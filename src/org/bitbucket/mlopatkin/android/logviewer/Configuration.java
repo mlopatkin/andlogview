@@ -39,7 +39,7 @@ public class Configuration {
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
-
+        
         private static void initColumns() {
             String columnsValue = instance.properties.getProperty(PREFIX + "columns",
                     "time, pid, priority, tag, message");
@@ -56,6 +56,17 @@ public class Configuration {
                 initColumns();
             }
             return columns_;
+        }
+        
+        public static int tooltipMaxWidth() {
+            final int DEFAULT_TOOLTIP_MAX_WIDTH = 120;
+            String widthValue = instance.properties.getProperty(PREFIX+"tooltip_max_width", "120");
+            try {
+                return Integer.parseInt(widthValue.trim());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return DEFAULT_TOOLTIP_MAX_WIDTH;
+            }
         }
     }
 }
