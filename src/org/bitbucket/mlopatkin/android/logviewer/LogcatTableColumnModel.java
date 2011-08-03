@@ -29,24 +29,19 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
             this.modelColumn = modelColumn;
             this.minWidth = minWidth;
         }
-
-        public ColumnInfo(int modelColumn) {
-            this.modelColumn = modelColumn;
-        }
-
     }
 
     private Map<String, ColumnInfo> columnInfo = new HashMap<String, ColumnInfo>();
 
     private void initColumnInfo() {
         columnInfo.put("time",
-                new ColumnInfo(LogRecordsTableModel.COLUMN_TIME, 0, timeCellRenderer));
-        columnInfo.put("pid", new ColumnInfo(LogRecordsTableModel.COLUMN_PID));
-        columnInfo.put("tid", new ColumnInfo(LogRecordsTableModel.COLUMN_TID));
-        columnInfo.put("priority", new ColumnInfo(LogRecordsTableModel.COLUMN_PRIORITY, 0,
+                new ColumnInfo(LogRecordsTableModel.COLUMN_TIME, 120, timeCellRenderer));
+        columnInfo.put("pid", new ColumnInfo(LogRecordsTableModel.COLUMN_PID, 30));
+        columnInfo.put("tid", new ColumnInfo(LogRecordsTableModel.COLUMN_TID, 30));
+        columnInfo.put("priority", new ColumnInfo(LogRecordsTableModel.COLUMN_PRIORITY, 30,
                 priorityCellRenderer));
-        columnInfo.put("tag", new ColumnInfo(LogRecordsTableModel.COLUMN_TAG));
-        columnInfo.put("message", new ColumnInfo(LogRecordsTableModel.COLUMN_MSG, 0,
+        columnInfo.put("tag", new ColumnInfo(LogRecordsTableModel.COLUMN_TAG, 120));
+        columnInfo.put("message", new ColumnInfo(LogRecordsTableModel.COLUMN_MSG, 800,
                 messageCellRenderer));
     }
 

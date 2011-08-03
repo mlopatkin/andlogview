@@ -42,11 +42,12 @@ public class Main {
     private void initialize() {
         frmAndroidLogViewer = new JFrame();
         frmAndroidLogViewer.setTitle("Android Log Viewer");
-        frmAndroidLogViewer.setBounds(100, 100, 450, 300);
+        frmAndroidLogViewer.setBounds(100, 100, 1000, 450);
         frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logElements = new JTable();
         logElements.setShowGrid(false);
+        logElements.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         frmAndroidLogViewer.getContentPane().add(logElements, BorderLayout.CENTER);
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
         logElements.setModel(recordsModel);
