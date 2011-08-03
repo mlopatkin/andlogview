@@ -11,16 +11,20 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 public class TestDataLoader {
     private static final String filename = "test_data.txt";
-    
+
     public static List<LogRecord> getRecords() {
         List<LogRecord> result = new ArrayList<LogRecord>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(filename));
-            String s = in.readLine();
-            while (s != null) {
-                result.add(LogRecordParser.parseThreadtimeRecord(s));
-                s = in.readLine();
-            }            
+            try {
+                String s = in.readLine();
+                while (s != null) {
+                    result.add(LogRecordParser.parseThreadtimeRecord(s));
+                    s = in.readLine();
+                }
+            } finally {
+                in.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
