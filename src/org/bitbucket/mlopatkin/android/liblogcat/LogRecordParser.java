@@ -1,10 +1,11 @@
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.liblogcat;
 import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
 
 public class LogRecordParser {
     private LogRecordParser() {

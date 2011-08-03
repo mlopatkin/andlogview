@@ -3,8 +3,8 @@ package test;
 
 import java.util.Calendar;
 
-import org.bitbucket.mlopatkin.android.logviewer.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitbucket.mlopatkin.android.logviewer.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 public class TestDataLoader {
     private static final String filename = "test_data.txt";

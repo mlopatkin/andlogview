@@ -1,7 +1,6 @@
-package org.bitbucket.mlopatkin.android.logviewer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+package org.bitbucket.mlopatkin.android.liblogcat;
 import java.util.Date;
+
 
 public class LogRecord {
     public enum Priority {

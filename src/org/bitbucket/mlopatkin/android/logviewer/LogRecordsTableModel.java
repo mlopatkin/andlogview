@@ -3,6 +3,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
 public class LogRecordsTableModel extends AbstractTableModel {
 
     private List<LogRecord> records;
