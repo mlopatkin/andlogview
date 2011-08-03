@@ -14,11 +14,11 @@ public class AdbDataSource {
     private static final String ADB_BASE_COMMANDLINE = Configuration.adb.commandline();
 
     private LogRecordStream input;
-    private LogRecordsTableModel model;
+    private LogRecordDataSourceListener listener;
     private Process adbProcess;
 
-    public AdbDataSource(LogRecordsTableModel model) {
-        this.model = model;
+    public AdbDataSource(LogRecordDataSourceListener listener) {
+        this.listener = listener;
         ProcessBuilder pb = new ProcessBuilder(makeCommandLine());
 
         try {
@@ -53,7 +53,7 @@ public class AdbDataSource {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                model.addRecord(record);
+                listener.onNewRecord(record);
             }
         });
     }

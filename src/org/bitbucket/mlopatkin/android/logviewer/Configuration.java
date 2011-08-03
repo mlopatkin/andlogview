@@ -78,6 +78,10 @@ public class Configuration {
         public static int tooltipMaxWidth() {
             return parseInt(PREFIX + "tooltip_max_width", 120);
         }
+
+        public static int autoscrollThreshold() {
+            return parseInt(PREFIX + "autoscroll_threshold", 20);
+        }
     }
 
     public static class adb {
