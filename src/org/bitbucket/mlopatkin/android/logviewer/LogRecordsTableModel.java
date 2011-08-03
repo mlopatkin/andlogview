@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class LogRecordsTableModel extends AbstractTableModel {
 
@@ -45,8 +46,9 @@ public class LogRecordsTableModel extends AbstractTableModel {
             return record.getTag();
         case 5:
             return record.getMessage();
-        }
-        return null;
+        default:
+            throw new IllegalArgumentException("Incorrect column number");
+        }        
     }
 
     @Override
@@ -54,6 +56,8 @@ public class LogRecordsTableModel extends AbstractTableModel {
         switch (columnIndex) {
         case COLUMN_TIME:
             return Date.class;
+        case COLUMN_PRIORITY:
+            return Priority.class;
         default:
             return super.getColumnClass(columnIndex);
         }        

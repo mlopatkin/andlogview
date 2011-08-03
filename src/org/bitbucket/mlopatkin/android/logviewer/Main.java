@@ -1,13 +1,14 @@
 package org.bitbucket.mlopatkin.android.logviewer;
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
 
-import test.TestDataLoader;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-import java.awt.BorderLayout;
-import java.util.Date;
+import test.TestDataLoader;
 
 public class Main {
 
@@ -51,6 +52,7 @@ public class Main {
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
         logElements.setDefaultRenderer(Date.class, new LogcatTimeCellRenderer());
+        logElements.setDefaultRenderer(LogRecord.Priority.class, new LogcatPriorityCellRenderer());
     }
 
 }
