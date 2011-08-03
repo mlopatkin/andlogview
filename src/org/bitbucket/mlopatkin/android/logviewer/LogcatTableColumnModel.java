@@ -17,6 +17,7 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
     private static class ColumnInfo {
         int modelColumn;
         int minWidth;
+        int maxWidth;
         TableCellRenderer renderer;
 
         public ColumnInfo(int modelColumn, int minWidth, TableCellRenderer renderer) {
@@ -25,9 +26,22 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
             this.renderer = renderer;
         }
 
+        public ColumnInfo(int modelColumn, int minWidth, int maxWidth, TableCellRenderer renderer) {
+            this.modelColumn = modelColumn;
+            this.minWidth = minWidth;
+            this.maxWidth = maxWidth;
+            this.renderer = renderer;
+        }
+        
         public ColumnInfo(int modelColumn, int minWidth) {
             this.modelColumn = modelColumn;
             this.minWidth = minWidth;
+        }
+        
+        public ColumnInfo(int modelColumn, int minWidth, int maxWidth) {
+            this.modelColumn = modelColumn;
+            this.minWidth = minWidth;
+            this.maxWidth = maxWidth;
         }
     }
 
@@ -35,13 +49,13 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
 
     private void initColumnInfo() {
         columnInfo.put("time",
-                new ColumnInfo(LogRecordsTableModel.COLUMN_TIME, 120, timeCellRenderer));
-        columnInfo.put("pid", new ColumnInfo(LogRecordsTableModel.COLUMN_PID, 30));
-        columnInfo.put("tid", new ColumnInfo(LogRecordsTableModel.COLUMN_TID, 30));
-        columnInfo.put("priority", new ColumnInfo(LogRecordsTableModel.COLUMN_PRIORITY, 30,
+                new ColumnInfo(LogRecordsTableModel.COLUMN_TIME, 150, 150, timeCellRenderer));
+        columnInfo.put("pid", new ColumnInfo(LogRecordsTableModel.COLUMN_PID, 30, 50));
+        columnInfo.put("tid", new ColumnInfo(LogRecordsTableModel.COLUMN_TID, 30, 50));
+        columnInfo.put("priority", new ColumnInfo(LogRecordsTableModel.COLUMN_PRIORITY, 30, 50,
                 priorityCellRenderer));
         columnInfo.put("tag", new ColumnInfo(LogRecordsTableModel.COLUMN_TAG, 120));
-        columnInfo.put("message", new ColumnInfo(LogRecordsTableModel.COLUMN_MSG, 800,
+        columnInfo.put("message", new ColumnInfo(LogRecordsTableModel.COLUMN_MSG, 1000,
                 messageCellRenderer));
     }
 
@@ -52,6 +66,9 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
         }
 
         TableColumn column = new TableColumn(info.modelColumn, info.minWidth, info.renderer, null);
+        if (info.maxWidth != 0) {
+            column.setMaxWidth(info.maxWidth);
+        }
         addColumn(column);
     }
 
