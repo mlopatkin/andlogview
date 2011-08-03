@@ -13,8 +13,13 @@ public class LogRecordsTableModel extends AbstractTableModel {
     
     private static final int COLUMNS_COUNT = 6;
     
-    public static final int COLUMN_PRIORITY = 3;
     public static final int COLUMN_TIME = 0;
+    public static final int COLUMN_PID = 1;
+    public static final int COLUMN_TID = 2;
+    public static final int COLUMN_PRIORITY = 3;
+    public static final int COLUMN_TAG = 4;
+    public static final int COLUMN_MSG = 5;
+    
     
     public LogRecordsTableModel(List<LogRecord> records) {
         this.records = records;
@@ -36,15 +41,15 @@ public class LogRecordsTableModel extends AbstractTableModel {
         switch (columnIndex) {
         case COLUMN_TIME:
             return record.getTime();
-        case 1:
+        case COLUMN_PID:
             return record.getPid();
-        case 2:
+        case COLUMN_TID:
             return record.getTid();
         case COLUMN_PRIORITY:
             return record.getPriority();
-        case 4:
+        case COLUMN_TAG:
             return record.getTag();
-        case 5:
+        case COLUMN_MSG:
             return record.getMessage();
         default:
             throw new IllegalArgumentException("Incorrect column number");
