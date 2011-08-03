@@ -15,18 +15,23 @@ public class AdbDataSource {
 
     private LogRecordStream input;
     private LogRecordsTableModel model;
+    private Process adbProcess;
 
     public AdbDataSource(LogRecordsTableModel model) {
         this.model = model;
         ProcessBuilder pb = new ProcessBuilder(makeCommandLine());
 
         try {
-            Process proc = pb.start();
-            input = new LogRecordStream(proc.getInputStream());
+            adbProcess = pb.start();
+            input = new LogRecordStream(adbProcess.getInputStream());
             (new AdbPollingThread()).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void close() {
+        adbProcess.destroy();
     }
 
     private List<String> makeCommandLine() {

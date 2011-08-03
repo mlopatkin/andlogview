@@ -14,6 +14,8 @@ public class Main {
     private JFrame frmAndroidLogViewer;
     private JTable logElements;
 
+    LogRecordsTableModel recordsModel = new LogRecordsTableModel();
+
     /**
      * Launch the application.
      */
@@ -28,6 +30,7 @@ public class Main {
                 }
             }
         });
+
     }
 
     /**
@@ -35,6 +38,14 @@ public class Main {
      */
     public Main() {
         initialize();
+        final AdbDataSource source = new AdbDataSource(recordsModel);
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                source.close();
+            }
+        });
     }
 
     /**
@@ -45,18 +56,16 @@ public class Main {
         frmAndroidLogViewer.setTitle("Android Log Viewer");
         frmAndroidLogViewer.setBounds(100, 100, 1000, 450);
         frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        LogRecordsTableModel recordsModel = new LogRecordsTableModel();
-        AdbDataSource source = new AdbDataSource(recordsModel);
 
-        logElements = new JTable();     
+        logElements = new JTable();
         logElements.setFillsViewportHeight(true);
-        logElements.setShowGrid(false);                
+        logElements.setShowGrid(false);
 
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
         logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));
-        
-        JScrollPane scrollPane = new JScrollPane(logElements);
+
+        final JScrollPane scrollPane = new JScrollPane(logElements);
         frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
         recordsModel.addTableModelListener(new TableModelListener() {
 
@@ -66,6 +75,5 @@ public class Main {
             }
         });
     }
-
 
 }
