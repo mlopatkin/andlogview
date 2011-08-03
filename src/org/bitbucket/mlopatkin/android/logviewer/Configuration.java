@@ -84,15 +84,17 @@ public class Configuration {
         private static final String PREFIX = "adb.";
 
         public static String commandline() {
-            return instance.properties.getProperty(PREFIX + "commandline", "commandline");
+            return instance.properties.getProperty(PREFIX + "commandline",
+                    "adb logcat -v threadtime");
         }
 
         public static String bufferswitch() {
-            return instance.properties.getProperty(PREFIX + "commandline", "bufferswitch");
+            return instance.properties.getProperty(PREFIX + "bufferswitch", "-b");
         }
 
         public static List<String> buffers() {
-            String buffersValue = instance.properties.getProperty("buffers", "system, main");
+            String buffersValue = instance.properties.getProperty(PREFIX + "buffers",
+                    "system, main");
             return splitCommaSeparatedValues(buffersValue);
         }
     }

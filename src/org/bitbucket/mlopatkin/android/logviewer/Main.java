@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 public class Main {
 
@@ -56,7 +58,14 @@ public class Main {
         
         JScrollPane scrollPane = new JScrollPane(logElements);
         frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        recordsModel.addTableModelListener(new TableModelListener() {
 
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                logElements.scrollRectToVisible(logElements.getCellRect(e.getLastRow(), 0, true));
+            }
+        });
     }
+
 
 }
