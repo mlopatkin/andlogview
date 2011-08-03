@@ -1,0 +1,51 @@
+07-29 16:15:29.787   296   721 D RPC     : 3000008c:00050000 dispatching RPC call (XID 1866, xdr 0x3357b8) for callback client 3100008c:00050001.
+07-29 16:15:29.787   296   721 D RPC     : 3100008c:327681 sending RPC reply (XID 1866)
+07-29 16:15:31.717   296   472 V AlarmManager: Adding alarm Alarm{40b2a148 type 2 com.google.android.apps.maps} at 12
+07-29 16:15:31.727   296   562 D RPC     : 3000008c:00050000 sending call (XID 195).
+07-29 16:15:31.787   427   427 I StatusBarPolicy: onSignalStrengthsChanged
+07-29 16:15:31.797   296   657 D RPC     : 3000008c:00050000 received REPLY (XID 195), grabbing mutex to wake up client.
+07-29 16:15:31.797   296   562 D RPC     : 3000008c:00050000 call success.
+07-29 16:15:31.857   296   657 D RPC     : 3000008c:00050000 received CALL.
+07-29 16:15:31.857   296   721 D RPC     : 3000008c:00050000 dispatching RPC call (XID 1867, xdr 0x3357b8) for callback client 3100008c:00050001.
+07-29 16:15:31.857   296   721 D RPC     : 3100008c:327681 sending RPC reply (XID 1867)
+07-29 16:15:33.777   296   337 W PowerManagerService: Timer 0x7->0x3|0x0
+07-29 16:15:33.777   296   337 I PowerManagerService: Ulight 7->3|0
+07-29 16:15:33.777   296   337 D PowerManagerService: setLightBrightness : mButtonLight : 0
+07-29 16:15:34.047   296   499 W WindowManager: Window Window{40950da0 com.android.browser/com.android.browser.BrowserActivity paused=false} destroyed surface Surface(name=com.android.browser/com.android.browser.BrowserActivity, identity=-1, mNativeSurface=0), session Session{40a40c50 uid 10102}
+07-29 16:15:34.587   296   342 I PowerManagerService: Ulight 3->7|0
+07-29 16:15:34.587   296   342 D PowerManagerService: setLightBrightness : mButtonLight : 99
+07-29 16:15:34.757   296   338 V AlarmManager: sending alarm Alarm{40b11de0 type 2 com.google.android.location}
+07-29 16:15:34.767   296   338 V AlarmManager: pending wakeup alarm com.google.android.location
+07-29 16:15:34.767   296   546 V AlarmManager: Adding alarm Alarm{408d5610 type 2 com.google.android.location} at 1
+07-29 16:15:37.407   296   296 V AlarmManager: Adding alarm Alarm{40995bf0 type 0 com.android.email} at 1
+07-29 16:15:37.667   296   472 V AlarmManager: Adding alarm Alarm{40b22820 type 0 com.android.email} at 1
+07-29 16:15:59.427   296   338 V AlarmManager: sending alarm Alarm{40b33b40 type 2 android}
+07-29 16:15:59.427   296   338 V AlarmManager: pending wakeup alarm android
+07-29 16:15:59.427   296   332 V AlarmManager: Adding alarm Alarm{40afc9e8 type 2 android} at 0
+07-29 16:15:59.997   296   338 V AlarmManager: sending alarm Alarm{40b31518 type 1 android}
+07-29 16:15:59.997   296   318 V AlarmManager: Adding alarm Alarm{408ae7a8 type 1 android} at 0
+07-29 16:16:00.757   296   334 D BatteryService: update start
+07-29 16:16:00.757   296   334 D BatteryService: updateBattery level:39 scale:100 status:3 health:2 present:true voltage: 3641 temperature: 237 technology: Li-ion AC powered:false USB powered:false icon:17302211
+07-29 16:16:00.777   427   427 I StatusBarPolicy: BAT. S:3 H:2
+07-29 16:16:05.177   427   427 I StatusBarPolicy: onSignalStrengthsChanged
+07-29 16:16:07.227   296   534 I ActivityManager: Starting: Intent { act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://m.comic.naver.com/webtoon/detail.nhn?titleId=22045&seq=306&week=thu&page=2 cmp=com.android.browser/.BrowserActivity } from pid 26509
+07-29 16:16:07.247   296   471 I WindowManager:   CREATE SURFACE Surface(name=com.android.browser/com.android.browser.BrowserActivity, identity=541, mNativeSurface=0) IN SESSION android.view.SurfaceSession@409ee948: pid=26509 format=-3 flags=0x0 / Window{40b3b368 com.android.browser/com.android.browser.BrowserActivity paused=false}
+07-29 16:16:07.277   296   338 V AlarmManager: sending alarm Alarm{40afc9e8 type 2 android}
+07-29 16:16:07.277   296   338 V AlarmManager: pending wakeup alarm android
+07-29 16:16:07.297   296   332 V AlarmManager: Adding alarm Alarm{40a287c0 type 2 android} at 1
+07-29 16:16:07.617   296   296 V AlarmManager: Adding alarm Alarm{40973fe0 type 0 com.android.email} at 0
+07-29 16:16:10.517   296   470 V AlarmManager: Adding alarm Alarm{40a9d930 type 0 com.android.email} at 1
+07-29 16:16:10.537   296   534 V AlarmManager: Adding alarm Alarm{40a9b5e8 type 0 com.android.email} at 1
+07-29 16:16:11.527   296   470 V AlarmManager: Adding alarm Alarm{40a55b08 type 0 com.android.email} at 1
+07-29 16:16:12.347   296   339 W WindowManager: Window Window{40b3b368 com.android.browser/com.android.browser.BrowserActivity paused=false} destroyed surface Surface(name=com.android.browser/com.android.browser.BrowserActivity, identity=-1, mNativeSurface=0), session Session{40a40c50 uid 10102}
+07-29 16:16:24.757   296   338 V AlarmManager: sending alarm Alarm{408d5610 type 2 com.google.android.location}
+07-29 16:16:24.767   296   338 V AlarmManager: pending wakeup alarm com.google.android.location
+07-29 16:16:24.777   296   499 V AlarmManager: Adding alarm Alarm{409bcb38 type 2 com.google.android.location} at 0
+07-29 16:16:24.827   296   515 V AlarmManager: Adding alarm Alarm{409bc330 type 2 com.google.android.apps.maps} at 12
+07-29 16:16:24.827   296   296 V AlarmManager: Adding alarm Alarm{409ba108 type 2 com.google.android.location} at 0
+07-29 16:16:25.587   296   515 I ActivityManager: Starting: Intent { act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://m.comic.naver.com/webtoon/detail.nhn?titleId=22045&seq=305&week=thu cmp=com.android.browser/.BrowserActivity } from pid 26509
+07-29 16:16:25.617   296   545 I WindowManager:   CREATE SURFACE Surface(name=com.android.browser/com.android.browser.BrowserActivity, identity=542, mNativeSurface=0) IN SESSION android.view.SurfaceSession@409ee948: pid=26509 format=-3 flags=0x0 / Window{4092d010 com.android.browser/com.android.browser.BrowserActivity paused=false}
+07-29 16:16:29.147   296   302 W WindowManager: Window Window{4092d010 com.android.browser/com.android.browser.BrowserActivity paused=false} destroyed surface Surface(name=com.android.browser/com.android.browser.BrowserActivity, identity=-1, mNativeSurface=0), session Session{40a40c50 uid 10102}
+07-29 16:16:29.767   296   338 V AlarmManager: sending alarm Alarm{409ba108 type 2 com.google.android.location}
+07-29 16:16:29.767   296   338 V AlarmManager: pending wakeup alarm com.google.android.location
+07-29 16:16:29.807   296   499 V AlarmManager: Adding alarm Alarm{409b9958 type 2 com.google.android.location} at 0
