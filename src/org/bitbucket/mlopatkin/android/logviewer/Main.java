@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.table.TableColumnModel;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
@@ -54,6 +55,7 @@ public class Main {
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
         logElements.setDefaultRenderer(Date.class, new LogcatTimeCellRenderer());
         logElements.setDefaultRenderer(LogRecord.Priority.class, new LogcatPriorityCellRenderer());
+                
     }
 
 }
