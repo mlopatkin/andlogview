@@ -1,13 +1,9 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
-import javax.swing.table.TableColumnModel;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import test.TestDataLoader;
 
