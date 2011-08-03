@@ -15,7 +15,7 @@ public class ToolTippedCellRenderer extends PriorityColoredCellRenderer {
 
     private static String formatStringToWidth(String src) {
         if (src.length() <= MAX_WIDTH) {
-            return src;
+            return null;
         }
 
         StringBuilder result = new StringBuilder("<html>");
