@@ -1,0 +1,2 @@
+version 0.1
+	This version shows logs from device via adb logcat, with coloring and autoscrolling.
