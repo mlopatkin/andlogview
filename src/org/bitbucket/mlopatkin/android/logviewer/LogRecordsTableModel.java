@@ -67,4 +67,24 @@ public class LogRecordsTableModel extends AbstractTableModel {
             return super.getColumnClass(columnIndex);
         }        
     }
+    
+    @Override
+    public String getColumnName(int column) {
+        switch (column) {
+        case COLUMN_TIME:
+            return "Time";
+        case COLUMN_PID:
+            return "pid";
+        case COLUMN_TID:
+            return "tid";
+        case COLUMN_PRIORITY:
+            return "";
+        case COLUMN_TAG:
+            return "tag";
+        case COLUMN_MSG:
+            return "Message";
+        default:
+            throw new IllegalArgumentException("Incorrect column number");
+        }
+    }
 }

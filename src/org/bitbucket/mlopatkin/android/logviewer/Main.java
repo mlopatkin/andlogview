@@ -13,7 +13,7 @@ import test.TestDataLoader;
 
 public class Main {
 
-    private JFrame frame;
+    private JFrame frmAndroidLogViewer;
     private JTable logElements;
 
     /**
@@ -24,7 +24,7 @@ public class Main {
             public void run() {
                 try {
                     Main window = new Main();
-                    window.frame.setVisible(true);
+                    window.frmAndroidLogViewer.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -43,19 +43,18 @@ public class Main {
      * Initialize the contents of the frame.
      */
     private void initialize() {
-        frame = new JFrame();
-        frame.setBounds(100, 100, 450, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmAndroidLogViewer = new JFrame();
+        frmAndroidLogViewer.setTitle("Android Log Viewer");
+        frmAndroidLogViewer.setBounds(100, 100, 450, 300);
+        frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logElements = new JTable();
         logElements.setShowGrid(false);
-        frame.getContentPane().add(logElements, BorderLayout.CENTER);
+        frmAndroidLogViewer.getContentPane().add(logElements, BorderLayout.CENTER);
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
-        logElements.setDefaultRenderer(Date.class, new LogcatTimeCellRenderer());
-        logElements.setDefaultRenderer(LogRecord.Priority.class, new LogcatPriorityCellRenderer());
-                
+        logElements.setColumnModel(new LogcatTableColumnModel());        
     }
 
 }
