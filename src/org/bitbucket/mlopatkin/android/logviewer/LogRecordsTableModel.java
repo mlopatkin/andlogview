@@ -1,4 +1,5 @@
 package org.bitbucket.mlopatkin.android.logviewer;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -10,6 +11,9 @@ public class LogRecordsTableModel extends AbstractTableModel {
     private List<LogRecord> records;
     
     private static final int COLUMNS_COUNT = 6;
+    
+    public static final int COLUMN_PRIORITY = 3;
+    public static final int COLUMN_TIME = 0;
     
     public LogRecordsTableModel(List<LogRecord> records) {
         this.records = records;
@@ -29,14 +33,14 @@ public class LogRecordsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         LogRecord record = records.get(rowIndex);
         switch (columnIndex) {
-        case 0:
+        case COLUMN_TIME:
             return record.getTime();
         case 1:
             return record.getPid();
         case 2:
             return record.getTid();
-        case 3:
-            return record.getPriority().getLetter();
+        case COLUMN_PRIORITY:
+            return record.getPriority();
         case 4:
             return record.getTag();
         case 5:
@@ -45,4 +49,13 @@ public class LogRecordsTableModel extends AbstractTableModel {
         return null;
     }
 
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        switch (columnIndex) {
+        case COLUMN_TIME:
+            return Date.class;
+        default:
+            return super.getColumnClass(columnIndex);
+        }        
+    }
 }

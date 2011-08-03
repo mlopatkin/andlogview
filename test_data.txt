@@ -34,13 +34,13 @@
 07-29 16:16:07.277   296   338 V AlarmManager: pending wakeup alarm android
 07-29 16:16:07.297   296   332 V AlarmManager: Adding alarm Alarm{40a287c0 type 2 android} at 1
 07-29 16:16:07.617   296   296 V AlarmManager: Adding alarm Alarm{40973fe0 type 0 com.android.email} at 0
-07-29 16:16:10.517   296   470 V AlarmManager: Adding alarm Alarm{40a9d930 type 0 com.android.email} at 1
-07-29 16:16:10.537   296   534 V AlarmManager: Adding alarm Alarm{40a9b5e8 type 0 com.android.email} at 1
+07-29 16:16:10.517   296   470 E AlarmManager: Adding alarm Alarm{40a9d930 type 0 com.android.email} at 1
+07-29 16:16:10.537   296   534 E AlarmManager: Adding alarm Alarm{40a9b5e8 type 0 com.android.email} at 1
 07-29 16:16:11.527   296   470 V AlarmManager: Adding alarm Alarm{40a55b08 type 0 com.android.email} at 1
 07-29 16:16:12.347   296   339 W WindowManager: Window Window{40b3b368 com.android.browser/com.android.browser.BrowserActivity paused=false} destroyed surface Surface(name=com.android.browser/com.android.browser.BrowserActivity, identity=-1, mNativeSurface=0), session Session{40a40c50 uid 10102}
 07-29 16:16:24.757   296   338 V AlarmManager: sending alarm Alarm{408d5610 type 2 com.google.android.location}
 07-29 16:16:24.767   296   338 V AlarmManager: pending wakeup alarm com.google.android.location
-07-29 16:16:24.777   296   499 V AlarmManager: Adding alarm Alarm{409bcb38 type 2 com.google.android.location} at 0
+07-29 16:16:24.777   296   499 D AlarmManager: Adding alarm Alarm{409bcb38 type 2 com.google.android.location} at 0
 07-29 16:16:24.827   296   515 V AlarmManager: Adding alarm Alarm{409bc330 type 2 com.google.android.apps.maps} at 12
 07-29 16:16:24.827   296   296 V AlarmManager: Adding alarm Alarm{409ba108 type 2 com.google.android.location} at 0
 07-29 16:16:25.587   296   515 I ActivityManager: Starting: Intent { act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://m.comic.naver.com/webtoon/detail.nhn?titleId=22045&seq=305&week=thu cmp=com.android.browser/.BrowserActivity } from pid 26509

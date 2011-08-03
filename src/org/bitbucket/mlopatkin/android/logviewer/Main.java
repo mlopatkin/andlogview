@@ -7,6 +7,7 @@ import javax.swing.JTable;
 import test.TestDataLoader;
 
 import java.awt.BorderLayout;
+import java.util.Date;
 
 public class Main {
 
@@ -48,6 +49,8 @@ public class Main {
         frame.getContentPane().add(logElements, BorderLayout.CENTER);
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
         logElements.setModel(recordsModel);
+        logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
+        logElements.setDefaultRenderer(Date.class, new LogcatTimeCellRenderer());
     }
 
 }
