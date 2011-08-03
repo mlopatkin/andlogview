@@ -1,17 +1,16 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
+
 import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-
 public class LogRecordParser {
     private LogRecordParser() {
     }
-  
 
     private static final Pattern tagSeparator = Pattern.compile(": ");
-    
+
     public static LogRecord parseThreadtimeRecord(String s) {
         ParsePosition pos = new ParsePosition(0);
         Date dateTime = TimeFormatUtils.getTimeFromString(s, pos);

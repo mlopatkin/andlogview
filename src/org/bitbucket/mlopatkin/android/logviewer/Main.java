@@ -1,4 +1,5 @@
 package org.bitbucket.mlopatkin.android.logviewer;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -50,7 +51,7 @@ public class Main {
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
-        logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));        
+        logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));
     }
 
 }

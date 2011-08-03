@@ -1,15 +1,15 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
-import java.util.Date;
 
+import java.util.Date;
 
 public class LogRecord {
     public enum Priority {
         ASSERT, DEBUG, ERROR, VERBOSE, WARN, INFO;
-        
+
         String getLetter() {
             return toString().substring(0, 1);
         }
-        
+
     }
 
     private Date time;
@@ -19,9 +19,7 @@ public class LogRecord {
     private String tag;
     private String message;
 
-    
-    public LogRecord(Date time, int pid, int tid, Priority priority,
-            String tag, String message) {
+    public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -65,6 +63,5 @@ public class LogRecord {
         b.append(message);
         return b.toString();
     }
-    
-    
+
 }

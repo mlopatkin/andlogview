@@ -1,13 +1,13 @@
 package test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.util.Calendar;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class LogRecordParserTest {
 
@@ -22,9 +22,9 @@ public class LogRecordParserTest {
         final LogRecord.Priority priority = LogRecord.Priority.DEBUG;
         final String tag = "RPC";
         final String message = "3000008c:00050000 dispatching RPC call (XID 1866, xdr 0x3357b8) for callback client 3100008c:00050001.";
-        
+
         LogRecord record = LogRecordParser.parseThreadtimeRecord(src);
-        
+
         assertEquals(calendar.getTime(), record.getTime());
         assertEquals(pid, record.getPid());
         assertEquals(tid, record.getTid());

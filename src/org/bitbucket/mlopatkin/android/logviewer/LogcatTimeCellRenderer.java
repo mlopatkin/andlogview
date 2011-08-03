@@ -14,5 +14,5 @@ public class LogcatTimeCellRenderer extends PriorityColoredCellRenderer {
         Date dateValue = (Date) value;
         super.setValue(TimeFormatUtils.convertTimeToString(dateValue));
     }
-   
+
 }

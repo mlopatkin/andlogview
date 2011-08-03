@@ -19,8 +19,7 @@ public class Configuration {
 
     private void loadFromFile() {
         try {
-            InputStream in = new BufferedInputStream(new FileInputStream(
-                    CONFIG_FILE_NAME));
+            InputStream in = new BufferedInputStream(new FileInputStream(CONFIG_FILE_NAME));
             try {
                 properties.load(in);
             } finally {
@@ -42,8 +41,8 @@ public class Configuration {
         private static List<String> columns_;
 
         private static void initColumns() {
-            String columnsValue = instance.properties.getProperty(PREFIX
-                    + "columns", "time, pid, priority, tag, message");
+            String columnsValue = instance.properties.getProperty(PREFIX + "columns",
+                    "time, pid, priority, tag, message");
             String[] columnNames = StringUtils.split(columnsValue, ",");
             List<String> result = new ArrayList<String>();
             for (String s : columnNames) {
