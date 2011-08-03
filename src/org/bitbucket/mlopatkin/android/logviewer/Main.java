@@ -54,7 +54,7 @@ public class Main {
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
-        logElements.setColumnModel(new LogcatTableColumnModel());        
+        logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));        
     }
 
 }

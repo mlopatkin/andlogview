@@ -1,6 +1,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.table.DefaultTableColumnModel;
@@ -48,7 +49,6 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
     }
     
     private void addColumnByName(String name) {
-        name = name.toLowerCase().trim();
         ColumnInfo info = columnInfo.get(name);
         if (info == null) {
             throw new IllegalArgumentException(name + " is not a valid column");            
@@ -61,6 +61,13 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
     public LogcatTableColumnModel() {
         initColumnInfo();
         for(String columnName : columnInfo.keySet()) {
+            addColumnByName(columnName);
+        }
+    }
+    
+    public LogcatTableColumnModel(List<String> columnNames) {
+        initColumnInfo();
+        for(String columnName : columnNames) {
             addColumnByName(columnName);
         }
     }
