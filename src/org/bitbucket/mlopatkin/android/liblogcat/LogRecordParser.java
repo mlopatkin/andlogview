@@ -10,15 +10,13 @@ import java.util.regex.Pattern;
 public class LogRecordParser {
     private LogRecordParser() {
     }
-
-    static DateFormat dateTimeFormat = new SimpleDateFormat(
-            "MM-dd HH:mm:ss.SSS");
+  
 
     private static final Pattern tagSeparator = Pattern.compile(": ");
     
     public static LogRecord parseThreadtimeRecord(String s) {
         ParsePosition pos = new ParsePosition(0);
-        Date dateTime = dateTimeFormat.parse(s, pos);
+        Date dateTime = TimeFormatUtils.getTimeFromString(s, pos);
         Scanner scanner = new Scanner(s.substring(pos.getIndex()));
         int pid = scanner.nextInt();
         int tid = scanner.nextInt();

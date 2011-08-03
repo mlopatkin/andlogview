@@ -57,7 +57,7 @@ public class LogRecord {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(LogRecordParser.dateTimeFormat.format(time)).append('\t');
+        b.append(TimeFormatUtils.convertTimeToString(time)).append('\t');
         b.append(pid).append('\t');
         b.append(tid).append('\t');
         b.append(priority.getLetter()).append('\t');
