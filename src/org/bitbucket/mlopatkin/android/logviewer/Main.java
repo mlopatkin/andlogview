@@ -47,6 +47,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logElements = new JTable();
+        logElements.setShowGrid(false);
         frame.getContentPane().add(logElements, BorderLayout.CENTER);
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
         logElements.setModel(recordsModel);
