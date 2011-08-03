@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 
 import test.TestDataLoader;
+import javax.swing.JScrollPane;
 
 public class Main {
 
@@ -44,15 +45,19 @@ public class Main {
         frmAndroidLogViewer.setTitle("Android Log Viewer");
         frmAndroidLogViewer.setBounds(100, 100, 1000, 450);
         frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        logElements = new JTable();
-        logElements.setShowGrid(false);
-        logElements.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        frmAndroidLogViewer.getContentPane().add(logElements, BorderLayout.CENTER);
         LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
+
+
+        logElements = new JTable();     
+        logElements.setFillsViewportHeight(true);
+        logElements.setShowGrid(false);                
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
         logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));
+        
+        JScrollPane scrollPane = new JScrollPane(logElements);
+        frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
+
     }
 
 }
