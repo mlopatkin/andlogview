@@ -4,10 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JTable;
-
-import test.TestDataLoader;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class Main {
 
@@ -45,12 +43,13 @@ public class Main {
         frmAndroidLogViewer.setTitle("Android Log Viewer");
         frmAndroidLogViewer.setBounds(100, 100, 1000, 450);
         frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        LogRecordsTableModel recordsModel = new LogRecordsTableModel(TestDataLoader.getRecords());
-
+        LogRecordsTableModel recordsModel = new LogRecordsTableModel();
+        AdbDataSource source = new AdbDataSource(recordsModel);
 
         logElements = new JTable();     
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);                
+
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
         logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));

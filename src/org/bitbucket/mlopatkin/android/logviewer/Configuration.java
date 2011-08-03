@@ -36,6 +36,28 @@ public class Configuration {
 
     private static Configuration instance = new Configuration();
 
+    private static List<String> splitCommaSeparatedValues(String valuesString) {
+        String[] values = StringUtils.split(valuesString, ",");
+        List<String> result = new ArrayList<String>();
+        for (String s : values) {
+            result.add(s.toLowerCase().trim());
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    private static int parseInt(String key, int defaultValue) {
+        String widthValue = instance.properties.getProperty(key);
+        if (widthValue == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(widthValue.trim());
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return defaultValue;
+        }
+    }
+
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
@@ -43,12 +65,7 @@ public class Configuration {
         private static void initColumns() {
             String columnsValue = instance.properties.getProperty(PREFIX + "columns",
                     "time, pid, priority, tag, message");
-            String[] columnNames = StringUtils.split(columnsValue, ",");
-            List<String> result = new ArrayList<String>();
-            for (String s : columnNames) {
-                result.add(s.toLowerCase().trim());
-            }
-            columns_ = Collections.unmodifiableList(result);
+            columns_ = splitCommaSeparatedValues(columnsValue);
         }
 
         public synchronized static List<String> columns() {
@@ -59,14 +76,24 @@ public class Configuration {
         }
         
         public static int tooltipMaxWidth() {
-            final int DEFAULT_TOOLTIP_MAX_WIDTH = 120;
-            String widthValue = instance.properties.getProperty(PREFIX+"tooltip_max_width", "120");
-            try {
-                return Integer.parseInt(widthValue.trim());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                return DEFAULT_TOOLTIP_MAX_WIDTH;
-            }
+            return parseInt(PREFIX + "tooltip_max_width", 120);
+        }
+    }
+
+    public static class adb {
+        private static final String PREFIX = "adb.";
+
+        public static String commandline() {
+            return instance.properties.getProperty(PREFIX + "commandline", "commandline");
+        }
+
+        public static String bufferswitch() {
+            return instance.properties.getProperty(PREFIX + "commandline", "bufferswitch");
+        }
+
+        public static List<String> buffers() {
+            String buffersValue = instance.properties.getProperty("buffers", "system, main");
+            return splitCommaSeparatedValues(buffersValue);
         }
     }
 }

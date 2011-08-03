@@ -1,5 +1,6 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,10 @@ public class LogRecordsTableModel extends AbstractTableModel {
     public static final int COLUMN_TAG = 4;
     public static final int COLUMN_MSG = 5;
 
+    public LogRecordsTableModel() {
+        this.records = new ArrayList<LogRecord>();
+    }
+    
     public LogRecordsTableModel(List<LogRecord> records) {
         this.records = records;
     }
@@ -66,6 +71,11 @@ public class LogRecordsTableModel extends AbstractTableModel {
         default:
             return super.getColumnClass(columnIndex);
         }
+    }
+
+    public void addRecord(LogRecord record) {
+        records.add(record);
+        fireTableRowsInserted(records.size() - 1, records.size() - 1);
     }
 
 }
