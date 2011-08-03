@@ -1,0 +1,6 @@
+syntax:glob
+.*
+bin/
+docs/
+javadoc/
+out/
