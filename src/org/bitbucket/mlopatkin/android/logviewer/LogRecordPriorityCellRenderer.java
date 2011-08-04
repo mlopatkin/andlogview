@@ -17,7 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
-public class LogcatPriorityCellRenderer extends PriorityColoredCellRenderer {
+public class LogRecordPriorityCellRenderer extends PriorityColoredCellRenderer {
     @Override
     protected void setValue(Object value) {
         if (!(value instanceof Priority)) {

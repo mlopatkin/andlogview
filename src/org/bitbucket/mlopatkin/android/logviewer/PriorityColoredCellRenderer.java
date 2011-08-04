@@ -43,7 +43,7 @@ public class PriorityColoredCellRenderer extends DefaultTableCellRenderer {
                 row, column);
         row = table.convertRowIndexToModel(row);
         Priority priority = (Priority) table.getModel().getValueAt(row,
-                LogRecordsTableModel.COLUMN_PRIORITY);
+                LogRecordTableModel.COLUMN_PRIORITY);
         result.setForeground(COLOR_MAP.get(priority));
         return result;
     }

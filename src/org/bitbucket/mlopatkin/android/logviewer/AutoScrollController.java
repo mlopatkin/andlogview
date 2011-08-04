@@ -27,9 +27,9 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
     private static final int THRESHOLD = Configuration.ui.autoscrollThreshold();
 
     private JTable table;
-    private LogRecordsTableModel model;
+    private LogRecordTableModel model;
 
-    public AutoScrollController(JTable table, LogRecordsTableModel model) {
+    public AutoScrollController(JTable table, LogRecordTableModel model) {
         this.table = table;
         this.model = model;
         this.model.addTableModelListener(this);

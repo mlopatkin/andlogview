@@ -23,10 +23,10 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-public class LogcatTableColumnModel extends DefaultTableColumnModel {
+public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
-    private TableCellRenderer timeCellRenderer = new LogcatTimeCellRenderer();
-    private TableCellRenderer priorityCellRenderer = new LogcatPriorityCellRenderer();
+    private TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
+    private TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
     private TableCellRenderer messageCellRenderer = new ToolTippedCellRenderer();
 
     private static class ColumnInfo {
@@ -70,14 +70,14 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
     private Map<String, ColumnInfo> columnInfo = new HashMap<String, ColumnInfo>();
 
     private void initColumnInfo() {
-        columnInfo.put("time", new ColumnInfo(LogRecordsTableModel.COLUMN_TIME, "Time", 150, 150,
+        columnInfo.put("time", new ColumnInfo(LogRecordTableModel.COLUMN_TIME, "Time", 150, 150,
                 timeCellRenderer));
-        columnInfo.put("pid", new ColumnInfo(LogRecordsTableModel.COLUMN_PID, "pid", 30, 50));
-        columnInfo.put("tid", new ColumnInfo(LogRecordsTableModel.COLUMN_TID, "tid", 30, 50));
-        columnInfo.put("priority", new ColumnInfo(LogRecordsTableModel.COLUMN_PRIORITY, "", 30, 50,
+        columnInfo.put("pid", new ColumnInfo(LogRecordTableModel.COLUMN_PID, "pid", 30, 50));
+        columnInfo.put("tid", new ColumnInfo(LogRecordTableModel.COLUMN_TID, "tid", 30, 50));
+        columnInfo.put("priority", new ColumnInfo(LogRecordTableModel.COLUMN_PRIORITY, "", 30, 50,
                 priorityCellRenderer));
-        columnInfo.put("tag", new ColumnInfo(LogRecordsTableModel.COLUMN_TAG, "Tag", 120));
-        columnInfo.put("message", new ColumnInfo(LogRecordsTableModel.COLUMN_MSG, "Message", 1000,
+        columnInfo.put("tag", new ColumnInfo(LogRecordTableModel.COLUMN_TAG, "Tag", 120));
+        columnInfo.put("message", new ColumnInfo(LogRecordTableModel.COLUMN_MSG, "Message", 1000,
                 messageCellRenderer));
     }
 
@@ -95,14 +95,14 @@ public class LogcatTableColumnModel extends DefaultTableColumnModel {
         addColumn(column);
     }
 
-    public LogcatTableColumnModel() {
+    public LogRecordTableColumnModel() {
         initColumnInfo();
         for (String columnName : columnInfo.keySet()) {
             addColumnByName(columnName);
         }
     }
 
-    public LogcatTableColumnModel(List<String> columnNames) {
+    public LogRecordTableColumnModel(List<String> columnNames) {
         initColumnInfo();
         for (String columnName : columnNames) {
             addColumnByName(columnName);

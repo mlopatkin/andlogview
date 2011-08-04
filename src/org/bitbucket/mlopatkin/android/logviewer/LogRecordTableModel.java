@@ -24,7 +24,7 @@ import javax.swing.table.AbstractTableModel;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
-public class LogRecordsTableModel extends AbstractTableModel {
+public class LogRecordTableModel extends AbstractTableModel {
 
     private List<LogRecord> records;
 
@@ -37,11 +37,11 @@ public class LogRecordsTableModel extends AbstractTableModel {
     public static final int COLUMN_TAG = 4;
     public static final int COLUMN_MSG = 5;
 
-    public LogRecordsTableModel() {
+    public LogRecordTableModel() {
         this.records = new ArrayList<LogRecord>();
     }
     
-    public LogRecordsTableModel(List<LogRecord> records) {
+    public LogRecordTableModel(List<LogRecord> records) {
         this.records = records;
     }
 

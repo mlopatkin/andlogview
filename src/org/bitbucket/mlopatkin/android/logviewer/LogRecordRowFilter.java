@@ -19,7 +19,7 @@ import javax.swing.RowFilter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 
-public class LogRecordRowFilter extends RowFilter<LogRecordsTableModel, Integer> {
+public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> {
 
     private LogRecordFilter filter;
 
@@ -28,7 +28,7 @@ public class LogRecordRowFilter extends RowFilter<LogRecordsTableModel, Integer>
     }
 
     @Override
-    public boolean include(Entry<? extends LogRecordsTableModel, ? extends Integer> entry) {
+    public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
         return filter.include(entry.getModel().getRowData(entry.getIdentifier()));
     }
 

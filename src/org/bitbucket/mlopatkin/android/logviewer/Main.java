@@ -36,7 +36,7 @@ public class Main implements DialogResultReceiver {
     private JTable logElements;
     private JScrollPane scrollPane;
 
-    private LogRecordsTableModel recordsModel = new LogRecordsTableModel();
+    private LogRecordTableModel recordsModel = new LogRecordTableModel();
     private AutoScrollController scrollController;
     private JPanel filterPanel;
 
@@ -65,7 +65,7 @@ public class Main implements DialogResultReceiver {
     public Main() {
         initialize();
         scrollController = new AutoScrollController(logElements, recordsModel);
-        defaultRowSorter = new TableRowSorter<LogRecordsTableModel>(recordsModel);
+        defaultRowSorter = new TableRowSorter<LogRecordTableModel>(recordsModel);
         logElements.setRowSorter(defaultRowSorter);
 
         newFilterDialog = new NewFilterDialog();
@@ -95,7 +95,7 @@ public class Main implements DialogResultReceiver {
 
         logElements.setModel(recordsModel);
         logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
-        logElements.setColumnModel(new LogcatTableColumnModel(Configuration.ui.columns()));
+        logElements.setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns()));
 
         scrollPane = new JScrollPane(logElements);
         frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -120,7 +120,7 @@ public class Main implements DialogResultReceiver {
         newFilterDialog.startDialogForResult(this);
     }
 
-    private TableRowSorter<LogRecordsTableModel> defaultRowSorter;
+    private TableRowSorter<LogRecordTableModel> defaultRowSorter;
 
     @Override
     public void onDialogResult(String tag) {
