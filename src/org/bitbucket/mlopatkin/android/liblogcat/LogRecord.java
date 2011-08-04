@@ -19,7 +19,7 @@ import java.util.Date;
 
 public class LogRecord {
     public enum Priority {
-        ASSERT, DEBUG, ERROR, VERBOSE, WARN, INFO;
+        DEBUG, ERROR, VERBOSE, WARN, INFO, FATAL;
 
         String getLetter() {
             return toString().substring(0, 1);

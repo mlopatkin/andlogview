@@ -31,11 +31,9 @@ public class PriorityColoredCellRenderer extends DefaultTableCellRenderer {
     private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<Priority, Color>(
             Priority.class);
     static {
-        COLOR_MAP.put(Priority.VERBOSE, Color.BLACK);
-        COLOR_MAP.put(Priority.ERROR, Color.RED);
-        COLOR_MAP.put(Priority.INFO, Color.GREEN);
-        COLOR_MAP.put(Priority.WARN, Color.ORANGE);
-        COLOR_MAP.put(Priority.DEBUG, Color.BLUE);
+        for(Priority p : Priority.values()) {
+            COLOR_MAP.put(p, Configuration.ui.priorityColor(p));
+        }
     }
 
     @Override

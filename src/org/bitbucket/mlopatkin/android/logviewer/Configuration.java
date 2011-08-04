@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class Configuration {
 
@@ -76,7 +78,7 @@ public class Configuration {
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
-        
+
         private static void initColumns() {
             String columnsValue = instance.properties.getProperty(PREFIX + "columns",
                     "time, pid, priority, tag, message");
@@ -89,13 +91,23 @@ public class Configuration {
             }
             return columns_;
         }
-        
+
         public static int tooltipMaxWidth() {
             return parseInt(PREFIX + "tooltip_max_width", 120);
         }
 
         public static int autoscrollThreshold() {
             return parseInt(PREFIX + "autoscroll_threshold", 20);
+        }
+
+        public static Color priorityColor(Priority p) {
+            String priorityName = p.name().toLowerCase();
+            try {
+                return Color.decode(instance.properties.getProperty(PREFIX + "priority_color."
+                        + priorityName));
+            } catch (Exception e) {
+                return Color.BLACK;
+            }
         }
     }
 
