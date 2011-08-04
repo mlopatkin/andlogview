@@ -84,6 +84,7 @@ public class NewFilterDialog extends JDialog {
 
     void startDialogForResult(DialogResultReceiver resultReceiver) {
         receiver = resultReceiver;
+        tagText.setText(null);
         setVisible(true);
     }
     
