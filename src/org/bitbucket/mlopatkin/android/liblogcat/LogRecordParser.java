@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+
 public class LogRecordParser {
     private LogRecordParser() {
     }
@@ -27,6 +29,7 @@ public class LogRecordParser {
     private static final Pattern tagSeparator = Pattern.compile(": ");
 
     public static LogRecord parseThreadtimeRecord(String s) {
+        try {
         ParsePosition pos = new ParsePosition(0);
         Date dateTime = TimeFormatUtils.getTimeFromString(s, pos);
         Scanner scanner = new Scanner(s.substring(pos.getIndex()));
@@ -37,6 +40,10 @@ public class LogRecordParser {
         scanner.skip(tagSeparator);
         String message = scanner.nextLine();
         return new LogRecord(dateTime, pid, tid, priority, tag, message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", s);
+        }
     }
 
     private static String readTag(Scanner scanner) {

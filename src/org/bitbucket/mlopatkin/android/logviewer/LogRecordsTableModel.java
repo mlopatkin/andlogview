@@ -93,4 +93,7 @@ public class LogRecordsTableModel extends AbstractTableModel {
         fireTableRowsInserted(records.size() - 1, records.size() - 1);
     }
 
+    public LogRecord getRowData(int row) {
+        return records.get(row);
+    }
 }

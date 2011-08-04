@@ -43,6 +43,7 @@ public class PriorityColoredCellRenderer extends DefaultTableCellRenderer {
             boolean hasFocus, int row, int column) {
         Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                 row, column);
+        row = table.convertRowIndexToModel(row);
         Priority priority = (Priority) table.getModel().getValueAt(row,
                 LogRecordsTableModel.COLUMN_PRIORITY);
         result.setForeground(COLOR_MAP.get(priority));
