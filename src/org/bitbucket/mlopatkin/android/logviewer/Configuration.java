@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,12 @@ public class Configuration {
 
     private void loadFromFile() {
         try {
-            InputStream in = new BufferedInputStream(new FileInputStream(CONFIG_FILE_NAME));
+            InputStream in = getClass().getResourceAsStream("/logview.properties");
+            File configFile = new File(CONFIG_FILE_NAME);
+            if (configFile.exists()) {
+                in.close();
+                in = new BufferedInputStream(new FileInputStream(CONFIG_FILE_NAME));
+            }
             try {
                 properties.load(in);
             } finally {
