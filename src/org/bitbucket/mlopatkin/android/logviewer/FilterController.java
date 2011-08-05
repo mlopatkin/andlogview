@@ -62,8 +62,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     }
 
     public void removeFilter(LogRecordFilter filter) {
-        // TODO Auto-generated method stub
-
+        panel.removeFilterButton(filter);
     }
 
     public void startEditFilterDialog(LogRecordFilter filter) {

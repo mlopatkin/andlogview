@@ -21,6 +21,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,6 +33,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 class FilterPanel extends JPanel {
 
     private FilterController controller;
+    private Map<LogRecordFilter, FilterButton> buttons = new HashMap<LogRecordFilter, FilterButton>();
 
     public FilterPanel(FilterController controller) {
         this.controller = controller;
@@ -65,7 +68,16 @@ class FilterPanel extends JPanel {
     public void addFilterButton(LogRecordFilter filter) {
         FilterButton button = new FilterButton(filter);
         add(button);
+        buttons.put(filter, button);
         validate();
+    }
+
+    public void removeFilterButton(LogRecordFilter filter) {
+        FilterButton button = buttons.get(filter);
+        buttons.remove(filter);
+        remove(button);
+        revalidate();
+        repaint();
     }
 
     private class FilterButton extends JButton implements ActionListener {
@@ -79,7 +91,8 @@ class FilterPanel extends JPanel {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (e.getButton() == MouseEvent.BUTTON2) {
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        System.out.println("remove");
                         controller.removeFilter(FilterButton.this.filter);
                     }
                 }
