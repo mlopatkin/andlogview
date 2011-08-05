@@ -21,12 +21,11 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
 public class Main {
 
     private JFrame frmAndroidLogViewer;
-    private JTable logElements;
+    private DecoratingRendererTable logElements;
     private JScrollPane scrollPane;
 
     private LogRecordTableModel recordsModel = new LogRecordTableModel();
@@ -77,12 +76,12 @@ public class Main {
         frmAndroidLogViewer.setBounds(100, 100, 1000, 450);
         frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        logElements = new JTable();
+        logElements = new DecoratingRendererTable();
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
         logElements.setModel(recordsModel);
-        logElements.setDefaultRenderer(Object.class, new PriorityColoredCellRenderer());
+        logElements.addDecorator(new PriorityColoredCellRenderer());
         logElements.setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns()));
 
         scrollPane = new JScrollPane(logElements);

@@ -15,10 +15,12 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import javax.swing.table.DefaultTableCellRenderer;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 
 
-public class ToolTippedCellRenderer extends PriorityColoredCellRenderer {
+public class ToolTippedCellRenderer extends DefaultTableCellRenderer {
 
     @Override
     protected void setValue(Object value) {        

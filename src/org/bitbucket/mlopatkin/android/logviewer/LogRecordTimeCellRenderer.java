@@ -17,9 +17,11 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.util.Date;
 
+import javax.swing.table.DefaultTableCellRenderer;
+
 import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
 
-public class LogRecordTimeCellRenderer extends PriorityColoredCellRenderer {
+public class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
     @Override
     protected void setValue(Object value) {
         if (!(value instanceof Date)) {

@@ -15,19 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-
-public class LogRecordPriorityCellRenderer extends DefaultTableCellRenderer {
-    @Override
-    protected void setValue(Object value) {
-        if (!(value instanceof Priority)) {
-            throw new IllegalArgumentException(
-                    "Incorrect value class passed into LogcatPriorityCellRenderer");
-        }
-
-        super.setValue(value.toString().substring(0, 1));
-
-    }
+interface DecoratingCellRenderer extends TableCellRenderer {
+    void setInnerRenderer(TableCellRenderer renderer);
 }

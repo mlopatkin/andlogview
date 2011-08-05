@@ -20,11 +20,12 @@ import java.awt.Component;
 import java.util.EnumMap;
 
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
-public class PriorityColoredCellRenderer extends DefaultTableCellRenderer {
+public class PriorityColoredCellRenderer implements
+        DecoratingCellRenderer {
 
     private static final long serialVersionUID = -5160005091082094580L;
 
@@ -39,12 +40,19 @@ public class PriorityColoredCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {
-        Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+        Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                 row, column);
         row = table.convertRowIndexToModel(row);
         Priority priority = (Priority) table.getModel().getValueAt(row,
                 LogRecordTableModel.COLUMN_PRIORITY);
         result.setForeground(COLOR_MAP.get(priority));
         return result;
+    }
+
+    private TableCellRenderer inner;
+
+    @Override
+    public void setInnerRenderer(TableCellRenderer renderer) {
+        inner = renderer;
     }
 }
