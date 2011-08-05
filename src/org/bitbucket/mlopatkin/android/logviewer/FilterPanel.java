@@ -27,6 +27,7 @@ class FilterPanel extends JPanel {
 
     public FilterPanel(FilterController controller) {
         this.controller = controller;
+        addMouseListener(new FilterPanelClickListener());
     }
 
     private class FilterPanelClickListener extends MouseAdapter implements MouseListener {

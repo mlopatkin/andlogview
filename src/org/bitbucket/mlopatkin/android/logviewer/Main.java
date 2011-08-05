@@ -31,7 +31,7 @@ public class Main {
 
     private LogRecordTableModel recordsModel = new LogRecordTableModel();
     private AutoScrollController scrollController;
-    private JPanel filterPanel;
+    private FilterController filterController;
 
 
 
@@ -57,7 +57,6 @@ public class Main {
      */
     public Main() {
         initialize();
-        scrollController = new AutoScrollController(logElements, recordsModel);
 
         final AdbDataSource source = new AdbDataSource(scrollController);
 
@@ -89,7 +88,9 @@ public class Main {
         scrollPane = new JScrollPane(logElements);
         frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-        filterPanel = new FilterPanel();
+        scrollController = new AutoScrollController(logElements, recordsModel);
+        filterController = new FilterController(logElements, recordsModel);
+        JPanel filterPanel = new FilterPanel(filterController);
         frmAndroidLogViewer.getContentPane().add(filterPanel, BorderLayout.SOUTH);
     }
 

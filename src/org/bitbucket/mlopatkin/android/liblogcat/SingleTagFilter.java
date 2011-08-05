@@ -25,7 +25,7 @@ public class SingleTagFilter implements LogRecordFilter {
 
     @Override
     public boolean include(LogRecord record) {
-        return tag.equals(record.getTag().trim());
+        return tag.equals(record.getTag());
     }
 
 }
