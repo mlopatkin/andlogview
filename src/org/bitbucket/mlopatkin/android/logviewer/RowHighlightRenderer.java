@@ -44,15 +44,16 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
             boolean hasFocus, int row, int column) {
         Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                 row, column);
-        LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
-        int modelRow = table.convertRowIndexToModel(row);
-        LogRecord record = tableModel.getRowData(modelRow);
-        if (filters.shouldHighlight(record)) {
-            result.setBackground(highlightColor);
-        } else {
-            result.setBackground(backgroundColor);
+        if (!isSelected) {
+            LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
+            int modelRow = table.convertRowIndexToModel(row);
+            LogRecord record = tableModel.getRowData(modelRow);
+            if (filters.shouldHighlight(record)) {
+                result.setBackground(highlightColor);
+            } else {
+                result.setBackground(backgroundColor);
+            }
         }
-
         return result;
     }
 
