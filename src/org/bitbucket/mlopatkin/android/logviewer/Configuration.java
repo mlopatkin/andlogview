@@ -75,6 +75,19 @@ public class Configuration {
         }
     }
 
+    private static Color parseColor(String key, Color defaultValue) {
+        String colorValue = instance.properties.getProperty(key);
+        if (colorValue == null) {
+            return defaultValue;
+        }
+        try {
+            return Color.decode(colorValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return defaultValue;
+        }
+    }
+
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
@@ -102,12 +115,16 @@ public class Configuration {
 
         public static Color priorityColor(Priority p) {
             String priorityName = p.name().toLowerCase();
-            try {
-                return Color.decode(instance.properties.getProperty(PREFIX + "priority_color."
-                        + priorityName));
-            } catch (Exception e) {
-                return Color.BLACK;
-            }
+            return parseColor(PREFIX + "priority_color." + priorityName, Color.BLACK);
+        }
+
+        public static Color highlightColor() {
+            Color defaultColor = Color.decode("#D0F0C0");
+            return parseColor(PREFIX + "highlight_color", defaultColor);
+        }
+
+        public static Color backgroundColor() {
+            return parseColor(PREFIX + "background_color", Color.WHITE);
         }
     }
 

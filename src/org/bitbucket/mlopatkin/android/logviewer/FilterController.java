@@ -15,7 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
@@ -23,14 +22,14 @@ import org.bitbucket.mlopatkin.android.liblogcat.SingleTagFilter;
 
 class FilterController implements NewFilterDialog.DialogResultReceiver {
 
-    private JTable table;
+    private DecoratingRendererTable table;
     private LogRecordTableModel tableModel;
 
     private TableRowSorter<LogRecordTableModel> defaultRowSorter;
 
     private NewFilterDialog newFilterDialog = new NewFilterDialog();
 
-    FilterController(JTable table, LogRecordTableModel tableModel) {
+    FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
         this.tableModel = tableModel;
         defaultRowSorter = new TableRowSorter<LogRecordTableModel>(tableModel);
@@ -42,7 +41,8 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
         if (tag != null) {
             LogRecordFilter filter = new SingleTagFilter(tag);
             LogRecordRowFilter rowFilter = new LogRecordRowFilter(filter);
-            defaultRowSorter.setRowFilter(rowFilter);
+            // defaultRowSorter.setRowFilter(rowFilter);
+            table.addDecorator(new RowHighlightRenderer(rowFilter));
         }
     }
 

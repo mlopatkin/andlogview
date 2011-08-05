@@ -32,5 +32,7 @@ public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> 
         return filter.include(entry.getModel().getRowData(entry.getIdentifier()));
     }
 
-
+    boolean include(LogRecordTableModel model, int row) {
+        return filter.include(model.getRowData(row));
+    }
 }
