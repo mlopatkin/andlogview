@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ class FilterPanel extends JPanel {
 
         ((FlowLayout) getLayout()).setAlignment(FlowLayout.LEFT);
 
-        JButton addFilter = new JButton(new ImageIcon("icons/list-add.png"));
+        JButton addFilter = new JButton(ADD_ICON);
         addFilter.addActionListener(new ActionListener() {
 
             @Override
@@ -81,12 +82,20 @@ class FilterPanel extends JPanel {
         repaint();
     }
 
+    private static URL getResource(String name) {
+        return FilterPanel.class.getResource(name);
+    }
+
+    private static final ImageIcon FILTER_ICON = new ImageIcon(
+            getResource("/icons/system-search.png"));
+    private static final ImageIcon ADD_ICON = new ImageIcon(getResource("/icons/list-add.png"));
+
     private class FilterButton extends JButton implements ActionListener {
 
         private final LogRecordFilter filter;
 
         public FilterButton(LogRecordFilter filter) {
-            super(new ImageIcon("icons/system-search.png"));
+            super(FILTER_ICON);
             this.filter = filter;
             addActionListener(this);
             addMouseListener(new MouseAdapter() {
