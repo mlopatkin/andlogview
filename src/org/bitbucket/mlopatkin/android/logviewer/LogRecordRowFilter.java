@@ -17,6 +17,8 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import javax.swing.RowFilter;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
 public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> {
 
     private FilterChain filters;
@@ -27,6 +29,7 @@ public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> 
 
     @Override
     public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
-        return filters.shouldShow(entry.getModel().getRowData(entry.getIdentifier()));
+        LogRecord record = entry.getModel().getRowData(entry.getIdentifier());
+        return filters.shouldShow(record) && !filters.shouldHide(record);
     }
 }

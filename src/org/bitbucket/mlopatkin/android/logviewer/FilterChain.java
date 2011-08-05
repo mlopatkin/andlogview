@@ -25,6 +25,7 @@ public class FilterChain {
 
     private Set<LogRecordFilter> highlightFilters = new HashSet<LogRecordFilter>();
     private Set<LogRecordFilter> showFilters = new HashSet<LogRecordFilter>();
+    private Set<LogRecordFilter> hideFilters = new HashSet<LogRecordFilter>();
 
     private boolean include(Set<LogRecordFilter> filters, LogRecord record) {
         for (LogRecordFilter filter : filters) {
@@ -47,17 +48,26 @@ public class FilterChain {
         return include(showFilters, record);
     }
 
+    public boolean shouldHide(LogRecord record) {
+        return include(hideFilters, record);
+    }
+
     public void addHighlightFilter(LogRecordFilter filter) {
         highlightFilters.add(filter);
     }
 
-    public void addHideFilter(LogRecordFilter filter) {
+    public void addShowFilter(LogRecordFilter filter) {
         showFilters.add(filter);
+    }
+
+    public void addHideFilter(LogRecordFilter filter) {
+        hideFilters.add(filter);
     }
 
     public void removeFilter(LogRecordFilter filter) {
         highlightFilters.remove(filter);
         showFilters.remove(filter);
+        hideFilters.remove(filter);
     }
 
 }
