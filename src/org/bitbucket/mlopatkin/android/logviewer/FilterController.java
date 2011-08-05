@@ -32,7 +32,12 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
         this.tableModel = tableModel;
-        defaultRowSorter = new TableRowSorter<LogRecordTableModel>(tableModel);
+        defaultRowSorter = new TableRowSorter<LogRecordTableModel>(tableModel) {
+            @Override
+            public boolean isSortable(int column) {
+                return false;
+            }
+        };
         table.setRowSorter(defaultRowSorter);
     }
 
