@@ -1,2 +1,5 @@
+version 0.2
+	This version introduces filtering.
+
 version 0.1
 	This version shows logs from device via adb logcat, with coloring and autoscrolling.

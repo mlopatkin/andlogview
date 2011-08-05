@@ -50,6 +50,7 @@ class FilterPanel extends JPanel {
                 FilterPanel.this.controller.startFilterCreationDialog();
             }
         });
+        addFilter.setToolTipText("Add new filter");
         add(addFilter);
     }
 
