@@ -15,11 +15,18 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 
 class FilterPanel extends JPanel {
 
@@ -27,7 +34,20 @@ class FilterPanel extends JPanel {
 
     public FilterPanel(FilterController controller) {
         this.controller = controller;
+        controller.setPanel(this);
         addMouseListener(new FilterPanelClickListener());
+
+        ((FlowLayout) getLayout()).setAlignment(FlowLayout.LEFT);
+
+        JButton addFilter = new JButton(new ImageIcon("icons/list-add.png"));
+        addFilter.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FilterPanel.this.controller.startFilterCreationDialog();
+            }
+        });
+        add(addFilter);
     }
 
     private class FilterPanelClickListener extends MouseAdapter implements MouseListener {
@@ -40,5 +60,36 @@ class FilterPanel extends JPanel {
                 controller.startFilterCreationDialog();
             }
         }
+    }
+
+    public void addFilterButton(LogRecordFilter filter) {
+        FilterButton button = new FilterButton(filter);
+        add(button);
+        validate();
+    }
+
+    private class FilterButton extends JButton implements ActionListener {
+
+        private final LogRecordFilter filter;
+
+        public FilterButton(LogRecordFilter filter) {
+            super(new ImageIcon("icons/system-search.png"));
+            this.filter = filter;
+            addActionListener(this);
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getButton() == MouseEvent.BUTTON2) {
+                        controller.removeFilter(FilterButton.this.filter);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            controller.startEditFilterDialog(filter);
+        }
+
     }
 }

@@ -24,6 +24,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
 
     private DecoratingRendererTable table;
     private LogRecordTableModel tableModel;
+    private FilterPanel panel;
 
     private TableRowSorter<LogRecordTableModel> defaultRowSorter;
 
@@ -48,6 +49,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
             LogRecordRowFilter rowFilter = new LogRecordRowFilter(filter);
             // defaultRowSorter.setRowFilter(rowFilter);
             table.addDecorator(new RowHighlightRenderer(rowFilter));
+            panel.addFilterButton(filter);
         }
     }
 
@@ -55,4 +57,16 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
         newFilterDialog.startDialogForResult(this);
     }
 
+    void setPanel(FilterPanel panel) {
+        this.panel = panel;
+    }
+
+    public void removeFilter(LogRecordFilter filter) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void startEditFilterDialog(LogRecordFilter filter) {
+        // TODO Auto-generated method stub
+    }
 }
