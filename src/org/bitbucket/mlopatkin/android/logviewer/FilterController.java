@@ -64,6 +64,9 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
 
     @Override
     public void onDialogResult(boolean success) {
+        if (success) {
+
+        }
     }
 
     public void startFilterCreationDialog() {

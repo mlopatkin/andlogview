@@ -20,6 +20,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
@@ -104,13 +105,11 @@ public class NewFilterDialog extends JDialog {
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.UNRELATED).addComponent(
                                         lblPidsToFilter)
+                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(pidText,
+                                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE).addPreferredGap(
+                                        ComponentPlacement.UNRELATED).addComponent(lblLogLevel)
                                 .addPreferredGap(ComponentPlacement.RELATED).addComponent(
-pidText,
-                                        GroupLayout.PREFERRED_SIZE,
-                                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.UNRELATED).addComponent(
-                                        lblLogLevel).addPreferredGap(ComponentPlacement.RELATED)
-.addComponent(
                                         cbLogLevel, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
@@ -137,10 +136,10 @@ pidText,
                 JButton cancelButton = new JButton("Cancel");
                 buttonPane.add(cancelButton);
                 cancelButton.addActionListener(new ActionListener() {
-                    
+
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        onNegativeResult();                        
+                        onNegativeResult();
                     }
                 });
             }
@@ -148,21 +147,23 @@ pidText,
     }
 
     void startDialogForResult(DialogResultReceiver resultReceiver) {
-        if (receiver == null) {
+        if (resultReceiver == null) {
             throw new NullPointerException("resultReceiver can't be null");
         }
         receiver = resultReceiver;
         resetDialog();
         setVisible(true);
     }
-    
+
     interface DialogResultReceiver {
         void onDialogResult(boolean success);
     }
 
     private void onPositiveResult() {
         assert receiver != null;
-        if (isInputValid())
+        if (!isInputValid()) {
+            return;
+        }
         if (receiver != null) {
             receiver.onDialogResult(true);
         }
@@ -180,19 +181,48 @@ pidText,
     }
 
     public String[] getTags() {
+        String tagsString = tagText.getText();
+        if (StringUtils.isNotBlank(tagsString)) {
+            String tags[] = StringUtils.split(tagsString, ',');
+            for (int i = 0; i < tags.length; ++i) {
+                tags[i] = tags[i].trim();
+            }
+            return tags;
+        }
         return null;
     }
 
     public String getMessageText() {
+        String message = messageText.getText();
+        if (StringUtils.isNotBlank(message)) {
+            return message;
+        }
         return null;
     }
 
     public int[] getPids() {
+        String pidString = pidText.getText();
+        if (StringUtils.isNotBlank(pidString)) {
+            String pidStrings[] = StringUtils.split(pidString, ',');
+            int pids[] = new int[pidStrings.length];
+            for (int i = 0; i < pids.length; ++i) {
+                pids[i] = Integer.parseInt(pidStrings[i].trim());
+            }
+            return pids;
+        }
         return null;
     }
 
     public LogRecord.Priority getPriority() {
         return (Priority) cbLogLevel.getSelectedItem();
+    }
+
+    public boolean isHighlightMode() {
+        return rdbtnHighlight.isSelected();
+    }
+
+    public boolean isHideMode() {
+        return rdbtnNewRadioButton.isSelected();
     }
 
     private class PriorityComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -225,11 +255,18 @@ pidText,
     }
 
     private boolean isInputValid() {
-        return true;
+        try {
+            getPids();
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
     }
 
     private void resetDialog() {
         tagText.setText(null);
         tagText.requestFocusInWindow();
     }
+
 }
