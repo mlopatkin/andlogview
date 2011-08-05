@@ -21,15 +21,17 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
 class RowHighlightRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
     private Color highlightColor = Configuration.ui.highlightColor();
     private Color backgroundColor = Configuration.ui.backgroundColor();
-    private LogRecordRowFilter rowFilter;
+    private FilterChain filters;
 
-    public RowHighlightRenderer(LogRecordRowFilter filter) {
-        rowFilter = filter;
+    public RowHighlightRenderer(FilterChain filters) {
+        this.filters = filters;
     }
 
     @Override
@@ -44,7 +46,8 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
                 row, column);
         LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
         int modelRow = table.convertRowIndexToModel(row);
-        if (rowFilter.include(tableModel, modelRow)) {
+        LogRecord record = tableModel.getRowData(modelRow);
+        if (filters.shouldHighlight(record)) {
             result.setBackground(highlightColor);
         } else {
             result.setBackground(backgroundColor);

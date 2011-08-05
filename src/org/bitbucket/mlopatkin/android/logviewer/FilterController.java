@@ -27,8 +27,11 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     private FilterPanel panel;
 
     private TableRowSorter<LogRecordTableModel> defaultRowSorter;
+    private LogRecordRowFilter rowFilter;
 
     private NewFilterDialog newFilterDialog = new NewFilterDialog();
+
+    private FilterChain filters = new FilterChain();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
@@ -40,16 +43,30 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
             }
         };
         table.setRowSorter(defaultRowSorter);
+        rowFilter = new LogRecordRowFilter(filters);
+        defaultRowSorter.setRowFilter(rowFilter);
+        table.addDecorator(new RowHighlightRenderer(filters));
+    }
+
+    private void addFilter(LogRecordFilter filter) {
+        panel.addFilterButton(filter);
+        table.repaint();
+    }
+
+    private void addHighlightFilter(LogRecordFilter filter) {
+        filters.addHighlightFilter(filter);
+        addFilter(filter);
+    }
+
+    private void addHideFilter(LogRecordFilter filter) {
+        filters.addHideFilter(filter);
+        addFilter(filter);
     }
 
     @Override
     public void onDialogResult(String tag) {
         if (tag != null) {
-            LogRecordFilter filter = new SingleTagFilter(tag);
-            LogRecordRowFilter rowFilter = new LogRecordRowFilter(filter);
-            // defaultRowSorter.setRowFilter(rowFilter);
-            table.addDecorator(new RowHighlightRenderer(rowFilter));
-            panel.addFilterButton(filter);
+            addHighlightFilter(new SingleTagFilter(tag));
         }
     }
 
@@ -63,6 +80,8 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
 
     public void removeFilter(LogRecordFilter filter) {
         panel.removeFilterButton(filter);
+        filters.removeFilter(filter);
+        table.repaint();
     }
 
     public void startEditFilterDialog(LogRecordFilter filter) {

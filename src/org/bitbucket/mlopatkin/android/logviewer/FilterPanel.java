@@ -92,7 +92,6 @@ class FilterPanel extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON3) {
-                        System.out.println("remove");
                         controller.removeFilter(FilterButton.this.filter);
                     }
                 }
