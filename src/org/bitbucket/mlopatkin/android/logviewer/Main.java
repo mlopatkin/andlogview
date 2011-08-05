@@ -59,9 +59,7 @@ public class Main {
         initialize();
 
         if (args.length > 0) {
-            for (String fileName : args) {
-                new DumpstateFileDataSource(scrollController, new File(fileName));
-            }
+            new DumpstateFileDataSource(scrollController, new File(args[0]));
         } else {
             final AdbDataSource source = new AdbDataSource(scrollController);
 
