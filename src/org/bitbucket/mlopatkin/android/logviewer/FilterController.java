@@ -17,7 +17,10 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import javax.swing.table.TableRowSorter;
 
+import org.bitbucket.mlopatkin.android.liblogcat.ComposeFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.MessageFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
 
 class FilterController implements NewFilterDialog.DialogResultReceiver {
 
@@ -62,10 +65,34 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
         addFilter(filter);
     }
 
+    private static LogRecordFilter appendFilter(LogRecordFilter a, LogRecordFilter b) {
+        if (a == null) {
+            return b;
+        } else if (a instanceof ComposeFilter) {
+            return ((ComposeFilter) a).append(b);
+        } else {
+            return new ComposeFilter(a, b);
+        }
+    }
+
     @Override
     public void onDialogResult(boolean success) {
         if (success) {
-
+            LogRecordFilter filter = null;
+            if (newFilterDialog.getTags() != null) {
+                filter = appendFilter(filter, new MultiTagFilter(newFilterDialog.getTags()));
+            }
+            if (newFilterDialog.getMessageText() != null) {
+                filter = appendFilter(filter, new MessageFilter(newFilterDialog.getMessageText()));
+            }
+            if (filter != null) {
+                if (newFilterDialog.isHideMode()) {
+                    addHideFilter(filter);
+                }
+                if (newFilterDialog.isHighlightMode()) {
+                    addHighlightFilter(filter);
+                }
+            }
         }
     }
 
