@@ -21,6 +21,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class NewFilterDialog extends JDialog {
 
@@ -147,27 +148,32 @@ pidText,
     }
 
     void startDialogForResult(DialogResultReceiver resultReceiver) {
+        if (receiver == null) {
+            throw new NullPointerException("resultReceiver can't be null");
+        }
         receiver = resultReceiver;
-        tagText.setText(null);
-        tagText.requestFocusInWindow();
+        resetDialog();
         setVisible(true);
     }
     
     interface DialogResultReceiver {
-        void onDialogResult(String tag);
+        void onDialogResult(boolean success);
     }
 
     private void onPositiveResult() {
+        assert receiver != null;
+        if (isInputValid())
         if (receiver != null) {
-            receiver.onDialogResult(tagText.getText());
+            receiver.onDialogResult(true);
         }
         receiver = null;
         setVisible(false);
     }
 
     private void onNegativeResult() {
+        assert receiver != null;
         if (receiver != null) {
-            receiver.onDialogResult(null);
+            receiver.onDialogResult(false);
         }
         receiver = null;
         setVisible(false);
@@ -186,7 +192,7 @@ pidText,
     }
 
     public LogRecord.Priority getPriority() {
-        return null;
+        return (Priority) cbLogLevel.getSelectedItem();
     }
 
     private class PriorityComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -216,5 +222,14 @@ pidText,
             return LogRecord.Priority.values().length + 1;
         }
 
+    }
+
+    private boolean isInputValid() {
+        return true;
+    }
+
+    private void resetDialog() {
+        tagText.setText(null);
+        tagText.requestFocusInWindow();
     }
 }

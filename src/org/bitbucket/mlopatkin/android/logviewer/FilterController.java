@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.SingleTagFilter;
 
 class FilterController implements NewFilterDialog.DialogResultReceiver {
 
@@ -64,10 +63,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     }
 
     @Override
-    public void onDialogResult(String tag) {
-        if (tag != null) {
-            addHighlightFilter(new SingleTagFilter(tag));
-        }
+    public void onDialogResult(boolean success) {
     }
 
     public void startFilterCreationDialog() {
