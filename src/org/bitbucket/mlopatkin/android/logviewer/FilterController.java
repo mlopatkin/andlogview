@@ -62,6 +62,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
 
     private void addHideFilter(LogRecordFilter filter) {
         filters.addHideFilter(filter);
+        defaultRowSorter.sort();
         addFilter(filter);
     }
 
@@ -107,6 +108,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     public void removeFilter(LogRecordFilter filter) {
         panel.removeFilterButton(filter);
         filters.removeFilter(filter);
+        defaultRowSorter.sort();
         table.repaint();
     }
 
