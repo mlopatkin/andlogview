@@ -97,7 +97,7 @@ class FilterPanel extends JPanel {
                     }
                 }
             });
-            setToolTipText(filter.toString());
+            setToolTipText("<html>" + filter.toString() + "</html>");
         }
 
         @Override

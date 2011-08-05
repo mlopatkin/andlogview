@@ -33,8 +33,9 @@ public class NewFilterDialog extends JDialog {
 
     private DialogResultReceiver receiver;
     private JComboBox cbLogLevel;
-    private JRadioButton rdbtnNewRadioButton;
+    private JRadioButton rdbtnShow;
     private JRadioButton rdbtnHighlight;
+    private JRadioButton rdbtnHideThis;
 
     /**
      * Create the dialog.
@@ -58,8 +59,8 @@ public class NewFilterDialog extends JDialog {
 
         final ButtonGroup btngrpFilterAction = new ButtonGroup();
 
-        rdbtnNewRadioButton = new JRadioButton("Hide other");
-        btngrpFilterAction.add(rdbtnNewRadioButton);
+        rdbtnShow = new JRadioButton("Hide other");
+        btngrpFilterAction.add(rdbtnShow);
 
         rdbtnHighlight = new JRadioButton("Highlight");
         btngrpFilterAction.add(rdbtnHighlight);
@@ -78,20 +79,26 @@ public class NewFilterDialog extends JDialog {
         JLabel lblLogLevel = new JLabel("Log level");
 
         cbLogLevel = new JComboBox(new PriorityComboBoxModel());
+
+        rdbtnHideThis = new JRadioButton("Hide this");
+        btngrpFilterAction.add(rdbtnHideThis);
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
                         gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(
                                 gl_contentPanel.createParallelGroup(Alignment.LEADING)
                                         .addComponent(rdbtnHighlight).addComponent(tagText,
-                                                GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
-                                        .addComponent(lblNewLabel)
-                                        .addComponent(rdbtnNewRadioButton).addComponent(
+                                                GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
+                                        .addComponent(lblNewLabel).addGroup(
+                                                gl_contentPanel.createSequentialGroup()
+                                                        .addComponent(rdbtnShow).addPreferredGap(
+                                                                ComponentPlacement.UNRELATED)
+                                                        .addComponent(rdbtnHideThis)).addComponent(
                                                 lblMessageTextTo).addComponent(messageText,
-                                                GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                                GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
                                         .addComponent(lblPidsToFilter).addComponent(pidText,
-                                                GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                                        .addComponent(lblLogLevel).addComponent(cbLogLevel, 0, 492,
+                                                GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
+                                        .addComponent(lblLogLevel).addComponent(cbLogLevel, 0, 487,
                                                 Short.MAX_VALUE)).addContainerGap()));
         gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
@@ -112,8 +119,11 @@ public class NewFilterDialog extends JDialog {
                                 .addPreferredGap(ComponentPlacement.RELATED).addComponent(
                                         cbLogLevel, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
-                                .addComponent(rdbtnNewRadioButton).addPreferredGap(
+                                .addPreferredGap(ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                                .addGroup(
+                                        gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+                                                .addComponent(rdbtnShow)
+                                                .addComponent(rdbtnHideThis)).addPreferredGap(
                                         ComponentPlacement.UNRELATED).addComponent(rdbtnHighlight)
                                 .addGap(30)));
         contentPanel.setLayout(gl_contentPanel);
@@ -221,8 +231,12 @@ public class NewFilterDialog extends JDialog {
         return rdbtnHighlight.isSelected();
     }
 
+    public boolean isShowMode() {
+        return rdbtnShow.isSelected();
+    }
+
     public boolean isHideMode() {
-        return rdbtnNewRadioButton.isSelected();
+        return rdbtnHideThis.isSelected();
     }
 
     private class PriorityComboBoxModel extends AbstractListModel implements ComboBoxModel {

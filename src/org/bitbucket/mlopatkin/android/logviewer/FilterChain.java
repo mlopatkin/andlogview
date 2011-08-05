@@ -24,7 +24,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 public class FilterChain {
 
     private Set<LogRecordFilter> highlightFilters = new HashSet<LogRecordFilter>();
-    private Set<LogRecordFilter> hideFilters = new HashSet<LogRecordFilter>();
+    private Set<LogRecordFilter> showFilters = new HashSet<LogRecordFilter>();
 
     private boolean include(Set<LogRecordFilter> filters, LogRecord record) {
         for (LogRecordFilter filter : filters) {
@@ -41,10 +41,10 @@ public class FilterChain {
     }
 
     public boolean shouldShow(LogRecord record) {
-        if (hideFilters.isEmpty()) {
+        if (showFilters.isEmpty()) {
             return true;
         }
-        return include(hideFilters, record);
+        return include(showFilters, record);
     }
 
     public void addHighlightFilter(LogRecordFilter filter) {
@@ -52,12 +52,12 @@ public class FilterChain {
     }
 
     public void addHideFilter(LogRecordFilter filter) {
-        hideFilters.add(filter);
+        showFilters.add(filter);
     }
 
     public void removeFilter(LogRecordFilter filter) {
         highlightFilters.remove(filter);
-        hideFilters.remove(filter);
+        showFilters.remove(filter);
     }
 
 }

@@ -22,6 +22,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MessageFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.NotFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
 
 class FilterController implements NewFilterDialog.DialogResultReceiver {
@@ -62,7 +63,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
         addFilter(filter);
     }
 
-    private void addHideFilter(LogRecordFilter filter) {
+    private void addShowFilter(LogRecordFilter filter) {
         filters.addHideFilter(filter);
         defaultRowSorter.sort();
         addFilter(filter);
@@ -95,11 +96,14 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
                 filter = appendFilter(filter, new PriorityFilter(newFilterDialog.getPriority()));
             }
             if (filter != null) {
-                if (newFilterDialog.isHideMode()) {
-                    addHideFilter(filter);
+                if (newFilterDialog.isShowMode()) {
+                    addShowFilter(filter);
                 }
                 if (newFilterDialog.isHighlightMode()) {
                     addHighlightFilter(filter);
+                }
+                if (newFilterDialog.isHideMode()) {
+                    addShowFilter(new NotFilter(filter));
                 }
             }
         }

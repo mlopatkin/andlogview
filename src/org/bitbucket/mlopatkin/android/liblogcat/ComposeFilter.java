@@ -48,11 +48,10 @@ public class ComposeFilter implements LogRecordFilter {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("<html>Composite:<br>");
+        StringBuilder builder = new StringBuilder("Composite:<br>");
         for (LogRecordFilter filter : filters) {
             builder.append(filter).append("<br>");
         }
-        builder.append("</html>");
         return builder.toString();
     }
 }
