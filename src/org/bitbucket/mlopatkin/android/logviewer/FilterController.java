@@ -57,18 +57,18 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
         table.repaint();
     }
 
-    private void addHighlightFilter(LogRecordFilter filter) {
+    void addHighlightFilter(LogRecordFilter filter) {
         filters.addHighlightFilter(filter);
         addFilter(filter);
     }
 
-    private void addShowFilter(LogRecordFilter filter) {
+    void addShowFilter(LogRecordFilter filter) {
         filters.addShowFilter(filter);
         defaultRowSorter.sort();
         addFilter(filter);
     }
 
-    private void addHideFilter(LogRecordFilter filter) {
+    void addHideFilter(LogRecordFilter filter) {
         filters.addHideFilter(filter);
         defaultRowSorter.sort();
         addFilter(filter);

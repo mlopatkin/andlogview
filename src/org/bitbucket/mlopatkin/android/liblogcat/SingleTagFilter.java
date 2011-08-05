@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+
 public class SingleTagFilter implements LogRecordFilter {
 
     private String tag;
@@ -28,4 +29,8 @@ public class SingleTagFilter implements LogRecordFilter {
         return tag.equals(record.getTag());
     }
 
+    @Override
+    public String toString() {
+        return "Tag: " + tag;
+    }
 }

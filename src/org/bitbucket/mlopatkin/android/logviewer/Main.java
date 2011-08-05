@@ -34,6 +34,7 @@ public class Main {
     private LogRecordTableModel recordsModel = new LogRecordTableModel();
     private AutoScrollController scrollController;
     private FilterController filterController;
+    private LogRecordPopupMenuHandler popupMenuHandler;
 
     /**
      * Launch the application.
@@ -94,6 +95,8 @@ public class Main {
 
         scrollController = new AutoScrollController(logElements, recordsModel);
         filterController = new FilterController(logElements, recordsModel);
+        popupMenuHandler = new LogRecordPopupMenuHandler(logElements, filterController);
+
         JPanel filterPanel = new FilterPanel(filterController);
         frmAndroidLogViewer.getContentPane().add(filterPanel, BorderLayout.SOUTH);
     }
