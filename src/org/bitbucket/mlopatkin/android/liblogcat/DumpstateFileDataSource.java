@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.LogRecordDataSourceListener;
 
 public class DumpstateFileDataSource {
@@ -52,6 +53,9 @@ public class DumpstateFileDataSource {
     }
 
     private void readLog(BufferedReader in, String bufferName) throws IOException {
+        if (!Configuration.dump.bufferEnabled(bufferName)) {
+            return;
+        }
         scanForLogBegin(in, bufferName);
         LogRecordStream stream = new DumpstateRecordStream(in);
         LogRecord record = stream.next();

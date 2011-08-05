@@ -146,4 +146,24 @@ public class Configuration {
             return splitCommaSeparatedValues(buffersValue);
         }
     }
+
+    public static class dump {
+        private static final String PREFIX = "dump.";
+
+        private static List<String> buffers_;
+
+        private static void initBuffers() {
+            String columnsValue = instance.properties.getProperty(PREFIX + "buffers",
+                    "main, event, radio");
+            buffers_ = splitCommaSeparatedValues(columnsValue);
+        }
+
+        public static boolean bufferEnabled(String bufferName) {
+            bufferName = bufferName.toLowerCase();
+            if (buffers_ == null) {
+                initBuffers();
+            }
+            return buffers_.contains(bufferName);
+        }
+    }
 }
