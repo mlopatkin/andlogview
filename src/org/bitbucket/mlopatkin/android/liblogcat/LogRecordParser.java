@@ -15,9 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import java.text.ParsePosition;
+import java.text.ParseException;
 import java.util.Date;
-import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
@@ -26,28 +26,33 @@ public class LogRecordParser {
     private LogRecordParser() {
     }
 
-    private static final Pattern tagSeparator = Pattern.compile(": ");
+    private static final String TIMESTAMP_REGEX = "(\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)";
+    private static final String ID_REGEX = "\\s+(\\d+)";
+    private static final String PRIORITY_REGEX = "\\s+([AVDIWEF])";
+    private static final String TAG_REGEX = "\\s+(.*?)\\s*: ";
+    private static final String MESSAGE_REGEX = "(.*)";
+    private static final Pattern threadTimeRecordPattern = Pattern.compile("^" + TIMESTAMP_REGEX
+            + ID_REGEX + ID_REGEX + PRIORITY_REGEX + TAG_REGEX + MESSAGE_REGEX + "$");
 
-    public static LogRecord parseThreadtimeRecord(String s) {
-        try {
-        ParsePosition pos = new ParsePosition(0);
-        Date dateTime = TimeFormatUtils.getTimeFromString(s, pos);
-        Scanner scanner = new Scanner(s.substring(pos.getIndex()));
-        int pid = scanner.nextInt();
-        int tid = scanner.nextInt();
-        LogRecord.Priority priority = getPriorityFromChar(scanner.next());
-        String tag = readTag(scanner);
-        scanner.skip(tagSeparator);
-        String message = scanner.nextLine();
-        return new LogRecord(dateTime, pid, tid, priority, tag, message);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", s);
-        }
+    public static Matcher parseLogRecordLine(String line) {
+        return threadTimeRecordPattern.matcher(line);
     }
 
-    private static String readTag(Scanner scanner) {
-        return scanner.useDelimiter(tagSeparator).next().trim();
+    public static LogRecord createThreadtimeRecord(Matcher m) {
+        if (!m.matches()) {
+            return null;
+        }
+        try {
+            Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+            int pid = Integer.parseInt(m.group(2));
+            int tid = Integer.parseInt(m.group(3));
+            LogRecord.Priority priority = getPriorityFromChar(m.group(4));
+            String tag = m.group(5);
+            String message = m.group(6);
+            return new LogRecord(dateTime, pid, tid, priority, tag, message);
+        } catch (ParseException e) {
+            return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
+        }
     }
 
     private static LogRecord.Priority getPriorityFromChar(String next) {
@@ -60,4 +65,5 @@ public class LogRecordParser {
         throw new IllegalArgumentException("Symbol '" + next
                 + "' doesn't correspond to valid priority value");
     }
+
 }

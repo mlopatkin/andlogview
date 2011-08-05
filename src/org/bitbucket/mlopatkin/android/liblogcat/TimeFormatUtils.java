@@ -16,7 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.text.DateFormat;
-import java.text.ParsePosition;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,8 +27,8 @@ public class TimeFormatUtils {
 
     private static final DateFormat LOGCAT_DATE_FORMAT = new SimpleDateFormat("MM-dd HH:mm:ss.SSS");
 
-    public static Date getTimeFromString(String s, ParsePosition pos) {
-        return LOGCAT_DATE_FORMAT.parse(s, pos);
+    public static Date getTimeFromString(String s) throws ParseException {
+        return LOGCAT_DATE_FORMAT.parse(s);
     }
 
     public static String convertTimeToString(Date date) {

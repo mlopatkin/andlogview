@@ -38,7 +38,8 @@ public class LogRecordParserTest {
         final String tag = "RPC";
         final String message = "3000008c:00050000 dispatching RPC call (XID 1866, xdr 0x3357b8) for callback client 3100008c:00050001.";
 
-        LogRecord record = LogRecordParser.parseThreadtimeRecord(src);
+        LogRecord record = LogRecordParser.createThreadtimeRecord(LogRecordParser
+                .parseLogRecordLine(src));
 
         assertEquals(calendar.getTime(), record.getTime());
         assertEquals(pid, record.getPid());

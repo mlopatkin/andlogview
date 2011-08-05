@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
 
 public class LogRecordStream {
 
@@ -28,18 +29,32 @@ public class LogRecordStream {
         this.in = new BufferedReader(new InputStreamReader(in));
     }
 
+    public LogRecordStream(BufferedReader in) {
+        this.in = in;
+    }
+
     public LogRecord next() {
         try {
-            String record = in.readLine();
-            while (record != null && (record.startsWith("-----") || record.isEmpty())) {
-                record = in.readLine();
+            String line = in.readLine();
+            Matcher result = null;
+            while (!isLogEnd(line)) {
+                Matcher m = LogRecordParser.parseLogRecordLine(line);
+                if (m.matches()) {
+                    result = m;
+                    break;
+                }
+                line = in.readLine();
             }
-            if (record != null) {
-                return LogRecordParser.parseThreadtimeRecord(record);
+            if (result != null) {
+                return LogRecordParser.createThreadtimeRecord(result);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected boolean isLogEnd(String line) {
+        return line == null;
     }
 }

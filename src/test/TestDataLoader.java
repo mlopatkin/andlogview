@@ -34,7 +34,8 @@ public class TestDataLoader {
             try {
                 String s = in.readLine();
                 while (s != null) {
-                    result.add(LogRecordParser.parseThreadtimeRecord(s));
+                    result.add(LogRecordParser.createThreadtimeRecord(LogRecordParser
+                            .parseLogRecordLine(s)));
                     s = in.readLine();
                 }
             } finally {
