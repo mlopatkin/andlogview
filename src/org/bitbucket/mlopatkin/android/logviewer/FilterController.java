@@ -20,7 +20,9 @@ import javax.swing.table.TableRowSorter;
 import org.bitbucket.mlopatkin.android.liblogcat.ComposeFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MessageFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
 
 class FilterController implements NewFilterDialog.DialogResultReceiver {
 
@@ -85,6 +87,12 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
             }
             if (newFilterDialog.getMessageText() != null) {
                 filter = appendFilter(filter, new MessageFilter(newFilterDialog.getMessageText()));
+            }
+            if (newFilterDialog.getPids() != null) {
+                filter = appendFilter(filter, new MultiPidFilter(newFilterDialog.getPids()));
+            }
+            if (newFilterDialog.getPriority() != null) {
+                filter = appendFilter(filter, new PriorityFilter(newFilterDialog.getPriority()));
             }
             if (filter != null) {
                 if (newFilterDialog.isHideMode()) {

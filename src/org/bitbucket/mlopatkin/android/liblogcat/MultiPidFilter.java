@@ -15,28 +15,28 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 
-public class MultiTagFilter implements LogRecordFilter {
+public class MultiPidFilter implements LogRecordFilter {
 
-    private String[] tags;
+    private Set<Integer> pids = new HashSet<Integer>();
 
-    public MultiTagFilter(String[] tags) {
-        this.tags = tags;
+    public MultiPidFilter(int[] pids) {
+        for (int pid : pids) {
+            this.pids.add(pid);
+        }
     }
 
     @Override
     public boolean include(LogRecord record) {
-        for (String tag : tags) {
-            if (tag.equalsIgnoreCase(record.getTag())) {
-                return true;
-            }
-        }
-        return false;
+        return pids.contains(record.getPid());
     }
 
     @Override
     public String toString() {
-        return "Tags: " + StringUtils.join(tags, ", ");
+        return "PIDs: " + StringUtils.join(pids, ", ");
     }
 }

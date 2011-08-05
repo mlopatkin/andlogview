@@ -15,28 +15,22 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import org.apache.commons.lang3.StringUtils;
+public class PriorityFilter implements LogRecordFilter {
 
-public class MultiTagFilter implements LogRecordFilter {
+    private LogRecord.Priority priority;
 
-    private String[] tags;
-
-    public MultiTagFilter(String[] tags) {
-        this.tags = tags;
+    public PriorityFilter(LogRecord.Priority priority) {
+        this.priority = priority;
     }
 
     @Override
     public boolean include(LogRecord record) {
-        for (String tag : tags) {
-            if (tag.equalsIgnoreCase(record.getTag())) {
-                return true;
-            }
-        }
-        return false;
+        LogRecord.Priority p = record.getPriority();
+        return p.ordinal() >= priority.ordinal();
     }
 
     @Override
     public String toString() {
-        return "Tags: " + StringUtils.join(tags, ", ");
+        return "Priority: " + priority;
     }
 }

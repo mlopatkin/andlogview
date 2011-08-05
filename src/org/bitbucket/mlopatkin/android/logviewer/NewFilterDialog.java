@@ -266,6 +266,10 @@ public class NewFilterDialog extends JDialog {
 
     private void resetDialog() {
         tagText.setText(null);
+        messageText.setText(null);
+        pidText.setText(null);
+        cbLogLevel.setSelectedIndex(0);
+        rdbtnHighlight.setSelected(true);
         tagText.requestFocusInWindow();
     }
 
