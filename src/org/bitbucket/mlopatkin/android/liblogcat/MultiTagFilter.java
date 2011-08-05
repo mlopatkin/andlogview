@@ -33,4 +33,13 @@ public class MultiTagFilter implements LogRecordFilter {
         return false;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("Tags: ");
+        for (int i = 0; i < tags.length - 1; ++i) {
+            builder.append(tags[i]).append(", ");
+        }
+        builder.append(tags[tags.length - 1]);
+        return builder.toString();
+    }
 }

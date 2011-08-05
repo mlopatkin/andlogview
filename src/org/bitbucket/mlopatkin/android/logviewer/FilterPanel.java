@@ -96,6 +96,7 @@ class FilterPanel extends JPanel {
                     }
                 }
             });
+            setToolTipText(filter.toString());
         }
 
         @Override

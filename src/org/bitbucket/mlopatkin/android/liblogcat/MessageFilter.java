@@ -29,4 +29,9 @@ public class MessageFilter implements LogRecordFilter {
         return message.contains(messageText);
     }
 
+    @Override
+    public String toString() {
+        return "Message containing '" + messageText + "'";
+    }
+
 }
