@@ -17,10 +17,13 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import org.bitbucket.mlopatkin.android.liblogcat.DumpstateFileDataSource;
 
 public class Main {
 
@@ -32,16 +35,14 @@ public class Main {
     private AutoScrollController scrollController;
     private FilterController filterController;
 
-
-
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    Main window = new Main();
+                    Main window = new Main(args);
                     window.frmAndroidLogViewer.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -54,17 +55,23 @@ public class Main {
     /**
      * Create the application.
      */
-    public Main() {
+    public Main(String[] args) {
         initialize();
 
-        final AdbDataSource source = new AdbDataSource(scrollController);
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                source.close();
+        if (args.length > 0) {
+            for (String fileName : args) {
+                new DumpstateFileDataSource(scrollController, new File(fileName));
             }
-        });
+        } else {
+            final AdbDataSource source = new AdbDataSource(scrollController);
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    source.close();
+                }
+            });
+        }
     }
 
     /**
