@@ -33,8 +33,6 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver {
     private TableRowSorter<LogRecordTableModel> defaultRowSorter;
     private LogRecordRowFilter rowFilter;
 
-    private CreateFilterDialog newFilterDialog = new CreateFilterDialog();
-
     private FilterChain filters = new FilterChain();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
@@ -70,29 +68,29 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver {
     }
 
     @Override
-    public void onDialogResult(boolean success) {
+    public void onDialogResult(CreateFilterDialog dialog, boolean success) {
         if (success) {
             LogRecordFilter filter = null;
-            if (newFilterDialog.getTags() != null) {
-                filter = appendFilter(filter, new MultiTagFilter(newFilterDialog.getTags()));
+            if (dialog.getTags() != null) {
+                filter = appendFilter(filter, new MultiTagFilter(dialog.getTags()));
             }
-            if (newFilterDialog.getMessageText() != null) {
-                filter = appendFilter(filter, new MessageFilter(newFilterDialog.getMessageText()));
+            if (dialog.getMessageText() != null) {
+                filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
             }
-            if (newFilterDialog.getPids() != null) {
-                filter = appendFilter(filter, new MultiPidFilter(newFilterDialog.getPids()));
+            if (dialog.getPids() != null) {
+                filter = appendFilter(filter, new MultiPidFilter(dialog.getPids()));
             }
-            if (newFilterDialog.getPriority() != null) {
-                filter = appendFilter(filter, new PriorityFilter(newFilterDialog.getPriority()));
+            if (dialog.getPriority() != null) {
+                filter = appendFilter(filter, new PriorityFilter(dialog.getPriority()));
             }
             if (filter != null) {
-                if (newFilterDialog.isShowMode()) {
+                if (dialog.isShowMode()) {
                     addFilter(FilteringMode.SHOW, filter);
                 }
-                if (newFilterDialog.isHighlightMode()) {
+                if (dialog.isHighlightMode()) {
                     addFilter(FilteringMode.HIGHLIGHT, filter);
                 }
-                if (newFilterDialog.isHideMode()) {
+                if (dialog.isHideMode()) {
                     addFilter(FilteringMode.HIDE, filter);
                 }
             }
@@ -100,7 +98,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver {
     }
 
     public void startFilterCreationDialog() {
-        newFilterDialog.startDialogForResult(this);
+        (new CreateFilterDialog()).startDialogForResult(this);
     }
 
     void setPanel(FilterPanel panel) {
@@ -115,6 +113,6 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver {
     }
 
     public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
-        newFilterDialog.startEditDialogForResult(this, filter);
+        // newFilterDialog.startEditDialogForResult(this, filter);
     }
 }

@@ -181,7 +181,7 @@ public class CreateFilterDialog extends JDialog {
     }
 
     interface DialogResultReceiver {
-        void onDialogResult(boolean success);
+        void onDialogResult(CreateFilterDialog result, boolean success);
     }
 
     private void onPositiveResult() {
@@ -190,7 +190,7 @@ public class CreateFilterDialog extends JDialog {
             return;
         }
         if (receiver != null) {
-            receiver.onDialogResult(true);
+            receiver.onDialogResult(this, true);
         }
         receiver = null;
         setVisible(false);
@@ -199,7 +199,7 @@ public class CreateFilterDialog extends JDialog {
     private void onNegativeResult() {
         assert receiver != null;
         if (receiver != null) {
-            receiver.onDialogResult(false);
+            receiver.onDialogResult(this, false);
         }
         receiver = null;
         setVisible(false);
