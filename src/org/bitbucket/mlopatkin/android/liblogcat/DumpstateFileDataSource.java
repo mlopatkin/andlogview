@@ -27,11 +27,11 @@ import java.util.List;
 
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
-public class DumpstateFileDataSource {
+public class DumpstateFileDataSource implements DataSource {
 
     private List<LogRecord> source = new ArrayList<LogRecord>();
 
-    public DumpstateFileDataSource(LogRecordDataSourceListener listener, File file) {
+    public DumpstateFileDataSource(File file) {
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
             readLog(in, "main");
@@ -44,11 +44,6 @@ public class DumpstateFileDataSource {
             e.printStackTrace();
         }
         Collections.sort(source, sortByTimeAscComparator);
-
-        for (LogRecord record : source) {
-            listener.onNewRecord(record);
-        }
-
     }
 
     private void readLog(BufferedReader in, String bufferName) throws IOException {
@@ -94,4 +89,21 @@ public class DumpstateFileDataSource {
         }
 
     };
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public PidToProcessConverter getPidToProcessConverter() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setLogRecordListener(LogRecordDataSourceListener listener) {
+        for (LogRecord record : source) {
+            listener.onNewRecord(record);
+        }
+    }
 }

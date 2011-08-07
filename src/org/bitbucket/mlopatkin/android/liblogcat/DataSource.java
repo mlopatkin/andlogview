@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.liblogcat;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+public interface DataSource {
+    void setLogRecordListener(LogRecordDataSourceListener listener);
 
-public interface LogRecordDataSourceListener {
-    public void onNewRecord(LogRecord record);
+    PidToProcessConverter getPidToProcessConverter();
+
+    void close();
 }

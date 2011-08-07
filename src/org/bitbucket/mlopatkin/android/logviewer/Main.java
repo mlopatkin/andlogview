@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DumpstateFileDataSource;
 
 public class Main {
@@ -59,19 +60,20 @@ public class Main {
      */
     public Main(String[] args) {
         initialize();
-
+        final DataSource source;
         if (args.length > 0) {
-            new DumpstateFileDataSource(scrollController, new File(args[0]));
+            source = new DumpstateFileDataSource(new File(args[0]));
         } else {
-            final AdbDataSource source = new AdbDataSource(scrollController);
-
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    source.close();
-                }
-            });
+            source = new AdbDataSource();
         }
+        source.setLogRecordListener(scrollController);
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                source.close();
+            }
+        });
     }
 
     /**

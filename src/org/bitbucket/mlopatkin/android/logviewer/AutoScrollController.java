@@ -22,6 +22,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 
 class AutoScrollController implements LogRecordDataSourceListener, TableModelListener {
     private static final int THRESHOLD = Configuration.ui.autoscrollThreshold();

@@ -24,24 +24,14 @@ import org.apache.commons.lang3.text.StrMatcher;
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
-public class AdbDataSource {
+public class AdbDataSource implements DataSource {
     private static final String ADB_BASE_COMMANDLINE = Configuration.adb.commandline();
 
     private LogRecordStream input;
     private LogRecordDataSourceListener listener;
     private Process adbProcess;
 
-    public AdbDataSource(LogRecordDataSourceListener listener) {
-        this.listener = listener;
-        ProcessBuilder pb = new ProcessBuilder(makeCommandLine());
-
-        try {
-            adbProcess = pb.start();
-            input = new LogRecordStream(adbProcess.getInputStream());
-            (new AdbPollingThread()).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public AdbDataSource() {
     }
 
     public void close() {
@@ -85,6 +75,26 @@ public class AdbDataSource {
                 pushRecord(record);
                 record = input.next();
             }
+        }
+    }
+
+    @Override
+    public PidToProcessConverter getPidToProcessConverter() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setLogRecordListener(LogRecordDataSourceListener listener) {
+        this.listener = listener;
+        ProcessBuilder pb = new ProcessBuilder(makeCommandLine());
+
+        try {
+            adbProcess = pb.start();
+            input = new LogRecordStream(adbProcess.getInputStream());
+            (new AdbPollingThread()).start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
