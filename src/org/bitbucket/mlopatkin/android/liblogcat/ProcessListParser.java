@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 
 class ProcessListParser {
     private static final String HEADER_REGEX = "^USER\\s+PID\\s+PPID\\s+VSIZE\\s+RSS\\s+PCY\\s+WCHAN\\s+PC\\s+NAME$";
-    private static final String FOOTER_REGEX = "^\\[ps: .* elapsed\\]$";
 
     private static final String NUMBER_REGEX = "[\\-]?\\d+";
     private static final String HEX_NUMBER_REGEX = "\\p{XDigit}+";
@@ -57,6 +56,9 @@ class ProcessListParser {
 
     private static final Pattern PS_LINE_PATTERN = Pattern.compile(PS_LINE_REGEX);
 
+    private ProcessListParser() {
+    }
+
     public static Matcher parseProcessListLine(String line) {
         return PS_LINE_PATTERN.matcher(line);
     }
@@ -75,5 +77,9 @@ class ProcessListParser {
         } else {
             throw new IllegalArgumentException("Matcher doesn't match");
         }
+    }
+
+    public static boolean isProcessListHeader(String line) {
+        return Pattern.matches(HEADER_REGEX, line);
     }
 }

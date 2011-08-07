@@ -23,12 +23,14 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     private TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
     private TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
     private TableCellRenderer messageCellRenderer = new ToolTippedCellRenderer();
-    private TableCellRenderer pidCellRender = new ToolTippedPidCellRenderer();
+    private TableCellRenderer pidCellRender;
 
     private static class ColumnInfo {
         int modelColumn;
@@ -97,14 +99,17 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addColumn(column);
     }
 
-    public LogRecordTableColumnModel() {
+    public LogRecordTableColumnModel(PidToProcessConverter pidToProcessConverter) {
+        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessConverter);
         initColumnInfo();
         for (String columnName : columnInfo.keySet()) {
             addColumnByName(columnName);
         }
     }
 
-    public LogRecordTableColumnModel(List<String> columnNames) {
+    public LogRecordTableColumnModel(List<String> columnNames,
+            PidToProcessConverter pidToProcessConverter) {
+        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessConverter);
         initColumnInfo();
         for (String columnName : columnNames) {
             addColumnByName(columnName);

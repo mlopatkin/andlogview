@@ -15,9 +15,18 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PidToProcessConverter {
 
-    public String getProcessName(int pid) {
-        return null;
+    private Map<Integer, String> pidToName = new HashMap<Integer, String>();
+
+    public synchronized void put(int pid, String name) {
+        pidToName.put(pid, name);
+    }
+
+    public synchronized String getProcessName(int pid) {
+        return pidToName.get(pid);
     }
 }

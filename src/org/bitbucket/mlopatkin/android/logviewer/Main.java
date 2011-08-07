@@ -38,6 +38,8 @@ public class Main {
     private FilterController filterController;
     private LogRecordPopupMenuHandler popupMenuHandler;
 
+    private DataSource source;
+
     /**
      * Launch the application.
      */
@@ -59,13 +61,12 @@ public class Main {
      * Create the application.
      */
     public Main(String[] args) {
-        initialize();
-        final DataSource source;
         if (args.length > 0) {
             source = new DumpstateFileDataSource(new File(args[0]));
         } else {
             source = new AdbDataSource();
         }
+        initialize();
         source.setLogRecordListener(scrollController);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -91,7 +92,8 @@ public class Main {
 
         logElements.setModel(recordsModel);
         logElements.addDecorator(new PriorityColoredCellRenderer());
-        logElements.setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns()));
+        logElements.setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), source
+                .getPidToProcessConverter()));
 
         scrollPane = new JScrollPane(logElements);
         frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);

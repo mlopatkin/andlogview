@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
 
     private List<LogRecord> source = new ArrayList<LogRecord>();
+    private PidToProcessConverter converter;
 
     public DumpstateFileDataSource(File file) {
         try {
@@ -37,6 +39,7 @@ public class DumpstateFileDataSource implements DataSource {
             readLog(in, "main");
             readLog(in, "event");
             readLog(in, "radio");
+            readProcessesList(in);
             in.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -61,9 +64,34 @@ public class DumpstateFileDataSource implements DataSource {
 
     private void scanForLogBegin(BufferedReader in, String bufferName) throws IOException {
         bufferName = bufferName.toUpperCase();
-        String logBegin = "------ " + bufferName + " LOG";
+        scanForSectionBegin(in, bufferName + " LOG");
+    }
+
+    private void readProcessesList(BufferedReader in) throws IOException {
+        final String PS_END = "[ps:";
+        scanForSectionBegin(in, "PROCESSES (ps -P)");
         String line = in.readLine();
-        while (line != null && !line.startsWith(logBegin)) {
+        if (!ProcessListParser.isProcessListHeader(line)) {
+            return;
+        }
+        converter = new PidToProcessConverter();
+        line = in.readLine();
+        while (line != null && line.startsWith(PS_END)) {
+            Matcher m = ProcessListParser.parseProcessListLine(line);
+            if (m.matches()) {
+                int pid = ProcessListParser.getPid(m);
+                String name = ProcessListParser.getProcessName(m);
+                converter.put(pid, name);
+            }
+            line = in.readLine();
+        }
+
+    }
+
+    private void scanForSectionBegin(BufferedReader in, String sectionHeader) throws IOException {
+        String sectionBegin = "------ " + sectionHeader;
+        String line = in.readLine();
+        while (line != null && !line.startsWith(sectionBegin)) {
             line = in.readLine();
         }
     }
@@ -96,8 +124,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     @Override
     public PidToProcessConverter getPidToProcessConverter() {
-        // TODO Auto-generated method stub
-        return null;
+        return converter;
     }
 
     @Override
@@ -105,5 +132,6 @@ public class DumpstateFileDataSource implements DataSource {
         for (LogRecord record : source) {
             listener.onNewRecord(record);
         }
+        source = null;
     }
 }
