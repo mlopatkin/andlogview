@@ -22,10 +22,15 @@ import org.junit.Test;
 public class ProcessListParserTest {
 
     private static final String PS_LINE_1 = "root      1     0     244    228   fg  ffffffff 00000000 S /init";
+    private static final String PS_LINE_TWO_WORDS_PNAME = "root      279   2     0      0     fg  ffffffff 00000000 S Two words";
 
     @Test
     public void testParseProcessListLine() {
         assertTrue(ProcessListParser.parseProcessListLine(PS_LINE_1).matches());
     }
 
+    @Test
+    public void testParseProcessNameWithSpaces() {
+        assertTrue(ProcessListParser.parseProcessListLine(PS_LINE_TWO_WORDS_PNAME).matches());
+    }
 }
