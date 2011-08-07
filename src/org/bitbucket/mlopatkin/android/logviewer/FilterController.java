@@ -55,6 +55,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     void addFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.addFilter(mode, filter);
         panel.addFilterButton(filter);
+        defaultRowSorter.sort();
         table.repaint();
     }
 
