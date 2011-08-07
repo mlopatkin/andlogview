@@ -26,7 +26,8 @@ public class EditFilterDialog extends FilterDialog {
     private DialogResultReceiver receiver;
     private LogRecordFilter filter;
 
-    protected EditFilterDialog(LogRecordFilter filter, DialogResultReceiver resultReceiver) {
+    protected EditFilterDialog(FilteringMode mode, LogRecordFilter filter,
+            DialogResultReceiver resultReceiver) {
         setTitle("Edit filter");
         this.receiver = resultReceiver;
         this.filter = filter;
@@ -34,6 +35,7 @@ public class EditFilterDialog extends FilterDialog {
         getPidTextField().setText(FilterToText.getPids(filter));
         getTagTextField().setText(FilterToText.getTags(filter));
         getLogLevelList().setSelectedItem(FilterToText.getPriority(filter));
+        getModePanel().setSelectedMode(mode);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class EditFilterDialog extends FilterDialog {
         setVisible(false);
     }
 
-    public static void startEditFilterDialog(LogRecordFilter filter,
+    public static void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter,
             DialogResultReceiver resultReceiver) {
         if (filter == null) {
             throw new NullPointerException("Filter should be not null");
@@ -61,7 +63,10 @@ public class EditFilterDialog extends FilterDialog {
         if (resultReceiver == null) {
             throw new NullPointerException("resultReceiver should be not null");
         }
-        EditFilterDialog dialog = new EditFilterDialog(filter, resultReceiver);
+        if (mode == null) {
+            throw new NullPointerException("mode should be not null");
+        }
+        EditFilterDialog dialog = new EditFilterDialog(mode, filter, resultReceiver);
         dialog.setVisible(true);
     }
 }

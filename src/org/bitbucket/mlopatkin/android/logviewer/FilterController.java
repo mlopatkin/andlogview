@@ -86,16 +86,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     }
 
     private FilteringMode getModeFromDialog(FilterDialog dialog) {
-        if (dialog.isShowMode()) {
-            return FilteringMode.SHOW;
-        }
-        if (dialog.isHideMode()) {
-            return FilteringMode.HIDE;
-        }
-        if (dialog.isHighlightMode()) {
-            return FilteringMode.HIGHLIGHT;
-        }
-        throw new IllegalStateException("Unknown mode");
+        return dialog.getFilteringMode();
     }
 
     @Override
@@ -125,7 +116,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     }
 
     public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
-        EditFilterDialog.startEditFilterDialog(filter, this);
+        EditFilterDialog.startEditFilterDialog(mode, filter, this);
     }
 
     @Override

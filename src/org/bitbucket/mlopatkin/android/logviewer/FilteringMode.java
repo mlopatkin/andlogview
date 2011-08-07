@@ -44,4 +44,8 @@ public enum FilteringMode {
     public boolean getDefaultResult() {
         return defaultResult;
     }
+
+    public static FilteringMode getDefaultMode() {
+        return HIGHLIGHT;
+    }
 }

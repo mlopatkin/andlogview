@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractListModel;
-import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -14,7 +13,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -27,14 +25,14 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 public abstract class FilterDialog extends JDialog {
 
     private final JPanel contentPanel = new JPanel();
+
     private JTextField tagTextField;
     private JTextField messageTextField;
     private JTextField pidTextField;
 
     private JComboBox logLevelList;
-    private JRadioButton showRadioBtn;
-    private JRadioButton highlightRadioBtn;
-    private JRadioButton hideRadioBtn;
+
+    private FilteringModesPanel modesPanel;
 
     /**
      * Create the dialog.
@@ -56,15 +54,6 @@ public abstract class FilterDialog extends JDialog {
 
         JLabel lblNewLabel = new JLabel("Tags to filter");
 
-        final ButtonGroup btngrpFilterAction = new ButtonGroup();
-
-        showRadioBtn = new JRadioButton("Hide other");
-        btngrpFilterAction.add(showRadioBtn);
-
-        highlightRadioBtn = new JRadioButton("Highlight");
-        btngrpFilterAction.add(highlightRadioBtn);
-        highlightRadioBtn.setSelected(true);
-
         JLabel lblMessageTextTo = new JLabel("Message text to filter");
 
         messageTextField = new JTextField();
@@ -79,27 +68,23 @@ public abstract class FilterDialog extends JDialog {
 
         logLevelList = new JComboBox(new PriorityComboBoxModel());
 
-        hideRadioBtn = new JRadioButton("Hide this");
-        btngrpFilterAction.add(hideRadioBtn);
+        modesPanel = new FilteringModesPanel();
+
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
                         gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(
                                 gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(highlightRadioBtn).addComponent(tagTextField,
-                                                GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
-                                        .addComponent(lblNewLabel).addGroup(
-                                                gl_contentPanel.createSequentialGroup()
-                                                        .addComponent(showRadioBtn)
-                                                        .addPreferredGap(
-                                                                ComponentPlacement.UNRELATED)
-                                                        .addComponent(hideRadioBtn)).addComponent(
-                                                lblMessageTextTo).addComponent(messageTextField,
-                                                GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
-                                        .addComponent(lblPidsToFilter).addComponent(pidTextField,
-                                                GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
-                                        .addComponent(lblLogLevel).addComponent(logLevelList, 0,
-                                                487, Short.MAX_VALUE)).addContainerGap()));
+                                        .addComponent(tagTextField, GroupLayout.DEFAULT_SIZE, 487,
+                                                Short.MAX_VALUE).addComponent(lblNewLabel)
+                                        .addComponent(lblMessageTextTo).addComponent(
+                                                messageTextField, GroupLayout.DEFAULT_SIZE, 487,
+                                                Short.MAX_VALUE).addComponent(lblPidsToFilter)
+                                        .addComponent(pidTextField, GroupLayout.DEFAULT_SIZE, 487,
+                                                Short.MAX_VALUE).addComponent(lblLogLevel)
+                                        .addComponent(logLevelList, 0, 487, Short.MAX_VALUE)
+                                        .addComponent(modesPanel, GroupLayout.DEFAULT_SIZE, 487,
+                                                Short.MAX_VALUE)).addContainerGap()));
         gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
                         gl_contentPanel.createSequentialGroup().addComponent(lblNewLabel)
@@ -119,13 +104,9 @@ public abstract class FilterDialog extends JDialog {
                                         lblLogLevel).addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(logLevelList, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                                .addGroup(
-                                        gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-                                                .addComponent(showRadioBtn).addComponent(
-                                                        hideRadioBtn)).addPreferredGap(
-                                        ComponentPlacement.UNRELATED).addComponent(
-                                        highlightRadioBtn).addGap(30)));
+                                .addPreferredGap(ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                                .addComponent(modesPanel, GroupLayout.PREFERRED_SIZE,
+                                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -197,16 +178,8 @@ public abstract class FilterDialog extends JDialog {
         return (Priority) logLevelList.getSelectedItem();
     }
 
-    public boolean isHighlightMode() {
-        return highlightRadioBtn.isSelected();
-    }
-
-    public boolean isShowMode() {
-        return showRadioBtn.isSelected();
-    }
-
-    public boolean isHideMode() {
-        return hideRadioBtn.isSelected();
+    public FilteringMode getFilteringMode() {
+        return modesPanel.getSelectedMode();
     }
 
     private class PriorityComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -264,4 +237,7 @@ public abstract class FilterDialog extends JDialog {
         return logLevelList;
     }
 
+    protected FilteringModesPanel getModePanel() {
+        return modesPanel;
+    }
 }
