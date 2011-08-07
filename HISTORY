@@ -1,3 +1,6 @@
+version 0.5
+    This version allows filter editing. Minor bugfixes and refactors.
+    
 version 0.4
 	This version introduces hiding filter to remove unnecessary distracting lines information from the log.
 
