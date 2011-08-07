@@ -29,15 +29,15 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 public class CreateFilterDialog extends JDialog {
 
     private final JPanel contentPanel = new JPanel();
-    private JTextField tagText;
-    private JTextField messageText;
-    private JTextField pidText;
+    private JTextField tagTextField;
+    private JTextField messageTextField;
+    private JTextField pidTextField;
 
     private DialogResultReceiver receiver;
-    private JComboBox cbLogLevel;
-    private JRadioButton rdbtnShow;
-    private JRadioButton rdbtnHighlight;
-    private JRadioButton rdbtnHideThis;
+    private JComboBox logLevelList;
+    private JRadioButton showRadioBtn;
+    private JRadioButton highlightRadioBtn;
+    private JRadioButton hideRadioBtn;
 
     /**
      * Create the dialog.
@@ -53,81 +53,82 @@ public class CreateFilterDialog extends JDialog {
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         {
-            tagText = new JTextField();
-            tagText.setColumns(10);
+            tagTextField = new JTextField();
+            tagTextField.setColumns(10);
         }
 
         JLabel lblNewLabel = new JLabel("Tags to filter");
 
         final ButtonGroup btngrpFilterAction = new ButtonGroup();
 
-        rdbtnShow = new JRadioButton("Hide other");
-        btngrpFilterAction.add(rdbtnShow);
+        showRadioBtn = new JRadioButton("Hide other");
+        btngrpFilterAction.add(showRadioBtn);
 
-        rdbtnHighlight = new JRadioButton("Highlight");
-        btngrpFilterAction.add(rdbtnHighlight);
-        rdbtnHighlight.setSelected(true);
+        highlightRadioBtn = new JRadioButton("Highlight");
+        btngrpFilterAction.add(highlightRadioBtn);
+        highlightRadioBtn.setSelected(true);
 
         JLabel lblMessageTextTo = new JLabel("Message text to filter");
 
-        messageText = new JTextField();
-        messageText.setColumns(10);
+        messageTextField = new JTextField();
+        messageTextField.setColumns(10);
 
         JLabel lblPidsToFilter = new JLabel("PIDs to filter");
 
-        pidText = new JTextField();
-        pidText.setColumns(10);
+        pidTextField = new JTextField();
+        pidTextField.setColumns(10);
 
         JLabel lblLogLevel = new JLabel("Log level");
 
-        cbLogLevel = new JComboBox(new PriorityComboBoxModel());
+        logLevelList = new JComboBox(new PriorityComboBoxModel());
 
-        rdbtnHideThis = new JRadioButton("Hide this");
-        btngrpFilterAction.add(rdbtnHideThis);
+        hideRadioBtn = new JRadioButton("Hide this");
+        btngrpFilterAction.add(hideRadioBtn);
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
                         gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(
                                 gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(rdbtnHighlight).addComponent(tagText,
+                                        .addComponent(highlightRadioBtn).addComponent(tagTextField,
                                                 GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
                                         .addComponent(lblNewLabel).addGroup(
                                                 gl_contentPanel.createSequentialGroup()
-                                                        .addComponent(rdbtnShow).addPreferredGap(
+                                                        .addComponent(showRadioBtn)
+                                                        .addPreferredGap(
                                                                 ComponentPlacement.UNRELATED)
-                                                        .addComponent(rdbtnHideThis)).addComponent(
-                                                lblMessageTextTo).addComponent(messageText,
+                                                        .addComponent(hideRadioBtn)).addComponent(
+                                                lblMessageTextTo).addComponent(messageTextField,
                                                 GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
-                                        .addComponent(lblPidsToFilter).addComponent(pidText,
+                                        .addComponent(lblPidsToFilter).addComponent(pidTextField,
                                                 GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
-                                        .addComponent(lblLogLevel).addComponent(cbLogLevel, 0, 487,
-                                                Short.MAX_VALUE)).addContainerGap()));
+                                        .addComponent(lblLogLevel).addComponent(logLevelList, 0,
+                                                487, Short.MAX_VALUE)).addContainerGap()));
         gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
                         gl_contentPanel.createSequentialGroup().addComponent(lblNewLabel)
-                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(tagText,
+                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(
+                                        tagTextField, GroupLayout.PREFERRED_SIZE,
+                                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(
+                                        lblMessageTextTo).addPreferredGap(
+                                        ComponentPlacement.RELATED).addComponent(messageTextField,
                                         GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
                                         GroupLayout.PREFERRED_SIZE).addPreferredGap(
-                                        ComponentPlacement.RELATED).addComponent(lblMessageTextTo)
+                                        ComponentPlacement.UNRELATED).addComponent(lblPidsToFilter)
                                 .addPreferredGap(ComponentPlacement.RELATED).addComponent(
-                                        messageText, GroupLayout.PREFERRED_SIZE,
+                                        pidTextField, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.UNRELATED).addComponent(
-                                        lblPidsToFilter)
-                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(pidText,
-                                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                        GroupLayout.PREFERRED_SIZE).addPreferredGap(
-                                        ComponentPlacement.UNRELATED).addComponent(lblLogLevel)
-                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(
-                                        cbLogLevel, GroupLayout.PREFERRED_SIZE,
+                                        lblLogLevel).addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(logLevelList, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                                 .addGroup(
                                         gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-                                                .addComponent(rdbtnShow)
-                                                .addComponent(rdbtnHideThis)).addPreferredGap(
-                                        ComponentPlacement.UNRELATED).addComponent(rdbtnHighlight)
-                                .addGap(30)));
+                                                .addComponent(showRadioBtn).addComponent(
+                                                        hideRadioBtn)).addPreferredGap(
+                                        ComponentPlacement.UNRELATED).addComponent(
+                                        highlightRadioBtn).addGap(30)));
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -172,10 +173,10 @@ public class CreateFilterDialog extends JDialog {
             throw new NullPointerException("resultReceiver can't be null");
         }
         receiver = resultReceiver;
-        tagText.setText(FilterToText.getTags(filter));
-        pidText.setText(FilterToText.getPids(filter));
-        messageText.setText(FilterToText.getMessage(filter));
-        cbLogLevel.setSelectedItem(FilterToText.getPriority(filter));
+        tagTextField.setText(FilterToText.getTags(filter));
+        pidTextField.setText(FilterToText.getPids(filter));
+        messageTextField.setText(FilterToText.getMessage(filter));
+        logLevelList.setSelectedItem(FilterToText.getPriority(filter));
 
         setVisible(true);
     }
@@ -184,29 +185,24 @@ public class CreateFilterDialog extends JDialog {
         void onDialogResult(CreateFilterDialog result, boolean success);
     }
 
-    private void onPositiveResult() {
+    protected void onPositiveResult() {
         assert receiver != null;
         if (!isInputValid()) {
             return;
         }
-        if (receiver != null) {
-            receiver.onDialogResult(this, true);
-        }
+        receiver.onDialogResult(this, true);
         receiver = null;
         setVisible(false);
     }
 
-    private void onNegativeResult() {
+    protected void onNegativeResult() {
         assert receiver != null;
-        if (receiver != null) {
-            receiver.onDialogResult(this, false);
-        }
         receiver = null;
         setVisible(false);
     }
 
     public String[] getTags() {
-        String tagsString = tagText.getText();
+        String tagsString = tagTextField.getText();
         if (StringUtils.isNotBlank(tagsString)) {
             String tags[] = StringUtils.split(tagsString, ',');
             for (int i = 0; i < tags.length; ++i) {
@@ -218,7 +214,7 @@ public class CreateFilterDialog extends JDialog {
     }
 
     public String getMessageText() {
-        String message = messageText.getText();
+        String message = messageTextField.getText();
         if (StringUtils.isNotBlank(message)) {
             return message;
         }
@@ -226,7 +222,7 @@ public class CreateFilterDialog extends JDialog {
     }
 
     public int[] getPids() {
-        String pidString = pidText.getText();
+        String pidString = pidTextField.getText();
         if (StringUtils.isNotBlank(pidString)) {
             String pidStrings[] = StringUtils.split(pidString, ',');
             int pids[] = new int[pidStrings.length];
@@ -239,19 +235,19 @@ public class CreateFilterDialog extends JDialog {
     }
 
     public LogRecord.Priority getPriority() {
-        return (Priority) cbLogLevel.getSelectedItem();
+        return (Priority) logLevelList.getSelectedItem();
     }
 
     public boolean isHighlightMode() {
-        return rdbtnHighlight.isSelected();
+        return highlightRadioBtn.isSelected();
     }
 
     public boolean isShowMode() {
-        return rdbtnShow.isSelected();
+        return showRadioBtn.isSelected();
     }
 
     public boolean isHideMode() {
-        return rdbtnHideThis.isSelected();
+        return hideRadioBtn.isSelected();
     }
 
     private class PriorityComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -294,12 +290,27 @@ public class CreateFilterDialog extends JDialog {
     }
 
     private void resetDialog() {
-        tagText.setText(null);
-        messageText.setText(null);
-        pidText.setText(null);
-        cbLogLevel.setSelectedIndex(0);
-        rdbtnHighlight.setSelected(true);
-        tagText.requestFocusInWindow();
+        tagTextField.setText(null);
+        messageTextField.setText(null);
+        pidTextField.setText(null);
+        logLevelList.setSelectedIndex(0);
+        highlightRadioBtn.setSelected(true);
+        tagTextField.requestFocusInWindow();
     }
 
+    protected JTextField getTagText() {
+        return tagTextField;
+    }
+
+    protected JTextField getTfMessage() {
+        return messageTextField;
+    }
+
+    protected JTextField getPidTextField() {
+        return pidTextField;
+    }
+
+    protected JComboBox getLogLevelList() {
+        return logLevelList;
+    }
 }
