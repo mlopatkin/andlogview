@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Android Log Viewer" default="all">
+
+    <property name="out-dir" location="out/" />
+
+    <property name="debug" value="yes" />
+    <property name="build.sysclasspath" value="ignore" />
+
+    <property name="download.url"
+              value="https://bitbucket.org/mlopatkin/android-log-viewer/downloads" />
+
+    <property name="lib.dir" location="lib/" />
+
+
+
+    <path id="libraries">
+        <pathelement path="lib/commons-lang3-3.0.jar" />
+        <pathelement path="lib/junit-4.9b2.jar" />
+    </path>
+
+    <target name="all" depends="make-jar" />
+
+
+    <target name="make-out-dir">
+        <mkdir dir="${out-dir}" />
+    </target>
+
+    <target name="compile-files" depends="make-out-dir">
+        <javac srcdir="src"
+               destdir="${out-dir}"
+               classpathref="libraries"
+               encoding="utf-8"
+               debug="${debug}" />
+    </target>
+
+    <target name="unpack-libs" depends="make-out-dir">
+        <unjar dest="${out-dir}">
+            <patternset>
+                <exclude name="META-INF/**" />
+                <exclude name="*.txt" />
+            </patternset>
+            <fileset dir="lib" includes="*.jar" />
+        </unjar>
+    </target>
+
+    <target name="copy-res" depends="make-out-dir">
+        <copy todir="${out-dir}/icons">
+            <fileset dir="icons" />
+        </copy>
+        <copy todir="${out-dir}" file="logview.properties" />
+    </target>
+
+    <target name="make-jar" depends="compile-files, unpack-libs, copy-res">
+        <jar destfile="logview.jar">
+            <fileset dir="${out-dir}" />
+            <manifest>
+                <attribute name="Main-Class"
+                           value="org.bitbucket.mlopatkin.android.logviewer.Main" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${out-dir}" />
+    </target>
+</project>
