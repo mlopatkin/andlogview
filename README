@@ -1,11 +1,18 @@
-version 0.4
-	This version introduces hiding filter to remove unnecessary distracting lines information from the log.
+Android log viewer is the tool to simplify analysis of the Android logs. It allows filtering
+the logs using the number of filters.
 
-version 0.3
-	This version is able to parse dumpstate file passed via the command line.	
+Available filters:
+	- by tag(s)
+	- by PID(s)
+	- entries containing specified text in message
+	- by priority
 
-version 0.2
-	This version introduces filtering.
+Available action on filtered lines:
+	- show only matching lines
+	- highlight matching lines
+	- hide matching lines
 
-version 0.1
-	This version shows logs from device via adb logcat, with coloring and autoscrolling.
+The tool can parse adb output or a dumpstate file specified in the command line.
+
+Tips:
+	- right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.

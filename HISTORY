@@ -1,0 +1,11 @@
+version 0.4
+	This version introduces hiding filter to remove unnecessary distracting lines information from the log.
+
+version 0.3
+	This version is able to parse dumpstate file passed via the command line.	
+
+version 0.2
+	This version introduces filtering.
+
+version 0.1
+	This version shows logs from device via adb logcat, with coloring and autoscrolling.
