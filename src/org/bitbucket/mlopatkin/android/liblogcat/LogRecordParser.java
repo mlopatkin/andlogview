@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class LogRecordParser {
@@ -27,12 +28,17 @@ public class LogRecordParser {
     }
 
     private static final String TIMESTAMP_REGEX = "(\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)";
-    private static final String ID_REGEX = "\\s+(\\d+)";
-    private static final String PRIORITY_REGEX = "\\s+([AVDIWEF])";
-    private static final String TAG_REGEX = "\\s+(.*?)\\s*: ";
+    private static final String ID_REGEX = "(\\d+)";
+    private static final String PID_REGEX = ID_REGEX;
+    private static final String TID_REGEX = ID_REGEX;
+    private static final String PRIORITY_REGEX = "([AVDIWEF])";
+    private static final String TAG_REGEX = "(.*?)\\s*: ";
     private static final String MESSAGE_REGEX = "(.*)";
-    private static final Pattern threadTimeRecordPattern = Pattern.compile("^" + TIMESTAMP_REGEX
-            + ID_REGEX + ID_REGEX + PRIORITY_REGEX + TAG_REGEX + MESSAGE_REGEX + "$");
+    private static final String SEP = "\\s+";
+    private static final String[] LOG_RECORD_FIELDS = { TIMESTAMP_REGEX, SEP, PID_REGEX, SEP,
+            TID_REGEX, SEP, PRIORITY_REGEX, SEP, TAG_REGEX, MESSAGE_REGEX };
+    private static final Pattern threadTimeRecordPattern = Pattern.compile("^"
+            + StringUtils.join(LOG_RECORD_FIELDS) + "$");
 
     public static Matcher parseLogRecordLine(String line) {
         return threadTimeRecordPattern.matcher(line);
