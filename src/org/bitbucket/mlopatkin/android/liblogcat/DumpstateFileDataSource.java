@@ -26,7 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.LogRecordDataSourceListener;
 
 public class DumpstateFileDataSource {
 
