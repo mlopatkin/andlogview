@@ -24,7 +24,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
 
-class FilterController implements CreateFilterDialog.DialogResultReceiver {
+class FilterController implements CreateFilterDialog.DialogResultReceiver,
+        EditFilterDialog.DialogResultReceiver {
 
     private DecoratingRendererTable table;
     private LogRecordTableModel tableModel;
@@ -67,38 +68,49 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver {
         }
     }
 
+    private LogRecordFilter createFilterFromDialog(CreateFilterDialog dialog) {
+        LogRecordFilter filter = null;
+        if (dialog.getTags() != null) {
+            filter = appendFilter(filter, new MultiTagFilter(dialog.getTags()));
+        }
+        if (dialog.getMessageText() != null) {
+            filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
+        }
+        if (dialog.getPids() != null) {
+            filter = appendFilter(filter, new MultiPidFilter(dialog.getPids()));
+        }
+        if (dialog.getPriority() != null) {
+            filter = appendFilter(filter, new PriorityFilter(dialog.getPriority()));
+        }
+        return filter;
+    }
+
+    private FilteringMode getModeFromDialog(CreateFilterDialog dialog) {
+        if (dialog.isShowMode()) {
+            return FilteringMode.SHOW;
+        }
+        if (dialog.isHideMode()) {
+            return FilteringMode.HIDE;
+        }
+        if (dialog.isHighlightMode()) {
+            return FilteringMode.HIGHLIGHT;
+        }
+        throw new IllegalStateException("Unknown mode");
+    }
+
     @Override
     public void onDialogResult(CreateFilterDialog dialog, boolean success) {
         if (success) {
-            LogRecordFilter filter = null;
-            if (dialog.getTags() != null) {
-                filter = appendFilter(filter, new MultiTagFilter(dialog.getTags()));
-            }
-            if (dialog.getMessageText() != null) {
-                filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
-            }
-            if (dialog.getPids() != null) {
-                filter = appendFilter(filter, new MultiPidFilter(dialog.getPids()));
-            }
-            if (dialog.getPriority() != null) {
-                filter = appendFilter(filter, new PriorityFilter(dialog.getPriority()));
-            }
+            LogRecordFilter filter = createFilterFromDialog(dialog);
+            FilteringMode mode = getModeFromDialog(dialog);
             if (filter != null) {
-                if (dialog.isShowMode()) {
-                    addFilter(FilteringMode.SHOW, filter);
-                }
-                if (dialog.isHighlightMode()) {
-                    addFilter(FilteringMode.HIGHLIGHT, filter);
-                }
-                if (dialog.isHideMode()) {
-                    addFilter(FilteringMode.HIDE, filter);
-                }
+                addFilter(mode, filter);
             }
         }
     }
 
     public void startFilterCreationDialog() {
-        (new CreateFilterDialog()).startDialogForResult(this);
+        CreateFilterDialog.startCreateFilterDialog(this);
     }
 
     void setPanel(FilterPanel panel) {
@@ -113,6 +125,21 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver {
     }
 
     public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
-        // newFilterDialog.startEditDialogForResult(this, filter);
+        EditFilterDialog.startEditFilterDialog(filter, this);
+    }
+
+    @Override
+    public void onDialogResult(EditFilterDialog dialog, LogRecordFilter oldFilter, boolean success) {
+        if (success) {
+            LogRecordFilter filter = createFilterFromDialog(dialog);
+            FilteringMode mode = getModeFromDialog(dialog);
+            if (filter != null) {
+                removeFilter(oldFilter);
+                addFilter(mode, filter);
+            } else {
+                removeFilter(oldFilter);
+            }
+        }
+
     }
 }

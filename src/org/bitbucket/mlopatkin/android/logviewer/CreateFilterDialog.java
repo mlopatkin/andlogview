@@ -21,9 +21,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bitbucket.mlopatkin.android.liblogcat.FilterToText;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class CreateFilterDialog extends JDialog {
@@ -42,8 +40,10 @@ public class CreateFilterDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public CreateFilterDialog() {
+    protected CreateFilterDialog(DialogResultReceiver resultReceiver) {
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         initialize();
+        receiver = resultReceiver;
     }
 
     private void initialize() {
@@ -159,28 +159,6 @@ public class CreateFilterDialog extends JDialog {
         }
     }
 
-    void startDialogForResult(DialogResultReceiver resultReceiver) {
-        if (resultReceiver == null) {
-            throw new NullPointerException("resultReceiver can't be null");
-        }
-        receiver = resultReceiver;
-        resetDialog();
-        setVisible(true);
-    }
-
-    void startEditDialogForResult(DialogResultReceiver resultReceiver, LogRecordFilter filter) {
-        if (resultReceiver == null) {
-            throw new NullPointerException("resultReceiver can't be null");
-        }
-        receiver = resultReceiver;
-        tagTextField.setText(FilterToText.getTags(filter));
-        pidTextField.setText(FilterToText.getPids(filter));
-        messageTextField.setText(FilterToText.getMessage(filter));
-        logLevelList.setSelectedItem(FilterToText.getPriority(filter));
-
-        setVisible(true);
-    }
-
     interface DialogResultReceiver {
         void onDialogResult(CreateFilterDialog result, boolean success);
     }
@@ -279,7 +257,7 @@ public class CreateFilterDialog extends JDialog {
 
     }
 
-    private boolean isInputValid() {
+    protected boolean isInputValid() {
         try {
             getPids();
             return true;
@@ -289,20 +267,11 @@ public class CreateFilterDialog extends JDialog {
 
     }
 
-    private void resetDialog() {
-        tagTextField.setText(null);
-        messageTextField.setText(null);
-        pidTextField.setText(null);
-        logLevelList.setSelectedIndex(0);
-        highlightRadioBtn.setSelected(true);
-        tagTextField.requestFocusInWindow();
-    }
-
-    protected JTextField getTagText() {
+    protected JTextField getTagTextField() {
         return tagTextField;
     }
 
-    protected JTextField getTfMessage() {
+    protected JTextField getMessageTextField() {
         return messageTextField;
     }
 
@@ -312,5 +281,13 @@ public class CreateFilterDialog extends JDialog {
 
     protected JComboBox getLogLevelList() {
         return logLevelList;
+    }
+
+    public static void startCreateFilterDialog(DialogResultReceiver resultReceiver) {
+        if (resultReceiver == null) {
+            throw new NullPointerException("resultReceiver can't be null");
+        }
+        CreateFilterDialog dialog = new CreateFilterDialog(resultReceiver);
+        dialog.setVisible(true);
     }
 }
