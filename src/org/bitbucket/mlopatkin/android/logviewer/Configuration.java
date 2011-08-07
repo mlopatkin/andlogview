@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class Configuration {
@@ -171,5 +172,9 @@ public class Configuration {
             }
             return buffers_.contains(bufferName);
         }
+    }
+
+    static {
+        PropertyConfigurator.configure(instance.properties);
     }
 }
