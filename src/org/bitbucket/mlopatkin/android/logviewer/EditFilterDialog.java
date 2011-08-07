@@ -18,7 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import org.bitbucket.mlopatkin.android.liblogcat.FilterToText;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 
-public class EditFilterDialog extends CreateFilterDialog {
+public class EditFilterDialog extends FilterDialog {
     public interface DialogResultReceiver {
         void onDialogResult(EditFilterDialog dialog, LogRecordFilter oldFilter, boolean success);
     }
@@ -27,7 +27,7 @@ public class EditFilterDialog extends CreateFilterDialog {
     private LogRecordFilter filter;
 
     protected EditFilterDialog(LogRecordFilter filter, DialogResultReceiver resultReceiver) {
-        super(null);
+        setTitle("Edit filter");
         this.receiver = resultReceiver;
         this.filter = filter;
         getMessageTextField().setText(FilterToText.getMessage(filter));

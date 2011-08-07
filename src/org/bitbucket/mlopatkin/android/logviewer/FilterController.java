@@ -68,7 +68,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         }
     }
 
-    private LogRecordFilter createFilterFromDialog(CreateFilterDialog dialog) {
+    private LogRecordFilter createFilterFromDialog(FilterDialog dialog) {
         LogRecordFilter filter = null;
         if (dialog.getTags() != null) {
             filter = appendFilter(filter, new MultiTagFilter(dialog.getTags()));
@@ -85,7 +85,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         return filter;
     }
 
-    private FilteringMode getModeFromDialog(CreateFilterDialog dialog) {
+    private FilteringMode getModeFromDialog(FilterDialog dialog) {
         if (dialog.isShowMode()) {
             return FilteringMode.SHOW;
         }
