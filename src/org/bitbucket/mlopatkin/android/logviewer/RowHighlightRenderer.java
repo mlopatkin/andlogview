@@ -48,7 +48,7 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
             LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
             int modelRow = table.convertRowIndexToModel(row);
             LogRecord record = tableModel.getRowData(modelRow);
-            if (filters.shouldHighlight(record)) {
+            if (filters.checkFilter(FilteringMode.HIGHLIGHT, record)) {
                 result.setBackground(highlightColor);
             } else {
                 result.setBackground(backgroundColor);

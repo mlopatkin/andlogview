@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,9 +24,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 
 public class FilterChain {
 
-    private Set<LogRecordFilter> highlightFilters = new HashSet<LogRecordFilter>();
-    private Set<LogRecordFilter> showFilters = new HashSet<LogRecordFilter>();
-    private Set<LogRecordFilter> hideFilters = new HashSet<LogRecordFilter>();
+    private EnumMap<FilteringMode, Set<LogRecordFilter>> filters = new EnumMap<FilteringMode, Set<LogRecordFilter>>(
+            FilteringMode.class);
 
     private boolean include(Set<LogRecordFilter> filters, LogRecord record) {
         for (LogRecordFilter filter : filters) {
@@ -37,37 +37,27 @@ public class FilterChain {
         return false;
     }
 
-    public boolean shouldHighlight(LogRecord record) {
-        return include(highlightFilters, record);
-    }
-
-    public boolean shouldShow(LogRecord record) {
-        if (showFilters.isEmpty()) {
-            return true;
+    public void addFilter(FilteringMode mode, LogRecordFilter filter) {
+        Set<LogRecordFilter> concreteFilters = filters.get(mode);
+        if (concreteFilters == null) {
+            concreteFilters = new HashSet<LogRecordFilter>();
+            filters.put(mode, concreteFilters);
         }
-        return include(showFilters, record);
+        concreteFilters.add(filter);
     }
 
-    public boolean shouldHide(LogRecord record) {
-        return include(hideFilters, record);
-    }
-
-    public void addHighlightFilter(LogRecordFilter filter) {
-        highlightFilters.add(filter);
-    }
-
-    public void addShowFilter(LogRecordFilter filter) {
-        showFilters.add(filter);
-    }
-
-    public void addHideFilter(LogRecordFilter filter) {
-        hideFilters.add(filter);
+    public boolean checkFilter(FilteringMode mode, LogRecord record) {
+        Set<LogRecordFilter> concreteFilters = filters.get(mode);
+        if (concreteFilters == null) {
+            return mode.getDefaultResult();
+        }
+        return include(concreteFilters, record);
     }
 
     public void removeFilter(LogRecordFilter filter) {
-        highlightFilters.remove(filter);
-        showFilters.remove(filter);
-        hideFilters.remove(filter);
+        for (Set<LogRecordFilter> concreteFilters : filters.values()) {
+            concreteFilters.remove(filter);
+        }
     }
 
 }

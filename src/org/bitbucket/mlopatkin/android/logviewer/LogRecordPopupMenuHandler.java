@@ -45,7 +45,8 @@ public class LogRecordPopupMenuHandler {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                filterController.addHideFilter(new SingleTagFilter(getLogRecordAtPoint().getTag()));
+                filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
+                        getLogRecordAtPoint().getTag()));
             }
         });
 
@@ -53,8 +54,8 @@ public class LogRecordPopupMenuHandler {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                filterController.addHideFilter(new MultiPidFilter(new int[] { getLogRecordAtPoint()
-                        .getPid() }));
+                filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
+                        new int[] { getLogRecordAtPoint().getPid() }));
             }
         });
         popupMenu.add(hideWithThisTag);

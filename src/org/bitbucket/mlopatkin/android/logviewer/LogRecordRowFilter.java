@@ -30,6 +30,7 @@ public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> 
     @Override
     public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
         LogRecord record = entry.getModel().getRowData(entry.getIdentifier());
-        return filters.shouldShow(record) && !filters.shouldHide(record);
+        return filters.checkFilter(FilteringMode.SHOW, record)
+                && !filters.checkFilter(FilteringMode.HIDE, record);
     }
 }
