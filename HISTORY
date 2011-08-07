@@ -1,3 +1,6 @@
+version 0.6
+	This version introduces name-by-pid tooltip in dumpstate files.
+
 version 0.5
     This version allows filter editing. Minor bugfixes and refactors.
     
