@@ -54,7 +54,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
 
     void addFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.addFilter(mode, filter);
-        panel.addFilterButton(filter);
+        panel.addFilterButton(mode, filter);
         defaultRowSorter.sort();
         table.repaint();
     }
@@ -114,7 +114,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
         table.repaint();
     }
 
-    public void startEditFilterDialog(LogRecordFilter filter) {
-        // TODO Auto-generated method stub
+    public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
+        newFilterDialog.startEditDialogForResult(this, filter);
     }
 }

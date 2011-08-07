@@ -15,9 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 
-public class MultiTagFilter implements LogRecordFilter {
+public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
 
     private String[] tags;
 
@@ -38,5 +40,10 @@ public class MultiTagFilter implements LogRecordFilter {
     @Override
     public String toString() {
         return "Tags: " + StringUtils.join(tags, ", ");
+    }
+
+    @Override
+    protected void dumpFilter(FilterData data) {
+        data.tags = Arrays.asList(tags);
     }
 }

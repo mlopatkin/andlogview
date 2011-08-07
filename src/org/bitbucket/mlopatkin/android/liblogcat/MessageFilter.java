@@ -15,7 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-public class MessageFilter implements LogRecordFilter {
+public class MessageFilter extends AbstractFilter implements LogRecordFilter {
 
     private String messageText;
 
@@ -32,6 +32,11 @@ public class MessageFilter implements LogRecordFilter {
     @Override
     public String toString() {
         return "Message containing '" + messageText + "'";
+    }
+
+    @Override
+    protected void dumpFilter(FilterData data) {
+        data.message = messageText;
     }
 
 }

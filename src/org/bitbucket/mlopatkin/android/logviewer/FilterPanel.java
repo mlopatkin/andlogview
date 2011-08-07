@@ -67,8 +67,8 @@ class FilterPanel extends JPanel {
         }
     }
 
-    public void addFilterButton(LogRecordFilter filter) {
-        FilterButton button = new FilterButton(filter);
+    public void addFilterButton(FilteringMode mode, LogRecordFilter filter) {
+        FilterButton button = new FilterButton(mode, filter);
         add(button);
         buttons.put(filter, button);
         validate();
@@ -93,10 +93,12 @@ class FilterPanel extends JPanel {
     private class FilterButton extends JButton implements ActionListener {
 
         private final LogRecordFilter filter;
+        private final FilteringMode mode;
 
-        public FilterButton(LogRecordFilter filter) {
+        public FilterButton(FilteringMode mode, LogRecordFilter filter) {
             super(FILTER_ICON);
             this.filter = filter;
+            this.mode = mode;
             addActionListener(this);
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -111,7 +113,7 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            controller.startEditFilterDialog(filter);
+            controller.startEditFilterDialog(mode, filter);
         }
 
     }

@@ -21,7 +21,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.liblogcat.FilterToText;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class NewFilterDialog extends JDialog {
@@ -162,6 +164,19 @@ public class NewFilterDialog extends JDialog {
         }
         receiver = resultReceiver;
         resetDialog();
+        setVisible(true);
+    }
+
+    void startEditDialogForResult(DialogResultReceiver resultReceiver, LogRecordFilter filter) {
+        if (resultReceiver == null) {
+            throw new NullPointerException("resultReceiver can't be null");
+        }
+        receiver = resultReceiver;
+        tagText.setText(FilterToText.getTags(filter));
+        pidText.setText(FilterToText.getPids(filter));
+        messageText.setText(FilterToText.getMessage(filter));
+        cbLogLevel.setSelectedItem(FilterToText.getPriority(filter));
+
         setVisible(true);
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
  * This filter performs AND operation upon all included filters.
  * 
  */
-public class ComposeFilter implements LogRecordFilter {
+public class ComposeFilter extends AbstractFilter implements LogRecordFilter {
 
     private List<LogRecordFilter> filters = new ArrayList<LogRecordFilter>();
 
@@ -53,5 +53,14 @@ public class ComposeFilter implements LogRecordFilter {
             builder.append(filter).append("<br>");
         }
         return builder.toString();
+    }
+
+    @Override
+    protected void dumpFilter(FilterData data) {
+        for (LogRecordFilter filter : filters) {
+            if (filter instanceof AbstractFilter) {
+                ((AbstractFilter) filter).dumpFilter(data);
+            }
+        }
     }
 }

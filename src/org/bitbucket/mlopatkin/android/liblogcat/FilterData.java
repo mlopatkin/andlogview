@@ -15,27 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-public class PriorityFilter extends AbstractFilter implements LogRecordFilter {
+import java.util.Collection;
 
-    private LogRecord.Priority priority;
-
-    public PriorityFilter(LogRecord.Priority priority) {
-        this.priority = priority;
-    }
-
-    @Override
-    public boolean include(LogRecord record) {
-        LogRecord.Priority p = record.getPriority();
-        return p.ordinal() >= priority.ordinal();
-    }
-
-    @Override
-    public String toString() {
-        return "Priority: " + priority;
-    }
-
-    @Override
-    protected void dumpFilter(FilterData data) {
-        data.priority = priority;
-    }
+class FilterData {
+    Collection<String> tags;
+    Collection<Integer> pids;
+    String message;
+    LogRecord.Priority priority;
 }

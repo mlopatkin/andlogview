@@ -15,8 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.Arrays;
 
-public class SingleTagFilter implements LogRecordFilter {
+public class SingleTagFilter extends AbstractFilter implements LogRecordFilter {
 
     private String tag;
 
@@ -32,5 +33,10 @@ public class SingleTagFilter implements LogRecordFilter {
     @Override
     public String toString() {
         return "Tag: " + tag;
+    }
+
+    @Override
+    protected void dumpFilter(FilterData data) {
+        data.tags = Arrays.asList(tag);
     }
 }
