@@ -26,7 +26,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
-public class NewFilterDialog extends JDialog {
+public class CreateFilterDialog extends JDialog {
 
     private final JPanel contentPanel = new JPanel();
     private JTextField tagText;
@@ -42,7 +42,7 @@ public class NewFilterDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public NewFilterDialog() {
+    public CreateFilterDialog() {
         initialize();
     }
 

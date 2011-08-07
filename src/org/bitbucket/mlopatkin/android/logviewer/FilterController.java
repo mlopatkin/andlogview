@@ -24,7 +24,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
 
-class FilterController implements NewFilterDialog.DialogResultReceiver {
+class FilterController implements CreateFilterDialog.DialogResultReceiver {
 
     private DecoratingRendererTable table;
     private LogRecordTableModel tableModel;
@@ -33,7 +33,7 @@ class FilterController implements NewFilterDialog.DialogResultReceiver {
     private TableRowSorter<LogRecordTableModel> defaultRowSorter;
     private LogRecordRowFilter rowFilter;
 
-    private NewFilterDialog newFilterDialog = new NewFilterDialog();
+    private CreateFilterDialog newFilterDialog = new CreateFilterDialog();
 
     private FilterChain filters = new FilterChain();
 
