@@ -48,7 +48,7 @@ public class FilterChain {
 
     public boolean checkFilter(FilteringMode mode, LogRecord record) {
         Set<LogRecordFilter> concreteFilters = filters.get(mode);
-        if (concreteFilters == null) {
+        if (concreteFilters == null || concreteFilters.isEmpty()) {
             return mode.getDefaultResult();
         }
         return include(concreteFilters, record);

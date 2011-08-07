@@ -23,8 +23,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.SingleTagFilter;
-import org.bitbucket.mlopatkin.android.logviewer.FilterChain;
-import org.bitbucket.mlopatkin.android.logviewer.FilteringMode;
 import org.junit.Test;
 
 public class FilterChainTest {
@@ -68,5 +66,18 @@ public class FilterChainTest {
     @Test
     public void testIncludeHighlight() {
         helperTestModeShow(FilteringMode.HIGHLIGHT);
+    }
+
+    @Test
+    public void testRemoveFilter() {
+        FilterChain chain = new FilterChain();
+        chain.addFilter(FilteringMode.SHOW, TAG_FILTER_MATCH);
+        chain.addFilter(FilteringMode.HIDE, TAG_FILTER_MATCH);
+        chain.addFilter(FilteringMode.HIGHLIGHT, TAG_FILTER_MATCH);
+        chain.removeFilter(TAG_FILTER_MATCH);
+        for (FilteringMode mode : FilteringMode.values()) {
+            assertEquals("Default filtering value failed for " + mode + " after cleanup", mode
+                    .getDefaultResult(), chain.checkFilter(mode, RECORD1));
+        }
     }
 }
