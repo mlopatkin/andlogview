@@ -26,9 +26,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
+    private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
 
     private List<LogRecord> source = new ArrayList<LogRecord>();
     private PidToProcessConverter converter;
@@ -76,7 +78,7 @@ public class DumpstateFileDataSource implements DataSource {
         }
         converter = new PidToProcessConverter();
         line = in.readLine();
-        while (line != null && line.startsWith(PS_END)) {
+        while (line != null && !line.startsWith(PS_END)) {
             Matcher m = ProcessListParser.parseProcessListLine(line);
             if (m.matches()) {
                 int pid = ProcessListParser.getPid(m);
