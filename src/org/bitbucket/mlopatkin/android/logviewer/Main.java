@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DumpstateFileDataSource;
 
 public class Main {

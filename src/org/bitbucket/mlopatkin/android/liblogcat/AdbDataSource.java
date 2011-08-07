@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.awt.EventQueue;
 import java.io.IOException;
@@ -22,8 +22,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.text.StrMatcher;
 import org.apache.commons.lang3.text.StrTokenizer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
+import org.bitbucket.mlopatkin.android.logviewer.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.logviewer.Configuration.adb;
 
 public class AdbDataSource {
     private static final String ADB_BASE_COMMANDLINE = Configuration.adb.commandline();
