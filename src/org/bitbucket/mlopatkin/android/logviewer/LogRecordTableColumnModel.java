@@ -28,6 +28,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
     private TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
     private TableCellRenderer messageCellRenderer = new ToolTippedCellRenderer();
+    private TableCellRenderer pidCellRender = new ToolTippedPidCellRenderer();
 
     private static class ColumnInfo {
         int modelColumn;
@@ -72,7 +73,8 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private void initColumnInfo() {
         columnInfo.put("time", new ColumnInfo(LogRecordTableModel.COLUMN_TIME, "Time", 150, 150,
                 timeCellRenderer));
-        columnInfo.put("pid", new ColumnInfo(LogRecordTableModel.COLUMN_PID, "pid", 30, 50));
+        columnInfo.put("pid", new ColumnInfo(LogRecordTableModel.COLUMN_PID, "pid", 30, 50,
+                pidCellRender));
         columnInfo.put("tid", new ColumnInfo(LogRecordTableModel.COLUMN_TID, "tid", 30, 50));
         columnInfo.put("priority", new ColumnInfo(LogRecordTableModel.COLUMN_PRIORITY, "", 30, 50,
                 priorityCellRenderer));
