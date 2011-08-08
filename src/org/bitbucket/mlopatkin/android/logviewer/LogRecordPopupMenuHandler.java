@@ -15,12 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.Component;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -30,19 +26,15 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.SingleTagFilter;
 
-public class LogRecordPopupMenuHandler {
+public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
 
     private JMenuItem hideWithThisTag = new JMenuItem("Hide with this tag");
     private JMenuItem hideWithThisPid = new JMenuItem("Hide with this pid");
     private JMenuItem pinThisLine = new JMenuItem("Pin this line");
-    private JPopupMenu popupMenu = new JPopupMenu();
+    private PinRecordsController pinRecordsController;
+    private FilterController filterController;
 
-    private Point p;
-
-    private JTable table;
-
-    public LogRecordPopupMenuHandler(JTable table, final FilterController filterController,
-            final PinRecordsController pinRecordsController) {
+    private void setUpMenu() {
         hideWithThisTag.addActionListener(new ActionListener() {
 
             @Override
@@ -68,40 +60,25 @@ public class LogRecordPopupMenuHandler {
                 pinRecordsController.pinRecord(getIdAtPoint());
             }
         });
-
+        JPopupMenu popupMenu = getMenu();
         popupMenu.add(hideWithThisTag);
         popupMenu.add(hideWithThisPid);
         popupMenu.add(pinThisLine);
-        addPopup(table, popupMenu);
-        this.table = table;
     }
 
-    private void addPopup(Component component, final JPopupMenu popup) {
-        component.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    showMenu(e);
-                }
-            }
-
-            public void mouseReleased(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    showMenu(e);
-                }
-            }
-
-            private void showMenu(MouseEvent e) {
-                p = e.getPoint();
-                popup.show(e.getComponent(), e.getX(), e.getY());
-            }
-        });
+    public LogRecordPopupMenuHandler(JTable table, final FilterController filterController,
+            final PinRecordsController pinRecordsController) {
+        super(table);
+        this.filterController = filterController;
+        this.pinRecordsController = pinRecordsController;
+        setUpMenu();
     }
 
     private LogRecord getLogRecordAtPoint() {
-        return ((LogRecordTableModel) table.getModel()).getRowData(getIdAtPoint());
+        return ((LogRecordTableModel) getTable().getModel()).getRowData(getIdAtPoint());
     }
 
     private int getIdAtPoint() {
-        return table.convertRowIndexToModel(table.rowAtPoint(p));
+        return getTable().convertRowIndexToModel(getTargetRow());
     }
 }
