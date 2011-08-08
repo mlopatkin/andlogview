@@ -51,11 +51,19 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         table.addDecorator(new RowHighlightRenderer(filters));
     }
 
+    private void onFilteringStateUpdated() {
+        defaultRowSorter.sort();
+        table.repaint();
+        if (table.getSelectedRow() != -1) {
+            table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(), table
+                    .getSelectedColumn(), false));
+        }
+    }
+
     void addFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.addFilter(mode, filter);
         panel.addFilterButton(mode, filter);
-        defaultRowSorter.sort();
-        table.repaint();
+        onFilteringStateUpdated();
     }
 
     private static LogRecordFilter appendFilter(LogRecordFilter a, LogRecordFilter b) {
@@ -111,8 +119,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     public void removeFilter(LogRecordFilter filter) {
         panel.removeFilterButton(filter);
         filters.removeFilter(filter);
-        defaultRowSorter.sort();
-        table.repaint();
+        onFilteringStateUpdated();
     }
 
     public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
