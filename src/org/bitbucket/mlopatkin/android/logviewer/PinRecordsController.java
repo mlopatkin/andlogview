@@ -15,30 +15,71 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
+
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public class PinRecordsController {
 
     private PinRecordsTableModel model;
     private PinRecordsTableColumnModel columnsModel;
+    private JTable table;
 
     private PinRecordsFrame frame;
+    private TableRowSorter<PinRecordsTableModel> rowSorter;
+    private PinnedRowsFilter filter = new PinnedRowsFilter();
 
     public PinRecordsController(LogRecordTableModel baseModel, DataSource source) {
         model = new PinRecordsTableModel(baseModel);
         columnsModel = new PinRecordsTableColumnModel(source.getPidToProcessConverter());
 
         frame = new PinRecordsFrame(model, columnsModel);
+        table = frame.getTable();
+        rowSorter = new SortingDisableSorter<PinRecordsTableModel>(model);
+        table.setRowSorter(rowSorter);
+        rowSorter.setRowFilter(filter);
     }
 
     public void pinRecord(int index) {
         if (!frame.isVisible()) {
             frame.setVisible(true);
         }
-        model.pinRecord(index);
+        filter.pin(index);
+        rowSorter.sort();
     }
 
     public void unpinRecord(int index) {
-        model.unpinRecord(index);
+        filter.unpin(index);
+        rowSorter.sort();
+    }
+
+    private class PinnedRowsFilter extends RowFilter<PinRecordsTableModel, Integer> {
+
+        private Set<Integer> pinnedRows = new HashSet<Integer>();
+
+        public void pin(int index) {
+            pinnedRows.add(index);
+        }
+
+        public void unpin(int index) {
+            pinnedRows.remove(index);
+        }
+
+        @Override
+        public boolean include(
+                javax.swing.RowFilter.Entry<? extends PinRecordsTableModel, ? extends Integer> entry) {
+            LogRecord record = entry.getModel().getParent().getRowData(entry.getIdentifier());
+            return include(entry.getIdentifier(), record);
+        }
+
+        private boolean include(int row, LogRecord record) {
+            return pinnedRows.contains(row);
+        }
     }
 }

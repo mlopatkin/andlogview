@@ -15,10 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import javax.swing.table.AbstractTableModel;
 
 public class PinRecordsTableModel extends AbstractTableModel {
@@ -34,7 +30,6 @@ public class PinRecordsTableModel extends AbstractTableModel {
     public static final int COLUMN_MSG = 5;
 
     private LogRecordTableModel parentModel;
-    private List<Integer> indices = new ArrayList<Integer>();
 
     public PinRecordsTableModel(LogRecordTableModel parentModel) {
         this.parentModel = parentModel;
@@ -47,35 +42,23 @@ public class PinRecordsTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return indices.size();
+        return parentModel.getRowCount();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        int parentRowIndex = indices.get(rowIndex);
         if (columnIndex < parentModel.getColumnCount()) {
-            return parentModel.getValueAt(parentRowIndex, columnIndex);
+            return parentModel.getValueAt(rowIndex, columnIndex);
         }
         switch (columnIndex) {
         case COLUMN_ID:
-            return parentRowIndex;
+            return rowIndex;
         default:
             throw new IllegalArgumentException("Incorrect column number");
         }
     }
 
-    public void pinRecord(int index) {
-        int pos = Collections.binarySearch(indices, index);
-        if (pos < 0) {
-            pos = -(pos + 1);
-            indices.add(pos, index);
-            fireTableRowsInserted(pos, pos);
-        }
+    public LogRecordTableModel getParent() {
+        return parentModel;
     }
-
-    public void unpinRecord(int index) {
-        int pos = Collections.binarySearch(indices, index);
-        indices.remove(pos);
-    }
-
 }

@@ -20,6 +20,7 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
@@ -37,7 +38,7 @@ public class PinRecordsFrame extends JFrame {
     private void initialize() {
         setTitle("Pinned log records");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setBounds(100, 100, 858, 300);
+        setBounds(100, 100, 1000, 300);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 0));
@@ -54,4 +55,7 @@ public class PinRecordsFrame extends JFrame {
         scrollPane.setViewportView(pinnedRecordsTable);
     }
 
+    JTable getTable() {
+        return pinnedRecordsTable;
+    }
 }

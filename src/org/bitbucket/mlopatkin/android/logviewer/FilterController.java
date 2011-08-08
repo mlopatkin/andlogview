@@ -31,7 +31,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     private LogRecordTableModel tableModel;
     private FilterPanel panel;
 
-    private TableRowSorter<LogRecordTableModel> defaultRowSorter;
+    private TableRowSorter<LogRecordTableModel> rowSorter;
     private LogRecordRowFilter rowFilter;
 
     private FilterChain filters = new FilterChain();
@@ -39,20 +39,15 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
         this.tableModel = tableModel;
-        defaultRowSorter = new TableRowSorter<LogRecordTableModel>(tableModel) {
-            @Override
-            public boolean isSortable(int column) {
-                return false;
-            }
-        };
-        table.setRowSorter(defaultRowSorter);
+        rowSorter = new SortingDisableSorter<LogRecordTableModel>(tableModel);
+        table.setRowSorter(rowSorter);
         rowFilter = new LogRecordRowFilter(filters);
-        defaultRowSorter.setRowFilter(rowFilter);
+        rowSorter.setRowFilter(rowFilter);
         table.addDecorator(new RowHighlightRenderer(filters));
     }
 
     private void onFilteringStateUpdated() {
-        defaultRowSorter.sort();
+        rowSorter.sort();
         table.repaint();
         if (table.getSelectedRow() != -1) {
             table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(), table
