@@ -1,3 +1,6 @@
+version 0.7
+	This version introduces full-text search.
+
 version 0.6
 	This version introduces name-by-pid tooltip in dumpstate files.
 

@@ -14,5 +14,11 @@ Available actions on filtered lines:
 
 The tool can parse adb output or a dumpstate file specified in the command line.
 
+Full-text search
+	1. press '/' to show search field
+	2. press Enter to start search
+	3. press F3 to search next occurence
+Searching is performed in tags and messages starting from the first selected row. 
+
 Tips:
 	- right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
