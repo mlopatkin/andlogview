@@ -110,7 +110,8 @@ class FilterPanel extends JPanel {
                     }
                 }
             });
-            setToolTipText("<html>" + filter.toString() + "<br><i>Right-click to remove</i></html>");
+            setToolTipText("<html>" + mode.getDescription() + "<br>" + filter.toString()
+                    + "<br><i>Right-click to remove</i></html>");
         }
 
         @Override

@@ -39,7 +39,7 @@ public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
 
     @Override
     public String toString() {
-        return "Tags: " + StringUtils.join(tags, ", ");
+        return "Tag" + (tags.length > 1 ? "s" : "") + ": " + StringUtils.join(tags, ", ");
     }
 
     @Override

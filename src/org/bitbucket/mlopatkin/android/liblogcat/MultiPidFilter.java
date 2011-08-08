@@ -16,14 +16,14 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
 
-    private Set<Integer> pids = new HashSet<Integer>();
+    private Set<Integer> pids = new TreeSet<Integer>();
 
     public MultiPidFilter(int[] pids) {
         for (int pid : pids) {
@@ -38,7 +38,7 @@ public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
 
     @Override
     public String toString() {
-        return "PIDs: " + StringUtils.join(pids, ", ");
+        return "PID" + (pids.size() > 1 ? "s" : "") + ": " + StringUtils.join(pids, ", ");
     }
 
     @Override
