@@ -46,6 +46,7 @@ public class Main {
     private FilterController filterController;
     private SearchController searchController;
     private LogRecordPopupMenuHandler popupMenuHandler;
+    private PinRecordsController pinRecordsController;
 
     private DataSource source;
     private JPanel panel;
@@ -111,8 +112,9 @@ public class Main {
 
         scrollController = new AutoScrollController(logElements, recordsModel);
         filterController = new FilterController(logElements, recordsModel);
-        popupMenuHandler = new LogRecordPopupMenuHandler(logElements, filterController);
-        searchController = new SearchController(logElements, recordsModel);
+        pinRecordsController = new PinRecordsController(recordsModel, source);
+        popupMenuHandler = new LogRecordPopupMenuHandler(logElements, filterController,
+                pinRecordsController);
 
         panel = new JPanel();
         frmAndroidLogViewer.getContentPane().add(panel, BorderLayout.SOUTH);

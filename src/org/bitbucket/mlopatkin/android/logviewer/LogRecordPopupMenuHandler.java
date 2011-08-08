@@ -34,13 +34,15 @@ public class LogRecordPopupMenuHandler {
 
     private JMenuItem hideWithThisTag = new JMenuItem("Hide with this tag");
     private JMenuItem hideWithThisPid = new JMenuItem("Hide with this pid");
+    private JMenuItem pinThisLine = new JMenuItem("Pin this line");
     private JPopupMenu popupMenu = new JPopupMenu();
 
     private Point p;
 
     private JTable table;
 
-    public LogRecordPopupMenuHandler(JTable table, final FilterController filterController) {
+    public LogRecordPopupMenuHandler(JTable table, final FilterController filterController,
+            final PinRecordsController pinRecordsController) {
         hideWithThisTag.addActionListener(new ActionListener() {
 
             @Override
@@ -58,8 +60,18 @@ public class LogRecordPopupMenuHandler {
                         new int[] { getLogRecordAtPoint().getPid() }));
             }
         });
+
+        pinThisLine.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pinRecordsController.pinRecord(getIdAtPoint());
+            }
+        });
+
         popupMenu.add(hideWithThisTag);
         popupMenu.add(hideWithThisPid);
+        popupMenu.add(pinThisLine);
         addPopup(table, popupMenu);
         this.table = table;
     }
@@ -86,7 +98,10 @@ public class LogRecordPopupMenuHandler {
     }
 
     private LogRecord getLogRecordAtPoint() {
-        int row = table.convertRowIndexToModel(table.rowAtPoint(p));
-        return ((LogRecordTableModel) table.getModel()).getRowData(row);
+        return ((LogRecordTableModel) table.getModel()).getRowData(getIdAtPoint());
+    }
+
+    private int getIdAtPoint() {
+        return table.convertRowIndexToModel(table.rowAtPoint(p));
     }
 }

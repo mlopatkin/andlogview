@@ -32,7 +32,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private TableCellRenderer messageCellRenderer = new ToolTippedCellRenderer();
     private TableCellRenderer pidCellRender;
 
-    private static class ColumnInfo {
+    static class ColumnInfo {
         int modelColumn;
         int minWidth;
         int maxWidth;
@@ -72,16 +72,20 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     private Map<String, ColumnInfo> columnInfo = new HashMap<String, ColumnInfo>();
 
-    private void initColumnInfo() {
-        columnInfo.put("time", new ColumnInfo(LogRecordTableModel.COLUMN_TIME, "Time", 150, 150,
+    protected void addColumnInfo(String name, ColumnInfo info) {
+        columnInfo.put(name, info);
+    }
+
+    protected void initColumnInfo() {
+        addColumnInfo("time", new ColumnInfo(LogRecordTableModel.COLUMN_TIME, "Time", 150, 150,
                 timeCellRenderer));
-        columnInfo.put("pid", new ColumnInfo(LogRecordTableModel.COLUMN_PID, "pid", 30, 50,
+        addColumnInfo("pid", new ColumnInfo(LogRecordTableModel.COLUMN_PID, "pid", 30, 50,
                 pidCellRender));
-        columnInfo.put("tid", new ColumnInfo(LogRecordTableModel.COLUMN_TID, "tid", 30, 50));
-        columnInfo.put("priority", new ColumnInfo(LogRecordTableModel.COLUMN_PRIORITY, "", 30, 50,
+        addColumnInfo("tid", new ColumnInfo(LogRecordTableModel.COLUMN_TID, "tid", 30, 50));
+        addColumnInfo("priority", new ColumnInfo(LogRecordTableModel.COLUMN_PRIORITY, "", 30, 50,
                 priorityCellRenderer));
-        columnInfo.put("tag", new ColumnInfo(LogRecordTableModel.COLUMN_TAG, "Tag", 120));
-        columnInfo.put("message", new ColumnInfo(LogRecordTableModel.COLUMN_MSG, "Message", 1000,
+        addColumnInfo("tag", new ColumnInfo(LogRecordTableModel.COLUMN_TAG, "Tag", 120));
+        addColumnInfo("message", new ColumnInfo(LogRecordTableModel.COLUMN_MSG, "Message", 1000,
                 messageCellRenderer));
     }
 
