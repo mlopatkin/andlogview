@@ -46,6 +46,9 @@ public class SearchController {
         if (StringUtils.isBlank(text)) {
             return;
         }
+        if (curRow != table.getSelectedRow()) {
+            curRow = table.getSelectedRow();
+        }
         int startPos = (scanCurrentRow) ? curRow : (curRow + 1);
         for (int i = startPos; i < table.getRowCount(); ++i) {
             LogRecord record = model.getRowData(table.convertRowIndexToModel(i));
