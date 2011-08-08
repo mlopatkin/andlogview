@@ -16,7 +16,6 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Color;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,73 +26,12 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class Configuration {
-
-    private Properties properties = new Properties();
-
-    private static final String CONFIG_FILE_NAME = "logview.properties";
-
-    private void loadFromFile() {
-        try {
-            InputStream in = getClass().getResourceAsStream("/logview.properties");
-            File configFile = new File(CONFIG_FILE_NAME);
-            if (configFile.exists()) {
-                in.close();
-                in = new BufferedInputStream(new FileInputStream(CONFIG_FILE_NAME));
-            }
-            try {
-                properties.load(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Configuration() {
-        loadFromFile();
-    }
-
-    private static Configuration instance = new Configuration();
-
-    private static List<String> splitCommaSeparatedValues(String valuesString) {
-        String[] values = StringUtils.split(valuesString, ",");
-        List<String> result = new ArrayList<String>();
-        for (String s : values) {
-            result.add(s.toLowerCase().trim());
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    private static int parseInt(String key, int defaultValue) {
-        String widthValue = instance.properties.getProperty(key);
-        if (widthValue == null) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(widthValue.trim());
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return defaultValue;
-        }
-    }
-
-    private static Color parseColor(String key, Color defaultValue) {
-        String colorValue = instance.properties.getProperty(key);
-        if (colorValue == null) {
-            return defaultValue;
-        }
-        try {
-            return Color.decode(colorValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return defaultValue;
-        }
-    }
 
     public static class ui {
         private static final String PREFIX = "ui.";
@@ -174,7 +112,96 @@ public class Configuration {
         }
     }
 
-    static {
-        PropertyConfigurator.configure(instance.properties);
+    private static final Logger logger = Logger.getLogger(Configuration.class);
+
+    private Properties properties = new Properties();
+
+    private static final String CONFIG_FILE_NAME = "logview.properties";
+
+    private void setUpDefaults() {
+        // set up default logging configuration
+        BasicConfigurator.configure();
     }
+
+    private Properties loadFromResources() {
+        Properties result = new Properties();
+        try {
+            InputStream in = getClass().getResourceAsStream("/" + CONFIG_FILE_NAME);
+            if (in == null) {
+                logger.error("Missing configuration file in resources - broken package?");
+                return null;
+            }
+            try {
+                result.load(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException ex) {
+            logger.error("Unexpected error when parsing properties", ex);
+        }
+        return result;
+    }
+
+    private Properties loadFromFile() {
+        Properties result = new Properties();
+        File configFile = new File(CONFIG_FILE_NAME);
+        if (configFile.exists()) {
+            try {
+                InputStream in = new FileInputStream(configFile);
+                try {
+                    result.load(in);
+                } finally {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unexpected error when parsing properties", ex);
+            }
+        }
+        return result;
+    }
+
+    private Configuration() {
+        setUpDefaults();
+        properties.putAll(loadFromResources());
+        PropertyConfigurator.configure(properties);
+        properties.putAll(loadFromFile());
+    }
+
+    private static Configuration instance = new Configuration();
+
+    private static List<String> splitCommaSeparatedValues(String valuesString) {
+        String[] values = StringUtils.split(valuesString, ",");
+        List<String> result = new ArrayList<String>();
+        for (String s : values) {
+            result.add(s.toLowerCase().trim());
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    private static int parseInt(String key, int defaultValue) {
+        String widthValue = instance.properties.getProperty(key);
+        if (widthValue == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(widthValue.trim());
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return defaultValue;
+        }
+    }
+
+    private static Color parseColor(String key, Color defaultValue) {
+        String colorValue = instance.properties.getProperty(key);
+        if (colorValue == null) {
+            return defaultValue;
+        }
+        try {
+            return Color.decode(colorValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return defaultValue;
+        }
+    }
+
 }
