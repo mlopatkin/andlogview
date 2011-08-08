@@ -7,7 +7,7 @@ Available filters:
 	- entries containing specified text in message
 	- by priority
 
-Available action on filtered lines:
+Available actions on filtered lines:
 	- show only matching lines
 	- highlight matching lines
 	- hide matching lines
