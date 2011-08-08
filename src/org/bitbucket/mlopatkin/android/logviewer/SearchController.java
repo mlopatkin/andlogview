@@ -32,25 +32,36 @@ public class SearchController {
         this.model = model;
     }
 
+    private static final int MODE_FORWARD = 1;
+    private static final int MODE_BACKWARD = -1;
+
     public void startSearch(String text) {
         this.text = text;
         curRow = table.getSelectedRow();
-        performSearch(curRow >= 0);
+        performSearch(MODE_FORWARD, curRow >= 0);
     }
 
-    public void continueSearch() {
-        performSearch(false);
+    public void searchNext() {
+        performSearch(MODE_FORWARD, false);
     }
 
-    private void performSearch(boolean scanCurrentRow) {
+    public void searchPrev() {
+        performSearch(MODE_BACKWARD, false);
+    }
+
+    private void performSearch(int searchMode, boolean scanCurrentRow) {
         if (StringUtils.isBlank(text)) {
             return;
         }
         if (curRow != table.getSelectedRow()) {
             curRow = table.getSelectedRow();
         }
-        int startPos = (scanCurrentRow) ? curRow : (curRow + 1);
-        for (int i = startPos; i < table.getRowCount(); ++i) {
+        int startPos = (scanCurrentRow) ? curRow : (curRow + searchMode);
+        int endPos = table.getRowCount();
+        if (searchMode < 0) {
+            endPos = -1;
+        }
+        for (int i = startPos; i != endPos; i += searchMode) {
             LogRecord record = model.getRowData(table.convertRowIndexToModel(i));
             if (StringUtils.contains(record.getTag(), text)
                     || StringUtils.contains(record.getMessage(), text)) {

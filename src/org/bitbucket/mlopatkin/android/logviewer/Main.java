@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -115,6 +116,7 @@ public class Main {
         pinRecordsController = new PinRecordsController(recordsModel, source);
         popupMenuHandler = new LogRecordPopupMenuHandler(logElements, filterController,
                 pinRecordsController);
+        searchController = new SearchController(logElements, recordsModel);
 
         panel = new JPanel();
         frmAndroidLogViewer.getContentPane().add(panel, BorderLayout.SOUTH);
@@ -132,57 +134,73 @@ public class Main {
     }
 
     private void setupSearchButtons() {
-        frmAndroidLogViewer.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KEY_SHOW_SEARCH_FIELD), ACTION_SHOW_SEARCH_FIELD);
-        frmAndroidLogViewer.getRootPane().getActionMap().put(ACTION_SHOW_SEARCH_FIELD,
-                new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        showSearchField();
-                    }
-                });
+        bindKeyGlobal(KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("show search");
+                showSearchField();
+            }
+        });
 
-        frmAndroidLogViewer.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KEY_FIND_NEXT), ACTION_FIND_NEXT);
-        frmAndroidLogViewer.getRootPane().getActionMap().put(ACTION_FIND_NEXT,
-                new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        searchController.continueSearch();
-                    }
-                });
+        bindKeyGlobal(KEY_FIND_NEXT, ACTION_FIND_NEXT, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("find next");
+                searchController.searchNext();
+            }
+        });
 
-        instantSearchTextField.getInputMap().put(KeyStroke.getKeyStroke(KEY_HIDE_AND_START_SEARCH),
-                ACTION_HIDE_AND_START_SEARCH);
-        instantSearchTextField.getActionMap().put(ACTION_HIDE_AND_START_SEARCH,
-                new AbstractAction() {
+        bindKeyGlobal(KEY_FIND_PREV, ACTION_FIND_PREV, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("search prev");
+                searchController.searchPrev();
+            }
+        });
+
+        bindKeyGlobal(KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("hide");
+                hideSearchField();
+                instantSearchTextField.setText(null);
+            }
+        });
+
+        bindKeyFocused(instantSearchTextField, KEY_HIDE_AND_START_SEARCH,
+                ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        logger.debug("hide & start");
                         hideSearchField();
                         searchController.startSearch(instantSearchTextField.getText());
                     }
                 });
-        frmAndroidLogViewer.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KEY_HIDE), ACTION_HIDE_SEARCH_FIELD);
-        frmAndroidLogViewer.getRootPane().getActionMap().put(ACTION_HIDE_SEARCH_FIELD,
-                new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        hideSearchField();
-                        instantSearchTextField.setText(null);
-                    }
-                });
 
+    }
+
+    private static void bindKeyFocused(JComponent component, String key, String actionKey,
+            Action action) {
+        component.getInputMap().put(KeyStroke.getKeyStroke(key), actionKey);
+        component.getActionMap().put(actionKey, action);
+    }
+
+    private void bindKeyGlobal(String key, String actionKey, Action action) {
+        frmAndroidLogViewer.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(key), actionKey);
+        frmAndroidLogViewer.getRootPane().getActionMap().put(actionKey, action);
     }
 
     private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
     private static final String ACTION_HIDE_SEARCH_FIELD = "hide_search";
     private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
     private static final String ACTION_FIND_NEXT = "find_next";
+    private static final String ACTION_FIND_PREV = "find_prev";
     private static final String KEY_HIDE_AND_START_SEARCH = "ENTER";
     private static final String KEY_HIDE = "ESCAPE";
-    private static final char KEY_SHOW_SEARCH_FIELD = '/';
+    private static final String KEY_SHOW_SEARCH_FIELD = "SLASH";
     private static final String KEY_FIND_NEXT = "F3";
+    private static final String KEY_FIND_PREV = "control F3";
 
     private void showSearchField() {
         instantSearchTextField.setVisible(true);
