@@ -44,10 +44,9 @@
     </target>
 
     <target name="copy-res" depends="make-out-dir">
-        <copy todir="${out-dir}/icons">
-            <fileset dir="icons" />
-        </copy>
-        <copy todir="${out-dir}" file="logview.properties" />
+        <copy todir="${out-dir}/">
+            <fileset dir="resources" includes="**/*.*" />
+        </copy>        
     </target>
 
     <target name="make-jar" depends="compile-files, unpack-libs, copy-res">
