@@ -151,20 +151,34 @@ public class Main {
                 });
 
         instantSearchTextField.getInputMap().put(KeyStroke.getKeyStroke(KEY_HIDE_AND_START_SEARCH),
-                ACTION_HIDE_SEARCH_FIELD);
-        instantSearchTextField.getActionMap().put(ACTION_HIDE_SEARCH_FIELD, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hideSearchField();
-            }
-        });
+                ACTION_HIDE_AND_START_SEARCH);
+        instantSearchTextField.getActionMap().put(ACTION_HIDE_AND_START_SEARCH,
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        hideSearchField();
+                        searchController.startSearch(instantSearchTextField.getText());
+                    }
+                });
+        frmAndroidLogViewer.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KEY_HIDE), ACTION_HIDE_SEARCH_FIELD);
+        frmAndroidLogViewer.getRootPane().getActionMap().put(ACTION_HIDE_SEARCH_FIELD,
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        hideSearchField();
+                        instantSearchTextField.setText(null);
+                    }
+                });
 
     }
 
     private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
     private static final String ACTION_HIDE_SEARCH_FIELD = "hide_search";
+    private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
     private static final String ACTION_FIND_NEXT = "find_next";
     private static final String KEY_HIDE_AND_START_SEARCH = "ENTER";
+    private static final String KEY_HIDE = "ESCAPE";
     private static final char KEY_SHOW_SEARCH_FIELD = '/';
     private static final String KEY_FIND_NEXT = "F3";
 
@@ -178,7 +192,6 @@ public class Main {
 
     private void hideSearchField() {
         instantSearchTextField.setVisible(false);
-        searchController.startSearch(instantSearchTextField.getText());
         panel.revalidate();
         panel.repaint();
     }
