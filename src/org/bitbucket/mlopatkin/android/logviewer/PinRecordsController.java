@@ -34,6 +34,7 @@ public class PinRecordsController {
     private PinRecordsFrame frame;
     private TableRowSorter<PinRecordsTableModel> rowSorter;
     private PinnedRowsFilter filter = new PinnedRowsFilter();
+    private PinRecordsPopupMenuHandler popupMenuHandler;
 
     public PinRecordsController(LogRecordTableModel baseModel, DataSource source) {
         model = new PinRecordsTableModel(baseModel);
@@ -44,6 +45,7 @@ public class PinRecordsController {
         rowSorter = new SortingDisableSorter<PinRecordsTableModel>(model);
         table.setRowSorter(rowSorter);
         rowSorter.setRowFilter(filter);
+        popupMenuHandler = new PinRecordsPopupMenuHandler(table, this);
     }
 
     public void pinRecord(int index) {

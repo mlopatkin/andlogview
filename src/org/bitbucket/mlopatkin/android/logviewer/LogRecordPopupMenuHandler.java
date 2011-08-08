@@ -57,7 +57,7 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                pinRecordsController.pinRecord(getIdAtPoint());
+                pinRecordsController.pinRecord(getRow());
             }
         });
         JPopupMenu popupMenu = getMenu();
@@ -75,10 +75,7 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
     }
 
     private LogRecord getLogRecordAtPoint() {
-        return ((LogRecordTableModel) getTable().getModel()).getRowData(getIdAtPoint());
+        return ((LogRecordTableModel) getTable().getModel()).getRowData(getRow());
     }
 
-    private int getIdAtPoint() {
-        return getTable().convertRowIndexToModel(getTargetRow());
-    }
 }

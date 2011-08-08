@@ -41,6 +41,10 @@ class TablePopupMenuHandler {
         return popupMenu;
     }
 
+    protected int getRow() {
+        return table.convertRowIndexToModel(getTargetRow());
+    }
+
     private Point poppedUpAt;
     private JTable table;
     private JPopupMenu popupMenu = new JPopupMenu();
