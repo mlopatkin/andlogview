@@ -64,6 +64,7 @@ public class SearchController {
         curRow = i;
         table.scrollRectToVisible(table.getCellRect(curRow, 0, false));
         table.getSelectionModel().setSelectionInterval(curRow, curRow);
+        table.requestFocusInWindow();
     }
 
 }
