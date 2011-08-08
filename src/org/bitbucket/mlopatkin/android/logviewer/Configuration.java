@@ -27,7 +27,9 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
@@ -120,7 +122,8 @@ public class Configuration {
 
     private void setUpDefaults() {
         // set up default logging configuration
-        BasicConfigurator.configure();
+        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout(
+                PatternLayout.TTCC_CONVERSION_PATTERN), ConsoleAppender.SYSTEM_ERR));
     }
 
     private Properties loadFromResources() {
@@ -129,15 +132,15 @@ public class Configuration {
             InputStream in = getClass().getResourceAsStream("/" + CONFIG_FILE_NAME);
             if (in == null) {
                 logger.error("Missing configuration file in resources - broken package?");
-                return null;
+                return result;
             }
             try {
                 result.load(in);
             } finally {
                 in.close();
             }
-        } catch (IOException ex) {
-            logger.error("Unexpected error when parsing properties", ex);
+        } catch (IOException e) {
+            logger.error("Unexpected error when parsing properties", e);
         }
         return result;
     }
@@ -153,8 +156,8 @@ public class Configuration {
                 } finally {
                     in.close();
                 }
-            } catch (IOException ex) {
-                logger.error("Unexpected error when parsing properties", ex);
+            } catch (IOException e) {
+                logger.error("Unexpected error when parsing properties", e);
             }
         }
         return result;
@@ -186,7 +189,7 @@ public class Configuration {
         try {
             return Integer.parseInt(widthValue.trim());
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            logger.warn("Incorrect number in " + key, e);
             return defaultValue;
         }
     }
@@ -198,8 +201,8 @@ public class Configuration {
         }
         try {
             return Color.decode(colorValue);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            logger.warn("Incorrect color format in " + key, e);
             return defaultValue;
         }
     }
