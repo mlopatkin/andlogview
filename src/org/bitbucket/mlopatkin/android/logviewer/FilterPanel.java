@@ -77,7 +77,9 @@ class FilterPanel extends JPanel {
     public void removeFilterButton(LogRecordFilter filter) {
         FilterButton button = buttons.get(filter);
         buttons.remove(filter);
-        remove(button);
+        if (button != null) {
+            remove(button);
+        }
         revalidate();
         repaint();
     }
