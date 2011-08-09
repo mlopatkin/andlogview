@@ -27,24 +27,26 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public class PinRecordsController {
 
-    private PinRecordsTableModel model;
+    private LogRecordTableModel model;
     private PinRecordsTableColumnModel columnsModel;
     private JTable table;
 
     private PinRecordsFrame frame;
-    private TableRowSorter<PinRecordsTableModel> rowSorter;
+    private TableRowSorter<LogRecordTableModel> rowSorter;
     private PinnedRowsFilter filter = new PinnedRowsFilter();
     private PinRecordsPopupMenuHandler popupMenuHandler;
 
-    public PinRecordsController(LogRecordTableModel baseModel, DataSource source) {
-        model = new PinRecordsTableModel(baseModel);
+    public PinRecordsController(LogRecordTableModel model, DataSource source) {
+        this.model = model;
+
         columnsModel = new PinRecordsTableColumnModel(source.getPidToProcessConverter());
 
         frame = new PinRecordsFrame(model, columnsModel);
         table = frame.getTable();
-        rowSorter = new SortingDisableSorter<PinRecordsTableModel>(model);
+        rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
         rowSorter.setRowFilter(filter);
+
         popupMenuHandler = new PinRecordsPopupMenuHandler(table, this);
     }
 
@@ -61,7 +63,7 @@ public class PinRecordsController {
         rowSorter.sort();
     }
 
-    private class PinnedRowsFilter extends RowFilter<PinRecordsTableModel, Integer> {
+    private class PinnedRowsFilter extends RowFilter<LogRecordTableModel, Integer> {
 
         private Set<Integer> pinnedRows = new HashSet<Integer>();
 
@@ -75,8 +77,8 @@ public class PinRecordsController {
 
         @Override
         public boolean include(
-                javax.swing.RowFilter.Entry<? extends PinRecordsTableModel, ? extends Integer> entry) {
-            LogRecord record = entry.getModel().getParent().getRowData(entry.getIdentifier());
+                javax.swing.RowFilter.Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
+            LogRecord record = entry.getModel().getRowData(entry.getIdentifier());
             return include(entry.getIdentifier(), record);
         }
 

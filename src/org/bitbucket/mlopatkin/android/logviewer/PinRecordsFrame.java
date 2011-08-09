@@ -29,7 +29,7 @@ public class PinRecordsFrame extends JFrame {
     private JPanel contentPane;
     private DecoratingRendererTable pinnedRecordsTable;
 
-    public PinRecordsFrame(PinRecordsTableModel model, PinRecordsTableColumnModel columnsModel) {
+    public PinRecordsFrame(LogRecordTableModel model, PinRecordsTableColumnModel columnsModel) {
         initialize();
         pinnedRecordsTable.setModel(model);
         pinnedRecordsTable.setColumnModel(columnsModel);

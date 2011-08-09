@@ -133,6 +133,5 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
                 removeFilter(oldFilter);
             }
         }
-
     }
 }

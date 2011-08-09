@@ -29,6 +29,6 @@ public class PinRecordsTableColumnModel extends LogRecordTableColumnModel {
     @Override
     protected void initColumnInfo() {
         super.initColumnInfo();
-        addColumnInfo("row", new ColumnInfo(PinRecordsTableModel.COLUMN_ID, "line", 30, 50));
+        addColumnInfo("row", new ColumnInfo(LogRecordTableModel.COLUMN_LINE, "line", 30, 50));
     }
 }
