@@ -34,12 +34,15 @@ public class DecoratingRendererTable extends JTable {
 
     public void addDecorator(DecoratingCellRenderer renderer) {
         decorators.add(renderer);
+        revalidate();
+        repaint();
     }
 
     public void removeDecorator(DecoratingCellRenderer renderer) {
         decorators.remove(renderer);
+        revalidate();
+        repaint();
     }
-
 
     @Override
     public TableCellRenderer getCellRenderer(int row, int column) {

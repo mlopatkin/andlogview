@@ -15,19 +15,18 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import javax.swing.JTable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public class SearchController {
 
-    private JTable table;
+    private DecoratingRendererTable table;
     private LogRecordTableModel model;
     private String text;
     private int curRow;
+    private TextHighlightCellRenderer renderer = new TextHighlightCellRenderer();
 
-    public SearchController(JTable table, LogRecordTableModel model) {
+    public SearchController(DecoratingRendererTable table, LogRecordTableModel model) {
         this.table = table;
         this.model = model;
     }
@@ -37,6 +36,12 @@ public class SearchController {
 
     public void startSearch(String text) {
         this.text = text;
+        if (StringUtils.isBlank(text)) {
+            table.removeDecorator(renderer);
+            return;
+        }
+        renderer.setTextToHighLight(text);
+        table.addDecorator(renderer);
         curRow = table.getSelectedRow();
         performSearch(MODE_FORWARD, curRow >= 0);
     }
