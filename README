@@ -20,5 +20,13 @@ Full-text search
 	3. press F3 to search next occurence
 Searching is performed in tags and messages starting from the first selected row. 
 
+Keys:
+	'/' - show search field
+	Enter - start searching
+	Esc - clear search results
+	F3 - find next
+	Ctrl+F3 - find prev
+	Ctrl+P - show pinned lines window
 Tips:
 	- right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
+	- lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it

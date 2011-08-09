@@ -1,20 +1,27 @@
+version 0.8
+	[+] Search back
+	[+] Highlight search results
+	[+] Pinned records window
+
 version 0.7
-	This version introduces full-text search.
+	[+] Full text search
 
 version 0.6
-	This version introduces name-by-pid tooltip in dumpstate files.
+	[+] Pid-to-name tooltip in dumpstate files
 
 version 0.5
-    This version allows filter editing. Minor bugfixes and refactors.
+	[+] Filter editing
     
 version 0.4
-	This version introduces hiding filter to remove unnecessary distracting lines information from the log.
+	[+] Hiding filter
 
 version 0.3
-	This version is able to parse dumpstate file passed via the command line.	
+	[+] Dumpstate parsing
 
 version 0.2
-	This version introduces filtering.
+	[+] Filtering
 
 version 0.1
-	This version shows logs from device via adb logcat, with coloring and autoscrolling.
+	[+] Display adb output
+	[+] Autoscroll
+	[+] Coloring
