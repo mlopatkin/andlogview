@@ -15,6 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +39,9 @@ public class PinRecordsController {
     private PinnedRowsFilter filter = new PinnedRowsFilter();
     private PinRecordsPopupMenuHandler popupMenuHandler;
 
-    public PinRecordsController(LogRecordTableModel model, DataSource source) {
+    @SuppressWarnings("unchecked")
+    public PinRecordsController(LogRecordTableModel model, DataSource source,
+            FilterController filterController) {
         this.model = model;
 
         columnsModel = new PinRecordsTableColumnModel(source.getPidToProcessConverter());
@@ -45,9 +50,19 @@ public class PinRecordsController {
         table = frame.getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
-        rowSorter.setRowFilter(filter);
+        LogRecordRowFilter showHideFilter = filterController.getRowFilter();
+
+        rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
 
         popupMenuHandler = new PinRecordsPopupMenuHandler(table, this);
+
+        filterController.addRefreshListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rowSorter.sort();
+            }
+        });
     }
 
     public void pinRecord(int index) {
@@ -90,4 +105,5 @@ public class PinRecordsController {
     public void showWindow() {
         frame.setVisible(true);
     }
+
 }

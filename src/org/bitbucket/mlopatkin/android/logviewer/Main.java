@@ -113,7 +113,7 @@ public class Main {
 
         scrollController = new AutoScrollController(logElements, recordsModel);
         filterController = new FilterController(logElements, recordsModel);
-        pinRecordsController = new PinRecordsController(recordsModel, source);
+        pinRecordsController = new PinRecordsController(recordsModel, source, filterController);
         popupMenuHandler = new LogRecordPopupMenuHandler(logElements, filterController,
                 pinRecordsController);
         searchController = new SearchController(logElements, recordsModel);

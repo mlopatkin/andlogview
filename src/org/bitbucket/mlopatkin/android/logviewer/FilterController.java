@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.ComposeFilter;
@@ -35,6 +39,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     private LogRecordRowFilter rowFilter;
 
     private FilterChain filters = new FilterChain();
+    private List<ActionListener> refreshActionListeners = new ArrayList<ActionListener>();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
@@ -52,6 +57,9 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         if (table.getSelectedRow() != -1) {
             table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(), table
                     .getSelectedColumn(), false));
+        }
+        for (ActionListener listener : refreshActionListeners) {
+            listener.actionPerformed(null);
         }
     }
 
@@ -133,5 +141,17 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
                 removeFilter(oldFilter);
             }
         }
+    }
+
+    LogRecordRowFilter getRowFilter() {
+        return rowFilter;
+    }
+
+    public void addRefreshListener(ActionListener listener) {
+        refreshActionListeners.add(listener);
+    }
+
+    public void removeRefreshListener(ActionListener listener) {
+        refreshActionListeners.remove(listener);
     }
 }
