@@ -160,6 +160,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 hideSearchField();
                 instantSearchTextField.setText(null);
+                searchController.startSearch(null);
             }
         });
 
