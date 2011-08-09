@@ -30,3 +30,4 @@ Keys:
 Tips:
 	- right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
 	- lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it
+	- name of the process is shown in PID tooltip in dumpstate mode
