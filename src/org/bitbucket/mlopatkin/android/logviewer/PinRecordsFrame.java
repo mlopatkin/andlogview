@@ -16,6 +16,9 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,15 +27,22 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.log4j.Logger;
+
 public class PinRecordsFrame extends JFrame {
+
+    private static final Logger logger = Logger.getLogger(PinRecordsFrame.class);
 
     private JPanel contentPane;
     private DecoratingRendererTable pinnedRecordsTable;
+    private PinRecordsController controller;
 
-    public PinRecordsFrame(LogRecordTableModel model, PinRecordsTableColumnModel columnsModel) {
+    public PinRecordsFrame(LogRecordTableModel model, PinRecordsTableColumnModel columnsModel,
+            PinRecordsController controller) {
         initialize();
         pinnedRecordsTable.setModel(model);
         pinnedRecordsTable.setColumnModel(columnsModel);
+        this.controller = controller;
     }
 
     private void initialize() {
@@ -52,10 +62,26 @@ public class PinRecordsFrame extends JFrame {
         pinnedRecordsTable.setFillsViewportHeight(true);
         pinnedRecordsTable.setShowGrid(false);
         pinnedRecordsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        pinnedRecordsTable.addMouseListener(new LineDoubleClickListener());
         scrollPane.setViewportView(pinnedRecordsTable);
     }
 
     JTable getTable() {
         return pinnedRecordsTable;
+    }
+
+    private class LineDoubleClickListener extends MouseAdapter implements MouseListener {
+
+        private static final int DOUBLE_CLICK_COUNT = 2;
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
+                int row = pinnedRecordsTable.convertRowIndexToModel(pinnedRecordsTable.rowAtPoint(e
+                        .getPoint()));
+                controller.activateRow(row);
+            }
+        }
+
     }
 }

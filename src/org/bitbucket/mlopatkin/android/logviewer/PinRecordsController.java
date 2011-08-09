@@ -32,6 +32,7 @@ public class PinRecordsController {
 
     private LogRecordTableModel model;
     private PinRecordsTableColumnModel columnsModel;
+    private JTable mainTable;
     private JTable table;
 
     private PinRecordsFrame frame;
@@ -40,13 +41,14 @@ public class PinRecordsController {
     private PinRecordsPopupMenuHandler popupMenuHandler;
 
     @SuppressWarnings("unchecked")
-    public PinRecordsController(LogRecordTableModel model, DataSource source,
+    public PinRecordsController(JTable mainTable, LogRecordTableModel model, DataSource source,
             FilterController filterController) {
         this.model = model;
+        this.mainTable = mainTable;
 
         columnsModel = new PinRecordsTableColumnModel(source.getPidToProcessConverter());
 
-        frame = new PinRecordsFrame(model, columnsModel);
+        frame = new PinRecordsFrame(model, columnsModel, this);
         table = frame.getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
@@ -104,6 +106,13 @@ public class PinRecordsController {
 
     public void showWindow() {
         frame.setVisible(true);
+    }
+
+    public void activateRow(int row) {
+        int rowTable = mainTable.convertRowIndexToView(row);
+        mainTable.getSelectionModel().setSelectionInterval(rowTable, rowTable);
+        mainTable.scrollRectToVisible(mainTable.getCellRect(rowTable,
+                mainTable.getSelectedColumn(), false));
     }
 
 }
