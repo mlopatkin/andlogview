@@ -137,7 +137,6 @@ public class Main {
         bindKeyGlobal(KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("show search");
                 showSearchField();
             }
         });
@@ -145,7 +144,6 @@ public class Main {
         bindKeyGlobal(KEY_FIND_NEXT, ACTION_FIND_NEXT, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("find next");
                 searchController.searchNext();
             }
         });
@@ -153,7 +151,6 @@ public class Main {
         bindKeyGlobal(KEY_FIND_PREV, ACTION_FIND_PREV, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("search prev");
                 searchController.searchPrev();
             }
         });
@@ -161,7 +158,6 @@ public class Main {
         bindKeyGlobal(KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("hide");
                 hideSearchField();
                 instantSearchTextField.setText(null);
             }
@@ -171,7 +167,6 @@ public class Main {
                 ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        logger.debug("hide & start");
                         hideSearchField();
                         searchController.startSearch(instantSearchTextField.getText());
                     }
@@ -204,6 +199,7 @@ public class Main {
 
     private void showSearchField() {
         instantSearchTextField.setVisible(true);
+        instantSearchTextField.selectAll();
         instantSearchTextField.requestFocusInWindow();
         panel.revalidate();
         panel.repaint();
