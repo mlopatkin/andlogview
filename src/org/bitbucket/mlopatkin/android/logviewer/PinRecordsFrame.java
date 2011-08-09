@@ -77,9 +77,11 @@ public class PinRecordsFrame extends JFrame {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
-                int row = pinnedRecordsTable.convertRowIndexToModel(pinnedRecordsTable.rowAtPoint(e
-                        .getPoint()));
-                controller.activateRow(row);
+                int rowView = pinnedRecordsTable.rowAtPoint(e.getPoint());
+                if (rowView >= 0) {
+                    int row = pinnedRecordsTable.convertRowIndexToModel(rowView);
+                    controller.activateRow(row);
+                }
             }
         }
 
