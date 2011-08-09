@@ -41,8 +41,8 @@ public class TextHighlightCellRenderer implements DecoratingCellRenderer {
     private String highlightMatches(String value) {
         StringBuilder result = new StringBuilder(value);
         int pos = result.indexOf(textToSearch);
-        while (pos != -1) {
-            String val = result.substring(pos, textToSearch.length());
+        while (pos != -1 && pos < result.length()) {
+            String val = result.substring(pos, pos + textToSearch.length());
             result.replace(pos, pos + textToSearch.length(), spanBegin + val + spanEnd);
             pos += val.length() + spanBegin.length() + spanEnd.length();
             pos = result.indexOf(textToSearch, pos);
