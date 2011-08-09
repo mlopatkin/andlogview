@@ -172,6 +172,12 @@ public class Main {
                     }
                 });
 
+        bindKeyGlobal(KEY_SHOW_PINNED, ACTION_SHOW_PINNED, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pinRecordsController.showWindow();
+            }
+        });
     }
 
     private static void bindKeyFocused(JComponent component, String key, String actionKey,
@@ -191,6 +197,7 @@ public class Main {
     private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
     private static final String ACTION_FIND_NEXT = "find_next";
     private static final String ACTION_FIND_PREV = "find_prev";
+
     private static final String KEY_HIDE_AND_START_SEARCH = "ENTER";
     private static final String KEY_HIDE = "ESCAPE";
     private static final String KEY_SHOW_SEARCH_FIELD = "SLASH";
@@ -211,4 +218,7 @@ public class Main {
         panel.revalidate();
         panel.repaint();
     }
+
+    private static final String ACTION_SHOW_PINNED = "show_pinned";
+    private static final String KEY_SHOW_PINNED = "control P";
 }

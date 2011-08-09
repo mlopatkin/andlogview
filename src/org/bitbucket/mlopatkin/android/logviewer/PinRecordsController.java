@@ -84,4 +84,8 @@ public class PinRecordsController {
             return pinnedRows.contains(row);
         }
     }
+
+    public void showWindow() {
+        frame.setVisible(true);
+    }
 }
