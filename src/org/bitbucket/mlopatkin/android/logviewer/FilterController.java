@@ -154,4 +154,14 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     public void removeRefreshListener(ActionListener listener) {
         refreshActionListeners.remove(listener);
     }
+
+    void enableFilter(FilteringMode mode, LogRecordFilter filter) {
+        filters.addFilter(mode, filter);
+        onFilteringStateUpdated();
+    }
+
+    void disableFilter(FilteringMode mode, LogRecordFilter filter) {
+        filters.removeFilter(filter);
+        onFilteringStateUpdated();
+    }
 }
