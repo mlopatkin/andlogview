@@ -26,12 +26,17 @@ public class LogRecord {
         }
     }
 
+    public enum Kind {
+        UNKNOWN, MAIN, SYSTEM, RADIO, EVENTS
+    }
+
     private Date time;
     private int pid;
     private int tid;
     private Priority priority;
     private String tag;
     private String message;
+    private Kind kind = Kind.UNKNOWN;
 
     public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message) {
         this.time = time;
@@ -40,6 +45,12 @@ public class LogRecord {
         this.priority = priority;
         this.tag = tag;
         this.message = message;
+    }
+
+    public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message,
+            Kind kind) {
+        this(time, pid, tid, priority, tag, message);
+        this.kind = kind;
     }
 
     public Date getTime() {
@@ -64,6 +75,10 @@ public class LogRecord {
 
     public String getMessage() {
         return message;
+    }
+
+    public Kind getKind() {
+        return kind;
     }
 
     @Override
