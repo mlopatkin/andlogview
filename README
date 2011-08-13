@@ -21,7 +21,7 @@ Full-text search
 Searching is performed in tags and messages starting from the first selected row. 
 
 Keys:
-	'/' - show search field
+	Ctrl+F - show search field
 	Enter - start searching
 	Esc - clear search results
 	F3 - find next

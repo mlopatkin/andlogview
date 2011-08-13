@@ -145,14 +145,22 @@ public class Main {
         bindKeyGlobal(KEY_FIND_NEXT, ACTION_FIND_NEXT, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchController.searchNext();
+                if (searchController.isActive()) {
+                    searchController.searchNext();
+                } else {
+                    showSearchField();
+                }
             }
         });
 
         bindKeyGlobal(KEY_FIND_PREV, ACTION_FIND_PREV, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchController.searchPrev();
+                if (searchController.isActive()) {
+                    searchController.searchPrev();
+                } else {
+                    showSearchField();
+                }
             }
         });
 
@@ -202,7 +210,7 @@ public class Main {
 
     private static final String KEY_HIDE_AND_START_SEARCH = "ENTER";
     private static final String KEY_HIDE = "ESCAPE";
-    private static final String KEY_SHOW_SEARCH_FIELD = "SLASH";
+    private static final String KEY_SHOW_SEARCH_FIELD = "control F";
     private static final String KEY_FIND_NEXT = "F3";
     private static final String KEY_FIND_PREV = "control F3";
 

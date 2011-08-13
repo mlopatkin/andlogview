@@ -83,4 +83,7 @@ public class SearchController {
         table.requestFocusInWindow();
     }
 
+    public boolean isActive() {
+        return !StringUtils.isBlank(text);
+    }
 }
