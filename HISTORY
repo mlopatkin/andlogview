@@ -1,3 +1,8 @@
+version 0.9
+    [+] Disabling filters
+    [*] Search hotkey changed to Ctrl+F
+    [*] Minor bugfix
+    
 version 0.8
 	[+] Search back
 	[+] Highlight search results
