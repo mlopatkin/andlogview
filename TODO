@@ -1,9 +1,10 @@
 TODO:
- - Toggle filter (temporary disable)
+ - Show message if text not found
+ - Case-insensitive search
  - Filtering results to index window (like pinned records)
  - Different colors for different filters
  - Implement filter based on log type (main, radio, etc)
  - Highlight under selected lines
  - ddmlib integration 
  - Parse adb brief output in dumpstate
- - Copy from records' table
+ - Copy from records' table 

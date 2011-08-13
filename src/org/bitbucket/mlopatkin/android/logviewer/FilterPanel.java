@@ -27,7 +27,10 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 
@@ -70,6 +73,7 @@ class FilterPanel extends JPanel {
     public void addFilterButton(FilteringMode mode, LogRecordFilter filter) {
         FilterButton button = new FilterButton(mode, filter);
         add(button);
+        menuHandler.addPopup(button);
         buttons.put(filter, button);
         validate();
     }
@@ -92,32 +96,76 @@ class FilterPanel extends JPanel {
             getResource("/icons/system-search.png"));
     private static final ImageIcon ADD_ICON = new ImageIcon(getResource("/icons/list-add.png"));
 
-    private class FilterButton extends JButton implements ActionListener {
+    private class FilterButton extends JToggleButton implements ActionListener {
 
-        private final LogRecordFilter filter;
-        private final FilteringMode mode;
+        final LogRecordFilter filter;
+        final FilteringMode mode;
 
         public FilterButton(FilteringMode mode, LogRecordFilter filter) {
-            super(FILTER_ICON);
+            super(FILTER_ICON, true);
             this.filter = filter;
             this.mode = mode;
             addActionListener(this);
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getButton() == MouseEvent.BUTTON3) {
-                        controller.removeFilter(FilterButton.this.filter);
-                    }
-                }
-            });
             setToolTipText("<html>" + mode.getDescription() + "<br>" + filter.toString()
-                    + "<br><i>Right-click to remove</i></html>");
+                    + "</html>");
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            controller.startEditFilterDialog(mode, filter);
+            // controller.startEditFilterDialog(mode, filter);
+            if (isSelected()) {
+                controller.enableFilter(mode, filter);
+            } else {
+                controller.disableFilter(mode, filter);
+            }
+        }
+    }
+
+    private class PopupMenuHandler {
+        private JPopupMenu menu = new JPopupMenu();
+        private JMenuItem editItem = new JMenuItem("Edit filter");
+        private JMenuItem removeItem = new JMenuItem("Remove filter");
+        private FilterButton activeButton;
+
+        PopupMenuHandler() {
+            editItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    controller.startEditFilterDialog(activeButton.mode, activeButton.filter);
+                }
+            });
+
+            removeItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    controller.removeFilter(activeButton.filter);
+                }
+            });
+            menu.add(editItem);
+            menu.add(removeItem);
         }
 
+        void addPopup(final FilterButton button) {
+            button.addMouseListener(new MouseAdapter() {
+                public void mousePressed(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        showMenu(e);
+                    }
+                }
+
+                public void mouseReleased(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        showMenu(e);
+                    }
+                }
+
+                private void showMenu(MouseEvent e) {
+                    activeButton = button;
+                    menu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            });
+        }
     }
+
+    private PopupMenuHandler menuHandler = new PopupMenuHandler();
 }
