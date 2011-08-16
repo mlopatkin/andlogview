@@ -17,8 +17,6 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.awt.EventQueue;
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -85,7 +83,7 @@ public class AdbDataSource implements DataSource {
 
     @Override
     public void close() {
-        for (AdbLogRecordStream stream : streams) {
+        for (AdbBuffer stream : buffers) {
             stream.close();
         }
         readingThreadsPool.shutdown();
@@ -151,79 +149,64 @@ public class AdbDataSource implements DataSource {
     private ExecutorService readingThreadsPool = Executors.newFixedThreadPool(LogRecord.Kind
             .values().length);
 
-    private Set<AdbLogRecordStream> streams = new HashSet<AdbLogRecordStream>();
+    private Set<AdbBuffer> buffers = new HashSet<AdbBuffer>();
 
     private void setUpStream(LogRecord.Kind kind) {
         String bufferName = Configuration.adb.bufferName(kind);
         if (bufferName == null) {
             logger.warn("This kind of log isn't supported by adb source: " + kind);
         }
-        final AdbLogRecordStream stream = new AdbLogRecordStream(kind);
+
         final String commandLine = createLogcatCommandLine(bufferName);
-        readingThreadsPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    device.executeShellCommand(commandLine, stream, 0);
-                } catch (TimeoutException e) {
-                    logger.warn("Connection to adb failed due to timeout", e);
-                } catch (AdbCommandRejectedException e) {
-                    logger.warn("Adb rejected command", e);
-                } catch (ShellCommandUnresponsiveException e) {
-                    logger.warn("Shell command unresponsive", e);
-                } catch (IOException e) {
-                    logger.warn("IO exception", e);
-                }
-            }
-        });
-        streams.add(stream);
+        final AdbBuffer buffer = new AdbBuffer(kind, commandLine);
+        buffers.add(buffer);
 
     }
 
-    private class AdbLogRecordStream implements IShellOutputReceiver {
-        private PipedOutputStream out = new PipedOutputStream();
-        private LogRecordStream parser;
+    private class AdbShellCommand implements Runnable {
+
+        private String command;
+        private IShellOutputReceiver receiver;
+        private int timeOut = 0;
+
+        AdbShellCommand(String commandLine, IShellOutputReceiver outputReceiver) {
+            this.command = commandLine;
+            this.receiver = outputReceiver;
+        }
+
+        @Override
+        public void run() {
+            try {
+                device.executeShellCommand(command, receiver, timeOut);
+            } catch (TimeoutException e) {
+                logger.warn("Connection to adb failed due to timeout", e);
+            } catch (AdbCommandRejectedException e) {
+                logger.warn("Adb rejected command", e);
+            } catch (ShellCommandUnresponsiveException e) {
+                logger.warn("Shell command unresponsive", e);
+            } catch (IOException e) {
+                logger.warn("IO exception", e);
+            }
+        }
+    }
+
+    private class AdbBuffer {
+        private ShellInputStream shellInput = new ShellInputStream();
+        private LogRecordStream in;
         private LogRecord.Kind kind;
+        private PollingThread pollingThread;
 
-        public AdbLogRecordStream(LogRecord.Kind kind) {
+        public AdbBuffer(LogRecord.Kind kind, String commandLine) {
             this.kind = kind;
-            try {
-                PipedInputStream in = new PipedInputStream(out);
-                parser = new LogRecordStream(in);
-                new PollingThread().start();
-            } catch (IOException e) {
-                logger.error("Unexpected IO exception", e);
-            }
+            in = new LogRecordStream(shellInput);
+            readingThreadsPool.execute(new AdbShellCommand(commandLine, shellInput));
+            pollingThread = new PollingThread();
+            pollingThread.start();
         }
 
-        @Override
-        public void addOutput(byte[] data, int offset, int length) {
-            try {
-                out.write(data, offset, length);
-            } catch (IOException e) {
-                logger.error("Unexpected IO exception", e);
-            }
-        }
-
-        @Override
-        public void flush() {
-            try {
-                out.close();
-            } catch (IOException e) {
-                logger.error("Unexpected IO exception", e);
-            }
-
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return closed;
-        }
-
-        private boolean closed = false;
-
-        public void close() {
-            closed = true;
+        void close() {
+            shellInput.close();
+            pollingThread.close();
         }
 
         private class PollingThread extends Thread {
@@ -235,11 +218,17 @@ public class AdbDataSource implements DataSource {
             @Override
             public void run() {
                 waitForListener();
-                LogRecord record = parser.next(kind);
+                LogRecord record = in.next(kind);
                 while (!closed && record != null) {
                     pushRecord(record);
-                    record = parser.next(kind);
+                    record = in.next(kind);
                 }
+            }
+
+            private boolean closed = false;
+
+            public void close() {
+                closed = true;
             }
         }
 
