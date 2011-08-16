@@ -107,6 +107,10 @@ public class Configuration {
         public static String bufferName(Kind buffer) {
             return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
         }
+
+        public static String psCommandLine() {
+            return "ps -P";
+        }
     }
 
     public static class dump {

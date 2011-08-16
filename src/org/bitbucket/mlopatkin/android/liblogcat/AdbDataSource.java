@@ -16,12 +16,17 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.awt.EventQueue;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
@@ -42,6 +47,7 @@ public class AdbDataSource implements DataSource {
     private LogRecordDataSourceListener listener;
 
     private IDevice device;
+    private AdbPidToProcessConverter converter;
 
     public AdbDataSource() {
         AndroidDebugBridge.addDeviceChangeListener(changeListener);
@@ -73,7 +79,7 @@ public class AdbDataSource implements DataSource {
                 setUpStream(kind);
             }
         }
-
+        converter = new AdbPidToProcessConverter();
     }
 
     public AdbDataSource(final IDevice device) {
@@ -86,13 +92,11 @@ public class AdbDataSource implements DataSource {
         for (AdbBuffer stream : buffers) {
             stream.close();
         }
-        readingThreadsPool.shutdown();
     }
 
     @Override
     public PidToProcessConverter getPidToProcessConverter() {
-        // TODO Auto-generated method stub
-        return null;
+        return converter;
     }
 
     @Override
@@ -146,9 +150,6 @@ public class AdbDataSource implements DataSource {
         return b.toString();
     }
 
-    private ExecutorService readingThreadsPool = Executors.newFixedThreadPool(LogRecord.Kind
-            .values().length);
-
     private Set<AdbBuffer> buffers = new HashSet<AdbBuffer>();
 
     private void setUpStream(LogRecord.Kind kind) {
@@ -195,12 +196,15 @@ public class AdbDataSource implements DataSource {
         private LogRecordStream in;
         private LogRecord.Kind kind;
         private PollingThread pollingThread;
+        private Thread shellExecutor;
 
         public AdbBuffer(LogRecord.Kind kind, String commandLine) {
             this.kind = kind;
             in = new LogRecordStream(shellInput);
-            readingThreadsPool.execute(new AdbShellCommand(commandLine, shellInput));
+            shellExecutor = new Thread(new AdbShellCommand(commandLine, shellInput),
+                    "Shell-reader-" + kind);
             pollingThread = new PollingThread();
+            shellExecutor.start();
             pollingThread.start();
         }
 
@@ -238,4 +242,66 @@ public class AdbDataSource implements DataSource {
     public EnumSet<Kind> getAvailableBuffers() {
         return EnumSet.of(Kind.MAIN, Kind.SYSTEM, Kind.RADIO, Kind.EVENTS);
     }
+
+    private ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
+    private ExecutorService shellCommandExecutor = Executors.newSingleThreadExecutor();
+
+    private class AdbPidToProcessConverter extends PidToProcessConverter {
+
+        private final String PS_COMMAND_LINE = Configuration.adb.psCommandLine();
+
+        @Override
+        public synchronized String getProcessName(int pid) {
+            String name = super.getProcessName(pid);
+            if (name == null) {
+                scheduleUpdate();
+            }
+            return name;
+        }
+
+        private Future<?> result;
+
+        private void scheduleUpdate() {
+            if (result == null || result.isDone()) {
+                ShellInputStream in = new ShellInputStream();
+                BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
+                AdbShellCommand command = new AdbShellCommand(PS_COMMAND_LINE, in);
+                result = backgroundUpdater.submit(updateTask);
+                shellCommandExecutor.execute(command);
+            }
+        }
+
+        private class BackgroundUpdateTask implements Runnable {
+
+            private BufferedReader in;
+
+            BackgroundUpdateTask(InputStream in) {
+                this.in = new BufferedReader(new InputStreamReader(in));
+            }
+
+            @Override
+            public void run() {
+                try {
+                    String line = in.readLine();
+
+                    if (!ProcessListParser.isProcessListHeader(line)) {
+                        return;
+                    }
+                    line = in.readLine();
+                    while (line != null) {
+                        Matcher m = ProcessListParser.parseProcessListLine(line);
+                        String processName = ProcessListParser.getProcessName(m);
+                        int pid = ProcessListParser.getPid(m);
+                        put(pid, processName);
+                        line = in.readLine();
+                    }
+                } catch (IOException e) {
+                    logger.error("Unexpected IO exception", e);
+                }
+
+            }
+
+        }
+    }
+
 }
