@@ -115,6 +115,8 @@ public class Main {
         logElements.setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), source
                 .getPidToProcessConverter()));
 
+        logElements.setTransferHandler(new LogRecordsTransferHandler());
+
         scrollPane = new JScrollPane(logElements);
         frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
