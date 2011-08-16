@@ -19,6 +19,8 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,6 +53,9 @@ public class AdbDataSource implements DataSource {
 
     @Override
     public void close() {
+        for (AdbLogRecordStream stream : streams) {
+            stream.close();
+        }
         readingThreadsPool.shutdown();
     }
 
@@ -114,6 +119,8 @@ public class AdbDataSource implements DataSource {
     private ExecutorService readingThreadsPool = Executors.newFixedThreadPool(LogRecord.Kind
             .values().length);
 
+    private Set<AdbLogRecordStream> streams = new HashSet<AdbLogRecordStream>();
+
     private void setUpStream(LogRecord.Kind kind) {
         String bufferName = Configuration.adb.bufferName(kind);
         if (bufferName == null) {
@@ -137,6 +144,7 @@ public class AdbDataSource implements DataSource {
                 }
             }
         });
+        streams.add(stream);
 
     }
 
@@ -177,7 +185,13 @@ public class AdbDataSource implements DataSource {
 
         @Override
         public boolean isCancelled() {
-            return false;
+            return closed;
+        }
+
+        private boolean closed = false;
+
+        public void close() {
+            closed = true;
         }
 
         private class PollingThread extends Thread {
@@ -190,11 +204,12 @@ public class AdbDataSource implements DataSource {
             public void run() {
                 waitForListener();
                 LogRecord record = parser.next(kind);
-                while (record != null) {
+                while (!closed && record != null) {
                     pushRecord(record);
                     record = parser.next(kind);
                 }
             }
         }
+
     }
 }
