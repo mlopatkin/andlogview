@@ -21,15 +21,20 @@ import java.util.List;
 
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ComposeFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.LogKindFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MessageFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 
 class FilterController implements CreateFilterDialog.DialogResultReceiver,
         EditFilterDialog.DialogResultReceiver {
+
+    private static final Logger logger = Logger.getLogger(FilterController.class);
 
     private DecoratingRendererTable table;
     private LogRecordTableModel tableModel;
@@ -41,10 +46,16 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     private FilterChain filters = new FilterChain();
     private List<ActionListener> refreshActionListeners = new ArrayList<ActionListener>();
 
+    // this filter acts as hiding filter, initially empty, but hides unselected
+    // buffers
+    private LogKindFilter kindFilter = new LogKindFilter();
+
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
         this.tableModel = tableModel;
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(tableModel);
+        filters.addFilter(FilteringMode.HIDE, kindFilter);
+        initKindFilter();
         table.setRowSorter(rowSorter);
         rowFilter = new LogRecordRowFilter(filters);
         rowSorter.setRowFilter(rowFilter);
@@ -163,5 +174,18 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     void disableFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.removeFilter(filter);
         onFilteringStateUpdated();
+    }
+
+    public void setBufferEnabled(Kind kind, boolean selected) {
+        kindFilter.setKindEnabled(kind, !selected);
+        onFilteringStateUpdated();
+    }
+
+    private void initKindFilter() {
+        for (Kind kind : Kind.values()) {
+            kindFilter.setKindEnabled(kind, !Configuration.ui.bufferEnabled(kind));
+            logger.debug(String.format("KindFilter: %s %s", kind, !Configuration.ui
+                    .bufferEnabled(kind)));
+        }
     }
 }

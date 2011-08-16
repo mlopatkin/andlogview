@@ -15,10 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.EnumSet;
+
 public interface DataSource {
     void setLogRecordListener(LogRecordDataSourceListener listener);
 
     PidToProcessConverter getPidToProcessConverter();
 
     void close();
+
+    EnumSet<LogRecord.Kind> getAvailableBuffers();
 }

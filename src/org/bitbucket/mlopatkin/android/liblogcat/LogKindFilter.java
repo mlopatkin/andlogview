@@ -15,17 +15,24 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.EnumSet;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+
 public class LogKindFilter implements LogRecordFilter {
 
-    private LogRecord.Kind kind;
-
-    public LogKindFilter(LogRecord.Kind kind) {
-        this.kind = kind;
-    }
+    private EnumSet<Kind> kinds = EnumSet.noneOf(Kind.class);
 
     @Override
     public boolean include(LogRecord record) {
-        return record.getKind() == kind || record.getKind() == LogRecord.Kind.UNKNOWN;
+        return kinds.contains(record.getKind());
     }
 
+    public void setKindEnabled(Kind kind, boolean enabled) {
+        if (enabled) {
+            kinds.add(kind);
+        } else {
+            kinds.remove(kind);
+        }
+    }
 }

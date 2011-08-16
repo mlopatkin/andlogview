@@ -16,6 +16,7 @@
     <path id="libraries">
         <pathelement path="lib/commons-lang3-3.0.jar" />
         <pathelement path="lib/log4j-1.2.16.jar" />
+        <pathelement path="lib/ddmlib.jar" />
     </path>
 
     <target name="all" depends="make-jar" />

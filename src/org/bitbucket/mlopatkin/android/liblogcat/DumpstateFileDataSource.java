@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
@@ -38,9 +40,9 @@ public class DumpstateFileDataSource implements DataSource {
     public DumpstateFileDataSource(File file) {
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
-            readLog(in, "main");
-            readLog(in, "event");
-            readLog(in, "radio");
+            readLog(in, LogRecord.Kind.MAIN);
+            readLog(in, LogRecord.Kind.EVENTS);
+            readLog(in, LogRecord.Kind.RADIO);
             readProcessesList(in);
             in.close();
         } catch (FileNotFoundException e) {
@@ -51,16 +53,18 @@ public class DumpstateFileDataSource implements DataSource {
         Collections.sort(source, sortByTimeAscComparator);
     }
 
-    private void readLog(BufferedReader in, String bufferName) throws IOException {
-        if (!Configuration.dump.bufferEnabled(bufferName)) {
+    private void readLog(BufferedReader in, LogRecord.Kind kind) throws IOException {
+        String bufferName = Configuration.dump.bufferHeader(kind);
+        if (bufferName == null) {
+            logger.warn("This kind of log isn't supported for dumpstate files:" + kind);
             return;
         }
         scanForLogBegin(in, bufferName);
         LogRecordStream stream = new DumpstateRecordStream(in);
-        LogRecord record = stream.next();
+        LogRecord record = stream.next(kind);
         while (record != null) {
             source.add(record);
-            record = stream.next();
+            record = stream.next(kind);
         }
     }
 
@@ -135,5 +139,10 @@ public class DumpstateFileDataSource implements DataSource {
             listener.onNewRecord(record);
         }
         source = null;
+    }
+
+    @Override
+    public EnumSet<Kind> getAvailableBuffers() {
+        return EnumSet.of(Kind.MAIN, Kind.RADIO, Kind.EVENTS);
     }
 }

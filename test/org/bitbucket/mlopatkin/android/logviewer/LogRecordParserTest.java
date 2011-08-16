@@ -22,6 +22,7 @@ import java.util.Calendar;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.junit.Test;
 
 public class LogRecordParserTest {
@@ -38,7 +39,7 @@ public class LogRecordParserTest {
         final String tag = "RPC";
         final String message = "3000008c:00050000 dispatching RPC call (XID 1866, xdr 0x3357b8) for callback client 3100008c:00050001.";
 
-        LogRecord record = LogRecordParser.createThreadtimeRecord(LogRecordParser
+        LogRecord record = LogRecordParser.createThreadtimeRecord(Kind.UNKNOWN, LogRecordParser
                 .parseLogRecordLine(src));
 
         assertEquals(calendar.getTime(), record.getTime());

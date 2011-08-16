@@ -35,6 +35,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DumpstateFileDataSource;
 
+import com.android.ddmlib.AndroidDebugBridge;
+
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
@@ -74,10 +76,12 @@ public class Main {
      * Create the application.
      */
     public Main(String[] args) {
+        Configuration.forceInit();
+
         if (args.length > 0) {
             source = new DumpstateFileDataSource(new File(args[0]));
         } else {
-            source = new AdbDataSource();
+            source = AdbDataSource.createAdbDataSource();
         }
         initialize();
         source.setLogRecordListener(scrollController);
@@ -86,6 +90,9 @@ public class Main {
             @Override
             public void run() {
                 source.close();
+                if (AndroidDebugBridge.getBridge() != null) {
+                    AndroidDebugBridge.terminate();
+                }
             }
         });
     }
@@ -132,6 +139,9 @@ public class Main {
 
         JPanel filterPanel = new FilterPanel(filterController);
         panel.add(filterPanel);
+
+        KindFilterMenu menu = new KindFilterMenu(source.getAvailableBuffers(), filterController);
+        UiHelper.addPopupMenu(filterPanel, menu);
 
         setupSearchButtons();
     }

@@ -21,7 +21,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 
+import org.apache.log4j.Logger;
+
 public class LogRecordStream {
+
+    private static final Logger logger = Logger.getLogger(LogRecordStream.class);
 
     private BufferedReader in;
 
@@ -33,7 +37,7 @@ public class LogRecordStream {
         this.in = in;
     }
 
-    public LogRecord next() {
+    public LogRecord next(LogRecord.Kind kind) {
         try {
             String line = in.readLine();
             Matcher result = null;
@@ -46,7 +50,7 @@ public class LogRecordStream {
                 line = in.readLine();
             }
             if (result != null) {
-                return LogRecordParser.createThreadtimeRecord(result);
+                return LogRecordParser.createThreadtimeRecord(kind, result);
             }
         } catch (IOException e) {
             e.printStackTrace();
