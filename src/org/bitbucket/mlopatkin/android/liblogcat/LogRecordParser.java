@@ -61,9 +61,6 @@ public class LogRecordParser {
             return new LogRecord(dateTime, pid, tid, priority, tag, message, kind);
         } catch (ParseException e) {
             return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
-        } catch (NumberFormatException e) {
-            logger.error("Parse error '" + m.group(1) + "'", e);
-            return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group(1));
         }
     }
 

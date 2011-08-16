@@ -43,7 +43,9 @@ public class AdbDataSource implements DataSource {
     public AdbDataSource(final IDevice device) {
         this.device = device;
         for (LogRecord.Kind kind : LogRecord.Kind.values()) {
-            setUpStream(kind);
+            if (kind != LogRecord.Kind.UNKNOWN) {
+                setUpStream(kind);
+            }
         }
     }
 
@@ -123,7 +125,7 @@ public class AdbDataSource implements DataSource {
             @Override
             public void run() {
                 try {
-                    device.executeShellCommand(commandLine, stream);
+                    device.executeShellCommand(commandLine, stream, 0);
                 } catch (TimeoutException e) {
                     logger.warn("Connection to adb failed due to timeout", e);
                 } catch (AdbCommandRejectedException e) {
