@@ -74,10 +74,12 @@ public class Main {
      * Create the application.
      */
     public Main(String[] args) {
+        Configuration.forceInit();
+
         if (args.length > 0) {
             source = new DumpstateFileDataSource(new File(args[0]));
         } else {
-            source = new AdbDataSource();
+            source = AdbDataSource.createAdbDataSource();
         }
         initialize();
         source.setLogRecordListener(scrollController);

@@ -7,6 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="lib/ddmlib.jar" sourcepath="/ddmlib"/>
+	<classpathentry kind="lib" path="lib/ddmlib.jar" sourcepath="/ddmlib/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

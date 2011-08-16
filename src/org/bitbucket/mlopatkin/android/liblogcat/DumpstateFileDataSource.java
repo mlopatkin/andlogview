@@ -38,9 +38,9 @@ public class DumpstateFileDataSource implements DataSource {
     public DumpstateFileDataSource(File file) {
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
-            readLog(in, "main");
-            readLog(in, "event");
-            readLog(in, "radio");
+            readLog(in, LogRecord.Kind.MAIN);
+            readLog(in, LogRecord.Kind.EVENTS);
+            readLog(in, LogRecord.Kind.RADIO);
             readProcessesList(in);
             in.close();
         } catch (FileNotFoundException e) {
@@ -51,16 +51,18 @@ public class DumpstateFileDataSource implements DataSource {
         Collections.sort(source, sortByTimeAscComparator);
     }
 
-    private void readLog(BufferedReader in, String bufferName) throws IOException {
-        if (!Configuration.dump.bufferEnabled(bufferName)) {
+    private void readLog(BufferedReader in, LogRecord.Kind kind) throws IOException {
+        String bufferName = Configuration.dump.bufferHeader(kind);
+        if (bufferName == null) {
+            logger.warn("This kind of log isn't supported for dumpstate files:" + kind);
             return;
         }
         scanForLogBegin(in, bufferName);
         LogRecordStream stream = new DumpstateRecordStream(in);
-        LogRecord record = stream.next();
+        LogRecord record = stream.next(kind);
         while (record != null) {
             source.add(record);
-            record = stream.next();
+            record = stream.next(kind);
         }
     }
 

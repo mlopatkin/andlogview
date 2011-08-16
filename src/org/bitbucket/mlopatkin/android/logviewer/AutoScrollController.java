@@ -37,7 +37,7 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
     }
 
     @Override
-    public void onNewRecord(LogRecord record) {
+    public void onNewRecord(final LogRecord record) {
         shouldScroll = isAtBottom();
         model.addRecord(record);
     }

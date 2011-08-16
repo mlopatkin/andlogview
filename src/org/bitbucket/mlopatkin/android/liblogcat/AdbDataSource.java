@@ -15,9 +15,22 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import org.apache.log4j.Logger;
+import java.awt.EventQueue;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.logviewer.Configuration;
+
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.IShellOutputReceiver;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 
 public class AdbDataSource implements DataSource {
 
@@ -25,20 +38,18 @@ public class AdbDataSource implements DataSource {
 
     private LogRecordDataSourceListener listener;
 
-    private AndroidDebugBridge adb;
+    private IDevice device;
 
-    public AdbDataSource() {
-        AndroidDebugBridge.init(false);
-        adb = AndroidDebugBridge.createBridge();
-        if (adb == null) {
-            logger.error("ADB is null");
+    public AdbDataSource(final IDevice device) {
+        this.device = device;
+        for (LogRecord.Kind kind : LogRecord.Kind.values()) {
+            setUpStream(kind);
         }
     }
 
     @Override
     public void close() {
-        // TODO Auto-generated method stub
-
+        readingThreadsPool.shutdown();
     }
 
     @Override
@@ -48,8 +59,140 @@ public class AdbDataSource implements DataSource {
     }
 
     @Override
-    public void setLogRecordListener(LogRecordDataSourceListener listener) {
+    public synchronized void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
+        notifyAll();
     }
 
+    public static AdbDataSource createAdbDataSource() {
+        AndroidDebugBridge.init(false);
+        AndroidDebugBridge adb = AndroidDebugBridge.createBridge();
+        if (adb == null) {
+            logger.error("ADB is null");
+            return null;
+        }
+        while (!adb.hasInitialDeviceList())
+            ;
+
+        if (adb.getDevices().length > 0) {
+            IDevice first = adb.getDevices()[0];
+            return new AdbDataSource(first);
+        } else {
+            logger.info("No device detected");
+            return null;
+        }
+    }
+
+    private synchronized void waitForListener() {
+        while (listener == null) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+    }
+
+    private synchronized void pushRecord(final LogRecord record) {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                listener.onNewRecord(record);
+            }
+        });
+    }
+
+    private String createLogcatCommandLine(String buffer) {
+        StringBuilder b = new StringBuilder(Configuration.adb.commandline());
+        b.append(' ').append(Configuration.adb.bufferswitch());
+        b.append(' ').append(buffer);
+        return b.toString();
+    }
+
+    private ExecutorService readingThreadsPool = Executors.newFixedThreadPool(LogRecord.Kind
+            .values().length);
+
+    private void setUpStream(LogRecord.Kind kind) {
+        String bufferName = Configuration.adb.bufferName(kind);
+        if (bufferName == null) {
+            logger.warn("This kind of log isn't supported by adb source: " + kind);
+        }
+        final AdbLogRecordStream stream = new AdbLogRecordStream(kind);
+        final String commandLine = createLogcatCommandLine(bufferName);
+        readingThreadsPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    device.executeShellCommand(commandLine, stream);
+                } catch (TimeoutException e) {
+                    logger.warn("Connection to adb failed due to timeout", e);
+                } catch (AdbCommandRejectedException e) {
+                    logger.warn("Adb rejected command", e);
+                } catch (ShellCommandUnresponsiveException e) {
+                    logger.warn("Shell command unresponsive", e);
+                } catch (IOException e) {
+                    logger.warn("IO exception", e);
+                }
+            }
+        });
+
+    }
+
+    private class AdbLogRecordStream implements IShellOutputReceiver {
+        private PipedOutputStream out = new PipedOutputStream();
+        private LogRecordStream parser;
+        private LogRecord.Kind kind;
+
+        public AdbLogRecordStream(LogRecord.Kind kind) {
+            this.kind = kind;
+            try {
+                PipedInputStream in = new PipedInputStream(out);
+                parser = new LogRecordStream(in);
+                new PollingThread().start();
+            } catch (IOException e) {
+                logger.error("Unexpected IO exception", e);
+            }
+        }
+
+        @Override
+        public void addOutput(byte[] data, int offset, int length) {
+            try {
+                out.write(data, offset, length);
+            } catch (IOException e) {
+                logger.error("Unexpected IO exception", e);
+            }
+        }
+
+        @Override
+        public void flush() {
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.error("Unexpected IO exception", e);
+            }
+
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        private class PollingThread extends Thread {
+
+            public PollingThread() {
+                super("ADB-polling-" + kind);
+            }
+
+            @Override
+            public void run() {
+                waitForListener();
+                LogRecord record = parser.next(kind);
+                while (record != null) {
+                    pushRecord(record);
+                    record = parser.next(kind);
+                }
+            }
+        }
+    }
 }

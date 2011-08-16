@@ -21,9 +21,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class LogRecordParser {
+    private static final Logger logger = Logger.getLogger(LogRecordParser.class);
+
     private LogRecordParser() {
     }
 
@@ -44,7 +47,7 @@ public class LogRecordParser {
         return threadTimeRecordPattern.matcher(line);
     }
 
-    public static LogRecord createThreadtimeRecord(Matcher m) {
+    public static LogRecord createThreadtimeRecord(LogRecord.Kind kind, Matcher m) {
         if (!m.matches()) {
             return null;
         }
@@ -55,9 +58,12 @@ public class LogRecordParser {
             LogRecord.Priority priority = getPriorityFromChar(m.group(4));
             String tag = m.group(5);
             String message = m.group(6);
-            return new LogRecord(dateTime, pid, tid, priority, tag, message);
+            return new LogRecord(dateTime, pid, tid, priority, tag, message, kind);
         } catch (ParseException e) {
             return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
+        } catch (NumberFormatException e) {
+            logger.error("Parse error '" + m.group(1) + "'", e);
+            return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group(1));
         }
     }
 

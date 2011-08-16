@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class Configuration {
@@ -38,11 +40,19 @@ public class Configuration {
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
+        private static EnumSet<Kind> buffers_ = EnumSet.noneOf(Kind.class);
 
         private static void initColumns() {
             String columnsValue = instance.properties.getProperty(PREFIX + "columns",
                     "time, pid, priority, tag, message");
             columns_ = splitCommaSeparatedValues(columnsValue);
+        }
+
+        private static void initBuffers() {
+            String columnsValue = instance.properties.getProperty(PREFIX + "buffers", "MAIN");
+            for (String bufferName : splitCommaSeparatedValues(columnsValue)) {
+                buffers_.add(Kind.valueOf(bufferName));
+            }
         }
 
         public synchronized static List<String> columns() {
@@ -73,14 +83,20 @@ public class Configuration {
         public static Color backgroundColor() {
             return parseColor(PREFIX + "background_color", Color.WHITE);
         }
+
+        public static boolean bufferEnabled(Kind buffer) {
+            if (buffers_ == null) {
+                initBuffers();
+            }
+            return buffers_.contains(buffer);
+        }
     }
 
     public static class adb {
         private static final String PREFIX = "adb.";
 
         public static String commandline() {
-            return instance.properties.getProperty(PREFIX + "commandline",
-                    "adb logcat -v threadtime");
+            return instance.properties.getProperty(PREFIX + "commandline", "logcat -v threadtime");
         }
 
         public static String bufferswitch() {
@@ -92,25 +108,17 @@ public class Configuration {
                     "system, main");
             return splitCommaSeparatedValues(buffersValue);
         }
+
+        public static String bufferName(Kind buffer) {
+            return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
+        }
     }
 
     public static class dump {
         private static final String PREFIX = "dump.";
 
-        private static List<String> buffers_;
-
-        private static void initBuffers() {
-            String columnsValue = instance.properties.getProperty(PREFIX + "buffers",
-                    "main, event, radio");
-            buffers_ = splitCommaSeparatedValues(columnsValue);
-        }
-
-        public static boolean bufferEnabled(String bufferName) {
-            bufferName = bufferName.toLowerCase();
-            if (buffers_ == null) {
-                initBuffers();
-            }
-            return buffers_.contains(bufferName);
+        public static String bufferHeader(Kind buffer) {
+            return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
         }
     }
 
@@ -207,4 +215,6 @@ public class Configuration {
         }
     }
 
+    static void forceInit() {
+    }
 }
