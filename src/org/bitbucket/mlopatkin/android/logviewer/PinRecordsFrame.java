@@ -42,6 +42,7 @@ public class PinRecordsFrame extends JFrame {
         initialize();
         pinnedRecordsTable.setModel(model);
         pinnedRecordsTable.setColumnModel(columnsModel);
+        pinnedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
         this.controller = controller;
     }
 
