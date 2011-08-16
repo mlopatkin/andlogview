@@ -65,6 +65,8 @@ class TablePopupMenuHandler {
 
             private void showMenu(MouseEvent e) {
                 poppedUpAt = e.getPoint();
+                int row = getTargetRow();
+                table.getSelectionModel().setSelectionInterval(row, row);
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         });
