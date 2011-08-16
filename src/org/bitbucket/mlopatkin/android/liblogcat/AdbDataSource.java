@@ -35,6 +35,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class AdbDataSource implements DataSource {
 
@@ -44,13 +45,42 @@ public class AdbDataSource implements DataSource {
 
     private IDevice device;
 
-    public AdbDataSource(final IDevice device) {
-        this.device = device;
+    public AdbDataSource() {
+        AndroidDebugBridge.addDeviceChangeListener(changeListener);
+    }
+
+    private IDeviceChangeListener changeListener = new IDeviceChangeListener() {
+        @Override
+        public void deviceDisconnected(IDevice device) {
+
+        }
+
+        @Override
+        public void deviceConnected(IDevice device) {
+            if (AdbDataSource.this.device == null) {
+                AdbDataSource.this.device = device;
+                initStreams();
+            }
+        }
+
+        @Override
+        public void deviceChanged(IDevice device, int changeMask) {
+
+        }
+    };
+
+    private void initStreams() {
         for (LogRecord.Kind kind : LogRecord.Kind.values()) {
             if (kind != LogRecord.Kind.UNKNOWN) {
                 setUpStream(kind);
             }
         }
+
+    }
+
+    public AdbDataSource(final IDevice device) {
+        this.device = device;
+        initStreams();
     }
 
     @Override
@@ -88,7 +118,7 @@ public class AdbDataSource implements DataSource {
             return new AdbDataSource(first);
         } else {
             logger.info("No device detected");
-            return null;
+            return new AdbDataSource();
         }
     }
 
