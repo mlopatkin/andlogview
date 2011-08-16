@@ -1,33 +1,50 @@
+https://bitbucket.org/mlopatkin/android-log-viewer
+
 Android log viewer is the tool to simplify analysis of the Android logs. It allows filtering
 the logs using the number of filters.
 
 Available filters:
-	- by tag(s)
-	- by PID(s)
-	- entries containing specified text in message
-	- by priority
+    - by tag(s)
+    - by PID(s)
+    - entries containing specified text in message
+    - by priority
+    - by log type (main, events, radio, etc)
 
 Available actions on filtered lines:
-	- show only matching lines
-	- highlight matching lines
-	- hide matching lines
+    - show only matching lines
+    - highlight matching lines
+    - hide matching lines
 
 The tool can parse adb output or a dumpstate file specified in the command line.
 
 Full-text search
-	1. press '/' to show search field
-	2. press Enter to start searching
-	3. press F3 to search for the next occurence
+    1. press Ctrl+F to show search field
+    2. press Enter to start searching
+    3. press F3 to search for the next occurence
 Searching is performed in tags and messages starting from the first selected row. 
 
 Keys:
-	Ctrl+F - show search field
-	Enter - start searching
-	Esc - clear search results
-	F3 - find next
-	Ctrl+F3 - find prev
-	Ctrl+P - show pinned lines window
+    Ctrl+F - show search field
+    Enter - start searching
+    Esc - clear search results
+    F3 - find next
+    Ctrl+F3 - find prev
+    Ctrl+P - show pinned lines window
 Tips:
-	- right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
-	- lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it
-	- name of the process is shown in PID tooltip in dumpstate mode
+    - right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
+    - lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it
+    - name of the process is shown in PID tooltip in dumpstate mode
+    - right-click on the filters panel to select buffers to show
+
+Useful configuration file parameters:
+This tool can be configured with the properties file. It searches for logview.properties file in the current folder.
+
+Here is brief overview of the parameters:
+- ui.columns - presence and order of columns (comma-separated list). Available columns are:
+        time, pid, tid, priority, tag, message
+
+- ui.tooltip_max_width - maximal tooltip line width in symbols
+
+
+
+

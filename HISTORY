@@ -1,3 +1,10 @@
+version 0.10
+    [+] Filtering by log type
+    [+] New adb interaction library
+
+version 0.9.1    
+    [*] Copy from log fix
+    
 version 0.9
     [+] Disabling filters
     [*] Search hotkey changed to Ctrl+F

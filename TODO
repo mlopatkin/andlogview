@@ -3,8 +3,6 @@ TODO:
  - Case-insensitive search
  - Filtering results to index window (like pinned records)
  - Different colors for different filters
- - Implement filter based on log type (main, radio, etc)
  - Highlight under selected lines
- - ddmlib integration 
  - Parse adb brief output in dumpstate
- - Copy from records' table 
+ - Reset log in adb mode
