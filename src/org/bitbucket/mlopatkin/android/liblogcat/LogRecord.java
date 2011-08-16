@@ -17,7 +17,7 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.Date;
 
-public class LogRecord {
+public class LogRecord implements Comparable<LogRecord> {
     public enum Priority {
         VERBOSE, DEBUG, INFO, WARN, ERROR, FATAL;
 
@@ -106,5 +106,10 @@ public class LogRecord {
         b.append(message);
         return b.toString();
     }
+
+    @Override
+    public int compareTo(LogRecord o) {
+        return getTime().compareTo(o.getTime());
+    };
 
 }
