@@ -35,6 +35,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DumpstateFileDataSource;
 
+import com.android.ddmlib.AndroidDebugBridge;
+
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
@@ -88,6 +90,9 @@ public class Main {
             @Override
             public void run() {
                 source.close();
+                if (AndroidDebugBridge.getBridge() != null) {
+                    AndroidDebugBridge.terminate();
+                }
             }
         });
     }
