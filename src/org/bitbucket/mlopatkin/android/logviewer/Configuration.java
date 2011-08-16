@@ -40,7 +40,7 @@ public class Configuration {
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
-        private static EnumSet<Kind> buffers_ = EnumSet.noneOf(Kind.class);
+        private static EnumSet<Kind> buffers_;
 
         private static void initColumns() {
             String columnsValue = instance.properties.getProperty(PREFIX + "columns",
@@ -49,9 +49,10 @@ public class Configuration {
         }
 
         private static void initBuffers() {
+            buffers_ = EnumSet.noneOf(Kind.class);
             String columnsValue = instance.properties.getProperty(PREFIX + "buffers", "MAIN");
             for (String bufferName : splitCommaSeparatedValues(columnsValue)) {
-                buffers_.add(Kind.valueOf(bufferName));
+                buffers_.add(Kind.valueOf(bufferName.toUpperCase()));
             }
         }
 
@@ -101,12 +102,6 @@ public class Configuration {
 
         public static String bufferswitch() {
             return instance.properties.getProperty(PREFIX + "bufferswitch", "-b");
-        }
-
-        public static List<String> buffers() {
-            String buffersValue = instance.properties.getProperty(PREFIX + "buffers",
-                    "system, main");
-            return splitCommaSeparatedValues(buffersValue);
         }
 
         public static String bufferName(Kind buffer) {

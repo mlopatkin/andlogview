@@ -19,12 +19,14 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -211,5 +213,10 @@ public class AdbDataSource implements DataSource {
             }
         }
 
+    }
+
+    @Override
+    public EnumSet<Kind> getAvailableBuffers() {
+        return EnumSet.of(Kind.MAIN, Kind.SYSTEM, Kind.RADIO, Kind.EVENTS);
     }
 }

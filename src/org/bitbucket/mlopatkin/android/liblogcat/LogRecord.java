@@ -27,7 +27,21 @@ public class LogRecord {
     }
 
     public enum Kind {
-        UNKNOWN, MAIN, SYSTEM, RADIO, EVENTS
+        UNKNOWN, MAIN("Main"), SYSTEM("System"), RADIO("Radio"), EVENTS("Events");
+
+        private String name;
+
+        public String getCaption() {
+            return name;
+        }
+
+        private Kind() {
+            name = null;
+        }
+
+        private Kind(String name) {
+            this.name = name;
+        }
     }
 
     private Date time;

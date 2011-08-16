@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
@@ -137,5 +139,10 @@ public class DumpstateFileDataSource implements DataSource {
             listener.onNewRecord(record);
         }
         source = null;
+    }
+
+    @Override
+    public EnumSet<Kind> getAvailableBuffers() {
+        return EnumSet.of(Kind.MAIN, Kind.RADIO, Kind.EVENTS);
     }
 }
