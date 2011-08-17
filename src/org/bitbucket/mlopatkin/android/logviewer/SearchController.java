@@ -34,34 +34,37 @@ public class SearchController {
     private static final int MODE_FORWARD = 1;
     private static final int MODE_BACKWARD = -1;
 
-    public void startSearch(String text) {
+    public boolean startSearch(String text) {
         this.text = text;
         if (StringUtils.isBlank(text)) {
             table.removeDecorator(renderer);
-            return;
+            return false;
         }
         renderer.setTextToHighLight(text);
         table.addDecorator(renderer);
         curRow = table.getSelectedRow();
-        performSearch(MODE_FORWARD, curRow >= 0);
+        return performSearch(MODE_FORWARD, curRow >= 0);
     }
 
-    public void searchNext() {
-        performSearch(MODE_FORWARD, false);
+    public boolean searchNext() {
+        return performSearch(MODE_FORWARD, false);
     }
 
-    public void searchPrev() {
-        performSearch(MODE_BACKWARD, false);
+    public boolean searchPrev() {
+        return performSearch(MODE_BACKWARD, false);
     }
 
-    private void performSearch(int searchMode, boolean scanCurrentRow) {
+    private boolean performSearch(int searchMode, boolean scanCurrentRow) {
         if (StringUtils.isBlank(text)) {
-            return;
+            return false;
         }
         if (curRow != table.getSelectedRow()) {
             curRow = table.getSelectedRow();
         }
         int startPos = (scanCurrentRow) ? curRow : (curRow + searchMode);
+        if (startPos < 0) {
+            startPos = 0;
+        }
         int endPos = table.getRowCount();
         if (searchMode < 0) {
             endPos = -1;
@@ -71,9 +74,10 @@ public class SearchController {
             if (StringUtils.contains(record.getTag(), text)
                     || StringUtils.contains(record.getMessage(), text)) {
                 setCurrentRow(i);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     private void setCurrentRow(int i) {

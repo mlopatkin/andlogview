@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.AbstractAction;
@@ -25,10 +26,12 @@ import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
@@ -132,6 +135,10 @@ public class Main {
         frmAndroidLogViewer.getContentPane().add(panel, BorderLayout.SOUTH);
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
+        statusLabel = new JLabel();
+        statusLabel.setVisible(false);
+        panel.add(statusLabel);
+
         instantSearchTextField = new JTextField();
         panel.add(instantSearchTextField);
         instantSearchTextField.setColumns(10);
@@ -158,7 +165,9 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (searchController.isActive()) {
-                    searchController.searchNext();
+                    if (!searchController.searchNext()) {
+                        showMessage(MESSAGE_NOT_FOUND);
+                    }
                 } else {
                     showSearchField();
                 }
@@ -169,7 +178,9 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (searchController.isActive()) {
-                    searchController.searchPrev();
+                    if (!searchController.searchPrev()) {
+                        showMessage(MESSAGE_NOT_FOUND);
+                    }
                 } else {
                     showSearchField();
                 }
@@ -190,7 +201,9 @@ public class Main {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         hideSearchField();
-                        searchController.startSearch(instantSearchTextField.getText());
+                        if (!searchController.startSearch(instantSearchTextField.getText())) {
+                            showMessage(MESSAGE_NOT_FOUND);
+                        }
                     }
                 });
 
@@ -243,4 +256,22 @@ public class Main {
 
     private static final String ACTION_SHOW_PINNED = "show_pinned";
     private static final String KEY_SHOW_PINNED = "control P";
+    private JLabel statusLabel;
+
+    private static final int MESSAGE_DELAY = 2000;
+    private static final String MESSAGE_NOT_FOUND = "Text not found";
+
+    private void showMessage(String text) {
+        statusLabel.setText(text);
+        statusLabel.setVisible(true);
+        Timer hidingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                statusLabel.setVisible(false);
+            }
+        });
+        hidingTimer.setRepeats(false);
+        hidingTimer.start();
+    }
 }
