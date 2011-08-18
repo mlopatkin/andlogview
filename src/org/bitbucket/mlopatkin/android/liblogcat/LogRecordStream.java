@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
@@ -40,20 +39,15 @@ public class LogRecordStream {
     public LogRecord next(LogRecord.Kind kind) {
         try {
             String line = in.readLine();
-            Matcher result = null;
             while (!isLogEnd(line)) {
-                Matcher m = LogRecordParser.parseLogRecordLine(line);
-                if (m.matches()) {
-                    result = m;
-                    break;
+                LogRecord record = LogRecordParser.parseThreadTime(kind, line);
+                if (record != null) {
+                    return record;
                 }
                 line = in.readLine();
             }
-            if (result != null) {
-                return LogRecordParser.createThreadtimeRecord(kind, result);
-            }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unexpected IO exception", e);
         }
         return null;
     }

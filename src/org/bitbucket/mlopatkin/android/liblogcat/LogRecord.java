@@ -44,6 +44,8 @@ public class LogRecord implements Comparable<LogRecord> {
         }
     }
 
+    public static final int NO_ID = -1;
+
     private Date time;
     private int pid;
     private int tid;

@@ -16,37 +16,83 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Date;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.junit.Test;
 
 public class LogRecordParserTest {
 
+    static final String BRIEF_RECORD = "D/MediaScanner(  417): postscan return";
+    static final String PROCESS_RECORD = "D(  417) postscan return  (MediaScanner)";
+    static final String TAG_RECORD = "D/MediaScanner: postscan return";
+    static final String THREAD_RECORD = "D(  417:0x494) postscan return";
+    static final String THREADTIME_RECORD = "08-18 13:40:59.546   417  1172 D MediaScanner: postscan return";
+    static final String RAW_RECORD = "postscan return";
+    static final String TIME_RECORD = "08-18 13:40:59.546 D/MediaScanner(  417): postscan return";
+    static final String LONG_RECORD = "[ 08-18 13:40:59.546   417:0x494 D/MediaScanner ]\n"
+            + "postscan return";
+
+    static final String TAG = "MediaScanner";
+    static final String MESSAGE = "postscan return";
+    static final int PID = 417;
+    static final int TID = 1172;
+    static final LogRecord.Priority PRIORITY = LogRecord.Priority.DEBUG;
+    static final Date DATE = getDate(getCurrentYear(), 8, 18, 13, 40, 59, 546);
+    static final LogRecord.Kind KIND = LogRecord.Kind.MAIN;
+
+    private static final int getCurrentYear() {
+        return Calendar.getInstance().get(Calendar.YEAR);
+    }
+
+    private static Date getDate(int year, int month, int day, int hour, int min, int sec, int msec) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day, hour, min, sec);
+        calendar.set(Calendar.MILLISECOND, msec);
+        return calendar.getTime();
+    }
+
+    private static boolean isSameDate(Date expected, Date actual) {
+        if (expected.equals(actual)) {
+            return true;
+        }
+        Calendar calExpected = Calendar.getInstance();
+        calExpected.setTime(expected);
+        Calendar calActual = Calendar.getInstance();
+        calActual.setTime(actual);
+        calExpected.set(Calendar.YEAR, calActual.get(Calendar.YEAR));
+        expected = calExpected.getTime();
+        return expected.equals(actual);
+    }
+
     @Test
     public void testLogRecordParserThreadTime() {
-        final String src = "07-29 16:15:29.787   296   721 D RPC: 3000008c:00050000 dispatching RPC call (XID 1866, xdr 0x3357b8) for callback client 3100008c:00050001.";
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(1970, 6, 29, 16, 15, 29);
-        calendar.set(Calendar.MILLISECOND, 787);
-        final int pid = 296;
-        final int tid = 721;
-        final LogRecord.Priority priority = LogRecord.Priority.DEBUG;
-        final String tag = "RPC";
-        final String message = "3000008c:00050000 dispatching RPC call (XID 1866, xdr 0x3357b8) for callback client 3100008c:00050001.";
+        LogRecord record = LogRecordParser.parseThreadTime(KIND, THREADTIME_RECORD);
 
-        LogRecord record = LogRecordParser.createThreadtimeRecord(Kind.UNKNOWN, LogRecordParser
-                .parseLogRecordLine(src));
-
-        assertEquals(calendar.getTime(), record.getTime());
-        assertEquals(pid, record.getPid());
-        assertEquals(tid, record.getTid());
-        assertEquals(tag, record.getTag());
-        assertSame(priority, record.getPriority());
-        assertEquals(message, record.getMessage());
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PID, record.getPid());
+        assertEquals(TID, record.getTid());
+        assertTrue(isSameDate(DATE, record.getTime()));
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(KIND, record.getKind());
     }
+
+    @Test
+    public void testLogRecordParserBrief() {
+        LogRecord record = LogRecordParser.parseBrief(KIND, BRIEF_RECORD);
+
+        assertNull(record.getTime());
+        assertEquals(LogRecord.NO_ID, record.getTid());
+
+        assertEquals(PID, record.getPid());
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(KIND, record.getKind());
+    }
+
 }

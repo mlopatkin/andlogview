@@ -28,17 +28,11 @@ import org.junit.Test;
 
 public class FilterChainTest {
 
-    private static final LogRecord RECORD1 = LogRecordParser
-            .createThreadtimeRecord(
-                    Kind.UNKNOWN,
-                    LogRecordParser
-                            .parseLogRecordLine("08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172"));
+    private static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(Kind.UNKNOWN,
+            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172");
 
-    private static final LogRecord RECORD2 = LogRecordParser
-            .createThreadtimeRecord(
-                    Kind.UNKNOWN,
-                    LogRecordParser
-                            .parseLogRecordLine("08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172"));
+    private static final LogRecord RECORD2 = LogRecordParser.parseThreadTime(Kind.UNKNOWN,
+            "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172");
 
     private static final LogRecordFilter TAG_FILTER_MATCH = new SingleTagFilter("AudioFlinger");
 

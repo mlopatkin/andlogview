@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class LogRecordParser {
@@ -34,33 +35,61 @@ public class LogRecordParser {
     private static final String ID_REGEX = "(\\d+)";
     private static final String PID_REGEX = ID_REGEX;
     private static final String TID_REGEX = ID_REGEX;
+    private static final String TAG_REGEX = "(.*?)";
     private static final String PRIORITY_REGEX = "([AVDIWEF])";
-    private static final String TAG_REGEX = "(.*?)\\s*: ";
     private static final String MESSAGE_REGEX = "(.*)";
     private static final String SEP = "\\s+";
-    private static final String[] LOG_RECORD_FIELDS = { TIMESTAMP_REGEX, SEP, PID_REGEX, SEP,
-            TID_REGEX, SEP, PRIORITY_REGEX, SEP, TAG_REGEX, MESSAGE_REGEX };
-    private static final Pattern threadTimeRecordPattern = Pattern.compile("^"
-            + StringUtils.join(LOG_RECORD_FIELDS) + "$");
 
-    public static Matcher parseLogRecordLine(String line) {
-        return threadTimeRecordPattern.matcher(line);
+    private static class ThreadTime {
+        private static final String TAG = TAG_REGEX + "\\s*: ";
+        private static final String[] LOG_RECORD_FIELDS = { TIMESTAMP_REGEX, SEP, PID_REGEX, SEP,
+                TID_REGEX, SEP, PRIORITY_REGEX, SEP, TAG, MESSAGE_REGEX };
+        private static final Pattern threadTimeRecordPattern = Pattern.compile("^"
+                + StringUtils.join(LOG_RECORD_FIELDS) + "$");
+
+        static Matcher matchLine(String line) {
+            return threadTimeRecordPattern.matcher(line);
+        }
+
+        static LogRecord createFromGroups(LogRecord.Kind kind, Matcher m) {
+            if (!m.matches()) {
+                return null;
+            }
+            try {
+                Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+                int pid = Integer.parseInt(m.group(2));
+                int tid = Integer.parseInt(m.group(3));
+                LogRecord.Priority priority = getPriorityFromChar(m.group(4));
+                String tag = m.group(5);
+                String message = m.group(6);
+                return new LogRecord(dateTime, pid, tid, priority, tag, message, kind);
+            } catch (ParseException e) {
+                return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
+            }
+        }
     }
 
-    public static LogRecord createThreadtimeRecord(LogRecord.Kind kind, Matcher m) {
-        if (!m.matches()) {
-            return null;
+    private static class Brief {
+        private static final String PID = "\\(\\s*" + PID_REGEX + "\\)";
+        private static final String[] LOG_RECORD_FIELDS = { PRIORITY_REGEX, "/", TAG_REGEX, PID,
+                ": ", MESSAGE_REGEX };
+        private static final Pattern briefRecordPattern = Pattern.compile("^"
+                + StringUtils.join(LOG_RECORD_FIELDS) + "$");
+
+        static Matcher matchLine(String line) {
+            return briefRecordPattern.matcher(line);
         }
-        try {
-            Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
-            int pid = Integer.parseInt(m.group(2));
-            int tid = Integer.parseInt(m.group(3));
-            LogRecord.Priority priority = getPriorityFromChar(m.group(4));
-            String tag = m.group(5);
-            String message = m.group(6);
-            return new LogRecord(dateTime, pid, tid, priority, tag, message, kind);
-        } catch (ParseException e) {
-            return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
+
+        static LogRecord createFromGroups(LogRecord.Kind kind, Matcher m) {
+            if (!m.matches()) {
+                return null;
+            }
+            LogRecord.Priority priority = getPriorityFromChar(m.group(1));
+            String tag = m.group(2);
+            int pid = Integer.parseInt(m.group(3));
+            String message = m.group(4);
+
+            return new LogRecord(null, pid, LogRecord.NO_ID, priority, tag, message, kind);
         }
     }
 
@@ -73,6 +102,14 @@ public class LogRecordParser {
         }
         throw new IllegalArgumentException("Symbol '" + next
                 + "' doesn't correspond to valid priority value");
+    }
+
+    public static LogRecord parseThreadTime(Kind kind, String line) {
+        return ThreadTime.createFromGroups(kind, ThreadTime.matchLine(line));
+    }
+
+    public static LogRecord parseBrief(Kind kind, String line) {
+        return Brief.createFromGroups(kind, Brief.matchLine(line));
     }
 
 }
