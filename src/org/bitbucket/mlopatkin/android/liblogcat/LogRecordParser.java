@@ -169,4 +169,10 @@ public class LogRecordParser {
         return Tag.createFromGroups(kind, Tag.matchLine(line));
     }
 
+    private static final String LOG_BEGIN = "--------- beginning of ";
+
+    public static boolean isLogBeginningLine(String line) {
+        return (line != null) && line.startsWith(LOG_BEGIN);
+    }
+
 }

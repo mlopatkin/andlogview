@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,6 +44,9 @@ public class LogRecordParserTest {
     static final LogRecord.Priority PRIORITY = LogRecord.Priority.DEBUG;
     static final Date DATE = getDate(getCurrentYear(), 8, 18, 13, 40, 59, 546);
     static final LogRecord.Kind KIND = LogRecord.Kind.MAIN;
+
+    static final String LOG_BEGINNING_LINE = "--------- beginning of /dev/log/system";
+    static final String BLANK_LINE = "";
 
     private static final int getCurrentYear() {
         return Calendar.getInstance().get(Calendar.YEAR);
@@ -121,5 +125,15 @@ public class LogRecordParserTest {
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PRIORITY, record.getPriority());
         assertEquals(KIND, record.getKind());
+    }
+
+    @Test
+    public void testIsLogBeginningLine() {
+        // positive test
+        assertTrue(LogRecordParser.isLogBeginningLine(LOG_BEGINNING_LINE));
+        // negative tests
+        assertFalse(LogRecordParser.isLogBeginningLine(BLANK_LINE));
+        assertFalse(LogRecordParser.isLogBeginningLine(BRIEF_RECORD));
+        assertFalse(LogRecordParser.isLogBeginningLine(THREADTIME_RECORD));
     }
 }
