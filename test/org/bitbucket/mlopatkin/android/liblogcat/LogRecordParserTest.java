@@ -95,4 +95,31 @@ public class LogRecordParserTest {
         assertEquals(KIND, record.getKind());
     }
 
+    @Test
+    public void testLogRecordParserProcess() {
+        LogRecord record = LogRecordParser.parseProcess(KIND, PROCESS_RECORD);
+
+        assertEquals(LogRecord.NO_ID, record.getTid());
+        assertNull(record.getTime());
+
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PID, record.getPid());
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(KIND, record.getKind());
+    }
+
+    @Test
+    public void testLogRecordParserTag() {
+        LogRecord record = LogRecordParser.parseTag(KIND, TAG_RECORD);
+
+        assertEquals(LogRecord.NO_ID, record.getTid());
+        assertNull(record.getTime());
+        assertEquals(LogRecord.NO_ID, record.getPid());
+
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(KIND, record.getKind());
+    }
 }
