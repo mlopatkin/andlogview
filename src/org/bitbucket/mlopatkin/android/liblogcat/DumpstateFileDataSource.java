@@ -17,7 +17,6 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,11 +44,17 @@ public class DumpstateFileDataSource implements DataSource {
             readLog(in, LogRecord.Kind.RADIO);
             readProcessesList(in);
             in.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unexpected IO exception", e);
         }
+        Collections.sort(source, sortByTimeAscComparator);
+    }
+
+    DumpstateFileDataSource(BufferedReader in) throws IOException {
+        readLog(in, LogRecord.Kind.MAIN);
+        readLog(in, LogRecord.Kind.EVENTS);
+        readLog(in, LogRecord.Kind.RADIO);
+        readProcessesList(in);
         Collections.sort(source, sortByTimeAscComparator);
     }
 

@@ -21,6 +21,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -37,7 +38,7 @@ import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.DumpstateFileDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.FileDataSourceFactory;
 
 import com.android.ddmlib.AndroidDebugBridge;
 
@@ -78,12 +79,14 @@ public class Main {
 
     /**
      * Create the application.
+     * 
+     * @throws IOException
      */
-    public Main(String[] args) {
+    public Main(String[] args) throws IOException {
         Configuration.forceInit();
 
         if (args.length > 0) {
-            source = new DumpstateFileDataSource(new File(args[0]));
+            source = FileDataSourceFactory.createDataSource(new File(args[0]));
         } else {
             source = AdbDataSource.createAdbDataSource();
         }
