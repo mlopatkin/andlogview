@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -136,6 +137,7 @@ public class Main {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
         statusLabel = new JLabel();
+        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         statusLabel.setVisible(false);
         panel.add(statusLabel);
 
