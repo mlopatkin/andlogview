@@ -173,8 +173,8 @@ public class Configuration {
     private Configuration() {
         setUpDefaults();
         properties.putAll(loadFromResources());
-        PropertyConfigurator.configure(properties);
         properties.putAll(loadFromFile());
+        PropertyConfigurator.configure(properties);
     }
 
     private static Configuration instance = new Configuration();
