@@ -51,8 +51,11 @@ public class KindFilterMenu extends JPopupMenu {
     public KindFilterMenu(EnumSet<Kind> enabledBuffers, FilterController controller) {
         this.controller = controller;
         for (Kind kind : enabledBuffers) {
-            JMenuItem item = new KindCheckBoxMenuItem(kind, Configuration.ui.bufferEnabled(kind));
-            add(item);
+            if (kind != LogRecord.Kind.UNKNOWN) {
+                JMenuItem item = new KindCheckBoxMenuItem(kind, Configuration.ui
+                        .bufferEnabled(kind));
+                add(item);
+            }
             logger.debug(kind);
         }
     }

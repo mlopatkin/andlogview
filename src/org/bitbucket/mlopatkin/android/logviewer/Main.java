@@ -152,8 +152,10 @@ public class Main {
         JPanel filterPanel = new FilterPanel(filterController);
         panel.add(filterPanel);
 
-        KindFilterMenu menu = new KindFilterMenu(source.getAvailableBuffers(), filterController);
-        UiHelper.addPopupMenu(filterPanel, menu);
+        if (source.getAvailableBuffers() != null) {
+            KindFilterMenu menu = new KindFilterMenu(source.getAvailableBuffers(), filterController);
+            UiHelper.addPopupMenu(filterPanel, menu);
+        }
 
         setupSearchButtons();
     }

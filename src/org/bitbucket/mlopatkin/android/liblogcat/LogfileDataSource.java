@@ -63,7 +63,7 @@ public class LogfileDataSource implements DataSource {
 
     @Override
     public EnumSet<Kind> getAvailableBuffers() {
-        return EnumSet.of(Kind.UNKNOWN);
+        return null;
     }
 
     @Override
