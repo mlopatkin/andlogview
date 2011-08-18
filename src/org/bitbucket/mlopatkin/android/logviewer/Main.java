@@ -243,6 +243,7 @@ public class Main {
         instantSearchTextField.setVisible(true);
         instantSearchTextField.selectAll();
         instantSearchTextField.requestFocusInWindow();
+        statusLabel.setVisible(false);
         panel.revalidate();
         panel.repaint();
 
@@ -260,17 +261,18 @@ public class Main {
 
     private static final int MESSAGE_DELAY = 2000;
     private static final String MESSAGE_NOT_FOUND = "Text not found";
+    Timer hidingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            statusLabel.setVisible(false);
+        }
+    });
 
     private void showMessage(String text) {
         statusLabel.setText(text);
         statusLabel.setVisible(true);
-        Timer hidingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                statusLabel.setVisible(false);
-            }
-        });
         hidingTimer.setRepeats(false);
         hidingTimer.start();
     }
