@@ -15,7 +15,8 @@ Available actions on filtered lines:
     - highlight matching lines
     - hide matching lines
 
-The tool can parse adb output or a dumpstate file specified in the command line.
+The tool can parse adb output or a dumpstate file specified in the command line. There is also 
+ability to parse simple log files, for example output of "adb logcat -d > file.txt".  
 
 Full-text search
     1. press Ctrl+F to show search field
