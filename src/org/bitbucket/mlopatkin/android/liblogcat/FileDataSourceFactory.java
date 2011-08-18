@@ -38,25 +38,29 @@ public class FileDataSourceFactory {
         return cur;
     }
 
-    public static DataSource createDataSource(File file) throws IOException {
+    public static DataSource createDataSource(File file) {
         // check first non-empty line of the file
-        BufferedReader in = new BufferedReader(new FileReader(file));
         try {
-            in.mark(READ_AHEAD_LIMIT);
-            String checkLine = getFirstNonEmptyLine(in);
-            while (checkLine != null && LogRecordParser.isLogBeginningLine(checkLine)) {
+            BufferedReader in = new BufferedReader(new FileReader(file));
+            try {
                 in.mark(READ_AHEAD_LIMIT);
-                checkLine = getFirstNonEmptyLine(in);
+                String checkLine = getFirstNonEmptyLine(in);
+                while (checkLine != null && LogRecordParser.isLogBeginningLine(checkLine)) {
+                    in.mark(READ_AHEAD_LIMIT);
+                    checkLine = getFirstNonEmptyLine(in);
+                }
+                if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
+                    return createDumpstateFileSource(in);
+                } else {
+                    return createLogFileSource(checkLine, in);
+                }
+            } finally {
+                in.close();
             }
-            if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
-                return createDumpstateFileSource(in);
-            } else {
-                return createLogFileSource(checkLine, in);
-            }
-
-        } finally {
-            in.close();
+        } catch (IOException ex) {
+            return null;
         }
+
     }
 
     private static DataSource createLogFileSource(String checkLine, BufferedReader in)

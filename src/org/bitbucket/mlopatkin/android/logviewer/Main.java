@@ -29,6 +29,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -70,7 +71,6 @@ public class Main {
                     Main window = new Main(args);
                     window.frmAndroidLogViewer.setVisible(true);
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });
@@ -87,9 +87,15 @@ public class Main {
 
         if (args.length > 0) {
             source = FileDataSourceFactory.createDataSource(new File(args[0]));
+            if (source == null) {
+                JOptionPane.showMessageDialog(null, "Unrecognized file " + args[0], "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         } else {
             source = AdbDataSource.createAdbDataSource();
         }
+
         initialize();
         source.setLogRecordListener(scrollController);
 
