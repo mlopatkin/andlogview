@@ -75,7 +75,7 @@ public class LogfileDataSource implements DataSource {
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
         for (LogRecord record : records) {
-            this.listener.onNewRecord(record);
+            this.listener.onNewRecord(record, false);
         }
         records = null; // force cleanup
     }

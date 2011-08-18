@@ -141,7 +141,7 @@ public class DumpstateFileDataSource implements DataSource {
     @Override
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
         for (LogRecord record : source) {
-            listener.onNewRecord(record);
+            listener.onNewRecord(record, false);
         }
         source = null;
     }

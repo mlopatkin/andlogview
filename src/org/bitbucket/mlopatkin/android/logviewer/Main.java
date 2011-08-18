@@ -71,6 +71,7 @@ public class Main {
                     Main window = new Main(args);
                     window.frmAndroidLogViewer.setVisible(true);
                 } catch (Exception e) {
+                    logger.error("Exception occured", e);
                 }
             }
         });

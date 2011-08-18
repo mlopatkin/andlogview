@@ -24,9 +24,13 @@ import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
 public class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
     @Override
     protected void setValue(Object value) {
+        if (value == null) {
+            super.setValue(null);
+            return;
+        }
         if (!(value instanceof Date)) {
             throw new IllegalArgumentException(
-                    "Incorrect value class passed into LogcatTimeCellRenderer");
+                    "Incorrect value class passed into LogcatTimeCellRenderer: " + value);
         }
         Date dateValue = (Date) value;
         super.setValue(TimeFormatUtils.convertTimeToString(dateValue));

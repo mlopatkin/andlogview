@@ -138,7 +138,7 @@ public class AdbDataSource implements DataSource {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                listener.onNewRecord(record);
+                listener.onNewRecord(record, true);
             }
         });
     }

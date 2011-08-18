@@ -15,7 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-
 public interface LogRecordDataSourceListener {
-    public void onNewRecord(LogRecord record);
+    public void onNewRecord(LogRecord record, boolean needPosition);
 }
