@@ -35,10 +35,10 @@ public class IndexFrame extends JFrame {
 
     private JPanel contentPane;
     private DecoratingRendererTable pinnedRecordsTable;
-    private PinRecordsController controller;
+    private IndexController controller;
 
     public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
-            PinRecordsController controller) {
+            IndexController controller) {
         initialize();
         pinnedRecordsTable.setModel(model);
         pinnedRecordsTable.setColumnModel(columnsModel);

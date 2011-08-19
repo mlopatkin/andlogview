@@ -28,7 +28,7 @@ import javax.swing.table.TableRowSorter;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-public class PinRecordsController {
+public class PinRecordsController implements IndexController {
 
     private LogRecordTableModel model;
     private IndexTableColumnModel columnsModel;
@@ -108,6 +108,7 @@ public class PinRecordsController {
         frame.setVisible(true);
     }
 
+    @Override
     public void activateRow(int row) {
         int rowTable = mainTable.convertRowIndexToView(row);
         mainTable.getSelectionModel().setSelectionInterval(rowTable, rowTable);
