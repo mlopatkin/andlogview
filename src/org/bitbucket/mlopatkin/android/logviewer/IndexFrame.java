@@ -29,15 +29,15 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 
-public class PinRecordsFrame extends JFrame {
+public class IndexFrame extends JFrame {
 
-    private static final Logger logger = Logger.getLogger(PinRecordsFrame.class);
+    private static final Logger logger = Logger.getLogger(IndexFrame.class);
 
     private JPanel contentPane;
     private DecoratingRendererTable pinnedRecordsTable;
     private PinRecordsController controller;
 
-    public PinRecordsFrame(LogRecordTableModel model, PinRecordsTableColumnModel columnsModel,
+    public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
             PinRecordsController controller) {
         initialize();
         pinnedRecordsTable.setModel(model);

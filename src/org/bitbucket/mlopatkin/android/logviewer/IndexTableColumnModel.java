@@ -19,9 +19,9 @@ import java.util.Arrays;
 
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 
-public class PinRecordsTableColumnModel extends LogRecordTableColumnModel {
+public class IndexTableColumnModel extends LogRecordTableColumnModel {
 
-    public PinRecordsTableColumnModel(PidToProcessConverter pidToProcessConverter) {
+    public IndexTableColumnModel(PidToProcessConverter pidToProcessConverter) {
         super(Arrays.asList("row", "time", "pid", "priority", "tag", "message"),
                 pidToProcessConverter);
     }

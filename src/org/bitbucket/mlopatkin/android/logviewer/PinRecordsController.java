@@ -31,11 +31,11 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 public class PinRecordsController {
 
     private LogRecordTableModel model;
-    private PinRecordsTableColumnModel columnsModel;
+    private IndexTableColumnModel columnsModel;
     private JTable mainTable;
     private JTable table;
 
-    private PinRecordsFrame frame;
+    private IndexFrame frame;
     private TableRowSorter<LogRecordTableModel> rowSorter;
     private PinnedRowsFilter filter = new PinnedRowsFilter();
     private PinRecordsPopupMenuHandler popupMenuHandler;
@@ -46,9 +46,9 @@ public class PinRecordsController {
         this.model = model;
         this.mainTable = mainTable;
 
-        columnsModel = new PinRecordsTableColumnModel(source.getPidToProcessConverter());
+        columnsModel = new IndexTableColumnModel(source.getPidToProcessConverter());
 
-        frame = new PinRecordsFrame(model, columnsModel, this);
+        frame = new IndexFrame(model, columnsModel, this);
         table = frame.getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
