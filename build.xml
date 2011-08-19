@@ -27,11 +27,13 @@
     </target>
 
     <target name="compile-files" depends="make-out-dir">
-        <javac srcdir="src"
-               destdir="${out-dir}"
+        <javac destdir="${out-dir}"
                classpathref="libraries"
                encoding="utf-8"
-               debug="${debug}" />
+               debug="${debug}">
+            <src path="src" />
+            <src path="utils" />
+		</javac>
     </target>
 
     <target name="unpack-libs" depends="make-out-dir">

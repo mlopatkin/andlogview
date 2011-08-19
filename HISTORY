@@ -1,6 +1,7 @@
 version 0.12	
-	[+]  Case-insensitive search
-
+	[+] Case-insensitive search
+    [+] Index window for filter results
+     
 version 0.11
 	[+] Parse simple log files in threadtime and brief formats
 	[*] Show message if text not found

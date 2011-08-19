@@ -1,5 +1,4 @@
 TODO:
- - Filtering results to index window (like pinned records)
  - Different colors for different filters
  - Highlight under selected lines
  - Parse adb brief output in dumpstate
