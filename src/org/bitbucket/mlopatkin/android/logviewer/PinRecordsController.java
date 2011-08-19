@@ -15,8 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,14 +26,10 @@ import javax.swing.table.TableRowSorter;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-public class PinRecordsController implements IndexController {
+public class PinRecordsController extends AbstractIndexController implements IndexController {
 
-    private LogRecordTableModel model;
-    private IndexTableColumnModel columnsModel;
-    private JTable mainTable;
     private JTable table;
 
-    private IndexFrame frame;
     private TableRowSorter<LogRecordTableModel> rowSorter;
     private PinnedRowsFilter filter = new PinnedRowsFilter();
     private PinRecordsPopupMenuHandler popupMenuHandler;
@@ -43,13 +37,9 @@ public class PinRecordsController implements IndexController {
     @SuppressWarnings("unchecked")
     public PinRecordsController(JTable mainTable, LogRecordTableModel model, DataSource source,
             FilterController filterController) {
-        this.model = model;
-        this.mainTable = mainTable;
+        super(mainTable, model, source, filterController);
 
-        columnsModel = new IndexTableColumnModel(source.getPidToProcessConverter());
-
-        frame = new IndexFrame(model, columnsModel, this);
-        table = frame.getTable();
+        table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
@@ -57,19 +47,11 @@ public class PinRecordsController implements IndexController {
         rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
 
         popupMenuHandler = new PinRecordsPopupMenuHandler(table, this);
-
-        filterController.addRefreshListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                rowSorter.sort();
-            }
-        });
     }
 
     public void pinRecord(int index) {
-        if (!frame.isVisible()) {
-            frame.setVisible(true);
+        if (!getFrame().isVisible()) {
+            getFrame().setVisible(true);
         }
         filter.pin(index);
         rowSorter.sort();
@@ -105,15 +87,12 @@ public class PinRecordsController implements IndexController {
     }
 
     public void showWindow() {
-        frame.setVisible(true);
+        getFrame().setVisible(true);
     }
 
     @Override
-    public void activateRow(int row) {
-        int rowTable = mainTable.convertRowIndexToView(row);
-        mainTable.getSelectionModel().setSelectionInterval(rowTable, rowTable);
-        mainTable.scrollRectToVisible(mainTable.getCellRect(rowTable,
-                mainTable.getSelectedColumn(), false));
+    protected void onMainTableUpdate() {
+        rowSorter.sort();
     }
 
 }
