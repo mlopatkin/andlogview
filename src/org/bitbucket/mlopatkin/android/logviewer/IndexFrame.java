@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -23,6 +24,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -68,6 +70,8 @@ public class IndexFrame extends JFrame {
         pinnedRecordsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         pinnedRecordsTable.addMouseListener(new LineDoubleClickListener());
         scrollPane.setViewportView(pinnedRecordsTable);
+
+        setupKeys();
     }
 
     JTable getTable() {
@@ -96,4 +100,21 @@ public class IndexFrame extends JFrame {
             controller.onWindowClosed();
         };
     };
+
+    private static final String KEY_JUMP_TO_LINE = "ENTER";
+    private static final String ACTION_JUMP_TO_LINE = "jump_to_line";
+
+    private void setupKeys() {
+        UiHelper.bindKeyFocused(pinnedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int row = pinnedRecordsTable.getSelectedRow();
+                        if (row >= 0) {
+                            row = pinnedRecordsTable.convertRowIndexToModel(row);
+                            controller.activateRow(row);
+                        }
+                    }
+                });
+    }
 }

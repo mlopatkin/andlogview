@@ -210,7 +210,7 @@ public class Main {
             }
         });
 
-        bindKeyFocused(instantSearchTextField, KEY_HIDE_AND_START_SEARCH,
+        UiHelper.bindKeyFocused(instantSearchTextField, KEY_HIDE_AND_START_SEARCH,
                 ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -227,12 +227,6 @@ public class Main {
                 pinRecordsController.showWindow();
             }
         });
-    }
-
-    private static void bindKeyFocused(JComponent component, String key, String actionKey,
-            Action action) {
-        component.getInputMap().put(KeyStroke.getKeyStroke(key), actionKey);
-        component.getActionMap().put(actionKey, action);
     }
 
     private void bindKeyGlobal(String key, String actionKey, Action action) {

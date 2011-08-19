@@ -18,8 +18,10 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -60,4 +62,11 @@ class UiHelper {
         String result = value.replace("\n", " ");
         return result;
     }
+
+    public static void bindKeyFocused(JComponent component, String key, String actionKey,
+            Action action) {
+        component.getInputMap().put(KeyStroke.getKeyStroke(key), actionKey);
+        component.getActionMap().put(actionKey, action);
+    }
+
 }
