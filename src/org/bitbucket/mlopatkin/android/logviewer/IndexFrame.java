@@ -19,6 +19,9 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -44,6 +47,7 @@ public class IndexFrame extends JFrame {
         pinnedRecordsTable.setColumnModel(columnsModel);
         pinnedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
         this.controller = controller;
+        addWindowListener(closingListener);
     }
 
     private void initialize() {
@@ -87,4 +91,10 @@ public class IndexFrame extends JFrame {
         }
 
     }
+
+    private WindowListener closingListener = new WindowAdapter() {
+        public void windowClosing(WindowEvent e) {
+            controller.onWindowClosed();
+        };
+    };
 }

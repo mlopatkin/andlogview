@@ -88,6 +88,10 @@ class FilterPanel extends JPanel {
         repaint();
     }
 
+    public JToggleButton getFilterButton(LogRecordFilter filter) {
+        return buttons.get(filter);
+    }
+
     private static URL getResource(String name) {
         return FilterPanel.class.getResource(name);
     }

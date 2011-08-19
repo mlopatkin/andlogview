@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 public interface IndexController {
-
     void activateRow(int row);
+
+    void onWindowClosed();
 }

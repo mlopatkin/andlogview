@@ -143,7 +143,10 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     public void removeFilter(LogRecordFilter filter) {
         panel.removeFilterButton(filter);
         filters.removeFilter(filter);
-        windowControllers.remove(filter);
+        WindowFilterController windowController = windowControllers.remove(filter);
+        if (windowController != null) {
+            windowController.dispose();
+        }
         onFilteringStateUpdated();
     }
 
@@ -189,8 +192,10 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     void disableFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.removeFilter(filter);
         if (mode == FilteringMode.WINDOW) {
+            logger.debug("Disable filter");
             WindowFilterController windowController = windowControllers.get(filter);
             windowController.hideWindow();
+            panel.getFilterButton(filter).setSelected(false);
         }
         onFilteringStateUpdated();
     }

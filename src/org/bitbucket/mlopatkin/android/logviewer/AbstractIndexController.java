@@ -66,4 +66,9 @@ public abstract class AbstractIndexController implements IndexController {
     public void hideWindow() {
         indexFrame.setVisible(false);
     }
+
+    @Override
+    public void onWindowClosed() {
+        // do nothing
+    }
 }

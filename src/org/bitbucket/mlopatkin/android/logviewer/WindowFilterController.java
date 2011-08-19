@@ -21,18 +21,25 @@ import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 
 public class WindowFilterController extends AbstractIndexController implements IndexController {
 
+    private static final Logger logger = Logger.getLogger(WindowFilterController.class);
     private TableRowSorter<LogRecordTableModel> rowSorter;
+    private FilterController filterController;
+    private LogRecordFilter filter;
 
     @SuppressWarnings("unchecked")
     public WindowFilterController(JTable mainTable, LogRecordTableModel model,
             PidToProcessConverter converter, FilterController filterController,
             LogRecordFilter filter) {
         super(mainTable, model, converter, filterController);
+        this.filterController = filterController;
+        this.filter = filter;
+
         JTable table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
@@ -47,4 +54,13 @@ public class WindowFilterController extends AbstractIndexController implements I
         rowSorter.sort();
     }
 
+    @Override
+    public void onWindowClosed() {
+        logger.debug("onWindowClosed");
+        filterController.disableFilter(FilteringMode.WINDOW, filter);
+    }
+
+    public void dispose() {
+        getFrame().dispose();
+    }
 }
