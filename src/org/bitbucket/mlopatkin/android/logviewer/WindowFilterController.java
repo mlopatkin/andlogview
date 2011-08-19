@@ -21,17 +21,18 @@ import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 
 public class WindowFilterController extends AbstractIndexController implements IndexController {
 
     private TableRowSorter<LogRecordTableModel> rowSorter;
 
     @SuppressWarnings("unchecked")
-    public WindowFilterController(JTable mainTable, LogRecordTableModel model, DataSource source,
-            FilterController filterController, LogRecordFilter filter) {
-        super(mainTable, model, source, filterController);
+    public WindowFilterController(JTable mainTable, LogRecordTableModel model,
+            PidToProcessConverter converter, FilterController filterController,
+            LogRecordFilter filter) {
+        super(mainTable, model, converter, filterController);
         JTable table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();

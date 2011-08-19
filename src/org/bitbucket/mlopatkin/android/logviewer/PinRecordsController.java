@@ -23,8 +23,8 @@ import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 
 public class PinRecordsController extends AbstractIndexController implements IndexController {
 
@@ -35,9 +35,9 @@ public class PinRecordsController extends AbstractIndexController implements Ind
     private PinRecordsPopupMenuHandler popupMenuHandler;
 
     @SuppressWarnings("unchecked")
-    public PinRecordsController(JTable mainTable, LogRecordTableModel model, DataSource source,
-            FilterController filterController) {
-        super(mainTable, model, source, filterController);
+    public PinRecordsController(JTable mainTable, LogRecordTableModel model,
+            PidToProcessConverter converter, FilterController filterController) {
+        super(mainTable, model, converter, filterController);
 
         table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);

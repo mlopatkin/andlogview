@@ -17,7 +17,9 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.TableRowSorter;
 
@@ -49,6 +51,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     // this filter acts as hiding filter, initially empty, but hides unselected
     // buffers
     private LogKindFilter kindFilter = new LogKindFilter();
+    private Map<LogRecordFilter, WindowFilterController> windowControllers = new HashMap<LogRecordFilter, WindowFilterController>();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
@@ -75,6 +78,13 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     }
 
     void addFilter(FilteringMode mode, LogRecordFilter filter) {
+        if (mode == FilteringMode.WINDOW) {
+            WindowFilterController controller = new WindowFilterController(table, tableModel, null,
+                    this, filter);
+            controller.showWindow();
+            windowControllers.put(filter, controller);
+        }
+
         filters.addFilter(mode, filter);
         panel.addFilterButton(mode, filter);
         onFilteringStateUpdated();
@@ -133,6 +143,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     public void removeFilter(LogRecordFilter filter) {
         panel.removeFilterButton(filter);
         filters.removeFilter(filter);
+        windowControllers.remove(filter);
         onFilteringStateUpdated();
     }
 
@@ -168,11 +179,19 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     void enableFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.addFilter(mode, filter);
+        if (mode == FilteringMode.WINDOW) {
+            WindowFilterController windowController = windowControllers.get(filter);
+            windowController.showWindow();
+        }
         onFilteringStateUpdated();
     }
 
     void disableFilter(FilteringMode mode, LogRecordFilter filter) {
         filters.removeFilter(filter);
+        if (mode == FilteringMode.WINDOW) {
+            WindowFilterController windowController = windowControllers.get(filter);
+            windowController.hideWindow();
+        }
         onFilteringStateUpdated();
     }
 
