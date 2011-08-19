@@ -1,3 +1,6 @@
+version 0.13
+    [+] Reset log in adb mode
+    
 version 0.12	
 	[+] Case-insensitive search
     [+] Index window for filter results
