@@ -27,7 +27,11 @@ public enum FilteringMode {
     /**
      * Highlight matching records.
      */
-    HIGHLIGHT("Highlight matching lines", false);
+    HIGHLIGHT("Highlight matching lines", false),
+    /**
+     * Show separate window with search results.
+     */
+    WINDOW("Show index window", false);
 
     private String description;
     private boolean defaultResult;
