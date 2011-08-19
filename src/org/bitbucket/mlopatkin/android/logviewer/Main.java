@@ -138,7 +138,7 @@ public class Main {
         filterController = new FilterController(logElements, recordsModel);
         pinRecordsController = new PinRecordsController(logElements, recordsModel, source
                 .getPidToProcessConverter(), filterController);
-        popupMenuHandler = new LogRecordPopupMenuHandler(logElements, filterController,
+        popupMenuHandler = new LogRecordPopupMenuHandler(this, logElements, filterController,
                 pinRecordsController);
         searchController = new SearchController(logElements, recordsModel);
 
@@ -283,5 +283,10 @@ public class Main {
 
         hidingTimer.setRepeats(false);
         hidingTimer.start();
+    }
+
+    public void reset() {
+        recordsModel.clear();
+        source.reset();
     }
 }

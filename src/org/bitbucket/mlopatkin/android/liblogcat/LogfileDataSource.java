@@ -77,7 +77,6 @@ public class LogfileDataSource implements DataSource {
         for (LogRecord record : records) {
             this.listener.onNewRecord(record, false);
         }
-        records = null; // force cleanup
     }
 
     private interface ParsingStrategy {
@@ -116,5 +115,10 @@ public class LogfileDataSource implements DataSource {
             }
         }
         return null;
+    }
+
+    @Override
+    public void reset() {
+        setLogRecordListener(listener);
     }
 }

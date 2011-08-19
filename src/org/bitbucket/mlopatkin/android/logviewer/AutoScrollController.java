@@ -48,10 +48,14 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        if (shouldScroll) {
-            Rectangle bottomRect = table.getBounds();
-            bottomRect.y = bottomRect.height - THRESHOLD;
-            table.scrollRectToVisible(bottomRect);
+        if (e.getType() == TableModelEvent.INSERT) {
+            if (shouldScroll) {
+                Rectangle bottomRect = table.getBounds();
+                bottomRect.y = bottomRect.height - THRESHOLD;
+                table.scrollRectToVisible(bottomRect);
+            }
+        } else {
+            shouldScroll = false;
         }
     }
 

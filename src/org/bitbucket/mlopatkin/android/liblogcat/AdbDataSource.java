@@ -304,4 +304,9 @@ public class AdbDataSource implements DataSource {
         }
     }
 
+    @Override
+    public void reset() {
+        // do nothing
+    }
+
 }

@@ -53,7 +53,7 @@ public class LogRecordTableModel extends AbstractTableModel {
     }
 
     @Override
-    public int getRowCount() {
+    public synchronized int getRowCount() {
         return records.size();
     }
 
@@ -92,7 +92,7 @@ public class LogRecordTableModel extends AbstractTableModel {
         }
     }
 
-    public void addRecord(LogRecord record) {
+    public synchronized void addRecord(LogRecord record) {
         int pos = Collections.binarySearch(records, record);
         if (pos < 0) {
             pos = -(pos + 1);
@@ -101,12 +101,18 @@ public class LogRecordTableModel extends AbstractTableModel {
         fireTableRowsInserted(pos, pos);
     }
 
-    public void addRecordToEnd(LogRecord record) {
+    public synchronized void addRecordToEnd(LogRecord record) {
         records.add(record);
         fireTableRowsInserted(records.size() - 1, records.size() - 1);
     }
 
     public LogRecord getRowData(int row) {
         return records.get(row);
+    }
+
+    public synchronized void clear() {
+        int lastRow = records.size() - 1;
+        records.clear();
+        fireTableRowsDeleted(0, lastRow);
     }
 }

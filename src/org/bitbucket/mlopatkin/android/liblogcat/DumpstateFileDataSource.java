@@ -35,6 +35,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     private List<LogRecord> source = new ArrayList<LogRecord>();
     private PidToProcessConverter converter;
+    private LogRecordDataSourceListener listener;
 
     public DumpstateFileDataSource(File file) {
         try {
@@ -143,11 +144,16 @@ public class DumpstateFileDataSource implements DataSource {
         for (LogRecord record : source) {
             listener.onNewRecord(record, false);
         }
-        source = null;
+        this.listener = listener;
     }
 
     @Override
     public EnumSet<Kind> getAvailableBuffers() {
         return EnumSet.of(Kind.MAIN, Kind.RADIO, Kind.EVENTS);
+    }
+
+    @Override
+    public void reset() {
+        setLogRecordListener(listener);
     }
 }
