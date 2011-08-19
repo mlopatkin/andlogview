@@ -40,6 +40,7 @@ public class WindowFilterController extends AbstractIndexController implements I
         this.filterController = filterController;
         this.filter = filter;
 
+        getFrame().setTitle(filter.toString());
         JTable table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
@@ -63,4 +64,5 @@ public class WindowFilterController extends AbstractIndexController implements I
     public void dispose() {
         getFrame().dispose();
     }
+
 }

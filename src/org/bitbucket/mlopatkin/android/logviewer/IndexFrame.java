@@ -42,16 +42,15 @@ public class IndexFrame extends JFrame {
 
     public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
             IndexController controller) {
+        this.controller = controller;
         initialize();
         pinnedRecordsTable.setModel(model);
         pinnedRecordsTable.setColumnModel(columnsModel);
         pinnedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
-        this.controller = controller;
         addWindowListener(closingListener);
     }
 
     private void initialize() {
-        setTitle("Pinned log records");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setBounds(100, 100, 1000, 300);
         contentPane = new JPanel();

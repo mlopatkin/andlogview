@@ -38,6 +38,7 @@ public class PinRecordsController extends AbstractIndexController implements Ind
     public PinRecordsController(JTable mainTable, LogRecordTableModel model,
             PidToProcessConverter converter, FilterController filterController) {
         super(mainTable, model, converter, filterController);
+        getFrame().setTitle("Pinned records");
 
         table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
