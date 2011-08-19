@@ -1,5 +1,4 @@
 TODO:
- - Case-insensitive search
  - Filtering results to index window (like pinned records)
  - Different colors for different filters
  - Highlight under selected lines

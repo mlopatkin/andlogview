@@ -21,6 +21,8 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.bitbucket.mlopatkin.utils.MyStringUtils;
+
 public class TextHighlightCellRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
@@ -40,12 +42,12 @@ public class TextHighlightCellRenderer implements DecoratingCellRenderer {
 
     private String highlightMatches(String value) {
         StringBuilder result = new StringBuilder(value);
-        int pos = result.indexOf(textToSearch);
-        while (pos != -1 && pos < result.length()) {
+        int pos = MyStringUtils.indexOfIgnoreCase(value, textToSearch);
+        while (pos != MyStringUtils.NOT_FOUND && pos < result.length()) {
             String val = result.substring(pos, pos + textToSearch.length());
             result.replace(pos, pos + textToSearch.length(), spanBegin + val + spanEnd);
             pos += val.length() + spanBegin.length() + spanEnd.length();
-            pos = result.indexOf(textToSearch, pos);
+            pos = MyStringUtils.indexOfIgnoreCase(result.toString(), textToSearch, pos);
         }
         result.insert(0, "<html>");
         result.append("</html>");

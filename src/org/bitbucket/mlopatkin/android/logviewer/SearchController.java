@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 public class SearchController {
 
@@ -71,8 +72,8 @@ public class SearchController {
         }
         for (int i = startPos; i != endPos; i += searchMode) {
             LogRecord record = model.getRowData(table.convertRowIndexToModel(i));
-            if (StringUtils.contains(record.getTag(), text)
-                    || StringUtils.contains(record.getMessage(), text)) {
+            if (MyStringUtils.containsIgnoreCase(record.getTag(), text)
+                    || MyStringUtils.containsIgnoreCase(record.getMessage(), text)) {
                 setCurrentRow(i);
                 return true;
             }
