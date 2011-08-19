@@ -21,6 +21,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 class UiHelper {
 
     private UiHelper() {
@@ -46,5 +48,16 @@ class UiHelper {
                 menu.show(e.getComponent(), e.getX(), e.getY());
             }
         });
+    }
+
+    public static String covertToHtml(String value) {
+        String escaped = StringEscapeUtils.escapeHtml4(value);
+        String result = escaped.replace("\n", "<br>");
+        return result;
+    }
+
+    public static String convertToSafe(String value) {
+        String result = value.replace("\n", " ");
+        return result;
     }
 }

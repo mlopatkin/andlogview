@@ -48,9 +48,9 @@ public class ComposeFilter extends AbstractFilter implements LogRecordFilter {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("Composite:<br>");
+        StringBuilder builder = new StringBuilder("Composite:\n");
         for (LogRecordFilter filter : filters) {
-            builder.append(filter).append("<br>");
+            builder.append(filter).append('\n');
         }
         return builder.toString();
     }

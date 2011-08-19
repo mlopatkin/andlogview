@@ -110,8 +110,8 @@ class FilterPanel extends JPanel {
             this.filter = filter;
             this.mode = mode;
             addActionListener(this);
-            setToolTipText("<html>" + mode.getDescription() + "<br>" + filter.toString()
-                    + "</html>");
+            setToolTipText("<html>" + mode.getDescription() + "<br>"
+                    + UiHelper.covertToHtml(filter.toString()) + "</html>");
         }
 
         @Override
