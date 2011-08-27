@@ -112,9 +112,12 @@ public class AdbDataSource implements DataSource {
             logger.error("ADB is null");
             return null;
         }
-        while (!adb.hasInitialDeviceList())
-            ;
-
+        while (!adb.hasInitialDeviceList()) { 
+            // do not remove following log line, it prevents server vm from
+            // dropping this cycle away and thus fixes #6
+            logger.debug("ADB retry");
+        }
+        logger.debug("ADB has initial device list");
         if (adb.getDevices().length > 0) {
             IDevice first = adb.getDevices()[0];
             return new AdbDataSource(first);
