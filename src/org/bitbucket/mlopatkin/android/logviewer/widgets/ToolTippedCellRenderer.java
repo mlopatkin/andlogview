@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-
+import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class ToolTippedCellRenderer extends DefaultTableCellRenderer {
 
     @Override
-    protected void setValue(Object value) {        
+    protected void setValue(Object value) {
         this.setToolTipText(formatStringToWidth(value.toString()));
         super.setValue(value);
     }
-    
+
     private static final int MAX_WIDTH = Configuration.ui.tooltipMaxWidth();
 
     private static String formatStringToWidth(String src) {

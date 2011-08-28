@@ -24,6 +24,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.ToolTippedCellRenderer;
 
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 

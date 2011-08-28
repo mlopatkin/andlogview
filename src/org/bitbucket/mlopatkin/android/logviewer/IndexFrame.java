@@ -33,6 +33,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class IndexFrame extends JFrame {
 

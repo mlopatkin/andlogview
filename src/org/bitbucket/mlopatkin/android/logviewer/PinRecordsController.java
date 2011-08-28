@@ -25,6 +25,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
 public class PinRecordsController extends AbstractIndexController implements IndexController {
 

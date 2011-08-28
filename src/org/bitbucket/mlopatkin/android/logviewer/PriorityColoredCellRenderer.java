@@ -23,6 +23,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 
 public class PriorityColoredCellRenderer implements
         DecoratingCellRenderer {

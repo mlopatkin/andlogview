@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
-interface DecoratingCellRenderer extends TableCellRenderer {
-    void setInnerRenderer(TableCellRenderer renderer);
+public class SortingDisableSorter<T extends TableModel> extends TableRowSorter<T> {
+
+    @Override
+    public boolean isSortable(int column) {
+        return false;
+    }
+
+    public SortingDisableSorter(T model) {
+        super(model);
+    }
+
 }

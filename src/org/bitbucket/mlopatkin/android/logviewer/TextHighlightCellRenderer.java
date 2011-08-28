@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 public class TextHighlightCellRenderer implements DecoratingCellRenderer {

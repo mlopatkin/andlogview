@@ -32,6 +32,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
 class FilterController implements CreateFilterDialog.DialogResultReceiver,
         EditFilterDialog.DialogResultReceiver {

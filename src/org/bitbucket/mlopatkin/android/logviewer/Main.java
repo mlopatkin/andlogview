@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.FileDataSourceFactory;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 import com.android.ddmlib.AndroidDebugBridge;
 

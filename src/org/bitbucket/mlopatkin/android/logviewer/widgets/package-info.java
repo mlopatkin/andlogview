@@ -13,20 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
 
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-
-public class SortingDisableSorter<T extends TableModel> extends TableRowSorter<T> {
-
-    @Override
-    public boolean isSortable(int column) {
-        return false;
-    }
-
-    SortingDisableSorter(T model) {
-        super(model);
-    }
-
-}
+/**
+ * This package contains generic extensions to the Swing widgets unrelated 
+ * to the logviewer app implementation.
+ */
+package org.bitbucket.mlopatkin.android.logviewer.widgets;
