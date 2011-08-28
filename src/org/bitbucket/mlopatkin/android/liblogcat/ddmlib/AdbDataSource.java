@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import java.awt.EventQueue;
 import java.io.BufferedReader;
@@ -29,6 +29,12 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
+import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
