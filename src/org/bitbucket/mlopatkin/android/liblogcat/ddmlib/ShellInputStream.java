@@ -23,7 +23,12 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IShellOutputReceiver;
 
-public class ShellInputStream extends PipedInputStream implements IShellOutputReceiver {
+/**
+ * This class represents the output of the running adb shell command.
+ * Note that attempt to read shell command output in the same thread that
+ * started it will lead to deadlock.
+ */
+class ShellInputStream extends PipedInputStream implements IShellOutputReceiver {
     private static final Logger logger = Logger.getLogger(ShellInputStream.class);
 
     private PipedOutputStream out = new PipedOutputStream();
