@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.file;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,6 +21,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 public class FileDataSourceFactory {
 

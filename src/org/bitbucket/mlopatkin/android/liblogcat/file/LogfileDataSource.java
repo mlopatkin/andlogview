@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.file;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +23,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 
 /**
