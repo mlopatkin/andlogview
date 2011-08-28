@@ -13,8 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-public interface LogRecordFilter {
-    boolean include(LogRecord record);
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
+public class NotFilter implements LogRecordFilter {
+
+    private LogRecordFilter base;
+
+    public NotFilter(LogRecordFilter base) {
+        this.base = base;
+    }
+
+    @Override
+    public boolean include(LogRecord record) {
+        return !base.include(record);
+    }
+
+    @Override
+    public String toString() {
+        return "HIDING<br>" + base.toString();
+    }
 }

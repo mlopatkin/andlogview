@@ -24,14 +24,14 @@ import java.util.Map;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ComposeFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.LogKindFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.MessageFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.MultiTagFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.PriorityFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.ComposeFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogKindFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.MessageFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 

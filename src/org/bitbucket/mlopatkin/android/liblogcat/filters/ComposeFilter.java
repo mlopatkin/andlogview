@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 /**
  * This filter performs AND operation upon all included filters.

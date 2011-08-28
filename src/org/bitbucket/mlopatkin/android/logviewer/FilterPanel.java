@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 class FilterPanel extends JPanel {

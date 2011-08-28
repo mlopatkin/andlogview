@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.EnumSet;
+import java.util.Collection;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
-public class LogKindFilter implements LogRecordFilter {
-
-    private EnumSet<Kind> kinds = EnumSet.noneOf(Kind.class);
-
-    @Override
-    public boolean include(LogRecord record) {
-        return kinds.contains(record.getKind());
-    }
-
-    public void setKindEnabled(Kind kind, boolean enabled) {
-        if (enabled) {
-            kinds.add(kind);
-        } else {
-            kinds.remove(kind);
-        }
-    }
+class FilterData {
+    Collection<String> tags;
+    Collection<Integer> pids;
+    String message;
+    LogRecord.Priority priority;
 }

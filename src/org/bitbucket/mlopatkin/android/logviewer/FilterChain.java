@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 
 public class FilterChain {
 

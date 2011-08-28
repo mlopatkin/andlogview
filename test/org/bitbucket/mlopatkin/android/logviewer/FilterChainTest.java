@@ -20,10 +20,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.SingleTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 import org.junit.Test;
 
 public class FilterChainTest {

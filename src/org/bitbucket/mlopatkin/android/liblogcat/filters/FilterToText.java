@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 /**

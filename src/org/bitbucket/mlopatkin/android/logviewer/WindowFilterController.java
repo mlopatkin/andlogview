@@ -22,8 +22,8 @@ import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 

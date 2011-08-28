@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.Collection;
+abstract class AbstractFilter {
+    protected abstract void dumpFilter(FilterData data);
 
-class FilterData {
-    Collection<String> tags;
-    Collection<Integer> pids;
-    String message;
-    LogRecord.Priority priority;
+    FilterData dumpFilter() {
+        FilterData data = new FilterData();
+        dumpFilter(data);
+        return data;
+    }
 }

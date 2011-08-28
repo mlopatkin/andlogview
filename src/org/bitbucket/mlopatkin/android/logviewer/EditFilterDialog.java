@@ -15,8 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import org.bitbucket.mlopatkin.android.liblogcat.FilterToText;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.FilterToText;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 
 public class EditFilterDialog extends FilterDialog {
     public interface DialogResultReceiver {

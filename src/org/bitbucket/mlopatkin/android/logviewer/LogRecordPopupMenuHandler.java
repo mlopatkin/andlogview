@@ -23,8 +23,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.MultiPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.SingleTagFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 
 public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
 

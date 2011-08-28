@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-abstract class AbstractFilter {
-    protected abstract void dumpFilter(FilterData data);
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-    FilterData dumpFilter() {
-        FilterData data = new FilterData();
-        dumpFilter(data);
-        return data;
-    }
+public interface LogRecordFilter {
+    boolean include(LogRecord record);
 }

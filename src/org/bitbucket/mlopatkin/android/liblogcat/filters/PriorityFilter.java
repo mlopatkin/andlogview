@@ -13,36 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
-import org.apache.commons.lang3.StringUtils;
+public class PriorityFilter extends AbstractFilter implements LogRecordFilter {
 
-public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
+    private LogRecord.Priority priority;
 
-    private Set<Integer> pids = new TreeSet<Integer>();
-
-    public MultiPidFilter(int[] pids) {
-        for (int pid : pids) {
-            this.pids.add(pid);
-        }
+    public PriorityFilter(LogRecord.Priority priority) {
+        this.priority = priority;
     }
 
     @Override
     public boolean include(LogRecord record) {
-        return pids.contains(record.getPid());
+        LogRecord.Priority p = record.getPriority();
+        return p.ordinal() >= priority.ordinal();
     }
 
     @Override
     public String toString() {
-        return "PID" + (pids.size() > 1 ? "s" : "") + ": " + StringUtils.join(pids, ", ");
+        return "Priority: " + priority;
     }
 
     @Override
     protected void dumpFilter(FilterData data) {
-        data.pids = Collections.unmodifiableCollection(pids);
+        data.priority = priority;
     }
 }

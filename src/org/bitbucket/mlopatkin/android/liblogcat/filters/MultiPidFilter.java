@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
+public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
 
-    private String[] tags;
+    private Set<Integer> pids = new TreeSet<Integer>();
 
-    public MultiTagFilter(String[] tags) {
-        this.tags = tags;
+    public MultiPidFilter(int[] pids) {
+        for (int pid : pids) {
+            this.pids.add(pid);
+        }
     }
 
     @Override
     public boolean include(LogRecord record) {
-        for (String tag : tags) {
-            if (tag.equalsIgnoreCase(record.getTag())) {
-                return true;
-            }
-        }
-        return false;
+        return pids.contains(record.getPid());
     }
 
     @Override
     public String toString() {
-        return "Tag" + (tags.length > 1 ? "s" : "") + ": " + StringUtils.join(tags, ", ");
+        return "PID" + (pids.size() > 1 ? "s" : "") + ": " + StringUtils.join(pids, ", ");
     }
 
     @Override
     protected void dumpFilter(FilterData data) {
-        data.tags = Arrays.asList(tags);
+        data.pids = Collections.unmodifiableCollection(pids);
     }
 }

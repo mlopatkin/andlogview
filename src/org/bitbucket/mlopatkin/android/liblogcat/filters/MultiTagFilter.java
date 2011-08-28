@@ -13,29 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-public class PriorityFilter extends AbstractFilter implements LogRecordFilter {
+import java.util.Arrays;
 
-    private LogRecord.Priority priority;
+import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-    public PriorityFilter(LogRecord.Priority priority) {
-        this.priority = priority;
+public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
+
+    private String[] tags;
+
+    public MultiTagFilter(String[] tags) {
+        this.tags = tags;
     }
 
     @Override
     public boolean include(LogRecord record) {
-        LogRecord.Priority p = record.getPriority();
-        return p.ordinal() >= priority.ordinal();
+        for (String tag : tags) {
+            if (tag.equalsIgnoreCase(record.getTag())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return "Priority: " + priority;
+        return "Tag" + (tags.length > 1 ? "s" : "") + ": " + StringUtils.join(tags, ", ");
     }
 
     @Override
     protected void dumpFilter(FilterData data) {
-        data.priority = priority;
+        data.tags = Arrays.asList(tags);
     }
 }
