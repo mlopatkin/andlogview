@@ -286,10 +286,17 @@ public class MainFrame extends JFrame {
 
     private void setupMainMenu() {
         JMenuBar mainMenu = new JMenuBar();
+
         JMenu mnFile = new JMenu("File");
         JMenuItem mnOpen = new JMenuItem(acOpenFile);
         mnFile.add(mnOpen);
         mainMenu.add(mnFile);
+
+        JMenu mnAdb = new JMenu("ADB");
+        JMenuItem mnConnectTo = new JMenuItem(acConnectToDevice);
+        mnAdb.add(acConnectToDevice);
+        mainMenu.add(mnAdb);
+
         setJMenuBar(mainMenu);
     }
 
@@ -313,6 +320,15 @@ public class MainFrame extends JFrame {
                 }
 
             }
+        }
+    };
+
+    private Action acConnectToDevice = new AbstractAction("Connect to device...") {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // TODO Auto-generated method stub
+
         }
     };
 }
