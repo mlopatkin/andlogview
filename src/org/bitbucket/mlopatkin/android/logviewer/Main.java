@@ -15,260 +15,59 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.EventQueue;
+import java.io.File;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
+import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 
-import com.android.ddmlib.AndroidDebugBridge;
+public class Main {
 
-public class Main extends JFrame {
-    private static final Logger logger = Logger.getLogger(Main.class);
+    private DataSource initialSource;
 
-    private DecoratingRendererTable logElements;
-    private JScrollPane scrollPane;
+    public static void main(String[] args) {
+        Configuration.forceInit();
+        if (args.length == 0) {
+            // ADB mode
+            new Main().start();
+        } else if (args.length == 1) {
+            // File mode
+            new Main(new File(args[0])).start();
+        } else {
+            // Error
+            showUsage();
+        }
+    }
 
-    private LogRecordTableModel recordsModel = new LogRecordTableModel();
-    private AutoScrollController scrollController;
-    private FilterController filterController;
-    private SearchController searchController;
-    private LogRecordPopupMenuHandler popupMenuHandler;
-    private PinRecordsController pinRecordsController;
+    Main(File file) {
+        initialSource = FileDataSourceFactory.createDataSource(file);
+    }
 
-    private DataSource source;
-    private JPanel panel;
-    private JTextField instantSearchTextField;
+    Main() {
+        initialSource = AdbDataSource.createAdbDataSource();
+    }
 
-    public Main(DataSource initialSource) {
-        source = initialSource;
-
-        initialize();
-        source.setLogRecordListener(scrollController);
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+    void start() {
+        final MainFrame window = new MainFrame(initialSource);
+        EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                source.close();
-                if (AndroidDebugBridge.getBridge() != null) {
-                    AndroidDebugBridge.terminate();
-                }
+                window.setVisible(true);
             }
         });
     }
 
-    public void setSource(DataSource newSource) {
-        if (source != null) {
-            source.close();
-        }
-        source = newSource;
-        recordsModel.clear();
-        source.setLogRecordListener(scrollController);
-    }
-
-    private PidToProcessMapper mapper = new PidToProcessMapper() {
-
-        @Override
-        public String getProcessName(int pid) {
-            if (source != null && source.getPidToProcessConverter() != null) {
-                return source.getPidToProcessConverter().getProcessName(pid);
-            } else {
-                return null;
-            }
-        }
-    };
-
-    /**
-     * Initialize the contents of the frame.
-     */
-    private void initialize() {
-        setTitle("Android Log Viewer");
-        setBounds(100, 100, 1000, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        logElements = new DecoratingRendererTable();
-        logElements.setFillsViewportHeight(true);
-        logElements.setShowGrid(false);
-
-        logElements.setModel(recordsModel);
-        logElements.addDecorator(new PriorityColoredCellRenderer());
-        logElements
-                .setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), mapper));
-
-        logElements.setTransferHandler(new LogRecordsTransferHandler());
-
-        scrollPane = new JScrollPane(logElements);
-        getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-        scrollController = new AutoScrollController(logElements, recordsModel);
-        filterController = new FilterController(logElements, recordsModel);
-        pinRecordsController = new PinRecordsController(logElements, recordsModel, mapper,
-                filterController);
-        popupMenuHandler = new LogRecordPopupMenuHandler(this, logElements, filterController,
-                pinRecordsController);
-        searchController = new SearchController(logElements, recordsModel);
-
-        panel = new JPanel();
-        getContentPane().add(panel, BorderLayout.SOUTH);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-
-        statusLabel = new JLabel();
-        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        statusLabel.setVisible(false);
-        panel.add(statusLabel);
-
-        instantSearchTextField = new JTextField();
-        panel.add(instantSearchTextField);
-        instantSearchTextField.setColumns(10);
-        instantSearchTextField.setVisible(false);
-
-        JPanel filterPanel = new FilterPanel(filterController);
-        panel.add(filterPanel);
-
-        if (source.getAvailableBuffers() != null) {
-            KindFilterMenu menu = new KindFilterMenu(source.getAvailableBuffers(), filterController);
-            UiHelper.addPopupMenu(filterPanel, menu);
-        }
-
-        setupSearchButtons();
-    }
-
-    private void setupSearchButtons() {
-        bindKeyGlobal(KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD, new AbstractAction() {
+    private static void showUsage() {
+        EventQueue.invokeLater(new Runnable() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                showSearchField();
+            public void run() {
+                JOptionPane.showMessageDialog(null,
+                        "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
+                        "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        bindKeyGlobal(KEY_FIND_NEXT, ACTION_FIND_NEXT, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (searchController.isActive()) {
-                    if (!searchController.searchNext()) {
-                        showMessage(MESSAGE_NOT_FOUND);
-                    }
-                } else {
-                    showSearchField();
-                }
-            }
-        });
-
-        bindKeyGlobal(KEY_FIND_PREV, ACTION_FIND_PREV, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (searchController.isActive()) {
-                    if (!searchController.searchPrev()) {
-                        showMessage(MESSAGE_NOT_FOUND);
-                    }
-                } else {
-                    showSearchField();
-                }
-            }
-        });
-
-        bindKeyGlobal(KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hideSearchField();
-                instantSearchTextField.setText(null);
-                searchController.startSearch(null);
-            }
-        });
-
-        UiHelper.bindKeyFocused(instantSearchTextField, KEY_HIDE_AND_START_SEARCH,
-                ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        hideSearchField();
-                        if (!searchController.startSearch(instantSearchTextField.getText())) {
-                            showMessage(MESSAGE_NOT_FOUND);
-                        }
-                    }
-                });
-
-        bindKeyGlobal(KEY_SHOW_PINNED, ACTION_SHOW_PINNED, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pinRecordsController.showWindow();
-            }
-        });
-    }
-
-    private void bindKeyGlobal(String key, String actionKey, Action action) {
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(key), actionKey);
-        getRootPane().getActionMap().put(actionKey, action);
-    }
-
-    private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
-    private static final String ACTION_HIDE_SEARCH_FIELD = "hide_search";
-    private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
-    private static final String ACTION_FIND_NEXT = "find_next";
-    private static final String ACTION_FIND_PREV = "find_prev";
-
-    private static final String KEY_HIDE_AND_START_SEARCH = "ENTER";
-    private static final String KEY_HIDE = "ESCAPE";
-    private static final String KEY_SHOW_SEARCH_FIELD = "control F";
-    private static final String KEY_FIND_NEXT = "F3";
-    private static final String KEY_FIND_PREV = "control F3";
-
-    private void showSearchField() {
-        instantSearchTextField.setVisible(true);
-        instantSearchTextField.selectAll();
-        instantSearchTextField.requestFocusInWindow();
-        statusLabel.setVisible(false);
-        panel.revalidate();
-        panel.repaint();
-
-    }
-
-    private void hideSearchField() {
-        instantSearchTextField.setVisible(false);
-        panel.revalidate();
-        panel.repaint();
-    }
-
-    private static final String ACTION_SHOW_PINNED = "show_pinned";
-    private static final String KEY_SHOW_PINNED = "control P";
-    private JLabel statusLabel;
-
-    private static final int MESSAGE_DELAY = 2000;
-    private static final String MESSAGE_NOT_FOUND = "Text not found";
-    Timer hidingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            statusLabel.setVisible(false);
-        }
-    });
-
-    private void showMessage(String text) {
-        statusLabel.setText(text);
-        statusLabel.setVisible(true);
-
-        hidingTimer.setRepeats(false);
-        hidingTimer.start();
-    }
-
-    public void reset() {
-        recordsModel.clear();
-        source.reset();
     }
 }
