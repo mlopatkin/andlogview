@@ -40,38 +40,32 @@ public class FileDataSourceFactory {
         return cur;
     }
 
-    public static DataSource createDataSource(File file) {
+    public static DataSource createDataSource(File file) throws UnrecognizedFormatException,
+            IOException {
         // check first non-empty line of the file
+        BufferedReader in = new BufferedReader(new FileReader(file));
         try {
-            BufferedReader in = new BufferedReader(new FileReader(file));
-            try {
+            in.mark(READ_AHEAD_LIMIT);
+            String checkLine = getFirstNonEmptyLine(in);
+            while (checkLine != null && LogRecordParser.isLogBeginningLine(checkLine)) {
                 in.mark(READ_AHEAD_LIMIT);
-                String checkLine = getFirstNonEmptyLine(in);
-                while (checkLine != null && LogRecordParser.isLogBeginningLine(checkLine)) {
-                    in.mark(READ_AHEAD_LIMIT);
-                    checkLine = getFirstNonEmptyLine(in);
-                }
-                if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
-                    return createDumpstateFileSource(in);
-                } else {
-                    return createLogFileSource(checkLine, in);
-                }
-            } finally {
-                in.close();
+                checkLine = getFirstNonEmptyLine(in);
             }
-        } catch (IOException ex) {
-            return null;
+            if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
+                return createDumpstateFileSource(in);
+            } else {
+                return createLogFileSource(checkLine, in);
+            }
+        } finally {
+            in.close();
         }
-
     }
 
     private static DataSource createLogFileSource(String checkLine, BufferedReader in)
-            throws IOException {
+            throws IOException, UnrecognizedFormatException {
         LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(checkLine);
-        if (source != null) {
-            in.reset();
-            source.parse(in);
-        }
+        in.reset();
+        source.parse(in);
         return source;
     }
 

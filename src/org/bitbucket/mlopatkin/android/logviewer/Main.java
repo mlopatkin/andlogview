@@ -17,12 +17,14 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.EventQueue;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
+import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 
 public class Main {
 
@@ -43,7 +45,13 @@ public class Main {
     }
 
     Main(File file) {
-        initialSource = FileDataSourceFactory.createDataSource(file);
+        try {
+            initialSource = FileDataSourceFactory.createDataSource(file);
+        } catch (UnrecognizedFormatException e) {
+            ErrorDialogsHelper.showError("Unrecognized file format for " + file);
+        } catch (IOException e) {
+            ErrorDialogsHelper.showError("Cannot read " + file);
+        }
     }
 
     Main() {
@@ -52,7 +60,9 @@ public class Main {
 
     void start() {
         final MainFrame window = new MainFrame();
-        window.setSource(initialSource);
+        if (initialSource != null) {
+            window.setSource(initialSource);
+        }
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {

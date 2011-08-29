@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -40,6 +41,7 @@ import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
+import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
@@ -294,13 +296,22 @@ public class MainFrame extends JFrame {
     private Action acOpenFile = new AbstractAction("Open...") {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent event) {
             JFileChooser fileChooser = new JFileChooser();
             int result = fileChooser.showOpenDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                DataSource source = FileDataSourceFactory.createDataSource(file);
-                setSource(source);
+                try {
+                    DataSource source = FileDataSourceFactory.createDataSource(file);
+                    setSource(source);
+                } catch (UnrecognizedFormatException e) {
+                    logger.error("Unrecognized source file " + file, e);
+                    ErrorDialogsHelper.showError("Unrecognized file format for " + file);
+                } catch (IOException e) {
+                    logger.error("IO Exception while reading " + file, e);
+                    ErrorDialogsHelper.showError("Cannot read " + file);
+                }
+
             }
         }
     };

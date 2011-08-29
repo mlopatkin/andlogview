@@ -25,10 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -113,13 +113,14 @@ public class LogfileDataSource implements DataSource {
     private static final ParsingStrategy supportedStrategies[] = { threadTimeStrategy,
             briefStrategy };
 
-    static LogfileDataSource createLogfileDataSourceWithStrategy(String checkLine) {
+    static LogfileDataSource createLogfileDataSourceWithStrategy(String checkLine)
+            throws UnrecognizedFormatException {
         for (ParsingStrategy current : supportedStrategies) {
             if (current.parse(null, checkLine) != null) {
                 return new LogfileDataSource(current);
             }
         }
-        return null;
+        throw new UnrecognizedFormatException();
     }
 
     @Override
