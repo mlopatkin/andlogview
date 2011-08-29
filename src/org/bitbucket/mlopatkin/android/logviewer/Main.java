@@ -51,7 +51,8 @@ public class Main {
     }
 
     void start() {
-        final MainFrame window = new MainFrame(initialSource);
+        final MainFrame window = new MainFrame();
+        window.setSource(initialSource);
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {

@@ -56,16 +56,15 @@ public class MainFrame extends JFrame {
     private JPanel panel;
     private JTextField instantSearchTextField;
 
-    public MainFrame(DataSource initialSource) {
-        source = initialSource;
-
+    public MainFrame() {
         initialize();
-        source.setLogRecordListener(scrollController);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                source.close();
+                if (source != null) {
+                    source.close();
+                }
                 if (AndroidDebugBridge.getBridge() != null) {
                     AndroidDebugBridge.terminate();
                 }
@@ -141,10 +140,11 @@ public class MainFrame extends JFrame {
         JPanel filterPanel = new FilterPanel(filterController);
         panel.add(filterPanel);
 
-        if (source.getAvailableBuffers() != null) {
-            KindFilterMenu menu = new KindFilterMenu(source.getAvailableBuffers(), filterController);
-            UiHelper.addPopupMenu(filterPanel, menu);
-        }
+        // if (source.getAvailableBuffers() != null) {
+        // KindFilterMenu menu = new
+        // KindFilterMenu(source.getAvailableBuffers(), filterController);
+        // UiHelper.addPopupMenu(filterPanel, menu);
+        // }
 
         setupSearchButtons();
     }

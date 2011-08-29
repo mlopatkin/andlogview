@@ -113,6 +113,8 @@ public class LogRecordTableModel extends AbstractTableModel {
     public synchronized void clear() {
         int lastRow = records.size() - 1;
         records.clear();
-        fireTableRowsDeleted(0, lastRow);
+        if (lastRow >= 0) {
+            fireTableRowsDeleted(0, lastRow);
+        }
     }
 }
