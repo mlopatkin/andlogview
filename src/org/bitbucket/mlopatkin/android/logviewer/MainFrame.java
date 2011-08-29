@@ -19,13 +19,18 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -34,6 +39,7 @@ import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
@@ -56,6 +62,9 @@ public class MainFrame extends JFrame {
     private JPanel panel;
     private JTextField instantSearchTextField;
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     public MainFrame() {
         initialize();
 
@@ -147,6 +156,7 @@ public class MainFrame extends JFrame {
         // }
 
         setupSearchButtons();
+        setupMainMenu();
     }
 
     private void setupSearchButtons() {
@@ -271,4 +281,27 @@ public class MainFrame extends JFrame {
         recordsModel.clear();
         source.reset();
     }
+
+    private void setupMainMenu() {
+        JMenuBar mainMenu = new JMenuBar();
+        JMenu mnFile = new JMenu("File");
+        JMenuItem mnOpen = new JMenuItem(acOpenFile);
+        mnFile.add(mnOpen);
+        mainMenu.add(mnFile);
+        setJMenuBar(mainMenu);
+    }
+
+    private Action acOpenFile = new AbstractAction("Open...") {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(MainFrame.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                DataSource source = FileDataSourceFactory.createDataSource(file);
+                setSource(source);
+            }
+        }
+    };
 }
