@@ -15,17 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.util.Arrays;
-
-public class IndexTableColumnModel extends LogRecordTableColumnModel {
-
-    public IndexTableColumnModel(PidToProcessMapper pidToProcessMapper) {
-        super(Arrays.asList("row", "time", "pid", "priority", "tag", "message"), pidToProcessMapper);
-    }
-
-    @Override
-    protected void initColumnInfo() {
-        super.initColumnInfo();
-        addColumnInfo("row", new ColumnInfo(LogRecordTableModel.COLUMN_LINE, "line", 30, 50));
-    }
+public interface PidToProcessMapper {
+    public String getProcessName(int pid);
 }

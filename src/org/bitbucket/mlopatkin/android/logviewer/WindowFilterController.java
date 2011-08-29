@@ -22,7 +22,6 @@ import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -36,9 +35,8 @@ public class WindowFilterController extends AbstractIndexController implements I
 
     @SuppressWarnings("unchecked")
     public WindowFilterController(JTable mainTable, LogRecordTableModel model,
-            PidToProcessConverter converter, FilterController filterController,
-            LogRecordFilter filter) {
-        super(mainTable, model, converter, filterController);
+            PidToProcessMapper mapper, FilterController filterController, LogRecordFilter filter) {
+        super(mainTable, model, mapper, filterController);
         this.filterController = filterController;
         this.filter = filter;
 

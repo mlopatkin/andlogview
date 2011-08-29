@@ -20,8 +20,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTable;
 
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
-
 public abstract class AbstractIndexController implements IndexController {
 
     private JTable mainTable;
@@ -30,11 +28,11 @@ public abstract class AbstractIndexController implements IndexController {
     private IndexFrame indexFrame;
 
     public AbstractIndexController(JTable mainTable, LogRecordTableModel model,
-            PidToProcessConverter converter, FilterController filterController) {
+            PidToProcessMapper mapper, FilterController filterController) {
         this.mainTable = mainTable;
         this.model = model;
 
-        indexFrame = new IndexFrame(model, new IndexTableColumnModel(converter), this);
+        indexFrame = new IndexFrame(model, new IndexTableColumnModel(mapper), this);
 
         filterController.addRefreshListener(new ActionListener() {
 

@@ -17,22 +17,18 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
-
 public class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
 
-    private PidToProcessConverter converter;
+    private PidToProcessMapper mapper;
 
-    public ToolTippedPidCellRenderer(PidToProcessConverter converter) {
-        this.converter = converter;
+    public ToolTippedPidCellRenderer(PidToProcessMapper mapper) {
+        this.mapper = mapper;
     }
 
     @Override
     protected void setValue(Object value) {
         assert value instanceof Integer;
         super.setValue(value);
-        if (converter != null) {
-            setToolTipText(converter.getProcessName((Integer) value));
-        }
+        setToolTipText(mapper.getProcessName((Integer) value));
     }
 }

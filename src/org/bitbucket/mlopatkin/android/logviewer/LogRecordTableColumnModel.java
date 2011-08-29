@@ -23,7 +23,6 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.ToolTippedCellRenderer;
 
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
@@ -104,17 +103,16 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addColumn(column);
     }
 
-    public LogRecordTableColumnModel(PidToProcessConverter pidToProcessConverter) {
-        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessConverter);
+    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper) {
+        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         initColumnInfo();
         for (String columnName : columnInfo.keySet()) {
             addColumnByName(columnName);
         }
     }
 
-    public LogRecordTableColumnModel(List<String> columnNames,
-            PidToProcessConverter pidToProcessConverter) {
-        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessConverter);
+    public LogRecordTableColumnModel(List<String> columnNames, PidToProcessMapper pidToProcessMapper) {
+        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         initColumnInfo();
         for (String columnName : columnNames) {
             addColumnByName(columnName);

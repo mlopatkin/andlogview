@@ -17,11 +17,8 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -29,7 +26,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -38,17 +34,14 @@ import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 import com.android.ddmlib.AndroidDebugBridge;
 
-public class Main {
+public class Main extends JFrame {
     private static final Logger logger = Logger.getLogger(Main.class);
 
-    private JFrame frmAndroidLogViewer;
     private DecoratingRendererTable logElements;
     private JScrollPane scrollPane;
 
@@ -63,41 +56,8 @@ public class Main {
     private JPanel panel;
     private JTextField instantSearchTextField;
 
-    /**
-     * Launch the application.
-     */
-    public static void main(final String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    Main window = new Main(args);
-                    window.frmAndroidLogViewer.setVisible(true);
-                } catch (Exception e) {
-                    logger.error("Exception occured", e);
-                }
-            }
-        });
-
-    }
-
-    /**
-     * Create the application.
-     * 
-     * @throws IOException
-     */
-    public Main(String[] args) throws IOException {
-        Configuration.forceInit();
-
-        if (args.length > 0) {
-            source = FileDataSourceFactory.createDataSource(new File(args[0]));
-            if (source == null) {
-                JOptionPane.showMessageDialog(null, "Unrecognized file " + args[0], "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } else {
-            source = AdbDataSource.createAdbDataSource();
-        }
+    public Main(DataSource initialSource) {
+        source = initialSource;
 
         initialize();
         source.setLogRecordListener(scrollController);
@@ -113,14 +73,34 @@ public class Main {
         });
     }
 
+    public void setSource(DataSource newSource) {
+        if (source != null) {
+            source.close();
+        }
+        source = newSource;
+        recordsModel.clear();
+        source.setLogRecordListener(scrollController);
+    }
+
+    private PidToProcessMapper mapper = new PidToProcessMapper() {
+
+        @Override
+        public String getProcessName(int pid) {
+            if (source != null && source.getPidToProcessConverter() != null) {
+                return source.getPidToProcessConverter().getProcessName(pid);
+            } else {
+                return null;
+            }
+        }
+    };
+
     /**
      * Initialize the contents of the frame.
      */
     private void initialize() {
-        frmAndroidLogViewer = new JFrame();
-        frmAndroidLogViewer.setTitle("Android Log Viewer");
-        frmAndroidLogViewer.setBounds(100, 100, 1000, 450);
-        frmAndroidLogViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Android Log Viewer");
+        setBounds(100, 100, 1000, 450);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logElements = new DecoratingRendererTable();
         logElements.setFillsViewportHeight(true);
@@ -128,24 +108,24 @@ public class Main {
 
         logElements.setModel(recordsModel);
         logElements.addDecorator(new PriorityColoredCellRenderer());
-        logElements.setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), source
-                .getPidToProcessConverter()));
+        logElements
+                .setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), mapper));
 
         logElements.setTransferHandler(new LogRecordsTransferHandler());
 
         scrollPane = new JScrollPane(logElements);
-        frmAndroidLogViewer.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         scrollController = new AutoScrollController(logElements, recordsModel);
         filterController = new FilterController(logElements, recordsModel);
-        pinRecordsController = new PinRecordsController(logElements, recordsModel, source
-                .getPidToProcessConverter(), filterController);
+        pinRecordsController = new PinRecordsController(logElements, recordsModel, mapper,
+                filterController);
         popupMenuHandler = new LogRecordPopupMenuHandler(this, logElements, filterController,
                 pinRecordsController);
         searchController = new SearchController(logElements, recordsModel);
 
         panel = new JPanel();
-        frmAndroidLogViewer.getContentPane().add(panel, BorderLayout.SOUTH);
+        getContentPane().add(panel, BorderLayout.SOUTH);
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
         statusLabel = new JLabel();
@@ -232,9 +212,9 @@ public class Main {
     }
 
     private void bindKeyGlobal(String key, String actionKey, Action action) {
-        frmAndroidLogViewer.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
                 KeyStroke.getKeyStroke(key), actionKey);
-        frmAndroidLogViewer.getRootPane().getActionMap().put(actionKey, action);
+        getRootPane().getActionMap().put(actionKey, action);
     }
 
     private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";

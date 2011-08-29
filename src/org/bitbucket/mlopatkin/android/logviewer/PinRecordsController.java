@@ -24,7 +24,6 @@ import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
 public class PinRecordsController extends AbstractIndexController implements IndexController {
@@ -37,8 +36,8 @@ public class PinRecordsController extends AbstractIndexController implements Ind
 
     @SuppressWarnings("unchecked")
     public PinRecordsController(JTable mainTable, LogRecordTableModel model,
-            PidToProcessConverter converter, FilterController filterController) {
-        super(mainTable, model, converter, filterController);
+            PidToProcessMapper mapper, FilterController filterController) {
+        super(mainTable, model, mapper, filterController);
         getFrame().setTitle("Pinned records");
 
         table = getFrame().getTable();
