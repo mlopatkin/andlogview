@@ -70,6 +70,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         initialize();
 
+        setTransferHandler(new FileTransferHandler(this));
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
