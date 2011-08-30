@@ -70,6 +70,7 @@ class ShellInputStream extends PipedInputStream implements IShellOutputReceiver 
         closed = true;
         try {
             super.close();
+            out.close();
         } catch (IOException e) {
             logger.error("Unexpected IO exception", e);
         }

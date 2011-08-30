@@ -88,6 +88,8 @@ public class AdbDataSource implements DataSource {
         for (AdbBuffer stream : buffers) {
             stream.close();
         }
+        backgroundUpdater.shutdown();
+        shellCommandExecutor.shutdown();
     }
 
     @Override
@@ -196,8 +198,8 @@ public class AdbDataSource implements DataSource {
         }
 
         void close() {
-            shellInput.close();
             pollingThread.close();
+            shellInput.close();
         }
 
         private class PollingThread extends Thread {
@@ -214,6 +216,7 @@ public class AdbDataSource implements DataSource {
                     pushRecord(record);
                     record = in.next(kind);
                 }
+
             }
 
             private boolean closed = false;
