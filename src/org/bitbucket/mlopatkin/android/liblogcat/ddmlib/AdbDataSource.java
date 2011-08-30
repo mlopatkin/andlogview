@@ -31,20 +31,19 @@ import java.util.regex.Matcher;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class AdbDataSource implements DataSource {
 
@@ -56,14 +55,10 @@ public class AdbDataSource implements DataSource {
     private AdbPidToProcessConverter converter;
 
     public AdbDataSource() {
-        AndroidDebugBridge.addDeviceChangeListener(changeListener);
+        AdbDeviceManager.addDeviceChangeListener(changeListener);
     }
 
-    private IDeviceChangeListener changeListener = new IDeviceChangeListener() {
-        @Override
-        public void deviceDisconnected(IDevice device) {
-
-        }
+    private IDeviceChangeListener changeListener = new AdbDeviceManager.AbstractDeviceListener() {
 
         @Override
         public void deviceConnected(IDevice device) {
@@ -71,11 +66,6 @@ public class AdbDataSource implements DataSource {
                 AdbDataSource.this.device = device;
                 initStreams();
             }
-        }
-
-        @Override
-        public void deviceChanged(IDevice device, int changeMask) {
-
         }
     };
 
@@ -112,21 +102,9 @@ public class AdbDataSource implements DataSource {
     }
 
     public static AdbDataSource createAdbDataSource() {
-        AndroidDebugBridge.init(false);
-        AndroidDebugBridge adb = AndroidDebugBridge.createBridge();
-        if (adb == null) {
-            logger.error("ADB is null");
-            return null;
-        }
-        while (!adb.hasInitialDeviceList()) { 
-            // do not remove following log line, it prevents server vm from
-            // dropping this cycle away and thus fixes #6
-            logger.debug("ADB retry");
-        }
-        logger.debug("ADB has initial device list");
-        if (adb.getDevices().length > 0) {
-            IDevice first = adb.getDevices()[0];
-            return new AdbDataSource(first);
+        IDevice device = AdbDeviceManager.getDefaultDevice();
+        if (device != null) {
+            return new AdbDataSource(device);
         } else {
             logger.info("No device detected");
             return new AdbDataSource();

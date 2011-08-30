@@ -45,8 +45,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatExceptio
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-import com.android.ddmlib.AndroidDebugBridge;
-
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
@@ -69,18 +67,6 @@ public class MainFrame extends JFrame {
      */
     public MainFrame() {
         initialize();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if (source != null) {
-                    source.close();
-                }
-                if (AndroidDebugBridge.getBridge() != null) {
-                    AndroidDebugBridge.terminate();
-                }
-            }
-        });
     }
 
     public void setSource(DataSource newSource) {
