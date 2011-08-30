@@ -29,6 +29,10 @@ public class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
     protected void setValue(Object value) {
         assert value instanceof Integer;
         super.setValue(value);
-        setToolTipText(mapper.getProcessName((Integer) value));
+        if (mapper != null) {
+            setToolTipText(mapper.getProcessName((Integer) value));
+        } else {
+            setToolTipText(null);
+        }
     }
 }
