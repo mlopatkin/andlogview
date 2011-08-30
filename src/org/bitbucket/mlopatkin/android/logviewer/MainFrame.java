@@ -283,6 +283,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         JMenu mnAdb = new JMenu("ADB");
         mnAdb.add(acConnectToDevice);
+        mnAdb.addSeparator();
+        mnAdb.add(acResetLogs);
         mainMenu.add(mnAdb);
 
         setJMenuBar(mainMenu);
@@ -325,4 +327,12 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             setSource(new AdbDataSource(selectedDevice));
         }
     }
+
+    private Action acResetLogs = new AbstractAction("Reset logs") {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            reset();
+        }
+    };
 }

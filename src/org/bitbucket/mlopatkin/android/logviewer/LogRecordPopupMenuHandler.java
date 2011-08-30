@@ -31,7 +31,6 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
     private JMenuItem hideWithThisTag = new JMenuItem("Hide with this tag");
     private JMenuItem hideWithThisPid = new JMenuItem("Hide with this pid");
     private JMenuItem pinThisLine = new JMenuItem("Pin this line");
-    private JMenuItem resetLog = new JMenuItem("Reset logs");
 
     private PinRecordsController pinRecordsController;
     private FilterController filterController;
@@ -64,20 +63,10 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
             }
         });
 
-        resetLog.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                main.reset();
-            }
-        });
-
         JPopupMenu popupMenu = getMenu();
         popupMenu.add(hideWithThisTag);
         popupMenu.add(hideWithThisPid);
         popupMenu.add(pinThisLine);
-        popupMenu.addSeparator();
-        popupMenu.add(resetLog);
     }
 
     public LogRecordPopupMenuHandler(MainFrame main, JTable table,
