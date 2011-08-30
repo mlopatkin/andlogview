@@ -32,6 +32,10 @@ public class AdbDeviceManager {
         AndroidDebugBridge.addDeviceChangeListener(listener);
     }
 
+    public static void removeDeviceChangeListener(IDeviceChangeListener listener) {
+        AndroidDebugBridge.removeDeviceChangeListener(listener);
+    }
+
     public static List<IDevice> getAvailableDevices() {
         AndroidDebugBridge adb = AdbConnectionManager.getAdb();
         if (adb.hasInitialDeviceList()) {

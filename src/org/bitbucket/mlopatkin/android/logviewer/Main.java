@@ -23,12 +23,16 @@ import javax.swing.JOptionPane;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+
+import com.android.ddmlib.IDevice;
 
 public class Main {
 
     private DataSource initialSource;
+    private MainFrame window;
 
     public static void main(String[] args) {
         Configuration.forceInit();
@@ -45,6 +49,7 @@ public class Main {
     }
 
     Main(File file) {
+        window = new MainFrame();
         try {
             initialSource = FileDataSourceFactory.createDataSource(file);
         } catch (UnrecognizedFormatException e) {
@@ -55,13 +60,19 @@ public class Main {
     }
 
     Main() {
-        initialSource = AdbDataSource.createAdbDataSource();
+        window = new MainFrame();
+        IDevice device = AdbDeviceManager.getDefaultDevice();
+        if (device != null) {
+            DeviceDisconnectedNotifier.startWatching(device);
+            initialSource = new AdbDataSource(device);
+        }
     }
 
     void start() {
-        final MainFrame window = new MainFrame();
         if (initialSource != null) {
             window.setSource(initialSource);
+        } else {
+            window.waitForDevice();
         }
         EventQueue.invokeLater(new Runnable() {
             @Override

@@ -39,7 +39,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
@@ -53,21 +52,6 @@ public class AdbDataSource implements DataSource {
 
     private IDevice device;
     private AdbPidToProcessConverter converter;
-
-    public AdbDataSource() {
-        AdbDeviceManager.addDeviceChangeListener(changeListener);
-    }
-
-    private IDeviceChangeListener changeListener = new AdbDeviceManager.AbstractDeviceListener() {
-
-        @Override
-        public void deviceConnected(IDevice device) {
-            if (AdbDataSource.this.device == null) {
-                AdbDataSource.this.device = device;
-                initStreams();
-            }
-        }
-    };
 
     private void initStreams() {
         for (LogRecord.Buffer buffer : LogRecord.Buffer.values()) {
@@ -101,16 +85,6 @@ public class AdbDataSource implements DataSource {
     public synchronized void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
         notifyAll();
-    }
-
-    public static AdbDataSource createAdbDataSource() {
-        IDevice device = AdbDeviceManager.getDefaultDevice();
-        if (device != null) {
-            return new AdbDataSource(device);
-        } else {
-            logger.info("No device detected");
-            return new AdbDataSource();
-        }
     }
 
     private synchronized void waitForListener() {

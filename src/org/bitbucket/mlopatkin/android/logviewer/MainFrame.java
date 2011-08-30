@@ -40,12 +40,14 @@ import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
@@ -325,6 +327,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     @Override
     public void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice) {
         if (selectedDevice != null) {
+            DeviceDisconnectedNotifier.startWatching(selectedDevice);
             setSource(new AdbDataSource(selectedDevice));
         }
     }
@@ -336,4 +339,19 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             reset();
         }
     };
+
+    /**
+     * Wait for device to connect.
+     */
+    public void waitForDevice() {
+        IDeviceChangeListener pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
+            @Override
+            public void deviceConnected(IDevice device) {
+                DeviceDisconnectedNotifier.startWatching(device);
+                setSource(new AdbDataSource(device));
+                AdbDeviceManager.removeDeviceChangeListener(this);
+            }
+        };
+        AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
+    }
 }
