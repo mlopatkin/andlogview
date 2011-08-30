@@ -33,7 +33,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
@@ -46,9 +46,9 @@ public class DumpstateFileDataSource implements DataSource {
     public DumpstateFileDataSource(File file) {
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
-            readLog(in, LogRecord.Kind.MAIN);
-            readLog(in, LogRecord.Kind.EVENTS);
-            readLog(in, LogRecord.Kind.RADIO);
+            readLog(in, LogRecord.Buffer.MAIN);
+            readLog(in, LogRecord.Buffer.EVENTS);
+            readLog(in, LogRecord.Buffer.RADIO);
             readProcessesList(in);
             in.close();
         } catch (IOException e) {
@@ -58,25 +58,25 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     DumpstateFileDataSource(BufferedReader in) throws IOException {
-        readLog(in, LogRecord.Kind.MAIN);
-        readLog(in, LogRecord.Kind.EVENTS);
-        readLog(in, LogRecord.Kind.RADIO);
+        readLog(in, LogRecord.Buffer.MAIN);
+        readLog(in, LogRecord.Buffer.EVENTS);
+        readLog(in, LogRecord.Buffer.RADIO);
         readProcessesList(in);
         Collections.sort(source, sortByTimeAscComparator);
     }
 
-    private void readLog(BufferedReader in, LogRecord.Kind kind) throws IOException {
-        String bufferName = Configuration.dump.bufferHeader(kind);
+    private void readLog(BufferedReader in, LogRecord.Buffer buffer) throws IOException {
+        String bufferName = Configuration.dump.bufferHeader(buffer);
         if (bufferName == null) {
-            logger.warn("This kind of log isn't supported for dumpstate files:" + kind);
+            logger.warn("This kind of log isn't supported for dumpstate files:" + buffer);
             return;
         }
         scanForLogBegin(in, bufferName);
         LogRecordStream stream = new DumpstateRecordStream(in);
-        LogRecord record = stream.next(kind);
+        LogRecord record = stream.next(buffer);
         while (record != null) {
             source.add(record);
-            record = stream.next(kind);
+            record = stream.next(buffer);
         }
     }
 
@@ -154,8 +154,8 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     @Override
-    public EnumSet<Kind> getAvailableBuffers() {
-        return EnumSet.of(Kind.MAIN, Kind.RADIO, Kind.EVENTS);
+    public EnumSet<Buffer> getAvailableBuffers() {
+        return EnumSet.of(Buffer.MAIN, Buffer.RADIO, Buffer.EVENTS);
     }
 
     @Override

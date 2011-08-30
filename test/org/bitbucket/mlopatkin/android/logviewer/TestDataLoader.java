@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
 public class TestDataLoader {
     private static final String filename = "test_data.txt";
@@ -35,7 +35,7 @@ public class TestDataLoader {
             try {
                 String s = in.readLine();
                 while (s != null) {
-                    result.add(LogRecordParser.parseThreadTime(Kind.UNKNOWN, s));
+                    result.add(LogRecordParser.parseThreadTime(Buffer.UNKNOWN, s));
                     s = in.readLine();
                 }
             } finally {

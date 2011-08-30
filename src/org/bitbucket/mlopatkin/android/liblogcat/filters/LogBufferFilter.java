@@ -18,22 +18,22 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 import java.util.EnumSet;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
-public class LogKindFilter implements LogRecordFilter {
+public class LogBufferFilter implements LogRecordFilter {
 
-    private EnumSet<Kind> kinds = EnumSet.noneOf(Kind.class);
+    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
 
     @Override
     public boolean include(LogRecord record) {
-        return kinds.contains(record.getKind());
+        return buffers.contains(record.getBuffer());
     }
 
-    public void setKindEnabled(Kind kind, boolean enabled) {
+    public void setBufferEnabled(Buffer buffer, boolean enabled) {
         if (enabled) {
-            kinds.add(kind);
+            buffers.add(buffer);
         } else {
-            kinds.remove(kind);
+            buffers.remove(buffer);
         }
     }
 }

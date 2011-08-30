@@ -24,9 +24,9 @@ import java.util.Map;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.ComposeFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogKindFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MessageFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
@@ -52,15 +52,15 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     // this filter acts as hiding filter, initially empty, but hides unselected
     // buffers
-    private LogKindFilter kindFilter = new LogKindFilter();
+    private LogBufferFilter bufferFilter = new LogBufferFilter();
     private Map<LogRecordFilter, WindowFilterController> windowControllers = new HashMap<LogRecordFilter, WindowFilterController>();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
         this.tableModel = tableModel;
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(tableModel);
-        filters.addFilter(FilteringMode.HIDE, kindFilter);
-        initKindFilter();
+        filters.addFilter(FilteringMode.HIDE, bufferFilter);
+        initBufferFilter();
         table.setRowSorter(rowSorter);
         rowFilter = new LogRecordRowFilter(filters);
         rowSorter.setRowFilter(rowFilter);
@@ -71,8 +71,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         rowSorter.sort();
         table.repaint();
         if (table.getSelectedRow() != -1) {
-            table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(), table
-                    .getSelectedColumn(), false));
+            table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(),
+                    table.getSelectedColumn(), false));
         }
         for (ActionListener listener : refreshActionListeners) {
             listener.actionPerformed(null);
@@ -202,16 +202,16 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         onFilteringStateUpdated();
     }
 
-    public void setBufferEnabled(Kind kind, boolean selected) {
-        kindFilter.setKindEnabled(kind, !selected);
+    public void setBufferEnabled(Buffer buffer, boolean selected) {
+        bufferFilter.setBufferEnabled(buffer, !selected);
         onFilteringStateUpdated();
     }
 
-    private void initKindFilter() {
-        for (Kind kind : Kind.values()) {
-            kindFilter.setKindEnabled(kind, !Configuration.ui.bufferEnabled(kind));
-            logger.debug(String.format("KindFilter: %s %s", kind, !Configuration.ui
-                    .bufferEnabled(kind)));
+    private void initBufferFilter() {
+        for (Buffer buffer : Buffer.values()) {
+            bufferFilter.setBufferEnabled(buffer, !Configuration.ui.bufferEnabled(buffer));
+            logger.debug(String.format("BufferFilter: %s %s", buffer,
+                    !Configuration.ui.bufferEnabled(buffer)));
         }
     }
 }

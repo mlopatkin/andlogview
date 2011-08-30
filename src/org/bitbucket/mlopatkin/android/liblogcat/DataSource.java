@@ -24,7 +24,7 @@ public interface DataSource {
 
     void close();
 
-    EnumSet<LogRecord.Kind> getAvailableBuffers();
+    EnumSet<LogRecord.Buffer> getAvailableBuffers();
 
     void reset();
 }

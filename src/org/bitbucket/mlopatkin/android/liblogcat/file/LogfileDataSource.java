@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
@@ -39,7 +39,7 @@ public class LogfileDataSource implements DataSource {
 
     private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
 
-    private static final Kind DEFAULT_KIND = Kind.UNKNOWN;
+    private static final Buffer DEFAULT_BUFFER = Buffer.UNKNOWN;
 
     private LogRecordDataSourceListener listener;
     private ParsingStrategy strategy;
@@ -54,7 +54,7 @@ public class LogfileDataSource implements DataSource {
         String line = in.readLine();
         while (line != null) {
             if (!LogRecordParser.isLogBeginningLine(line) && !StringUtils.isBlank(line)) {
-                LogRecord record = strategy.parse(DEFAULT_KIND, line);
+                LogRecord record = strategy.parse(DEFAULT_BUFFER, line);
                 records.add(record);
             }
             line = in.readLine();
@@ -67,7 +67,7 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public EnumSet<Kind> getAvailableBuffers() {
+    public EnumSet<Buffer> getAvailableBuffers() {
         return null;
     }
 
@@ -85,13 +85,13 @@ public class LogfileDataSource implements DataSource {
     }
 
     private interface ParsingStrategy {
-        LogRecord parse(Kind kind, String line);
+        LogRecord parse(Buffer buffer, String line);
     }
 
     private static final ParsingStrategy threadTimeStrategy = new ParsingStrategy() {
         @Override
-        public LogRecord parse(Kind kind, String line) {
-            return LogRecordParser.parseThreadTime(kind, line);
+        public LogRecord parse(Buffer buffer, String line) {
+            return LogRecordParser.parseThreadTime(buffer, line);
         }
 
         public String toString() {
@@ -101,8 +101,8 @@ public class LogfileDataSource implements DataSource {
 
     private static final ParsingStrategy briefStrategy = new ParsingStrategy() {
         @Override
-        public LogRecord parse(Kind kind, String line) {
-            return LogRecordParser.parseBrief(kind, line);
+        public LogRecord parse(Buffer buffer, String line) {
+            return LogRecordParser.parseBrief(buffer, line);
         }
 
         public String toString() {

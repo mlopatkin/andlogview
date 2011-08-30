@@ -43,7 +43,7 @@ public class LogRecordParserTest {
     static final int TID = 1172;
     static final LogRecord.Priority PRIORITY = LogRecord.Priority.DEBUG;
     static final Date DATE = getDate(getCurrentYear(), 8, 18, 13, 40, 59, 546);
-    static final LogRecord.Kind KIND = LogRecord.Kind.MAIN;
+    static final LogRecord.Buffer BUFFER = LogRecord.Buffer.MAIN;
 
     static final String LOG_BEGINNING_LINE = "--------- beginning of /dev/log/system";
     static final String BLANK_LINE = "";
@@ -74,7 +74,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserThreadTime() {
-        LogRecord record = LogRecordParser.parseThreadTime(KIND, THREADTIME_RECORD);
+        LogRecord record = LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD);
 
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
@@ -82,12 +82,12 @@ public class LogRecordParserTest {
         assertEquals(TID, record.getTid());
         assertTrue(isSameDate(DATE, record.getTime()));
         assertEquals(PRIORITY, record.getPriority());
-        assertEquals(KIND, record.getKind());
+        assertEquals(BUFFER, record.getBuffer());
     }
 
     @Test
     public void testLogRecordParserBrief() {
-        LogRecord record = LogRecordParser.parseBrief(KIND, BRIEF_RECORD);
+        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD);
 
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getTid());
@@ -96,12 +96,12 @@ public class LogRecordParserTest {
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PRIORITY, record.getPriority());
-        assertEquals(KIND, record.getKind());
+        assertEquals(BUFFER, record.getBuffer());
     }
 
     @Test
     public void testLogRecordParserProcess() {
-        LogRecord record = LogRecordParser.parseProcess(KIND, PROCESS_RECORD);
+        LogRecord record = LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD);
 
         assertEquals(LogRecord.NO_ID, record.getTid());
         assertNull(record.getTime());
@@ -110,12 +110,12 @@ public class LogRecordParserTest {
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PID, record.getPid());
         assertEquals(PRIORITY, record.getPriority());
-        assertEquals(KIND, record.getKind());
+        assertEquals(BUFFER, record.getBuffer());
     }
 
     @Test
     public void testLogRecordParserTag() {
-        LogRecord record = LogRecordParser.parseTag(KIND, TAG_RECORD);
+        LogRecord record = LogRecordParser.parseTag(BUFFER, TAG_RECORD);
 
         assertEquals(LogRecord.NO_ID, record.getTid());
         assertNull(record.getTime());
@@ -124,7 +124,7 @@ public class LogRecordParserTest {
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PRIORITY, record.getPriority());
-        assertEquals(KIND, record.getKind());
+        assertEquals(BUFFER, record.getBuffer());
     }
 
     @Test

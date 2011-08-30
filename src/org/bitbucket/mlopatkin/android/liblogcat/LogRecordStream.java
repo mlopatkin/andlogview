@@ -36,7 +36,7 @@ public class LogRecordStream {
         this.in = in;
     }
 
-    public LogRecord next(LogRecord.Kind kind) {
+    public LogRecord next(LogRecord.Buffer kind) {
         try {
             String line = in.readLine();
             while (!isLogEnd(line)) {

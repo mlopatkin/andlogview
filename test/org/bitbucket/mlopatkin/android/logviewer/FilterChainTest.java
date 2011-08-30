@@ -21,17 +21,17 @@ import static org.junit.Assert.assertTrue;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 import org.junit.Test;
 
 public class FilterChainTest {
 
-    private static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(Kind.UNKNOWN,
+    private static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(Buffer.UNKNOWN,
             "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172");
 
-    private static final LogRecord RECORD2 = LogRecordParser.parseThreadTime(Kind.UNKNOWN,
+    private static final LogRecord RECORD2 = LogRecordParser.parseThreadTime(Buffer.UNKNOWN,
             "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172");
 
     private static final LogRecordFilter TAG_FILTER_MATCH = new SingleTagFilter("AudioFlinger");

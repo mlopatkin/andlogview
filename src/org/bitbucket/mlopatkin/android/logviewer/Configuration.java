@@ -32,7 +32,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class Configuration {
@@ -40,7 +40,7 @@ public class Configuration {
     public static class ui {
         private static final String PREFIX = "ui.";
         private static List<String> columns_;
-        private static EnumSet<Kind> buffers_;
+        private static EnumSet<Buffer> buffers_;
 
         private static void initColumns() {
             String columnsValue = instance.properties.getProperty(PREFIX + "columns",
@@ -49,10 +49,10 @@ public class Configuration {
         }
 
         private static void initBuffers() {
-            buffers_ = EnumSet.noneOf(Kind.class);
+            buffers_ = EnumSet.noneOf(Buffer.class);
             String columnsValue = instance.properties.getProperty(PREFIX + "buffers", "MAIN");
             for (String bufferName : splitCommaSeparatedValues(columnsValue)) {
-                buffers_.add(Kind.valueOf(bufferName.toUpperCase()));
+                buffers_.add(Buffer.valueOf(bufferName.toUpperCase()));
             }
         }
 
@@ -85,7 +85,7 @@ public class Configuration {
             return parseColor(PREFIX + "background_color", Color.WHITE);
         }
 
-        public static boolean bufferEnabled(Kind buffer) {
+        public static boolean bufferEnabled(Buffer buffer) {
             if (buffers_ == null) {
                 initBuffers();
             }
@@ -104,7 +104,7 @@ public class Configuration {
             return instance.properties.getProperty(PREFIX + "bufferswitch", "-b");
         }
 
-        public static String bufferName(Kind buffer) {
+        public static String bufferName(Buffer buffer) {
             return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
         }
 
@@ -116,7 +116,7 @@ public class Configuration {
     public static class dump {
         private static final String PREFIX = "dump.";
 
-        public static String bufferHeader(Kind buffer) {
+        public static String bufferHeader(Buffer buffer) {
             return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
         }
     }

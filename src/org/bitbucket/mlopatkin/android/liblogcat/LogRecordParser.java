@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class LogRecordParser {
@@ -53,7 +53,7 @@ public class LogRecordParser {
             return threadTimeRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Kind kind, Matcher m) {
+        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
@@ -64,7 +64,7 @@ public class LogRecordParser {
                 LogRecord.Priority priority = getPriorityFromChar(m.group(4));
                 String tag = m.group(5);
                 String message = m.group(6);
-                return new LogRecord(dateTime, pid, tid, priority, tag, message, kind);
+                return new LogRecord(dateTime, pid, tid, priority, tag, message, buffer);
             } catch (ParseException e) {
                 return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
             }
@@ -82,7 +82,7 @@ public class LogRecordParser {
             return briefRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Kind kind, Matcher m) {
+        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
@@ -91,7 +91,7 @@ public class LogRecordParser {
             int pid = Integer.parseInt(m.group(3));
             String message = m.group(4);
 
-            return new LogRecord(null, pid, LogRecord.NO_ID, priority, tag, message, kind);
+            return new LogRecord(null, pid, LogRecord.NO_ID, priority, tag, message, buffer);
         }
     }
 
@@ -106,7 +106,7 @@ public class LogRecordParser {
             return processRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Kind kind, Matcher m) {
+        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
@@ -115,7 +115,7 @@ public class LogRecordParser {
             String message = m.group(3);
             String tag = m.group(4);
 
-            return new LogRecord(null, pid, LogRecord.NO_ID, priority, tag, message, kind);
+            return new LogRecord(null, pid, LogRecord.NO_ID, priority, tag, message, buffer);
         }
     }
 
@@ -129,7 +129,7 @@ public class LogRecordParser {
             return tagRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Kind kind, Matcher m) {
+        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
@@ -138,7 +138,7 @@ public class LogRecordParser {
             String message = m.group(3);
 
             return new LogRecord(null, LogRecord.NO_ID, LogRecord.NO_ID, priority, tag, message,
-                    kind);
+                    buffer);
         }
     }
 
@@ -153,20 +153,20 @@ public class LogRecordParser {
                 + "' doesn't correspond to valid priority value");
     }
 
-    public static LogRecord parseThreadTime(Kind kind, String line) {
-        return ThreadTime.createFromGroups(kind, ThreadTime.matchLine(line));
+    public static LogRecord parseThreadTime(Buffer buffer, String line) {
+        return ThreadTime.createFromGroups(buffer, ThreadTime.matchLine(line));
     }
 
-    public static LogRecord parseBrief(Kind kind, String line) {
-        return Brief.createFromGroups(kind, Brief.matchLine(line));
+    public static LogRecord parseBrief(Buffer buffer, String line) {
+        return Brief.createFromGroups(buffer, Brief.matchLine(line));
     }
 
-    public static LogRecord parseProcess(Kind kind, String line) {
-        return Process.createFromGroups(kind, Process.matchLine(line));
+    public static LogRecord parseProcess(Buffer buffer, String line) {
+        return Process.createFromGroups(buffer, Process.matchLine(line));
     }
 
-    public static LogRecord parseTag(Kind kind, String line) {
-        return Tag.createFromGroups(kind, Tag.matchLine(line));
+    public static LogRecord parseTag(Buffer buffer, String line) {
+        return Tag.createFromGroups(buffer, Tag.matchLine(line));
     }
 
     private static final String LOG_BEGIN = "--------- beginning of ";

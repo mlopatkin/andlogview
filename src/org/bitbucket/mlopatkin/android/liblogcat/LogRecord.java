@@ -26,7 +26,7 @@ public class LogRecord implements Comparable<LogRecord> {
         }
     }
 
-    public enum Kind {
+    public enum Buffer {
         UNKNOWN, MAIN("Main"), SYSTEM("System"), RADIO("Radio"), EVENTS("Events");
 
         private String name;
@@ -35,11 +35,11 @@ public class LogRecord implements Comparable<LogRecord> {
             return name;
         }
 
-        private Kind() {
+        private Buffer() {
             name = null;
         }
 
-        private Kind(String name) {
+        private Buffer(String name) {
             this.name = name;
         }
     }
@@ -52,7 +52,7 @@ public class LogRecord implements Comparable<LogRecord> {
     private Priority priority;
     private String tag;
     private String message;
-    private Kind kind = Kind.UNKNOWN;
+    private Buffer buffer = Buffer.UNKNOWN;
 
     public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message) {
         this.time = time;
@@ -64,9 +64,9 @@ public class LogRecord implements Comparable<LogRecord> {
     }
 
     public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message,
-            Kind kind) {
+            Buffer buffer) {
         this(time, pid, tid, priority, tag, message);
-        this.kind = kind;
+        this.buffer = buffer;
     }
 
     public Date getTime() {
@@ -93,8 +93,8 @@ public class LogRecord implements Comparable<LogRecord> {
         return message;
     }
 
-    public Kind getKind() {
-        return kind;
+    public Buffer getBuffer() {
+        return buffer;
     }
 
     @Override

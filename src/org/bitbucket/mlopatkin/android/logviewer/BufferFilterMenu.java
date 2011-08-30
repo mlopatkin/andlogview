@@ -25,38 +25,38 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Kind;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
-public class KindFilterMenu extends JPopupMenu {
-    private static final Logger logger = Logger.getLogger(KindFilterMenu.class);
+public class BufferFilterMenu extends JPopupMenu {
+    private static final Logger logger = Logger.getLogger(BufferFilterMenu.class);
 
     private FilterController controller;
 
-    private class KindCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
+    private class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
 
-        private LogRecord.Kind kind;
+        private LogRecord.Buffer buffer;
 
-        public KindCheckBoxMenuItem(LogRecord.Kind kind, boolean selected) {
-            super(kind.getCaption(), selected);
+        public BufferCheckBoxMenuItem(LogRecord.Buffer buffer, boolean selected) {
+            super(buffer.getCaption(), selected);
             addActionListener(this);
-            this.kind = kind;
+            this.buffer = buffer;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            controller.setBufferEnabled(kind, isSelected());
+            controller.setBufferEnabled(buffer, isSelected());
         }
     }
 
-    public KindFilterMenu(EnumSet<Kind> enabledBuffers, FilterController controller) {
+    public BufferFilterMenu(EnumSet<Buffer> enabledBuffers, FilterController controller) {
         this.controller = controller;
-        for (Kind kind : enabledBuffers) {
-            if (kind != LogRecord.Kind.UNKNOWN) {
-                JMenuItem item = new KindCheckBoxMenuItem(kind, Configuration.ui
-                        .bufferEnabled(kind));
+        for (Buffer buffer : enabledBuffers) {
+            if (buffer != LogRecord.Buffer.UNKNOWN) {
+                JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui
+                        .bufferEnabled(buffer));
                 add(item);
             }
-            logger.debug(kind);
+            logger.debug(buffer);
         }
     }
 }
