@@ -31,7 +31,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -66,6 +65,7 @@ public class MainFrame extends JFrame {
      * @wbp.parser.entryPoint
      */
     public MainFrame() {
+        super();
         initialize();
     }
 
@@ -274,12 +274,10 @@ public class MainFrame extends JFrame {
         JMenuBar mainMenu = new JMenuBar();
 
         JMenu mnFile = new JMenu("File");
-        JMenuItem mnOpen = new JMenuItem(acOpenFile);
-        mnFile.add(mnOpen);
+        mnFile.add(acOpenFile);
         mainMenu.add(mnFile);
 
         JMenu mnAdb = new JMenu("ADB");
-        JMenuItem mnConnectTo = new JMenuItem(acConnectToDevice);
         mnAdb.add(acConnectToDevice);
         mainMenu.add(mnAdb);
 
@@ -313,8 +311,8 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-
+            SelectDeviceDialog dialog = new SelectDeviceDialog();
+            dialog.setVisible(true);
         }
     };
 }
