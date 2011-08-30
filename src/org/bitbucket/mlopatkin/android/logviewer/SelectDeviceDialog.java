@@ -38,13 +38,29 @@ import com.android.ddmlib.IDevice;
 
 public class SelectDeviceDialog extends JDialog {
 
+    public interface DialogResultReceiver {
+        void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice);
+    }
+
+    public static void showSelectDeviceDialog(DialogResultReceiver receiver) {
+        if (dialog == null) {
+            dialog = new SelectDeviceDialog();
+        }
+        dialog.receiver = receiver;
+        dialog.setVisible(true);
+    }
+
     private static final Logger logger = Logger.getLogger(SelectDeviceDialog.class);
 
+    private static SelectDeviceDialog dialog;
+
     private JList deviceList;
+    private DialogResultReceiver receiver;
 
     private DeviceListModel devices = new DeviceListModel();
 
-    public SelectDeviceDialog() {
+    private SelectDeviceDialog() {
+        setModal(true);
         setTitle("Select device");
         setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());
@@ -87,14 +103,18 @@ public class SelectDeviceDialog extends JDialog {
     }
 
     private void onPositiveResult() {
-
+        assert receiver != null;
+        receiver.onDialogResult(this, getSelectedDevice());
+        setVisible(false);
     }
 
     private void onNegativeResult() {
-
+        assert receiver != null;
+        receiver.onDialogResult(this, null);
+        setVisible(false);
     }
 
-    public IDevice getSelectedDevice() {
+    private IDevice getSelectedDevice() {
         int selected = deviceList.getSelectedIndex();
         if (selected >= 0) {
             return devices.getDevice(selected);

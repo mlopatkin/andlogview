@@ -39,12 +39,16 @@ import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-public class MainFrame extends JFrame {
+import com.android.ddmlib.IDevice;
+
+public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
     private DecoratingRendererTable logElements;
@@ -311,8 +315,14 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            SelectDeviceDialog dialog = new SelectDeviceDialog();
-            dialog.setVisible(true);
+            SelectDeviceDialog.showSelectDeviceDialog(MainFrame.this);
         }
     };
+
+    @Override
+    public void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice) {
+        if (selectedDevice != null) {
+            setSource(new AdbDataSource(selectedDevice));
+        }
+    }
 }
