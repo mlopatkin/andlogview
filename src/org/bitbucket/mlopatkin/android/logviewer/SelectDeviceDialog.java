@@ -166,8 +166,10 @@ public class SelectDeviceDialog extends JDialog {
         private void removeDevice(IDevice device) {
             logger.debug("device removed " + device);
             int index = devices.indexOf(device);
-            devices.remove(index);
-            fireIntervalRemoved(this, index, index);
+            if (index >= 0) {
+                devices.remove(index);
+                fireIntervalRemoved(this, index, index);
+            }
         }
 
         @Override
