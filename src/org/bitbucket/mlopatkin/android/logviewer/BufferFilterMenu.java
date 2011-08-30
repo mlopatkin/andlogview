@@ -17,26 +17,28 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map.Entry;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
-public class BufferFilterMenu extends JPopupMenu {
+public class BufferFilterMenu {
     private static final Logger logger = Logger.getLogger(BufferFilterMenu.class);
 
     private FilterController controller;
+    private JMenu parent;
 
     private class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
 
-        private LogRecord.Buffer buffer;
+        private Buffer buffer;
 
-        public BufferCheckBoxMenuItem(LogRecord.Buffer buffer, boolean selected) {
+        public BufferCheckBoxMenuItem(Buffer buffer, boolean selected) {
             super(buffer.getCaption(), selected);
             addActionListener(this);
             this.buffer = buffer;
@@ -48,15 +50,40 @@ public class BufferFilterMenu extends JPopupMenu {
         }
     }
 
-    public BufferFilterMenu(EnumSet<Buffer> enabledBuffers, FilterController controller) {
+    private EnumMap<Buffer, JMenuItem> items = new EnumMap<Buffer, JMenuItem>(Buffer.class);
+
+    public BufferFilterMenu(JMenu parent, FilterController controller) {
         this.controller = controller;
-        for (Buffer buffer : enabledBuffers) {
-            if (buffer != LogRecord.Buffer.UNKNOWN) {
-                JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui
-                        .bufferEnabled(buffer));
-                add(item);
+        this.parent = parent;
+        for (Buffer buffer : Buffer.values()) {
+            if (buffer != Buffer.UNKNOWN) {
+                JMenuItem item = new BufferCheckBoxMenuItem(buffer,
+                        Configuration.ui.bufferEnabled(buffer));
+                items.put(buffer, item);
+                parent.add(item);
             }
             logger.debug(buffer);
         }
+        resetBuffers();
+    }
+
+    private void resetBuffers() {
+        for (Entry<Buffer, JMenuItem> entry : items.entrySet()) {
+            controller.setBufferEnabled(entry.getKey(), false);
+            entry.getValue().setVisible(false);
+        }
+        parent.setVisible(false);
+    }
+
+    public void setEnabledBuffers(EnumSet<Buffer> enabledBuffers) {
+        resetBuffers();
+        boolean anyBufferEnabled = false;
+        for (Buffer buffer : enabledBuffers) {
+            anyBufferEnabled = true;
+            JMenuItem item = items.get(buffer);
+            item.setVisible(true);
+            controller.setBufferEnabled(buffer, item.isSelected());
+        }
+        parent.setVisible(anyBufferEnabled);
     }
 }

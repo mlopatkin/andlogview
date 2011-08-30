@@ -80,6 +80,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         source = newSource;
         recordsModel.clear();
         source.setLogRecordListener(scrollController);
+        bufferMenu.setEnabledBuffers(source.getAvailableBuffers());
     }
 
     private PidToProcessMapper mapper = new PidToProcessMapper() {
@@ -140,12 +141,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         JPanel filterPanel = new FilterPanel(filterController);
         panel.add(filterPanel);
-
-        // if (source.getAvailableBuffers() != null) {
-        // KindFilterMenu menu = new
-        // KindFilterMenu(source.getAvailableBuffers(), filterController);
-        // UiHelper.addPopupMenu(filterPanel, menu);
-        // }
 
         setupSearchButtons();
         setupMainMenu();
@@ -274,6 +269,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         source.reset();
     }
 
+    private BufferFilterMenu bufferMenu;
+
     private void setupMainMenu() {
         JMenuBar mainMenu = new JMenuBar();
 
@@ -286,6 +283,10 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         mnAdb.addSeparator();
         mnAdb.add(acResetLogs);
         mainMenu.add(mnAdb);
+
+        JMenu mnFilters = new JMenu("Buffers");
+        bufferMenu = new BufferFilterMenu(mnFilters, filterController);
+        mainMenu.add(mnFilters);
 
         setJMenuBar(mainMenu);
     }
