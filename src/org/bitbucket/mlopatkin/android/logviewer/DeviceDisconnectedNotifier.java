@@ -32,9 +32,8 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
 
     private IDevice device;
 
-    public DeviceDisconnectedNotifier(IDevice device) {
+    private DeviceDisconnectedNotifier(IDevice device) {
         this.device = device;
-        AdbDeviceManager.addDeviceChangeListener(this);
     }
 
     @Override
@@ -59,6 +58,6 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
     };
 
     public static void startWatching(IDevice device) {
-        new DeviceDisconnectedNotifier(device);
+        AdbDeviceManager.addDeviceChangeListener(new DeviceDisconnectedNotifier(device));
     }
 }
