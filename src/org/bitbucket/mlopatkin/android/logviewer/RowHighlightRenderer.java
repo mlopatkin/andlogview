@@ -29,10 +29,10 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
     private TableCellRenderer inner;
     private Color highlightColor = Configuration.ui.highlightColor();
     private Color backgroundColor = Configuration.ui.backgroundColor();
-    private FilterChain filters;
+    private HighlightHandler colorer;
 
-    public RowHighlightRenderer(FilterChain filters) {
-        this.filters = filters;
+    public RowHighlightRenderer(HighlightHandler colorer) {
+        this.colorer = colorer;
     }
 
     @Override
@@ -49,8 +49,9 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
             LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
             int modelRow = table.convertRowIndexToModel(row);
             LogRecord record = tableModel.getRowData(modelRow);
-            if (filters.checkFilter(FilteringMode.HIGHLIGHT, record)) {
-                result.setBackground(highlightColor);
+            Color targetColor = colorer.getColor(record);
+            if (targetColor != null) {
+                result.setBackground(targetColor);
             } else {
                 result.setBackground(backgroundColor);
             }

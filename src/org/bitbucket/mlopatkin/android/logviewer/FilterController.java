@@ -64,6 +64,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     private FilteringModeHandler showHideHandler = new FilterChainHandler();
     private FilteringModeHandler windowHandler = new IndexWindowHandler();
+    private HighlightHandler highlightHandler = new HighlightHandler();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;
@@ -74,10 +75,10 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         table.setRowSorter(rowSorter);
         rowFilter = new LogRecordRowFilter(filters);
         rowSorter.setRowFilter(rowFilter);
-        table.addDecorator(new RowHighlightRenderer(filters));
+        table.addDecorator(new RowHighlightRenderer(highlightHandler));
         handlers.put(FilteringMode.SHOW, showHideHandler);
         handlers.put(FilteringMode.HIDE, showHideHandler);
-        handlers.put(FilteringMode.HIGHLIGHT, showHideHandler);
+        handlers.put(FilteringMode.HIGHLIGHT, highlightHandler);
         handlers.put(FilteringMode.WINDOW, windowHandler);
     }
 
@@ -218,7 +219,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
      * handling. The map of mode handlers is used to lookup exact handler based
      * on mode.
      */
-    private interface FilteringModeHandler {
+    interface FilteringModeHandler {
         void addFilter(FilteringMode mode, LogRecordFilter filter, Object data);
 
         void removeFilter(FilteringMode mode, LogRecordFilter filter);
