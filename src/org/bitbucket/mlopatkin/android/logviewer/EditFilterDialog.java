@@ -20,17 +20,20 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 
 public class EditFilterDialog extends FilterDialog {
     public interface DialogResultReceiver {
-        void onDialogResult(EditFilterDialog dialog, LogRecordFilter oldFilter, boolean success);
+        void onDialogResult(EditFilterDialog dialog, FilteringMode oldMode,
+                LogRecordFilter oldFilter, boolean success);
     }
 
     private DialogResultReceiver receiver;
     private LogRecordFilter filter;
+    private FilteringMode mode;
 
     protected EditFilterDialog(FilteringMode mode, LogRecordFilter filter,
             DialogResultReceiver resultReceiver) {
         setTitle("Edit filter");
         this.receiver = resultReceiver;
         this.filter = filter;
+        this.mode = mode;
         getMessageTextField().setText(FilterToText.getMessage(filter));
         getPidTextField().setText(FilterToText.getPids(filter));
         getTagTextField().setText(FilterToText.getTags(filter));
@@ -44,14 +47,14 @@ public class EditFilterDialog extends FilterDialog {
         if (!isInputValid()) {
             return;
         }
-        receiver.onDialogResult(this, filter, true);
+        receiver.onDialogResult(this, mode, filter, true);
         setVisible(false);
     }
 
     @Override
     protected void onNegativeResult() {
         assert receiver != null;
-        receiver.onDialogResult(this, filter, false);
+        receiver.onDialogResult(this, mode, filter, false);
         setVisible(false);
     }
 

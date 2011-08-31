@@ -143,7 +143,7 @@ class FilterPanel extends JPanel {
             removeItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    controller.removeFilter(activeButton.filter);
+                    controller.removeFilter(activeButton.mode, activeButton.filter);
                 }
             });
             menu.add(editItem);
