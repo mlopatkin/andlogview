@@ -59,11 +59,11 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     // buffers
     private LogBufferFilter bufferFilter = new LogBufferFilter();
 
-    private EnumMap<FilteringMode, FilteringModeHandler> handlers = new EnumMap<FilteringMode, FilteringModeHandler>(
+    private EnumMap<FilteringMode, FilteringModeHandler<?>> handlers = new EnumMap<FilteringMode, FilteringModeHandler<?>>(
             FilteringMode.class);
 
-    private FilteringModeHandler showHideHandler = new FilterChainHandler();
-    private FilteringModeHandler windowHandler = new IndexWindowHandler();
+    private FilterChainHandler showHideHandler = new FilterChainHandler();
+    private IndexWindowHandler windowHandler = new IndexWindowHandler();
     private HighlightHandler highlightHandler = new HighlightHandler();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
@@ -94,12 +94,18 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         }
     }
 
-    private FilteringModeHandler getHandler(FilteringMode mode) {
+    private FilteringModeHandler<?> getHandler(FilteringMode mode) {
         return handlers.get(mode);
     }
 
     void addFilter(FilteringMode mode, LogRecordFilter filter) {
-        getHandler(mode).addFilter(mode, filter, null);
+        addFilter(mode, filter, null);
+    }
+
+    <T> void addFilter(FilteringMode mode, LogRecordFilter filter, T data) {
+        @SuppressWarnings("unchecked")
+        FilteringModeHandler<T> handler = (FilteringModeHandler<T>) getHandler(mode);
+        handler.addFilter(mode, filter, data);
         panel.addFilterButton(mode, filter);
         onFilteringStateUpdated();
     }
@@ -219,8 +225,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
      * handling. The map of mode handlers is used to lookup exact handler based
      * on mode.
      */
-    interface FilteringModeHandler {
-        void addFilter(FilteringMode mode, LogRecordFilter filter, Object data);
+    interface FilteringModeHandler<T> {
+        void addFilter(FilteringMode mode, LogRecordFilter filter, T data);
 
         void removeFilter(FilteringMode mode, LogRecordFilter filter);
 
@@ -229,7 +235,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         void disableFilter(FilteringMode mode, LogRecordFilter filter);
     }
 
-    private class FilterChainHandler implements FilteringModeHandler {
+    private class FilterChainHandler implements FilteringModeHandler<Object> {
 
         @Override
         public void addFilter(FilteringMode mode, LogRecordFilter filter, Object data) {
@@ -253,7 +259,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     }
 
-    private class IndexWindowHandler implements FilteringModeHandler {
+    private class IndexWindowHandler implements FilteringModeHandler<Object> {
 
         private Map<LogRecordFilter, WindowFilterController> windowControllers = new HashMap<LogRecordFilter, WindowFilterController>();
 

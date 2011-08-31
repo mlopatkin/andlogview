@@ -24,7 +24,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.FilterController.FilteringModeHandler;
 
-class HighlightHandler implements FilteringModeHandler {
+class HighlightHandler implements FilteringModeHandler<Color> {
     private class FilterInfo {
         Color color;
         boolean enabled = true;
@@ -37,7 +37,7 @@ class HighlightHandler implements FilteringModeHandler {
     private Map<LogRecordFilter, FilterInfo> filterColors = new HashMap<LogRecordFilter, FilterInfo>();
 
     @Override
-    public void addFilter(FilteringMode mode, LogRecordFilter filter, Object data) {
+    public void addFilter(FilteringMode mode, LogRecordFilter filter, Color data) {
         filterColors.put(filter, new FilterInfo(Configuration.ui.highlightColor()));
     }
 
