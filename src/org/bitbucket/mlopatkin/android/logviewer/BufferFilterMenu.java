@@ -75,15 +75,15 @@ public class BufferFilterMenu {
         parent.setVisible(false);
     }
 
-    public void setEnabledBuffers(EnumSet<Buffer> enabledBuffers) {
+    public void setAvailableBuffers(EnumSet<Buffer> availableBuffers) {
         resetBuffers();
-        boolean anyBufferEnabled = false;
-        for (Buffer buffer : enabledBuffers) {
-            anyBufferEnabled = true;
+        boolean anyBufferAvailable = false;
+        for (Buffer buffer : availableBuffers) {
+            anyBufferAvailable = true;
             JMenuItem item = items.get(buffer);
             item.setVisible(true);
             controller.setBufferEnabled(buffer, item.isSelected());
         }
-        parent.setVisible(anyBufferEnabled);
+        parent.setVisible(anyBufferAvailable);
     }
 }

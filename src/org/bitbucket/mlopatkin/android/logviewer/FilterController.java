@@ -35,6 +35,10 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
+/**
+ * This class manages all filter-related stuff: adding, removing, enabling, etc.
+ * 
+ */
 class FilterController implements CreateFilterDialog.DialogResultReceiver,
         EditFilterDialog.DialogResultReceiver {
 

@@ -82,7 +82,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         source = newSource;
         recordsModel.clear();
         source.setLogRecordListener(scrollController);
-        bufferMenu.setEnabledBuffers(source.getAvailableBuffers());
+        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
     }
 
     private PidToProcessMapper mapper = new PidToProcessMapper() {
