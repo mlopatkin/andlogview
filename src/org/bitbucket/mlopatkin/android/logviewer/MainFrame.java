@@ -82,6 +82,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         }
         source = newSource;
         recordsModel.clear();
+        pinRecordsController.clear();
         source.setLogRecordListener(scrollController);
         bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
     }

@@ -55,12 +55,12 @@ public class PinRecordsController extends AbstractIndexController implements Ind
             getFrame().setVisible(true);
         }
         filter.pin(index);
-        rowSorter.sort();
+        update();
     }
 
     public void unpinRecord(int index) {
         filter.unpin(index);
-        rowSorter.sort();
+        update();
     }
 
     private class PinnedRowsFilter extends RowFilter<LogRecordTableModel, Integer> {
@@ -85,6 +85,10 @@ public class PinRecordsController extends AbstractIndexController implements Ind
         private boolean include(int row, LogRecord record) {
             return pinnedRows.contains(row);
         }
+
+        public void clear() {
+            pinnedRows.clear();
+        }
     }
 
     public void showWindow() {
@@ -93,6 +97,15 @@ public class PinRecordsController extends AbstractIndexController implements Ind
 
     @Override
     protected void onMainTableUpdate() {
+        update();
+    }
+
+    public void clear() {
+        filter.clear();
+        update();
+    }
+
+    private void update() {
         rowSorter.sort();
     }
 
