@@ -28,6 +28,33 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public class LogRecordsTransferHandler extends TransferHandler {
 
+    private TransferHandler globalHandler;
+
+    public LogRecordsTransferHandler() {
+    }
+
+    public LogRecordsTransferHandler(TransferHandler globalHandler) {
+        this.globalHandler = globalHandler;
+    }
+
+    @Override
+    public boolean canImport(TransferSupport support) {
+        if (globalHandler != null) {
+            return globalHandler.canImport(support);
+        } else {
+            return super.canImport(support);
+        }
+    }
+
+    @Override
+    public boolean importData(TransferSupport support) {
+        if (globalHandler != null) {
+            return globalHandler.importData(support);
+        } else {
+            return super.importData(support);
+        }
+    }
+
     @Override
     protected Transferable createTransferable(JComponent c) {
         if (!(c instanceof JTable)) {

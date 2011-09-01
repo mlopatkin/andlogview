@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
+import javax.swing.TransferHandler;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -73,7 +74,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     public MainFrame() {
         super();
         initialize();
-        setTransferHandler(new FileTransferHandler(this));
     }
 
     public void setSource(DataSource newSource) {
@@ -115,7 +115,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         logElements
                 .setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), mapper));
 
-        logElements.setTransferHandler(new LogRecordsTransferHandler());
+        TransferHandler fileHandler = new FileTransferHandler(this);
+        setTransferHandler(fileHandler);
+        logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
 
         scrollPane = new JScrollPane(logElements);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
