@@ -73,6 +73,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     public MainFrame() {
         super();
         initialize();
+        setTransferHandler(new FileTransferHandler(this));
     }
 
     public void setSource(DataSource newSource) {
