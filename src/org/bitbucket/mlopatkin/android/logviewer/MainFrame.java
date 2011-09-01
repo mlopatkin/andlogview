@@ -68,9 +68,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private JPanel panel;
     private JTextField instantSearchTextField;
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     public MainFrame() {
         super();
         initialize();
