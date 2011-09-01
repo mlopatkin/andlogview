@@ -35,14 +35,15 @@ public abstract class FilterDialog extends JDialog {
     private JComboBox logLevelList;
 
     private FilteringModesPanel modesPanel;
-    private JComboBox cbColorSelector;
+    private JComboBox colorsList;
+
     private ModeChangedListener modeListener = new ModeChangedListener() {
 
         @Override
         public void modeSelected(FilteringMode mode) {
-            cbColorSelector.setVisible(mode == FilteringMode.HIGHLIGHT);
-            cbColorSelector.revalidate();
-            cbColorSelector.repaint();
+            colorsList.setVisible(mode == FilteringMode.HIGHLIGHT);
+            colorsList.revalidate();
+            colorsList.repaint();
         }
     };
 
@@ -82,8 +83,8 @@ public abstract class FilterDialog extends JDialog {
 
         JPanel modesWithDataPanel = new JPanel();
 
-        cbColorSelector = new JComboBox(new ColorsComboBoxModel());
-        cbColorSelector.setSelectedIndex(0);
+        colorsList = new JComboBox(new ColorsComboBoxModel());
+        colorsList.setSelectedIndex(0);
 
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel
@@ -121,7 +122,7 @@ public abstract class FilterDialog extends JDialog {
                                                                                 GroupLayout.PREFERRED_SIZE)
                                                                         .addGap(18)
                                                                         .addComponent(
-                                                                                cbColorSelector,
+                                                                                colorsList,
                                                                                 GroupLayout.PREFERRED_SIZE,
                                                                                 132,
                                                                                 GroupLayout.PREFERRED_SIZE)))
@@ -162,7 +163,7 @@ public abstract class FilterDialog extends JDialog {
                                                         Alignment.TRAILING,
                                                         gl_contentPanel
                                                                 .createSequentialGroup()
-                                                                .addComponent(cbColorSelector,
+                                                                .addComponent(colorsList,
                                                                         GroupLayout.PREFERRED_SIZE,
                                                                         GroupLayout.DEFAULT_SIZE,
                                                                         GroupLayout.PREFERRED_SIZE)
@@ -305,6 +306,10 @@ public abstract class FilterDialog extends JDialog {
         return modesPanel;
     }
 
+    protected JComboBox getColorsList() {
+        return colorsList;
+    }
+
     private class ColorsComboBoxModel extends AbstractListModel implements ComboBoxModel {
 
         private Object selected;
@@ -339,9 +344,21 @@ public abstract class FilterDialog extends JDialog {
 
     public Color getSelectedColor() {
         if (getFilteringMode() == FilteringMode.HIGHLIGHT) {
-            return Configuration.ui.highlightColors()[cbColorSelector.getSelectedIndex()];
+            return Configuration.ui.highlightColors()[colorsList.getSelectedIndex()];
         } else {
             return null;
+        }
+    }
+
+    protected void setSelectedColor(Color color) {
+        int index = 0;
+        for (Color current : Configuration.ui.highlightColors()) {
+            if (current.equals(color)) {
+                colorsList.setSelectedIndex(index);
+                return;
+            } else {
+                ++index;
+            }
         }
     }
 

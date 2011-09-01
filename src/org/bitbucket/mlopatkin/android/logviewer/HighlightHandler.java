@@ -66,4 +66,9 @@ class HighlightHandler implements FilteringModeHandler<Color> {
         }
         return null;
     }
+
+    @Override
+    public Color getData(FilteringMode mode, LogRecordFilter filter) {
+        return filterColors.get(filter).color;
+    }
 }

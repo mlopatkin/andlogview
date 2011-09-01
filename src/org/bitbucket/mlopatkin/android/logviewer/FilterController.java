@@ -167,7 +167,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     }
 
     public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
-        EditFilterDialog.startEditFilterDialog(mode, filter, this);
+        Object data = getHandler(mode).getData(mode, filter);
+        EditFilterDialog.startEditFilterDialog(mode, filter, this, data);
     }
 
     @Override
@@ -233,6 +234,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         void enableFilter(FilteringMode mode, LogRecordFilter filter);
 
         void disableFilter(FilteringMode mode, LogRecordFilter filter);
+
+        T getData(FilteringMode mode, LogRecordFilter filter);
     }
 
     private class FilterChainHandler implements FilteringModeHandler<Object> {
@@ -255,6 +258,11 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         @Override
         public void disableFilter(FilteringMode mode, LogRecordFilter filter) {
             filters.removeFilter(filter);
+        }
+
+        @Override
+        public Object getData(FilteringMode mode, LogRecordFilter filter) {
+            return null;
         }
 
     }
@@ -291,6 +299,11 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
             WindowFilterController windowController = windowControllers.get(filter);
             windowController.hideWindow();
             panel.getFilterButton(filter).setSelected(false);
+        }
+
+        @Override
+        public Object getData(FilteringMode mode, LogRecordFilter filter) {
+            return null;
         }
 
     }
