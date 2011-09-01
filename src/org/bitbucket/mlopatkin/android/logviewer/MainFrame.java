@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -24,6 +25,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -35,8 +37,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
+import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -132,11 +136,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         getContentPane().add(panel, BorderLayout.SOUTH);
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-        statusLabel = new JLabel();
-        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        statusLabel.setVisible(false);
-        panel.add(statusLabel);
-
         instantSearchTextField = new JTextField();
         panel.add(instantSearchTextField);
         instantSearchTextField.setColumns(10);
@@ -144,6 +143,21 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         JPanel filterPanel = new FilterPanel(filterController);
         panel.add(filterPanel);
+
+        statusPanel = new JPanel();
+        statusPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        panel.add(statusPanel);
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
+
+        statusLabel = new JLabel();
+        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        statusPanel.add(statusLabel);
+
+        horizontalGlue = Box.createHorizontalGlue();
+        statusPanel.add(horizontalGlue);
+
+        rigidArea = Box.createRigidArea(new Dimension(0, 16));
+        statusPanel.add(rigidArea);
 
         setupSearchButtons();
         setupMainMenu();
@@ -227,7 +241,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final String KEY_HIDE = "ESCAPE";
     private static final String KEY_SHOW_SEARCH_FIELD = "control F";
     private static final String KEY_FIND_NEXT = "F3";
-    private static final String KEY_FIND_PREV = "control F3";
+    private static final String KEY_FIND_PREV = "shift F3";
 
     private void showSearchField() {
         instantSearchTextField.setVisible(true);
@@ -262,7 +276,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private void showMessage(String text) {
         statusLabel.setText(text);
         statusLabel.setVisible(true);
-
         hidingTimer.setRepeats(false);
         hidingTimer.start();
     }
@@ -340,6 +353,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             reset();
         }
     };
+    private JPanel statusPanel;
+    private Component horizontalGlue;
+    private Component rigidArea;
 
     /**
      * Wait for device to connect.
