@@ -147,7 +147,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
             LogRecordFilter filter = createFilterFromDialog(dialog);
             FilteringMode mode = getModeFromDialog(dialog);
             if (filter != null) {
-                addFilter(mode, filter);
+                addFilter(mode, filter, dialog.getAdditionalData());
             }
         }
     }
@@ -178,7 +178,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
             FilteringMode mode = getModeFromDialog(dialog);
             if (filter != null) {
                 removeFilter(oldMode, oldFilter);
-                addFilter(mode, filter);
+                addFilter(mode, filter, dialog.getAdditionalData());
             } else {
                 removeFilter(oldMode, oldFilter);
             }

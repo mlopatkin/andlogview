@@ -1,6 +1,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +34,7 @@ public abstract class FilterDialog extends JDialog {
     private JComboBox logLevelList;
 
     private FilteringModesPanel modesPanel;
+    private JComboBox cbColorSelector;
 
     /**
      * Create the dialog.
@@ -68,7 +70,10 @@ public abstract class FilterDialog extends JDialog {
 
         logLevelList = new JComboBox(new PriorityComboBoxModel());
 
-        modesPanel = new FilteringModesPanel();
+        JPanel modesWithDataPanel = new JPanel();
+
+        cbColorSelector = new JComboBox(new ColorsComboBoxModel());
+        cbColorSelector.setSelectedIndex(0);
 
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel
@@ -82,23 +87,35 @@ public abstract class FilterDialog extends JDialog {
                                                 gl_contentPanel
                                                         .createParallelGroup(Alignment.LEADING)
                                                         .addComponent(tagTextField,
-                                                                GroupLayout.DEFAULT_SIZE, 487,
+                                                                GroupLayout.DEFAULT_SIZE, 477,
                                                                 Short.MAX_VALUE)
                                                         .addComponent(lblNewLabel)
                                                         .addComponent(lblMessageTextTo)
                                                         .addComponent(messageTextField,
-                                                                GroupLayout.DEFAULT_SIZE, 487,
+                                                                GroupLayout.DEFAULT_SIZE, 477,
                                                                 Short.MAX_VALUE)
                                                         .addComponent(lblPidsToFilter)
                                                         .addComponent(pidTextField,
-                                                                GroupLayout.DEFAULT_SIZE, 487,
+                                                                GroupLayout.DEFAULT_SIZE, 477,
                                                                 Short.MAX_VALUE)
                                                         .addComponent(lblLogLevel)
-                                                        .addComponent(logLevelList, 0, 487,
+                                                        .addComponent(logLevelList, 0, 477,
                                                                 Short.MAX_VALUE)
-                                                        .addComponent(modesPanel,
-                                                                GroupLayout.DEFAULT_SIZE, 487,
-                                                                Short.MAX_VALUE)).addContainerGap()));
+                                                        .addGroup(
+                                                                gl_contentPanel
+                                                                        .createSequentialGroup()
+                                                                        .addComponent(
+                                                                                modesWithDataPanel,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE)
+                                                                        .addGap(18)
+                                                                        .addComponent(
+                                                                                cbColorSelector,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                132,
+                                                                                GroupLayout.PREFERRED_SIZE)))
+                                        .addContainerGap()));
         gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
                         gl_contentPanel
@@ -122,9 +139,27 @@ public abstract class FilterDialog extends JDialog {
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(logLevelList, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                                .addComponent(modesPanel, GroupLayout.PREFERRED_SIZE,
-                                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
+                                .addPreferredGap(ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
+                                .addGroup(
+                                        gl_contentPanel
+                                                .createParallelGroup(Alignment.LEADING)
+                                                .addComponent(modesWithDataPanel,
+                                                        Alignment.TRAILING,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(
+                                                        Alignment.TRAILING,
+                                                        gl_contentPanel
+                                                                .createSequentialGroup()
+                                                                .addComponent(cbColorSelector,
+                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                        GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(31)))));
+
+        modesPanel = new FilteringModesPanel();
+        modesWithDataPanel.add(modesPanel);
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -257,5 +292,49 @@ public abstract class FilterDialog extends JDialog {
 
     protected FilteringModesPanel getModePanel() {
         return modesPanel;
+    }
+
+    private class ColorsComboBoxModel extends AbstractListModel implements ComboBoxModel {
+
+        private Object selected;
+
+        @Override
+        public Object getSelectedItem() {
+            return selected;
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            selected = anItem;
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            return "<html><span style='background-color: "
+                    + toString(Configuration.ui.highlightColors()[index]) + "'>Color " + index
+                    + "</span></html>";
+
+        }
+
+        private String toString(Color color) {
+            return String.format("#%06x", color.getRGB() & 0x00FFFFFF);
+        }
+
+        @Override
+        public int getSize() {
+            return Configuration.ui.highlightColors().length;
+        }
+    }
+
+    public Color getSelectedColor() {
+        if (getFilteringMode() == FilteringMode.HIGHLIGHT) {
+            return Configuration.ui.highlightColors()[cbColorSelector.getSelectedIndex()];
+        } else {
+            return null;
+        }
+    }
+
+    public Object getAdditionalData() {
+        return getSelectedColor();
     }
 }

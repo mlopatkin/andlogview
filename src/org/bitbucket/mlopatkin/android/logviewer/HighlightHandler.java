@@ -38,7 +38,7 @@ class HighlightHandler implements FilteringModeHandler<Color> {
 
     @Override
     public void addFilter(FilteringMode mode, LogRecordFilter filter, Color data) {
-        filterColors.put(filter, new FilterInfo(Configuration.ui.highlightColor()));
+        filterColors.put(filter, new FilterInfo(data));
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -79,6 +80,31 @@ public class Configuration {
         public static Color highlightColor() {
             Color defaultColor = Color.decode("#D0F0C0");
             return parseColor(PREFIX + "highlight_color", defaultColor);
+        }
+
+        private static void initHighlightColors() {
+            String prefix = PREFIX + "highlight_color.";
+            TreeMap<Integer, Color> colors = new TreeMap<Integer, Color>();
+            for (String param : instance.properties.stringPropertyNames()) {
+                if (param.startsWith(prefix)) {
+                    int id = Integer.parseInt(param.substring(prefix.length()));
+                    colors.put(id, parseColor(param, highlightColor()));
+                }
+            }
+            _highlightColors = new Color[colors.size()];
+            int i = 0;
+            for (Color color : colors.values()) {
+                _highlightColors[i++] = color;
+            }
+        }
+
+        private static Color[] _highlightColors;
+
+        public static Color[] highlightColors() {
+            if (_highlightColors == null) {
+                initHighlightColors();
+            }
+            return _highlightColors;
         }
 
         public static Color backgroundColor() {
