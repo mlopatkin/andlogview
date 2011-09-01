@@ -1,3 +1,15 @@
+version 0.14
+	[+] File opening via main menu
+	[+] Device selector
+	[+] Notification about disconnected device
+	[+] Drag&drop support for files
+	[+] Multiple colors for highlighting filters
+	
+	[*] "Reset logs" menu item moved into main menu
+	[*] Buffer type selection moved into main menu
+	[*] Status bar introduced
+	[*] Minor bugfixes and refactorings
+	
 version 0.13
     [+] Reset log in adb mode
     

@@ -31,6 +31,8 @@ import com.android.ddmlib.IDevice;
 
 public class Main {
 
+    public static final String APP_VERSION = "0.14";
+
     private DataSource initialSource;
     private MainFrame window;
 

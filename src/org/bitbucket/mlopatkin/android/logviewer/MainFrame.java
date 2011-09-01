@@ -104,7 +104,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
      * Initialize the contents of the frame.
      */
     private void initialize() {
-        setTitle("Android Log Viewer");
+        setTitle("Android Log Viewer " + Main.APP_VERSION);
         setBounds(100, 100, 1000, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

@@ -1,7 +1,7 @@
 https://bitbucket.org/mlopatkin/android-log-viewer
 
 Android log viewer is the tool to simplify analysis of the Android logs. It allows filtering
-the logs using the number of filters.
+the logs using the number of filters. This tool requires Java Runtime Environment 6 to run.
 
 Available filters:
     - by tag(s)
@@ -30,13 +30,12 @@ Keys:
     Enter - start searching
     Esc - clear search results
     F3 - find next
-    Ctrl+F3 - find prev
+    Shift+F3 - find prev
     Ctrl+P - show pinned lines window
 Tips:
     - right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
     - lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it
-    - name of the process is shown in PID tooltip in dumpstate mode
-    - right-click on the filters panel to select buffers to show
+    - name of the process is shown in PID tooltip in dumpstate or ADB mode    
 
 Useful configuration file parameters:
 This tool can be configured with the properties file. It searches for logview.properties file in the current folder.
