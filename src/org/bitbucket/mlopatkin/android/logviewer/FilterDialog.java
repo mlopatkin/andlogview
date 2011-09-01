@@ -22,6 +22,7 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.android.logviewer.FilteringModesPanel.ModeChangedListener;
 
 public abstract class FilterDialog extends JDialog {
 
@@ -35,6 +36,15 @@ public abstract class FilterDialog extends JDialog {
 
     private FilteringModesPanel modesPanel;
     private JComboBox cbColorSelector;
+    private ModeChangedListener modeListener = new ModeChangedListener() {
+
+        @Override
+        public void modeSelected(FilteringMode mode) {
+            cbColorSelector.setVisible(mode == FilteringMode.HIGHLIGHT);
+            cbColorSelector.revalidate();
+            cbColorSelector.repaint();
+        }
+    };
 
     /**
      * Create the dialog.
@@ -160,6 +170,7 @@ public abstract class FilterDialog extends JDialog {
 
         modesPanel = new FilteringModesPanel();
         modesWithDataPanel.add(modesPanel);
+        modesPanel.setModeChangedListener(modeListener);
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -337,4 +348,5 @@ public abstract class FilterDialog extends JDialog {
     public Object getAdditionalData() {
         return getSelectedColor();
     }
+
 }

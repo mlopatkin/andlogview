@@ -22,11 +22,19 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-class FilteringModesPanel extends JPanel {
+class FilteringModesPanel extends JPanel implements ChangeListener {
     private ButtonGroup buttonGroup = new ButtonGroup();
     private EnumMap<FilteringMode, JRadioButton> buttons = new EnumMap<FilteringMode, JRadioButton>(
             FilteringMode.class);
+
+    interface ModeChangedListener {
+        void modeSelected(FilteringMode mode);
+    }
+
+    private ModeChangedListener listener;
 
     public FilteringModesPanel() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -43,6 +51,7 @@ class FilteringModesPanel extends JPanel {
         buttonGroup.add(button);
         add(button);
         buttons.put(mode, button);
+        button.addChangeListener(this);
     }
 
     public FilteringMode getSelectedMode() {
@@ -57,5 +66,23 @@ class FilteringModesPanel extends JPanel {
     public void setSelectedMode(FilteringMode mode) {
         assert mode != null;
         buttons.get(mode).setSelected(true);
+        notifyListener(mode);
+    }
+
+    public void setModeChangedListener(ModeChangedListener listener) {
+        this.listener = listener;
+    }
+
+    private void notifyListener(FilteringMode mode) {
+        if (listener != null) {
+            listener.modeSelected(mode);
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        if (((JRadioButton) e.getSource()).isSelected()) {
+            notifyListener(getSelectedMode());
+        }
     }
 }
