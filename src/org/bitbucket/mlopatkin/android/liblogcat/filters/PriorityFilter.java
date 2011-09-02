@@ -16,7 +16,6 @@
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 public class PriorityFilter extends AbstractFilter implements LogRecordFilter {
 

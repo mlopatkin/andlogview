@@ -32,7 +32,6 @@ public class PinRecordsController extends AbstractIndexController implements Ind
 
     private TableRowSorter<LogRecordTableModel> rowSorter;
     private PinnedRowsFilter filter = new PinnedRowsFilter();
-    private PinRecordsPopupMenuHandler popupMenuHandler;
 
     @SuppressWarnings("unchecked")
     public PinRecordsController(JTable mainTable, LogRecordTableModel model,
@@ -47,7 +46,7 @@ public class PinRecordsController extends AbstractIndexController implements Ind
 
         rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
 
-        popupMenuHandler = new PinRecordsPopupMenuHandler(table, this);
+        new PinRecordsPopupMenuHandler(table, this);
     }
 
     public void pinRecord(int index) {

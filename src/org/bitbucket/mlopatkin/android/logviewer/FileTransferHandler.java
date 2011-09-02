@@ -52,6 +52,7 @@ public class FileTransferHandler extends TransferHandler {
         Transferable t = support.getTransferable();
 
         try {
+            @SuppressWarnings("unchecked")
             java.util.List<File> l = (java.util.List<File>) t
                     .getTransferData(DataFlavor.javaFileListFlavor);
 

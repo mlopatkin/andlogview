@@ -34,7 +34,6 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
 
     private PinRecordsController pinRecordsController;
     private FilterController filterController;
-    private MainFrame main;
 
     private void setUpMenu() {
         hideWithThisTag.addActionListener(new ActionListener() {
@@ -69,10 +68,9 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
         popupMenu.add(pinThisLine);
     }
 
-    public LogRecordPopupMenuHandler(MainFrame main, JTable table,
-            final FilterController filterController, final PinRecordsController pinRecordsController) {
+    public LogRecordPopupMenuHandler(JTable table, final FilterController filterController,
+            final PinRecordsController pinRecordsController) {
         super(table);
-        this.main = main;
         this.filterController = filterController;
         this.pinRecordsController = pinRecordsController;
         setUpMenu();

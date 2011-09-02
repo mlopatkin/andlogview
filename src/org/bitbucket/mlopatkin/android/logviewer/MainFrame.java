@@ -65,7 +65,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private AutoScrollController scrollController;
     private FilterController filterController;
     private SearchController searchController;
-    private LogRecordPopupMenuHandler popupMenuHandler;
     private PinRecordsController pinRecordsController;
 
     private DataSource source;
@@ -129,8 +128,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         filterController = new FilterController(logElements, recordsModel);
         pinRecordsController = new PinRecordsController(logElements, recordsModel, mapper,
                 filterController);
-        popupMenuHandler = new LogRecordPopupMenuHandler(this, logElements, filterController,
-                pinRecordsController);
+        new LogRecordPopupMenuHandler(logElements, filterController, pinRecordsController);
         searchController = new SearchController(logElements, recordsModel);
 
         panel = new JPanel();

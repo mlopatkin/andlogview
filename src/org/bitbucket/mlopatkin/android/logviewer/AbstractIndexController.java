@@ -32,7 +32,7 @@ public abstract class AbstractIndexController implements IndexController {
         this.mainTable = mainTable;
         this.model = model;
 
-        indexFrame = new IndexFrame(model, new IndexTableColumnModel(mapper), this);
+        indexFrame = new IndexFrame(this.model, new IndexTableColumnModel(mapper), this);
 
         filterController.addRefreshListener(new ActionListener() {
 

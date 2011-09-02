@@ -27,7 +27,6 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 class RowHighlightRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
-    private Color highlightColor = Configuration.ui.highlightColor();
     private Color backgroundColor = Configuration.ui.backgroundColor();
     private HighlightHandler colorer;
 

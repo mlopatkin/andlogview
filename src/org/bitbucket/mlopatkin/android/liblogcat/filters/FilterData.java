@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 import java.util.Collection;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 class FilterData {
     Collection<String> tags;

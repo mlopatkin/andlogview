@@ -32,13 +32,10 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class IndexFrame extends JFrame {
-
-    private static final Logger logger = Logger.getLogger(IndexFrame.class);
 
     private JPanel contentPane;
     private DecoratingRendererTable pinnedRecordsTable;
