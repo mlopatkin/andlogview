@@ -81,6 +81,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         if (source != null) {
             source.close();
         }
+        stopWaitingForDevice();
         source = newSource;
         recordsModel.clear();
         pinRecordsController.clear();
@@ -356,19 +357,27 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private JPanel statusPanel;
     private Component horizontalGlue;
     private Component rigidArea;
+    private IDeviceChangeListener pendingAttacher;
 
     /**
      * Wait for device to connect.
      */
     public void waitForDevice() {
-        IDeviceChangeListener pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
+        pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
             @Override
             public void deviceConnected(IDevice device) {
                 DeviceDisconnectedNotifier.startWatching(device);
                 setSource(new AdbDataSource(device));
-                AdbDeviceManager.removeDeviceChangeListener(this);
+                stopWaitingForDevice();
             }
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
+    }
+
+    private void stopWaitingForDevice() {
+        if (pendingAttacher != null) {
+            AdbDeviceManager.removeDeviceChangeListener(pendingAttacher);
+            pendingAttacher = null;
+        }
     }
 }
