@@ -48,7 +48,7 @@ public class ProcessListParser {
     private static final String PROCESS_STATUS_REGEX = "[DRSTWXZ]";
     private static final String PROCESS_NAME = "(.+)";
 
-    private static final String PS_LINE_FIELDS[] = { USERNAME_REGEX, PID_REGEX, PPID_REGEX,
+    private static final String[] PS_LINE_FIELDS = { USERNAME_REGEX, PID_REGEX, PPID_REGEX,
             VSIZE_REGEX, RSS_REGEX, PCY_REGEX, WCHAN_REGEX, PC_REGEX, PROCESS_STATUS_REGEX,
             PROCESS_NAME };
 

@@ -209,7 +209,7 @@ public abstract class FilterDialog extends JDialog {
     public String[] getTags() {
         String tagsString = tagTextField.getText();
         if (StringUtils.isNotBlank(tagsString)) {
-            String tags[] = StringUtils.split(tagsString, ',');
+            String[] tags = StringUtils.split(tagsString, ',');
             for (int i = 0; i < tags.length; ++i) {
                 tags[i] = tags[i].trim();
             }
@@ -229,8 +229,8 @@ public abstract class FilterDialog extends JDialog {
     public int[] getPids() {
         String pidString = pidTextField.getText();
         if (StringUtils.isNotBlank(pidString)) {
-            String pidStrings[] = StringUtils.split(pidString, ',');
-            int pids[] = new int[pidStrings.length];
+            String[] pidStrings = StringUtils.split(pidString, ',');
+            int[] pids = new int[pidStrings.length];
             for (int i = 0; i < pids.length; ++i) {
                 pids[i] = Integer.parseInt(pidStrings[i].trim());
             }

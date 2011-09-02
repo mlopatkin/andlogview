@@ -110,7 +110,7 @@ public class LogfileDataSource implements DataSource {
         };
     };
 
-    private static final ParsingStrategy supportedStrategies[] = { threadTimeStrategy,
+    private static final ParsingStrategy[] supportedStrategies = { threadTimeStrategy,
             briefStrategy };
 
     static LogfileDataSource createLogfileDataSourceWithStrategy(String checkLine)

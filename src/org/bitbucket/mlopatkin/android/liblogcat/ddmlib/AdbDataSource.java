@@ -91,7 +91,7 @@ public class AdbDataSource implements DataSource {
         while (listener == null) {
             try {
                 wait();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException e) { // $codepro.audit.disable emptyCatchClause
                 // ignore
             }
         }

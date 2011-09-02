@@ -51,7 +51,7 @@ public class LogRecordParser {
             return threadTimeRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
+        static LogRecord createFromGroups(Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
@@ -59,7 +59,7 @@ public class LogRecordParser {
                 Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
                 int pid = Integer.parseInt(m.group(2));
                 int tid = Integer.parseInt(m.group(3));
-                LogRecord.Priority priority = getPriorityFromChar(m.group(4));
+                Priority priority = getPriorityFromChar(m.group(4));
                 String tag = m.group(5);
                 String message = m.group(6);
                 return new LogRecord(dateTime, pid, tid, priority, tag, message, buffer);
@@ -80,11 +80,11 @@ public class LogRecordParser {
             return briefRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
+        static LogRecord createFromGroups(Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
-            LogRecord.Priority priority = getPriorityFromChar(m.group(1));
+            Priority priority = getPriorityFromChar(m.group(1));
             String tag = m.group(2);
             int pid = Integer.parseInt(m.group(3));
             String message = m.group(4);
@@ -104,11 +104,11 @@ public class LogRecordParser {
             return processRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
+        static LogRecord createFromGroups(Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
-            LogRecord.Priority priority = getPriorityFromChar(m.group(1));
+            Priority priority = getPriorityFromChar(m.group(1));
             int pid = Integer.parseInt(m.group(2));
             String message = m.group(3);
             String tag = m.group(4);
@@ -127,11 +127,11 @@ public class LogRecordParser {
             return tagRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(LogRecord.Buffer buffer, Matcher m) {
+        static LogRecord createFromGroups(Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
-            LogRecord.Priority priority = getPriorityFromChar(m.group(1));
+            Priority priority = getPriorityFromChar(m.group(1));
             String tag = m.group(2);
             String message = m.group(3);
 
@@ -140,9 +140,9 @@ public class LogRecordParser {
         }
     }
 
-    private static LogRecord.Priority getPriorityFromChar(String next) {
+    private static Priority getPriorityFromChar(String next) {
         next = next.trim();
-        for (LogRecord.Priority val : LogRecord.Priority.values()) {
+        for (Priority val : Priority.values()) {
             if (val.getLetter().equalsIgnoreCase(next)) {
                 return val;
             }

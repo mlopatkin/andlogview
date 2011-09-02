@@ -25,15 +25,12 @@ import javax.swing.table.TableCellRenderer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 
-public class PriorityColoredCellRenderer implements
-        DecoratingCellRenderer {
-
-    private static final long serialVersionUID = -5160005091082094580L;
+public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
 
     private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<Priority, Color>(
             Priority.class);
     static {
-        for(Priority p : Priority.values()) {
+        for (Priority p : Priority.values()) {
             COLOR_MAP.put(p, Configuration.ui.priorityColor(p));
         }
     }

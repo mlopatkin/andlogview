@@ -27,7 +27,7 @@ class ErrorDialogsHelper {
     }
 
     static void showError(String format, Object... vals) {
-        String message = String.format(format, (Object[]) vals);
+        String message = String.format(format, vals);
         showError(message);
     }
 
