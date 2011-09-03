@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.EventQueue;
 import java.awt.Rectangle;
 
 import javax.swing.JTable;
@@ -37,13 +38,18 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
     }
 
     @Override
-    public void onNewRecord(final LogRecord record, boolean needPosition) {
-        shouldScroll = isAtBottom();
-        if (needPosition) {
-            model.addRecord(record);
-        } else {
-            model.addRecordToEnd(record);
-        }
+    public void onNewRecord(final LogRecord record, final boolean needPosition) {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                shouldScroll = isAtBottom();
+                if (needPosition) {
+                    model.addRecord(record);
+                } else {
+                    model.addRecordToEnd(record);
+                }
+            }
+        });
     }
 
     @Override

@@ -15,7 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import java.awt.EventQueue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,19 +90,15 @@ public class AdbDataSource implements DataSource {
         while (listener == null) {
             try {
                 wait();
-            } catch (InterruptedException e) { // $codepro.audit.disable emptyCatchClause
+            } catch (InterruptedException e) { // $codepro.audit.disable
+                                               // emptyCatchClause
                 // ignore
             }
         }
     }
 
     private synchronized void pushRecord(final LogRecord record) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                listener.onNewRecord(record, true);
-            }
-        });
+        listener.onNewRecord(record, true);
     }
 
     private String createLogcatCommandLine(String buffer) {
