@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.Log;
 
 class AdbConnectionManager {
     private AdbConnectionManager() {
@@ -40,5 +41,9 @@ class AdbConnectionManager {
 
     static void closeAdb() {
         AndroidDebugBridge.terminate();
+    }
+
+    static {
+        Log.setLogOutput(new DdmlibToLog4jWrapper());
     }
 }
