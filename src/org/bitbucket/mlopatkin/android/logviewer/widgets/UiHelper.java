@@ -69,4 +69,23 @@ public class UiHelper {
         component.getActionMap().put(actionKey, action);
     }
 
+    public interface DoubleClickListener {
+        void mouseClicked(MouseEvent e);
+    }
+
+    private static final int DOUBLE_CLICK_COUNT = 2;
+
+    public static void addDoubleClickListener(JComponent component,
+            final DoubleClickListener listener) {
+        assert listener != null;
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
+                    listener.mouseClicked(e);
+                }
+            }
+        });
+    }
+
 }

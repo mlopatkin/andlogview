@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +33,7 @@ import javax.swing.JToggleButton;
 
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 class FilterPanel extends JPanel {
 
@@ -43,7 +43,7 @@ class FilterPanel extends JPanel {
     public FilterPanel(FilterController controller) {
         this.controller = controller;
         controller.setPanel(this);
-        addMouseListener(new FilterPanelClickListener());
+        UiHelper.addDoubleClickListener(this, new FilterPanelClickListener());
 
         ((FlowLayout) getLayout()).setAlignment(FlowLayout.LEFT);
 
@@ -59,15 +59,11 @@ class FilterPanel extends JPanel {
         add(addFilter);
     }
 
-    private class FilterPanelClickListener extends MouseAdapter implements MouseListener {
-        private static final int DOUBLE_CLICK_COUNT = 2;
+    private class FilterPanelClickListener implements DoubleClickListener {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            // double click to add filter
-            if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == DOUBLE_CLICK_COUNT) {
-                controller.startFilterCreationDialog();
-            }
+            controller.startFilterCreationDialog();
         }
     }
 

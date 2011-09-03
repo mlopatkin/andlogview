@@ -17,9 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -34,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 public class IndexFrame extends JFrame {
 
@@ -67,7 +66,7 @@ public class IndexFrame extends JFrame {
         pinnedRecordsTable.setFillsViewportHeight(true);
         pinnedRecordsTable.setShowGrid(false);
         pinnedRecordsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        pinnedRecordsTable.addMouseListener(new LineDoubleClickListener());
+        UiHelper.addDoubleClickListener(pinnedRecordsTable, new LineDoubleClickListener());
         scrollPane.setViewportView(pinnedRecordsTable);
 
         setupKeys();
@@ -77,18 +76,14 @@ public class IndexFrame extends JFrame {
         return pinnedRecordsTable;
     }
 
-    private class LineDoubleClickListener extends MouseAdapter implements MouseListener {
-
-        private static final int DOUBLE_CLICK_COUNT = 2;
+    private class LineDoubleClickListener implements DoubleClickListener {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
-                int rowView = pinnedRecordsTable.rowAtPoint(e.getPoint());
-                if (rowView >= 0) {
-                    int row = pinnedRecordsTable.convertRowIndexToModel(rowView);
-                    controller.activateRow(row);
-                }
+            int rowView = pinnedRecordsTable.rowAtPoint(e.getPoint());
+            if (rowView >= 0) {
+                int row = pinnedRecordsTable.convertRowIndexToModel(rowView);
+                controller.activateRow(row);
             }
         }
 
