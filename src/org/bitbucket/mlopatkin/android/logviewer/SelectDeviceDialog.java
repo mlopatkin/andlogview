@@ -20,6 +20,7 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
@@ -72,6 +75,13 @@ public class SelectDeviceDialog extends JDialog {
             deviceList = new JList();
             deviceList.setModel(devices);
             contentPanel.add(deviceList);
+
+            UiHelper.addDoubleClickListener(deviceList, new DoubleClickListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    onPositiveResult();
+                }
+            });
         }
         {
             JPanel buttonPane = new JPanel();
