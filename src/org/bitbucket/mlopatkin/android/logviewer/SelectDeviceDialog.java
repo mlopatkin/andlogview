@@ -36,8 +36,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class SelectDeviceDialog extends JDialog {
 
@@ -206,10 +206,7 @@ public class SelectDeviceDialog extends JDialog {
             });
         }
 
-        @Override
-        public void deviceChanged(IDevice device, int changeMask) {
-            logger.debug("Device changed: " + device + " changeMask="
-                    + Integer.toHexString(changeMask));
+        private void updateState(IDevice device, int changeMask) {
             if ((changeMask & IDevice.CHANGE_STATE) != 0) {
                 if (device.isOnline()) {
                     addDevice(device);
@@ -220,6 +217,18 @@ public class SelectDeviceDialog extends JDialog {
             if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
                 fireContentsChanged(DeviceListModel.this, 0, devices.size() - 1);
             }
+        }
+
+        @Override
+        public void deviceChanged(final IDevice device, final int changeMask) {
+            logger.debug("Device changed: " + device + " changeMask="
+                    + Integer.toHexString(changeMask));
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateState(device, changeMask);
+                }
+            });
         }
 
     }
