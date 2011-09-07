@@ -20,6 +20,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Utility class that parses ps output in dumpstate files.
+ */
 public class ProcessListParser {
     private static final String HEADER_REGEX = "^USER\\s+PID\\s+PPID\\s+VSIZE\\s+RSS\\s+PCY\\s+WCHAN\\s+PC\\s+NAME$";
 

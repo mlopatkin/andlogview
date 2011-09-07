@@ -17,6 +17,10 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.Date;
 
+/**
+ * This class contains all available log record data like timestamp, tag,
+ * message, etc.
+ */
 public class LogRecord implements Comparable<LogRecord> {
     public enum Priority {
         VERBOSE, DEBUG, INFO, WARN, ERROR, FATAL;
@@ -109,6 +113,9 @@ public class LogRecord implements Comparable<LogRecord> {
         return b.toString();
     }
 
+    /**
+     * Performs timestamp comparison in ascending order.
+     */
     @Override
     public int compareTo(LogRecord o) {
         return getTime().compareTo(o.getTime());

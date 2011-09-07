@@ -24,6 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
+/**
+ * Utility class to parse log record lines in different formats.
+ */
 public class LogRecordParser {
 
     private LogRecordParser() {

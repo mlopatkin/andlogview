@@ -17,14 +17,43 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.EnumSet;
 
+/**
+ * Interface that all log records producers like ADB or log files must
+ * implement.
+ */
 public interface DataSource {
+    /**
+     * Sets the listener to which all output will be directed.
+     * 
+     * @param listener
+     *            the listener to set
+     */
     void setLogRecordListener(LogRecordDataSourceListener listener);
 
+    /**
+     * Returns the utility class that performs conversion from PID to process
+     * name.
+     * 
+     * @return {@link PidToProcessConverter} or {@code null} if this feature is
+     *         not available
+     */
     PidToProcessConverter getPidToProcessConverter();
 
+    /**
+     * Disposes all resources of this {@link DataSource}. It becomes not usable.
+     */
     void close();
 
+    /**
+     * Returns a set of the buffers available in this source.
+     * 
+     * @return a set of buffers
+     */
     EnumSet<LogRecord.Buffer> getAvailableBuffers();
 
+    /**
+     * Resets internal data structures and resends all available records into
+     * the attached listener.
+     */
     void reset();
 }

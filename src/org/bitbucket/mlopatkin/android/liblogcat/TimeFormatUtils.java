@@ -20,6 +20,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Thread-safe routines that perform reading and writing of the timestamps in
+ * the logcat format.
+ */
 public class TimeFormatUtils {
 
     private TimeFormatUtils() {

@@ -15,6 +15,26 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+/**
+ * This interface should be implemented by classes that perform log record
+ * processing. {@link DataSource} objects will put all records via
+ * {@link #onNewRecord(LogRecord, boolean)} method invocations.
+ */
 public interface LogRecordDataSourceListener {
-    public void onNewRecord(LogRecord record, boolean needPosition);
+    /**
+     * Called when a new log record is available in the {@link DataSource}.
+     * There is a possibility that the order of
+     * {@link #onNewRecord(LogRecord, boolean)} calls doesn't match the actual
+     * order of records, i. e. there can be two consequent calls "add record A"
+     * and "add record B" but the record B is created earlier than teh record A.
+     * If so {@code needPosition} is set to {@code true} and this is the
+     * listener's responsibility to maintain a chronological order of records.
+     * 
+     * @param record
+     *            a new record
+     * @param needPosition
+     *            {@code true} if the records order doesn't match the invokation
+     *            order.
+     */
+    void onNewRecord(LogRecord record, boolean needPosition);
 }

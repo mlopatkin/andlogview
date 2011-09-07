@@ -22,6 +22,10 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
+/**
+ * The utility class that parses it's input stream line-by-line assuming that
+ * lines are in threadtime format.
+ */
 public class LogRecordStream {
 
     private static final Logger logger = Logger.getLogger(LogRecordStream.class);

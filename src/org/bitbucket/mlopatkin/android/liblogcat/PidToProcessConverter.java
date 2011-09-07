@@ -18,6 +18,10 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Simple wrapper around the Map class that performs conversion from a PID to a
+ * process name.
+ */
 public class PidToProcessConverter {
 
     private Map<Integer, String> pidToName = new HashMap<Integer, String>();
