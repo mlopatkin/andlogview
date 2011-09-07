@@ -21,7 +21,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -33,6 +35,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -44,6 +47,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
@@ -52,8 +56,8 @@ import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResult
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -291,6 +295,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         JMenu mnFile = new JMenu("File");
         mnFile.add(acOpenFile);
+        mnFile.add(acSaveToFile);
         mainMenu.add(mnFile);
 
         JMenu mnAdb = new JMenu("ADB");
@@ -376,6 +381,44 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         if (pendingAttacher != null) {
             AdbDeviceManager.removeDeviceChangeListener(pendingAttacher);
             pendingAttacher = null;
+        }
+    }
+
+    private Action acSaveToFile = new AbstractAction("Save...") {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showSaveDialog(MainFrame.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                if (file.exists()) {
+                    result = JOptionPane.showConfirmDialog(MainFrame.this, "File " + file
+                            + " already exists, overwrite?");
+                    if (result != JOptionPane.YES_OPTION) {
+                        return;
+                    }
+                }
+                saveTableToFile(file);
+            }
+        }
+    };
+
+    private void saveTableToFile(File file) {
+        try {
+            PrintWriter out = new PrintWriter(file);
+            try {
+                final int rowCount = logElements.getRowCount();
+                for (int i = 0; i < rowCount; ++i) {
+                    LogRecord record = recordsModel.getRowData(logElements
+                            .convertRowIndexToModel(i));
+                    out.println(record);
+                }
+            } finally {
+                out.close();
+            }
+        } catch (FileNotFoundException e) {
+            logger.warn("Unexpected exception", e);
         }
     }
 }
