@@ -104,12 +104,24 @@ public class LogRecord implements Comparable<LogRecord> {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(TimeFormatUtils.convertTimeToString(time)).append('\t');
-        b.append(pid).append('\t');
-        b.append(tid).append('\t');
-        b.append(priority.getLetter()).append('\t');
-        b.append(tag).append('\t');
-        b.append(message);
+        if (time != null) {
+            b.append(TimeFormatUtils.convertTimeToString(time)).append('\t');
+        }
+        if (pid != NO_ID) {
+            b.append(pid).append('\t');
+        }
+        if (tid != NO_ID) {
+            b.append(tid).append('\t');
+        }
+        if (priority != null) {
+            b.append(priority.getLetter()).append('\t');
+        }
+        if (tag != null) {
+            b.append(tag).append('\t');
+        }
+        if (message != null) {
+            b.append(message);
+        }
         return b.toString();
     }
 
