@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.JOptionPane;
 
@@ -39,6 +40,7 @@ public class Main {
     private MainFrame window;
 
     public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
         Configuration.forceInit();
         logger.info("Android Log Viewer " + APP_VERSION);
         if (args.length == 0) {
@@ -97,4 +99,16 @@ public class Main {
             }
         });
     }
+
+    private static UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler() {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            try {
+                logger.error("Uncaught exception in " + t.getName(), e);
+            } catch (Throwable ex) {
+                logger.error("Exception in exception handler", ex);
+            }
+
+        }
+    };
 }
