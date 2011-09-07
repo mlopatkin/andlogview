@@ -15,7 +15,16 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+/**
+ * Base class for filters that allows filter decomposition.
+ */
 abstract class AbstractFilter {
+    /**
+     * Fill {@code data} with filter data in this method.
+     * 
+     * @param data
+     *            object to be filled
+     */
     protected abstract void dumpFilter(FilterData data);
 
     FilterData dumpFilter() {

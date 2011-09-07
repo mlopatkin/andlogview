@@ -17,6 +17,10 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+/**
+ * Performs filtering based on the priority value of the records. Matches all
+ * records with the priority not less than specified.
+ */
 public class PriorityFilter extends AbstractFilter implements LogRecordFilter {
 
     private LogRecord.Priority priority;

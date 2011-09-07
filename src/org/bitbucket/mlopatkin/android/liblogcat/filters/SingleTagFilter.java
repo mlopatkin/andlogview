@@ -19,6 +19,9 @@ import java.util.Arrays;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+/**
+ * Performs filtering based on the tag value of the record.
+ */
 public class SingleTagFilter extends AbstractFilter implements LogRecordFilter {
 
     private String tag;

@@ -19,6 +19,10 @@ import java.util.Collection;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+/**
+ * Contains data associated with the filter that appears in filter edit dialogs
+ * in the application.
+ */
 class FilterData {
     Collection<String> tags;
     Collection<Integer> pids;

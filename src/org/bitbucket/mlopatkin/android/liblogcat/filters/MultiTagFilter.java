@@ -20,6 +20,10 @@ import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+/**
+ * Performs filtering based on the tag value of the record. If multiple tags are
+ * specified in the filter it matches any of them.
+ */
 public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
 
     private String[] tags;

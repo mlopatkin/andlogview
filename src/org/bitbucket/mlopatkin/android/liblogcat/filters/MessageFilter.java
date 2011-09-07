@@ -17,6 +17,9 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+/**
+ * Performs filtering based on the message of the record.
+ */
 public class MessageFilter extends AbstractFilter implements LogRecordFilter {
 
     private String messageText;

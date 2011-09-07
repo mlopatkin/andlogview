@@ -20,6 +20,9 @@ import java.util.EnumSet;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
+/**
+ * Performs filtering based on the buffer of the record.
+ */
 public class LogBufferFilter implements LogRecordFilter {
 
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);

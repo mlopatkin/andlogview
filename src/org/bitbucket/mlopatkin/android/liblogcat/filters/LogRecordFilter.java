@@ -17,6 +17,16 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+/**
+ * Generic filter interface.
+ */
 public interface LogRecordFilter {
+    /**
+     * Checks if the record matches the filter.
+     * 
+     * @param record
+     *            the record to match
+     * @return {@code true} if the records matched the filter
+     */
     boolean include(LogRecord record);
 }
