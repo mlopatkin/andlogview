@@ -22,23 +22,23 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
-public class PinRecordsPopupMenuHandler extends TablePopupMenuHandler {
+public class BookmarksPopupMenuHandler extends TablePopupMenuHandler {
 
-    private JMenuItem unpinThis = new JMenuItem("Unpin this line");
-    private PinRecordsController controller;
+    private JMenuItem unmarkThis = new JMenuItem("Remove from bookmarks");
+    private BookmarksController controller;
 
     private void setUpMenu() {
         JPopupMenu menu = getMenu();
-        unpinThis.addActionListener(new ActionListener() {
+        unmarkThis.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.unpinRecord(getRow());
+                controller.unmarkRecord(getRow());
             }
         });
-        menu.add(unpinThis);
+        menu.add(unmarkThis);
     }
 
-    public PinRecordsPopupMenuHandler(JTable table, PinRecordsController controller) {
+    public BookmarksPopupMenuHandler(JTable table, BookmarksController controller) {
         super(table);
         setUpMenu();
         this.controller = controller;

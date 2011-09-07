@@ -37,16 +37,16 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickLis
 public class IndexFrame extends JFrame {
 
     private JPanel contentPane;
-    private DecoratingRendererTable pinnedRecordsTable;
+    private DecoratingRendererTable indexedRecordsTable;
     private IndexController controller;
 
     public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
             IndexController controller) {
         this.controller = controller;
         initialize();
-        pinnedRecordsTable.setModel(model);
-        pinnedRecordsTable.setColumnModel(columnsModel);
-        pinnedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
+        indexedRecordsTable.setModel(model);
+        indexedRecordsTable.setColumnModel(columnsModel);
+        indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
         addWindowListener(closingListener);
     }
 
@@ -61,28 +61,28 @@ public class IndexFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane();
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        pinnedRecordsTable = new DecoratingRendererTable();
-        pinnedRecordsTable.addDecorator(new PriorityColoredCellRenderer());
-        pinnedRecordsTable.setFillsViewportHeight(true);
-        pinnedRecordsTable.setShowGrid(false);
-        pinnedRecordsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        UiHelper.addDoubleClickListener(pinnedRecordsTable, new LineDoubleClickListener());
-        scrollPane.setViewportView(pinnedRecordsTable);
+        indexedRecordsTable = new DecoratingRendererTable();
+        indexedRecordsTable.addDecorator(new PriorityColoredCellRenderer());
+        indexedRecordsTable.setFillsViewportHeight(true);
+        indexedRecordsTable.setShowGrid(false);
+        indexedRecordsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        UiHelper.addDoubleClickListener(indexedRecordsTable, new LineDoubleClickListener());
+        scrollPane.setViewportView(indexedRecordsTable);
 
         setupKeys();
     }
 
     JTable getTable() {
-        return pinnedRecordsTable;
+        return indexedRecordsTable;
     }
 
     private class LineDoubleClickListener implements DoubleClickListener {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            int rowView = pinnedRecordsTable.rowAtPoint(e.getPoint());
+            int rowView = indexedRecordsTable.rowAtPoint(e.getPoint());
             if (rowView >= 0) {
-                int row = pinnedRecordsTable.convertRowIndexToModel(rowView);
+                int row = indexedRecordsTable.convertRowIndexToModel(rowView);
                 controller.activateRow(row);
             }
         }
@@ -99,13 +99,13 @@ public class IndexFrame extends JFrame {
     private static final String ACTION_JUMP_TO_LINE = "jump_to_line";
 
     private void setupKeys() {
-        UiHelper.bindKeyFocused(pinnedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
+        UiHelper.bindKeyFocused(indexedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
                 new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        int row = pinnedRecordsTable.getSelectedRow();
+                        int row = indexedRecordsTable.getSelectedRow();
                         if (row >= 0) {
-                            row = pinnedRecordsTable.convertRowIndexToModel(row);
+                            row = indexedRecordsTable.convertRowIndexToModel(row);
                             controller.activateRow(row);
                         }
                     }

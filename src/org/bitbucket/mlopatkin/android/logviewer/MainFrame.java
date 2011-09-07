@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private AutoScrollController scrollController;
     private FilterController filterController;
     private SearchController searchController;
-    private PinRecordsController pinRecordsController;
+    private BookmarksController bookmarksController;
 
     private DataSource source;
     private JPanel panel;
@@ -87,7 +87,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         stopWaitingForDevice();
         source = newSource;
         recordsModel.clear();
-        pinRecordsController.clear();
+        bookmarksController.clear();
         source.setLogRecordListener(scrollController);
         bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
     }
@@ -130,9 +130,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         scrollController = new AutoScrollController(logElements, recordsModel);
         filterController = new FilterController(logElements, recordsModel);
-        pinRecordsController = new PinRecordsController(logElements, recordsModel, mapper,
+        bookmarksController = new BookmarksController(logElements, recordsModel, mapper,
                 filterController);
-        new LogRecordPopupMenuHandler(logElements, filterController, pinRecordsController);
+        new LogRecordPopupMenuHandler(logElements, filterController, bookmarksController);
         searchController = new SearchController(logElements, recordsModel);
 
         panel = new JPanel();
@@ -220,10 +220,10 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                     }
                 });
 
-        bindKeyGlobal(KEY_SHOW_PINNED, ACTION_SHOW_PINNED, new AbstractAction() {
+        bindKeyGlobal(KEY_SHOW_BOOKMARKS, ACTION_SHOW_BOOKMARKS, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pinRecordsController.showWindow();
+                bookmarksController.showWindow();
             }
         });
     }
@@ -262,8 +262,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         panel.repaint();
     }
 
-    private static final String ACTION_SHOW_PINNED = "show_pinned";
-    private static final String KEY_SHOW_PINNED = "control P";
+    private static final String ACTION_SHOW_BOOKMARKS = "show_bookmarks";
+    private static final String KEY_SHOW_BOOKMARKS = "control P";
     private JLabel statusLabel;
 
     private static final int MESSAGE_DELAY = 2000;

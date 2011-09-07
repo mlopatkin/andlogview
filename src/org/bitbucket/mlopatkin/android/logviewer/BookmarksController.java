@@ -26,18 +26,18 @@ import javax.swing.table.TableRowSorter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
-public class PinRecordsController extends AbstractIndexController implements IndexController {
+public class BookmarksController extends AbstractIndexController implements IndexController {
 
     private JTable table;
 
     private TableRowSorter<LogRecordTableModel> rowSorter;
-    private PinnedRowsFilter filter = new PinnedRowsFilter();
+    private BookmarksRowFilter filter = new BookmarksRowFilter();
 
     @SuppressWarnings("unchecked")
-    public PinRecordsController(JTable mainTable, LogRecordTableModel model,
+    public BookmarksController(JTable mainTable, LogRecordTableModel model,
             PidToProcessMapper mapper, FilterController filterController) {
         super(mainTable, model, mapper, filterController);
-        getFrame().setTitle("Pinned records");
+        getFrame().setTitle("Bookmarks");
 
         table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
@@ -46,32 +46,32 @@ public class PinRecordsController extends AbstractIndexController implements Ind
 
         rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
 
-        new PinRecordsPopupMenuHandler(table, this);
+        new BookmarksPopupMenuHandler(table, this);
     }
 
-    public void pinRecord(int index) {
+    public void markRecord(int index) {
         if (!getFrame().isVisible()) {
             getFrame().setVisible(true);
         }
-        filter.pin(index);
+        filter.mark(index);
         update();
     }
 
-    public void unpinRecord(int index) {
-        filter.unpin(index);
+    public void unmarkRecord(int index) {
+        filter.unmark(index);
         update();
     }
 
-    private class PinnedRowsFilter extends RowFilter<LogRecordTableModel, Integer> {
+    private class BookmarksRowFilter extends RowFilter<LogRecordTableModel, Integer> {
 
-        private Set<Integer> pinnedRows = new HashSet<Integer>();
+        private Set<Integer> markedRows = new HashSet<Integer>();
 
-        public void pin(int index) {
-            pinnedRows.add(index);
+        public void mark(int index) {
+            markedRows.add(index);
         }
 
-        public void unpin(int index) {
-            pinnedRows.remove(index);
+        public void unmark(int index) {
+            markedRows.remove(index);
         }
 
         @Override
@@ -82,11 +82,11 @@ public class PinRecordsController extends AbstractIndexController implements Ind
         }
 
         private boolean include(int row, LogRecord record) {
-            return pinnedRows.contains(row);
+            return markedRows.contains(row);
         }
 
         public void clear() {
-            pinnedRows.clear();
+            markedRows.clear();
         }
     }
 
