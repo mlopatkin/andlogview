@@ -65,6 +65,7 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
         JPopupMenu popupMenu = getMenu();
         popupMenu.add(hideWithThisTag);
         popupMenu.add(hideWithThisPid);
+        popupMenu.addSeparator();
         popupMenu.add(addToBookmarks);
     }
 
