@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
@@ -30,6 +31,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatExceptio
 import com.android.ddmlib.IDevice;
 
 public class Main {
+    private static final Logger logger = Logger.getLogger(Main.class);
 
     public static final String APP_VERSION = "0.14";
 
@@ -38,6 +40,7 @@ public class Main {
 
     public static void main(String[] args) {
         Configuration.forceInit();
+        logger.info("Android Log Viewer " + APP_VERSION);
         if (args.length == 0) {
             // ADB mode
             new Main().start();
