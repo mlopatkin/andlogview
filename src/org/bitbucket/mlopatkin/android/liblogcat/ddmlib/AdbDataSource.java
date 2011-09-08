@@ -30,11 +30,11 @@ import java.util.regex.Matcher;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -51,12 +51,32 @@ public class AdbDataSource implements DataSource {
 
     private IDevice device;
     private AdbPidToProcessConverter converter;
+    private EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
+
+    private void checkBuffers() {
+        ShellInputStream shellIn = new ShellInputStream();
+        AdbShellCommand listBuffers = new AdbShellCommand("ls /dev/log/", shellIn);
+        shellCommandExecutor.execute(listBuffers);
+        BufferedReader in = new BufferedReader(new InputStreamReader(shellIn));
+        try {
+            String line = in.readLine();
+            while (line != null) {
+                for (Buffer buffer : Buffer.values()) {
+                    if (line.equalsIgnoreCase(Configuration.adb.bufferName(buffer))) {
+                        availableBuffers.add(buffer);
+                    }
+                }
+                line = in.readLine();
+            }
+        } catch (IOException e) {
+            logger.warn("Exception while reading buffers list", e);
+        }
+    }
 
     private void initStreams() {
-        for (LogRecord.Buffer buffer : LogRecord.Buffer.values()) {
-            if (buffer != LogRecord.Buffer.UNKNOWN) {
-                setUpStream(buffer);
-            }
+        checkBuffers();
+        for (LogRecord.Buffer buffer : availableBuffers) {
+            setUpStream(buffer);
         }
         converter = new AdbPidToProcessConverter();
     }
@@ -91,7 +111,7 @@ public class AdbDataSource implements DataSource {
             try {
                 wait();
             } catch (InterruptedException e) { // $codepro.audit.disable
-                                               // emptyCatchClause
+                // emptyCatchClause
                 // ignore
             }
         }
@@ -199,7 +219,7 @@ public class AdbDataSource implements DataSource {
 
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
-        return EnumSet.of(Buffer.MAIN, Buffer.SYSTEM, Buffer.RADIO, Buffer.EVENTS);
+        return availableBuffers;
     }
 
     private ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
