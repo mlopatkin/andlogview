@@ -64,7 +64,6 @@ public class BookmarksController extends AbstractIndexController implements Inde
 
     public void unmarkRecord(int index) {
         filter.unmark(index);
-        getMainTable().repaint();
         update();
     }
 
@@ -112,6 +111,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
 
     private void update() {
         rowSorter.sort();
+        getMainTable().repaint();
     }
 
     private class BookmarksHighlighter implements DecoratingCellRenderer {
