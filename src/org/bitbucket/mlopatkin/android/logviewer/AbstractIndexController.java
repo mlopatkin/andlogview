@@ -57,6 +57,14 @@ public abstract class AbstractIndexController implements IndexController {
         return indexFrame;
     }
 
+    protected LogRecordTableModel getModel() {
+        return model;
+    }
+
+    protected JTable getMainTable() {
+        return mainTable;
+    }
+
     public void showWindow() {
         indexFrame.setVisible(true);
     }

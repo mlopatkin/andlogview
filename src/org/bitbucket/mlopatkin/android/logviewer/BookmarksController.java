@@ -15,15 +15,20 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
 public class BookmarksController extends AbstractIndexController implements IndexController {
@@ -34,7 +39,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
     private BookmarksRowFilter filter = new BookmarksRowFilter();
 
     @SuppressWarnings("unchecked")
-    public BookmarksController(JTable mainTable, LogRecordTableModel model,
+    public BookmarksController(DecoratingRendererTable mainTable, LogRecordTableModel model,
             PidToProcessMapper mapper, FilterController filterController) {
         super(mainTable, model, mapper, filterController);
         getFrame().setTitle("Bookmarks");
@@ -45,7 +50,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
 
         rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
-
+        mainTable.addDecorator(new BookmarksHighlighter());
         new BookmarksPopupMenuHandler(table, this);
     }
 
@@ -59,6 +64,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
 
     public void unmarkRecord(int index) {
         filter.unmark(index);
+        getMainTable().repaint();
         update();
     }
 
@@ -81,7 +87,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
             return include(entry.getIdentifier(), record);
         }
 
-        private boolean include(int row, LogRecord record) {
+        boolean include(int row, LogRecord record) {
             return markedRows.contains(row);
         }
 
@@ -108,4 +114,41 @@ public class BookmarksController extends AbstractIndexController implements Inde
         rowSorter.sort();
     }
 
+    private class BookmarksHighlighter implements DecoratingCellRenderer {
+
+        private TableCellRenderer inner;
+
+        public void setInnerRenderer(TableCellRenderer renderer) {
+            inner = renderer;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cmp = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                    row, column);
+            int modelRow = table.convertRowIndexToModel(row);
+            LogRecord record = getModel().getRowData(modelRow);
+            if (filter.include(modelRow, record)) {
+                highlight(cmp, isSelected);
+            }
+
+            return cmp;
+        }
+
+        private void highlight(Component cmp, boolean isSelected) {
+            Color backgroundColor = Configuration.ui.bookmarkBackground();
+            Color foregroundColor = Configuration.ui.bookmarkedForeground();
+            if (isSelected) {
+                backgroundColor = backgroundColor.brighter();
+            }
+            if (backgroundColor != null) {
+                cmp.setBackground(backgroundColor);
+            }
+            if (foregroundColor != null) {
+                cmp.setForeground(foregroundColor);
+            }
+        }
+
+    }
 }

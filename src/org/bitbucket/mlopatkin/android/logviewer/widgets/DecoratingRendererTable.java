@@ -15,8 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -30,7 +30,7 @@ public class DecoratingRendererTable extends JTable {
 
     private static final long serialVersionUID = 2582491704714327034L;
 
-    private Set<DecoratingCellRenderer> decorators = new HashSet<DecoratingCellRenderer>();
+    private List<DecoratingCellRenderer> decorators = new ArrayList<DecoratingCellRenderer>();
 
     public void addDecorator(DecoratingCellRenderer renderer) {
         decorators.add(renderer);
