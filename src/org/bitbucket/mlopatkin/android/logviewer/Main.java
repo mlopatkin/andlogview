@@ -77,7 +77,7 @@ public class Main {
 
     void start() {
         if (initialSource != null) {
-            window.setSource(initialSource);
+            window.setSourceAsync(initialSource);
         } else {
             window.waitForDevice();
         }

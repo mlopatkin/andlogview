@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -81,6 +82,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     }
 
     public void setSource(DataSource newSource) {
+        assert EventQueue.isDispatchThread();
         if (source != null) {
             source.close();
         }
@@ -90,6 +92,19 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         bookmarksController.clear();
         source.setLogRecordListener(scrollController);
         bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
+    }
+
+    public void setSourceAsync(final DataSource newSource) {
+        if (EventQueue.isDispatchThread()) {
+            setSource(newSource);
+        } else {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    setSource(newSource);
+                }
+            });
+        }
     }
 
     private PidToProcessMapper mapper = new PidToProcessMapper() {
@@ -372,9 +387,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     public void waitForDevice() {
         pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
             @Override
-            public void deviceConnected(IDevice device) {
+            public void deviceConnected(final IDevice device) {
                 DeviceDisconnectedNotifier.startWatching(device);
-                setSource(new AdbDataSource(device));
+                setSourceAsync(new AdbDataSource(device));
                 stopWaitingForDevice();
             }
         };
