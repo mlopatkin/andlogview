@@ -74,7 +74,7 @@ public class LogRecordParser {
 
     private static class Brief {
 
-        private static final String[] LOG_RECORD_FIELDS = { PRIORITY_REGEX, "/", TAG_REGEX,
+        private static final String[] LOG_RECORD_FIELDS = { PRIORITY_REGEX, "/", TAG_REGEX, SEP,
                 PID_BRACKETS, ": ", MESSAGE_REGEX };
         private static final Pattern briefRecordPattern = Pattern.compile("^"
                 + StringUtils.join(LOG_RECORD_FIELDS) + "$");
