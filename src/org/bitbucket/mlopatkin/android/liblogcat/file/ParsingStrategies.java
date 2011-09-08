@@ -46,4 +46,16 @@ class ParsingStrategies {
         };
     };
 
+    static final ParsingStrategies.Strategy time = new ParsingStrategies.Strategy() {
+        @Override
+        public LogRecord parse(Buffer buffer, String line) {
+            return LogRecordParser.parseTime(buffer, line);
+        }
+
+        public String toString() {
+            return "TimeStrategy";
+        };
+    };
+    static final ParsingStrategies.Strategy[] supportedStrategies = { threadTime, brief, time };
+
 }

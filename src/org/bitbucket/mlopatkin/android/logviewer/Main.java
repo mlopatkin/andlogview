@@ -61,8 +61,10 @@ public class Main {
             initialSource = FileDataSourceFactory.createDataSource(file);
         } catch (UnrecognizedFormatException e) {
             ErrorDialogsHelper.showError("Unrecognized file format for " + file);
+            logger.error("Exception while reading the file", e);
         } catch (IOException e) {
             ErrorDialogsHelper.showError("Cannot read " + file);
+            logger.error("Exception while reading the file", e);
         }
     }
 

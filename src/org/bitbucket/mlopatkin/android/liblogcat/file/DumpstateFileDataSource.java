@@ -19,22 +19,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
+import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
     private static final int READ_AHEAD_LIMIT = 65536;
 
     private List<SectionHandler> handlers = new ArrayList<SectionHandler>();
+    private List<LogRecord> records = new ArrayList<LogRecord>();
+    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
+    private LogRecordDataSourceListener listener;
 
     public DumpstateFileDataSource(BufferedReader in) throws IOException, ParseException {
         initSectionHandlers();
@@ -58,6 +67,7 @@ public class DumpstateFileDataSource implements DataSource {
         if (handler == null) {
             return;
         }
+        handler.startSection(sectionName);
         in.mark(READ_AHEAD_LIMIT);
         String line = in.readLine();
         while (line != null) {
@@ -88,6 +98,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private void initSectionHandlers() {
+        handlers.add(new LogcatSectionHandler());
     }
 
     @Override
@@ -97,7 +108,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
-        return EnumSet.noneOf(Buffer.class);
+        return buffers;
     }
 
     @Override
@@ -107,11 +118,16 @@ public class DumpstateFileDataSource implements DataSource {
 
     @Override
     public void reset() {
-
+        setLogRecordListener(listener);
     }
 
     @Override
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
+        this.listener = listener;
+        Collections.sort(records);
+        for (LogRecord record : records) {
+            listener.onNewRecord(record, false);
+        }
     }
 
     /**
@@ -143,6 +159,11 @@ public class DumpstateFileDataSource implements DataSource {
          * section starts.
          */
         void endSection();
+
+        /**
+         * Starts section processing.
+         */
+        void startSection(String sectionName);
     }
 
     private static final Pattern SECTION_NAME_PATTERN = Pattern.compile("^------ (.*) ------$");
@@ -153,6 +174,89 @@ public class DumpstateFileDataSource implements DataSource {
             return m.group(1);
         } else {
             return null;
+        }
+    }
+
+    private static final Pattern LOGCAT_END_PATTERN = Pattern.compile("^\\[logcat: .* elapsed\\]$");
+
+    private void addLogRecord(LogRecord record) {
+        records.add(record);
+    }
+
+    private void addBuffer(Buffer buffer) {
+        buffers.add(buffer);
+    }
+
+    private class LogcatSectionHandler implements SectionHandler {
+
+        private Buffer buffer;
+        private Strategy parsingStrategy;
+
+        @Override
+        public void endSection() {
+            assert buffer != null;
+            addBuffer(buffer);
+        }
+
+        @Override
+        public boolean handleLine(String line) throws ParseException {
+            if (isEnd(line)) {
+                return false;
+            }
+            if (StringUtils.isBlank(line) || LogRecordParser.isLogBeginningLine(line)) {
+                return true;
+            }
+            if (parsingStrategy == null) {
+                parsingStrategy = chooseParsingStrategy(line);
+            }
+            assert buffer != null;
+            LogRecord record = parsingStrategy.parse(buffer, line);
+            if (record == null) {
+                logger.debug("Null record: " + line);
+            } else {
+                addLogRecord(record);
+            }
+            return true;
+        }
+
+        private Strategy chooseParsingStrategy(String line) throws ParseException {
+            for (Strategy strategy : ParsingStrategies.supportedStrategies) {
+                if (strategy.parse(null, line) != null) {
+                    return strategy;
+                }
+            }
+            throw new ParseException("Cannot figure out log format from " + line, 0);
+        }
+
+        @Override
+        public boolean isSupportedSection(String sectionName) {
+            for (Buffer buffer : Buffer.values()) {
+                String header = Configuration.dump.bufferHeader(buffer);
+                if (header != null && sectionName.startsWith(header + " LOG")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public void startSection(String sectionName) {
+            parsingStrategy = null;
+            buffer = getBufferFromName(sectionName);
+        }
+
+        private Buffer getBufferFromName(String sectionName) {
+            for (Buffer buffer : Buffer.values()) {
+                String header = Configuration.dump.bufferHeader(buffer);
+                if (header != null && sectionName.startsWith(header)) {
+                    return buffer;
+                }
+            }
+            return Buffer.UNKNOWN;
+        }
+
+        private boolean isEnd(String line) {
+            return LOGCAT_END_PATTERN.matcher(line).matches();
         }
     }
 }

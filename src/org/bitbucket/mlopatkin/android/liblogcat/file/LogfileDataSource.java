@@ -84,12 +84,9 @@ public class LogfileDataSource implements DataSource {
         }
     }
 
-    private static final ParsingStrategies.Strategy[] supportedStrategies = { ParsingStrategies.threadTime,
-            ParsingStrategies.brief };
-
     static LogfileDataSource createLogfileDataSourceWithStrategy(String checkLine)
             throws UnrecognizedFormatException {
-        for (ParsingStrategies.Strategy current : supportedStrategies) {
+        for (ParsingStrategies.Strategy current : ParsingStrategies.supportedStrategies) {
             if (current.parse(null, checkLine) != null) {
                 return new LogfileDataSource(current);
             }
