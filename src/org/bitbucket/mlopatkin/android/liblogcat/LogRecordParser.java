@@ -143,6 +143,33 @@ public class LogRecordParser {
         }
     }
 
+    private static class Time {
+        private static final String[] LOG_RECORD_FIELDS = { TIMESTAMP_REGEX, SEP, PRIORITY_REGEX,
+                "/", TAG_REGEX, SEP, PID_BRACKETS, ": ", MESSAGE_REGEX };
+        private static final Pattern timeRecordPattern = Pattern.compile("^"
+                + StringUtils.join(LOG_RECORD_FIELDS) + "$");
+
+        static Matcher matchLine(String line) {
+            return timeRecordPattern.matcher(line);
+        }
+
+        static LogRecord createFromGroups(Buffer buffer, Matcher m) {
+            if (!m.matches()) {
+                return null;
+            }
+            try {
+                Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+                Priority priority = getPriorityFromChar(m.group(2));
+                String tag = m.group(3);
+                int pid = Integer.parseInt(m.group(4));
+                String message = m.group(5);
+                return new LogRecord(dateTime, pid, LogRecord.NO_ID, priority, tag, message, buffer);
+            } catch (ParseException e) {
+                return new LogRecord(new Date(), -1, -1, Priority.ERROR, "Parse Error", m.group());
+            }
+        }
+    }
+
     private static Priority getPriorityFromChar(String next) {
         next = next.trim();
         for (Priority val : Priority.values()) {
@@ -174,6 +201,10 @@ public class LogRecordParser {
 
     public static boolean isLogBeginningLine(String line) {
         return (line != null) && line.startsWith(LOG_BEGIN);
+    }
+
+    public static LogRecord parseTime(Buffer buffer, String line) {
+        return Time.createFromGroups(buffer, Time.matchLine(line));
     }
 
 }
