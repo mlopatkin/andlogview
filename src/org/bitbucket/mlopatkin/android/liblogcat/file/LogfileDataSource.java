@@ -42,10 +42,10 @@ public class LogfileDataSource implements DataSource {
     private static final Buffer DEFAULT_BUFFER = Buffer.UNKNOWN;
 
     private LogRecordDataSourceListener listener;
-    private ParsingStrategy strategy;
+    private ParsingStrategies.Strategy strategy;
     private List<LogRecord> records = new ArrayList<LogRecord>();
 
-    private LogfileDataSource(ParsingStrategy strategy) {
+    private LogfileDataSource(ParsingStrategies.Strategy strategy) {
         this.strategy = strategy;
         logger.debug("Strategy implemented: " + strategy);
     }
@@ -84,38 +84,12 @@ public class LogfileDataSource implements DataSource {
         }
     }
 
-    private interface ParsingStrategy {
-        LogRecord parse(Buffer buffer, String line);
-    }
-
-    private static final ParsingStrategy threadTimeStrategy = new ParsingStrategy() {
-        @Override
-        public LogRecord parse(Buffer buffer, String line) {
-            return LogRecordParser.parseThreadTime(buffer, line);
-        }
-
-        public String toString() {
-            return "ThreadTimeStrategy";
-        };
-    };
-
-    private static final ParsingStrategy briefStrategy = new ParsingStrategy() {
-        @Override
-        public LogRecord parse(Buffer buffer, String line) {
-            return LogRecordParser.parseBrief(buffer, line);
-        }
-
-        public String toString() {
-            return "BriefStrategy";
-        };
-    };
-
-    private static final ParsingStrategy[] supportedStrategies = { threadTimeStrategy,
-            briefStrategy };
+    private static final ParsingStrategies.Strategy[] supportedStrategies = { ParsingStrategies.threadTime,
+            ParsingStrategies.brief };
 
     static LogfileDataSource createLogfileDataSourceWithStrategy(String checkLine)
             throws UnrecognizedFormatException {
-        for (ParsingStrategy current : supportedStrategies) {
+        for (ParsingStrategies.Strategy current : supportedStrategies) {
             if (current.parse(null, checkLine) != null) {
                 return new LogfileDataSource(current);
             }
