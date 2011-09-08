@@ -17,12 +17,20 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
@@ -30,6 +38,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class BookmarksController extends AbstractIndexController implements IndexController {
 
@@ -47,11 +56,21 @@ public class BookmarksController extends AbstractIndexController implements Inde
         table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
+        table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
 
         rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
         mainTable.addDecorator(new BookmarksHighlighter());
-        new BookmarksPopupMenuHandler(table, this);
+        setupPopupMenu();
+    }
+
+    private void setupPopupMenu() {
+        JPopupMenu menu = new JPopupMenu();
+        menu.add(acDeleteBookmarks);
+        UiHelper.addPopupMenu(table, menu);
+        UiHelper.bindKeyFocused(table, "DELETE", "remove_bookmark", acDeleteBookmarks);
+        table.getSelectionModel().addListSelectionListener(selectionListener);
+        acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
     }
 
     public void markRecord(int index) {
@@ -151,4 +170,29 @@ public class BookmarksController extends AbstractIndexController implements Inde
         }
 
     }
+
+    private Action acDeleteBookmarks = new AbstractAction("Remove from bookmarks") {
+        {
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("DELETE"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] modelRows = new int[table.getSelectedRows().length];
+            int p = 0;
+            for (int row : table.getSelectedRows()) {
+                modelRows[p++] = table.convertRowIndexToModel(row);
+            }
+            for (int row : modelRows) {
+                unmarkRecord(row);
+            }
+        }
+    };
+    private ListSelectionListener selectionListener = new ListSelectionListener() {
+
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
+        }
+    };
 }
