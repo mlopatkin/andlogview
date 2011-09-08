@@ -313,6 +313,10 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
     private Action acOpenFile = new AbstractAction("Open...") {
 
+        {
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
+        }
+
         @Override
         public void actionPerformed(ActionEvent event) {
             JFileChooser fileChooser = new JFileChooser();
@@ -385,6 +389,10 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     }
 
     private Action acSaveToFile = new AbstractAction("Save...") {
+
+        {
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control S"));
+        }
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
