@@ -230,6 +230,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                     public void actionPerformed(ActionEvent e) {
                         hideSearchField();
                         if (!searchController.startSearch(instantSearchTextField.getText())) {
+                            logElements.requestFocusInWindow();
                             showMessage(MESSAGE_NOT_FOUND);
                         }
                     }
