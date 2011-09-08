@@ -60,13 +60,14 @@ public class TextHighlightCellRenderer implements DecoratingCellRenderer {
             boolean hasFocus, int row, int column) {
         JLabel result = (JLabel) inner.getTableCellRendererComponent(table, value, isSelected,
                 hasFocus, row, column);
-        int modelColumn = table.convertColumnIndexToModel(column);
-        if (modelColumn == LogRecordTableModel.COLUMN_MSG
-                || modelColumn == LogRecordTableModel.COLUMN_TAG) {
-            String valueString = value.toString();
-            result.setText(highlightMatches(valueString));
+        if (textToSearch != null) {
+            int modelColumn = table.convertColumnIndexToModel(column);
+            if (modelColumn == LogRecordTableModel.COLUMN_MSG
+                    || modelColumn == LogRecordTableModel.COLUMN_TAG) {
+                String valueString = value.toString();
+                result.setText(highlightMatches(valueString));
+            }
         }
-
         return result;
     }
 

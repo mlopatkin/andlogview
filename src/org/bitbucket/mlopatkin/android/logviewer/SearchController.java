@@ -31,6 +31,7 @@ public class SearchController {
     public SearchController(DecoratingRendererTable table, LogRecordTableModel model) {
         this.table = table;
         this.model = model;
+        table.addDecorator(renderer);
     }
 
     private static final int MODE_FORWARD = 1;
@@ -39,11 +40,12 @@ public class SearchController {
     public boolean startSearch(String text) {
         this.text = text;
         if (StringUtils.isBlank(text)) {
-            table.removeDecorator(renderer);
+            renderer.setTextToHighLight(null);
+            table.repaint();
             return false;
         }
         renderer.setTextToHighLight(text);
-        table.addDecorator(renderer);
+        table.repaint();
         curRow = table.getSelectedRow();
         return performSearch(MODE_FORWARD, curRow >= 0);
     }
