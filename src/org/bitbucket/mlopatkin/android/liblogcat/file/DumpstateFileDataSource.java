@@ -32,6 +32,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
@@ -99,6 +100,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     private void initSectionHandlers() {
         handlers.add(new LogcatSectionHandler());
+        handlers.add(new ProcessesSectionHandler());
     }
 
     @Override
@@ -113,7 +115,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     @Override
     public PidToProcessConverter getPidToProcessConverter() {
-        return null;
+        return converter;
     }
 
     @Override
@@ -177,7 +179,7 @@ public class DumpstateFileDataSource implements DataSource {
         }
     }
 
-    private static final Pattern LOGCAT_END_PATTERN = Pattern.compile("^\\[logcat: .* elapsed\\]$");
+    private static final Pattern SECTION_END_PATTERN = Pattern.compile("^\\[.*: .* elapsed\\]$");
 
     private void addLogRecord(LogRecord record) {
         records.add(record);
@@ -256,7 +258,45 @@ public class DumpstateFileDataSource implements DataSource {
         }
 
         private boolean isEnd(String line) {
-            return LOGCAT_END_PATTERN.matcher(line).matches();
+            return SECTION_END_PATTERN.matcher(line).matches();
         }
+    }
+
+    private static final String PROCESSES_SECTION = "PROCESSES (ps -P)";
+    private PidToProcessConverter converter = new PidToProcessConverter();
+
+    private class ProcessesSectionHandler implements SectionHandler {
+
+        @Override
+        public void endSection() {
+        }
+
+        @Override
+        public boolean handleLine(String line) throws ParseException {
+            if (isEnd(line)) {
+                return false;
+            }
+
+            if (StringUtils.isBlank(line) || ProcessListParser.isProcessListHeader(line)) {
+                return true;
+            }
+            Matcher m = ProcessListParser.parseProcessListLine(line);
+            converter.put(ProcessListParser.getPid(m), ProcessListParser.getProcessName(m));
+            return true;
+        }
+
+        @Override
+        public boolean isSupportedSection(String sectionName) {
+            return PROCESSES_SECTION.equalsIgnoreCase(sectionName);
+        }
+
+        @Override
+        public void startSection(String sectionName) {
+        }
+
+        private boolean isEnd(String line) {
+            return SECTION_END_PATTERN.matcher(line).matches();
+        }
+
     }
 }
