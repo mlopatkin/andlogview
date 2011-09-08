@@ -86,8 +86,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         rowSorter.sort();
         table.repaint();
         if (table.getSelectedRow() != -1) {
-            table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(),
-                    table.getSelectedColumn(), false));
+            table.scrollRectToVisible(table.getCellRect(table.getSelectedRow(), table
+                    .getSelectedColumn(), false));
         }
         for (ActionListener listener : refreshActionListeners) {
             listener.actionPerformed(null);
@@ -216,8 +216,6 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     private void initBufferFilter() {
         for (Buffer buffer : Buffer.values()) {
             bufferFilter.setBufferEnabled(buffer, !Configuration.ui.bufferEnabled(buffer));
-            logger.debug(String.format("BufferFilter: %s %s", buffer,
-                    !Configuration.ui.bufferEnabled(buffer)));
         }
     }
 

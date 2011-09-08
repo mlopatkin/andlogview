@@ -25,12 +25,9 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
 public class BufferFilterMenu {
-    private static final Logger logger = Logger.getLogger(BufferFilterMenu.class);
-
     private FilterController controller;
     private JMenu parent;
 
@@ -57,12 +54,11 @@ public class BufferFilterMenu {
         this.parent = parent;
         for (Buffer buffer : Buffer.values()) {
             if (buffer != Buffer.UNKNOWN) {
-                JMenuItem item = new BufferCheckBoxMenuItem(buffer,
-                        Configuration.ui.bufferEnabled(buffer));
+                JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui
+                        .bufferEnabled(buffer));
                 items.put(buffer, item);
                 parent.add(item);
             }
-            logger.debug(buffer);
         }
         resetBuffers();
     }
