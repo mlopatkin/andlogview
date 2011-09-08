@@ -27,13 +27,15 @@ import org.junit.Test;
 
 public class LogRecordParserTest {
 
-    static final String BRIEF_RECORD = "D/MediaScanner   (  417): postscan return";
+    static final String BRIEF_RECORD = "D/MediaScanner(417): postscan return";
+    static final String BRIEF_RECORD_PAD = "D/MediaScanner   (  417): postscan return";
     static final String PROCESS_RECORD = "D(  417) postscan return  (MediaScanner)";
     static final String TAG_RECORD = "D/MediaScanner: postscan return";
     static final String THREAD_RECORD = "D(  417:0x494) postscan return";
     static final String THREADTIME_RECORD = "08-18 13:40:59.546   417  1172 D MediaScanner: postscan return";
     static final String RAW_RECORD = "postscan return";
-    static final String TIME_RECORD = "08-18 13:40:59.546 D/MediaScanner   (  417): postscan return";
+    static final String TIME_RECORD = "08-18 13:40:59.546 D/MediaScanner(417): postscan return";
+    static final String TIME_RECORD_PAD = "08-18 13:40:59.546 D/MediaScanner   (  417): postscan return";
     static final String LONG_RECORD = "[ 08-18 13:40:59.546   417:0x494 D/MediaScanner ]\n"
             + "postscan return";
 
@@ -100,6 +102,20 @@ public class LogRecordParserTest {
     }
 
     @Test
+    public void testLogRecordParserBriefPad() {
+        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD_PAD);
+
+        assertNull(record.getTime());
+        assertEquals(LogRecord.NO_ID, record.getTid());
+
+        assertEquals(PID, record.getPid());
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(BUFFER, record.getBuffer());
+    }
+
+    @Test
     public void testLogRecordParserProcess() {
         LogRecord record = LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD);
 
@@ -130,6 +146,20 @@ public class LogRecordParserTest {
     @Test
     public void testLogRecordParserTime() {
         LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD);
+
+        assertEquals(LogRecord.NO_ID, record.getTid());
+
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PID, record.getPid());
+        assertTrue(isSameDate(DATE, record.getTime()));
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(BUFFER, record.getBuffer());
+    }
+
+    @Test
+    public void testLogRecordParserTimePad() {
+        LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD_PAD);
 
         assertEquals(LogRecord.NO_ID, record.getTid());
 
