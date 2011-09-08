@@ -15,10 +15,15 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Component;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -100,6 +105,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
             column.setMaxWidth(info.maxWidth);
         }
         column.setHeaderValue(info.columnName);
+        column.setCellEditor(readOnlyCellEditor);
         addColumn(column);
     }
 
@@ -119,4 +125,22 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
+    private DefaultCellEditor readOnlyCellEditor = new DefaultCellEditor(new JTextField()) {
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            JTextField tf = (JTextField) super.getTableCellEditorComponent(table, value,
+                    isSelected, row, column);
+            tf.setEditable(false);
+            return tf;
+        };
+
+        public boolean isCellEditable(java.util.EventObject anEvent) {
+            // only allow double-click to toggle cell editing
+            if (anEvent instanceof MouseEvent) {
+                return super.isCellEditable(anEvent);
+            } else {
+                return false;
+            }
+        };
+    };
 }

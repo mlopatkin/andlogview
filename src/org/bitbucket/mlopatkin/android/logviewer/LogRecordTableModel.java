@@ -117,4 +117,17 @@ public class LogRecordTableModel extends AbstractTableModel {
             fireTableRowsDeleted(0, lastRow);
         }
     }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+        case COLUMN_MSG:
+        case COLUMN_PID:
+        case COLUMN_TID:
+        case COLUMN_TAG:
+            return true;
+        default:
+            return false;
+        }
+    }
 }
