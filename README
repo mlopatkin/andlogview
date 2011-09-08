@@ -31,7 +31,7 @@ Keys:
     Esc - clear search results
     F3 - find next
     Shift+F3 - find prev
-    Ctrl+P - show pinned lines window
+    Ctrl+P - show bookmarks
 Tips:
     - right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
     - lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it

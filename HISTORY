@@ -1,3 +1,15 @@
+version 0.15
+    [+] Saving logs
+    [+] Keyboard shortcuts for main menu commands
+    [+] Highlighting bookmarks
+    [+] Copy text from PID, tag or message
+    [+] Logs and dumpstates in old format are now supported
+    
+    [*] Fixed crash when opening a dumpstate file specified from the command-line
+    [*] "Pin" was renamed to "Bookmark"
+    [*] Available buffers on the device are detected
+    [*] Minor bugfixes and refactorings
+     
 version 0.14
 	[+] File opening via main menu
 	[+] Device selector
