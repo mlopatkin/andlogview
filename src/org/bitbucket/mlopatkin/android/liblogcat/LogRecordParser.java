@@ -42,6 +42,7 @@ public class LogRecordParser {
     private static final String PRIORITY_REGEX = "([AVDIWEF])";
     private static final String MESSAGE_REGEX = "(.*)";
     private static final String SEP = "\\s+";
+    private static final String SEP_OPT = "\\s*";
 
     private static class ThreadTime {
         private static final String TAG = TAG_REGEX + "\\s*: ";
@@ -74,8 +75,8 @@ public class LogRecordParser {
 
     private static class Brief {
 
-        private static final String[] LOG_RECORD_FIELDS = { PRIORITY_REGEX, "/", TAG_REGEX, SEP,
-                PID_BRACKETS, ": ", MESSAGE_REGEX };
+        private static final String[] LOG_RECORD_FIELDS = { PRIORITY_REGEX, "/", TAG_REGEX,
+                SEP_OPT, PID_BRACKETS, ": ", MESSAGE_REGEX };
         private static final Pattern briefRecordPattern = Pattern.compile("^"
                 + StringUtils.join(LOG_RECORD_FIELDS) + "$");
 
@@ -145,7 +146,7 @@ public class LogRecordParser {
 
     private static class Time {
         private static final String[] LOG_RECORD_FIELDS = { TIMESTAMP_REGEX, SEP, PRIORITY_REGEX,
-                "/", TAG_REGEX, SEP, PID_BRACKETS, ": ", MESSAGE_REGEX };
+                "/", TAG_REGEX, SEP_OPT, PID_BRACKETS, ": ", MESSAGE_REGEX };
         private static final Pattern timeRecordPattern = Pattern.compile("^"
                 + StringUtils.join(LOG_RECORD_FIELDS) + "$");
 
