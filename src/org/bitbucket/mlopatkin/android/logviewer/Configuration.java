@@ -77,18 +77,23 @@ public class Configuration {
             return parseColor(PREFIX + "priority_color." + priorityName, Color.BLACK);
         }
 
-        public static Color highlightColor() {
+        public static Color bookmarkBackground() {
             Color defaultColor = Color.decode("#D0F0C0");
-            return parseColor(PREFIX + "highlight_color", defaultColor);
+            return parseColor(PREFIX + "bookmark_background", defaultColor);
+        }
+
+        public static Color bookmarkedForeground() {
+            return parseColor(PREFIX + "bookmark_foreground", null);
         }
 
         private static void initHighlightColors() {
+            Color defaultColor = Color.decode("#D0F0C0");
             String prefix = PREFIX + "highlight_color.";
             TreeMap<Integer, Color> colors = new TreeMap<Integer, Color>();
             for (String param : instance.properties.stringPropertyNames()) {
                 if (param.startsWith(prefix)) {
                     int id = Integer.parseInt(param.substring(prefix.length()));
-                    colors.put(id, parseColor(param, highlightColor()));
+                    colors.put(id, parseColor(param, defaultColor));
                 }
             }
             _highlightColors = new Color[colors.size()];
