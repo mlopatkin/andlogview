@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -69,7 +70,12 @@ public class FileDataSourceFactory {
         return source;
     }
 
-    private static DataSource createDumpstateFileSource(BufferedReader in) throws IOException {
-        return new DumpstateFileDataSource(in);
+    private static DataSource createDumpstateFileSource(BufferedReader in) throws IOException,
+            UnrecognizedFormatException {
+        try {
+            return new DumpstateFileDataSource(in);
+        } catch (ParseException e) {
+            throw new UnrecognizedFormatException("Cannot parse dumpstate file", e);
+        }
     }
 }

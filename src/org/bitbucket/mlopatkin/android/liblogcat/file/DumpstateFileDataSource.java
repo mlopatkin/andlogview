@@ -16,150 +16,143 @@
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
-import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
+    private static final int READ_AHEAD_LIMIT = 65536;
 
-    private List<LogRecord> source = new ArrayList<LogRecord>();
-    private PidToProcessConverter converter;
-    private LogRecordDataSourceListener listener;
+    private List<SectionHandler> handlers = new ArrayList<SectionHandler>();
 
-    public DumpstateFileDataSource(File file) {
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file));
-            readLog(in, LogRecord.Buffer.MAIN);
-            readLog(in, LogRecord.Buffer.EVENTS);
-            readLog(in, LogRecord.Buffer.RADIO);
-            readProcessesList(in);
-            in.close();
-        } catch (IOException e) {
-            logger.error("Unexpected IO exception", e);
-        }
-        Collections.sort(source, sortByTimeAscComparator);
+    public DumpstateFileDataSource(BufferedReader in) throws IOException, ParseException {
+        initSectionHandlers();
+        parseFile(in);
     }
 
-    DumpstateFileDataSource(BufferedReader in) throws IOException {
-        readLog(in, LogRecord.Buffer.MAIN);
-        readLog(in, LogRecord.Buffer.EVENTS);
-        readLog(in, LogRecord.Buffer.RADIO);
-        readProcessesList(in);
-        Collections.sort(source, sortByTimeAscComparator);
-    }
-
-    private void readLog(BufferedReader in, LogRecord.Buffer buffer) throws IOException {
-        String bufferName = Configuration.dump.bufferHeader(buffer);
-        if (bufferName == null) {
-            logger.warn("This kind of log isn't supported for dumpstate files:" + buffer);
-            return;
-        }
-        scanForLogBegin(in, bufferName);
-        LogRecordStream stream = new DumpstateRecordStream(in);
-        LogRecord record = stream.next(buffer);
-        while (record != null) {
-            source.add(record);
-            record = stream.next(buffer);
-        }
-    }
-
-    private void scanForLogBegin(BufferedReader in, String bufferName) throws IOException {
-        bufferName = bufferName.toUpperCase();
-        scanForSectionBegin(in, bufferName + " LOG");
-    }
-
-    private void readProcessesList(BufferedReader in) throws IOException {
-        final String PS_END = "[ps:";
-        scanForSectionBegin(in, "PROCESSES (ps -P)");
+    private void parseFile(BufferedReader in) throws IOException, ParseException {
         String line = in.readLine();
-        if (!ProcessListParser.isProcessListHeader(line)) {
-            return;
-        }
-        converter = new PidToProcessConverter();
-        line = in.readLine();
-        while (line != null && !line.startsWith(PS_END)) {
-            Matcher m = ProcessListParser.parseProcessListLine(line);
-            if (m.matches()) {
-                int pid = ProcessListParser.getPid(m);
-                String name = ProcessListParser.getProcessName(m);
-                converter.put(pid, name);
+        while (line != null) {
+            String sectionName = getSectionName(line);
+            if (sectionName != null) {
+                parseSection(in, sectionName);
             }
             line = in.readLine();
         }
-
     }
 
-    private void scanForSectionBegin(BufferedReader in, String sectionHeader) throws IOException {
-        String sectionBegin = "------ " + sectionHeader;
+    private void parseSection(BufferedReader in, String sectionName) throws IOException,
+            ParseException {
+        SectionHandler handler = getSectionHandler(sectionName);
+        if (handler == null) {
+            return;
+        }
+        in.mark(READ_AHEAD_LIMIT);
         String line = in.readLine();
-        while (line != null && !line.startsWith(sectionBegin)) {
+        while (line != null) {
+            if (getSectionName(line) != null) {
+                // found start of a new section
+                in.reset();
+                break;
+            }
+            boolean shouldBreak = !handler.handleLine(line);
+            if (shouldBreak) {
+                // handler reported that his section is over
+                break;
+            }
+            in.mark(READ_AHEAD_LIMIT);
             line = in.readLine();
         }
+        handler.endSection();
     }
 
-    private static class DumpstateRecordStream extends LogRecordStream {
-
-        public DumpstateRecordStream(BufferedReader in) {
-            super(in);
+    private SectionHandler getSectionHandler(String sectionName) {
+        for (SectionHandler handler : handlers) {
+            if (handler.isSupportedSection(sectionName)) {
+                return handler;
+            }
         }
-
-        private static final String LOG_END = "[logcat:";
-
-        @Override
-        protected boolean isLogEnd(String line) {
-            return super.isLogEnd(line) || line.startsWith(LOG_END);
-        }
+        logger.debug("Unsupported section: " + sectionName);
+        return null;
     }
 
-    private static Comparator<LogRecord> sortByTimeAscComparator = new Comparator<LogRecord>() {
-
-        public int compare(LogRecord o1, LogRecord o2) {
-            return o1.getTime().compareTo(o2.getTime());
-        }
-
-    };
+    private void initSectionHandlers() {
+    }
 
     @Override
     public void close() {
-    }
 
-    @Override
-    public PidToProcessConverter getPidToProcessConverter() {
-        return converter;
-    }
-
-    @Override
-    public void setLogRecordListener(LogRecordDataSourceListener listener) {
-        for (LogRecord record : source) {
-            listener.onNewRecord(record, false);
-        }
-        this.listener = listener;
     }
 
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
-        return EnumSet.of(Buffer.MAIN, Buffer.RADIO, Buffer.EVENTS);
+        return EnumSet.noneOf(Buffer.class);
+    }
+
+    @Override
+    public PidToProcessConverter getPidToProcessConverter() {
+        return null;
     }
 
     @Override
     public void reset() {
-        setLogRecordListener(listener);
+
+    }
+
+    @Override
+    public void setLogRecordListener(LogRecordDataSourceListener listener) {
+    }
+
+    /**
+     * Handles one section of the dumpstate file
+     */
+    private interface SectionHandler {
+        /**
+         * Checks if the implementation supports some section.
+         * 
+         * @param sectionName
+         *            section name as appears in the file without wrapping
+         *            dashes
+         * @return {@code true} if the implementation can handle this section
+         */
+        boolean isSupportedSection(String sectionName);
+
+        /**
+         * Handles one line from the file.
+         * 
+         * @param line
+         *            one line from the file (not null but can be empty)
+         * @return {@code true} if the line wasn't last line in section and the
+         *         handler is expecting more
+         */
+        boolean handleLine(String line) throws ParseException;
+
+        /**
+         * Called when the section ends due to end of the file or because other
+         * section starts.
+         */
+        void endSection();
+    }
+
+    private static final Pattern SECTION_NAME_PATTERN = Pattern.compile("^------ (.*) ------$");
+
+    private static String getSectionName(String line) {
+        Matcher m = SECTION_NAME_PATTERN.matcher(line);
+        if (m.matches()) {
+            return m.group(1);
+        } else {
+            return null;
+        }
     }
 }
