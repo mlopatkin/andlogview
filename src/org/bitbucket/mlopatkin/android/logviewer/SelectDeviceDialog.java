@@ -136,7 +136,6 @@ public class SelectDeviceDialog extends JDialog {
     private static class DeviceListModel extends AbstractListModel implements IDeviceChangeListener {
 
         private List<IDevice> devices;
-        private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
 
         public DeviceListModel() {
             devices = new ArrayList<IDevice>(AdbDeviceManager.getAvailableDevices());
@@ -151,16 +150,7 @@ public class SelectDeviceDialog extends JDialog {
         @Override
         public Object getElementAt(int index) {
             IDevice device = getDevice(index);
-            StringBuilder deviceName = new StringBuilder(device.getSerialNumber());
-            if (device.isEmulator()) {
-                deviceName.append(' ').append(device.getAvdName());
-            } else {
-                String productName = device.getProperty(PRODUCT_NAME_PROPERTY);
-                if (productName != null) {
-                    deviceName.append(' ').append(productName);
-                }
-            }
-            return deviceName.toString();
+            return AdbDeviceManager.getDeviceDisplayName(device);
         }
 
         public IDevice getDevice(int index) {

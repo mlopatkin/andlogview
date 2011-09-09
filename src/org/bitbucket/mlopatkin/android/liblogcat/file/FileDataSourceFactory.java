@@ -53,27 +53,28 @@ public class FileDataSourceFactory {
                 checkLine = getFirstNonEmptyLine(in);
             }
             if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
-                return createDumpstateFileSource(in);
+                return createDumpstateFileSource(file, in);
             } else {
-                return createLogFileSource(checkLine, in);
+                return createLogFileSource(file, checkLine, in);
             }
         } finally {
             in.close();
         }
     }
 
-    private static DataSource createLogFileSource(String checkLine, BufferedReader in)
+    private static DataSource createLogFileSource(File file, String checkLine, BufferedReader in)
             throws IOException, UnrecognizedFormatException {
-        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(checkLine);
+        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(file,
+                checkLine);
         in.reset();
         source.parse(in);
         return source;
     }
 
-    private static DataSource createDumpstateFileSource(BufferedReader in) throws IOException,
-            UnrecognizedFormatException {
+    private static DataSource createDumpstateFileSource(File file, BufferedReader in)
+            throws IOException, UnrecognizedFormatException {
         try {
-            return new DumpstateFileDataSource(in);
+            return new DumpstateFileDataSource(file, in);
         } catch (ParseException e) {
             throw new UnrecognizedFormatException("Cannot parse dumpstate file", e);
         }

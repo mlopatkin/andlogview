@@ -74,7 +74,10 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private DecoratingRendererTable logElements;
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
-    private JLabel statusLabel;
+
+    private JPanel statusPanel;
+    private JLabel searchStatusLabel;
+    private JLabel sourceStatusLabel;
 
     public MainFrame() {
         super();
@@ -92,6 +95,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         bookmarksController.clear();
         source.setLogRecordListener(scrollController);
         bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
+        showSourceMessage(source.toString());
+        updatingTimer.start();
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -167,12 +172,15 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         controlsPanel.add(statusPanel);
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
 
-        statusLabel = new JLabel();
-        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        statusPanel.add(statusLabel);
+        searchStatusLabel = new JLabel();
+        searchStatusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        statusPanel.add(searchStatusLabel);
 
         Component horizontalGlue = Box.createHorizontalGlue();
         statusPanel.add(horizontalGlue);
+
+        sourceStatusLabel = new JLabel();
+        statusPanel.add(sourceStatusLabel);
 
         Component rigidArea = Box.createRigidArea(new Dimension(0, 16));
         statusPanel.add(rigidArea);
@@ -194,7 +202,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             public void actionPerformed(ActionEvent e) {
                 if (searchController.isActive()) {
                     if (!searchController.searchNext()) {
-                        showMessage(MESSAGE_NOT_FOUND);
+                        showSearchMessage(MESSAGE_NOT_FOUND);
                     }
                 } else {
                     showSearchField();
@@ -207,7 +215,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             public void actionPerformed(ActionEvent e) {
                 if (searchController.isActive()) {
                     if (!searchController.searchPrev()) {
-                        showMessage(MESSAGE_NOT_FOUND);
+                        showSearchMessage(MESSAGE_NOT_FOUND);
                     }
                 } else {
                     showSearchField();
@@ -231,7 +239,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                         hideSearchField();
                         if (!searchController.startSearch(instantSearchTextField.getText())) {
                             logElements.requestFocusInWindow();
-                            showMessage(MESSAGE_NOT_FOUND);
+                            showSearchMessage(MESSAGE_NOT_FOUND);
                         }
                     }
                 });
@@ -266,7 +274,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         instantSearchTextField.setVisible(true);
         instantSearchTextField.selectAll();
         instantSearchTextField.requestFocusInWindow();
-        statusLabel.setVisible(false);
+        searchStatusLabel.setVisible(false);
         controlsPanel.revalidate();
         controlsPanel.repaint();
 
@@ -287,15 +295,31 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            statusLabel.setVisible(false);
+            searchStatusLabel.setVisible(false);
         }
     });
 
-    private void showMessage(String text) {
-        statusLabel.setText(text);
-        statusLabel.setVisible(true);
+    Timer updatingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (source != null) {
+                showSourceMessage(source.toString());
+            }
+        }
+    });
+
+    private void showSearchMessage(String text) {
+        searchStatusLabel.setText(text);
+        searchStatusLabel.setVisible(true);
         hidingTimer.setRepeats(false);
         hidingTimer.start();
+    }
+
+    private void showSourceMessage(String text) {
+        sourceStatusLabel.setText(text);
+        statusPanel.revalidate();
+        statusPanel.repaint();
     }
 
     public void reset() {
@@ -376,7 +400,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             reset();
         }
     };
-    private JPanel statusPanel;
     private IDeviceChangeListener pendingAttacher;
 
     /**
@@ -392,6 +415,12 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             }
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showSourceMessage("Waiting for device...");
+            }
+        });
     }
 
     private void stopWaitingForDevice() {

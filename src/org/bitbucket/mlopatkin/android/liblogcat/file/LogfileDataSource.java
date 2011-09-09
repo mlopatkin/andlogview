@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,10 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -44,9 +45,11 @@ public class LogfileDataSource implements DataSource {
     private LogRecordDataSourceListener listener;
     private ParsingStrategies.Strategy strategy;
     private List<LogRecord> records = new ArrayList<LogRecord>();
+    private File file;
 
-    private LogfileDataSource(ParsingStrategies.Strategy strategy) {
+    private LogfileDataSource(File file, ParsingStrategies.Strategy strategy) {
         this.strategy = strategy;
+        this.file = file;
         logger.debug("Strategy implemented: " + strategy);
     }
 
@@ -84,11 +87,11 @@ public class LogfileDataSource implements DataSource {
         }
     }
 
-    static LogfileDataSource createLogfileDataSourceWithStrategy(String checkLine)
+    static LogfileDataSource createLogfileDataSourceWithStrategy(File file, String checkLine)
             throws UnrecognizedFormatException {
         for (ParsingStrategies.Strategy current : ParsingStrategies.supportedStrategies) {
             if (current.parse(null, checkLine) != null) {
-                return new LogfileDataSource(current);
+                return new LogfileDataSource(file, current);
             }
         }
         throw new UnrecognizedFormatException();
@@ -97,5 +100,10 @@ public class LogfileDataSource implements DataSource {
     @Override
     public void reset() {
         setLogRecordListener(listener);
+    }
+
+    @Override
+    public String toString() {
+        return file.getName();
     }
 }

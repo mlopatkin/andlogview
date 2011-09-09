@@ -288,4 +288,8 @@ public class AdbDataSource implements DataSource {
         // do nothing
     }
 
+    @Override
+    public String toString() {
+        return "ADB connected: " + AdbDeviceManager.getDeviceDisplayName(device);
+    }
 }

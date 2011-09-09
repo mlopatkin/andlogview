@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -46,7 +47,10 @@ public class DumpstateFileDataSource implements DataSource {
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
     private LogRecordDataSourceListener listener;
 
-    public DumpstateFileDataSource(BufferedReader in) throws IOException, ParseException {
+    private File file;
+
+    public DumpstateFileDataSource(File file, BufferedReader in) throws IOException, ParseException {
+        this.file = file;
         initSectionHandlers();
         parseFile(in);
     }
@@ -298,5 +302,10 @@ public class DumpstateFileDataSource implements DataSource {
             return SECTION_END_PATTERN.matcher(line).matches();
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return file.getName();
     }
 }
