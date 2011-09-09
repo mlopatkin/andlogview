@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
+import org.bitbucket.mlopatkin.android.logviewer.Configuration;
+
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.Log;
 
@@ -22,21 +24,23 @@ class AdbConnectionManager {
     private AdbConnectionManager() {
     }
 
-    private static AndroidDebugBridge adb;
+    private static boolean inited = false;
 
     static AndroidDebugBridge getAdb() {
-        if (adb == null) {
+        if (!inited) {
             AndroidDebugBridge.init(false);
-            adb = AndroidDebugBridge.createBridge();
+            AndroidDebugBridge.createBridge(Configuration.adb.executable(), false);
 
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
                     closeAdb();
                 }
+
             });
+            inited = true;
         }
-        return adb;
+        return AndroidDebugBridge.getBridge();
     }
 
     static void closeAdb() {

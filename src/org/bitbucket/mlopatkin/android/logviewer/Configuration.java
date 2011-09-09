@@ -142,6 +142,10 @@ public class Configuration {
         public static String psCommandLine() {
             return "ps -P";
         }
+
+        public static String executable() {
+            return instance.properties.getProperty(PREFIX + "executable", "adb");
+        }
     }
 
     public static class dump {
