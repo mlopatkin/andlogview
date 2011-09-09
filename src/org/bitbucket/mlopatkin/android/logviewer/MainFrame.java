@@ -343,6 +343,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         setJMenuBar(mainMenu);
     }
 
+    private File recentDir = null;
+
     private Action acOpenFile = new AbstractAction("Open...") {
 
         {
@@ -351,10 +353,11 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            JFileChooser fileChooser = new JFileChooser();
+            JFileChooser fileChooser = new JFileChooser(recentDir);
             int result = fileChooser.showOpenDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
+                recentDir = file.getParentFile();
                 try {
                     DataSource source = FileDataSourceFactory.createDataSource(file);
                     setSource(source);
@@ -453,10 +456,11 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
-            JFileChooser fileChooser = new JFileChooser();
+            JFileChooser fileChooser = new JFileChooser(recentDir);
             int result = fileChooser.showSaveDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
+                recentDir = file.getParentFile();
                 if (file.exists()) {
                     result = JOptionPane.showConfirmDialog(MainFrame.this, "File " + file
                             + " already exists, overwrite?");
