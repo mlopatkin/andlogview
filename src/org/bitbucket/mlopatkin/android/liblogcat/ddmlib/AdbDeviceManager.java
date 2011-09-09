@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class AdbDeviceManager {
     private AdbDeviceManager() {
@@ -47,7 +47,8 @@ public class AdbDeviceManager {
 
     public static IDevice getDefaultDevice() {
         AndroidDebugBridge adb = AdbConnectionManager.getAdb();
-        if (adb.hasInitialDeviceList() && adb.getDevices().length > 0) {
+        if (adb.hasInitialDeviceList() && adb.getDevices().length > 0
+                && adb.getDevices()[0].isOnline()) {
             return adb.getDevices()[0];
         } else {
             return null;

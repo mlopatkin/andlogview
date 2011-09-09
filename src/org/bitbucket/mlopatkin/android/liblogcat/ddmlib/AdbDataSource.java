@@ -82,6 +82,8 @@ public class AdbDataSource implements DataSource {
     }
 
     public AdbDataSource(final IDevice device) {
+        assert device != null;
+        assert device.isOnline();
         this.device = device;
         initStreams();
     }
