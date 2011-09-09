@@ -139,7 +139,12 @@ public class SelectDeviceDialog extends JDialog {
         private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
 
         public DeviceListModel() {
-            devices = new ArrayList<IDevice>(AdbDeviceManager.getAvailableDevices());
+            devices = new ArrayList<IDevice>();
+            for (IDevice device : AdbDeviceManager.getAvailableDevices()) {
+                if (device.isOnline()) {
+                    devices.add(device);
+                }
+            }
             AdbDeviceManager.addDeviceChangeListener(this);
         }
 
