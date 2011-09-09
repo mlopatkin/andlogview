@@ -413,6 +413,20 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
             @Override
             public void deviceConnected(final IDevice device) {
+                if (device.isOnline()) {
+                    connectDevice(device);
+                }
+            }
+
+            @Override
+            public void deviceChanged(IDevice device, int changeMask) {
+                if ((changeMask & IDevice.CHANGE_STATE) != 0 && device.isOnline()) {
+                    connectDevice(device);
+                }
+            };
+
+            private void connectDevice(IDevice device) {
+                assert device.isOnline();
                 DeviceDisconnectedNotifier.startWatching(device);
                 setSourceAsync(new AdbDataSource(device));
                 stopWaitingForDevice();

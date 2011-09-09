@@ -138,7 +138,12 @@ public class SelectDeviceDialog extends JDialog {
         private List<IDevice> devices;
 
         public DeviceListModel() {
-            devices = new ArrayList<IDevice>(AdbDeviceManager.getAvailableDevices());
+            devices = new ArrayList<IDevice>();
+            for (IDevice device : AdbDeviceManager.getAvailableDevices()) {
+                if (device.isOnline()) {
+                    devices.add(device);
+                }
+            }
             AdbDeviceManager.addDeviceChangeListener(this);
         }
 

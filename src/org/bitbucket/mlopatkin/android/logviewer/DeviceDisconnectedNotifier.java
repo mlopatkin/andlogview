@@ -45,6 +45,16 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
         }
     }
 
+    @Override
+    public void deviceChanged(IDevice device, int changeMask) {
+        if (device == this.device && (changeMask & IDevice.CHANGE_STATE) != 0) {
+            if (!device.isOnline()) {
+                showNotification();
+                AdbDeviceManager.removeDeviceChangeListener(this);
+            }
+        }
+    }
+
     private void showNotification() {
         EventQueue.invokeLater(notificationInvoker);
     }
