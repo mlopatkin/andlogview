@@ -108,7 +108,8 @@ public class Main {
             try {
                 logger.error("Uncaught exception in " + t.getName(), e);
             } catch (Throwable ex) {
-                logger.error("Exception in exception handler", ex);
+                // bad idea to log something if we already failed with logging
+                // logger.error("Exception in exception handler", ex);
             }
 
         }
