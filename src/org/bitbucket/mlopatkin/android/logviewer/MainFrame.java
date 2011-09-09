@@ -243,13 +243,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                         }
                     }
                 });
-
-        bindKeyGlobal(KEY_SHOW_BOOKMARKS, ACTION_SHOW_BOOKMARKS, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bookmarksController.showWindow();
-            }
-        });
     }
 
     private void bindKeyGlobal(String key, String actionKey, Action action) {
@@ -335,6 +328,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         JMenu mnFile = new JMenu("File");
         mnFile.add(acOpenFile);
         mnFile.add(acSaveToFile);
+        mnFile.addSeparator();
+        mnFile.add(acShowBookmarks);
         mainMenu.add(mnFile);
 
         JMenu mnAdb = new JMenu("ADB");
@@ -460,6 +455,17 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                 }
                 saveTableToFile(file);
             }
+        }
+    };
+
+    private AbstractAction acShowBookmarks = new AbstractAction("Show bookmarks") {
+        {
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control P"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            bookmarksController.showWindow();
         }
     };
 
