@@ -150,6 +150,10 @@ public class Configuration {
         public static String executable() {
             return instance.properties.getProperty(PREFIX + "executable", "adb");
         }
+
+        public static void executable(String newExecutable) {
+            instance.properties.setProperty(PREFIX + "executable", newExecutable);
+        }
     }
 
     public static class dump {

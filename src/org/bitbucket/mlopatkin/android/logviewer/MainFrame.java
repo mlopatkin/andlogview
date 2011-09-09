@@ -341,6 +341,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         mnAdb.add(acConnectToDevice);
         mnAdb.addSeparator();
         mnAdb.add(acResetLogs);
+        mnAdb.add(acChangeConfiguration);
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
@@ -398,6 +399,14 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         @Override
         public void actionPerformed(ActionEvent e) {
             reset();
+        }
+    };
+
+    private Action acChangeConfiguration = new AbstractAction("Configuration...") {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ConfigurationDialog.showConfigurationDialog(MainFrame.this);
         }
     };
     private IDeviceChangeListener pendingAttacher;
