@@ -74,14 +74,14 @@ public class Main {
         if (device != null) {
             DeviceDisconnectedNotifier.startWatching(device);
             initialSource = new AdbDataSource(device);
+        } else {
+            window.waitForDevice();
         }
     }
 
     void start() {
         if (initialSource != null) {
             window.setSourceAsync(initialSource);
-        } else {
-            window.waitForDevice();
         }
         EventQueue.invokeLater(new Runnable() {
             @Override
