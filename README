@@ -3,6 +3,11 @@ https://bitbucket.org/mlopatkin/android-log-viewer
 Android log viewer is the tool to simplify analysis of the Android logs. It allows filtering
 the logs using the number of filters. This tool requires Java Runtime Environment 6 to run.
 
+Setup:
+Java 6 is required. You need javaw somewhere in your PATH. If you are using some
+custom SDK you might consider switching to its ADB libraries. You should specify
+ANDROID_HOME variable containing the path to your SDK to do that.
+
 Available filters:
     - by tag(s)
     - by PID(s)

@@ -19,7 +19,7 @@
         <pathelement path="lib/ddmlib.jar" />
     </path>
 
-    <target name="all" depends="make-jar" />
+    <target name="all" depends="make-dist" />
 
 
     <target name="make-out-dir">
@@ -42,7 +42,7 @@
                 <exclude name="META-INF/**" />
                 <exclude name="*.txt" />
             </patternset>
-            <fileset dir="lib" includes="*.jar" />
+            <fileset dir="lib" includes="*.jar" excludes="ddmlib.jar"/>
         </unjar>
     </target>
 
@@ -61,6 +61,20 @@
             </manifest>
         </jar>
     </target>
+	
+	<target name="make-dist" depends="make-jar">
+		<zip destfile="logview.zip">
+			<zipfileset dir=".">
+				<include name="HISTORY"/>
+				<include name="NOTICE"/>
+				<include name="README"/>
+				<include name="LICENSE"/>
+				<include name="logview.bat"/>
+			</zipfileset>
+			<zipfileset dir="." includes="logview.jar" fullpath="lib/logview.jar"/>
+			<zipfileset dir="${lib.dir}" includes="ddmlib.jar" fullpath="lib/ddmlib.jar"/>
+		</zip>
+	</target>
 
     <target name="clean">
         <delete dir="${out-dir}" />
