@@ -57,8 +57,8 @@ import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResult
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -278,9 +278,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         controlsPanel.revalidate();
         controlsPanel.repaint();
     }
-
-    private static final String ACTION_SHOW_BOOKMARKS = "show_bookmarks";
-    private static final String KEY_SHOW_BOOKMARKS = "control P";
 
     private static final int MESSAGE_DELAY = 2000;
     private static final String MESSAGE_NOT_FOUND = "Text not found";
