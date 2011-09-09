@@ -17,6 +17,8 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.EventQueue;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
@@ -74,6 +76,18 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
         int delta = Math.abs(bottom - (top + height));
         boolean atBottom = delta <= THRESHOLD;
         return atBottom;
+    }
+
+    @Override
+    public void assign(List<LogRecord> records) {
+        final List<LogRecord> copy = new ArrayList<LogRecord>(records);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                shouldScroll = false;
+                model.assign(copy);
+            }
+        });
     }
 
 }

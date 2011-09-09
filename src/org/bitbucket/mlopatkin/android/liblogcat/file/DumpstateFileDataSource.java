@@ -30,11 +30,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
@@ -131,9 +131,7 @@ public class DumpstateFileDataSource implements DataSource {
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
         Collections.sort(records);
-        for (LogRecord record : records) {
-            listener.onNewRecord(record, false);
-        }
+        listener.assign(records);
     }
 
     /**

@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.List;
+
 /**
  * This interface should be implemented by classes that perform log record
  * processing. {@link DataSource} objects will put all records via
@@ -26,7 +28,7 @@ public interface LogRecordDataSourceListener {
      * There is a possibility that the order of
      * {@link #onNewRecord(LogRecord, boolean)} calls doesn't match the actual
      * order of records, i. e. there can be two consequent calls "add record A"
-     * and "add record B" but the record B is created earlier than teh record A.
+     * and "add record B" but the record B is created earlier than the record A.
      * If so {@code needPosition} is set to {@code true} and this is the
      * listener's responsibility to maintain a chronological order of records.
      * 
@@ -37,4 +39,13 @@ public interface LogRecordDataSourceListener {
      *            order.
      */
     void onNewRecord(LogRecord record, boolean needPosition);
+
+    /**
+     * Called when the {@link DataSource} sends all containing data to the
+     * listener and guarantees that there never be any more.
+     * 
+     * @param records
+     *            list of records sorted by time in ascending order
+     */
+    void assign(List<LogRecord> records);
 }

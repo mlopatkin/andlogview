@@ -56,7 +56,7 @@ public class Main {
     }
 
     Main(File file) {
-        window = new MainFrame();
+        createAndShowWindow();
         try {
             initialSource = FileDataSourceFactory.createDataSource(file);
         } catch (UnrecognizedFormatException e) {
@@ -69,7 +69,7 @@ public class Main {
     }
 
     Main() {
-        window = new MainFrame();
+        createAndShowWindow();
         IDevice device = AdbDeviceManager.getDefaultDevice();
         if (device != null) {
             DeviceDisconnectedNotifier.startWatching(device);
@@ -79,16 +79,21 @@ public class Main {
         }
     }
 
-    void start() {
-        if (initialSource != null) {
-            window.setSourceAsync(initialSource);
-        }
+    private void createAndShowWindow() {
+        window = new MainFrame();
         EventQueue.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 window.setVisible(true);
             }
         });
+    }
+
+    void start() {
+        if (initialSource != null) {
+            window.setSourceAsync(initialSource);
+        }
     }
 
     private static void showUsage() {

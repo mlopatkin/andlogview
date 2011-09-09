@@ -130,4 +130,9 @@ public class LogRecordTableModel extends AbstractTableModel {
             return false;
         }
     }
+
+    public void assign(List<LogRecord> copy) {
+        records = copy;
+        fireTableDataChanged();
+    }
 }

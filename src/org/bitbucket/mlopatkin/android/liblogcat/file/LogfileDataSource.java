@@ -26,10 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -82,9 +82,7 @@ public class LogfileDataSource implements DataSource {
     @Override
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
-        for (LogRecord record : records) {
-            this.listener.onNewRecord(record, false);
-        }
+        this.listener.assign(records);
     }
 
     static LogfileDataSource createLogfileDataSourceWithStrategy(File file, String checkLine)
