@@ -25,20 +25,15 @@ import java.util.List;
 public interface LogRecordDataSourceListener {
     /**
      * Called when a new log record is available in the {@link DataSource}.
-     * There is a possibility that the order of
-     * {@link #onNewRecord(LogRecord, boolean)} calls doesn't match the actual
-     * order of records, i. e. there can be two consequent calls "add record A"
-     * and "add record B" but the record B is created earlier than the record A.
-     * If so {@code needPosition} is set to {@code true} and this is the
-     * listener's responsibility to maintain a chronological order of records.
+     * There is a possibility that the order of {@link #onNewRecord(LogRecord)}
+     * calls doesn't match the actual order of records, i. e. there can be two
+     * consequent calls "add record A" and "add record B" but the record B is
+     * created earlier than the record A.
      * 
      * @param record
      *            a new record
-     * @param needPosition
-     *            {@code true} if the records order doesn't match the invokation
-     *            order.
      */
-    void onNewRecord(LogRecord record, boolean needPosition);
+    void onNewRecord(LogRecord record);
 
     /**
      * Called when the {@link DataSource} sends all containing data to the

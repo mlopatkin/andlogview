@@ -24,6 +24,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.utils.MyListUtils;
 
 public class LogRecordTableModel extends AbstractTableModel {
 
@@ -41,10 +42,6 @@ public class LogRecordTableModel extends AbstractTableModel {
 
     public LogRecordTableModel() {
         this.records = new ArrayList<LogRecord>();
-    }
-
-    public LogRecordTableModel(List<LogRecord> records) {
-        this.records = records;
     }
 
     @Override
@@ -133,6 +130,11 @@ public class LogRecordTableModel extends AbstractTableModel {
 
     public void assign(List<LogRecord> copy) {
         records = copy;
+        fireTableDataChanged();
+    }
+
+    public void append(List<LogRecord> newRecords) {
+        MyListUtils.mergeOrdered(records, newRecords);
         fireTableDataChanged();
     }
 }

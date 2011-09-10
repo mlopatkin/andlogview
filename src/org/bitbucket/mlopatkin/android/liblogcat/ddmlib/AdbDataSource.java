@@ -30,11 +30,11 @@ import java.util.regex.Matcher;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -120,7 +120,7 @@ public class AdbDataSource implements DataSource {
     }
 
     private synchronized void pushRecord(final LogRecord record) {
-        listener.onNewRecord(record, true);
+        listener.onNewRecord(record);
     }
 
     private String createLogcatCommandLine(String buffer) {
