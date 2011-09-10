@@ -35,19 +35,22 @@ public class MyListUtils {
      *            sorted list
      * @param elems
      *            sorted list of elements to be merged into {@code base}
+     * @return index of first inserted row
      */
-    public static <T extends Comparable<? super T>> void mergeOrdered(List<T> base, List<T> elems) {
+    public static <T extends Comparable<? super T>> int mergeOrdered(List<T> base, List<T> elems) {
         // handle specific cases
         if (elems.isEmpty()) {
-            return;
+            return base.size();
         }
         if (base.isEmpty()) {
             base.addAll(elems);
-            return;
+            return 0;
         }
 
         int basePos = 0;
         int elemsPos = 0;
+
+        int firstInsertedIndex = -1;
         // assume that base element should be before equal elems element in the
         // result
         while (basePos < base.size() && elemsPos < elems.size()) {
@@ -73,6 +76,9 @@ public class MyListUtils {
                 // the interval
                 List<T> interval = elems.subList(elemsPos, elemsIntervalEndPos);
                 base.addAll(basePos, interval);
+                if (firstInsertedIndex < 0) {
+                    firstInsertedIndex = basePos;
+                }
                 elemsPos = elemsIntervalEndPos;
                 basePos += interval.size();
             }
@@ -80,7 +86,11 @@ public class MyListUtils {
         // note that we can have some rest elems that are greater than any
         // element of base, we should add them
         if (elemsPos < elems.size()) {
+            if (firstInsertedIndex < 0) {
+                firstInsertedIndex = basePos;
+            }
             base.addAll(elems.subList(elemsPos, elems.size()));
         }
+        return firstInsertedIndex;
     }
 }
