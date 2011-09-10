@@ -123,8 +123,9 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     @Override
-    public void reset() {
+    public boolean reset() {
         setLogRecordListener(listener);
+        return true;
     }
 
     @Override

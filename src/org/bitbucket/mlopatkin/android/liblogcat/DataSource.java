@@ -54,6 +54,10 @@ public interface DataSource {
     /**
      * Resets internal data structures and resends all available records into
      * the attached listener.
+     * 
+     * @return {@code true} if the new are basically the same (e.g. reloading a
+     *         file), {@code false} if the records are completely new (so
+     *         bookmarks become invalid)
      */
-    void reset();
+    boolean reset();
 }

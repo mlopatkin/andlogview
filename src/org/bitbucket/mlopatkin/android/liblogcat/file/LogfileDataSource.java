@@ -96,8 +96,9 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public void reset() {
+    public boolean reset() {
         setLogRecordListener(listener);
+        return true;
     }
 
     @Override

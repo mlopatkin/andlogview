@@ -317,7 +317,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
     public void reset() {
         recordsModel.clear();
-        source.reset();
+        if (!source.reset()) {
+            bookmarksController.clear();
+        }
     }
 
     private BufferFilterMenu bufferMenu;

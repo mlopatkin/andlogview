@@ -292,8 +292,8 @@ public class AdbDataSource implements DataSource {
     }
 
     @Override
-    public void reset() {
-        // do nothing
+    public boolean reset() {
+        return false;
     }
 
     @Override
