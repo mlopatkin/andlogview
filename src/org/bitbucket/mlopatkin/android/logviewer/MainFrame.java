@@ -49,6 +49,7 @@ import javax.swing.border.EtchedBorder;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
@@ -68,6 +69,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private FilterController filterController;
     private SearchController searchController;
     private BookmarksController bookmarksController;
+    private LogRecordDataSourceListener listener;
 
     private DataSource source;
 
@@ -93,7 +95,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         source = newSource;
         recordsModel.clear();
         bookmarksController.clear();
-        source.setLogRecordListener(scrollController);
+        source.setLogRecordListener(listener);
         bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
         showSourceMessage(source.toString());
         updatingTimer.start();
@@ -154,6 +156,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                 filterController);
         new LogRecordPopupMenuHandler(logElements, filterController, bookmarksController);
         searchController = new SearchController(logElements, recordsModel);
+        listener = new BufferedListener(recordsModel, scrollController);
 
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);

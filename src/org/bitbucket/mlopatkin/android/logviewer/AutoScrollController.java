@@ -17,21 +17,12 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Container;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JTable;
-import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
-
-class AutoScrollController implements LogRecordDataSourceListener, TableModelListener {
+class AutoScrollController implements TableModelListener {
     private JTable table;
     private LogRecordTableModel model;
 
@@ -39,37 +30,6 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
         this.table = table;
         this.model = model;
         this.model.addTableModelListener(this);
-        mergeTimer.setDelay(500);
-        mergeTimer.start();
-    }
-
-    private List<LogRecord> internalBuffer = new ArrayList<LogRecord>();;
-    private final Object lock = new Object();
-
-    @Override
-    public void onNewRecord(final LogRecord record) {
-        synchronized (lock) {
-            internalBuffer.add(record);
-        }
-
-    }
-
-    private Timer mergeTimer = new Timer(0, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            mergeIntoModel();
-        }
-    });
-
-    private void mergeIntoModel() {
-        assert EventQueue.isDispatchThread();
-        List<LogRecord> records = internalBuffer;
-        synchronized (lock) {
-            internalBuffer = new ArrayList<LogRecord>();
-        }
-        Collections.sort(records);
-        shouldScroll = isAtBottom();
-        model.append(records);
     }
 
     private Runnable scrollToTheEnd = new Runnable() {
@@ -82,7 +42,7 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
 
     @Override
     public void tableChanged(final TableModelEvent e) {
-        if (true) {
+        if (e.getType() == TableModelEvent.INSERT) {
             if (shouldScroll) {
                 EventQueue.invokeLater(scrollToTheEnd);
             }
@@ -102,16 +62,7 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
         return atBottom;
     }
 
-    @Override
-    public void assign(List<LogRecord> records) {
-        final List<LogRecord> copy = new ArrayList<LogRecord>(records);
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                shouldScroll = false;
-                model.assign(copy);
-            }
-        });
+    public void notifyBeforeInsert() {
+        shouldScroll = isAtBottom();
     }
-
 }
