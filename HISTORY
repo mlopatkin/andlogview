@@ -1,3 +1,17 @@
+version 0.16
+    [+] Notification about current connection or opened file
+    [+] Menu command to show bookmarks window
+    [+] The tool can start ADB server if it is not running
+    [+] ADB library from the SDK can be connected instead of custom one
+    [+] Properties are now stored in %APPDATA%\logview\logview.properties
+        (~/.logview/logview.propeties)
+    
+    [*] Improved responsiveness during the startup
+    [*] Open and save dialogs remember last used directory
+    [*] Bookmarks are cleared after reset if it makes sense (in the ADB mode)
+    
+    [*] Distribution form changed
+    
 version 0.15
     [+] Saving logs
     [+] Keyboard shortcuts for main menu commands
