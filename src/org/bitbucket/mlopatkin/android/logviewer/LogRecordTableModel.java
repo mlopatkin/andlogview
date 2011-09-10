@@ -51,7 +51,7 @@ public class LogRecordTableModel extends AbstractTableModel {
     }
 
     @Override
-    public synchronized int getRowCount() {
+    public int getRowCount() {
         return records.size();
     }
 
@@ -90,7 +90,8 @@ public class LogRecordTableModel extends AbstractTableModel {
         }
     }
 
-    public synchronized void addRecord(LogRecord record) {
+    public void addRecord(LogRecord record) {
+        assert EventQueue.isDispatchThread();
         int pos = Collections.binarySearch(records, record);
         if (pos < 0) {
             pos = -(pos + 1);
@@ -99,7 +100,8 @@ public class LogRecordTableModel extends AbstractTableModel {
         fireTableRowsInserted(pos, pos);
     }
 
-    public synchronized void addRecordToEnd(LogRecord record) {
+    public void addRecordToEnd(LogRecord record) {
+        assert EventQueue.isDispatchThread();
         records.add(record);
         fireTableRowsInserted(records.size() - 1, records.size() - 1);
     }
@@ -108,7 +110,8 @@ public class LogRecordTableModel extends AbstractTableModel {
         return records.get(row);
     }
 
-    public synchronized void clear() {
+    public void clear() {
+        assert EventQueue.isDispatchThread();
         int lastRow = records.size() - 1;
         records.clear();
         if (lastRow >= 0) {
@@ -130,6 +133,7 @@ public class LogRecordTableModel extends AbstractTableModel {
     }
 
     public void assign(List<LogRecord> copy) {
+        assert EventQueue.isDispatchThread();
         records = copy;
         fireTableDataChanged();
     }
@@ -139,6 +143,10 @@ public class LogRecordTableModel extends AbstractTableModel {
         int oldSize = records.size();
         int firstAffected = MyListUtils.mergeOrdered(records, newRecords);
         if (firstAffected < records.size()) {
+            // we need to do two fireXXX because JTable machinery is very
+            // sensitive to the number of inserted rows
+            // however to get all rows displayed properly we update all possibly
+            // affected rows
             fireTableRowsInserted(oldSize, records.size() - 1);
             fireTableRowsUpdated(firstAffected, records.size() - 1);
         }
