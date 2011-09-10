@@ -168,6 +168,7 @@ public class AdbDataSource implements DataSource {
             } catch (IOException e) {
                 logger.warn("IO exception", e);
             }
+            logger.debug("The command '" + command + "' sucessfully terminated");
         }
     }
 
@@ -206,6 +207,11 @@ public class AdbDataSource implements DataSource {
                 while (!closed && record != null) {
                     pushRecord(record);
                     record = in.next(buffer);
+                }
+                if (closed) {
+                    logger.debug(getName() + " successfully ended");
+                } else {
+                    logger.warn(getName() + " ends due to null record");
                 }
 
             }
