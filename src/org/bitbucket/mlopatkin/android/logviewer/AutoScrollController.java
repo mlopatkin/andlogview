@@ -15,8 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Container;
 import java.awt.EventQueue;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +28,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 
 class AutoScrollController implements LogRecordDataSourceListener, TableModelListener {
-    private static final int THRESHOLD = Configuration.ui.autoscrollThreshold();
-
     private JTable table;
     private LogRecordTableModel model;
 
@@ -54,13 +52,19 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
         });
     }
 
+    private Runnable scrollToTheEnd = new Runnable() {
+        @Override
+        public void run() {
+            table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1,
+                    TableModelEvent.ALL_COLUMNS, true));
+        }
+    };
+
     @Override
-    public void tableChanged(TableModelEvent e) {
+    public void tableChanged(final TableModelEvent e) {
         if (e.getType() == TableModelEvent.INSERT) {
             if (shouldScroll) {
-                Rectangle bottomRect = table.getBounds();
-                bottomRect.y = bottomRect.height - THRESHOLD;
-                table.scrollRectToVisible(bottomRect);
+                EventQueue.invokeLater(scrollToTheEnd);
             }
         } else {
             shouldScroll = false;
@@ -70,11 +74,11 @@ class AutoScrollController implements LogRecordDataSourceListener, TableModelLis
     private boolean shouldScroll;
 
     private boolean isAtBottom() {
+        Container parent = table.getParent();
         int bottom = table.getBounds().height;
-        int top = table.getVisibleRect().y;
-        int height = table.getVisibleRect().height;
-        int delta = Math.abs(bottom - (top + height));
-        boolean atBottom = delta <= THRESHOLD;
+        int pHeight = parent.getBounds().height;
+        int y = table.getBounds().y;
+        boolean atBottom = (pHeight - y) == bottom;
         return atBottom;
     }
 
