@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -74,7 +73,8 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     private JMenuItem itemRemoveBookmarks = new JMenuItem(acRemoveFromBookmarks);
 
     private void setUpMenu() {
-        JPopupMenu popupMenu = new TablePopupMenu(this);
+        TablePopupMenu popupMenu = new TablePopupMenu();
+        popupMenu.addItemsUpdater(this);
         acCopy = UiHelper.createActionWrapper(table, "copy", "Copy", "control C");
         popupMenu.add(acCopy);
         popupMenu.addSeparator();

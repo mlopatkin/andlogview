@@ -24,7 +24,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
 /**
- * This class implements popup menu for {@link JTable} that follows specific
+ * This class implements context menu for {@link JTable} that follows specific
  * policy of selecting items with right-click.
  * 
  * <p>
@@ -51,7 +51,18 @@ import javax.swing.JTable;
  */
 public class TablePopupMenu extends JPopupMenu {
 
+    /**
+     * Implementation of this interface is responsible for making context menu
+     * content to match with the table state.
+     */
     public interface ItemsUpdater {
+        /**
+         * Called before menu is shown. Implement this method to adjust the
+         * context menu's state according to the table's state.
+         * 
+         * @param source
+         *            the table for which the menu will be shown
+         */
         void updateItemsState(JTable source);
     }
 
@@ -59,12 +70,14 @@ public class TablePopupMenu extends JPopupMenu {
 
     private List<ItemsUpdater> updaters = new ArrayList<ItemsUpdater>();
 
-    public TablePopupMenu(ItemsUpdater updater) {
-        if (updater != null) {
-            updaters.add(updater);
-        }
-    }
-
+    /**
+     * Adds an updater.
+     * 
+     * @param updater
+     *            a non-{@code null} updater to add
+     * @throws NullPointerException
+     *             if {@code updater} is null
+     */
     public void addItemsUpdater(ItemsUpdater updater) {
         if (updater == null) {
             throw new NullPointerException("updater can't be null");
@@ -72,10 +85,13 @@ public class TablePopupMenu extends JPopupMenu {
         updaters.add(updater);
     }
 
+    /**
+     * Removes a previously added updater.
+     * 
+     * @param updater
+     *            an updater to remove
+     */
     public void removeItemsUpdater(ItemsUpdater updater) {
-        if (updater == null) {
-            throw new NullPointerException("updater can't be null");
-        }
         updaters.remove(updater);
     }
 

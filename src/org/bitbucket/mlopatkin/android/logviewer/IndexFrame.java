@@ -40,7 +40,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     private JPanel contentPane;
     private DecoratingRendererTable indexedRecordsTable;
     private IndexController controller;
-    private TablePopupMenu popupMenu = new TablePopupMenu(this);
+    private TablePopupMenu popupMenu = new TablePopupMenu();
     private Action acCopy;
 
     public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
@@ -52,6 +52,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
         acCopy = UiHelper.createActionWrapper(indexedRecordsTable, "copy", "Copy", "control C");
         popupMenu.add(acCopy);
+        popupMenu.addItemsUpdater(this);
         addWindowListener(closingListener);
     }
 
