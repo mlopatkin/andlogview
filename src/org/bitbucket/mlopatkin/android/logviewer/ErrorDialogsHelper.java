@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Component;
 import java.awt.Frame;
 
 import javax.swing.JOptionPane;
@@ -28,13 +29,13 @@ class ErrorDialogsHelper {
     private ErrorDialogsHelper() {
     }
 
-    static void showError(String format, Object... vals) {
+    static void showError(Component owner, String format, Object... vals) {
         String message = String.format(format, vals);
-        showError(message);
+        showError(owner, message);
     }
 
-    static void showError(String message) {
-        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    static void showError(Component owner, String message) {
+        JOptionPane.showMessageDialog(owner, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     static void showAdbNotFoundError(Frame owner) {
@@ -45,4 +46,5 @@ class ErrorDialogsHelper {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

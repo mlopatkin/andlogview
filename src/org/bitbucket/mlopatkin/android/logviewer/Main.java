@@ -63,10 +63,10 @@ public class Main {
         try {
             initialSource = FileDataSourceFactory.createDataSource(file);
         } catch (UnrecognizedFormatException e) {
-            ErrorDialogsHelper.showError("Unrecognized file format for " + file);
+            ErrorDialogsHelper.showError(window, "Unrecognized file format for " + file);
             logger.error("Exception while reading the file", e);
         } catch (IOException e) {
-            ErrorDialogsHelper.showError("Cannot read " + file);
+            ErrorDialogsHelper.showError(window, "Cannot read " + file);
             logger.error("Exception while reading the file", e);
         }
     }
@@ -90,7 +90,7 @@ public class Main {
         } catch (DdmlibUnsupportedException e) {
             logger.error("Cannot work with DDMLIB supplied", e);
             window.disableAdbCommandsAsync();
-            ErrorDialogsHelper.showError(e.getMessage());
+            ErrorDialogsHelper.showError(window, e.getMessage());
         }
     }
 

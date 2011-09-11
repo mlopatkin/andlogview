@@ -136,6 +136,8 @@ public class Configuration {
 
     public static class adb {
         private static final String PREFIX = "adb.";
+        public static final String DEFAULT_EXECUTABLE = ((SystemUtils.IS_OS_WINDOWS) ? "adb.exe"
+                : "adb").intern();
 
         public static String commandline() {
             return instance.properties.getProperty(PREFIX + "commandline", "logcat -v threadtime");
@@ -154,7 +156,7 @@ public class Configuration {
         }
 
         public static String executable() {
-            return instance.properties.getProperty(PREFIX + "executable", "adb");
+            return instance.properties.getProperty(PREFIX + "executable", DEFAULT_EXECUTABLE);
         }
 
         public static void executable(String newExecutable) {

@@ -63,10 +63,10 @@ public class FileTransferHandler extends TransferHandler {
                 source = FileDataSourceFactory.createDataSource(file);
                 frame.setSource(source);
             } catch (UnrecognizedFormatException e) {
-                ErrorDialogsHelper.showError("Unrecognized file format for " + file);
+                ErrorDialogsHelper.showError(frame, "Unrecognized file format for " + file);
                 return false;
             } catch (IOException e) {
-                ErrorDialogsHelper.showError("Cannot read " + file);
+                ErrorDialogsHelper.showError(frame, "Cannot read " + file);
                 return false;
             }
         } catch (UnsupportedFlavorException e) {

@@ -62,7 +62,7 @@ public class SelectDeviceDialog extends JDialog {
             } catch (DdmlibUnsupportedException e) {
                 logger.error("Cannot work with DDMLIB supplied", e);
                 owner.disableAdbCommandsAsync();
-                ErrorDialogsHelper.showError(e.getMessage());
+                ErrorDialogsHelper.showError(owner, e.getMessage());
                 return;
             }
         }

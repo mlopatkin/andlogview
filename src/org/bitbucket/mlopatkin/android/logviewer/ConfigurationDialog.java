@@ -26,15 +26,18 @@ import java.io.File;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class ConfigurationDialog extends JDialog {
 
@@ -72,25 +75,33 @@ public class ConfigurationDialog extends JDialog {
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
-                        gl_contentPanel.createSequentialGroup().addComponent(
-                                lblAdbExecutableLocation).addPreferredGap(
-                                ComponentPlacement.RELATED).addComponent(textAdbExecutable,
-                                GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE).addPreferredGap(
-                                ComponentPlacement.RELATED).addComponent(btBrowseAdb,
-                                GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)));
+                        gl_contentPanel
+                                .createSequentialGroup()
+                                .addComponent(lblAdbExecutableLocation)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(textAdbExecutable, GroupLayout.DEFAULT_SIZE, 486,
+                                        Short.MAX_VALUE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(btBrowseAdb, GroupLayout.PREFERRED_SIZE, 33,
+                                        GroupLayout.PREFERRED_SIZE)));
         gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
-                        gl_contentPanel.createSequentialGroup().addGroup(
-                                gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(lblAdbExecutableLocation).addGroup(
-                                                gl_contentPanel.createParallelGroup(
-                                                        Alignment.BASELINE).addComponent(
-                                                        textAdbExecutable,
-                                                        GroupLayout.PREFERRED_SIZE,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        GroupLayout.PREFERRED_SIZE).addComponent(
-                                                        btBrowseAdb))).addContainerGap(375,
-                                Short.MAX_VALUE)));
+                        gl_contentPanel
+                                .createSequentialGroup()
+                                .addGroup(
+                                        gl_contentPanel
+                                                .createParallelGroup(Alignment.LEADING)
+                                                .addComponent(lblAdbExecutableLocation)
+                                                .addGroup(
+                                                        gl_contentPanel
+                                                                .createParallelGroup(
+                                                                        Alignment.BASELINE)
+                                                                .addComponent(textAdbExecutable,
+                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                        GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(btBrowseAdb)))
+                                .addContainerGap(375, Short.MAX_VALUE)));
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -111,9 +122,14 @@ public class ConfigurationDialog extends JDialog {
     private Action acOk = new AbstractAction("OK") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            save();
-            ConfigurationDialog.this.setVisible(false);
-            ConfigurationDialog.this.dispose();
+            if (validateData()) {
+                notifyAboutChanges();
+                save();
+                ConfigurationDialog.this.setVisible(false);
+                ConfigurationDialog.this.dispose();
+            } else {
+                textAdbExecutable.requestFocusInWindow();
+            }
         }
     };
 
@@ -138,16 +154,24 @@ public class ConfigurationDialog extends JDialog {
             return false; // silently ignore
         }
         File f = new File(filename);
-        if ("adb".equals(filename) || (f.exists() && f.canExecute())) {
+        if (Configuration.adb.DEFAULT_EXECUTABLE.equals(filename) || (f.exists() && f.canExecute())) {
             return true;
         }
-        ErrorDialogsHelper.showError("%s is not a valid adb file", filename);
+        ErrorDialogsHelper.showError(this, "%s is not a valid adb file", filename);
         return false;
     }
 
-    private void save() {
-        if (validateData()) {
-            Configuration.adb.executable(textAdbExecutable.getText());
+    private void notifyAboutChanges() {
+        if (!StringUtils.equals(Configuration.adb.executable(), textAdbExecutable.getText())) {
+            JOptionPane
+                    .showMessageDialog(
+                            this,
+                            "You've changed the path to the ADB executable. Please restart the application to apply changes.",
+                            "Please restart", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    private void save() {
+        Configuration.adb.executable(textAdbExecutable.getText());
     }
 }

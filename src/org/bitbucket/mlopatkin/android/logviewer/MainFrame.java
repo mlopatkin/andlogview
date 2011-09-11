@@ -369,10 +369,11 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                     setSource(source);
                 } catch (UnrecognizedFormatException e) {
                     logger.error("Unrecognized source file " + file, e);
-                    ErrorDialogsHelper.showError("Unrecognized file format for " + file);
+                    ErrorDialogsHelper.showError(MainFrame.this, "Unrecognized file format for "
+                            + file);
                 } catch (IOException e) {
                     logger.error("IO Exception while reading " + file, e);
-                    ErrorDialogsHelper.showError("Cannot read " + file);
+                    ErrorDialogsHelper.showError(MainFrame.this, "Cannot read " + file);
                 }
 
             }
