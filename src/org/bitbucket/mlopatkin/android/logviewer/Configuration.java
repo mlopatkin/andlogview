@@ -18,11 +18,15 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -41,6 +45,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 public class Configuration {
+    private static final boolean DEBUG_MODE = System.getProperty("logview.debug") != null;
 
     public static class ui {
         private static final String PREFIX = "ui.";
@@ -212,6 +217,9 @@ public class Configuration {
     }
 
     private Configuration() {
+        if (DEBUG_MODE) {
+            System.err.println("DEBUG MODE ENABLED!");
+        }
         setUpDefaults();
         properties.putAll(loadFromResources());
         properties.putAll(loadFromFile(getConfigFileName()));
@@ -270,7 +278,23 @@ public class Configuration {
 
     private String getSystemConfigDir() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            return System.getenv("APPDATA");
+            String appdata = System.getenv("APPDATA");
+            // dirty hack to get eclipse work properly with the environment
+            // variables
+            // when I start project in Debug under JDK 1.6_22 debug JRE it
+            // receives environment variables in CP866 but thinks that they are
+            // in CP1251. My login contains russian letters and APPDATA points
+            // to nowhere :(
+            if (DEBUG_MODE && !(new File(appdata).exists())) {
+                logger.warn("DEBUG_MODE is ON");
+                logger.warn("Appdata value: " + Arrays.toString(appdata.getBytes()));
+                try {
+                    appdata = new String(appdata.getBytes("WINDOWS-1251"), "CP866");
+                } catch (UnsupportedEncodingException e) {
+                    throw new AssertionError(e.toString());
+                }
+            }
+            return appdata;
         } else {
             return SystemUtils.USER_HOME;
         }
@@ -278,6 +302,23 @@ public class Configuration {
 
     private String getConfigFileDir() {
         String systemConfig = getSystemConfigDir();
+        try {
+            OutputStream out = new FileOutputStream("temp.txt");
+            out.write(systemConfig.getBytes());
+            out.write((int) '\n');
+            out.write(systemConfig.getBytes("UTF-8"));
+            out.write((int) '\n');
+            out.write(systemConfig.getBytes("WINDOWS-1251"));
+            out.write((int) '\n');
+            out.write(systemConfig.getBytes("CP866"));
+            out.close();
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            logger.warn("", e);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            logger.warn("", e);
+        }
         if (systemConfig == null) {
             return null;
         }
