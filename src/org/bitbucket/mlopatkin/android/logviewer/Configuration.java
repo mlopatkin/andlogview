@@ -18,11 +18,9 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -323,23 +321,6 @@ public class Configuration {
 
     private String getConfigFileDir() {
         String systemConfig = getSystemConfigDir();
-        try {
-            OutputStream out = new FileOutputStream("temp.txt");
-            out.write(systemConfig.getBytes());
-            out.write((int) '\n');
-            out.write(systemConfig.getBytes("UTF-8"));
-            out.write((int) '\n');
-            out.write(systemConfig.getBytes("WINDOWS-1251"));
-            out.write((int) '\n');
-            out.write(systemConfig.getBytes("CP866"));
-            out.close();
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            logger.warn("", e);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            logger.warn("", e);
-        }
         if (systemConfig == null) {
             return null;
         }
