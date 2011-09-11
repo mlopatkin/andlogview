@@ -29,8 +29,6 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
@@ -65,11 +63,15 @@ public class BookmarksController extends AbstractIndexController implements Inde
     }
 
     private void setupPopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
+        JPopupMenu menu = new TablePopupMenu() {
+            @Override
+            protected void onSelectionChanged(JTable table) {
+                acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
+            }
+        };
         menu.add(acDeleteBookmarks);
         UiHelper.addPopupMenu(table, menu);
         UiHelper.bindKeyFocused(table, "DELETE", "remove_bookmark", acDeleteBookmarks);
-        table.getSelectionModel().addListSelectionListener(selectionListener);
         acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
     }
 
@@ -186,13 +188,6 @@ public class BookmarksController extends AbstractIndexController implements Inde
             for (int row : modelRows) {
                 unmarkRecord(row);
             }
-        }
-    };
-    private ListSelectionListener selectionListener = new ListSelectionListener() {
-
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
         }
     };
 }
