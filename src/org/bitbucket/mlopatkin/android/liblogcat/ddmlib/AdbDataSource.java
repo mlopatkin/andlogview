@@ -38,6 +38,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
@@ -86,7 +87,10 @@ public class AdbDataSource implements DataSource {
         assert device.isOnline();
         this.device = device;
         initStreams();
+        AdbDeviceManager.addDeviceChangeListener(deviceListener);
     }
+
+    private boolean closed = false;
 
     @Override
     public void close() {
@@ -95,6 +99,7 @@ public class AdbDataSource implements DataSource {
         }
         backgroundUpdater.shutdown();
         shellCommandExecutor.shutdown();
+        closed = true;
     }
 
     @Override
@@ -298,6 +303,30 @@ public class AdbDataSource implements DataSource {
 
     @Override
     public String toString() {
-        return "ADB connected: " + AdbDeviceManager.getDeviceDisplayName(device);
+        if (!closed) {
+            return "Device: " + AdbDeviceManager.getDeviceDisplayName(device);
+        } else {
+            return "Disconnected device: " + AdbDeviceManager.getDeviceDisplayName(device);
+        }
     }
+
+    private IDeviceChangeListener deviceListener = new AdbDeviceManager.AbstractDeviceListener() {
+        @Override
+        public void deviceDisconnected(IDevice device) {
+            if (device == AdbDataSource.this.device) {
+                close();
+                AdbDeviceManager.removeDeviceChangeListener(this);
+            }
+
+        };
+
+        @Override
+        public void deviceChanged(IDevice device, int changeMask) {
+            if (device == AdbDataSource.this.device && (changeMask & IDevice.CHANGE_STATE) != 0
+                    && device.isOffline()) {
+                close();
+                AdbDeviceManager.removeDeviceChangeListener(this);
+            }
+        };
+    };
 }

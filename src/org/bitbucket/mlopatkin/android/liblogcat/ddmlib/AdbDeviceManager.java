@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
 
 public class AdbDeviceManager {
     private AdbDeviceManager() {
@@ -74,7 +74,7 @@ public class AdbDeviceManager {
     private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
 
     public static String getDeviceDisplayName(IDevice device) {
-        StringBuilder deviceName = new StringBuilder(device.getSerialNumber());
+        String serial = device.getSerialNumber();
         String productName = null;
         if (device.isEmulator()) {
             productName = device.getAvdName();
@@ -83,8 +83,9 @@ public class AdbDeviceManager {
 
         }
         if (productName != null) {
-            deviceName.append(' ').append(productName);
+            return productName + " (" + serial + ")";
+        } else {
+            return serial;
         }
-        return deviceName.toString();
     }
 }
