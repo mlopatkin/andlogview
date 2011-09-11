@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
@@ -54,17 +55,29 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
         }
     };
 
+    private Action acRemoveFromBookmarks = new AbstractAction("Remove from bookmarks") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for (int rowIndex : getSelectedRows())
+                bookmarksController.unmarkRecord(table.convertRowIndexToModel(rowIndex));
+        }
+    };
+
     private BookmarksController bookmarksController;
     private FilterController filterController;
     private JTable table;
     private LogRecordTableModel model;
+
+    private JMenuItem itemAddToBookmarks = new JMenuItem(acAddToBookmarks);
+    private JMenuItem itemRemoveBookmarks = new JMenuItem(acRemoveFromBookmarks);
 
     private void setUpMenu() {
         JPopupMenu popupMenu = new TablePopupMenu(this);
         popupMenu.add(acHideByTag);
         popupMenu.add(acHideByPid);
         popupMenu.addSeparator();
-        popupMenu.add(acAddToBookmarks);
+        popupMenu.add(itemAddToBookmarks);
+        popupMenu.add(itemRemoveBookmarks);
         UiHelper.addPopupMenu(table, popupMenu);
     }
 
@@ -96,17 +109,34 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
             acHideByTag.setEnabled(false);
             acHideByPid.setEnabled(false);
             acAddToBookmarks.setEnabled(false);
+            acRemoveFromBookmarks.setEnabled(false);
+            toggleAddRemoveState(true);
             break;
         case 1:
             acHideByTag.setEnabled(true);
             acHideByPid.setEnabled(true);
             acAddToBookmarks.setEnabled(true);
+            acRemoveFromBookmarks.setEnabled(true);
+            adjustAddRemoveVisibilty();
             break;
         default:
             acHideByTag.setEnabled(false);
             acHideByPid.setEnabled(false);
-            acAddToBookmarks.setEnabled(true);
+            acAddToBookmarks.setEnabled(false);
+            acRemoveFromBookmarks.setEnabled(false);
+            toggleAddRemoveState(true);
         }
     }
 
+    private void adjustAddRemoveVisibilty() {
+        assert table.getSelectedRowCount() == 1;
+        int row = table.convertRowIndexToModel(table.getSelectedRow());
+        boolean marked = bookmarksController.isMarked(row);
+        toggleAddRemoveState(!marked);
+    }
+
+    private void toggleAddRemoveState(boolean canAdd) {
+        itemAddToBookmarks.setVisible(canAdd);
+        itemRemoveBookmarks.setVisible(!canAdd);
+    }
 }

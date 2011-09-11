@@ -201,4 +201,8 @@ public class BookmarksController extends AbstractIndexController implements Inde
             updateItemsState(table);
         }
     }
+
+    public boolean isMarked(int row) {
+        return filter.include(row, getModel().getRowData(row));
+    }
 }
