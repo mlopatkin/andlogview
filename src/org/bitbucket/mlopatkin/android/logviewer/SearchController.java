@@ -67,7 +67,8 @@ public class SearchController {
         }
         int startPos = (scanCurrentRow) ? curRow : (curRow + searchMode);
         if (startPos < 0) {
-            startPos = 0;
+            // no more rows to search
+            return false;
         }
         int endPos = table.getRowCount();
         if (searchMode < 0) {
