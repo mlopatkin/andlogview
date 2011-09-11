@@ -30,9 +30,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
-import org.bitbucket.mlopatkin.android.logviewer.TablePopupMenu.ItemsUpdater;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 public class IndexFrame extends JFrame implements ItemsUpdater {

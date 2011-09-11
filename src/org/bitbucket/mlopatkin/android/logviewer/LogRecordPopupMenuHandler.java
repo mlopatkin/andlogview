@@ -25,8 +25,9 @@ import javax.swing.JTable;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
-import org.bitbucket.mlopatkin.android.logviewer.TablePopupMenu.ItemsUpdater;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
 
 public class LogRecordPopupMenuHandler implements ItemsUpdater {
 

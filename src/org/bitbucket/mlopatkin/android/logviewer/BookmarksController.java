@@ -36,6 +36,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class BookmarksController extends AbstractIndexController implements IndexController,
