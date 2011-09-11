@@ -24,8 +24,11 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 
@@ -70,12 +73,24 @@ public class Main {
 
     Main() {
         createAndShowWindow();
-        IDevice device = AdbDeviceManager.getDefaultDevice();
-        if (device != null) {
-            DeviceDisconnectedNotifier.startWatching(device);
-            initialSource = new AdbDataSource(device);
-        } else {
-            window.waitForDevice();
+        try {
+            AdbConnectionManager.init();
+
+            IDevice device = AdbDeviceManager.getDefaultDevice();
+            if (device != null) {
+                DeviceDisconnectedNotifier.startWatching(device);
+                initialSource = new AdbDataSource(device);
+            } else {
+                window.waitForDevice();
+            }
+        } catch (AdbException e) {
+            logger.warn("Cannot start in ADB mode", e);
+            window.disableAdbCommandsAsync();
+            ErrorDialogsHelper.showAdbNotFoundError(window);
+        } catch (DdmlibUnsupportedException e) {
+            logger.error("Cannot work with DDMLIB supplied", e);
+            window.disableAdbCommandsAsync();
+            ErrorDialogsHelper.showError(e.getMessage());
         }
     }
 

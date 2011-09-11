@@ -15,22 +15,49 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
 
-class AdbConnectionManager {
+public class AdbConnectionManager {
+    private static final Logger logger = Logger.getLogger(AdbConnectionManager.class);
+
     private AdbConnectionManager() {
     }
 
     private static boolean inited = false;
+    private static boolean ready = false;
 
-    static AndroidDebugBridge getAdb() {
+    private static boolean isReady(AndroidDebugBridge adb) throws DdmlibUnsupportedException {
+        if (adb == null) {
+            return false;
+        }
+        // hack below - there is now explicit way to check if the bridge was
+        // created succesfully
+        try {
+            return (Boolean) FieldUtils.readField(
+                    FieldUtils.getDeclaredField(AndroidDebugBridge.class, "mStarted", true), adb,
+                    true);
+        } catch (IllegalAccessException e) {
+            logger.fatal("The DDMLIB is unsupported", e);
+            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: "
+                    + System.getenv("DDMLIB"));
+        }
+
+    }
+
+    public static void init() throws AdbException, DdmlibUnsupportedException {
         if (!inited) {
-            AndroidDebugBridge.init(false);
-            AndroidDebugBridge.createBridge(Configuration.adb.executable(), false);
+            Log.setLogOutput(new DdmlibToLog4jWrapper());
+            if (System.getProperty("logview.debug.ddmlib") != null) {
+                DdmPreferences.setLogLevel("debug");
+            }
 
+            AndroidDebugBridge.init(false);
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
@@ -39,7 +66,30 @@ class AdbConnectionManager {
 
             });
             inited = true;
+            AndroidDebugBridge adb = AndroidDebugBridge.createBridge(
+                    Configuration.adb.executable(), false);
+            if (isReady(adb)) {
+                ready = true;
+            } else {
+                throw new AdbException("Cannot initialize ADB server. See logs for details");
+            }
         }
+
+    }
+
+    public static boolean isFailed() {
+        return inited && !ready;
+    }
+
+    private static void checkState() throws IllegalStateException {
+        if (!inited || AndroidDebugBridge.getBridge() == null) {
+            throw new IllegalStateException("Invalid DDMLIB state: inited=" + inited + " bridge="
+                    + AndroidDebugBridge.getBridge());
+        }
+    }
+
+    static AndroidDebugBridge getAdb() {
+        checkState();
         return AndroidDebugBridge.getBridge();
     }
 
@@ -47,7 +97,4 @@ class AdbConnectionManager {
         AndroidDebugBridge.terminate();
     }
 
-    static {
-        Log.setLogOutput(new DdmlibToLog4jWrapper());
-    }
 }

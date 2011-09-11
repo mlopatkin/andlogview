@@ -507,4 +507,13 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             logger.warn("Unexpected exception", e);
         }
     }
+
+    void disableAdbCommandsAsync() {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                acConnectToDevice.setEnabled(false);
+            }
+        });
+    }
 }
