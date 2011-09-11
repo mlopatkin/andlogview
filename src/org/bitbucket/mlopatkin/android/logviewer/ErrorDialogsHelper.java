@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Frame;
+
 import javax.swing.JOptionPane;
 
 /**
@@ -33,5 +35,14 @@ class ErrorDialogsHelper {
 
     static void showError(String message) {
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    static void showAdbNotFoundError(Frame owner) {
+        if (Configuration.adb.showSetupDialog()) {
+            SetupAdbDialog.showDialog(owner);
+        } else {
+            JOptionPane.showMessageDialog(owner, "The ADB executable was not found", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
