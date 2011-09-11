@@ -43,9 +43,7 @@ class AutoScrollController implements TableModelListener {
     @Override
     public void tableChanged(final TableModelEvent e) {
         if (e.getType() == TableModelEvent.INSERT) {
-            if (shouldScroll) {
-                EventQueue.invokeLater(scrollToTheEnd);
-            }
+            scrollIfNeeded();
         } else {
             shouldScroll = false;
         }
@@ -64,5 +62,11 @@ class AutoScrollController implements TableModelListener {
 
     public void notifyBeforeInsert() {
         shouldScroll = isAtBottom();
+    }
+
+    public void scrollIfNeeded() {
+        if (shouldScroll) {
+            EventQueue.invokeLater(scrollToTheEnd);
+        }
     }
 }

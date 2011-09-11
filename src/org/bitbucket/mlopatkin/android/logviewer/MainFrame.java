@@ -268,19 +268,22 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final String KEY_FIND_PREV = "shift F3";
 
     private void showSearchField() {
+        scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(true);
         instantSearchTextField.selectAll();
         instantSearchTextField.requestFocusInWindow();
         searchStatusLabel.setVisible(false);
         controlsPanel.revalidate();
         controlsPanel.repaint();
-
+        scrollController.scrollIfNeeded();
     }
 
     private void hideSearchField() {
+        scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(false);
         controlsPanel.revalidate();
         controlsPanel.repaint();
+        scrollController.scrollIfNeeded();
     }
 
     private static final int MESSAGE_DELAY = 2000;
