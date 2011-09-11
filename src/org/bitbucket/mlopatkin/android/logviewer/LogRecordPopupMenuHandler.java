@@ -16,9 +16,9 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JMenuItem;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
@@ -28,45 +28,39 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 
 public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
 
-    private JMenuItem hideWithThisTag = new JMenuItem("Hide with this tag");
-    private JMenuItem hideWithThisPid = new JMenuItem("Hide with this pid");
-    private JMenuItem addToBookmarks = new JMenuItem("Add to bookmarks");
+    private Action acHideByTag = new AbstractAction("Hide with this tag") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
+                    getLogRecordAtPoint().getTag()));
+        }
+    };
+
+    private Action acHideByPid = new AbstractAction("Hide with this pid") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
+                    new int[] { getLogRecordAtPoint().getPid() }));
+        }
+    };
+
+    private Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            bookmarksController.markRecord(getRow());
+        }
+    };
 
     private BookmarksController bookmarksController;
     private FilterController filterController;
 
     private void setUpMenu() {
-        hideWithThisTag.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
-                        getLogRecordAtPoint().getTag()));
-            }
-        });
-
-        hideWithThisPid.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
-                        new int[] { getLogRecordAtPoint().getPid() }));
-            }
-        });
-
-        addToBookmarks.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bookmarksController.markRecord(getRow());
-            }
-        });
 
         JPopupMenu popupMenu = getMenu();
-        popupMenu.add(hideWithThisTag);
-        popupMenu.add(hideWithThisPid);
+        popupMenu.add(acHideByTag);
+        popupMenu.add(acHideByPid);
         popupMenu.addSeparator();
-        popupMenu.add(addToBookmarks);
+        popupMenu.add(acAddToBookmarks);
     }
 
     public LogRecordPopupMenuHandler(JTable table, final FilterController filterController,
