@@ -62,6 +62,7 @@ public class Main {
         createAndShowWindow();
         try {
             initialSource = FileDataSourceFactory.createDataSource(file);
+            window.setRecentDir(file.getAbsoluteFile().getParentFile());
         } catch (UnrecognizedFormatException e) {
             ErrorDialogsHelper.showError(window, "Unrecognized file format for " + file);
             logger.error("Exception while reading the file", e);

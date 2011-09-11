@@ -69,6 +69,7 @@ public class FileTransferHandler extends TransferHandler {
                 ErrorDialogsHelper.showError(frame, "Cannot read " + file);
                 return false;
             }
+            frame.setRecentDir(file.getAbsoluteFile().getParentFile());
         } catch (UnsupportedFlavorException e) {
             return false;
         } catch (IOException e) {

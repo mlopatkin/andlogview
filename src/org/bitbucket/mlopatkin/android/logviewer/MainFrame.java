@@ -366,7 +366,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             int result = fileChooser.showOpenDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                recentDir = file.getParentFile();
+                setRecentDir(file.getAbsoluteFile().getParentFile());
                 try {
                     DataSource source = FileDataSourceFactory.createDataSource(file);
                     setSource(source);
@@ -470,7 +470,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             int result = fileChooser.showSaveDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                recentDir = file.getParentFile();
+                setRecentDir(file.getAbsoluteFile().getParentFile());
                 if (file.exists()) {
                     result = JOptionPane.showConfirmDialog(MainFrame.this, "File " + file
                             + " already exists, overwrite?");
@@ -519,5 +519,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                 acConnectToDevice.setEnabled(false);
             }
         });
+    }
+
+    void setRecentDir(File dir) {
+        recentDir = dir;
     }
 }
