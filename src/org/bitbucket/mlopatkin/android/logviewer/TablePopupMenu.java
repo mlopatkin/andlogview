@@ -49,14 +49,26 @@ import javax.swing.JTable;
  */
 public class TablePopupMenu extends JPopupMenu {
 
+    public interface ItemsUpdater {
+        void updateItemsState(JTable source);
+    }
+
     private static final int NO_ROW = -1;
+
+    private ItemsUpdater updater;
+
+    public TablePopupMenu(ItemsUpdater updater) {
+        this.updater = updater;
+    }
 
     @Override
     public void show(Component invoker, int x, int y) {
         if (invoker instanceof JTable) {
             JTable table = (JTable) invoker;
             adjustSelection(table, table.rowAtPoint(new Point(x, y)));
-            onSelectionChanged(table);
+            if (updater != null) {
+                updater.updateItemsState(table);
+            }
         }
         super.show(invoker, x, y);
     }
@@ -67,12 +79,5 @@ public class TablePopupMenu extends JPopupMenu {
         } else if (!table.getSelectionModel().isSelectedIndex(clickedRow)) {
             table.getSelectionModel().setSelectionInterval(clickedRow, clickedRow);
         }
-    }
-
-    /**
-     * Override this method to adjust state of your menu items.
-     * 
-     */
-    protected void onSelectionChanged(JTable table) {
     }
 }

@@ -38,7 +38,8 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-public class BookmarksController extends AbstractIndexController implements IndexController {
+public class BookmarksController extends AbstractIndexController implements IndexController,
+        TablePopupMenu.ItemsUpdater {
 
     private JTable table;
 
@@ -63,12 +64,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
     }
 
     private void setupPopupMenu() {
-        JPopupMenu menu = new TablePopupMenu() {
-            @Override
-            protected void onSelectionChanged(JTable table) {
-                acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
-            }
-        };
+        JPopupMenu menu = new TablePopupMenu(this);
         menu.add(acDeleteBookmarks);
         UiHelper.addPopupMenu(table, menu);
         UiHelper.bindKeyFocused(table, "DELETE", "remove_bookmark", acDeleteBookmarks);
@@ -190,4 +186,9 @@ public class BookmarksController extends AbstractIndexController implements Inde
             }
         }
     };
+
+    @Override
+    public void updateItemsState(JTable source) {
+        acDeleteBookmarks.setEnabled(source.getSelectedRowCount() > 0);
+    }
 }
