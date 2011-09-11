@@ -21,19 +21,6 @@ public class MyStringUtils {
     private MyStringUtils() {
     }
 
-    public static boolean containsIgnoreCase(String src, String pattern) {
-        if (src == null) {
-            return false;
-        }
-        if (pattern == null) {
-            return true;
-        }
-
-        src = src.toLowerCase();
-        pattern = pattern.toLowerCase();
-        return src.contains(pattern);
-    }
-
     public static final int NOT_FOUND = -1;
 
     public static int indexOfIgnoreCase(String src, String pattern) {
