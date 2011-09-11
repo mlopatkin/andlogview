@@ -18,8 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-
 public class RegExpSearcher implements SearchStrategy {
     private Pattern pattern;
 
@@ -27,12 +25,8 @@ public class RegExpSearcher implements SearchStrategy {
         pattern = Pattern.compile(regex);
     }
 
-    private boolean isStringMatched(String s) {
-        return pattern.matcher(s).find();
-    }
-
     @Override
-    public boolean isRowMatched(LogRecord record) {
-        return isStringMatched(record.getTag()) || isStringMatched(record.getMessage());
+    public boolean isStringMatched(String s) {
+        return pattern.matcher(s).find();
     }
 }

@@ -16,7 +16,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public class IgnoreCaseSearcher implements SearchStrategy {
     private String text;
@@ -25,13 +24,9 @@ public class IgnoreCaseSearcher implements SearchStrategy {
         this.text = text;
     }
 
-    private boolean isStringMatched(String s) {
-        return StringUtils.containsIgnoreCase(s, text);
-    }
-
     @Override
-    public boolean isRowMatched(LogRecord record) {
-        return isStringMatched(record.getTag()) || isStringMatched(record.getMessage());
+    public boolean isStringMatched(String s) {
+        return StringUtils.containsIgnoreCase(s, text);
     }
 
 }

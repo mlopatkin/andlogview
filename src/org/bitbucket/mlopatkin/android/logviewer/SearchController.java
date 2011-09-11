@@ -90,7 +90,8 @@ public class SearchController {
     private SearchStrategy strategy;
 
     private boolean isRowMatch(LogRecord record) {
-        return strategy.isRowMatched(record);
+        return strategy.isStringMatched(record.getMessage())
+                || strategy.isStringMatched(record.getTag());
     }
 
     private void setCurrentRow(int i) {

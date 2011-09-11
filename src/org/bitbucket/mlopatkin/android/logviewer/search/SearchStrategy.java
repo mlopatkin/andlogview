@@ -15,8 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public interface SearchStrategy {
-    boolean isRowMatched(LogRecord record);
+    boolean isStringMatched(String text);
 }
