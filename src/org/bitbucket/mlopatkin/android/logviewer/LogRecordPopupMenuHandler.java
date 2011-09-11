@@ -25,14 +25,16 @@ import javax.swing.JTable;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
+import org.bitbucket.mlopatkin.android.logviewer.TablePopupMenu.ItemsUpdater;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
+public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
     private Action acHideByTag = new AbstractAction("Hide with this tag") {
         @Override
         public void actionPerformed(ActionEvent e) {
             filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
-                    getLogRecordAtPoint().getTag()));
+                    getSelectedLogRecord().getTag()));
         }
     };
 
@@ -40,39 +42,71 @@ public class LogRecordPopupMenuHandler extends TablePopupMenuHandler {
         @Override
         public void actionPerformed(ActionEvent e) {
             filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
-                    new int[] { getLogRecordAtPoint().getPid() }));
+                    new int[] { getSelectedLogRecord().getPid() }));
         }
     };
 
     private Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            bookmarksController.markRecord(getRow());
+            for (int rowIndex : getSelectedRows())
+                bookmarksController.markRecord(table.convertRowIndexToModel(rowIndex));
         }
     };
 
     private BookmarksController bookmarksController;
     private FilterController filterController;
+    private JTable table;
+    private LogRecordTableModel model;
 
     private void setUpMenu() {
-
-        JPopupMenu popupMenu = getMenu();
+        JPopupMenu popupMenu = new TablePopupMenu(this);
         popupMenu.add(acHideByTag);
         popupMenu.add(acHideByPid);
         popupMenu.addSeparator();
         popupMenu.add(acAddToBookmarks);
+        UiHelper.addPopupMenu(table, popupMenu);
     }
 
-    public LogRecordPopupMenuHandler(JTable table, final FilterController filterController,
-            final BookmarksController bookmarksController) {
-        super(table);
+    protected int[] getSelectedRows() {
+        return table.getSelectedRows();
+    }
+
+    protected int getSelectedRow() {
+        return table.getSelectedRow();
+    }
+
+    protected LogRecord getSelectedLogRecord() {
+        return model.getRowData(table.convertRowIndexToModel(getSelectedRow()));
+    }
+
+    public LogRecordPopupMenuHandler(JTable table, LogRecordTableModel model,
+            final FilterController filterController, final BookmarksController bookmarksController) {
+        this.table = table;
+        this.model = model;
         this.filterController = filterController;
         this.bookmarksController = bookmarksController;
         setUpMenu();
     }
 
-    private LogRecord getLogRecordAtPoint() {
-        return ((LogRecordTableModel) getTable().getModel()).getRowData(getRow());
+    @Override
+    public void updateItemsState(JTable source) {
+        switch (source.getSelectedRowCount()) {
+        case 0:
+            acHideByTag.setEnabled(false);
+            acHideByPid.setEnabled(false);
+            acAddToBookmarks.setEnabled(false);
+            break;
+        case 1:
+            acHideByTag.setEnabled(true);
+            acHideByPid.setEnabled(true);
+            acAddToBookmarks.setEnabled(true);
+            break;
+        default:
+            acHideByTag.setEnabled(false);
+            acHideByPid.setEnabled(false);
+            acAddToBookmarks.setEnabled(true);
+        }
     }
 
 }

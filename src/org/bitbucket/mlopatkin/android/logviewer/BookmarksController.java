@@ -29,6 +29,8 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
@@ -39,7 +41,7 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class BookmarksController extends AbstractIndexController implements IndexController,
-        TablePopupMenu.ItemsUpdater {
+        TablePopupMenu.ItemsUpdater, ListSelectionListener {
 
     private JTable table;
 
@@ -56,6 +58,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
         table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        table.getSelectionModel().addListSelectionListener(this);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
 
         rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(filter, showHideFilter)));
@@ -190,5 +193,12 @@ public class BookmarksController extends AbstractIndexController implements Inde
     @Override
     public void updateItemsState(JTable source) {
         acDeleteBookmarks.setEnabled(source.getSelectedRowCount() > 0);
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        if (!e.getValueIsAdjusting()) {
+            updateItemsState(table);
+        }
     }
 }

@@ -154,7 +154,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         filterController = new FilterController(logElements, recordsModel);
         bookmarksController = new BookmarksController(logElements, recordsModel, mapper,
                 filterController);
-        new LogRecordPopupMenuHandler(logElements, filterController, bookmarksController);
+        new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,
+                bookmarksController);
         searchController = new SearchController(logElements, recordsModel);
         listener = new BufferedListener(recordsModel, scrollController);
 
