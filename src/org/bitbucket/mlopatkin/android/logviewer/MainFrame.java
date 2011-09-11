@@ -383,7 +383,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            SelectDeviceDialog.showSelectDeviceDialog(MainFrame.this);
+            SelectDeviceDialog.showSelectDeviceDialog(MainFrame.this, MainFrame.this);
         }
     };
 

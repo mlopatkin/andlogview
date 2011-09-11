@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -32,12 +33,15 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
-import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
 
 public class SelectDeviceDialog extends JDialog {
 
@@ -45,9 +49,25 @@ public class SelectDeviceDialog extends JDialog {
         void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice);
     }
 
-    public static void showSelectDeviceDialog(DialogResultReceiver receiver) {
+    public static void showSelectDeviceDialog(MainFrame owner, DialogResultReceiver receiver) {
+        assert !AdbConnectionManager.isFailed();
+        if (!AdbConnectionManager.isReady()) {
+            try {
+                AdbConnectionManager.init();
+            } catch (AdbException e) {
+                logger.warn("Cannot start in ADB mode", e);
+                owner.disableAdbCommandsAsync();
+                ErrorDialogsHelper.showAdbNotFoundError(owner);
+                return;
+            } catch (DdmlibUnsupportedException e) {
+                logger.error("Cannot work with DDMLIB supplied", e);
+                owner.disableAdbCommandsAsync();
+                ErrorDialogsHelper.showError(e.getMessage());
+                return;
+            }
+        }
         if (dialog == null) {
-            dialog = new SelectDeviceDialog();
+            dialog = new SelectDeviceDialog(owner);
         }
         dialog.receiver = receiver;
         dialog.setVisible(true);
@@ -62,8 +82,8 @@ public class SelectDeviceDialog extends JDialog {
 
     private DeviceListModel devices = new DeviceListModel();
 
-    private SelectDeviceDialog() {
-        setModal(true);
+    private SelectDeviceDialog(Frame owner) {
+        super(owner, true);
         setTitle("Select device");
         setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());

@@ -81,6 +81,10 @@ public class AdbConnectionManager {
         return inited && !ready;
     }
 
+    public static boolean isReady() {
+        return inited && ready;
+    }
+
     private static void checkState() throws IllegalStateException {
         if (!inited || AndroidDebugBridge.getBridge() == null) {
             throw new IllegalStateException("Invalid DDMLIB state: inited=" + inited + " bridge="
