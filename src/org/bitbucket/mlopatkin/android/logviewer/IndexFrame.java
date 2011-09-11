@@ -23,22 +23,25 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+import org.bitbucket.mlopatkin.android.logviewer.TablePopupMenu.ItemsUpdater;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
-public class IndexFrame extends JFrame {
+public class IndexFrame extends JFrame implements ItemsUpdater {
 
     private JPanel contentPane;
     private DecoratingRendererTable indexedRecordsTable;
     private IndexController controller;
+    private TablePopupMenu popupMenu = new TablePopupMenu(this);
+    private Action acCopy;
 
     public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
             IndexController controller) {
@@ -47,6 +50,8 @@ public class IndexFrame extends JFrame {
         indexedRecordsTable.setModel(model);
         indexedRecordsTable.setColumnModel(columnsModel);
         indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
+        acCopy = UiHelper.createActionWrapper(indexedRecordsTable, "copy", "Copy", "control C");
+        popupMenu.add(acCopy);
         addWindowListener(closingListener);
     }
 
@@ -65,8 +70,8 @@ public class IndexFrame extends JFrame {
         indexedRecordsTable.addDecorator(new PriorityColoredCellRenderer());
         indexedRecordsTable.setFillsViewportHeight(true);
         indexedRecordsTable.setShowGrid(false);
-        indexedRecordsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         UiHelper.addDoubleClickListener(indexedRecordsTable, new LineDoubleClickListener());
+        UiHelper.addPopupMenu(indexedRecordsTable, popupMenu);
         scrollPane.setViewportView(indexedRecordsTable);
 
         setupKeys();
@@ -74,6 +79,10 @@ public class IndexFrame extends JFrame {
 
     JTable getTable() {
         return indexedRecordsTable;
+    }
+
+    TablePopupMenu getPopupMenu() {
+        return popupMenu;
     }
 
     private class LineDoubleClickListener implements DoubleClickListener {
@@ -110,5 +119,10 @@ public class IndexFrame extends JFrame {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void updateItemsState(JTable source) {
+        acCopy.setEnabled(source.getSelectedRowCount() > 0);
     }
 }

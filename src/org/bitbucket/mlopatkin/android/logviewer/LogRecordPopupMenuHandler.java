@@ -63,6 +63,8 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
         }
     };
 
+    private Action acCopy;
+
     private BookmarksController bookmarksController;
     private FilterController filterController;
     private JTable table;
@@ -73,6 +75,9 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
     private void setUpMenu() {
         JPopupMenu popupMenu = new TablePopupMenu(this);
+        acCopy = UiHelper.createActionWrapper(table, "copy", "Copy", "control C");
+        popupMenu.add(acCopy);
+        popupMenu.addSeparator();
         popupMenu.add(acHideByTag);
         popupMenu.add(acHideByPid);
         popupMenu.addSeparator();
@@ -110,6 +115,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
             acHideByPid.setEnabled(false);
             acAddToBookmarks.setEnabled(false);
             acRemoveFromBookmarks.setEnabled(false);
+            acCopy.setEnabled(false);
             toggleAddRemoveState(true);
             break;
         case 1:
@@ -117,6 +123,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
             acHideByPid.setEnabled(true);
             acAddToBookmarks.setEnabled(true);
             acRemoveFromBookmarks.setEnabled(true);
+            acCopy.setEnabled(true);
             adjustAddRemoveVisibilty();
             break;
         default:
@@ -124,6 +131,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
             acHideByPid.setEnabled(false);
             acAddToBookmarks.setEnabled(false);
             acRemoveFromBookmarks.setEnabled(false);
+            acCopy.setEnabled(true);
             toggleAddRemoveState(true);
         }
     }

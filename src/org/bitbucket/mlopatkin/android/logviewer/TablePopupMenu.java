@@ -17,6 +17,8 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Component;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
@@ -55,10 +57,26 @@ public class TablePopupMenu extends JPopupMenu {
 
     private static final int NO_ROW = -1;
 
-    private ItemsUpdater updater;
+    private List<ItemsUpdater> updaters = new ArrayList<ItemsUpdater>();
 
     public TablePopupMenu(ItemsUpdater updater) {
-        this.updater = updater;
+        if (updater != null) {
+            updaters.add(updater);
+        }
+    }
+
+    public void addItemsUpdater(ItemsUpdater updater) {
+        if (updater == null) {
+            throw new NullPointerException("updater can't be null");
+        }
+        updaters.add(updater);
+    }
+
+    public void removeItemsUpdater(ItemsUpdater updater) {
+        if (updater == null) {
+            throw new NullPointerException("updater can't be null");
+        }
+        updaters.remove(updater);
     }
 
     @Override
@@ -66,7 +84,7 @@ public class TablePopupMenu extends JPopupMenu {
         if (invoker instanceof JTable) {
             JTable table = (JTable) invoker;
             adjustSelection(table, table.rowAtPoint(new Point(x, y)));
-            if (updater != null) {
+            for (ItemsUpdater updater : updaters) {
                 updater.updateItemsState(table);
             }
         }

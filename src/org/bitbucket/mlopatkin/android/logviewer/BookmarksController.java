@@ -24,10 +24,8 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -57,7 +55,6 @@ public class BookmarksController extends AbstractIndexController implements Inde
         table = getFrame().getTable();
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
         table.setRowSorter(rowSorter);
-        table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         table.getSelectionModel().addListSelectionListener(this);
         LogRecordRowFilter showHideFilter = filterController.getRowFilter();
 
@@ -67,9 +64,9 @@ public class BookmarksController extends AbstractIndexController implements Inde
     }
 
     private void setupPopupMenu() {
-        JPopupMenu menu = new TablePopupMenu(this);
+        TablePopupMenu menu = getFrame().getPopupMenu();
+        menu.addItemsUpdater(this);
         menu.add(acDeleteBookmarks);
-        UiHelper.addPopupMenu(table, menu);
         UiHelper.bindKeyFocused(table, "DELETE", "remove_bookmark", acDeleteBookmarks);
         acDeleteBookmarks.setEnabled(table.getSelectedRowCount() > 0);
     }

@@ -15,9 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -88,4 +90,43 @@ public class UiHelper {
         });
     }
 
+    /**
+     * Creates a wrapper around an existing action of the component to be used
+     * in menus.
+     * 
+     * @param c
+     *            base component
+     * @param actionKey
+     *            key in the component's ActionMap
+     * @param caption
+     *            caption of the action wrapper
+     * @param acceleratorKey
+     *            accelerator key of the action wrapper
+     * @return action that translates its
+     *         {@link Action#actionPerformed(ActionEvent)} to the underlaying
+     *         existing action.
+     */
+    public static Action createActionWrapper(final JComponent c, final String actionKey,
+            String caption, final String acceleratorKey) {
+        final Action baseAction = c.getActionMap().get(actionKey);
+        Action result = new AbstractAction(caption) {
+            {
+                putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(acceleratorKey));
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ActionEvent newEvent = new ActionEvent(c, e.getID(), actionKey, e.getWhen(),
+                        e.getModifiers());
+                baseAction.actionPerformed(newEvent);
+            }
+
+            @Override
+            public void setEnabled(boolean newValue) {
+                super.setEnabled(newValue);
+                baseAction.setEnabled(newValue);
+            }
+        };
+        return result;
+    }
 }
