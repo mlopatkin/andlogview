@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -159,6 +160,15 @@ public class Configuration {
         public static void executable(String newExecutable) {
             instance.properties.setProperty(PREFIX + "executable", newExecutable);
         }
+
+        public static boolean showSetupDialog() {
+            return parseBoolean(PREFIX + "show_setup_dialog", true);
+        }
+
+        public static void showSetupDialog(boolean value) {
+            instance.properties.setProperty(PREFIX + "show_setup_dialog",
+                    BooleanUtils.toStringTrueFalse(value));
+        }
     }
 
     public static class dump {
@@ -246,6 +256,15 @@ public class Configuration {
             return Integer.parseInt(widthValue.trim());
         } catch (NumberFormatException e) {
             logger.warn("Incorrect number in " + key, e);
+            return defaultValue;
+        }
+    }
+
+    private static boolean parseBoolean(String key, boolean defaultValue) {
+        String boolValue = instance.properties.getProperty(key);
+        if (boolValue != null) {
+            return BooleanUtils.toBoolean(boolValue);
+        } else {
             return defaultValue;
         }
     }
