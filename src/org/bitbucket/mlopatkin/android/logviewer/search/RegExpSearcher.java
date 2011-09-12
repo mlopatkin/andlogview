@@ -20,7 +20,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
-public class RegExpSearcher implements HighlightStrategy, SearchStrategy {
+class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     private Pattern pattern;
     private String replacement;
 

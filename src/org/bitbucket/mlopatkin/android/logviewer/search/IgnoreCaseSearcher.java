@@ -18,7 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
-public class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
+class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
     private String textToSearch;
     private String begin;
     private String end;
