@@ -73,6 +73,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private BookmarksController bookmarksController;
     private LogRecordDataSourceListener listener;
 
+    private ProcessListFrame processListFrame = new ProcessListFrame();
+
     private DataSource source;
 
     private DecoratingRendererTable logElements;
@@ -101,6 +103,13 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
         showSourceMessage(source.toString());
         updatingTimer.start();
+        if (source != null && source.getPidToProcessConverter() != null) {
+            acShowProcesses.setEnabled(true);
+            processListFrame.setSource(source);
+        } else {
+            processListFrame.setSource(null);
+            acShowProcesses.setEnabled(false);
+        }
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -352,6 +361,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         mnAdb.addSeparator();
         mnAdb.add(acResetLogs);
         mnAdb.add(acChangeConfiguration);
+        mnAdb.add(acShowProcesses);
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
@@ -500,6 +510,19 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         @Override
         public void actionPerformed(ActionEvent e) {
             bookmarksController.showWindow();
+        }
+    };
+
+    private AbstractAction acShowProcesses = new AbstractAction("Show processes") {
+        {
+            setEnabled(false);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            assert source != null;
+            assert source.getPidToProcessConverter() != null;
+            processListFrame.setVisible(true);
         }
     };
 
