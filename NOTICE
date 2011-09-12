@@ -7,9 +7,18 @@ Copyright (C) 2007 The Android Open Source Project
 This product uses icons from the Tango base icon theme 
 (http://tango.freedesktop.org/Tango_Desktop_Project). 
 The Tango base icon theme is released to the Public Domain. 
+================================================================================
+This product contains the Apache Commons Collections Library distributed under 
+Apache License version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html)
 
-=================================================================================
-This product contains the Apache Commons Library distributed under 
+Apache Commons Collections
+Copyright 2001-2008 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+================================================================================
+This product contains the Apache Commons Lang Library distributed under 
 Apache License version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Apache Commons Lang
