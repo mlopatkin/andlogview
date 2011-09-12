@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -29,7 +30,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -75,7 +75,7 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public PidToProcessConverter getPidToProcessConverter() {
+    public Map<Integer, String> getPidToProcessConverter() {
         return null;
     }
 

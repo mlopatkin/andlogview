@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.EnumSet;
+import java.util.Map;
 
 /**
  * Interface that all log records producers like ADB or log files must
@@ -34,10 +35,10 @@ public interface DataSource {
      * Returns the utility class that performs conversion from PID to process
      * name.
      * 
-     * @return {@link PidToProcessConverter} or {@code null} if this feature is
+     * @return {@link Map} or {@code null} if this feature is
      *         not available
      */
-    PidToProcessConverter getPidToProcessConverter();
+    Map<Integer, String> getPidToProcessConverter();
 
     /**
      * Disposes all resources of this {@link DataSource}. It becomes not usable.

@@ -21,7 +21,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -33,7 +35,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
@@ -103,8 +104,8 @@ public class AdbDataSource implements DataSource {
     }
 
     @Override
-    public PidToProcessConverter getPidToProcessConverter() {
-        return converter;
+    public Map<Integer, String> getPidToProcessConverter() {
+        return converter.getMap();
     }
 
     @Override
@@ -238,20 +239,25 @@ public class AdbDataSource implements DataSource {
     private ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
     private ExecutorService shellCommandExecutor = Executors.newSingleThreadExecutor();
 
-    private class AdbPidToProcessConverter extends PidToProcessConverter {
+    private class AdbPidToProcessConverter {
 
         private final String PS_COMMAND_LINE = Configuration.adb.psCommandLine();
 
-        @Override
-        public synchronized String getProcessName(int pid) {
-            String name = super.getProcessName(pid);
-            if (name == null) {
-                scheduleUpdate();
-            }
-            return name;
+        private Map<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
+            @Override
+            public String get(Object key) {
+                if (!containsKey(key)) {
+                    scheduleUpdate();
+                }
+                return super.get(key);
+            };
+        };
+
+        public Map<Integer, String> getMap() {
+            return processMap;
         }
 
-        private Future<?> result;
+        volatile private Future<?> result;
 
         private void scheduleUpdate() {
             if (result == null || result.isDone()) {
@@ -284,7 +290,7 @@ public class AdbDataSource implements DataSource {
                         Matcher m = ProcessListParser.parseProcessListLine(line);
                         String processName = ProcessListParser.getProcessName(m);
                         int pid = ProcessListParser.getPid(m);
-                        put(pid, processName);
+                        processMap.put(pid, processName);
                         line = in.readLine();
                     }
                 } catch (IOException e) {

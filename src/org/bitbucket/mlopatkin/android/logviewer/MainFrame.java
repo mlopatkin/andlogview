@@ -121,7 +121,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         @Override
         public String getProcessName(int pid) {
             if (source != null && source.getPidToProcessConverter() != null) {
-                return source.getPidToProcessConverter().getProcessName(pid);
+                return source.getPidToProcessConverter().get(pid);
             } else {
                 return null;
             }

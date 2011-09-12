@@ -22,7 +22,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +35,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.PidToProcessConverter;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
@@ -118,7 +119,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     @Override
-    public PidToProcessConverter getPidToProcessConverter() {
+    public Map<Integer, String> getPidToProcessConverter() {
         return converter;
     }
 
@@ -266,7 +267,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private static final String PROCESSES_SECTION = "PROCESSES (ps -P)";
-    private PidToProcessConverter converter = new PidToProcessConverter();
+    private Map<Integer, String> converter = new HashMap<Integer, String>();
 
     private class ProcessesSectionHandler implements SectionHandler {
 
