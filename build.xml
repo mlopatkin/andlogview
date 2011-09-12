@@ -17,7 +17,6 @@
         <pathelement path="lib/commons-lang3-3.0.jar" />
         <pathelement path="lib/log4j-1.2.16.jar" />
         <pathelement path="lib/ddmlib.jar" />
-    	<pathelement path="lib/commons-collections-3.2.1.jar" />
     </path>
 
     <target name="all" depends="make-dist" />
@@ -79,7 +78,5 @@
 
     <target name="clean">
         <delete dir="${out-dir}" />
-    	<delete file="logview.jar" />
-    	<delete file="logview.zip" />
     </target>
 </project>
