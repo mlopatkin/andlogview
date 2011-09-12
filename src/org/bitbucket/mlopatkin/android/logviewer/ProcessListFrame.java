@@ -34,7 +34,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -48,7 +51,6 @@ public class ProcessListFrame extends JFrame {
     public ProcessListFrame() {
         setTitle("Processes");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
         JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 0));
@@ -60,7 +62,9 @@ public class ProcessListFrame extends JFrame {
         table = new JTable();
         table.setFillsViewportHeight(true);
         table.setAutoCreateRowSorter(true);
+        table.setAutoCreateColumnsFromModel(false);
         scrollPane.setViewportView(table);
+        pack();
     }
 
     private static final TableModel EMPTY_MODEL = new DefaultTableModel();
@@ -85,6 +89,7 @@ public class ProcessListFrame extends JFrame {
             model = new ProcessListModel(source.getPidToProcessConverter());
 
             table.setModel(model);
+            table.setColumnModel(new ColumnModel());
             if (oldKeys.isEmpty()) {
                 table.getRowSorter().setSortKeys(DEFAULT_SORTING);
             } else {
@@ -146,7 +151,7 @@ public class ProcessListFrame extends JFrame {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false;
+            return true;
         }
 
         @Override
@@ -186,4 +191,21 @@ public class ProcessListFrame extends JFrame {
             model.update();
         }
     });
+
+    private static class ColumnModel extends DefaultTableColumnModel {
+        private TableCellEditor readOnlyEditor = TableCellHelper.createReadOnlyCellTextEditor();
+
+        private TableColumn column(int columnIndex, int width) {
+            TableColumn c = new TableColumn(columnIndex, width);
+            c.setHeaderValue(COLUMN_NAMES[columnIndex]);
+            c.setCellEditor(readOnlyEditor);
+            addColumn(c);
+            return c;
+        }
+
+        public ColumnModel() {
+            column(ProcessListModel.COLUMN_PID, 50).setMaxWidth(200);
+            column(ProcessListModel.COLUMN_PROCESS, 100);
+        }
+    }
 }
