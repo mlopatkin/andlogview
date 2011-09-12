@@ -161,11 +161,21 @@ public class ProcessListFrame extends JFrame {
 
         public void update() {
             assert SwingUtilities.isEventDispatchThread();
+            int oldSize = getRowCount();
             for (List l : items) {
                 l.clear();
             }
             fillItems();
-            fireTableDataChanged();
+            int newSize = getRowCount();
+            if (newSize < oldSize) {
+                fireTableRowsUpdated(0, newSize - 1);
+                fireTableRowsDeleted(newSize, oldSize - 1);
+            } else if (newSize > oldSize) {
+                fireTableRowsUpdated(0, oldSize - 1);
+                fireTableRowsInserted(oldSize, newSize - 1);
+            } else {
+                fireTableRowsUpdated(0, newSize - 1);
+            }
         }
     }
 
