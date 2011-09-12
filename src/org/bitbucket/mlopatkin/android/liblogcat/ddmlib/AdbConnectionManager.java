@@ -36,7 +36,7 @@ public class AdbConnectionManager {
         if (adb == null) {
             return false;
         }
-        // hack below - there is now explicit way to check if the bridge was
+        // hack below - there is no explicit way to check if the bridge was
         // created succesfully
         try {
             return (Boolean) FieldUtils.readField(
