@@ -15,15 +15,21 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 
 public class AdbDeviceManager {
+    private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
+
     private AdbDeviceManager() {
     }
 
@@ -87,5 +93,38 @@ public class AdbDeviceManager {
         } else {
             return serial;
         }
+    }
+
+    private static class DeviceStateLogger implements IDeviceChangeListener {
+
+        @Override
+        public void deviceConnected(IDevice device) {
+            logger.debug("Device connected: " + device.getSerialNumber());
+        }
+
+        @Override
+        public void deviceDisconnected(IDevice device) {
+            logger.debug("Device disconnected: " + device.getSerialNumber());
+        }
+
+        @Override
+        public void deviceChanged(IDevice device, int changeMask) {
+            logger.debug("Device state changed: " + device.getSerialNumber());
+            List<String> changes = new ArrayList<String>(3);
+            if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
+                changes.add("CHANGE_BUILD_INFO");
+            }
+            if ((changeMask & IDevice.CHANGE_CLIENT_LIST) != 0) {
+                changes.add("CHANGE_CLIENT_LIST");
+            }
+            if ((changeMask & IDevice.CHANGE_STATE) != 0) {
+                changes.add("CHANGE_STATE");
+            }
+            logger.debug(StringUtils.join(changes, " | "));
+        }
+    }
+
+    static {
+        addDeviceChangeListener(new DeviceStateLogger());
     }
 }

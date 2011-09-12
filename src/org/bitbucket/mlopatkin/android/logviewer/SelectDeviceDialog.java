@@ -70,6 +70,7 @@ public class SelectDeviceDialog extends JDialog {
             dialog = new SelectDeviceDialog(owner);
         }
         dialog.receiver = receiver;
+        dialog.deviceList.clearSelection();
         dialog.setVisible(true);
     }
 
@@ -134,8 +135,14 @@ public class SelectDeviceDialog extends JDialog {
 
     private void onPositiveResult() {
         assert receiver != null;
-        receiver.onDialogResult(this, getSelectedDevice());
-        setVisible(false);
+        IDevice selectedDevice = getSelectedDevice();
+        if (selectedDevice == null || selectedDevice.isOnline()) {
+            receiver.onDialogResult(this, getSelectedDevice());
+            setVisible(false);
+        } else {
+            ErrorDialogsHelper.showError(this, "Can't connect to offline device");
+        }
+
     }
 
     private void onNegativeResult() {
@@ -160,9 +167,7 @@ public class SelectDeviceDialog extends JDialog {
         public DeviceListModel() {
             devices = new ArrayList<IDevice>();
             for (IDevice device : AdbDeviceManager.getAvailableDevices()) {
-                if (device.isOnline()) {
-                    devices.add(device);
-                }
+                devices.add(device);
             }
             AdbDeviceManager.addDeviceChangeListener(this);
         }
@@ -172,10 +177,19 @@ public class SelectDeviceDialog extends JDialog {
             return devices.size();
         }
 
+        private String formatOfflineDevice(String deviceName) {
+            return "<html><i> Offline (" + deviceName + ")</i></html>";
+        }
+
         @Override
         public Object getElementAt(int index) {
             IDevice device = getDevice(index);
-            return AdbDeviceManager.getDeviceDisplayName(device);
+            String deviceName = AdbDeviceManager.getDeviceDisplayName(device);
+            if (device.isOnline()) {
+                return deviceName;
+            } else {
+                return formatOfflineDevice(deviceName);
+            }
         }
 
         public IDevice getDevice(int index) {
@@ -222,14 +236,7 @@ public class SelectDeviceDialog extends JDialog {
         }
 
         private void updateState(IDevice device, int changeMask) {
-            if ((changeMask & IDevice.CHANGE_STATE) != 0) {
-                if (device.isOnline()) {
-                    addDevice(device);
-                } else {
-                    removeDevice(device);
-                }
-            }
-            if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
+            if ((changeMask & (IDevice.CHANGE_STATE | IDevice.CHANGE_BUILD_INFO)) != 0) {
                 fireContentsChanged(DeviceListModel.this, 0, devices.size() - 1);
             }
         }
