@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,6 +28,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -68,14 +71,25 @@ public class ProcessListFrame extends JFrame {
         table.setModel(EMPTY_MODEL);
     }
 
+    private static final List<SortKey> DEFAULT_SORTING = Arrays.asList(new SortKey(
+            ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
+
     public void setSource(DataSource source) {
         assert SwingUtilities.isEventDispatchThread();
+        @SuppressWarnings("unchecked")
+        List<SortKey> oldKeys = (List<SortKey>) table.getRowSorter().getSortKeys();
         reset();
         if (source != null) {
             assert source.getPidToProcessConverter() != null;
 
             model = new ProcessListModel(source.getPidToProcessConverter());
+
             table.setModel(model);
+            if (oldKeys.isEmpty()) {
+                table.getRowSorter().setSortKeys(DEFAULT_SORTING);
+            } else {
+                table.getRowSorter().setSortKeys(oldKeys);
+            }
             updateTimer.start();
         } else {
             if (isVisible()) {
@@ -85,6 +99,9 @@ public class ProcessListFrame extends JFrame {
     }
 
     private ProcessListModel model;
+
+    private static final String[] COLUMN_NAMES = new String[] { "PID", "Process" };
+    private static final Class<?>[] COLUMN_CLASSES = new Class<?>[] { Integer.class, String.class };
 
     @SuppressWarnings("rawtypes")
     private class ProcessListModel extends AbstractTableModel {
@@ -114,13 +131,12 @@ public class ProcessListFrame extends JFrame {
 
         @Override
         public String getColumnName(int column) {
-            switch (column) {
-            case COLUMN_PID:
-                return "pid";
-            case COLUMN_PROCESS:
-                return "Process";
-            }
-            throw new ArrayIndexOutOfBoundsException(column);
+            return COLUMN_NAMES[column];
+        }
+
+        @Override
+        public Class<?> getColumnClass(int column) {
+            return COLUMN_CLASSES[column];
         }
 
         @Override
