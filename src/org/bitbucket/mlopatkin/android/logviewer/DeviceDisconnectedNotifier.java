@@ -19,6 +19,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 
 import com.android.ddmlib.IDevice;
@@ -29,7 +30,7 @@ import com.android.ddmlib.IDevice;
  * 
  */
 public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceListener {
-
+    private static final Logger logger = Logger.getLogger(DeviceDisconnectedNotifier.class);
     private IDevice device;
 
     private DeviceDisconnectedNotifier(IDevice device) {
@@ -56,14 +57,17 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
     }
 
     private void showNotification() {
+        logger.debug("showNotification");
         EventQueue.invokeLater(notificationInvoker);
     }
 
     private Runnable notificationInvoker = new Runnable() {
         @Override
         public void run() {
+            logger.debug("show notification dialog");
             JOptionPane.showMessageDialog(null, "Device is disconnected", "Warning",
                     JOptionPane.WARNING_MESSAGE);
+            logger.debug("close notification dialog");
         }
     };
 
