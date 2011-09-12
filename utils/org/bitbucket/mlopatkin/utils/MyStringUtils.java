@@ -23,6 +23,10 @@ public class MyStringUtils {
 
     public static final int NOT_FOUND = -1;
 
+    public static String escRegexChars(String inStr) {
+        return inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
+    }
+
     public static int indexOfIgnoreCase(String src, String pattern) {
         if (src == null || pattern == null) {
             throw new NullPointerException("Null argument is not allowed, src=" + src

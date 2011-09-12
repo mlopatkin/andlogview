@@ -21,8 +21,9 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
-import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 public class TextHighlightCellRenderer implements DecoratingCellRenderer {
 
@@ -33,26 +34,23 @@ public class TextHighlightCellRenderer implements DecoratingCellRenderer {
             "<span style='color: %s; background-color: %s'>", highlightTextColor,
             highlightBackgroundColor);
     private static final String spanEnd = "</span>";
+    private static final String placeholderBegin = "=====@@@";
+    private static final String placeholderEnd = "@@@=====";
 
-    private String textToSearch;
+    private HighlightStrategy strategy;
 
     @Override
     public void setInnerRenderer(TableCellRenderer renderer) {
         inner = renderer;
     }
 
+    private String escapeHighlighted(String value) {
+        String escaped = StringEscapeUtils.escapeHtml3(value);
+        return escaped.replace(placeholderBegin, spanBegin).replace(placeholderEnd, spanEnd);
+    }
+
     private String highlightMatches(String value) {
-        StringBuilder result = new StringBuilder(value);
-        int pos = MyStringUtils.indexOfIgnoreCase(value, textToSearch);
-        while (pos != MyStringUtils.NOT_FOUND && pos < result.length()) {
-            String val = result.substring(pos, pos + textToSearch.length());
-            result.replace(pos, pos + textToSearch.length(), spanBegin + val + spanEnd);
-            pos += val.length() + spanBegin.length() + spanEnd.length();
-            pos = MyStringUtils.indexOfIgnoreCase(result.toString(), textToSearch, pos);
-        }
-        result.insert(0, "<html>");
-        result.append("</html>");
-        return result.toString();
+        return strategy.highlightOccurences(value);
     }
 
     @Override
@@ -60,18 +58,22 @@ public class TextHighlightCellRenderer implements DecoratingCellRenderer {
             boolean hasFocus, int row, int column) {
         JLabel result = (JLabel) inner.getTableCellRendererComponent(table, value, isSelected,
                 hasFocus, row, column);
-        if (textToSearch != null) {
+        if (strategy != null) {
             int modelColumn = table.convertColumnIndexToModel(column);
             if (modelColumn == LogRecordTableModel.COLUMN_MSG
                     || modelColumn == LogRecordTableModel.COLUMN_TAG) {
                 String valueString = value.toString();
-                result.setText(highlightMatches(valueString));
+                result.setText("<html>" + escapeHighlighted(highlightMatches(valueString))
+                        + "</html>");
             }
         }
         return result;
     }
 
-    public void setTextToHighLight(String textToSearch) {
-        this.textToSearch = textToSearch;
+    public void setHighlightStrategy(HighlightStrategy strategy) {
+        this.strategy = strategy;
+        if (strategy != null) {
+            strategy.setHighlights(placeholderBegin, placeholderEnd);
+        }
     }
 }

@@ -18,15 +18,29 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class RegExpSearcher implements SearchStrategy {
+import org.bitbucket.mlopatkin.utils.MyStringUtils;
+
+public class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     private Pattern pattern;
+    private String replacement;
 
     public RegExpSearcher(String regex) throws PatternSyntaxException {
-        pattern = Pattern.compile(regex);
+        pattern = Pattern.compile("(" + regex + ")");
     }
 
     @Override
     public boolean isStringMatched(String s) {
         return pattern.matcher(s).find();
+    }
+
+    @Override
+    public void setHighlights(String begin, String end) {
+        replacement = MyStringUtils.escRegexChars(begin) + "$1" + MyStringUtils.escRegexChars(end);
+
+    }
+
+    @Override
+    public String highlightOccurences(String text) {
+        return pattern.matcher(text).replaceAll(replacement);
     }
 }
