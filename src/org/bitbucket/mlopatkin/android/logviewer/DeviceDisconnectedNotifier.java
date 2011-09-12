@@ -40,7 +40,7 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
     @Override
     public void deviceDisconnected(IDevice device) {
         if (device == this.device) {
-            showNotification();
+            showNotification(disconnectedInvoker);
             // one-shot
             AdbDeviceManager.removeDeviceChangeListener(this);
         }
@@ -50,24 +50,35 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
     public void deviceChanged(IDevice device, int changeMask) {
         if (device == this.device && (changeMask & IDevice.CHANGE_STATE) != 0) {
             if (!device.isOnline()) {
-                showNotification();
+                showNotification(offlineInvoker);
                 AdbDeviceManager.removeDeviceChangeListener(this);
             }
         }
     }
 
-    private void showNotification() {
+    private void showNotification(Runnable notificationInvoker) {
         logger.debug("showNotification");
         EventQueue.invokeLater(notificationInvoker);
     }
 
-    private Runnable notificationInvoker = new Runnable() {
+    private void showNotificationDialog(String message) {
+        assert EventQueue.isDispatchThread();
+        logger.debug("show notification dialog");
+        JOptionPane.showMessageDialog(null, message, "Warning", JOptionPane.WARNING_MESSAGE);
+        logger.debug("close notification dialog");
+    }
+
+    private Runnable disconnectedInvoker = new Runnable() {
         @Override
         public void run() {
-            logger.debug("show notification dialog");
-            JOptionPane.showMessageDialog(null, "Device is disconnected", "Warning",
-                    JOptionPane.WARNING_MESSAGE);
-            logger.debug("close notification dialog");
+            showNotificationDialog("Device is disconnected");
+        }
+    };
+
+    private Runnable offlineInvoker = new Runnable() {
+        @Override
+        public void run() {
+            showNotificationDialog("Device goes offline");
         }
     };
 
