@@ -15,33 +15,39 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import java.util.regex.PatternSyntaxException;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategy;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
 /**
  * Performs filtering based on the message of the record.
  */
 public class MessageFilter extends AbstractFilter implements LogRecordFilter {
 
-    private String messageText;
+    private SearchStrategy strategy;
+    private String requestText;
 
-    public MessageFilter(String messageText) {
-        this.messageText = messageText;
+    public MessageFilter(String request) throws PatternSyntaxException {
+        this.requestText = request;
+        strategy = SearchStrategyFactory.createSearchStrategy(request);
     }
 
     @Override
     public boolean include(LogRecord record) {
         String message = record.getMessage();
-        return message.contains(messageText);
+        return strategy.isStringMatched(message);
     }
 
     @Override
     public String toString() {
-        return "Message containing '" + messageText + "'";
+        return "Message containing '" + requestText + "'";
     }
 
     @Override
     protected void dumpFilter(FilterData data) {
-        data.message = messageText;
+        data.message = requestText;
     }
 
 }
