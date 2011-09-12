@@ -352,9 +352,12 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         JMenu mnFile = new JMenu("File");
         mnFile.add(acOpenFile);
         mnFile.add(acSaveToFile);
-        mnFile.addSeparator();
-        mnFile.add(acShowBookmarks);
         mainMenu.add(mnFile);
+
+        JMenu mnView = new JMenu("View");
+        mnView.add(acShowBookmarks);
+        mnView.add(acShowProcesses);
+        mainMenu.add(mnView);
 
         JMenu mnAdb = new JMenu("ADB");
         mnAdb.add(acConnectToDevice);
