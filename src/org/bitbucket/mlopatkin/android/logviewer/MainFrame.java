@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -55,6 +56,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
@@ -241,9 +243,16 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         hideSearchField();
-                        if (!searchController.startSearch(instantSearchTextField.getText())) {
-                            logElements.requestFocusInWindow();
-                            showSearchMessage(MESSAGE_NOT_FOUND);
+                        String request = instantSearchTextField.getText();
+                        try {
+                            if (!searchController.startSearch(request)) {
+                                logElements.requestFocusInWindow();
+                                showSearchMessage(MESSAGE_NOT_FOUND);
+                            }
+                        } catch (PatternSyntaxException ex) {
+                            ErrorDialogsHelper.showError(MainFrame.this,
+                                    "%s is not a valid search expression: %s", request,
+                                    SearchStrategyFactory.describeError(request));
                         }
                     }
                 });

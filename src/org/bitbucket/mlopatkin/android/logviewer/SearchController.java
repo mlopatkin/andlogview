@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.util.regex.PatternSyntaxException;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
@@ -36,7 +38,7 @@ public class SearchController {
     private static final int MODE_FORWARD = 1;
     private static final int MODE_BACKWARD = -1;
 
-    public boolean startSearch(String text) {
+    public boolean startSearch(String text) throws PatternSyntaxException {
         strategy = SearchStrategyFactory.createHighlightStrategy(text);
         if (strategy == null) {
             renderer.setHighlightStrategy(null);

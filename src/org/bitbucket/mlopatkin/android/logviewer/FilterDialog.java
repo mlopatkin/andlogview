@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.android.logviewer.FilteringModesPanel.ModeChangedListener;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
 public abstract class FilterDialog extends JDialog {
 
@@ -279,7 +280,14 @@ public abstract class FilterDialog extends JDialog {
     protected boolean isInputValid() {
         try {
             getPids();
-            return true;
+            String request = getMessageText();
+            if (SearchStrategyFactory.isSearchRequestValid(request)) {
+                return true;
+            } else {
+                ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
+                        request, SearchStrategyFactory.describeError(request));
+                return false;
+            }
         } catch (NumberFormatException e) {
             return false;
         }

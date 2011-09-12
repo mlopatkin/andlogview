@@ -43,17 +43,31 @@ public class SearchStrategyFactory {
 
     private static final char REGEX_BOUND_CHAR = '/';
 
+    private static boolean isRegexRequest(String request) {
+        assert request != null;
+        final int length = request.length();
+        if (length > 1) {
+            if (request.charAt(0) == REGEX_BOUND_CHAR
+                    && request.charAt(length - 1) == REGEX_BOUND_CHAR) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String extractRegexRequest(String request) {
+        assert isRegexRequest(request) : request + " is not a regex";
+        return request.substring(1, request.length() - 1);
+    }
+
     public static HighlightStrategy createHighlightStrategy(String request)
             throws PatternSyntaxException {
         if (StringUtils.isNotBlank(request)) {
-            final int length = request.length();
-            if (length > 1) {
-                if (request.charAt(0) == REGEX_BOUND_CHAR
-                        && request.charAt(length - 1) == REGEX_BOUND_CHAR) {
-                    return new RegExpSearcher(request.substring(1, length - 1));
-                }
+            if (isRegexRequest(request)) {
+                return new RegExpSearcher(extractRegexRequest(request));
+            } else {
+                return new IgnoreCaseSearcher(request);
             }
-            return new IgnoreCaseSearcher(request);
         } else {
             return null;
         }
@@ -61,5 +75,38 @@ public class SearchStrategyFactory {
 
     public static SearchStrategy createSearchStrategy(String request) throws PatternSyntaxException {
         return createHighlightStrategy(request);
+    }
+
+    private static boolean isSearchRequestValid(String request, boolean noThrow)
+            throws PatternSyntaxException {
+        if (StringUtils.isBlank(request))
+            return true;
+        if (isRegexRequest(request)) {
+            try {
+                Pattern.compile(extractRegexRequest(request));
+                return true;
+            } catch (PatternSyntaxException e) {
+                if (noThrow) {
+                    return false;
+                } else {
+                    throw e;
+                }
+            }
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean isSearchRequestValid(String request) {
+        return isSearchRequestValid(request, true);
+    }
+
+    public static String describeError(String request) {
+        try {
+            isSearchRequestValid(request, false);
+            return "OK";
+        } catch (PatternSyntaxException e) {
+            return e.getDescription();
+        }
     }
 }
