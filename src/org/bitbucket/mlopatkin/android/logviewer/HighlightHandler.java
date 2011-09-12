@@ -16,10 +16,10 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Color;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.map.ListOrderedMap;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.FilterController.FilteringModeHandler;
@@ -34,8 +34,7 @@ class HighlightHandler implements FilteringModeHandler<Color> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<LogRecordFilter, FilterInfo> filterColors = new ListOrderedMap();
+    private Map<LogRecordFilter, FilterInfo> filterColors = new LinkedHashMap<LogRecordFilter, FilterInfo>();
 
     @Override
     public void addFilter(FilteringMode mode, LogRecordFilter filter, Color data) {
