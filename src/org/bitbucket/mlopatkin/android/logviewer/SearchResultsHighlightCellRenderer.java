@@ -17,26 +17,17 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Component;
 
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class SearchResultsHighlightCellRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
-    private static final String highlightBackgroundColor = "yellow";
-    private static final String highlightTextColor = "red";
-    private static final String spanBegin = String.format(
-            "<span style='color: %s; background-color: %s'>", highlightTextColor,
-            highlightBackgroundColor);
-    private static final String spanEnd = "</span>";
-    private static final String placeholderBegin = "=====@@@";
-    private static final String placeholderEnd = "@@@=====";
-
     private HighlightStrategy strategy;
 
     @Override
@@ -44,39 +35,27 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
         inner = renderer;
     }
 
-    private String escapeHighlighted(String value) {
-        String escaped = StringEscapeUtils.escapeHtml3(value);
-        return escaped.replace(placeholderBegin, spanBegin).replace(placeholderEnd, spanEnd);
-    }
-
-    private String highlightMatches(String value) {
-        return strategy.highlightOccurences(value);
-    }
-
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {
-        Component c = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-                column);
-        if ((c instanceof JLabel)) {
-            JLabel result = (JLabel) c;
-            if (strategy != null) {
-                int modelColumn = table.convertColumnIndexToModel(column);
-                if (modelColumn == LogRecordTableModel.COLUMN_MSG
-                        || modelColumn == LogRecordTableModel.COLUMN_TAG) {
-                    String valueString = value.toString();
-                    result.setText("<html>" + escapeHighlighted(highlightMatches(valueString))
-                            + "</html>");
+        JComponent c = (JComponent) inner.getTableCellRendererComponent(table, value, isSelected,
+                hasFocus, row, column);
+        int modelColumn = table.convertColumnIndexToModel(column);
+        if (modelColumn == LogRecordTableModel.COLUMN_MSG
+                || modelColumn == LogRecordTableModel.COLUMN_TAG) {
+            if (strategy != null && value != null) {
+                String text = value.toString();
+                if (!UiHelper.isTextFit(c, table, row, column, text)) {
+                    TooltipGenerator tooltip = new TooltipGenerator(text);
+                    strategy.highlightOccurences(text, tooltip);
+                    c.setToolTipText(tooltip.getTooltip());
                 }
-            }
-        } else if (c instanceof TextHighlighter) {
-            TextHighlighter th = (TextHighlighter) c;
-            if (strategy != null) {
-                int modelColumn = table.convertColumnIndexToModel(column);
-                if (modelColumn == LogRecordTableModel.COLUMN_MSG
-                        || modelColumn == LogRecordTableModel.COLUMN_TAG) {
-                    strategy.highlightOccurences(value.toString(), th);
+
+                if (c instanceof TextHighlighter) {
+                    TextHighlighter th = (TextHighlighter) c;
+                    strategy.highlightOccurences(text, th);
                 }
+
             }
         }
         return c;
@@ -84,8 +63,5 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
 
     public void setHighlightStrategy(HighlightStrategy strategy) {
         this.strategy = strategy;
-        if (strategy != null) {
-            strategy.setHighlights(placeholderBegin, placeholderEnd);
-        }
     }
 }
