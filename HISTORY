@@ -1,3 +1,13 @@
+version 0.17
+    [+] Regular expression search and filter
+    [+] List of processes
+    [+] Copy lines with a context menu
+    
+    [*] Tooltips for truncated cells
+    [*] Matches are highlighted in tooltips too
+    [*] Several bugs fixed
+    [*] Multiple UI glitches fixed
+    
 version 0.16
     [+] Notification about current connection or opened file
     [+] Menu command to show bookmarks window
