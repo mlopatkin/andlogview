@@ -173,13 +173,19 @@ public class ProcessListFrame extends JFrame {
             fillItems();
             int newSize = getRowCount();
             if (newSize < oldSize) {
-                fireTableRowsUpdated(0, newSize - 1);
+                if (newSize > 0) {
+                    fireTableRowsUpdated(0, newSize - 1);
+                }
                 fireTableRowsDeleted(newSize, oldSize - 1);
             } else if (newSize > oldSize) {
-                fireTableRowsUpdated(0, oldSize - 1);
+                if (oldSize > 0) {
+                    fireTableRowsUpdated(0, oldSize - 1);
+                }
                 fireTableRowsInserted(oldSize, newSize - 1);
             } else {
-                fireTableRowsUpdated(0, newSize - 1);
+                if (newSize > 0) {
+                    fireTableRowsUpdated(0, newSize - 1);
+                }
             }
         }
     }
