@@ -56,18 +56,30 @@ public class TextHighlightCellRenderer implements DecoratingCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {
-        JLabel result = (JLabel) inner.getTableCellRendererComponent(table, value, isSelected,
-                hasFocus, row, column);
-        if (strategy != null) {
-            int modelColumn = table.convertColumnIndexToModel(column);
-            if (modelColumn == LogRecordTableModel.COLUMN_MSG
-                    || modelColumn == LogRecordTableModel.COLUMN_TAG) {
-                String valueString = value.toString();
-                result.setText("<html>" + escapeHighlighted(highlightMatches(valueString))
-                        + "</html>");
+        Component c = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                column);
+        if ((c instanceof JLabel)) {
+            JLabel result = (JLabel) c;
+            if (strategy != null) {
+                int modelColumn = table.convertColumnIndexToModel(column);
+                if (modelColumn == LogRecordTableModel.COLUMN_MSG
+                        || modelColumn == LogRecordTableModel.COLUMN_TAG) {
+                    String valueString = value.toString();
+                    result.setText("<html>" + escapeHighlighted(highlightMatches(valueString))
+                            + "</html>");
+                }
+            }
+        } else if (c instanceof TextHighlighter) {
+            TextHighlighter th = (TextHighlighter) c;
+            if (strategy != null) {
+                int modelColumn = table.convertColumnIndexToModel(column);
+                if (modelColumn == LogRecordTableModel.COLUMN_MSG
+                        || modelColumn == LogRecordTableModel.COLUMN_TAG) {
+                    strategy.highlightOccurences(value.toString(), th);
+                }
             }
         }
-        return result;
+        return c;
     }
 
     public void setHighlightStrategy(HighlightStrategy strategy) {

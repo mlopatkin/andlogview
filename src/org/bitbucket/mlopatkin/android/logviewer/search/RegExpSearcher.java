@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.bitbucket.mlopatkin.android.logviewer.TextHighlighter;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 class RegExpSearcher implements HighlightStrategy, SearchStrategy {
@@ -42,5 +43,11 @@ class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     @Override
     public String highlightOccurences(String text) {
         return pattern.matcher(text).replaceAll(replacement);
+    }
+
+    @Override
+    public void highlightOccurences(String text, TextHighlighter highlighter) {
+        // TODO Auto-generated method stub
+
     }
 }

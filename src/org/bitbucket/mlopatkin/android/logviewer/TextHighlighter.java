@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.search;
+package org.bitbucket.mlopatkin.android.logviewer;
 
-import org.bitbucket.mlopatkin.android.logviewer.TextHighlighter;
+/**
+ *
+ */
+public interface TextHighlighter {
+    void highlightText(int from, int to);
 
-public interface HighlightStrategy extends SearchStrategy {
-    void setHighlights(String begin, String end);
-
-    String highlightOccurences(String text);
-
-    void highlightOccurences(String text, TextHighlighter highlighter);
+    void clearHighlight();
 }

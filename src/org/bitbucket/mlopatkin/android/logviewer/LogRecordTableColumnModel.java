@@ -24,13 +24,11 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.bitbucket.mlopatkin.android.logviewer.widgets.ToolTippedCellRenderer;
-
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     private TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
     private TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
-    private TableCellRenderer messageCellRenderer = new ToolTippedCellRenderer();
+    private TableCellRenderer messageCellRenderer = new HighlightCellRenderer();
     private TableCellRenderer pidCellRender;
 
     static class ColumnInfo {

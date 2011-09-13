@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.logviewer.TextHighlighter;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
@@ -51,4 +52,12 @@ class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
         return result.toString();
     }
 
+    @Override
+    public void highlightOccurences(String text, TextHighlighter highlighter) {
+        int pos = MyStringUtils.indexOfIgnoreCase(text, textToSearch);
+        while (pos != MyStringUtils.NOT_FOUND && pos < text.length()) {
+            highlighter.highlightText(pos, pos + textToSearch.length());
+            pos = MyStringUtils.indexOfIgnoreCase(text, textToSearch, pos + textToSearch.length());
+        }
+    }
 }
