@@ -23,10 +23,11 @@ import java.awt.Toolkit;
 
 import javax.swing.JTextPane;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.BoxView;
 import javax.swing.text.ComponentView;
 import javax.swing.text.Element;
+import javax.swing.text.FlowView;
+import javax.swing.text.FlowView.FlowStrategy;
 import javax.swing.text.IconView;
 import javax.swing.text.LabelView;
 import javax.swing.text.ParagraphView;
@@ -70,19 +71,28 @@ public class StyledLabel extends JTextPane {
         }
     }
 
+    private static final FlowStrategy CROPPING_STRATEGY = new FlowStrategy() {
+        protected int layoutRow(FlowView fv, int rowIndex, int pos) {
+            super.layoutRow(fv, rowIndex, pos);
+            return fv.getEndOffset();
+        }
+    };
+
     private static class NoWrapParagraphView extends ParagraphView {
         public NoWrapParagraphView(Element elem) {
             super(elem);
+            strategy = CROPPING_STRATEGY;
         }
 
         public void layout(int width, int height) {
-            super.layout(Short.MAX_VALUE, height);
+            super.layout(width, height);
         }
 
         @Override
         public void paint(Graphics g, Shape a) {
             super.paint(g, a);
         }
+
     }
 
     private static class CenteredBoxView extends BoxView {
@@ -125,7 +135,21 @@ public class StyledLabel extends JTextPane {
             return fm.stringWidth(ELLIPSIS);
         }
 
-        private boolean isShowEllipsis = false;
+        @Override
+        public int getBreakWeight(int axis, float pos, float len) {
+            len = len - getEllipsisWidth();
+            if (len <= 0) {
+                return BadBreakWeight;
+            }
+            int bw = super.getBreakWeight(axis, pos, len);
+            if (bw != BadBreakWeight) {
+                return GoodBreakWeight;
+            } else {
+                return bw;
+            }
+        }
+
+        private boolean isEllipsisShown;
 
         public View breakView(int axis, int p0, float pos, float len) {
             if (axis == View.X_AXIS) {
@@ -137,10 +161,11 @@ public class StyledLabel extends JTextPane {
                 int p1 = getGlyphPainter().getBoundedPosition(this, p0, pos, l);
                 // else, no break in the region, return a fragment of the
                 // bounded region.
+                isEllipsisShown = true;
                 if (p0 == getStartOffset() && p1 == getEndOffset()) {
                     return this;
                 }
-                isShowEllipsis = true;
+
                 return createFragment(p0, p1);
             }
             return this;
@@ -148,7 +173,7 @@ public class StyledLabel extends JTextPane {
 
         public float getPreferredSpan(int axis) {
             float span = super.getPreferredSpan(axis);
-            if (axis == View.X_AXIS && isShowEllipsis) {
+            if (axis == View.X_AXIS && isEllipsisShown) {
                 span += getEllipsisWidth();
             }
             return span;
@@ -156,7 +181,7 @@ public class StyledLabel extends JTextPane {
 
         public void paint(Graphics g, Shape a) {
             super.paint(g, a);
-            if (isShowEllipsis) {
+            if (isEllipsisShown) {
                 Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
                 int last = (int) (getPreferredSpan(View.X_AXIS) - getEllipsisWidth());
                 Rectangle clip = new Rectangle(alloc.x + last, alloc.y, (int) getEllipsisWidth(),
@@ -178,29 +203,6 @@ public class StyledLabel extends JTextPane {
                 }
                 g.setClip(oldClip);
             }
-        }
-    }
-
-    // Debug routines
-
-    private static void dumpView(View v) {
-        dumpViews(v);
-        System.out.println();
-    }
-
-    private static void dumpViews(View v) {
-        System.out.println(v + " " + getText(v));
-        for (int i = 0; i < v.getViewCount(); ++i) {
-            dumpViews(v.getView(i));
-        }
-    }
-
-    private static String getText(View v) {
-        try {
-            return v.getDocument().getText(v.getStartOffset(),
-                    v.getEndOffset() - v.getStartOffset());
-        } catch (BadLocationException e) {
-            return "";
         }
     }
 }
