@@ -29,6 +29,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
     private TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
     private TableCellRenderer messageCellRenderer = new HighlightCellRenderer();
+    private TableCellRenderer tagCellRenderer = messageCellRenderer;
     private TableCellRenderer pidCellRender;
 
     static class ColumnInfo {
@@ -83,7 +84,8 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addColumnInfo("tid", new ColumnInfo(LogRecordTableModel.COLUMN_TID, "tid", 30, 50));
         addColumnInfo("priority", new ColumnInfo(LogRecordTableModel.COLUMN_PRIORITY, "", 30, 50,
                 priorityCellRenderer));
-        addColumnInfo("tag", new ColumnInfo(LogRecordTableModel.COLUMN_TAG, "Tag", 120));
+        addColumnInfo("tag", new ColumnInfo(LogRecordTableModel.COLUMN_TAG, "Tag", 120,
+                tagCellRenderer));
         addColumnInfo("message", new ColumnInfo(LogRecordTableModel.COLUMN_MSG, "Message", 1000,
                 messageCellRenderer));
     }

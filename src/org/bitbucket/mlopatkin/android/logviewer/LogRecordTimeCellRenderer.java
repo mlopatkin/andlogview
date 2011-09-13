@@ -15,11 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Component;
 import java.util.Date;
 
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
     @Override
@@ -28,12 +31,20 @@ public class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
             super.setValue(null);
             return;
         }
-        if (!(value instanceof Date)) {
-            throw new IllegalArgumentException(
-                    "Incorrect value class passed into LogcatTimeCellRenderer: " + value);
-        }
-        Date dateValue = (Date) value;
-        super.setValue(TimeFormatUtils.convertTimeToString(dateValue));
+        assert value instanceof Date;
+        String strValue = TimeFormatUtils.convertTimeToString((Date) value);
+        super.setValue(strValue);
     }
 
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (UiHelper.isTextFit(this, table, row, column, getText())) {
+            setToolTipText(null);
+        } else {
+            setToolTipText(getText());
+        }
+        return this;
+    }
 }

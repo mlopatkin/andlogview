@@ -43,19 +43,21 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
         int modelColumn = table.convertColumnIndexToModel(column);
         if (modelColumn == LogRecordTableModel.COLUMN_MSG
                 || modelColumn == LogRecordTableModel.COLUMN_TAG) {
-            if (strategy != null && value != null) {
+            if (value != null) {
                 String text = value.toString();
                 if (!UiHelper.isTextFit(c, table, row, column, text)) {
                     TooltipGenerator tooltip = new TooltipGenerator(text);
-                    strategy.highlightOccurences(text, tooltip);
+                    if (strategy != null) {
+                        strategy.highlightOccurences(text, tooltip);
+                    }
                     c.setToolTipText(tooltip.getTooltip());
+                } else {
+                    c.setToolTipText(null);
                 }
-
-                if (c instanceof TextHighlighter) {
+                if (strategy != null) {
                     TextHighlighter th = (TextHighlighter) c;
                     strategy.highlightOccurences(text, th);
                 }
-
             }
         }
         return c;
