@@ -83,16 +83,6 @@ public class StyledLabel extends JTextPane {
             super(elem);
             strategy = CROPPING_STRATEGY;
         }
-
-        public void layout(int width, int height) {
-            super.layout(width, height);
-        }
-
-        @Override
-        public void paint(Graphics g, Shape a) {
-            super.paint(g, a);
-        }
-
     }
 
     private static class CenteredBoxView extends BoxView {
@@ -125,7 +115,7 @@ public class StyledLabel extends JTextPane {
         }
 
         private FontMetrics fm;
-        private static final String ELLIPSIS = "\u2026";
+        private static final String ELLIPSIS = "...";
 
         @SuppressWarnings("deprecation")
         private float getEllipsisWidth() {
