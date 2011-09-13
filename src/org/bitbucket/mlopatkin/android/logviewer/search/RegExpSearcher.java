@@ -15,18 +15,17 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.bitbucket.mlopatkin.android.logviewer.TextHighlighter;
-import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     private Pattern pattern;
-    private String replacement;
 
     public RegExpSearcher(String regex) throws PatternSyntaxException {
-        pattern = Pattern.compile("(" + regex + ")");
+        pattern = Pattern.compile(regex);
     }
 
     @Override
@@ -35,19 +34,12 @@ class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     }
 
     @Override
-    public void setHighlights(String begin, String end) {
-        replacement = MyStringUtils.escRegexChars(begin) + "$1" + MyStringUtils.escRegexChars(end);
-
-    }
-
-    @Override
-    public String highlightOccurences(String text) {
-        return pattern.matcher(text).replaceAll(replacement);
-    }
-
-    @Override
     public void highlightOccurences(String text, TextHighlighter highlighter) {
-        // TODO Auto-generated method stub
-
+        Matcher m = pattern.matcher(text);
+        int pos = 0;
+        while (m.find(pos)) {
+            highlighter.highlightText(m.start(), m.end());
+            pos = m.end();
+        }
     }
 }
