@@ -24,7 +24,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.FilterController.FilteringModeHandler;
 
-class HighlightHandler implements FilteringModeHandler<Color> {
+class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
     private class FilterInfo {
         Color color;
         boolean enabled = true;

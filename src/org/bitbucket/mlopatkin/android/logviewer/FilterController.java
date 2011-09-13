@@ -64,7 +64,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     private FilterChainHandler showHideHandler = new FilterChainHandler();
     private IndexWindowHandler windowHandler = new IndexWindowHandler();
-    private HighlightHandler highlightHandler = new HighlightHandler();
+    private HighlightFilteringModeHandler highlightHandler = new HighlightFilteringModeHandler();
 
     FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.table = table;

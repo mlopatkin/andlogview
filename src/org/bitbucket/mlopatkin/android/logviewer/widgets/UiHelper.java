@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
+import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,6 +24,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -128,5 +130,17 @@ public class UiHelper {
             }
         };
         return result;
+    }
+
+    public static boolean isTextFit(JComponent component, int width, String text) {
+        FontMetrics m = component.getFontMetrics(component.getFont());
+        int textWidth = m.stringWidth(text);
+        return textWidth <= width;
+
+    }
+
+    public static boolean isTextFit(JComponent renderer, JTable table, int row, int column,
+            String text) {
+        return isTextFit(renderer, table.getCellRect(row, column, false).width, text);
     }
 }

@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 
-public class TextHighlightCellRenderer implements DecoratingCellRenderer {
+public class SearchResultsHighlightCellRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
     private static final String highlightBackgroundColor = "yellow";

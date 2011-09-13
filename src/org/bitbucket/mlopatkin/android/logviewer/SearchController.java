@@ -27,7 +27,7 @@ public class SearchController {
     private DecoratingRendererTable table;
     private LogRecordTableModel model;
     private int curRow;
-    private TextHighlightCellRenderer renderer = new TextHighlightCellRenderer();
+    private SearchResultsHighlightCellRenderer renderer = new SearchResultsHighlightCellRenderer();
 
     public SearchController(DecoratingRendererTable table, LogRecordTableModel model) {
         this.table = table;

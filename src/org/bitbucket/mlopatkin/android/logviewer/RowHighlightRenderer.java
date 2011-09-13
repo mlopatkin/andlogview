@@ -28,9 +28,9 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
     private Color backgroundColor = Configuration.ui.backgroundColor();
-    private HighlightHandler colorer;
+    private HighlightFilteringModeHandler colorer;
 
-    public RowHighlightRenderer(HighlightHandler colorer) {
+    public RowHighlightRenderer(HighlightFilteringModeHandler colorer) {
         this.colorer = colorer;
     }
 
