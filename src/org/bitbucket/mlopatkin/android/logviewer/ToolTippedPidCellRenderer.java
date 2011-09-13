@@ -15,7 +15,12 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Component;
+
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
 
@@ -34,5 +39,19 @@ public class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
         } else {
             setToolTipText(null);
         }
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (getToolTipText() == null) {
+            if (UiHelper.isTextFit(this, table, row, column, getText())) {
+                setToolTipText(null);
+            } else {
+                setToolTipText(getText());
+            }
+        }
+        return this;
     }
 }
