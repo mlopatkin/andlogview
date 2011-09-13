@@ -32,6 +32,7 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 import org.bitbucket.mlopatkin.android.logviewer.widgets.StyledLabel;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class HighlightCellRenderer extends StyledLabel implements TableCellRenderer,
         TextHighlighter {
@@ -73,9 +74,16 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
             setForeground(table.getForeground());
         }
         if (value != null) {
-            setText(value.toString());
+            String text = value.toString();
+            if (!UiHelper.isTextFit(this, table, row, column, text)) {
+                setToolTipText(new TooltipGenerator(text).getTooltip());
+            } else {
+                setToolTipText(null);
+            }
+            setText(text);
         } else {
             setText(null);
+            setToolTipText(null);
         }
         return this;
     }
