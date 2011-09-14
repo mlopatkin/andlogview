@@ -79,5 +79,7 @@
 
     <target name="clean">
         <delete dir="${out-dir}" />
+    	<delete file="logview.jar" />
+    	<delete file="logview.zip" />
     </target>
 </project>
