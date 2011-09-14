@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ "$ANDROID_HOME" == "" ]; then
+    DDMLIB=lib/ddmlib.jar
+else
+    DDMLIB=$ANDROID_HOME/tools/lib/ddmlib.jar
+fi	
+
+CLASSES=$DDMLIB:lib/logview.jar
+
+java -cp $CLASSES org.bitbucket.mlopatkin.android.logviewer.Main $@ 
