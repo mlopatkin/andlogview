@@ -31,6 +31,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
+import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.StyledLabel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 

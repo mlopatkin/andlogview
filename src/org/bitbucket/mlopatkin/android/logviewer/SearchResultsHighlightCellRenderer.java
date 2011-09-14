@@ -22,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
+import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
