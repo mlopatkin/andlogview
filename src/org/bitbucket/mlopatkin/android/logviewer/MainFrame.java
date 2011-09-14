@@ -60,8 +60,8 @@ import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -364,7 +364,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         mnAdb.addSeparator();
         mnAdb.add(acResetLogs);
         mnAdb.add(acChangeConfiguration);
-        mnAdb.add(acShowProcesses);
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
