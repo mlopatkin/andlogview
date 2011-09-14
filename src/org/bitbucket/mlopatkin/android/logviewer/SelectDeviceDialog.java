@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
@@ -40,8 +41,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedExcepti
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class SelectDeviceDialog extends JDialog {
 
@@ -131,6 +132,7 @@ public class SelectDeviceDialog extends JDialog {
                 buttonPane.add(cancelButton);
             }
         }
+        updater.start();
     }
 
     private void onPositiveResult() {
@@ -255,4 +257,14 @@ public class SelectDeviceDialog extends JDialog {
 
     }
 
+    private static final int UPDATE_DELAY = 500;
+    private Timer updater = new Timer(UPDATE_DELAY, new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (isVisible()) {
+                deviceList.repaint();
+            }
+        }
+    });
 }
