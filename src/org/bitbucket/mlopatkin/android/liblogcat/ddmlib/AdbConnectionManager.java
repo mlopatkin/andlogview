@@ -39,9 +39,8 @@ public class AdbConnectionManager {
         // hack below - there is no explicit way to check if the bridge was
         // created succesfully
         try {
-            return (Boolean) FieldUtils.readField(
-                    FieldUtils.getDeclaredField(AndroidDebugBridge.class, "mStarted", true), adb,
-                    true);
+            return (Boolean) FieldUtils.readField(FieldUtils.getDeclaredField(
+                    AndroidDebugBridge.class, "mStarted", true), adb, true);
         } catch (IllegalAccessException e) {
             logger.fatal("The DDMLIB is unsupported", e);
             throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: "
@@ -56,7 +55,7 @@ public class AdbConnectionManager {
             if (System.getProperty("logview.debug.ddmlib") != null) {
                 DdmPreferences.setLogLevel("debug");
             }
-
+            logger.debug("ADB library initialization");
             AndroidDebugBridge.init(false);
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
