@@ -242,11 +242,14 @@ public class AdbDataSource implements DataSource {
     private class AdbPidToProcessConverter {
 
         private final String PS_COMMAND_LINE = Configuration.adb.psCommandLine();
+        private final String NO_INFO = "No info available";
 
         private Map<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
             @Override
             public String get(Object key) {
-                if (!containsKey(key)) {
+                String r = putIfAbsent((Integer) key, NO_INFO);
+                if (r == null) {
+                    logger.debug("missed key" + key);
                     scheduleUpdate();
                 }
                 return super.get(key);
@@ -259,13 +262,14 @@ public class AdbDataSource implements DataSource {
 
         volatile private Future<?> result;
 
-        private void scheduleUpdate() {
+        private synchronized void scheduleUpdate() {
             if (result == null || result.isDone()) {
                 ShellInputStream in = new ShellInputStream();
                 BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
                 AdbShellCommand command = new AdbShellCommand(PS_COMMAND_LINE, in);
                 result = backgroundUpdater.submit(updateTask);
                 shellCommandExecutor.execute(command);
+                logger.debug("update scheduled");
             }
         }
 
