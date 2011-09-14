@@ -70,6 +70,7 @@
 				<include name="README"/>
 				<include name="LICENSE"/>
 				<include name="logview.bat"/>
+				<include name="logview"/>
 			</zipfileset>
 			<zipfileset dir="." includes="logview.jar" fullpath="lib/logview.jar"/>
 			<zipfileset dir="${lib.dir}" includes="ddmlib.jar" fullpath="lib/ddmlib.jar"/>
