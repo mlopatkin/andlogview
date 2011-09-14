@@ -118,8 +118,8 @@ public class UiHelper {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                ActionEvent newEvent = new ActionEvent(c, e.getID(), actionKey, e.getWhen(),
-                        e.getModifiers());
+                ActionEvent newEvent = new ActionEvent(c, e.getID(), actionKey, e.getWhen(), e
+                        .getModifiers());
                 baseAction.actionPerformed(newEvent);
             }
 
@@ -139,8 +139,15 @@ public class UiHelper {
 
     }
 
+    private static final int DEFAULT_PADDING_PX = 3;
+
     public static boolean isTextFit(JComponent renderer, JTable table, int row, int column,
             String text) {
-        return isTextFit(renderer, table.getCellRect(row, column, false).width, text);
+        return isTextFit(renderer, table, row, column, text, DEFAULT_PADDING_PX);
+    }
+
+    public static boolean isTextFit(JComponent renderer, JTable table, int row, int column,
+            String text, int padding) {
+        return isTextFit(renderer, table.getCellRect(row, column, false).width - padding, text);
     }
 }
