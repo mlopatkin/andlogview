@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -66,7 +67,10 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     private IndexWindowHandler windowHandler = new IndexWindowHandler();
     private HighlightFilteringModeHandler highlightHandler = new HighlightFilteringModeHandler();
 
-    FilterController(DecoratingRendererTable table, LogRecordTableModel tableModel) {
+    private Frame main;
+
+    FilterController(Frame main, DecoratingRendererTable table, LogRecordTableModel tableModel) {
+        this.main = main;
         this.table = table;
         this.tableModel = tableModel;
         rowSorter = new SortingDisableSorter<LogRecordTableModel>(tableModel);
@@ -153,7 +157,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     }
 
     public void startFilterCreationDialog() {
-        CreateFilterDialog.startCreateFilterDialog(this);
+        CreateFilterDialog.startCreateFilterDialog(main, this);
     }
 
     void setPanel(FilterPanel panel) {
@@ -168,7 +172,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
         Object data = getHandler(mode).getData(mode, filter);
-        EditFilterDialog.startEditFilterDialog(mode, filter, this, data);
+        EditFilterDialog.startEditFilterDialog(main, mode, filter, this, data);
     }
 
     @Override

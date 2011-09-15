@@ -162,7 +162,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         scrollController = new AutoScrollController(logElements, recordsModel);
-        filterController = new FilterController(logElements, recordsModel);
+        filterController = new FilterController(this, logElements, recordsModel);
         bookmarksController = new BookmarksController(logElements, recordsModel, mapper,
                 filterController);
         new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,

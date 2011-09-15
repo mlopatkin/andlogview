@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Color;
+import java.awt.Frame;
 
 import org.bitbucket.mlopatkin.android.liblogcat.filters.FilterToText;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
@@ -30,8 +31,9 @@ public class EditFilterDialog extends FilterDialog {
     private LogRecordFilter filter;
     private FilteringMode mode;
 
-    protected EditFilterDialog(FilteringMode mode, LogRecordFilter filter,
+    protected EditFilterDialog(Frame owner, FilteringMode mode, LogRecordFilter filter,
             DialogResultReceiver resultReceiver, Object data) {
+        super(owner);
         setTitle("Edit filter");
         this.receiver = resultReceiver;
         this.filter = filter;
@@ -63,8 +65,8 @@ public class EditFilterDialog extends FilterDialog {
         setVisible(false);
     }
 
-    public static void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter,
-            DialogResultReceiver resultReceiver, Object data) {
+    public static void startEditFilterDialog(Frame owner, FilteringMode mode,
+            LogRecordFilter filter, DialogResultReceiver resultReceiver, Object data) {
         if (filter == null) {
             throw new NullPointerException("Filter should be not null");
         }
@@ -74,7 +76,7 @@ public class EditFilterDialog extends FilterDialog {
         if (mode == null) {
             throw new NullPointerException("mode should be not null");
         }
-        EditFilterDialog dialog = new EditFilterDialog(mode, filter, resultReceiver, data);
+        EditFilterDialog dialog = new EditFilterDialog(owner, mode, filter, resultReceiver, data);
         dialog.setVisible(true);
     }
 }
