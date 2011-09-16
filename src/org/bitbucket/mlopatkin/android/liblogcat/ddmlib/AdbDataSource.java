@@ -249,7 +249,6 @@ public class AdbDataSource implements DataSource {
             public String get(Object key) {
                 String r = putIfAbsent((Integer) key, NO_INFO);
                 if (r == null) {
-                    logger.debug("missed key" + key);
                     scheduleUpdate();
                 }
                 return super.get(key);
@@ -269,7 +268,6 @@ public class AdbDataSource implements DataSource {
                 AdbShellCommand command = new AdbShellCommand(PS_COMMAND_LINE, in);
                 result = backgroundUpdater.submit(updateTask);
                 shellCommandExecutor.execute(command);
-                logger.debug("update scheduled");
             }
         }
 
