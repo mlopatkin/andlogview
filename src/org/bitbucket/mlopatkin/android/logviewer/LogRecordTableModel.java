@@ -17,7 +17,6 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -92,18 +91,9 @@ public class LogRecordTableModel extends AbstractTableModel {
 
     public void addRecord(LogRecord record) {
         assert EventQueue.isDispatchThread();
-        int pos = Collections.binarySearch(records, record);
-        if (pos < 0) {
-            pos = -(pos + 1);
-        }
+        int pos = MyListUtils.getUpperBoundPos(records, record);
         records.add(pos, record);
         fireTableRowsInserted(pos, pos);
-    }
-
-    public void addRecordToEnd(LogRecord record) {
-        assert EventQueue.isDispatchThread();
-        records.add(record);
-        fireTableRowsInserted(records.size() - 1, records.size() - 1);
     }
 
     public LogRecord getRowData(int row) {
