@@ -1,3 +1,8 @@
+version 0.17.1
+    [*] Scrolling if there are many filters
+    [*] Dialogs are shown over the main window after alt-tab
+    [*] Filtering process list from logging-related stuff 
+    
 version 0.17
     [+] Regular expression search and filter
     [+] List of processes

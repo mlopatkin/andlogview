@@ -37,7 +37,7 @@ import com.android.ddmlib.IDevice;
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
-    public static final String APP_VERSION = "0.17";
+    public static final String APP_VERSION = "0.17.1";
 
     private DataSource initialSource;
     private MainFrame window;
