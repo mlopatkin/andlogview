@@ -15,61 +15,79 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.JViewport;
 
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 class FilterPanel extends JPanel {
 
     private FilterController controller;
     private Map<LogRecordFilter, FilterButton> buttons = new HashMap<LogRecordFilter, FilterButton>();
 
+    private static final int SEPARATOR_HEIGHT = 42;
+    private static final int SEPARATOR_WIDTH = 5;
+    private static final int SCROLL_BUTTON_WIDTH = 26;
+
     public FilterPanel(FilterController controller) {
         this.controller = controller;
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         controller.setPanel(this);
-        UiHelper.addDoubleClickListener(this, new FilterPanelClickListener());
 
-        ((FlowLayout) getLayout()).setAlignment(FlowLayout.LEFT);
-
-        JButton addFilter = new JButton(ADD_ICON);
-        addFilter.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                FilterPanel.this.controller.startFilterCreationDialog();
-            }
-        });
+        JButton addFilter = new JButton(acCreateFilter);
         addFilter.setToolTipText("Add new filter");
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
         add(addFilter);
-    }
-
-    private class FilterPanelClickListener implements DoubleClickListener {
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            controller.startFilterCreationDialog();
-        }
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(btScrollLeft);
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        content = new JPanel();
+        content.setBorder(UiHelper.NO_BORDER);
+        ((FlowLayout) content.getLayout()).setAlignment(FlowLayout.LEFT);
+        JScrollPane scrollPane = new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(UiHelper.NO_BORDER);
+        add(scrollPane);
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(btScrollRight);
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        contentViewport = scrollPane.getViewport();
+        this.addComponentListener(resizeListener);
+        UiHelper.addDoubleClickAction(this, acCreateFilter);
+        UiHelper.addDoubleClickAction(content, acCreateFilter);
+        UiHelper.setWidths(btScrollLeft, SCROLL_BUTTON_WIDTH);
+        UiHelper.setWidths(btScrollRight, SCROLL_BUTTON_WIDTH);
     }
 
     public void addFilterButton(FilteringMode mode, LogRecordFilter filter) {
         FilterButton button = new FilterButton(mode, filter);
-        add(button);
+        content.add(button);
         menuHandler.addPopup(button);
         buttons.put(filter, button);
         validate();
@@ -79,7 +97,7 @@ class FilterPanel extends JPanel {
         FilterButton button = buttons.get(filter);
         buttons.remove(filter);
         if (button != null) {
-            remove(button);
+            content.remove(button);
         }
         revalidate();
         repaint();
@@ -96,6 +114,8 @@ class FilterPanel extends JPanel {
     private static final ImageIcon FILTER_ICON = new ImageIcon(
             getResource("/icons/system-search.png"));
     private static final ImageIcon ADD_ICON = new ImageIcon(getResource("/icons/list-add.png"));
+    private static final ImageIcon NEXT_ICON = new ImageIcon(getResource("/icons/go-next.png"));
+    private static final ImageIcon PREV_ICON = new ImageIcon(getResource("/icons/go-previous.png"));
 
     private class FilterButton extends JToggleButton implements ActionListener {
 
@@ -119,6 +139,11 @@ class FilterPanel extends JPanel {
             } else {
                 controller.disableFilter(mode, filter);
             }
+        }
+
+        @Override
+        public String toString() {
+            return filter.toString() + " " + super.toString();
         }
     }
 
@@ -169,4 +194,83 @@ class FilterPanel extends JPanel {
     }
 
     private PopupMenuHandler menuHandler = new PopupMenuHandler();
+    private JPanel content;
+    private JViewport contentViewport;
+    private int leftmostButton = -1;
+    private int rightmostButton = -1;
+
+    private void computeButtonIndices() {
+        Rectangle viewportRect = contentViewport.getBounds();
+        Rectangle contentsRect = content.getBounds();
+        viewportRect.x -= contentsRect.x;
+        viewportRect.y -= contentsRect.y;
+        int cur = 0;
+        leftmostButton = -1;
+        rightmostButton = -1;
+        for (Component button : content.getComponents()) {
+            Rectangle buttonRect = button.getBounds();
+            if (viewportRect.contains(buttonRect)) {
+                if (leftmostButton < 0) {
+                    leftmostButton = cur;
+                }
+                rightmostButton = cur;
+            }
+            ++cur;
+        }
+    }
+
+    private void scrollTo(int i) {
+        Component button = content.getComponent(i);
+        content.scrollRectToVisible(button.getBounds());
+        updateScrollState();
+    }
+
+    private Action acScrollLeft = new AbstractAction("", PREV_ICON) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            computeButtonIndices();
+            if (leftmostButton > 0) {
+                scrollTo(leftmostButton - 1);
+            }
+        }
+    };
+
+    private Action acScrollRight = new AbstractAction("", NEXT_ICON) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            computeButtonIndices();
+            if (rightmostButton < content.getComponentCount() - 1) {
+                scrollTo(rightmostButton + 1);
+            }
+        }
+    };
+
+    private JButton btScrollLeft = new JButton(acScrollLeft);
+    private JButton btScrollRight = new JButton(acScrollRight);
+
+    private void updateScrollState() {
+        computeButtonIndices();
+        boolean canScrollLeft = leftmostButton > 0;
+        boolean canScrollRight = rightmostButton < content.getComponentCount() - 1;
+        boolean canScroll = canScrollLeft | canScrollRight;
+
+        acScrollLeft.setEnabled(canScrollLeft);
+        acScrollRight.setEnabled(canScrollRight);
+
+        btScrollRight.setVisible(canScroll);
+        btScrollLeft.setVisible(canScroll);
+    }
+
+    private ComponentListener resizeListener = new ComponentAdapter() {
+        public void componentResized(ComponentEvent e) {
+            updateScrollState();
+        };
+    };
+
+    private Action acCreateFilter = new AbstractAction("", ADD_ICON) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            controller.startFilterCreationDialog();
+        }
+    };
 }

@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -26,6 +27,8 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -92,6 +95,20 @@ public class UiHelper {
         });
     }
 
+    public static void addDoubleClickAction(JComponent component, final Action action) {
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
+                    action.actionPerformed(new ActionEvent(e.getSource(),
+                            ActionEvent.ACTION_PERFORMED, (String) action
+                                    .getValue(Action.ACTION_COMMAND_KEY), e.getWhen(), e
+                                    .getModifiers()));
+                }
+            }
+        });
+    }
+
     /**
      * Creates a wrapper around an existing action of the component to be used
      * in menus.
@@ -150,4 +167,15 @@ public class UiHelper {
             String text, int padding) {
         return isTextFit(renderer, table.getCellRect(row, column, false).width - padding, text);
     }
+
+    public static final Border NO_BORDER = new EmptyBorder(0, 0, 0, 0);
+
+    public static void setWidths(JComponent component, int width) {
+        Dimension dim = component.getPreferredSize();
+        dim.width = width;
+        component.setPreferredSize(dim);
+        component.setMaximumSize(dim);
+        component.setMinimumSize(dim);
+    }
+
 }
