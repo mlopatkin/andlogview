@@ -130,7 +130,12 @@ public class LogRecord implements Comparable<LogRecord> {
      */
     @Override
     public int compareTo(LogRecord o) {
-        return getTime().compareTo(o.getTime());
+        int timeCompare = getTime().compareTo(o.getTime());
+        if (timeCompare == 0) {
+            return getBuffer().compareTo(o.getBuffer());
+        } else {
+            return timeCompare;
+        }
     };
 
 }
