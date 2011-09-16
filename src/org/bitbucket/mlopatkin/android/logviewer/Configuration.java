@@ -130,6 +130,10 @@ public class Configuration {
             }
             return buffers_.contains(buffer);
         }
+
+        public static boolean hideLoggingProcesses() {
+            return parseBoolean(PREFIX + "hide_logging_processes", true);
+        }
     }
 
     public static class adb {
@@ -166,8 +170,8 @@ public class Configuration {
         }
 
         public static void showSetupDialog(boolean value) {
-            instance.properties.setProperty(PREFIX + "show_setup_dialog",
-                    BooleanUtils.toStringTrueFalse(value));
+            instance.properties.setProperty(PREFIX + "show_setup_dialog", BooleanUtils
+                    .toStringTrueFalse(value));
         }
     }
 

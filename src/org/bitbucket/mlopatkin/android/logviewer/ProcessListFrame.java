@@ -20,18 +20,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.RowSorter.SortKey;
+import javax.swing.RowFilter;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
@@ -39,6 +42,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 
@@ -94,6 +98,11 @@ public class ProcessListFrame extends JFrame {
                 table.getRowSorter().setSortKeys(DEFAULT_SORTING);
             } else {
                 table.getRowSorter().setSortKeys(oldKeys);
+            }
+            if (Configuration.ui.hideLoggingProcesses()) {
+                TableRowSorter<ProcessListModel> sorter = (TableRowSorter<ProcessListModel>) table
+                        .getRowSorter();
+                sorter.setRowFilter(new ProcessesRowFilter());
             }
             updateTimer.start();
         } else {
@@ -213,5 +222,26 @@ public class ProcessListFrame extends JFrame {
             column(ProcessListModel.COLUMN_PID, 50).setMaxWidth(200);
             column(ProcessListModel.COLUMN_PROCESS, 100);
         }
+    }
+
+    private static class ProcessesRowFilter extends RowFilter<ProcessListModel, Integer> {
+
+        private static final Set<String> HIDDEN_PROCESSES = new HashSet<String>();
+        static {
+            HIDDEN_PROCESSES.add("ps");
+            HIDDEN_PROCESSES.add("logcat");
+            HIDDEN_PROCESSES.add("/system/bin/sh");
+            HIDDEN_PROCESSES.add("No info available");
+        }
+
+        @Override
+        public boolean include(
+                javax.swing.RowFilter.Entry<? extends ProcessListModel, ? extends Integer> entry) {
+            ProcessListModel model = entry.getModel();
+            int row = entry.getIdentifier();
+            String processName = (String) model.getValueAt(row, ProcessListModel.COLUMN_PROCESS);
+            return !HIDDEN_PROCESSES.contains(processName);
+        }
+
     }
 }
