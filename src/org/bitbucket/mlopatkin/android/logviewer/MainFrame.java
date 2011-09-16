@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
@@ -60,8 +61,8 @@ import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -536,7 +537,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                 for (int i = 0; i < rowCount; ++i) {
                     LogRecord record = recordsModel.getRowData(logElements
                             .convertRowIndexToModel(i));
-                    out.println(record);
+                    out.println(LogRecordFormatter.formatAppropriate(record));
                 }
             } finally {
                 out.close();
