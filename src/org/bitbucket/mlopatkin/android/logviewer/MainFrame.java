@@ -55,7 +55,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
@@ -371,9 +370,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         bufferMenu = new BufferFilterMenu(mnFilters, filterController);
         mainMenu.add(mnFilters);
 
-        JMenu mnDebug = new JMenu("Debug");
-        mnDebug.add(acDebugFilters);
-        mainMenu.add(mnDebug);
         setJMenuBar(mainMenu);
     }
 
@@ -562,16 +558,4 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     void setRecentDir(File dir) {
         recentDir = dir;
     }
-
-    private Action acDebugFilters = new AbstractAction("Create 1..10 filters") {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            for (int i = 1; i < 10; ++i) {
-                filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(Integer
-                        .toString(i)));
-            }
-
-        }
-    };
 }
