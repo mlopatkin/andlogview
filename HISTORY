@@ -2,6 +2,7 @@ version 0.17.2
     [*] Ordering of the lines was reworked to be as natural as possible
     [*] Logs are now saved in native adb format
     [*] Fixed crash when opening ill-formated logfile
+    [*] Added notification for the user on uncaught exceptions
     
 version 0.17.1
     [*] Scrolling if there are many filters

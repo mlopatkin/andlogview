@@ -31,6 +31,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 import com.android.ddmlib.IDevice;
 
@@ -128,6 +129,12 @@ public class Main {
         public void uncaughtException(Thread t, Throwable e) {
             try {
                 logger.error("Uncaught exception in " + t.getName(), e);
+                ErrorDialogsHelper.showError(
+                        null,
+                        "<html>Unhandled exception occured. Please collect log file at<br>"
+                                + MyStringUtils.joinPath(System.getProperty("java.io.tmpdir"),
+                                        "logview.log") + "<br>and send it to the authors, "
+                                + "then restart the program");
             } catch (Throwable ex) {
                 // bad idea to log something if we already failed with logging
                 // logger.error("Exception in exception handler", ex);
