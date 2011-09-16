@@ -15,12 +15,11 @@
  */
 package org.bitbucket.mlopatkin.utils;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.bitbucket.mlopatkin.utils.ListTestUtils.assertListEquals;
+import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,17 +29,17 @@ public class MyListUtilsTest {
 
     @Test
     public void testMergeOrdered_emptyBoth() {
-        genericTest(MyListUtilsTest.<Integer> list(), MyListUtilsTest.<Integer> list(), 0);
+        genericTest(ListTestUtils.<Integer> list(), ListTestUtils.<Integer> list(), 0);
     }
 
     @Test
     public void testMergeOrdered_emptyBase() {
-        genericTest(MyListUtilsTest.<Integer> list(), list(3, 4, 5), 0);
+        genericTest(ListTestUtils.<Integer> list(), list(3, 4, 5), 0);
     }
 
     @Test
     public void testMergeOrdered_emptyElems() {
-        genericTest(list(3, 4, 5), MyListUtilsTest.<Integer> list(), 3);
+        genericTest(list(3, 4, 5), ListTestUtils.<Integer> list(), 3);
     }
 
     @Test
@@ -102,28 +101,5 @@ public class MyListUtilsTest {
         int resultPos = MyListUtils.mergeOrdered(base, elems);
         assertListEquals(result, base);
         assertEquals(expectedResultPos, resultPos);
-    }
-
-    private static <T> void assertListEquals(List<T> expected, List<T> actual) {
-        if (expected == null) {
-            if (actual == null) {
-                return;
-            } else {
-                fail("null expected but found non-null");
-            }
-        }
-        if (expected != null && actual == null) {
-            fail("Non-null expected but found null");
-        }
-        Object[] expecteds = expected.toArray(), actuals = actual.toArray();
-        assertArrayEquals(expecteds, actuals);
-    }
-
-    private static <T> ArrayList<T> list(T... args) {
-        return new ArrayList<T>(Arrays.asList(args));
-    }
-
-    private static <T> ArrayList<T> list() {
-        return new ArrayList<T>();
     }
 }

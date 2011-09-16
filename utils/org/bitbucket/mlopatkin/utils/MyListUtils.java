@@ -93,4 +93,8 @@ public class MyListUtils {
         }
         return firstInsertedIndex;
     }
+
+    public static <T extends Comparable<? super T>> int getUpperBoundPos(List<T> items, T value) {
+        return 0;
+    }
 }
