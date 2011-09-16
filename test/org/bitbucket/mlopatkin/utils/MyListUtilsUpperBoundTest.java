@@ -18,7 +18,9 @@ package org.bitbucket.mlopatkin.utils;
 import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -162,6 +164,22 @@ public class MyListUtilsUpperBoundTest {
     public void testGetUpperBoundPos_manyItemsEnd() {
         List<Integer> items = list(1, 2, 3, 4, 4, 5, 5, 5, 5, 5);
         int value = 6;
+        int expected = reliableGetUpperBound(items, value);
+        int result = MyListUtils.getUpperBoundPos(items, value);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetUpperBoundPos_randomTest() {
+        final int N = 1000;
+        final int MAX = 100;
+        Random rnd = new Random();
+        List<Integer> items = list();
+        for (int i = 0; i < N; ++i) {
+            items.add(rnd.nextInt(MAX));
+        }
+        Collections.sort(items);
+        int value = rnd.nextInt(MAX);
         int expected = reliableGetUpperBound(items, value);
         int result = MyListUtils.getUpperBoundPos(items, value);
         assertEquals(expected, result);
