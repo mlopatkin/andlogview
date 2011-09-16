@@ -31,13 +31,14 @@ public interface LogRecordDataSourceListener {
      * created earlier than the record A.
      * 
      * @param record
-     *            a new record
+     *            a non-null new record
      */
     void onNewRecord(LogRecord record);
 
     /**
      * Called when the {@link DataSource} sends all containing data to the
-     * listener and guarantees that there never be any more.
+     * listener and guarantees that there never be any more. The list supplied
+     * cannot be null or contain nulls.
      * 
      * @param records
      *            list of records sorted by time in ascending order

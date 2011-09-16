@@ -84,6 +84,7 @@ public class BufferedListener implements LogRecordDataSourceListener {
 
     @Override
     public void onNewRecord(final LogRecord record) {
+        assert record != null;
         switch (policy) {
         case IMMEDIATE:
             sendRecordImmediate(record);

@@ -47,6 +47,8 @@ public class LogRecordStream {
                 LogRecord record = LogRecordParser.parseThreadTime(kind, line);
                 if (record != null) {
                     return record;
+                } else {
+                    logger.debug("Null record: " + line);
                 }
                 line = in.readLine();
             }

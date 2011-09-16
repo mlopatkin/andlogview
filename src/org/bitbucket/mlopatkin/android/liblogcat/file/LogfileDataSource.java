@@ -58,7 +58,19 @@ public class LogfileDataSource implements DataSource {
         while (line != null) {
             if (!LogRecordParser.isLogBeginningLine(line) && !StringUtils.isBlank(line)) {
                 LogRecord record = strategy.parse(DEFAULT_BUFFER, line);
-                records.add(record);
+                // sometimes we cannot handle the line well: if we didn't guess
+                // the log type correctly or if there is some weird formatting
+                // (probably binary output)
+
+                // in the first case to stop and throw may be better but there
+                // is no reliable way to distinguish these two cases
+                // in the second case it is obviously better to ignore these
+                // weird lines
+                if (record != null) {
+                    records.add(record);
+                } else {
+                    logger.debug("Null record: " + line);
+                }
             }
             line = in.readLine();
         }
