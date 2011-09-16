@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.utils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -94,7 +95,36 @@ public class MyListUtils {
         return firstInsertedIndex;
     }
 
+    /**
+     * Returns the position where {@code value} should be inserted into
+     * {@code items}. After that {@code items} should remain sorted and
+     * {@code value} should be inserted after all equivalent elements already
+     * presented in the {@code items}, if any.
+     * 
+     * @param items
+     *            non-{@code null} sorted list
+     * @param value
+     *            to be inserted into list
+     * @return position in which {@code value} should be inserted into
+     *         {@code items} using {@link List#add(int, Object)}
+     */
     public static <T extends Comparable<? super T>> int getUpperBoundPos(List<T> items, T value) {
-        return 0;
+        if (items.isEmpty()) {
+            return 0;
+        }
+        int pos = Collections.binarySearch(items, value);
+        if (pos < 0) {
+            return -(pos + 1);
+        }
+        T item = items.get(pos);
+        while (value.compareTo(item) == 0) {
+            ++pos;
+            if (pos < items.size()) {
+                item = items.get(pos);
+            } else {
+                break;
+            }
+        }
+        return pos;
     }
 }

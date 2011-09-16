@@ -176,6 +176,6 @@ public class MyListUtilsUpperBoundTest {
                 break;
             }
         }
-        return value;
+        return pos;
     }
 }
