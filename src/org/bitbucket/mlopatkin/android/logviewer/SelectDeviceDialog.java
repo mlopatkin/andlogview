@@ -41,8 +41,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedExcepti
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
-import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
 
 public class SelectDeviceDialog extends JDialog {
 
@@ -219,9 +219,7 @@ public class SelectDeviceDialog extends JDialog {
             EventQueue.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (device.isOnline()) {
-                        addDevice(device);
-                    }
+                    addDevice(device);
                 }
             });
         }
