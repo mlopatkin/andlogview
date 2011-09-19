@@ -1,56 +1,67 @@
 https://bitbucket.org/mlopatkin/android-log-viewer
 
-Android log viewer is the tool to simplify analysis of the Android logs. It allows filtering
-the logs using the number of filters. This tool requires Java Runtime Environment 6 to run.
+Android log viewer is the tool to simplify analysis of the Android logs.
 
-Setup:
-Java 6 is required. You need javaw somewhere in your PATH. If you are using some
-custom SDK you might consider switching to its ADB libraries. You should specify
-ANDROID_HOME variable containing the path to your SDK to do that.
+FEATURES
 
-Available filters:
-    - by tag(s)
-    - by PID(s)
-    - entries containing specified text in message
-    - by priority
-    - by log type (main, events, radio, etc)
+	- Display logs from a device or an emulator 
+	- Display saved logs and dumpstate files 
+	- Search in the logs using regex if needed 
+	- Bookmarks 
+	- Filter log lines by tag, PID, log priority, message content 
+	- Filtered lines can be hidden, highlighted or shown in a separate window 
+	- Display any avaliable buffers: main, system, events, radio 
+	- Save filtered lines 
+	- Display process list
 
-Available actions on filtered lines:
-    - show only matching lines
-    - highlight matching lines
-    - hide matching lines
-    - show index window
+INSTALLATION
 
-The tool can parse adb output or a dumpstate file specified in the command line. There is also 
-ability to parse simple log files, for example output of "adb logcat -d > file.txt".  
+Requirements:
+	- JRE 6 
+	- Android SDK (to work with a device or an emulator) 
 
-Full-text search
-    1. press Ctrl+F to show search field
-    2. press Enter to start searching
-    3. press F3 to search for the next occurence
-Searching is performed in tags and messages starting from the first selected row. 
+Unpack a zip archive to any folder. 
 
-Keys:
-    Ctrl+F - show search field
-    Enter - start searching
-    Esc - clear search results
-    F3 - find next
-    Shift+F3 - find prev
-    Ctrl+P - show bookmarks
-Tips:
-    - right-click on a log entry shows popup menu that allows fast hiding messages with entry's PID or tag.
-    - lines can be pinned in separate window and used as bookmarks - double click on line scrolls main window to it
-    - name of the process is shown in PID tooltip in dumpstate or ADB mode    
+Use the OS-specific script to launch the logviewer:
+	- logview.bat (Windows) 
+	- logview (Linux) 
+Both scripts expect the javaw/java to be on your PATH. 
 
-Useful configuration file parameters:
-This tool can be configured with the properties file. It searches for logview.properties file in the current folder.
+OVERVIEW: FILTERS
 
-Here is brief overview of the parameters:
-- ui.columns - presence and order of columns (comma-separated list). Available columns are:
-        time, pid, tid, priority, tag, message
+The following filtering criteria are supported:
+	- Tag(s) 
+	- Message text 
+	- PID(s) 
+	- Log priority 
 
-- ui.tooltip_max_width - maximal tooltip line width in symbols
+Filtered lines can be:
+	- Showed (all other lines will be hidden) 
+	- Hidden 
+	- Highlighted 
+	- Showed in a separate window
 
+You may enter several tags or PIDs separated with commas, any of them will be filtered.
+Message filter supports regular expressions.
+If several criteria are specified, only records that match all of them will be filtered.
 
+OVERVIEW: SEARCHING
 
+	1. Ctrl+F - show search field
+	2. Enter the pattern, then press Enter to start searching
+	3. F3 - find next, Shift+F3 - find previous
+	4. Esc - clear search results
+You should wrap your pattern into "/.../" - slashes - to search using regular expressions, 
+ex. “/^[Aa].*$/” - all lines that start with lower or upper 'a'. Regex-based searching is 
+case-sensitive in opposite to a simple searching. Standard Java regular expression 
+syntax is used.
 
+OVERVIEW: OTHER
+
+	- The bookmarks windows can be used for quick jumping between marked lines. Use context 
+	  menu to add a line to bookmarks.
+	- You can copy log lines to the clipboard using Ctrl+C, Ctrl+Ins or the context menu
+	- Double-click on tag, message or pid cell opens edit mode where you can select and copy 
+	  a substring of the cell’s content
+
+See the complete manual at https://bitbucket.org/mlopatkin/android-log-viewer/wiki
