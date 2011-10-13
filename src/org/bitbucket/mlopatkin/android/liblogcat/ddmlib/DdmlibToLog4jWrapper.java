@@ -39,8 +39,10 @@ class DdmlibToLog4jWrapper implements ILogOutput {
             break;
         case WARN:
             logger.warn(formattedMessage);
+            break;
         case ERROR:
-            logger.warn(formattedMessage);
+            logger.error(formattedMessage);
+            break;
         }
     }
 
