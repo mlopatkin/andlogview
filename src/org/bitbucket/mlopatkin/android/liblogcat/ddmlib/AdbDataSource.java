@@ -40,7 +40,6 @@ import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
@@ -72,6 +71,12 @@ public class AdbDataSource implements DataSource {
             }
         } catch (IOException e) {
             logger.warn("Exception while reading buffers list", e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.warn("Exception while closing input stream", e);
+            }
         }
     }
 
@@ -153,10 +158,10 @@ public class AdbDataSource implements DataSource {
     private class AdbShellCommand implements Runnable {
 
         private String command;
-        private IShellOutputReceiver receiver;
+        private ShellInputStream receiver;
         private int timeOut = 0;
 
-        AdbShellCommand(String commandLine, IShellOutputReceiver outputReceiver) {
+        AdbShellCommand(String commandLine, ShellInputStream outputReceiver) {
             this.command = commandLine;
             this.receiver = outputReceiver;
         }
@@ -167,12 +172,16 @@ public class AdbDataSource implements DataSource {
                 device.executeShellCommand(command, receiver, timeOut);
             } catch (TimeoutException e) {
                 logger.warn("Connection to adb failed due to timeout", e);
+                receiver.close();
             } catch (AdbCommandRejectedException e) {
                 logger.warn("Adb rejected command", e);
+                receiver.close();
             } catch (ShellCommandUnresponsiveException e) {
                 logger.warn("Shell command unresponsive", e);
+                receiver.close();
             } catch (IOException e) {
                 logger.warn("IO exception", e);
+                receiver.close();
             }
             logger.debug("The command '" + command + "' sucessfully terminated");
         }
@@ -222,7 +231,7 @@ public class AdbDataSource implements DataSource {
 
             }
 
-            private boolean closed = false;
+            private volatile boolean closed = false;
 
             public void close() {
                 closed = true;
