@@ -271,7 +271,7 @@ public class AdbDataSource implements DataSource {
         volatile private Future<?> result;
 
         private synchronized void scheduleUpdate() {
-            if (result == null || result.isDone()) {
+            if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
                 ShellInputStream in = new ShellInputStream();
                 BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
                 AdbShellCommand command = new AdbShellCommand(PS_COMMAND_LINE, in);
