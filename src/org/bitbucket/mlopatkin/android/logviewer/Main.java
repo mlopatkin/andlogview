@@ -38,7 +38,7 @@ import com.android.ddmlib.IDevice;
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
-    public static final String APP_VERSION = "0.17.2";
+    public static final String APP_VERSION = "0.17.3";
 
     private DataSource initialSource;
     private MainFrame window;
@@ -129,8 +129,7 @@ public class Main {
         public void uncaughtException(Thread t, Throwable e) {
             try {
                 logger.error("Uncaught exception in " + t.getName(), e);
-                ErrorDialogsHelper.showError(
-                        null,
+                ErrorDialogsHelper.showError(null,
                         "<html>Unhandled exception occured. Please collect log file at<br>"
                                 + MyStringUtils.joinPath(System.getProperty("java.io.tmpdir"),
                                         "logview.log") + "<br>and send it to the authors, "

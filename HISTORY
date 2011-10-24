@@ -1,3 +1,11 @@
+version 0.17.3
+    [*] Fixed classpath issue if the path to the bat file contains spaces
+    [*] Fixed exception when viewing logs after the device was disconnected
+    [*] Fixed app hanging if the emulator becomes unresponsive
+    [*] Fixed app hanging when connecting to the running emulator
+    [*] Fixed incorrect log output for DDMS errors and warnings
+    [*] Started emulator now is added to the "Select device" dialog correctly
+    
 version 0.17.2
     [*] Ordering of the lines was reworked to be as natural as possible
     [*] Logs are now saved in native adb format
