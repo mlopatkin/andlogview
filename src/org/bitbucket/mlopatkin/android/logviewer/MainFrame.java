@@ -61,8 +61,8 @@ import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -442,27 +442,24 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
      * Wait for device to connect.
      */
     public void waitForDevice() {
+        synchronized (this) {
+            isWaitingForDevice = true;
+        }
         pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
             @Override
             public void deviceConnected(final IDevice device) {
                 if (device.isOnline()) {
-                    connectDevice(device);
+                    connectDevicePending(device);
                 }
             }
 
             @Override
             public void deviceChanged(IDevice device, int changeMask) {
                 if ((changeMask & IDevice.CHANGE_STATE) != 0 && device.isOnline()) {
-                    connectDevice(device);
+                    connectDevicePending(device);
                 }
             };
 
-            private void connectDevice(IDevice device) {
-                assert device.isOnline();
-                DeviceDisconnectedNotifier.startWatching(device);
-                setSourceAsync(new AdbDataSource(device));
-                stopWaitingForDevice();
-            }
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
         EventQueue.invokeLater(new Runnable() {
@@ -471,6 +468,22 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                 showSourceMessage("Waiting for device...");
             }
         });
+        IDevice device = AdbDeviceManager.getDefaultDevice();
+        if (device != null) {
+            connectDevicePending(device);
+        }
+    }
+
+    private volatile boolean isWaitingForDevice;
+
+    private synchronized void connectDevicePending(IDevice device) {
+        if (!isWaitingForDevice) {
+            return;
+        }
+        isWaitingForDevice = false;
+        stopWaitingForDevice();
+        DeviceDisconnectedNotifier.startWatching(device);
+        setSourceAsync(new AdbDataSource(device));
     }
 
     private void stopWaitingForDevice() {
