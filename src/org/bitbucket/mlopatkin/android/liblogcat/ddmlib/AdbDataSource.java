@@ -43,11 +43,11 @@ import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class AdbDataSource implements DataSource, BufferReceiver {
 
-    static final Logger logger = Logger.getLogger(AdbDataSource.class);
+    private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
     private LogRecordDataSourceListener listener;
 
-    IDevice device;
+    private IDevice device;
     private AdbPidToProcessConverter converter;
     private EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
 
@@ -121,13 +121,13 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         while (listener == null) {
             try {
                 wait();
-            } catch (InterruptedException e) { // $codepro.audit.disable
-                // emptyCatchClause
+            } catch (InterruptedException e) {
                 // ignore
             }
         }
     }
 
+    @Override
     public synchronized void pushRecord(final LogRecord record) {
         waitForListener();
         listener.onNewRecord(record);
