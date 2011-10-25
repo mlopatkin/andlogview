@@ -33,30 +33,27 @@ import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
-import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class AdbDataSource implements DataSource {
 
-    private static final Logger logger = Logger.getLogger(AdbDataSource.class);
+    static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
     private LogRecordDataSourceListener listener;
 
-    private IDevice device;
+    IDevice device;
     private AdbPidToProcessConverter converter;
     private EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
 
     private void checkBuffers() {
         ShellInputStream shellIn = new ShellInputStream();
-        AdbShellCommand listBuffers = new AdbShellCommand("ls /dev/log/", shellIn);
+        AdbShellCommand<?> listBuffers = new AutoClosingAdbShellCommand(device, "ls /dev/log/",
+                shellIn);
         shellCommandExecutor.execute(listBuffers);
         BufferedReader in = new BufferedReader(new InputStreamReader(shellIn));
         try {
@@ -119,7 +116,7 @@ public class AdbDataSource implements DataSource {
         notifyAll();
     }
 
-    private synchronized void waitForListener() {
+    synchronized void waitForListener() {
         while (listener == null) {
             try {
                 wait();
@@ -130,7 +127,7 @@ public class AdbDataSource implements DataSource {
         }
     }
 
-    private synchronized void pushRecord(final LogRecord record) {
+    synchronized void pushRecord(final LogRecord record) {
         listener.onNewRecord(record);
     }
 
@@ -150,93 +147,8 @@ public class AdbDataSource implements DataSource {
         }
 
         final String commandLine = createLogcatCommandLine(bufferName);
-        final AdbBuffer adbBuffer = new AdbBuffer(buffer, commandLine);
+        final AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine);
         buffers.add(adbBuffer);
-
-    }
-
-    private class AdbShellCommand implements Runnable {
-
-        private String command;
-        private ShellInputStream receiver;
-        private int timeOut = 0;
-
-        AdbShellCommand(String commandLine, ShellInputStream outputReceiver) {
-            this.command = commandLine;
-            this.receiver = outputReceiver;
-        }
-
-        @Override
-        public void run() {
-            try {
-                device.executeShellCommand(command, receiver, timeOut);
-            } catch (TimeoutException e) {
-                logger.warn("Connection to adb failed due to timeout", e);
-                receiver.close();
-            } catch (AdbCommandRejectedException e) {
-                logger.warn("Adb rejected command", e);
-                receiver.close();
-            } catch (ShellCommandUnresponsiveException e) {
-                logger.warn("Shell command unresponsive", e);
-                receiver.close();
-            } catch (IOException e) {
-                logger.warn("IO exception", e);
-                receiver.close();
-            }
-            logger.debug("The command '" + command + "' sucessfully terminated");
-        }
-    }
-
-    private class AdbBuffer {
-        private ShellInputStream shellInput = new ShellInputStream();
-        private LogRecordStream in;
-        private LogRecord.Buffer buffer;
-        private PollingThread pollingThread;
-        private Thread shellExecutor;
-
-        public AdbBuffer(LogRecord.Buffer buffer, String commandLine) {
-            this.buffer = buffer;
-            in = new LogRecordStream(shellInput);
-            shellExecutor = new Thread(new AdbShellCommand(commandLine, shellInput),
-                    "Shell-reader-" + buffer);
-            pollingThread = new PollingThread();
-            shellExecutor.start();
-            pollingThread.start();
-        }
-
-        void close() {
-            pollingThread.close();
-            shellInput.close();
-        }
-
-        private class PollingThread extends Thread {
-
-            public PollingThread() {
-                super("ADB-polling-" + buffer);
-            }
-
-            @Override
-            public void run() {
-                waitForListener();
-                LogRecord record = in.next(buffer);
-                while (!closed && record != null) {
-                    pushRecord(record);
-                    record = in.next(buffer);
-                }
-                if (closed) {
-                    logger.debug(getName() + " successfully ended");
-                } else {
-                    logger.warn(getName() + " ends due to null record");
-                }
-
-            }
-
-            private volatile boolean closed = false;
-
-            public void close() {
-                closed = true;
-            }
-        }
 
     }
 
@@ -274,7 +186,9 @@ public class AdbDataSource implements DataSource {
             if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
                 ShellInputStream in = new ShellInputStream();
                 BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
-                AdbShellCommand command = new AdbShellCommand(PS_COMMAND_LINE, in);
+                AdbShellCommand<?> command = new AutoClosingAdbShellCommand(device,
+                        PS_COMMAND_LINE, in);
+
                 result = backgroundUpdater.submit(updateTask);
                 shellCommandExecutor.execute(command);
             }
