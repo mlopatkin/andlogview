@@ -55,7 +55,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         ShellInputStream shellIn = new ShellInputStream();
         AdbShellCommand<?> listBuffers = new AutoClosingAdbShellCommand(device, "ls /dev/log/",
                 shellIn);
-        shellCommandExecutor.execute(listBuffers);
+        listBuffers.start();
         BufferedReader in = new BufferedReader(new InputStreamReader(shellIn));
         try {
             String line = in.readLine();
@@ -102,7 +102,6 @@ public class AdbDataSource implements DataSource, BufferReceiver {
             stream.close();
         }
         backgroundUpdater.shutdown();
-        shellCommandExecutor.shutdown();
         closed = true;
     }
 
@@ -160,7 +159,6 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     }
 
     private ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
-    private ExecutorService shellCommandExecutor = Executors.newSingleThreadExecutor();
 
     private class AdbPidToProcessConverter {
 
@@ -192,7 +190,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
                         PS_COMMAND_LINE, in);
 
                 result = backgroundUpdater.submit(updateTask);
-                shellCommandExecutor.execute(command);
+                command.start();
             }
         }
 

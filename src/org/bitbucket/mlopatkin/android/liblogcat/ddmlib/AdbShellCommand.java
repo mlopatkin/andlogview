@@ -16,6 +16,8 @@
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +34,7 @@ import com.android.ddmlib.TimeoutException;
  * <p>
  * Note that the {@link #run()} method will block until the command finishes.
  * Objects of this class are intended to be used in background threads.
+ * Alternatively you can use {@link #start()} to run the command in background.
  * <p>
  * This class is immutable.
  * 
@@ -77,6 +80,16 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
         }
         onCommandFinished(receiver);
         logger.debug("The command '" + command + "' sucessfully terminated");
+    }
+
+    private static final Executor backgroundShellCommandExecutor = Executors
+            .newSingleThreadExecutor();
+
+    /**
+     * Executes the command in the background using internal thread pool.
+     */
+    public void start() {
+        backgroundShellCommandExecutor.execute(this);
     }
 
     /**
