@@ -27,18 +27,22 @@ import com.android.ddmlib.IDevice;
  */
 class AdbBuffer {
 
+    public interface BufferReceiver {
+        void pushRecord(LogRecord record);
+    }
+
     private static final Logger logger = Logger.getLogger(AdbBuffer.class);
 
-    private final AdbDataSource adbDataSource;
+    private final BufferReceiver receiver;
     private final ShellInputStream shellInput = new ShellInputStream();
     private final LogRecordStream in;
     private final LogRecord.Buffer buffer;
     private final PollingThread pollingThread;
     private final Thread shellExecutor;
 
-    public AdbBuffer(AdbDataSource adbDataSource, IDevice device, LogRecord.Buffer buffer,
+    public AdbBuffer(BufferReceiver receiver, IDevice device, LogRecord.Buffer buffer,
             String commandLine) {
-        this.adbDataSource = adbDataSource;
+        this.receiver = receiver;
         this.buffer = buffer;
         in = new LogRecordStream(shellInput);
         shellExecutor = new Thread(new AutoClosingAdbShellCommand(device, commandLine, shellInput),
@@ -61,10 +65,9 @@ class AdbBuffer {
 
         @Override
         public void run() {
-            AdbBuffer.this.adbDataSource.waitForListener();
             LogRecord record = in.next(buffer);
             while (!closed && record != null) {
-                AdbBuffer.this.adbDataSource.pushRecord(record);
+                receiver.pushRecord(record);
                 record = in.next(buffer);
             }
             if (closed) {

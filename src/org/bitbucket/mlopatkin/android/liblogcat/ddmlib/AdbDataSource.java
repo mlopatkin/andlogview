@@ -35,12 +35,13 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
-public class AdbDataSource implements DataSource {
+public class AdbDataSource implements DataSource, BufferReceiver {
 
     static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
@@ -116,7 +117,7 @@ public class AdbDataSource implements DataSource {
         notifyAll();
     }
 
-    synchronized void waitForListener() {
+    private synchronized void waitForListener() {
         while (listener == null) {
             try {
                 wait();
@@ -127,7 +128,8 @@ public class AdbDataSource implements DataSource {
         }
     }
 
-    synchronized void pushRecord(final LogRecord record) {
+    public synchronized void pushRecord(final LogRecord record) {
+        waitForListener();
         listener.onNewRecord(record);
     }
 
