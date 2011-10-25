@@ -17,23 +17,16 @@ package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
-import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
@@ -83,7 +76,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         for (LogRecord.Buffer buffer : availableBuffers) {
             setUpStream(buffer);
         }
-        converter = new AdbPidToProcessConverter();
+        converter = new AdbPidToProcessConverter(device);
     }
 
     public AdbDataSource(final IDevice device) {
@@ -101,7 +94,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         for (AdbBuffer stream : buffers) {
             stream.close();
         }
-        backgroundUpdater.shutdown();
+        converter.close();
         closed = true;
     }
 
@@ -156,75 +149,6 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
         return availableBuffers;
-    }
-
-    private ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
-
-    private class AdbPidToProcessConverter {
-
-        private final String PS_COMMAND_LINE = Configuration.adb.psCommandLine();
-        private final String NO_INFO = "No info available";
-
-        private Map<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
-            @Override
-            public String get(Object key) {
-                String r = putIfAbsent((Integer) key, NO_INFO);
-                if (r == null) {
-                    scheduleUpdate();
-                }
-                return super.get(key);
-            };
-        };
-
-        public Map<Integer, String> getMap() {
-            return processMap;
-        }
-
-        volatile private Future<?> result;
-
-        private synchronized void scheduleUpdate() {
-            if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
-                ShellInputStream in = new ShellInputStream();
-                BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
-                AdbShellCommand<?> command = new AutoClosingAdbShellCommand(device,
-                        PS_COMMAND_LINE, in);
-
-                result = backgroundUpdater.submit(updateTask);
-                command.start();
-            }
-        }
-
-        private class BackgroundUpdateTask implements Runnable {
-
-            private BufferedReader in;
-
-            BackgroundUpdateTask(InputStream in) {
-                this.in = new BufferedReader(new InputStreamReader(in));
-            }
-
-            @Override
-            public void run() {
-                try {
-                    String line = in.readLine();
-
-                    if (!ProcessListParser.isProcessListHeader(line)) {
-                        return;
-                    }
-                    line = in.readLine();
-                    while (line != null) {
-                        Matcher m = ProcessListParser.parseProcessListLine(line);
-                        String processName = ProcessListParser.getProcessName(m);
-                        int pid = ProcessListParser.getPid(m);
-                        processMap.put(pid, processName);
-                        line = in.readLine();
-                    }
-                } catch (IOException e) {
-                    logger.error("Unexpected IO exception", e);
-                }
-
-            }
-
-        }
     }
 
     @Override
