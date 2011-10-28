@@ -26,7 +26,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.utils.MyListUtils;
 
-public class LogRecordTableModel extends AbstractTableModel {
+public class LogRecordTableModel extends AbstractTableModel implements
+        BatchRecordsReceiver<LogRecord> {
 
     private List<LogRecord> records;
 
@@ -89,6 +90,7 @@ public class LogRecordTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
     public void addRecord(LogRecord record) {
         assert EventQueue.isDispatchThread();
         int pos = MyListUtils.getUpperBoundPos(records, record);
@@ -122,13 +124,15 @@ public class LogRecordTableModel extends AbstractTableModel {
         }
     }
 
-    public void assign(List<LogRecord> copy) {
+    @Override
+    public void setRecords(List<LogRecord> copy) {
         assert EventQueue.isDispatchThread();
         records = copy;
         fireTableDataChanged();
     }
 
-    public void append(List<LogRecord> newRecords) {
+    @Override
+    public void addRecords(List<LogRecord> newRecords) {
         assert EventQueue.isDispatchThread();
         int oldSize = records.size();
         int firstAffected = MyListUtils.mergeOrdered(records, newRecords);

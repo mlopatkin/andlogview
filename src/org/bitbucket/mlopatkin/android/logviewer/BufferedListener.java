@@ -42,11 +42,12 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 public class BufferedListener implements LogRecordDataSourceListener {
     private static final Logger logger = Logger.getLogger(BufferedListener.class);
 
-    private LogRecordTableModel model;
+    private BatchRecordsReceiver<LogRecord> receiver;
     private AutoScrollController scrollController;
 
-    public BufferedListener(LogRecordTableModel model, AutoScrollController scrollController) {
-        this.model = model;
+    public BufferedListener(BatchRecordsReceiver<LogRecord> receiver,
+            AutoScrollController scrollController) {
+        this.receiver = receiver;
         this.scrollController = scrollController;
         mergeTimer.start();
         watchdogTimer.start();
@@ -135,7 +136,7 @@ public class BufferedListener implements LogRecordDataSourceListener {
     private void addOneRecord(LogRecord record) {
         assert EventQueue.isDispatchThread();
         scrollController.notifyBeforeInsert();
-        model.addRecord(record);
+        receiver.addRecord(record);
     }
 
     private void mergeIntoModel() {
@@ -149,7 +150,7 @@ public class BufferedListener implements LogRecordDataSourceListener {
         }
         Collections.sort(records);
         scrollController.notifyBeforeInsert();
-        model.append(records);
+        receiver.addRecords(records);
     }
 
     @Override
@@ -158,7 +159,7 @@ public class BufferedListener implements LogRecordDataSourceListener {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                model.assign(copy);
+                receiver.setRecords(copy);
             }
         });
     }
