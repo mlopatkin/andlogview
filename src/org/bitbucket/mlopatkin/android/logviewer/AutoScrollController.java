@@ -21,33 +21,48 @@ import java.awt.EventQueue;
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 
-class AutoScrollController implements TableModelListener {
-    private JTable table;
-    private LogRecordTableModel model;
+/**
+ * This class is responsible for scrolling a table when new records are added
+ * into it or table's size has been changed. The scrolling to the last record is
+ * performed only if the table was already scrolled to the bottom before the
+ * insertion.
+ * <p>
+ * The usage pattern is following: whenever you want to insert a record or
+ * change size of the table call {@link #notifyBeforeInsert()} before your
+ * action. If you aren't inserting something you should call
+ * {@link #scrollIfNeeded()} after your action.
+ */
+class AutoScrollController {
 
-    public AutoScrollController(JTable table, LogRecordTableModel model) {
+    private final JTable table;
+
+    private final TableModelListener modelListener = new TableModelListener() {
+
+        @Override
+        public void tableChanged(TableModelEvent e) {
+            if (e.getType() == TableModelEvent.INSERT) {
+                scrollIfNeeded();
+            } else {
+                shouldScroll = false;
+            }
+        }
+    };
+
+    public AutoScrollController(JTable table) {
         this.table = table;
-        this.model = model;
-        this.model.addTableModelListener(this);
+        TableModel model = table.getModel();
+        model.addTableModelListener(modelListener);
     }
 
-    private Runnable scrollToTheEnd = new Runnable() {
+    private final Runnable scrollToTheEnd = new Runnable() {
         @Override
         public void run() {
             table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1,
                     TableModelEvent.ALL_COLUMNS, true));
         }
     };
-
-    @Override
-    public void tableChanged(final TableModelEvent e) {
-        if (e.getType() == TableModelEvent.INSERT) {
-            scrollIfNeeded();
-        } else {
-            shouldScroll = false;
-        }
-    }
 
     private boolean shouldScroll;
 
@@ -60,11 +75,26 @@ class AutoScrollController implements TableModelListener {
         return atBottom;
     }
 
+    /**
+     * Call this before inserting anything into the table or changing its size.
+     * <p>
+     * This methods checks if scrolling is needed after the action.
+     * <p>
+     * NOTE: this should be called on the UI thread.
+     */
     public void notifyBeforeInsert() {
+        assert EventQueue.isDispatchThread();
         shouldScroll = isAtBottom();
     }
 
+    /**
+     * Call this method after any action other then inserting something into the
+     * table.
+     * <p>
+     * NOTE: this should be called on the UI thread.
+     */
     public void scrollIfNeeded() {
+        assert EventQueue.isDispatchThread();
         if (shouldScroll) {
             EventQueue.invokeLater(scrollToTheEnd);
         }
