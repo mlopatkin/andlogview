@@ -169,7 +169,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,
                 bookmarksController);
         searchController = new SearchController(logElements, recordsModel);
-        listener = new BufferedListener(recordsModel, scrollController);
+        listener = new BufferedListener<LogRecord>(recordsModel, scrollController);
 
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);

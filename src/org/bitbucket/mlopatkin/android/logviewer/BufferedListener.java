@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 
@@ -39,14 +38,13 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
  * then the event queue becomes overloaded with these events. The UI becomes
  * unresponsive. However, new records should appear as fast as possible.
  */
-public class BufferedListener implements RecordListener<LogRecord> {
+public class BufferedListener<T> implements RecordListener<T> {
     private static final Logger logger = Logger.getLogger(BufferedListener.class);
 
-    private BatchRecordsReceiver<LogRecord> receiver;
+    private BatchRecordsReceiver<T> receiver;
     private AutoScrollController scrollController;
 
-    public BufferedListener(BatchRecordsReceiver<LogRecord> receiver,
-            AutoScrollController scrollController) {
+    public BufferedListener(BatchRecordsReceiver<T> receiver, AutoScrollController scrollController) {
         this.receiver = receiver;
         this.scrollController = scrollController;
         mergeTimer.start();
@@ -80,11 +78,11 @@ public class BufferedListener implements RecordListener<LogRecord> {
     // the number of records sent into eventqueue between watchdog invocations
     private volatile AtomicInteger immediateCount = new AtomicInteger(0);
 
-    private List<LogRecord> internalBuffer = new ArrayList<LogRecord>();;
+    private List<T> internalBuffer = new ArrayList<T>();;
     private final Object lock = new Object();
 
     @Override
-    public void addRecord(final LogRecord record) {
+    public void addRecord(final T record) {
         assert record != null;
         switch (policy) {
         case IMMEDIATE:
@@ -98,13 +96,13 @@ public class BufferedListener implements RecordListener<LogRecord> {
         }
     }
 
-    private void addRecordToBuffer(LogRecord record) {
+    private void addRecordToBuffer(T record) {
         synchronized (lock) {
             internalBuffer.add(record);
         }
     }
 
-    private void sendRecordImmediate(final LogRecord record) {
+    private void sendRecordImmediate(final T record) {
         int count = immediateCount.addAndGet(1);
         if (count >= MAX_RECORDS_SPEED_THRESHOLD) {
             setPolicy(Policy.BUFFER);
@@ -133,29 +131,37 @@ public class BufferedListener implements RecordListener<LogRecord> {
         }
     });
 
-    private void addOneRecord(LogRecord record) {
+    private void addOneRecord(T record) {
         assert EventQueue.isDispatchThread();
         scrollController.notifyBeforeInsert();
         receiver.addRecord(record);
     }
 
+    @SuppressWarnings("unchecked")
+    private void sortRecordsIfPossible(List<T> records) {
+        if (records.size() > 0 && records.get(0) instanceof Comparable<?>) {
+            List comparableRecords = records;
+            Collections.sort(comparableRecords);
+        }
+    }
+
     private void mergeIntoModel() {
         assert EventQueue.isDispatchThread();
-        List<LogRecord> records = internalBuffer;
+        List<T> records = internalBuffer;
         synchronized (lock) {
-            internalBuffer = new ArrayList<LogRecord>();
+            internalBuffer = new ArrayList<T>();
         }
         if (records.size() < MIN_RECORDS_SPEED_THRESHOLD) {
             setPolicy(Policy.IMMEDIATE);
         }
-        Collections.sort(records);
+        sortRecordsIfPossible(records);
         scrollController.notifyBeforeInsert();
         receiver.addRecords(records);
     }
 
     @Override
-    public void setRecords(List<LogRecord> records) {
-        final List<LogRecord> copy = new ArrayList<LogRecord>(records);
+    public void setRecords(List<T> records) {
+        final List<T> copy = new ArrayList<T>(records);
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
