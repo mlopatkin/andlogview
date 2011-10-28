@@ -27,7 +27,7 @@ import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 
 /**
@@ -39,7 +39,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
  * then the event queue becomes overloaded with these events. The UI becomes
  * unresponsive. However, new records should appear as fast as possible.
  */
-public class BufferedListener implements LogRecordDataSourceListener {
+public class BufferedListener implements RecordListener<LogRecord> {
     private static final Logger logger = Logger.getLogger(BufferedListener.class);
 
     private BatchRecordsReceiver<LogRecord> receiver;

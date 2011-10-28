@@ -50,8 +50,8 @@ import javax.swing.border.EtchedBorder;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private FilterController filterController;
     private SearchController searchController;
     private BookmarksController bookmarksController;
-    private LogRecordDataSourceListener listener;
+    private RecordListener<LogRecord> listener;
 
     private ProcessListFrame processListFrame = new ProcessListFrame();
 

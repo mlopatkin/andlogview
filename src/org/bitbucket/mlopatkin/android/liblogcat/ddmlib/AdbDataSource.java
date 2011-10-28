@@ -26,7 +26,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
@@ -38,7 +38,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
 
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
-    private LogRecordDataSourceListener listener;
+    private RecordListener<LogRecord> listener;
 
     private IDevice device;
     private AdbPidToProcessConverter converter;
@@ -104,7 +104,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     }
 
     @Override
-    public synchronized void setLogRecordListener(LogRecordDataSourceListener listener) {
+    public synchronized void setLogRecordListener(RecordListener<LogRecord> listener) {
         this.listener = listener;
         notifyAll();
     }

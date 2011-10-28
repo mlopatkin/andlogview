@@ -29,7 +29,7 @@ public interface DataSource {
      * @param listener
      *            the listener to set
      */
-    void setLogRecordListener(LogRecordDataSourceListener listener);
+    void setLogRecordListener(RecordListener<LogRecord> listener);
 
     /**
      * Returns the utility class that performs conversion from PID to process

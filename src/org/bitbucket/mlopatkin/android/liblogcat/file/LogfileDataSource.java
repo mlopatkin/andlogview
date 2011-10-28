@@ -27,8 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordDataSourceListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 /**
@@ -42,7 +42,7 @@ public class LogfileDataSource implements DataSource {
 
     private static final Buffer DEFAULT_BUFFER = Buffer.UNKNOWN;
 
-    private LogRecordDataSourceListener listener;
+    private RecordListener<LogRecord> listener;
     private ParsingStrategies.Strategy strategy;
     private List<LogRecord> records = new ArrayList<LogRecord>();
     private File file;
@@ -92,7 +92,7 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public void setLogRecordListener(LogRecordDataSourceListener listener) {
+    public void setLogRecordListener(RecordListener<LogRecord> listener) {
         this.listener = listener;
         this.listener.setRecords(records);
     }
