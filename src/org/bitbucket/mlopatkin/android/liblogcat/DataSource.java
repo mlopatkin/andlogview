@@ -32,6 +32,15 @@ public interface DataSource {
     void setLogRecordListener(RecordListener<LogRecord> listener);
 
     /**
+     * Sets the listener to which all kernel log's output will be directed.
+     * 
+     * @param listener
+     *            the listener to set
+     * @return {@code false} if this data source doesn't support kernel logs
+     */
+    boolean setKernelLogListener(RecordListener<KernelLogRecord> listener);
+
+    /**
      * Returns the utility class that performs conversion from PID to process
      * name.
      * 

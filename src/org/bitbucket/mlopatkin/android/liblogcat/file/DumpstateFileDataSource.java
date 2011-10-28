@@ -31,11 +31,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.KernelLogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
@@ -307,5 +308,11 @@ public class DumpstateFileDataSource implements DataSource {
     @Override
     public String toString() {
         return file.getName();
+    }
+
+    @Override
+    public boolean setKernelLogListener(RecordListener<KernelLogRecord> listener) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

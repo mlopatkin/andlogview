@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.KernelLogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
@@ -185,4 +186,10 @@ public class AdbDataSource implements DataSource, BufferReceiver {
             }
         };
     };
+
+    @Override
+    public boolean setKernelLogListener(RecordListener<KernelLogRecord> listener) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

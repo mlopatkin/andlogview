@@ -26,10 +26,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.KernelLogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -116,5 +117,10 @@ public class LogfileDataSource implements DataSource {
     @Override
     public String toString() {
         return file.getName();
+    }
+
+    @Override
+    public boolean setKernelLogListener(RecordListener<KernelLogRecord> listener) {
+        return false;
     }
 }
