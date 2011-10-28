@@ -122,7 +122,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     @Override
     public synchronized void pushRecord(final LogRecord record) {
         waitForListener();
-        listener.onNewRecord(record);
+        listener.addRecord(record);
     }
 
     private String createLogcatCommandLine(String buffer) {

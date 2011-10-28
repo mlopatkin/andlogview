@@ -94,7 +94,7 @@ public class LogfileDataSource implements DataSource {
     @Override
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
-        this.listener.assign(records);
+        this.listener.setRecords(records);
     }
 
     static LogfileDataSource createLogfileDataSourceWithStrategy(File file, String checkLine)

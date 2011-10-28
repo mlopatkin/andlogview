@@ -133,7 +133,7 @@ public class DumpstateFileDataSource implements DataSource {
     public void setLogRecordListener(LogRecordDataSourceListener listener) {
         this.listener = listener;
         Collections.sort(records);
-        listener.assign(records);
+        listener.setRecords(records);
     }
 
     /**

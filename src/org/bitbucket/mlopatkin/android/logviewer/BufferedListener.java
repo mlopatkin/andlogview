@@ -83,7 +83,7 @@ public class BufferedListener implements LogRecordDataSourceListener {
     private final Object lock = new Object();
 
     @Override
-    public void onNewRecord(final LogRecord record) {
+    public void addRecord(final LogRecord record) {
         assert record != null;
         switch (policy) {
         case IMMEDIATE:
@@ -153,7 +153,7 @@ public class BufferedListener implements LogRecordDataSourceListener {
     }
 
     @Override
-    public void assign(List<LogRecord> records) {
+    public void setRecords(List<LogRecord> records) {
         final List<LogRecord> copy = new ArrayList<LogRecord>(records);
         EventQueue.invokeLater(new Runnable() {
             @Override
