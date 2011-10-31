@@ -22,7 +22,8 @@ import java.util.Map;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
@@ -32,77 +33,34 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private TableCellRenderer tagCellRenderer = messageCellRenderer;
     private TableCellRenderer pidCellRender;
 
-    static class ColumnInfo {
-        int modelColumn;
-        int minWidth;
-        int maxWidth;
-        String columnName;
-        TableCellRenderer renderer;
+    private Map<String, TableColumnBuilder> columnInfo = new HashMap<String, TableColumnBuilder>();
 
-        public ColumnInfo(int modelColumn, String columnName, int minWidth,
-                TableCellRenderer renderer) {
-            this.modelColumn = modelColumn;
-            this.minWidth = minWidth;
-            this.renderer = renderer;
-            this.columnName = columnName;
-        }
-
-        public ColumnInfo(int modelColumn, String columnName, int minWidth, int maxWidth,
-                TableCellRenderer renderer) {
-            this.modelColumn = modelColumn;
-            this.minWidth = minWidth;
-            this.maxWidth = maxWidth;
-            this.renderer = renderer;
-            this.columnName = columnName;
-        }
-
-        public ColumnInfo(int modelColumn, String columnName, int minWidth) {
-            this.modelColumn = modelColumn;
-            this.minWidth = minWidth;
-            this.columnName = columnName;
-        }
-
-        public ColumnInfo(int modelColumn, String columnName, int minWidth, int maxWidth) {
-            this.modelColumn = modelColumn;
-            this.minWidth = minWidth;
-            this.maxWidth = maxWidth;
-            this.columnName = columnName;
-        }
-    }
-
-    private Map<String, ColumnInfo> columnInfo = new HashMap<String, ColumnInfo>();
-
-    protected void addColumnInfo(String name, ColumnInfo info) {
+    protected void addColumnInfo(String name, TableColumnBuilder info) {
         columnInfo.put(name, info);
     }
 
     protected void initColumnInfo() {
-        addColumnInfo("time", new ColumnInfo(LogRecordTableModel.COLUMN_TIME, "Time", 150, 150,
-                timeCellRenderer));
-        addColumnInfo("pid", new ColumnInfo(LogRecordTableModel.COLUMN_PID, "pid", 30, 50,
-                pidCellRender));
-        addColumnInfo("tid", new ColumnInfo(LogRecordTableModel.COLUMN_TID, "tid", 30, 50));
-        addColumnInfo("priority", new ColumnInfo(LogRecordTableModel.COLUMN_PRIORITY, "", 30, 50,
-                priorityCellRenderer));
-        addColumnInfo("tag", new ColumnInfo(LogRecordTableModel.COLUMN_TAG, "Tag", 120,
-                tagCellRenderer));
-        addColumnInfo("message", new ColumnInfo(LogRecordTableModel.COLUMN_MSG, "Message", 1000,
-                messageCellRenderer));
+        addColumnInfo("time", new TableColumnBuilder(LogRecordTableModel.COLUMN_TIME, "Time")
+                .setWidth(150).setMaxWidth(150).setRenderer(timeCellRenderer));
+        addColumnInfo("pid", new TableColumnBuilder(LogRecordTableModel.COLUMN_PID, "pid")
+                .setWidth(30).setMaxWidth(50).setRenderer(pidCellRender));
+        addColumnInfo("tid", new TableColumnBuilder(LogRecordTableModel.COLUMN_TID, "tid")
+                .setWidth(30).setMaxWidth(50));
+        addColumnInfo("priority", new TableColumnBuilder(LogRecordTableModel.COLUMN_PRIORITY)
+                .setWidth(30).setMaxWidth(50).setRenderer(priorityCellRenderer));
+        addColumnInfo("tag", new TableColumnBuilder(LogRecordTableModel.COLUMN_TAG, "Tag")
+                .setWidth(120).setRenderer(tagCellRenderer));
+        addColumnInfo("message", new TableColumnBuilder(LogRecordTableModel.COLUMN_MSG, "Message")
+                .setWidth(1000).setRenderer(messageCellRenderer));
     }
 
     private void addColumnByName(String name) {
-        ColumnInfo info = columnInfo.get(name);
-        if (info == null) {
+        TableColumnBuilder builder = columnInfo.get(name);
+        if (builder == null) {
             throw new IllegalArgumentException(name + " is not a valid column");
         }
-
-        TableColumn column = new TableColumn(info.modelColumn, info.minWidth, info.renderer, null);
-        if (info.maxWidth != 0) {
-            column.setMaxWidth(info.maxWidth);
-        }
-        column.setHeaderValue(info.columnName);
-        column.setCellEditor(readOnlyCellEditor);
-        addColumn(column);
+        builder.setEditor(readOnlyCellEditor);
+        addColumn(builder.build());
     }
 
     public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper) {

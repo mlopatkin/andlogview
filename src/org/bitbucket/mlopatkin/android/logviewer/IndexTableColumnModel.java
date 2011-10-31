@@ -17,30 +17,18 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.util.Arrays;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JTextField;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 public class IndexTableColumnModel extends LogRecordTableColumnModel {
 
     public IndexTableColumnModel(PidToProcessMapper pidToProcessMapper) {
         super(Arrays.asList("row", "time", "pid", "priority", "tag", "message"), pidToProcessMapper);
-        for (int i = 0; i < getColumnCount(); ++i) {
-            TableColumn column = getColumn(i);
-            column.setCellEditor(noneditableCellEditor);
-        }
     }
 
     @Override
     protected void initColumnInfo() {
         super.initColumnInfo();
-        addColumnInfo("row", new ColumnInfo(LogRecordTableModel.COLUMN_LINE, "line", 30, 50));
+        addColumnInfo("row", new TableColumnBuilder(LogRecordTableModel.COLUMN_LINE, "line")
+                .setWidth(30).setMaxWidth(50));
     }
-
-    private TableCellEditor noneditableCellEditor = new DefaultCellEditor(new JTextField()) {
-        public boolean isCellEditable(java.util.EventObject anEvent) {
-            return false;
-        };
-    };
 }
