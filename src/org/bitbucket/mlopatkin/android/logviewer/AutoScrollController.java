@@ -18,10 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.Container;
 import java.awt.EventQueue;
 
-import javax.swing.JTable;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
+import javax.swing.JComponent;
 
 /**
  * This class is responsible for scrolling a table when new records are added
@@ -34,43 +31,20 @@ import javax.swing.table.TableModel;
  * action. If you aren't inserting something you should call
  * {@link #scrollIfNeeded()} after your action.
  */
-class AutoScrollController {
-
-    private final JTable table;
-
-    private final TableModelListener modelListener = new TableModelListener() {
-
-        @Override
-        public void tableChanged(TableModelEvent e) {
-            if (e.getType() == TableModelEvent.INSERT) {
-                scrollIfNeeded();
-            } else {
-                shouldScroll = false;
-            }
-        }
-    };
-
-    public AutoScrollController(JTable table) {
-        this.table = table;
-        TableModel model = table.getModel();
-        model.addTableModelListener(modelListener);
-    }
-
-    private final Runnable scrollToTheEnd = new Runnable() {
-        @Override
-        public void run() {
-            table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1,
-                    TableModelEvent.ALL_COLUMNS, true));
-        }
-    };
+abstract class AutoScrollController {
 
     private boolean shouldScroll;
+    private JComponent scrollable;
+
+    public AutoScrollController(JComponent scrollable) {
+        this.scrollable = scrollable;
+    }
 
     private boolean isAtBottom() {
-        Container parent = table.getParent();
-        int bottom = table.getBounds().height;
+        Container parent = scrollable.getParent();
+        int bottom = scrollable.getBounds().height;
         int pHeight = parent.getBounds().height;
-        int y = table.getBounds().y;
+        int y = scrollable.getBounds().y;
         boolean atBottom = (pHeight - y) == bottom;
         return atBottom;
     }
@@ -87,6 +61,13 @@ class AutoScrollController {
         shouldScroll = isAtBottom();
     }
 
+    private final Runnable scrollToTheEnd = new Runnable() {
+        @Override
+        public void run() {
+            performScrollToTheEnd();
+        }
+    };
+
     /**
      * Call this method after any action other then inserting something into the
      * table.
@@ -98,5 +79,11 @@ class AutoScrollController {
         if (shouldScroll) {
             EventQueue.invokeLater(scrollToTheEnd);
         }
+    }
+
+    protected abstract void performScrollToTheEnd();
+
+    protected final void resetScroll() {
+        shouldScroll = false;
     }
 }

@@ -68,7 +68,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
     private LogRecordTableModel recordsModel = new LogRecordTableModel();
-    private AutoScrollController scrollController;
+    private TableScrollController scrollController;
     private FilterController filterController;
     private SearchController searchController;
     private BookmarksController bookmarksController;
@@ -162,7 +162,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         JScrollPane scrollPane = new JScrollPane(logElements);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-        scrollController = new AutoScrollController(logElements);
+        scrollController = new TableScrollController(logElements);
         filterController = new FilterController(this, logElements, recordsModel);
         bookmarksController = new BookmarksController(logElements, recordsModel, mapper,
                 filterController);
