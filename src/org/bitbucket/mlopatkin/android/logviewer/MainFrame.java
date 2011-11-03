@@ -422,6 +422,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     }
 
     private Action acResetLogs = new AbstractAction("Reset logs") {
+        {
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control R"));
+        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
