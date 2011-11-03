@@ -1,3 +1,6 @@
+version 0.17.4
+    [+] Ctrl+R now resets logs
+    
 version 0.17.3
     [*] Fixed classpath issue if the path to the bat file contains spaces
     [*] Fixed exception when viewing logs after the device was disconnected
