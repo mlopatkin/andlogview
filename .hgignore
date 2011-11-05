@@ -4,7 +4,8 @@ bin/
 lib/
 docs/
 javadoc/
-out/
+build/
+dist/
 *.orig
 *.log
 *.jar

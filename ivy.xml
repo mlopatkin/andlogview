@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info
+        organisation="org.bitbucket.mlopatkin"
+        module="androidlogviewer" />
+
+	<configurations defaultconfmapping="*->default" >
+        <conf name="${libs.core}" visibility="private" description="Basic libraries that should be built into the resulting archive"/>
+        <conf name="${libs.compile}" extends="${libs.core}" description="All libraries required to build distributive package" />
+        <conf name="${libs.dist}" description="Libraries that should be included into distribution" />
+        <conf name="${libs.test}" description="Libraries that are used for testing" />
+    </configurations>
+
+   <dependencies>
+        <dependency org="org.apache.commons" name="commons-lang3" rev="latest.integration" conf="${libs.core}"/>
+        <dependency org="log4j" name="log4j" rev="latest.integration" conf="${libs.core}"/>
+
+        <dependency org="com.google.android.tools" name="ddmlib" rev="latest.integration" conf="${libs.compile}, ${libs.dist}"/>
+        <dependency org="junit" name="junit" rev="latest.integration" conf="${libs.test}" />
+   </dependencies>
+</ivy-module>
+
