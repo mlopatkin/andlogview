@@ -75,6 +75,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private RecordListener<LogRecord> listener;
 
     private ProcessListFrame processListFrame = new ProcessListFrame();
+    private KernelLogFrame kernelLogFrame = new KernelLogFrame();
 
     private DataSource source;
 
@@ -111,6 +112,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             processListFrame.setSource(null);
             acShowProcesses.setEnabled(false);
         }
+
+        acShowKernelLogs.setEnabled(kernelLogFrame.setSource(source));
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -358,6 +361,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         JMenu mnView = new JMenu("View");
         mnView.add(acShowBookmarks);
         mnView.add(acShowProcesses);
+        mnView.add(acShowKernelLogs);
         mainMenu.add(mnView);
 
         JMenu mnAdb = new JMenu("ADB");
@@ -575,4 +579,12 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     void setRecentDir(File dir) {
         recentDir = dir;
     }
+
+    private Action acShowKernelLogs = new AbstractAction("Show kernel log") {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            kernelLogFrame.setVisible(true);
+        }
+    };
 }

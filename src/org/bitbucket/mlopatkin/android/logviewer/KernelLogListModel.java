@@ -66,4 +66,11 @@ public class KernelLogListModel extends AbstractListModel implements
         fireContentsChanged(this, 0, this.records.size());
     }
 
+    public void clear() {
+        int lastIndex = getSize() - 1;
+        this.records.clear();
+        if (lastIndex >= 0) {
+            fireIntervalRemoved(this, 0, lastIndex);
+        }
+    }
 }

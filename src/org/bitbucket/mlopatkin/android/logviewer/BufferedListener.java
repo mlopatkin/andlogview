@@ -42,9 +42,9 @@ public class BufferedListener<T> implements RecordListener<T> {
     private static final Logger logger = Logger.getLogger(BufferedListener.class);
 
     private BatchRecordsReceiver<T> receiver;
-    private TableScrollController scrollController;
+    private AutoScrollController scrollController;
 
-    public BufferedListener(BatchRecordsReceiver<T> receiver, TableScrollController scrollController) {
+    public BufferedListener(BatchRecordsReceiver<T> receiver, AutoScrollController scrollController) {
         this.receiver = receiver;
         this.scrollController = scrollController;
         mergeTimer.start();
