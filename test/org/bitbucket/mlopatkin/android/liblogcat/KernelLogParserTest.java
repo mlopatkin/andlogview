@@ -32,6 +32,14 @@ public class KernelLogParserTest {
     }
 
     @Test
+    public void testParseRecordOldStyle() {
+        String line = "<3>Topology = 10be3";
+        KernelLogRecord record = KernelLogParser.parseRecord(line);
+        assertNotNull(record);
+        assertEquals(line, record.getLine());
+    }
+
+    @Test
     public void testParseRecordFailed() {
         String line = "] ld9040 ea8868_gamma_ctl 3 3";
         KernelLogRecord record = KernelLogParser.parseRecord(line);
