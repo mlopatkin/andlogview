@@ -21,10 +21,10 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
-public class KernelLogWindow extends JFrame {
+public class KernelLogFrame extends JFrame {
     private JList kernelLogList;
 
-    public KernelLogWindow() {
+    public KernelLogFrame() {
         setBounds(100, 100, 450, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
