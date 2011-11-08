@@ -33,6 +33,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbBuffer.BufferReceiver
 import org.bitbucket.mlopatkin.android.logviewer.Configuration;
 
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 
 public class AdbDataSource implements DataSource, BufferReceiver {
@@ -40,6 +41,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
     private RecordListener<LogRecord> listener;
+    private RecordListener<KernelLogRecord> kernelListener;
 
     private IDevice device;
     private AdbPidToProcessConverter converter;
@@ -80,11 +82,20 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         converter = new AdbPidToProcessConverter(device);
     }
 
+    private final KernelLogReceiver kernelReceiver = new KernelLogReceiver(this);
+
+    private void initKernelLog() {
+        AdbShellCommand<IShellOutputReceiver> command = new AdbShellCommand<IShellOutputReceiver>(
+                device, "cat /proc/kmsg", kernelReceiver);
+        new Thread(command).start();
+    }
+
     public AdbDataSource(final IDevice device) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
         initStreams();
+        initKernelLog();
         AdbDeviceManager.addDeviceChangeListener(deviceListener);
     }
 
@@ -96,6 +107,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
             stream.close();
         }
         converter.close();
+        kernelReceiver.stop();
         closed = true;
     }
 
@@ -124,6 +136,17 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     public synchronized void pushRecord(final LogRecord record) {
         waitForListener();
         listener.addRecord(record);
+    }
+
+    public synchronized void pushRecord(final KernelLogRecord record) {
+        while (kernelListener == null) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+        kernelListener.addRecord(record);
     }
 
     private String createLogcatCommandLine(String buffer) {
@@ -188,8 +211,9 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     };
 
     @Override
-    public boolean setKernelLogListener(RecordListener<KernelLogRecord> listener) {
-        // TODO Auto-generated method stub
-        return false;
+    public synchronized boolean setKernelLogListener(RecordListener<KernelLogRecord> listener) {
+        kernelListener = listener;
+        notifyAll();
+        return true;
     }
 }
