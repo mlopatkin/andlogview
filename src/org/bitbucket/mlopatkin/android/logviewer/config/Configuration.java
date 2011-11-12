@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.utils.properties.ConfigurationMap;
+import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.Parsers;
 import org.bitbucket.mlopatkin.utils.properties.PropertyBuilder;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
@@ -149,7 +150,7 @@ public class Configuration {
     private Configuration() {
     }
 
-    public static void init() {
+    public static void init() throws IllegalConfigurationException {
 
         // save on exit
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -160,6 +161,7 @@ public class Configuration {
         });
         Logging.setUpDefault();
         Logging.loadDebug();
+        Utils.loadConfiguration(config);
     }
 
     public static void save() {

@@ -16,19 +16,20 @@
 package org.bitbucket.mlopatkin.android.logviewer.config;
 
 import java.awt.Color;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.utils.properties.Configuration;
+import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.Parser;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
 class Utils {
-    private static final Logger logger = Logger
-            .getLogger(org.bitbucket.mlopatkin.android.logviewer.config.Configuration.class);
+    private static final Logger logger = Logger.getLogger(Configuration.class);
 
     private Utils() {
     }
@@ -51,7 +52,7 @@ class Utils {
     private static final String CONFIG_FILE_NAME = "logview.properties";
     private static final String CONFIG_APP_NAME = "logview";
 
-    static final void saveConfiguration(Configuration cfg) {
+    static final void saveConfiguration(org.bitbucket.mlopatkin.utils.properties.Configuration cfg) {
         File cfgDir = PropertyUtils.getAppConfigDir(CONFIG_APP_NAME);
         if (!cfgDir.exists()) {
             cfgDir.mkdirs();
@@ -66,6 +67,30 @@ class Utils {
             }
         } catch (IOException e) {
             logger.error("Failed to save configuration file", e);
+        }
+    }
+
+    public static void loadConfiguration(
+            org.bitbucket.mlopatkin.utils.properties.Configuration config)
+            throws IllegalConfigurationException {
+        File cfgDir = PropertyUtils.getAppConfigDir(CONFIG_APP_NAME);
+        if (!cfgDir.exists()) {
+            return;
+        }
+        File cfgFile = new File(cfgDir, CONFIG_FILE_NAME);
+        if (!cfgFile.exists()) {
+            return;
+        }
+
+        try {
+            BufferedInputStream input = new BufferedInputStream(new FileInputStream(cfgFile));
+            try {
+                config.load(input);
+            } finally {
+                input.close();
+            }
+        } catch (IOException e) {
+            logger.error("Failed to load configuration file", e);
         }
     }
 }

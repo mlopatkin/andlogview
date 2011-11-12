@@ -33,6 +33,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
+import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 
 import com.android.ddmlib.IDevice;
 
@@ -46,7 +47,13 @@ public class Main {
 
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
-        Configuration.init();
+        try {
+            Configuration.init();
+        } catch (IllegalConfigurationException e) {
+            logger.warn("Unxpected exception while parsing config file", e);
+            ErrorDialogsHelper.showError(null, "Error in configuration file: " + e.getMessage());
+        }
+
         logger.info("Android Log Viewer " + APP_VERSION);
         if (args.length == 0) {
             // ADB mode
