@@ -56,7 +56,7 @@ public class Configuration {
             return config.get(COLUMNS_KEY);
         }
 
-        public static int tooltipMaxWidth() {
+        public static Integer tooltipMaxWidth() {
             return config.get(TOOLTIP_MAX_WIDTH_KEY);
         }
 
@@ -80,11 +80,11 @@ public class Configuration {
             return config.get(BACKGROUND_COLOR_KEY);
         }
 
-        public static boolean bufferEnabled(Buffer buffer) {
+        public static Boolean bufferEnabled(Buffer buffer) {
             return config.get(BUFFER_ENABLED_KEY, buffer);
         }
 
-        public static boolean hideLoggingProcesses() {
+        public static Boolean hideLoggingProcesses() {
             return config.get(HIDE_LOGGING_PROCESSES_KEY);
         }
     }
@@ -127,7 +127,7 @@ public class Configuration {
             config.set(EXECUTABLE_KEY, newExecutable);
         }
 
-        public static boolean showSetupDialog() {
+        public static Boolean showSetupDialog() {
             return config.get(SHOW_SETUP_DIALOG_KEY);
         }
 

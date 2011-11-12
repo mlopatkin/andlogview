@@ -17,6 +17,8 @@
         <dependency org="log4j" name="log4j" rev="latest.integration" conf="${libs.core}"/>
         <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="latest.integration" conf="${libs.core}"/>
 
+        <dependency org="org.bitbucket.mlopatkin" name="utils.properties" rev="latest.integration" conf="${libs.core}"/>
+
         <dependency org="com.google.android.tools" name="ddmlib" rev="latest.integration" conf="${libs.compile}, ${libs.dist}"/>
         <dependency org="junit" name="junit" rev="latest.integration" conf="${libs.test}" />
    </dependencies>
