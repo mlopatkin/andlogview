@@ -19,8 +19,12 @@ import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
 
 import javax.swing.JOptionPane;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -47,20 +51,24 @@ public class Main {
 
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+        OptionParser parser = new OptionParser("d");
+        OptionSet result = parser.parse(args);
+        boolean debug = result.has("d");
         try {
-            Configuration.init();
+            Configuration.init(debug);
         } catch (IllegalConfigurationException e) {
             logger.warn("Unxpected exception while parsing config file", e);
             ErrorDialogsHelper.showError(null, "Error in configuration file: " + e.getMessage());
         }
 
         logger.info("Android Log Viewer " + APP_VERSION);
-        if (args.length == 0) {
+        List<String> files = result.nonOptionArguments();
+        if (files.size() == 0) {
             // ADB mode
             new Main().start();
-        } else if (args.length == 1) {
+        } else if (files.size() == 1) {
             // File mode
-            new Main(new File(args[0])).start();
+            new Main(new File(files.get(0))).start();
         } else {
             // Error
             showUsage();

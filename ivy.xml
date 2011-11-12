@@ -15,6 +15,7 @@
    <dependencies>
         <dependency org="org.apache.commons" name="commons-lang3" rev="latest.integration" conf="${libs.core}"/>
         <dependency org="log4j" name="log4j" rev="latest.integration" conf="${libs.core}"/>
+        <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="latest.integration" conf="${libs.core}"/>
 
         <dependency org="com.google.android.tools" name="ddmlib" rev="latest.integration" conf="${libs.compile}, ${libs.dist}"/>
         <dependency org="junit" name="junit" rev="latest.integration" conf="${libs.test}" />
