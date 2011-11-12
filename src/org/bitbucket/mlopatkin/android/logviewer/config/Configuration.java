@@ -159,6 +159,7 @@ public class Configuration {
             }
         });
         Logging.setUpDefault();
+        Logging.loadDebug();
     }
 
     public static void save() {

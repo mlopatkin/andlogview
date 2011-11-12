@@ -18,6 +18,8 @@ package org.bitbucket.mlopatkin.android.logviewer.config;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
+import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
 /**
  * Logging configuration routines
@@ -29,5 +31,15 @@ class Logging {
     static void setUpDefault() {
         BasicConfigurator.configure(new ConsoleAppender(new PatternLayout(
                 PatternLayout.TTCC_CONVERSION_PATTERN), ConsoleAppender.SYSTEM_ERR));
+    }
+
+    static void loadNormal() {
+        PropertyConfigurator.configure(PropertyUtils
+                .getPropertiesFromResources("/normal_log.properties"));
+    }
+
+    static void loadDebug() {
+        PropertyConfigurator.configure(PropertyUtils
+                .getPropertiesFromResources("/debug_log.properties"));
     }
 }
