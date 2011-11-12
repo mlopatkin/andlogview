@@ -46,7 +46,7 @@ public class Main {
 
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
-        Configuration.forceInit();
+        Configuration.init();
         logger.info("Android Log Viewer " + APP_VERSION);
         if (args.length == 0) {
             // ADB mode
@@ -130,7 +130,8 @@ public class Main {
         public void uncaughtException(Thread t, Throwable e) {
             try {
                 logger.error("Uncaught exception in " + t.getName(), e);
-                ErrorDialogsHelper.showError(null,
+                ErrorDialogsHelper.showError(
+                        null,
                         "<html>Unhandled exception occured. Please collect log file at<br>"
                                 + MyStringUtils.joinPath(System.getProperty("java.io.tmpdir"),
                                         "logview.log") + "<br>and send it to the authors, "
