@@ -17,7 +17,7 @@ package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.logviewer.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;

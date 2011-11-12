@@ -26,6 +26,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 
     private JOptionPane optionPane;

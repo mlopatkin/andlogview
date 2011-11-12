@@ -34,6 +34,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.MessageFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 

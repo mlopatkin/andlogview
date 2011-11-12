@@ -39,7 +39,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
-import org.bitbucket.mlopatkin.android.logviewer.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);

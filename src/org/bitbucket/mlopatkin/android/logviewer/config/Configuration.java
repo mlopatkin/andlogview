@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.config;
 
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.bool;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.enumMap;
@@ -26,11 +26,9 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -217,7 +215,7 @@ public class Configuration {
 
     private static Configuration instance = new Configuration();
 
-    static void forceInit() {
+    public static void forceInit() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {

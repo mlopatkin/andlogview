@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.logviewer.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 import com.android.ddmlib.IDevice;
 

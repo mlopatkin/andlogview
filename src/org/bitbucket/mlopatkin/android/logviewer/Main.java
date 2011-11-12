@@ -31,6 +31,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 import com.android.ddmlib.IDevice;

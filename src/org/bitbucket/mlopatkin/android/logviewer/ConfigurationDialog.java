@@ -38,6 +38,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class ConfigurationDialog extends JDialog {
 
