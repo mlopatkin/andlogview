@@ -27,7 +27,7 @@ public class KernelLogParser {
     }
 
     private static final Pattern KERNEL_LOG_RECORD_PATTTERN = Pattern
-            .compile("^<\\d+>\\[\\s*\\d+\\.\\d+\\] .*$");
+            .compile("^<\\d+>(\\[\\s*\\d+\\.\\d+\\] )?.*$");
 
     public static KernelLogRecord parseRecord(String line) {
         Matcher m = KERNEL_LOG_RECORD_PATTTERN.matcher(line);
