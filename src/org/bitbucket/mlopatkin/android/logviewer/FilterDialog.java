@@ -10,13 +10,13 @@ import java.awt.event.ActionListener;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
@@ -90,57 +90,82 @@ public abstract class FilterDialog extends JDialog {
         colorsList.setSelectedIndex(0);
 
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-        gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                .addGroup(
-                        gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(
-                                gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(tagTextField, GroupLayout.DEFAULT_SIZE, 477,
-                                                Short.MAX_VALUE).addComponent(lblNewLabel)
-                                        .addComponent(lblMessageTextTo).addComponent(
-                                                messageTextField, GroupLayout.DEFAULT_SIZE, 477,
-                                                Short.MAX_VALUE).addComponent(lblPidsToFilter)
-                                        .addComponent(pidTextField, GroupLayout.DEFAULT_SIZE, 477,
-                                                Short.MAX_VALUE).addComponent(lblLogLevel)
-                                        .addComponent(logLevelList, 0, 477, Short.MAX_VALUE)
+        gl_contentPanel
+                .setHorizontalGroup(gl_contentPanel
+                        .createParallelGroup(Alignment.LEADING)
+                        .addGroup(
+                                gl_contentPanel
+                                        .createSequentialGroup()
+                                        .addContainerGap()
                                         .addGroup(
-                                                gl_contentPanel.createSequentialGroup()
-                                                        .addComponent(modesWithDataPanel,
-                                                                GroupLayout.PREFERRED_SIZE,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                GroupLayout.PREFERRED_SIZE).addGap(
-                                                                18).addComponent(colorsList,
-                                                                GroupLayout.PREFERRED_SIZE, 132,
-                                                                GroupLayout.PREFERRED_SIZE)))
-                                .addContainerGap()));
+                                                gl_contentPanel
+                                                        .createParallelGroup(Alignment.LEADING)
+                                                        .addComponent(tagTextField,
+                                                                GroupLayout.DEFAULT_SIZE, 477,
+                                                                Short.MAX_VALUE)
+                                                        .addComponent(lblNewLabel)
+                                                        .addComponent(lblMessageTextTo)
+                                                        .addComponent(messageTextField,
+                                                                GroupLayout.DEFAULT_SIZE, 477,
+                                                                Short.MAX_VALUE)
+                                                        .addComponent(lblPidsToFilter)
+                                                        .addComponent(pidTextField,
+                                                                GroupLayout.DEFAULT_SIZE, 477,
+                                                                Short.MAX_VALUE)
+                                                        .addComponent(lblLogLevel)
+                                                        .addComponent(logLevelList, 0, 477,
+                                                                Short.MAX_VALUE)
+                                                        .addGroup(
+                                                                gl_contentPanel
+                                                                        .createSequentialGroup()
+                                                                        .addComponent(
+                                                                                modesWithDataPanel,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE)
+                                                                        .addGap(18)
+                                                                        .addComponent(
+                                                                                colorsList,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                132,
+                                                                                GroupLayout.PREFERRED_SIZE)))
+                                        .addContainerGap()));
         gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
                 .addGroup(
-                        gl_contentPanel.createSequentialGroup().addComponent(lblNewLabel)
-                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(
-                                        tagTextField, GroupLayout.PREFERRED_SIZE,
+                        gl_contentPanel
+                                .createSequentialGroup()
+                                .addComponent(lblNewLabel)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(tagTextField, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(
-                                        lblMessageTextTo).addPreferredGap(
-                                        ComponentPlacement.RELATED).addComponent(messageTextField,
-                                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                        GroupLayout.PREFERRED_SIZE).addPreferredGap(
-                                        ComponentPlacement.UNRELATED).addComponent(lblPidsToFilter)
-                                .addPreferredGap(ComponentPlacement.RELATED).addComponent(
-                                        pidTextField, GroupLayout.PREFERRED_SIZE,
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(lblMessageTextTo)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(messageTextField, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.UNRELATED).addComponent(
-                                        lblLogLevel).addPreferredGap(ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.UNRELATED)
+                                .addComponent(lblPidsToFilter)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(pidTextField, GroupLayout.PREFERRED_SIZE,
+                                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.UNRELATED)
+                                .addComponent(lblLogLevel)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(logLevelList, GroupLayout.PREFERRED_SIZE,
                                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
                                 .addGroup(
-                                        gl_contentPanel.createParallelGroup(Alignment.LEADING)
+                                        gl_contentPanel
+                                                .createParallelGroup(Alignment.LEADING)
                                                 .addComponent(modesWithDataPanel,
                                                         Alignment.TRAILING,
                                                         GroupLayout.PREFERRED_SIZE,
                                                         GroupLayout.DEFAULT_SIZE,
-                                                        GroupLayout.PREFERRED_SIZE).addGroup(
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(
                                                         Alignment.TRAILING,
-                                                        gl_contentPanel.createSequentialGroup()
+                                                        gl_contentPanel
+                                                                .createSequentialGroup()
                                                                 .addComponent(colorsList,
                                                                         GroupLayout.PREFERRED_SIZE,
                                                                         GroupLayout.DEFAULT_SIZE,
@@ -312,7 +337,7 @@ public abstract class FilterDialog extends JDialog {
         @Override
         public Object getElementAt(int index) {
             return "<html><span style='background-color: "
-                    + toString(Configuration.ui.highlightColors()[index]) + "'>Color " + index
+                    + toString(Configuration.ui.highlightColors().get(index)) + "'>Color " + index
                     + "</span></html>";
 
         }
@@ -323,13 +348,13 @@ public abstract class FilterDialog extends JDialog {
 
         @Override
         public int getSize() {
-            return Configuration.ui.highlightColors().length;
+            return Configuration.ui.highlightColors().size();
         }
     }
 
     public Color getSelectedColor() {
         if (getFilteringMode() == FilteringMode.HIGHLIGHT) {
-            return Configuration.ui.highlightColors()[colorsList.getSelectedIndex()];
+            return Configuration.ui.highlightColors().get(colorsList.getSelectedIndex());
         } else {
             return null;
         }

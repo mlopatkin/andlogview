@@ -15,24 +15,26 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.bool;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.enumMap;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.integer;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.list;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.string;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.TreeMap;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
@@ -42,144 +44,117 @@ import org.apache.log4j.PropertyConfigurator;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
+import org.bitbucket.mlopatkin.utils.properties.Parser;
+import org.bitbucket.mlopatkin.utils.properties.Parsers;
+import org.bitbucket.mlopatkin.utils.properties.PropertyBuilder;
+import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
 public class Configuration {
     private static final boolean DEBUG_MODE = System.getProperty("logview.debug") != null;
 
     public static class ui {
         private static final String PREFIX = "ui.";
-        private static List<String> columns_;
-        private static EnumSet<Buffer> buffers_;
 
-        private static void initColumns() {
-            String columnsValue = instance.properties.getProperty(PREFIX + "columns",
-                    "time, pid, priority, tag, message");
-            columns_ = splitCommaSeparatedValues(columnsValue);
-        }
+        private static final String HIDE_LOGGING_PROCESSES_KEY = PREFIX + "hide_logging_processes";
+        private static final String BACKGROUND_COLOR_KEY = PREFIX + "background_color";
+        private static final String BOOKMARK_FOREGROUND_KEY = PREFIX + "bookmark_foreground";
+        private static final String BOOKMARK_BACKGROUND_KEY = PREFIX + "bookmark_background";
+        private static final String PRIORITY_FOREGROUND_KEY = PREFIX + "priority_color";
+        private static final String HIGHLIGHT_FOREGROUNDS_KEY = PREFIX + "highlight_colors";
+        private static final String TOOLTIP_MAX_WIDTH_KEY = PREFIX + "tooltip_max_width";
+        private static final String COLUMNS_KEY = PREFIX + "columns";
+        private static final String BUFFER_ENABLED_KEY = PREFIX + "buffer_enabled";
 
-        private static void initBuffers() {
-            buffers_ = EnumSet.noneOf(Buffer.class);
-            String columnsValue = instance.properties.getProperty(PREFIX + "buffers", "MAIN");
-            for (String bufferName : splitCommaSeparatedValues(columnsValue)) {
-                buffers_.add(Buffer.valueOf(bufferName.toUpperCase()));
-            }
-        }
-
-        public synchronized static List<String> columns() {
-            if (columns_ == null) {
-                initColumns();
-            }
-            return columns_;
+        public static List<String> columns() {
+            return cfg.get(COLUMNS_KEY);
         }
 
         public static int tooltipMaxWidth() {
-            return parseInt(PREFIX + "tooltip_max_width", 120);
-        }
-
-        public static int autoscrollThreshold() {
-            return parseInt(PREFIX + "autoscroll_threshold", 20);
+            return cfg.get(TOOLTIP_MAX_WIDTH_KEY);
         }
 
         public static Color priorityColor(Priority p) {
-            String priorityName = p.name().toLowerCase();
-            return parseColor(PREFIX + "priority_color." + priorityName, Color.BLACK);
+            return cfg.get(PRIORITY_FOREGROUND_KEY, p);
         }
 
         public static Color bookmarkBackground() {
-            Color defaultColor = Color.decode("#D0F0C0");
-            return parseColor(PREFIX + "bookmark_background", defaultColor);
+            return cfg.get(BOOKMARK_BACKGROUND_KEY);
         }
 
         public static Color bookmarkedForeground() {
-            return parseColor(PREFIX + "bookmark_foreground", null);
+            return cfg.get(BOOKMARK_FOREGROUND_KEY);
         }
 
-        private static void initHighlightColors() {
-            Color defaultColor = Color.decode("#D0F0C0");
-            String prefix = PREFIX + "highlight_color.";
-            TreeMap<Integer, Color> colors = new TreeMap<Integer, Color>();
-            for (String param : instance.properties.stringPropertyNames()) {
-                if (param.startsWith(prefix)) {
-                    int id = Integer.parseInt(param.substring(prefix.length()));
-                    colors.put(id, parseColor(param, defaultColor));
-                }
-            }
-            _highlightColors = new Color[colors.size()];
-            int i = 0;
-            for (Color color : colors.values()) {
-                _highlightColors[i++] = color;
-            }
-        }
-
-        private static Color[] _highlightColors;
-
-        public static Color[] highlightColors() {
-            if (_highlightColors == null) {
-                initHighlightColors();
-            }
-            return _highlightColors;
+        public static List<Color> highlightColors() {
+            return cfg.get(HIGHLIGHT_FOREGROUNDS_KEY);
         }
 
         public static Color backgroundColor() {
-            return parseColor(PREFIX + "background_color", Color.WHITE);
+            return cfg.get(BACKGROUND_COLOR_KEY);
         }
 
         public static boolean bufferEnabled(Buffer buffer) {
-            if (buffers_ == null) {
-                initBuffers();
-            }
-            return buffers_.contains(buffer);
+            return cfg.get(BUFFER_ENABLED_KEY, buffer);
         }
 
         public static boolean hideLoggingProcesses() {
-            return parseBoolean(PREFIX + "hide_logging_processes", true);
+            return cfg.get(HIDE_LOGGING_PROCESSES_KEY);
         }
     }
 
     public static class adb {
         private static final String PREFIX = "adb.";
+
+        private static final String SHOW_SETUP_DIALOG_KEY = PREFIX + "show_setup_dialog";
+        private static final String EXECUTABLE_KEY = PREFIX + "executable";
+        private static final String BUFFERSWITCH_KEY = PREFIX + "bufferswitch";
+        private static final String LOGCAT_COMMANDLINE_KEY = PREFIX + "logcat_cmdline";
+        private static final String PS_COMMANDLINE_KEY = PREFIX + "ps_cmdline";
+        private static final String KMSG_COMMANDLINE_KEY = PREFIX + "kmsg_cmdline";
+        private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
+
         public static final String DEFAULT_EXECUTABLE = ((SystemUtils.IS_OS_WINDOWS) ? "adb.exe"
                 : "adb").intern();
 
         public static String commandline() {
-            return instance.properties.getProperty(PREFIX + "commandline", "logcat -v threadtime");
+            return cfg.get(LOGCAT_COMMANDLINE_KEY);
         }
 
         public static String bufferswitch() {
-            return instance.properties.getProperty(PREFIX + "bufferswitch", "-b");
+            return cfg.get(BUFFERSWITCH_KEY);
         }
 
         public static String bufferName(Buffer buffer) {
-            return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
+            return cfg.get(BUFFER_NAME_KEY, buffer);
         }
 
         public static String psCommandLine() {
-            return "ps -P";
+            return cfg.get(PS_COMMANDLINE_KEY);
         }
 
         public static String executable() {
-            return instance.properties.getProperty(PREFIX + "executable", DEFAULT_EXECUTABLE);
+            return cfg.get(EXECUTABLE_KEY);
         }
 
         public static void executable(String newExecutable) {
-            instance.properties.setProperty(PREFIX + "executable", newExecutable);
+            cfg.set(EXECUTABLE_KEY, newExecutable);
         }
 
         public static boolean showSetupDialog() {
-            return parseBoolean(PREFIX + "show_setup_dialog", true);
+            return cfg.get(SHOW_SETUP_DIALOG_KEY);
         }
 
         public static void showSetupDialog(boolean value) {
-            instance.properties.setProperty(PREFIX + "show_setup_dialog", BooleanUtils
-                    .toStringTrueFalse(value));
+            cfg.set(SHOW_SETUP_DIALOG_KEY, value);
         }
     }
 
     public static class dump {
         private static final String PREFIX = "dump.";
+        private static final String BUFFER_HEADER_KEY = PREFIX + "buffer";
 
         public static String bufferHeader(Buffer buffer) {
-            return instance.properties.getProperty(PREFIX + "buffer." + buffer.toString());
+            return cfg.get(BUFFER_HEADER_KEY, buffer);
         }
     }
 
@@ -241,50 +216,6 @@ public class Configuration {
     }
 
     private static Configuration instance = new Configuration();
-
-    private static List<String> splitCommaSeparatedValues(String valuesString) {
-        String[] values = StringUtils.split(valuesString, ",");
-        List<String> result = new ArrayList<String>();
-        for (String s : values) {
-            result.add(s.toLowerCase().trim());
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    private static int parseInt(String key, int defaultValue) {
-        String widthValue = instance.properties.getProperty(key);
-        if (widthValue == null) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(widthValue.trim());
-        } catch (NumberFormatException e) {
-            logger.warn("Incorrect number in " + key, e);
-            return defaultValue;
-        }
-    }
-
-    private static boolean parseBoolean(String key, boolean defaultValue) {
-        String boolValue = instance.properties.getProperty(key);
-        if (boolValue != null) {
-            return BooleanUtils.toBoolean(boolValue);
-        } else {
-            return defaultValue;
-        }
-    }
-
-    private static Color parseColor(String key, Color defaultValue) {
-        String colorValue = instance.properties.getProperty(key);
-        if (colorValue == null) {
-            return defaultValue;
-        }
-        try {
-            return Color.decode(colorValue);
-        } catch (NumberFormatException e) {
-            logger.warn("Incorrect color format in " + key, e);
-            return defaultValue;
-        }
-    }
 
     static void forceInit() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -362,13 +293,11 @@ public class Configuration {
         File file = new File(configFile);
         ensureDir();
         try {
-            Writer writer = new FileWriter(file);
+            FileOutputStream output = new FileOutputStream(file);
             try {
-                properties
-                        .store(writer,
-                                "Don't edit this file while application is running or your changes will be lost\n");
+                cfg.save(output);
             } finally {
-                writer.close();
+                output.close();
             }
         } catch (IOException e) {
             logger.error("Cannot save properties", e);
@@ -378,4 +307,54 @@ public class Configuration {
     public static void save() {
         instance.saveToFile();
     }
+
+    private static final Parser<Color> colorParser = new Parser<Color>() {
+
+        @Override
+        public Color read(String value) {
+            return Color.decode(value);
+        }
+
+        @Override
+        public String write(Color value) {
+            return String
+                    .format("#%02x%02x%02x", value.getRed(), value.getGreen(), value.getBlue());
+        }
+
+    };
+
+    private static final org.bitbucket.mlopatkin.utils.properties.Configuration cfg = new org.bitbucket.mlopatkin.utils.properties.Configuration();
+    static {
+        PropertyBuilder<Color> color = type(Color.class, colorParser);
+
+        // @formatter:off
+        cfg.property(ui.BACKGROUND_COLOR_KEY, color);
+        cfg.property(ui.BOOKMARK_BACKGROUND_KEY, color);
+        cfg.property(ui.BOOKMARK_FOREGROUND_KEY, color);
+        cfg.property(ui.BUFFER_ENABLED_KEY, 
+                enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
+        cfg.property(ui.COLUMNS_KEY, list(String.class, Parsers.stringParser));
+        cfg.property(ui.HIDE_LOGGING_PROCESSES_KEY, bool().defaultVal(true));
+        cfg.property(ui.HIGHLIGHT_FOREGROUNDS_KEY, list(Color.class, colorParser));
+        cfg.property(ui.PRIORITY_FOREGROUND_KEY, 
+                enumMap(Priority.class, Color.class, colorParser));
+        cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
+        
+        cfg.property(adb.BUFFER_NAME_KEY, 
+                enumMap(Buffer.class, String.class, Parsers.stringParser));
+        cfg.property(adb.BUFFERSWITCH_KEY, string());
+        cfg.property(adb.EXECUTABLE_KEY, string().defaultVal(adb.DEFAULT_EXECUTABLE));
+        cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
+        cfg.property(adb.LOGCAT_COMMANDLINE_KEY, string());
+        cfg.property(adb.PS_COMMANDLINE_KEY, string());
+        cfg.property(adb.SHOW_SETUP_DIALOG_KEY, bool().defaultVal(true));
+        
+        cfg.property(dump.BUFFER_HEADER_KEY, 
+                enumMap(Buffer.class, String.class, Parsers.stringParser));
+        // @formatter:on
+
+        // setup default values from resource
+        PropertyUtils.loadValuesFromResource(cfg, "/logview.properties");
+    }
+
 }
