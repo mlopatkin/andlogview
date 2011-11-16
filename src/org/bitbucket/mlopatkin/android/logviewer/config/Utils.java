@@ -61,7 +61,7 @@ class Utils {
         try {
             BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile));
             try {
-                cfg.save(output);
+                cfg.save(output, "Do not modify while Logviewer is running");
             } finally {
                 output.close();
             }
