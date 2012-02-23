@@ -18,6 +18,8 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bitbucket.mlopatkin.android.liblogcat.KernelLogRecord.Severity;
+
 /**
  * This class contains utility methods to check kernel log lines to be
  * well-formed.
@@ -27,12 +29,15 @@ public class KernelLogParser {
     }
 
     private static final Pattern KERNEL_LOG_RECORD_PATTTERN = Pattern
-            .compile("^<\\d+>(\\[\\s*\\d+\\.\\d+\\] )?.*$");
+            .compile("^<(\\d+)>(?:\\[(\\s*\\d+\\.\\d+)\\] )?(.*)$");
 
     public static KernelLogRecord parseRecord(String line) {
         Matcher m = KERNEL_LOG_RECORD_PATTTERN.matcher(line);
         if (m.matches()) {
-            return new KernelLogRecord(line);
+            int severityCode = Integer.parseInt(m.group(1));
+            String timestamp = m.group(2);
+            String message = m.group(3);
+            return new KernelLogRecord(Severity.lookupByCode(severityCode), timestamp, message);
         } else {
             return null;
         }

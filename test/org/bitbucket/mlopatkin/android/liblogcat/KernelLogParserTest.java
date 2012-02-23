@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.bitbucket.mlopatkin.android.liblogcat.KernelLogRecord.Severity;
 import org.junit.Test;
 
 public class KernelLogParserTest {
@@ -28,7 +29,10 @@ public class KernelLogParserTest {
         String line = "<3>[ 4572.545557] Topology = 10be3";
         KernelLogRecord record = KernelLogParser.parseRecord(line);
         assertNotNull(record);
-        assertEquals(line, record.getLine());
+        assertEquals(Severity.KERN_ERR, record.getSeverity());
+        assertEquals(" 4572.545557", record.getTimestamp());
+        assertEquals("Topology = 10be3", record.getMessage());
+        assertEquals(line, record.toString());
     }
 
     @Test
@@ -36,7 +40,10 @@ public class KernelLogParserTest {
         String line = "<3>Topology = 10be3";
         KernelLogRecord record = KernelLogParser.parseRecord(line);
         assertNotNull(record);
-        assertEquals(line, record.getLine());
+        assertEquals(Severity.KERN_ERR, record.getSeverity());
+        assertNull(record.getTimestamp());
+        assertEquals("Topology = 10be3", record.getMessage());
+        assertEquals(line, record.toString());
     }
 
     @Test

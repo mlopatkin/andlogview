@@ -37,7 +37,7 @@ public class KernelLogListModel extends AbstractListModel implements
 
     @Override
     public Object getElementAt(int index) {
-        return records.get(index).getLine();
+        return records.get(index).toString();
     }
 
     @Override
