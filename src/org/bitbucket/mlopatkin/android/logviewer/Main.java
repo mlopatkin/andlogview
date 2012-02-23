@@ -50,12 +50,13 @@ public class Main {
     private MainFrame window;
 
     public static void main(String[] args) {
+        Configuration.init();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
         OptionParser parser = new OptionParser("d");
         OptionSet result = parser.parse(args);
         boolean debug = result.has("d");
         try {
-            Configuration.init(debug);
+            Configuration.load(debug);
         } catch (IllegalConfigurationException e) {
             logger.warn("Unxpected exception while parsing config file", e);
             ErrorDialogsHelper.showError(null, "Error in configuration file: " + e.getMessage());

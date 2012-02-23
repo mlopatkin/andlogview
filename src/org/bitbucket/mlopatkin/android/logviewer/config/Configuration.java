@@ -150,7 +150,11 @@ public class Configuration {
     private Configuration() {
     }
 
-    public static void init(boolean debug) throws IllegalConfigurationException {
+    public static void init() {
+        Logging.setUpDefault();
+    }
+
+    public static void load(boolean debug) throws IllegalConfigurationException {
 
         // save on exit
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -159,7 +163,7 @@ public class Configuration {
                 Configuration.save();
             }
         });
-        Logging.setUpDefault();
+
         if (debug) {
             Logging.loadDebug();
         } else {
