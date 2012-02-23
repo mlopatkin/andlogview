@@ -140,6 +140,7 @@ public class BufferedListener<T> implements RecordListener<T> {
     @SuppressWarnings("unchecked")
     private void sortRecordsIfPossible(List<T> records) {
         if (records.size() > 0 && records.get(0) instanceof Comparable<?>) {
+            @SuppressWarnings("rawtypes")
             List comparableRecords = records;
             Collections.sort(comparableRecords);
         }

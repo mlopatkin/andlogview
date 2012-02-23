@@ -23,18 +23,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.RowSorter.SortKey;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
@@ -101,6 +101,7 @@ public class ProcessListFrame extends JFrame {
                 table.getRowSorter().setSortKeys(oldKeys);
             }
             if (Configuration.ui.hideLoggingProcesses()) {
+                @SuppressWarnings("unchecked")
                 TableRowSorter<ProcessListModel> sorter = (TableRowSorter<ProcessListModel>) table
                         .getRowSorter();
                 sorter.setRowFilter(new ProcessesRowFilter());

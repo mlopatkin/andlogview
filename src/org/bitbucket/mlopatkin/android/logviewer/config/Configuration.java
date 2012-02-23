@@ -166,6 +166,7 @@ public class Configuration {
 
         if (debug) {
             Logging.loadDebug();
+            logger.info("debug mode on");
         } else {
             Logging.loadNormal();
         }
