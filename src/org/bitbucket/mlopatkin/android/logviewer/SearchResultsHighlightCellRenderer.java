@@ -43,7 +43,8 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
                 hasFocus, row, column);
         int modelColumn = table.convertColumnIndexToModel(column);
         if (modelColumn == LogRecordTableModel.COLUMN_MSG
-                || modelColumn == LogRecordTableModel.COLUMN_TAG) {
+                || modelColumn == LogRecordTableModel.COLUMN_TAG
+                || modelColumn == LogRecordTableModel.COLUMN_APPNAME) {
             if (value != null) {
                 String text = value.toString();
                 if (!UiHelper.isTextFit(c, table, row, column, text)) {

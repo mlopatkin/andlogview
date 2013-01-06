@@ -45,7 +45,7 @@ public class SearchController {
             table.repaint();
             return false;
         }
-        renderer.setHighlightStrategy((HighlightStrategy) strategy);
+        renderer.setHighlightStrategy(strategy);
         table.repaint();
         curRow = table.getSelectedRow();
         return performSearch(MODE_FORWARD, curRow >= 0);
@@ -89,7 +89,8 @@ public class SearchController {
 
     private boolean isRowMatch(LogRecord record) {
         return strategy.isStringMatched(record.getMessage())
-                || strategy.isStringMatched(record.getTag());
+                || strategy.isStringMatched(record.getTag())
+                || strategy.isStringMatched(record.getAppName());
     }
 
     private void setCurrentRow(int i) {
