@@ -40,8 +40,6 @@
     <!-- Libraries used for testing -->
     <property name="libs.test" value="test" />
 
-    <ivy:settings file="ivysettings.xml" />
-        
     <property name="build.sysclasspath" value="ignore" />
 
     <!-- Locations for intermediate libraries and compiled files -->
