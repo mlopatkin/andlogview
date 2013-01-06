@@ -27,11 +27,11 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.utils.MyListUtils;
 
 public class LogRecordTableModel extends AbstractTableModel implements
-        BatchRecordsReceiver<LogRecord> {
+BatchRecordsReceiver<LogRecord> {
 
     private List<LogRecord> records;
 
-    private static final int COLUMNS_COUNT = 7;
+    private static final int COLUMNS_COUNT = 8;
 
     public static final int COLUMN_TIME = 0;
     public static final int COLUMN_PID = 1;
@@ -40,6 +40,7 @@ public class LogRecordTableModel extends AbstractTableModel implements
     public static final int COLUMN_TAG = 4;
     public static final int COLUMN_MSG = 5;
     public static final int COLUMN_LINE = 6;
+    public static final int COLUMN_APPNAME = 7;
 
     public LogRecordTableModel() {
         this.records = new ArrayList<LogRecord>();
@@ -71,6 +72,8 @@ public class LogRecordTableModel extends AbstractTableModel implements
             return record.getTag();
         case COLUMN_MSG:
             return record.getMessage();
+        case COLUMN_APPNAME:
+            return record.getAppName();
         case COLUMN_LINE:
             return rowIndex + 1;
         default:
@@ -118,6 +121,7 @@ public class LogRecordTableModel extends AbstractTableModel implements
         case COLUMN_PID:
         case COLUMN_TID:
         case COLUMN_TAG:
+        case COLUMN_APPNAME:
             return true;
         default:
             return false;

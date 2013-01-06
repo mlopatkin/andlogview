@@ -31,6 +31,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
     private TableCellRenderer messageCellRenderer = new HighlightCellRenderer();
     private TableCellRenderer tagCellRenderer = messageCellRenderer;
+    private TableCellRenderer appCellRenderer = messageCellRenderer;
     private TableCellRenderer pidCellRender;
 
     private Map<String, TableColumnBuilder> columnInfo = new HashMap<String, TableColumnBuilder>();
@@ -41,17 +42,19 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     protected void initColumnInfo() {
         addColumnInfo("time", new TableColumnBuilder(LogRecordTableModel.COLUMN_TIME, "Time")
-                .setWidth(150).setMaxWidth(150).setRenderer(timeCellRenderer));
+        .setWidth(150).setMaxWidth(150).setRenderer(timeCellRenderer));
         addColumnInfo("pid", new TableColumnBuilder(LogRecordTableModel.COLUMN_PID, "pid")
-                .setWidth(30).setMaxWidth(50).setRenderer(pidCellRender));
+        .setWidth(40).setMaxWidth(50).setRenderer(pidCellRender));
         addColumnInfo("tid", new TableColumnBuilder(LogRecordTableModel.COLUMN_TID, "tid")
-                .setWidth(30).setMaxWidth(50));
+        .setWidth(40).setMaxWidth(50));
         addColumnInfo("priority", new TableColumnBuilder(LogRecordTableModel.COLUMN_PRIORITY)
-                .setWidth(30).setMaxWidth(50).setRenderer(priorityCellRenderer));
+        .setWidth(30).setMaxWidth(50).setRenderer(priorityCellRenderer));
         addColumnInfo("tag", new TableColumnBuilder(LogRecordTableModel.COLUMN_TAG, "Tag")
-                .setWidth(120).setRenderer(tagCellRenderer));
+        .setWidth(120).setRenderer(tagCellRenderer));
+        addColumnInfo("app", new TableColumnBuilder(LogRecordTableModel.COLUMN_APPNAME, "Application")
+        .setWidth(150).setRenderer(appCellRenderer));
         addColumnInfo("message", new TableColumnBuilder(LogRecordTableModel.COLUMN_MSG, "Message")
-                .setWidth(1000).setRenderer(messageCellRenderer));
+        .setWidth(1000).setRenderer(messageCellRenderer));
     }
 
     private void addColumnByName(String name) {
