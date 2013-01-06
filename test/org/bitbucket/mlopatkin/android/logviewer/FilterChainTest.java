@@ -19,9 +19,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 import org.junit.Test;
@@ -29,10 +31,12 @@ import org.junit.Test;
 public class FilterChainTest {
 
     private static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(Buffer.UNKNOWN,
-            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172");
+            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172",
+            Collections.<Integer, String> emptyMap());
 
     private static final LogRecord RECORD2 = LogRecordParser.parseThreadTime(Buffer.UNKNOWN,
-            "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172");
+            "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172",
+            Collections.<Integer, String> emptyMap());
 
     private static final LogRecordFilter TAG_FILTER_MATCH = new SingleTagFilter("AudioFlinger");
 
@@ -75,8 +79,8 @@ public class FilterChainTest {
         chain.addFilter(FilteringMode.HIGHLIGHT, TAG_FILTER_MATCH);
         chain.removeFilter(TAG_FILTER_MATCH);
         for (FilteringMode mode : FilteringMode.values()) {
-            assertEquals("Default filtering value failed for " + mode + " after cleanup", mode
-                    .getDefaultResult(), chain.checkFilter(mode, RECORD1));
+            assertEquals("Default filtering value failed for " + mode + " after cleanup",
+                    mode.getDefaultResult(), chain.checkFilter(mode, RECORD1));
         }
     }
 }

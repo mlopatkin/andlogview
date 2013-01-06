@@ -68,7 +68,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private void parseSection(BufferedReader in, String sectionName) throws IOException,
-            ParseException {
+    ParseException {
         SectionHandler handler = getSectionHandler(sectionName);
         if (handler == null) {
             return;
@@ -217,7 +217,7 @@ public class DumpstateFileDataSource implements DataSource {
                 parsingStrategy = chooseParsingStrategy(line);
             }
             assert buffer != null;
-            LogRecord record = parsingStrategy.parse(buffer, line);
+            LogRecord record = parsingStrategy.parse(buffer, line, getPidToProcessConverter());
             if (record == null) {
                 logger.debug("Null record: " + line);
             } else {
@@ -228,7 +228,7 @@ public class DumpstateFileDataSource implements DataSource {
 
         private Strategy chooseParsingStrategy(String line) throws ParseException {
             for (Strategy strategy : ParsingStrategies.supportedStrategies) {
-                if (strategy.parse(null, line) != null) {
+                if (strategy.parse(null, line, Collections.<Integer, String>emptyMap()) != null) {
                     return strategy;
                 }
             }

@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,10 @@ public class LogRecordStream {
 
     private BufferedReader in;
 
-    public LogRecordStream(InputStream in) {
+    private Map<Integer, String> pidToProcess;
+
+    public LogRecordStream(InputStream in, Map<Integer, String> pidToProcess) {
+        this.pidToProcess = pidToProcess;
         this.in = new BufferedReader(new InputStreamReader(in));
     }
 
@@ -44,7 +48,7 @@ public class LogRecordStream {
         try {
             String line = in.readLine();
             while (!isLogEnd(line)) {
-                LogRecord record = LogRecordParser.parseThreadTime(kind, line);
+                LogRecord record = LogRecordParser.parseThreadTime(kind, line, pidToProcess);
                 if (record != null) {
                     return record;
                 } else {

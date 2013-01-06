@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserThreadTime() {
-        LogRecord record = LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD);
+        LogRecord record = LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD, Collections.<Integer, String>emptyMap());
 
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
@@ -89,7 +90,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserBrief() {
-        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD);
+        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD, Collections.<Integer, String>emptyMap());
 
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getTid());
@@ -103,7 +104,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserBriefPad() {
-        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD_PAD);
+        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD_PAD, Collections.<Integer, String>emptyMap());
 
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getTid());
@@ -117,7 +118,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserProcess() {
-        LogRecord record = LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD);
+        LogRecord record = LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD, Collections.<Integer, String>emptyMap());
 
         assertEquals(LogRecord.NO_ID, record.getTid());
         assertNull(record.getTime());
@@ -145,7 +146,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserTime() {
-        LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD);
+        LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD, Collections.<Integer, String>emptyMap());
 
         assertEquals(LogRecord.NO_ID, record.getTid());
 
@@ -159,7 +160,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserTimePad() {
-        LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD_PAD);
+        LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD_PAD, Collections.<Integer, String>emptyMap());
 
         assertEquals(LogRecord.NO_ID, record.getTid());
 

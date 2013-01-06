@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class LogfileDataSource implements DataSource {
         String line = in.readLine();
         while (line != null) {
             if (!LogRecordParser.isLogBeginningLine(line) && !StringUtils.isBlank(line)) {
-                LogRecord record = strategy.parse(DEFAULT_BUFFER, line);
+                LogRecord record = strategy.parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
                 // sometimes we cannot handle the line well: if we didn't guess
                 // the log type correctly or if there is some weird formatting
                 // (probably binary output)
@@ -100,7 +101,7 @@ public class LogfileDataSource implements DataSource {
     static LogfileDataSource createLogfileDataSourceWithStrategy(File file, String checkLine)
             throws UnrecognizedFormatException {
         for (ParsingStrategies.Strategy current : ParsingStrategies.supportedStrategies) {
-            if (current.parse(null, checkLine) != null) {
+            if (current.parse(null, checkLine, Collections.<Integer, String>emptyMap()) != null) {
                 return new LogfileDataSource(file, current);
             }
         }

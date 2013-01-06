@@ -15,32 +15,36 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
+import java.util.Map;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 class ParsingStrategies {
 
     interface Strategy {
-        LogRecord parse(Buffer buffer, String line);
+        LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess);
     }
 
     static final ParsingStrategies.Strategy threadTime = new ParsingStrategies.Strategy() {
         @Override
-        public LogRecord parse(Buffer buffer, String line) {
-            return LogRecordParser.parseThreadTime(buffer, line);
+        public LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+            return LogRecordParser.parseThreadTime(buffer, line, pidToProcess);
         }
 
+        @Override
         public String toString() {
             return "ThreadTimeStrategy";
         };
     };
     static final ParsingStrategies.Strategy brief = new ParsingStrategies.Strategy() {
         @Override
-        public LogRecord parse(Buffer buffer, String line) {
-            return LogRecordParser.parseBrief(buffer, line);
+        public LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+            return LogRecordParser.parseBrief(buffer, line, pidToProcess);
         }
 
+        @Override
         public String toString() {
             return "BriefStrategy";
         };
@@ -48,10 +52,11 @@ class ParsingStrategies {
 
     static final ParsingStrategies.Strategy time = new ParsingStrategies.Strategy() {
         @Override
-        public LogRecord parse(Buffer buffer, String line) {
-            return LogRecordParser.parseTime(buffer, line);
+        public LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+            return LogRecordParser.parseTime(buffer, line, pidToProcess);
         }
 
+        @Override
         public String toString() {
             return "TimeStrategy";
         };

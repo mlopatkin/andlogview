@@ -17,6 +17,8 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * This class contains all available log record data like timestamp, tag,
  * message, etc.
@@ -50,26 +52,29 @@ public class LogRecord implements Comparable<LogRecord> {
 
     public static final int NO_ID = -1;
 
-    private Date time;
-    private int pid;
-    private int tid;
-    private Priority priority;
-    private String tag;
-    private String message;
-    private Buffer buffer = Buffer.UNKNOWN;
+    private final Date time;
+    private final int pid;
+    private final int tid;
+    private final Priority priority;
+    private final String tag;
+    private final String message;
+    private final Buffer buffer;
+    private final String appName;
 
-    public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message) {
+    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag,
+            String message) {
+        this(time, pid, tid, appName, priority, tag, message, Buffer.UNKNOWN);
+    }
+
+    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message,
+            Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
+        this.appName = StringUtils.defaultIfBlank(appName, "");
         this.priority = priority;
         this.tag = tag;
         this.message = message;
-    }
-
-    public LogRecord(Date time, int pid, int tid, Priority priority, String tag, String message,
-            Buffer buffer) {
-        this(time, pid, tid, priority, tag, message);
         this.buffer = buffer;
     }
 
@@ -99,6 +104,10 @@ public class LogRecord implements Comparable<LogRecord> {
 
     public Buffer getBuffer() {
         return buffer;
+    }
+
+    public String getAppName() {
+        return appName;
     }
 
     @Override

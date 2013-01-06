@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
@@ -41,10 +43,10 @@ class AdbBuffer {
     private final Thread shellExecutor;
 
     public AdbBuffer(BufferReceiver receiver, IDevice device, LogRecord.Buffer buffer,
-            String commandLine) {
+            String commandLine, Map<Integer, String> pidToProcess) {
         this.receiver = receiver;
         this.buffer = buffer;
-        in = new LogRecordStream(shellInput);
+        in = new LogRecordStream(shellInput, pidToProcess);
         shellExecutor = new Thread(new AutoClosingAdbShellCommand(device, commandLine, shellInput),
                 "Shell-reader-" + buffer);
         pollingThread = new PollingThread();

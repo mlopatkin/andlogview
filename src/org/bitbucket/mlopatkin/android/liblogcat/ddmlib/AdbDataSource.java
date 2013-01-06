@@ -73,10 +73,10 @@ public class AdbDataSource implements DataSource, BufferReceiver {
 
     private void initStreams() {
         checkBuffers();
+        converter = new AdbPidToProcessConverter(device);
         for (LogRecord.Buffer buffer : availableBuffers) {
             setUpStream(buffer);
         }
-        converter = new AdbPidToProcessConverter(device);
     }
 
     public AdbDataSource(final IDevice device) {
@@ -141,7 +141,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         }
 
         final String commandLine = createLogcatCommandLine(bufferName);
-        final AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine);
+        final AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
         buffers.add(adbBuffer);
 
     }
