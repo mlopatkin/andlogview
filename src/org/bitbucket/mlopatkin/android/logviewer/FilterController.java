@@ -27,6 +27,8 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameOrPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.ComposeFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
@@ -43,7 +45,7 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
  * 
  */
 class FilterController implements CreateFilterDialog.DialogResultReceiver,
-        EditFilterDialog.DialogResultReceiver {
+EditFilterDialog.DialogResultReceiver {
 
     private static final Logger logger = Logger.getLogger(FilterController.class);
 
@@ -133,8 +135,10 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         if (dialog.getMessageText() != null) {
             filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
         }
-        if (dialog.getPids() != null) {
-            filter = appendFilter(filter, new MultiPidFilter(dialog.getPids()));
+        if (!dialog.getPids().isEmpty() || !dialog.getAppNames().isEmpty()) {
+            AppNameFilter appNames = AppNameFilter.fromList(dialog.getAppNames());
+            MultiPidFilter pids = MultiPidFilter.fromList(dialog.getPids());
+            filter = appendFilter(filter, AppNameOrPidFilter.or(appNames, pids));
         }
         if (dialog.getPriority() != null) {
             filter = appendFilter(filter, new PriorityFilter(dialog.getPriority()));

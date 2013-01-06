@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -36,6 +37,10 @@ public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
         }
     }
 
+    public MultiPidFilter(List<Integer> pids) {
+        this.pids.addAll(pids);
+    }
+
     @Override
     public boolean include(LogRecord record) {
         return pids.contains(record.getPid());
@@ -49,5 +54,13 @@ public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
     @Override
     protected void dumpFilter(FilterData data) {
         data.pids = Collections.unmodifiableCollection(pids);
+    }
+
+    public static MultiPidFilter fromList(List<Integer> pids) {
+        if (pids == null || pids.isEmpty()) {
+            return null;
+        } else {
+            return new MultiPidFilter(pids);
+        }
     }
 }

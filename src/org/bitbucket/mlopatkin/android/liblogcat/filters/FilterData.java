@@ -28,4 +28,5 @@ class FilterData {
     Collection<Integer> pids;
     String message;
     LogRecord.Priority priority;
+    Collection<String> appNames;
 }

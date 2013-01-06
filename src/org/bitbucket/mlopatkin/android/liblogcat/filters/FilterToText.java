@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
@@ -38,6 +42,13 @@ public class FilterToText {
         return getMessage(getData(filter));
     }
 
+    public static String getAppNames(LogRecordFilter filter) {
+        return getAppNames(getData(filter));
+    }
+
+    public static String getAppNamesAndPids(LogRecordFilter filter) {
+        return getAppNamesAndPids(getData(filter));
+    }
     public static LogRecord.Priority getPriority(LogRecordFilter filter) {
         return getPriority(getData(filter));
     }
@@ -73,9 +84,27 @@ public class FilterToText {
         }
     }
 
+    private static String getAppNames(FilterData data) {
+        if (data != null) {
+            return StringUtils.join(data.appNames, ", ");
+        } else {
+            return null;
+        }
+    }
+
     private static Priority getPriority(FilterData data) {
         if (data != null) {
             return data.priority;
+        } else {
+            return null;
+        }
+    }
+
+    private static String getAppNamesAndPids(FilterData data) {
+        if (data != null) {
+            List<Object> allItems = new ArrayList<Object>(data.pids != null ? data.pids : Collections.emptyList());
+            allItems.addAll(data.appNames != null ? data.appNames : Collections.emptyList());
+            return StringUtils.join(allItems, ", ");
         } else {
             return null;
         }

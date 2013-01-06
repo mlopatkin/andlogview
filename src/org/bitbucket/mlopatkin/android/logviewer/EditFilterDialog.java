@@ -39,7 +39,7 @@ public class EditFilterDialog extends FilterDialog {
         this.filter = filter;
         this.mode = mode;
         getMessageTextField().setText(FilterToText.getMessage(filter));
-        getPidTextField().setText(FilterToText.getPids(filter));
+        getPidTextField().setText(FilterToText.getAppNamesAndPids(filter));
         getTagTextField().setText(FilterToText.getTags(filter));
         getLogLevelList().setSelectedItem(FilterToText.getPriority(filter));
         getModePanel().setSelectedMode(mode);
