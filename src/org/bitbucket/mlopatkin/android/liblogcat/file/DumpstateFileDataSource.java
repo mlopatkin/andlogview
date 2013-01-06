@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.KernelLogParser;
-import org.bitbucket.mlopatkin.android.liblogcat.KernelLogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
@@ -49,7 +47,6 @@ public class DumpstateFileDataSource implements DataSource {
     private List<LogRecord> records = new ArrayList<LogRecord>();
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
     private RecordListener<LogRecord> logcatListener;
-    private RecordListener<KernelLogRecord> kernelListener;
 
     private File file;
 
@@ -110,7 +107,6 @@ public class DumpstateFileDataSource implements DataSource {
     private void initSectionHandlers() {
         handlers.add(new LogcatSectionHandler());
         handlers.add(new ProcessesSectionHandler());
-        handlers.add(new KernelLogHandler());
     }
 
     @Override
@@ -131,7 +127,6 @@ public class DumpstateFileDataSource implements DataSource {
     @Override
     public boolean reset() {
         setLogRecordListener(logcatListener);
-        setKernelLogListener(kernelListener);
         return true;
     }
 
@@ -310,51 +305,9 @@ public class DumpstateFileDataSource implements DataSource {
 
     }
 
-    private static final String KERNEL_SECTION = "KERNEL LOG (dmesg)";
-
-    private final List<KernelLogRecord> kernelRecords = new ArrayList<KernelLogRecord>();
-
-    private class KernelLogHandler implements SectionHandler {
-
-        @Override
-        public boolean isSupportedSection(String sectionName) {
-            return KERNEL_SECTION.equals(sectionName);
-        }
-
-        @Override
-        public boolean handleLine(String line) throws ParseException {
-            if (isEnd(line)) {
-                return false;
-            }
-            KernelLogRecord record = KernelLogParser.parseRecord(line);
-            if (record != null) {
-                kernelRecords.add(record);
-            }
-            return true;
-        }
-
-        @Override
-        public void endSection() {
-        }
-
-        @Override
-        public void startSection(String sectionName) {
-        }
-
-        private boolean isEnd(String line) {
-            return SECTION_END_PATTERN.matcher(line).matches();
-        }
-    }
-
     @Override
     public String toString() {
         return file.getName();
     }
 
-    @Override
-    public boolean setKernelLogListener(RecordListener<KernelLogRecord> listener) {
-        kernelListener = listener;
-        kernelListener.setRecords(kernelRecords);
-        return true;
-    }
 }
