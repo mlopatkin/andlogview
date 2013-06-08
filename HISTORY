@@ -1,3 +1,12 @@
+version 0.18
+    [+] Application name is now displayed as column
+    [+] It is possible to search and filter by application name
+    [+] Search scope can be limited to application name, tag or message by prefixing request
+    [+] Window size and position is persisted between runs
+    [+] Log viewer reconnects to the device automatically if enabled in settings
+
+    [*] Improved compatibility with various log format deviations
+
 version 0.17.4
     [+] Ctrl+R now resets logs
     
