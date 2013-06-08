@@ -15,13 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.List;
-
-import javax.swing.JOptionPane;
+import com.android.ddmlib.IDevice;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -39,7 +33,13 @@ import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 
-import com.android.ddmlib.IDevice;
+import java.awt.EventQueue;
+import java.io.File;
+import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
@@ -97,7 +97,7 @@ public class Main {
 
             IDevice device = AdbDeviceManager.getDefaultDevice();
             if (device != null) {
-                DeviceDisconnectedNotifier.startWatching(device);
+                DeviceDisconnectedHandler.startWatching(window, device);
                 initialSource = new AdbDataSource(device);
             } else {
                 window.waitForDevice();

@@ -15,6 +15,24 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
+import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -46,24 +64,6 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.border.EtchedBorder;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
-import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
-import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
-import com.android.ddmlib.IDevice;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -418,7 +418,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     @Override
     public void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice) {
         if (selectedDevice != null) {
-            DeviceDisconnectedNotifier.startWatching(selectedDevice);
+            DeviceDisconnectedHandler.startWatching(this, selectedDevice);
             setSource(new AdbDataSource(selectedDevice));
         }
     }
@@ -487,7 +487,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         }
         isWaitingForDevice = false;
         stopWaitingForDevice();
-        DeviceDisconnectedNotifier.startWatching(device);
+        DeviceDisconnectedHandler.startWatching(this, device);
         setSourceAsync(new AdbDataSource(device));
     }
 

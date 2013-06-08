@@ -15,32 +15,35 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import com.android.ddmlib.IDevice;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 import java.awt.EventQueue;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-
-import com.android.ddmlib.IDevice;
-
 /**
  * This class is responsible for showing notification dialog when device is
  * disconnected.
- * 
+ *
  */
-public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceListener {
-    private static final Logger logger = Logger.getLogger(DeviceDisconnectedNotifier.class);
-    private IDevice device;
+public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceListener {
+    private static final Logger logger = Logger.getLogger(DeviceDisconnectedHandler.class);
+    private final IDevice device;
+    private final MainFrame mainFrame;
 
-    private DeviceDisconnectedNotifier(IDevice device) {
+    private DeviceDisconnectedHandler(MainFrame mainFrame, IDevice device) {
+        this.mainFrame = mainFrame;
         this.device = device;
     }
 
     @Override
     public void deviceDisconnected(IDevice device) {
         if (device == this.device) {
-            showNotification(disconnectedInvoker);
+            onDeviceDisconnected(disconnectedInvoker);
             // one-shot
             AdbDeviceManager.removeDeviceChangeListener(this);
         }
@@ -50,21 +53,25 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
     public void deviceChanged(IDevice device, int changeMask) {
         if (device == this.device && (changeMask & IDevice.CHANGE_STATE) != 0) {
             if (!device.isOnline()) {
-                showNotification(offlineInvoker);
+                onDeviceDisconnected(offlineInvoker);
                 AdbDeviceManager.removeDeviceChangeListener(this);
             }
         }
     }
 
-    private void showNotification(Runnable notificationInvoker) {
+    private void onDeviceDisconnected(Runnable notificationInvoker) {
         logger.debug("showNotification");
-        EventQueue.invokeLater(notificationInvoker);
+        if (Configuration.adb.isAutoReconnectEnabled()) {
+            mainFrame.waitForDevice();
+        } else {
+            EventQueue.invokeLater(notificationInvoker);
+        }
     }
 
     private void showNotificationDialog(String message) {
         assert EventQueue.isDispatchThread();
         logger.debug("show notification dialog");
-        JOptionPane.showMessageDialog(null, message, "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(mainFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
         logger.debug("close notification dialog");
     }
 
@@ -82,7 +89,7 @@ public class DeviceDisconnectedNotifier extends AdbDeviceManager.AbstractDeviceL
         }
     };
 
-    public static void startWatching(IDevice device) {
-        AdbDeviceManager.addDeviceChangeListener(new DeviceDisconnectedNotifier(device));
+    public static void startWatching(MainFrame mainFrame, IDevice device) {
+        AdbDeviceManager.addDeviceChangeListener(new DeviceDisconnectedHandler(mainFrame, device));
     }
 }

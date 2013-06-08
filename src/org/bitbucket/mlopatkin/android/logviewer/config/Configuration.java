@@ -23,9 +23,6 @@ import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.list;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.string;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
 
-import java.awt.Color;
-import java.util.List;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
@@ -36,6 +33,9 @@ import org.bitbucket.mlopatkin.utils.properties.Parsers;
 import org.bitbucket.mlopatkin.utils.properties.PropertyBuilder;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 import org.bitbucket.mlopatkin.utils.properties.SynchronizedConfiguration;
+
+import java.awt.Color;
+import java.util.List;
 
 public class Configuration {
 
@@ -99,6 +99,7 @@ public class Configuration {
         private static final String PS_COMMANDLINE_KEY = PREFIX + "ps_cmdline";
         private static final String KMSG_COMMANDLINE_KEY = PREFIX + "kmsg_cmdline";
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
+        private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
 
         public static final String DEFAULT_EXECUTABLE = ((SystemUtils.IS_OS_WINDOWS) ? "adb.exe"
                 : "adb").intern();
@@ -133,6 +134,14 @@ public class Configuration {
 
         public static void showSetupDialog(boolean value) {
             config.set(SHOW_SETUP_DIALOG_KEY, value);
+        }
+
+        public static Boolean isAutoReconnectEnabled() {
+            return config.get(AUTORECONNECT_KEY);
+        }
+
+        public static void setAutoReconnectEnabled(boolean enabled) {
+            config.set(AUTORECONNECT_KEY, enabled);
         }
     }
 
@@ -186,16 +195,16 @@ public class Configuration {
         cfg.property(ui.BACKGROUND_COLOR_KEY, color);
         cfg.property(ui.BOOKMARK_BACKGROUND_KEY, color);
         cfg.property(ui.BOOKMARK_FOREGROUND_KEY, color);
-        cfg.property(ui.BUFFER_ENABLED_KEY, 
+        cfg.property(ui.BUFFER_ENABLED_KEY,
                 enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
         cfg.property(ui.COLUMNS_KEY, list(String.class, Parsers.stringParser));
         cfg.property(ui.HIDE_LOGGING_PROCESSES_KEY, bool().defaultVal(true));
         cfg.property(ui.HIGHLIGHT_FOREGROUNDS_KEY, list(Color.class, colorParser));
-        cfg.property(ui.PRIORITY_FOREGROUND_KEY, 
+        cfg.property(ui.PRIORITY_FOREGROUND_KEY,
                 enumMap(Priority.class, Color.class, colorParser));
         cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
-        
-        cfg.property(adb.BUFFER_NAME_KEY, 
+
+        cfg.property(adb.BUFFER_NAME_KEY,
                 enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.BUFFERSWITCH_KEY, string());
         cfg.property(adb.EXECUTABLE_KEY, string().defaultVal(adb.DEFAULT_EXECUTABLE));
@@ -203,8 +212,9 @@ public class Configuration {
         cfg.property(adb.LOGCAT_COMMANDLINE_KEY, string());
         cfg.property(adb.PS_COMMANDLINE_KEY, string());
         cfg.property(adb.SHOW_SETUP_DIALOG_KEY, bool().defaultVal(true));
-        
-        cfg.property(dump.BUFFER_HEADER_KEY, 
+        cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
+
+        cfg.property(dump.BUFFER_HEADER_KEY,
                 enumMap(Buffer.class, String.class, Parsers.stringParser));
         // @formatter:on
 

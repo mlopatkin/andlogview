@@ -15,6 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -28,6 +31,7 @@ import javax.swing.Action;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -36,9 +40,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
-
-import org.apache.commons.lang3.StringUtils;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class ConfigurationDialog extends JDialog {
 
@@ -49,7 +50,7 @@ public class ConfigurationDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setModalityType(ModalityType.APPLICATION_MODAL);
         setTitle("Configuration");
-        setBounds(100, 100, 400, 122);
+        setBounds(100, 100, 456, 193);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -73,36 +74,34 @@ public class ConfigurationDialog extends JDialog {
                 }
             }
         });
+
+        cbAutoReconnect = new JCheckBox("Reconnect to device automatically");
+        cbAutoReconnect.getModel().setSelected(Configuration.adb.isAutoReconnectEnabled());
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-        gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                .addGroup(
-                        gl_contentPanel
-                                .createSequentialGroup()
-                                .addComponent(lblAdbExecutableLocation)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(textAdbExecutable, GroupLayout.DEFAULT_SIZE, 486,
-                                        Short.MAX_VALUE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(btBrowseAdb, GroupLayout.PREFERRED_SIZE, 33,
-                                        GroupLayout.PREFERRED_SIZE)));
-        gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                .addGroup(
-                        gl_contentPanel
-                                .createSequentialGroup()
-                                .addGroup(
-                                        gl_contentPanel
-                                                .createParallelGroup(Alignment.LEADING)
-                                                .addComponent(lblAdbExecutableLocation)
-                                                .addGroup(
-                                                        gl_contentPanel
-                                                                .createParallelGroup(
-                                                                        Alignment.BASELINE)
-                                                                .addComponent(textAdbExecutable,
-                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                        GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(btBrowseAdb)))
-                                .addContainerGap(375, Short.MAX_VALUE)));
+        gl_contentPanel.setHorizontalGroup(
+            gl_contentPanel.createParallelGroup(Alignment.LEADING)
+                .addGroup(gl_contentPanel.createSequentialGroup()
+                    .addComponent(lblAdbExecutableLocation)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(textAdbExecutable, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btBrowseAdb, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+                .addGroup(gl_contentPanel.createSequentialGroup()
+                    .addComponent(cbAutoReconnect)
+                    .addContainerGap())
+        );
+        gl_contentPanel.setVerticalGroup(
+            gl_contentPanel.createParallelGroup(Alignment.LEADING)
+                .addGroup(gl_contentPanel.createSequentialGroup()
+                    .addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+                        .addComponent(lblAdbExecutableLocation)
+                        .addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(textAdbExecutable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btBrowseAdb)))
+                    .addGap(18)
+                    .addComponent(cbAutoReconnect)
+                    .addContainerGap(57, Short.MAX_VALUE))
+        );
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -142,6 +141,7 @@ public class ConfigurationDialog extends JDialog {
         }
     };
     private JTextField textAdbExecutable;
+    private JCheckBox cbAutoReconnect;
 
     public static void showConfigurationDialog(Frame owner) {
         assert EventQueue.isDispatchThread();
@@ -174,5 +174,6 @@ public class ConfigurationDialog extends JDialog {
 
     private void save() {
         Configuration.adb.executable(textAdbExecutable.getText());
+        Configuration.adb.setAutoReconnectEnabled(cbAutoReconnect.getModel().isSelected());
     }
 }
