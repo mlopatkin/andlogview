@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -37,11 +38,7 @@ public class LogRecordStream {
 
     public LogRecordStream(InputStream in, Map<Integer, String> pidToProcess) {
         this.pidToProcess = pidToProcess;
-        this.in = new BufferedReader(new InputStreamReader(in));
-    }
-
-    public LogRecordStream(BufferedReader in) {
-        this.in = in;
+        this.in = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
     }
 
     public LogRecord next(LogRecord.Buffer kind) {
