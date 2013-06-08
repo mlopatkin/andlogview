@@ -28,6 +28,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.android.logviewer.FilteringModesPanel.ModeChangedListener;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
 public abstract class FilterDialog extends JDialog {
@@ -317,17 +318,21 @@ public abstract class FilterDialog extends JDialog {
     protected boolean isInputValid() {
         List<String> appNames = getAppNames();
         for (String appName : appNames) {
-            if (!SearchStrategyFactory.isSearchRequestValid(appName)) {
+            try {
+                SearchStrategyFactory.createSearchStrategy(appName);
+            } catch (RequestCompilationException e) {
                 ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
-                        appName, SearchStrategyFactory.describeError(appName));
-                return false;
+                      appName, e.getMessage());
+              return false;
             }
         }
         String request = getMessageText();
-        if (!SearchStrategyFactory.isSearchRequestValid(request)) {
-            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s", request,
-                    SearchStrategyFactory.describeError(request));
-            return false;
+        try {
+            SearchStrategyFactory.createSearchStrategy(request);
+        } catch (RequestCompilationException e) {
+            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
+                  request, e.getMessage());
+          return false;
         }
         return true;
     }

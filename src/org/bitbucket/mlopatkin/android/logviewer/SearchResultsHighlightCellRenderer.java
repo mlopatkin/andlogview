@@ -21,7 +21,8 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -29,7 +30,7 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 public class SearchResultsHighlightCellRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
-    private HighlightStrategy strategy;
+    private RowSearchStrategy strategy;
 
     @Override
     public void setInnerRenderer(TableCellRenderer renderer) {
@@ -42,6 +43,8 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
         JComponent c = (JComponent) inner.getTableCellRendererComponent(table, value, isSelected,
                 hasFocus, row, column);
         int modelColumn = table.convertColumnIndexToModel(column);
+        LogRecordTableModel model = (LogRecordTableModel) table.getModel();
+        LogRecord rowData = model.getRowData(table.convertRowIndexToModel(row));
         if (modelColumn == LogRecordTableModel.COLUMN_MSG
                 || modelColumn == LogRecordTableModel.COLUMN_TAG
                 || modelColumn == LogRecordTableModel.COLUMN_APPNAME) {
@@ -50,7 +53,7 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
                 if (!UiHelper.isTextFit(c, table, row, column, text)) {
                     TooltipGenerator tooltip = new TooltipGenerator(text);
                     if (strategy != null) {
-                        strategy.highlightOccurences(text, tooltip);
+                        strategy.highlightColumn(rowData, modelColumn, tooltip);
                     }
                     c.setToolTipText(tooltip.getTooltip());
                 } else {
@@ -58,14 +61,14 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
                 }
                 if (strategy != null) {
                     TextHighlighter th = (TextHighlighter) c;
-                    strategy.highlightOccurences(text, th);
+                    strategy.highlightColumn(rowData, modelColumn, th);
                 }
             }
         }
         return c;
     }
 
-    public void setHighlightStrategy(HighlightStrategy strategy) {
+    public void setHighlightStrategy(RowSearchStrategy strategy) {
         this.strategy = strategy;
     }
 }

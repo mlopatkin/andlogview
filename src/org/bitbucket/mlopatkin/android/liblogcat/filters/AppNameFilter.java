@@ -17,9 +17,9 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
@@ -31,7 +31,7 @@ public class AppNameFilter extends AbstractFilter implements LogRecordFilter {
     private List<SearchStrategy> strategies = new ArrayList<SearchStrategy>();
     private List<String> requestTexts = new ArrayList<String>();
 
-    public AppNameFilter(List<String> appNames) throws PatternSyntaxException {
+    public AppNameFilter(List<String> appNames) throws RequestCompilationException {
         for (String request : appNames) {
             requestTexts.add(request);
             strategies.add(SearchStrategyFactory.createSearchStrategy(request));
@@ -59,7 +59,7 @@ public class AppNameFilter extends AbstractFilter implements LogRecordFilter {
         data.appNames = requestTexts;
     }
 
-    public static AppNameFilter fromList(List<String> appNames) {
+    public static AppNameFilter fromList(List<String> appNames) throws RequestCompilationException {
         if (appNames == null || appNames.isEmpty()) {
             return null;
         } else {

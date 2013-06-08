@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.PatternSyntaxException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -60,7 +59,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
@@ -264,7 +263,11 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
             public void actionPerformed(ActionEvent e) {
                 hideSearchField();
                 instantSearchTextField.setText(null);
-                searchController.startSearch(null);
+                try {
+                    searchController.startSearch(null);
+                } catch (RequestCompilationException e1) {
+                    logger.error("Unexpected exception", e1);
+                }
             }
         });
 
@@ -279,10 +282,10 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                                 logElements.requestFocusInWindow();
                                 showSearchMessage(MESSAGE_NOT_FOUND);
                             }
-                        } catch (PatternSyntaxException ex) {
+                        } catch (RequestCompilationException e1) {
                             ErrorDialogsHelper.showError(MainFrame.this,
-                                    "%s is not a valid search expression: %s", request,
-                                    SearchStrategyFactory.describeError(request));
+                                    "%s isn't a valid search expression: %s", request,
+                                    e1.getMessage());
                         }
                     }
                 });

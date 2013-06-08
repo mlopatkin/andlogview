@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.event.ActionListener;
@@ -37,15 +38,15 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
 /**
  * This class manages all filter-related stuff: adding, removing, enabling, etc.
- *
  */
 class FilterController implements CreateFilterDialog.DialogResultReceiver,
-EditFilterDialog.DialogResultReceiver {
+        EditFilterDialog.DialogResultReceiver {
 
     private static final Logger logger = Logger.getLogger(FilterController.class);
 
@@ -132,13 +133,18 @@ EditFilterDialog.DialogResultReceiver {
         if (dialog.getTags() != null) {
             filter = appendFilter(filter, new MultiTagFilter(dialog.getTags()));
         }
-        if (dialog.getMessageText() != null) {
-            filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
-        }
-        if (!dialog.getPids().isEmpty() || !dialog.getAppNames().isEmpty()) {
-            AppNameFilter appNames = AppNameFilter.fromList(dialog.getAppNames());
-            MultiPidFilter pids = MultiPidFilter.fromList(dialog.getPids());
-            filter = appendFilter(filter, AppNameOrPidFilter.or(appNames, pids));
+        try {
+            if (dialog.getMessageText() != null) {
+                filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
+            }
+            if (!dialog.getPids().isEmpty() || !dialog.getAppNames().isEmpty()) {
+                AppNameFilter appNames = AppNameFilter.fromList(dialog.getAppNames());
+                MultiPidFilter pids = MultiPidFilter.fromList(dialog.getPids());
+                filter = appendFilter(filter, AppNameOrPidFilter.or(appNames, pids));
+            }
+        } catch (RequestCompilationException e) {
+            logger.error("Unexpected exception, must be validated");
+            throw new AssertionError(e);
         }
         if (dialog.getPriority() != null) {
             filter = appendFilter(filter, new PriorityFilter(dialog.getPriority()));
@@ -280,7 +286,8 @@ EditFilterDialog.DialogResultReceiver {
 
         @Override
         public void addFilter(FilteringMode mode, LogRecordFilter filter, Object data) {
-            WindowFilterController controller = new WindowFilterController(main, table, tableModel, null,
+            WindowFilterController controller = new WindowFilterController(main, table, tableModel,
+                    null,
                     FilterController.this, filter);
             controller.showWindow();
             windowControllers.put(filter, controller);

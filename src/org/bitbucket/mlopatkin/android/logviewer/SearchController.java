@@ -15,11 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.util.regex.PatternSyntaxException;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.search.HighlightStrategy;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
+import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 
 public class SearchController {
@@ -28,6 +27,8 @@ public class SearchController {
     private LogRecordTableModel model;
     private int curRow;
     private SearchResultsHighlightCellRenderer renderer = new SearchResultsHighlightCellRenderer();
+
+    private RowSearchStrategy strategy;
 
     public SearchController(DecoratingRendererTable table, LogRecordTableModel model) {
         this.table = table;
@@ -38,8 +39,8 @@ public class SearchController {
     private static final int MODE_FORWARD = 1;
     private static final int MODE_BACKWARD = -1;
 
-    public boolean startSearch(String text) throws PatternSyntaxException {
-        strategy = SearchStrategyFactory.createHighlightStrategy(text);
+    public boolean startSearch(String text) throws RequestCompilationException {
+        strategy = RowSearchStrategyFactory.compile(text);
         if (strategy == null) {
             renderer.setHighlightStrategy(null);
             table.repaint();
@@ -77,20 +78,12 @@ public class SearchController {
         }
         for (int i = startPos; i != endPos; i += searchMode) {
             LogRecord record = model.getRowData(table.convertRowIndexToModel(i));
-            if (isRowMatch(record)) {
+            if (strategy.isRowMatched(record)) {
                 setCurrentRow(i);
                 return true;
             }
         }
         return false;
-    }
-
-    private HighlightStrategy strategy;
-
-    private boolean isRowMatch(LogRecord record) {
-        return strategy.isStringMatched(record.getMessage())
-                || strategy.isStringMatched(record.getTag())
-                || strategy.isStringMatched(record.getAppName());
     }
 
     private void setCurrentRow(int i) {

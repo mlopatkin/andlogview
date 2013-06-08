@@ -15,9 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.regex.PatternSyntaxException;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
@@ -29,7 +28,7 @@ public class MessageFilter extends AbstractFilter implements LogRecordFilter {
     private SearchStrategy strategy;
     private String requestText;
 
-    public MessageFilter(String request) throws PatternSyntaxException {
+    public MessageFilter(String request) throws RequestCompilationException {
         this.requestText = request;
         strategy = SearchStrategyFactory.createSearchStrategy(request);
     }

@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
  * method returns searcher/highlighter that checks for the request with
  * {@link StringUtils#containsIgnoreCase(CharSequence, CharSequence)}.
  * </ol>
- * 
+ *
  * @see Pattern
  */
 public class SearchStrategyFactory {
@@ -61,10 +61,19 @@ public class SearchStrategyFactory {
     }
 
     public static HighlightStrategy createHighlightStrategy(String request)
-            throws PatternSyntaxException {
+            throws RequestCompilationException {
         if (StringUtils.isNotBlank(request)) {
             if (isRegexRequest(request)) {
-                return new RegExpSearcher(extractRegexRequest(request));
+                try {
+                    String regexRequest = extractRegexRequest(request);
+                    if (StringUtils.isNotBlank(regexRequest)) {
+                        return new RegExpSearcher(regexRequest);
+                    } else {
+                        throw new RequestCompilationException(request + " contains blank regex");
+                    }
+                } catch (PatternSyntaxException e) {
+                    throw new RequestCompilationException(e.getMessage(), e);
+                }
             } else {
                 return new IgnoreCaseSearcher(request);
             }
@@ -73,40 +82,7 @@ public class SearchStrategyFactory {
         }
     }
 
-    public static SearchStrategy createSearchStrategy(String request) throws PatternSyntaxException {
+    public static SearchStrategy createSearchStrategy(String request) throws RequestCompilationException {
         return createHighlightStrategy(request);
-    }
-
-    private static boolean isSearchRequestValid(String request, boolean noThrow)
-            throws PatternSyntaxException {
-        if (StringUtils.isBlank(request))
-            return true;
-        if (isRegexRequest(request)) {
-            try {
-                Pattern.compile(extractRegexRequest(request));
-                return true;
-            } catch (PatternSyntaxException e) {
-                if (noThrow) {
-                    return false;
-                } else {
-                    throw e;
-                }
-            }
-        } else {
-            return true;
-        }
-    }
-
-    public static boolean isSearchRequestValid(String request) {
-        return isSearchRequestValid(request, true);
-    }
-
-    public static String describeError(String request) {
-        try {
-            isSearchRequestValid(request, false);
-            return "OK";
-        } catch (PatternSyntaxException e) {
-            return e.getDescription();
-        }
     }
 }

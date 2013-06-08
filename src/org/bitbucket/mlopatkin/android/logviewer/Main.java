@@ -15,7 +15,13 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import com.android.ddmlib.IDevice;
+import java.awt.EventQueue;
+import java.io.File;
+import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -33,13 +39,7 @@ import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.List;
-
-import javax.swing.JOptionPane;
+import com.android.ddmlib.IDevice;
 
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
@@ -63,7 +63,8 @@ public class Main {
         }
 
         logger.info("Android Log Viewer " + APP_VERSION);
-        List<String> files = result.nonOptionArguments();
+        @SuppressWarnings("unchecked")
+        List<String> files = (List<String>) result.nonOptionArguments();
         if (files.size() == 0) {
             // ADB mode
             new Main().start();
