@@ -38,7 +38,7 @@ public class FileDataSourceFactory {
         while (cur != null && StringUtils.isBlank(cur)) {
             cur = in.readLine();
         }
-        return cur;
+        return StringUtils.trim(cur);
     }
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException,

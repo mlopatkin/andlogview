@@ -143,7 +143,7 @@ public class DumpstateFileDataSource implements DataSource {
     private interface SectionHandler {
         /**
          * Checks if the implementation supports some section.
-         * 
+         *
          * @param sectionName
          *            section name as appears in the file without wrapping
          *            dashes
@@ -153,7 +153,7 @@ public class DumpstateFileDataSource implements DataSource {
 
         /**
          * Handles one line from the file.
-         * 
+         *
          * @param line
          *            one line from the file (not null but can be empty)
          * @return {@code true} if the line wasn't last line in section and the
@@ -173,7 +173,7 @@ public class DumpstateFileDataSource implements DataSource {
         void startSection(String sectionName);
     }
 
-    private static final Pattern SECTION_NAME_PATTERN = Pattern.compile("^------ (.*) ------$");
+    private static final Pattern SECTION_NAME_PATTERN = Pattern.compile("^------ (.*) ------\\s*$");
 
     private static String getSectionName(String line) {
         Matcher m = SECTION_NAME_PATTERN.matcher(line);
