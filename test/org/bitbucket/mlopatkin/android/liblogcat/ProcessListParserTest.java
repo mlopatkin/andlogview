@@ -23,6 +23,8 @@ public class ProcessListParserTest {
 
     private static final String PS_LINE_1 = "root      1     0     244    228   fg  ffffffff 00000000 S /init";
     private static final String PS_LINE_TWO_WORDS_PNAME = "root      279   2     0      0     fg  ffffffff 00000000 S Two words";
+    private static final String PS_NO_PCY_LINE = "root      12    2     0      0         ffffffff 00000000 S sync_supers";
+    private static final String PS_NO_NAME_LINE = "root      626   2     0      0     fg  ffffffff 00000000 S ";
 
     @Test
     public void testParseProcessListLine() {
@@ -32,5 +34,15 @@ public class ProcessListParserTest {
     @Test
     public void testParseProcessNameWithSpaces() {
         assertTrue(ProcessListParser.parseProcessListLine(PS_LINE_TWO_WORDS_PNAME).matches());
+    }
+
+    @Test
+    public void testParseProcessListNoPCY() {
+        assertTrue(ProcessListParser.parseProcessListLine(PS_NO_PCY_LINE).matches());
+    }
+
+    @Test
+    public void testParseProcessListNoName() {
+        assertTrue(ProcessListParser.parseProcessListLine(PS_NO_NAME_LINE).matches());
     }
 }

@@ -101,6 +101,8 @@ class AdbPidToProcessConverter {
                         String processName = ProcessListParser.getProcessName(m);
                         int pid = ProcessListParser.getPid(m);
                         processMap.put(pid, processName);
+                    } else {
+                        logger.debug("Failed to parse line " + line);
                     }
                     line = in.readLine();
                 }

@@ -36,7 +36,7 @@ public class ProcessListParser {
     private static final String PPID_REGEX = NUMBER_REGEX;
     private static final String VSIZE_REGEX = NUMBER_REGEX;
     private static final String RSS_REGEX = NUMBER_REGEX;
-    private static final String PCY_REGEX = "\\w\\w";
+    private static final String PCY_REGEX = "(?:\\w\\w)?";
     private static final String WCHAN_REGEX = HEX_NUMBER_REGEX;
     private static final String PC_REGEX = HEX_NUMBER_REGEX;
     /*
@@ -49,7 +49,7 @@ public class ProcessListParser {
      * Z Defunct ("zombie") process, terminated but not reaped by its parent.
      */
     private static final String PROCESS_STATUS_REGEX = "[DRSTWXZ]";
-    private static final String PROCESS_NAME = "(.+)";
+    private static final String PROCESS_NAME = "(.*)";
 
     private static final String[] PS_LINE_FIELDS = { USERNAME_REGEX, PID_REGEX, PPID_REGEX,
             VSIZE_REGEX, RSS_REGEX, PCY_REGEX, WCHAN_REGEX, PC_REGEX, PROCESS_STATUS_REGEX,
