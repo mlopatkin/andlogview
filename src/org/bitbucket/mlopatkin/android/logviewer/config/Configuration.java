@@ -20,8 +20,13 @@ import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.bool;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.enumMap;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.integer;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.list;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.point;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.string;
 import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
+
+import java.awt.Color;
+import java.awt.Point;
+import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Logger;
@@ -33,9 +38,6 @@ import org.bitbucket.mlopatkin.utils.properties.Parsers;
 import org.bitbucket.mlopatkin.utils.properties.PropertyBuilder;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 import org.bitbucket.mlopatkin.utils.properties.SynchronizedConfiguration;
-
-import java.awt.Color;
-import java.util.List;
 
 public class Configuration {
 
@@ -51,6 +53,12 @@ public class Configuration {
         private static final String TOOLTIP_MAX_WIDTH_KEY = PREFIX + "tooltip_max_width";
         private static final String COLUMNS_KEY = PREFIX + "columns";
         private static final String BUFFER_ENABLED_KEY = PREFIX + "buffer_enabled";
+
+        private static final String MAIN_WINDOW_POSITION_KEY = PREFIX + "main_window_pos";
+        private static final String MAIN_WINDOW_WIDTH_KEY = PREFIX + "main_window_width";
+        private static final String MAIN_WINDOW_HEIGHT_KEY = PREFIX + "main_window_height";
+
+        private static final String PROCESS_LIST_WINDOW_POSITION_KEY = PREFIX + "proc_window_pos";
 
         public static List<String> columns() {
             return config.get(COLUMNS_KEY);
@@ -86,6 +94,38 @@ public class Configuration {
 
         public static Boolean hideLoggingProcesses() {
             return config.get(HIDE_LOGGING_PROCESSES_KEY);
+        }
+
+        public static Point mainWindowPosition() {
+            return config.get(MAIN_WINDOW_POSITION_KEY);
+        }
+
+        public static void mainWindowPosition(Point pos) {
+            config.set(MAIN_WINDOW_POSITION_KEY, pos);
+        }
+
+        public static Integer mainWindowWidth() {
+            return config.get(MAIN_WINDOW_WIDTH_KEY);
+        }
+
+        public static void mainWindowWidth(int width) {
+            config.set(MAIN_WINDOW_WIDTH_KEY, width);
+        }
+
+        public static Integer mainWindowHeight() {
+            return config.get(MAIN_WINDOW_HEIGHT_KEY);
+        }
+
+        public static void mainWindowHeight(int height) {
+            config.set(MAIN_WINDOW_WIDTH_KEY, height);
+        }
+
+        public static Point processWindowPosition() {
+            return config.get(PROCESS_LIST_WINDOW_POSITION_KEY);
+        }
+
+        public static void processWindowPosition(Point pos) {
+            config.set(PROCESS_LIST_WINDOW_POSITION_KEY, pos);
         }
     }
 
@@ -204,6 +244,11 @@ public class Configuration {
                 enumMap(Priority.class, Color.class, colorParser));
         cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
 
+        cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(new Point(0,0)));
+        cfg.property(ui.PROCESS_LIST_WINDOW_POSITION_KEY, point().defaultVal(null));
+        cfg.property(ui.MAIN_WINDOW_WIDTH_KEY, integer(800));
+        cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
+
         cfg.property(adb.BUFFER_NAME_KEY,
                 enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.BUFFERSWITCH_KEY, string());
@@ -225,3 +270,4 @@ public class Configuration {
     }
 
 }
+

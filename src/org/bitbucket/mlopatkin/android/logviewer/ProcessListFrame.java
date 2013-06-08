@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -52,8 +53,10 @@ import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
  */
 public class ProcessListFrame extends JFrame {
     private JTable table;
+    private JFrame owner;
 
-    public ProcessListFrame() {
+    public ProcessListFrame(JFrame owner) {
+        this.owner = owner;
         setTitle("Processes");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         JPanel contentPane = new JPanel();
@@ -204,6 +207,7 @@ public class ProcessListFrame extends JFrame {
     private static final int UPDATE_DELAY_MS = 1000;
 
     private Timer updateTimer = new Timer(UPDATE_DELAY_MS, new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             model.update();
         }
@@ -245,5 +249,20 @@ public class ProcessListFrame extends JFrame {
             return !HIDDEN_PROCESSES.contains(processName);
         }
 
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        if (b) {
+            Point position = Configuration.ui.processWindowPosition();
+            if (position == null) {
+                setLocationRelativeTo(owner);
+            } else {
+                setLocation(position);
+            }
+        } else {
+            Configuration.ui.processWindowPosition(getLocation());
+        }
+        super.setVisible(b);
     }
 }

@@ -15,30 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
-import com.android.ddmlib.IDevice;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
-import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
-import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -65,6 +49,24 @@ import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.border.EtchedBorder;
 
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
+import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
+
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
@@ -75,7 +77,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private BookmarksController bookmarksController;
     private RecordListener<LogRecord> listener;
 
-    private ProcessListFrame processListFrame = new ProcessListFrame();
+    private ProcessListFrame processListFrame;
 
     private DataSource source;
 
@@ -90,6 +92,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     public MainFrame() {
         super();
         initialize();
+        processListFrame = new ProcessListFrame(this);
     }
 
     public void setSource(DataSource newSource) {
@@ -145,7 +148,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
      */
     private void initialize() {
         setTitle("Android Log Viewer " + Main.APP_VERSION);
-        setBounds(100, 100, 1000, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logElements = new DecoratingRendererTable();
@@ -205,6 +207,22 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         setupSearchButtons();
         setupMainMenu();
+        setPreferredSize(new Dimension(Configuration.ui.mainWindowWidth(),
+                Configuration.ui.mainWindowHeight()));
+        if (Configuration.ui.mainWindowPosition() != null) {
+            setLocation(Configuration.ui.mainWindowPosition());
+        } else {
+            setLocationByPlatform(true);
+        }
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Configuration.ui.mainWindowHeight(getHeight());
+                Configuration.ui.mainWindowWidth(getWidth());
+                Configuration.ui.mainWindowPosition(getLocation());
+            }
+        });
+        pack();
     }
 
     private void setupSearchButtons() {

@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import java.awt.Point;
+
 /**
  * Static methods to show property traits - type, immutability and so on. You
  * may use static import to simplify code.
@@ -27,7 +29,7 @@ public class PropertyTraits {
     /**
      * Represents property of specified type. You may configure additional
      * options with chaining.
-     * 
+     *
      * @param <T>
      *            type of the property
      * @param type
@@ -41,7 +43,7 @@ public class PropertyTraits {
     /**
      * Represents property of specified type. You may configure additional
      * options with chaining.
-     * 
+     *
      * @param <T>
      *            type of the property
      * @param type
@@ -56,7 +58,7 @@ public class PropertyTraits {
 
     /**
      * Integer property that can be read from/stored in text file.
-     * 
+     *
      * @return object for chaining
      */
     public static PropertyBuilder<Integer> integer() {
@@ -65,7 +67,7 @@ public class PropertyTraits {
 
     /**
      * String property that can be read from/stored in text file.
-     * 
+     *
      * @return object for chaining
      */
     public static PropertyBuilder<String> string() {
@@ -76,6 +78,9 @@ public class PropertyTraits {
         return type(Boolean.class, Parsers.booleanParser);
     }
 
+    public static PropertyBuilder<Point> point() {
+        return type(Point.class, Parsers.pointParser);
+    }
     public static PropertyBuilder<String> string(String defaultValue) {
         return string().defaultVal(defaultValue);
     }

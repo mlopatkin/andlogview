@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import java.awt.Point;
+
 public class Parsers {
     private Parsers() {
     }
@@ -23,6 +25,7 @@ public class Parsers {
     public static final Parser<String> stringParser = new StringParser();
     public static final Parser<Integer> integerParser = new IntegerParser();
     public static final Parser<Boolean> booleanParser = new BooleanParser();
+    public static final Parser<Point> pointParser = new PointParser();
 
     public static <T extends Enum<T>> Parser<T> enumParser(Class<T> clazz) {
         return new EnumParser<T>(clazz);
