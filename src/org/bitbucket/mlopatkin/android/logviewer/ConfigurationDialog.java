@@ -15,9 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import org.apache.commons.lang3.StringUtils;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -41,6 +38,9 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.lang3.StringUtils;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 public class ConfigurationDialog extends JDialog {
 
     private final JPanel contentPanel = new JPanel();
@@ -50,7 +50,6 @@ public class ConfigurationDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setModalityType(ModalityType.APPLICATION_MODAL);
         setTitle("Configuration");
-        setBounds(100, 100, 456, 193);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -117,6 +116,8 @@ public class ConfigurationDialog extends JDialog {
                 buttonPane.add(cancelButton);
             }
         }
+        pack();
+        setLocationRelativeTo(owner);
     }
 
     private Action acOk = new AbstractAction("OK") {
