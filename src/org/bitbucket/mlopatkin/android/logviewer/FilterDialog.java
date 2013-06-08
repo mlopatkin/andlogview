@@ -63,7 +63,6 @@ public abstract class FilterDialog extends JDialog {
     }
 
     private void initialize() {
-        setBounds(100, 100, 527, 390);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -207,6 +206,8 @@ public abstract class FilterDialog extends JDialog {
                 });
             }
         }
+        pack();
+        setLocationRelativeTo(getParent());
     }
 
     protected abstract void onPositiveResult();
