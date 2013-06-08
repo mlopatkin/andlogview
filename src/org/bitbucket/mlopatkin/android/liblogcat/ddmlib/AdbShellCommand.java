@@ -37,7 +37,7 @@ import com.android.ddmlib.TimeoutException;
  * Alternatively you can use {@link #start()} to run the command in background.
  * <p>
  * This class is immutable.
- * 
+ *
  * @param <T>
  *            Subclass of {@link IShellOutputReceiver} to be passed into
  *            template methods to avoid unnecessary casts.
@@ -63,6 +63,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
      */
     @Override
     public void run() {
+        logger.debug("Starting command "+ command);
         try {
             device.executeShellCommand(command, receiver, timeOut);
         } catch (TimeoutException e) {
@@ -94,7 +95,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
 
     /**
      * Called when one of exceptions occured during shell command's execution.
-     * 
+     *
      * @param e
      *            exception (one of {@link TimeoutException},
      *            {@link AdbCommandRejectedException},
@@ -108,7 +109,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
 
     /**
      * Called when execution of the command finishes.
-     * 
+     *
      * @param outputReceiver
      *            {@link IShellOutputReceiver} previously passed to constructor
      */

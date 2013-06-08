@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.utils.MyStreamUtils;
 
 import com.android.ddmlib.IDevice;
 
@@ -89,14 +90,18 @@ class AdbPidToProcessConverter {
                 String line = in.readLine();
 
                 if (!ProcessListParser.isProcessListHeader(line)) {
+                    logger.warn("Can't parse header");
+                    MyStreamUtils.consume(in);
                     return;
                 }
                 line = in.readLine();
                 while (line != null) {
                     Matcher m = ProcessListParser.parseProcessListLine(line);
-                    String processName = ProcessListParser.getProcessName(m);
-                    int pid = ProcessListParser.getPid(m);
-                    processMap.put(pid, processName);
+                    if (m.matches()) {
+                        String processName = ProcessListParser.getProcessName(m);
+                        int pid = ProcessListParser.getPid(m);
+                        processMap.put(pid, processName);
+                    }
                     line = in.readLine();
                 }
             } catch (IOException e) {
