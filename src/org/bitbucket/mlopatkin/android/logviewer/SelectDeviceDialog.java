@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -86,8 +87,8 @@ public class SelectDeviceDialog extends JDialog {
 
     private SelectDeviceDialog(Frame owner) {
         super(owner, true);
+        setPreferredSize(new Dimension(450, 300));
         setTitle("Select device");
-        setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());
         JPanel contentPanel = new JPanel();
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -132,6 +133,8 @@ public class SelectDeviceDialog extends JDialog {
                 buttonPane.add(cancelButton);
             }
         }
+        pack();
+        setLocationRelativeTo(owner);
         updater.start();
     }
 
