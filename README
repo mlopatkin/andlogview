@@ -56,6 +56,10 @@ ex. "/^[Aa].*$/" - all lines that start with lower or upper 'a'. Regex-based sea
 case-sensitive in opposite to a simple searching. Standard Java regular expression 
 syntax is used.
 
+Searching is performed in application name, tag and message fields. You can limit search scope to 
+the single field by prefixing search request with "app:", "tag:", or "msg:" respectively. Only one
+(first) prefix is in effect, others are treated like normal search pattern.
+  
 OVERVIEW: OTHER
 
     - The bookmarks windows can be used for quick jumping between marked lines. Use context 
