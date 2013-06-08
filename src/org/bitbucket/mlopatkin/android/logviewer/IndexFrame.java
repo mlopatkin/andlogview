@@ -16,6 +16,8 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -32,8 +34,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 public class IndexFrame extends JFrame implements ItemsUpdater {
@@ -43,9 +45,12 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     private IndexController controller;
     private TablePopupMenu popupMenu = new TablePopupMenu();
     private Action acCopy;
+    private Component owner;
+    private boolean isFirstShow = true;
 
-    public IndexFrame(LogRecordTableModel model, IndexTableColumnModel columnsModel,
+    public IndexFrame(JFrame owner, LogRecordTableModel model, IndexTableColumnModel columnsModel,
             IndexController controller) {
+        this.owner = owner;
         this.controller = controller;
         initialize();
         indexedRecordsTable.setModel(model);
@@ -59,7 +64,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
 
     private void initialize() {
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setBounds(100, 100, 1000, 300);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 0));
@@ -101,6 +105,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     }
 
     private WindowListener closingListener = new WindowAdapter() {
+        @Override
         public void windowClosing(WindowEvent e) {
             controller.onWindowClosed();
         };
@@ -126,5 +131,16 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     @Override
     public void updateItemsState(JTable source) {
         acCopy.setEnabled(source.getSelectedRowCount() > 0);
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        if (b && isFirstShow) {
+            setPreferredSize(new Dimension(owner.getWidth(), getPreferredSize().height));
+            pack();
+            setLocationRelativeTo(owner);
+            isFirstShow = false;
+        }
+        super.setVisible(b);
     }
 }

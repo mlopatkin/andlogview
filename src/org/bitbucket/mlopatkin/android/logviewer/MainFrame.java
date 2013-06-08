@@ -168,7 +168,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         scrollController = new TableScrollController(logElements);
         filterController = new FilterController(this, logElements, recordsModel);
-        bookmarksController = new BookmarksController(logElements, recordsModel, mapper,
+        bookmarksController = new BookmarksController(this, logElements, recordsModel, mapper,
                 filterController);
         new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,
                 bookmarksController);

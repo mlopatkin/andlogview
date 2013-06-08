@@ -15,7 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -23,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFrame;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
@@ -42,7 +42,7 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
 /**
  * This class manages all filter-related stuff: adding, removing, enabling, etc.
- * 
+ *
  */
 class FilterController implements CreateFilterDialog.DialogResultReceiver,
 EditFilterDialog.DialogResultReceiver {
@@ -70,9 +70,9 @@ EditFilterDialog.DialogResultReceiver {
     private IndexWindowHandler windowHandler = new IndexWindowHandler();
     private HighlightFilteringModeHandler highlightHandler = new HighlightFilteringModeHandler();
 
-    private Frame main;
+    private JFrame main;
 
-    FilterController(Frame main, DecoratingRendererTable table, LogRecordTableModel tableModel) {
+    FilterController(JFrame main, DecoratingRendererTable table, LogRecordTableModel tableModel) {
         this.main = main;
         this.table = table;
         this.tableModel = tableModel;
@@ -280,7 +280,7 @@ EditFilterDialog.DialogResultReceiver {
 
         @Override
         public void addFilter(FilteringMode mode, LogRecordFilter filter, Object data) {
-            WindowFilterController controller = new WindowFilterController(table, tableModel, null,
+            WindowFilterController controller = new WindowFilterController(main, table, tableModel, null,
                     FilterController.this, filter);
             controller.showWindow();
             windowControllers.put(filter, controller);

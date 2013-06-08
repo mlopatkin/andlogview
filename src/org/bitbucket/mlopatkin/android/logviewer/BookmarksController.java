@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.RowFilter;
@@ -49,9 +50,9 @@ public class BookmarksController extends AbstractIndexController implements Inde
     private BookmarksRowFilter filter = new BookmarksRowFilter();
 
     @SuppressWarnings("unchecked")
-    public BookmarksController(DecoratingRendererTable mainTable, LogRecordTableModel model,
+    public BookmarksController(JFrame owner, DecoratingRendererTable mainTable, LogRecordTableModel model,
             PidToProcessMapper mapper, FilterController filterController) {
-        super(mainTable, model, mapper, filterController);
+        super(owner, mainTable, model, mapper, filterController);
         getFrame().setTitle("Bookmarks");
 
         table = getFrame().getTable();
@@ -114,6 +115,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
         }
     }
 
+    @Override
     public void showWindow() {
         getFrame().setVisible(true);
     }
@@ -137,6 +139,7 @@ public class BookmarksController extends AbstractIndexController implements Inde
 
         private TableCellRenderer inner;
 
+        @Override
         public void setInnerRenderer(TableCellRenderer renderer) {
             inner = renderer;
         }

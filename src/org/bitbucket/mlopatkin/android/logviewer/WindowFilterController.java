@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.util.Arrays;
 
+import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
@@ -34,9 +35,9 @@ public class WindowFilterController extends AbstractIndexController implements I
     private LogRecordFilter filter;
 
     @SuppressWarnings("unchecked")
-    public WindowFilterController(JTable mainTable, LogRecordTableModel model,
+    public WindowFilterController(JFrame owner, JTable mainTable, LogRecordTableModel model,
             PidToProcessMapper mapper, FilterController filterController, LogRecordFilter filter) {
-        super(mainTable, model, mapper, filterController);
+        super(owner, mainTable, model, mapper, filterController);
         this.filterController = filterController;
         this.filter = filter;
 

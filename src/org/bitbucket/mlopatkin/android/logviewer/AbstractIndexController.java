@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JFrame;
 import javax.swing.JTable;
 
 public abstract class AbstractIndexController implements IndexController {
@@ -27,12 +28,12 @@ public abstract class AbstractIndexController implements IndexController {
 
     private IndexFrame indexFrame;
 
-    public AbstractIndexController(JTable mainTable, LogRecordTableModel model,
+    public AbstractIndexController(JFrame owner, JTable mainTable, LogRecordTableModel model,
             PidToProcessMapper mapper, FilterController filterController) {
         this.mainTable = mainTable;
         this.model = model;
 
-        indexFrame = new IndexFrame(this.model, new IndexTableColumnModel(mapper), this);
+        indexFrame = new IndexFrame(owner, this.model, new IndexTableColumnModel(mapper), this);
 
         filterController.addRefreshListener(new ActionListener() {
 
