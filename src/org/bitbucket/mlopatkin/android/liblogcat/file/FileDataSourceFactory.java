@@ -52,6 +52,9 @@ public class FileDataSourceFactory {
                 in.mark(READ_AHEAD_LIMIT);
                 checkLine = getFirstNonEmptyLine(in);
             }
+            if (checkLine == null) {
+                throw new UnrecognizedFormatException("There are no non-empty lines in the file");
+            }
             if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
                 return createDumpstateFileSource(file, in);
             } else {
