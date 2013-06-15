@@ -29,6 +29,9 @@
     <!-- Resources to be embedded into the package -->
     <property name="res.dir" location="resources" />
 
+    <!-- Target java version -->
+    <property name="target.version" value="1.6" />
+
     <!-- Ivy configurations -->
 
     <!-- Core libraries that are embedded into resulting jar -->
@@ -103,6 +106,8 @@
         <javac destdir="${build.classes.dir}"
                classpathref="libraries"
                encoding="utf-8"
+               target="${target.version}"
+               source="${target.version}"
                debug="${debug}">
             <src path="${src.main.dir}" />
             <src path="${src.utils.dir}" />
@@ -115,7 +120,7 @@
 
     <target name="compile-test"
             depends="compile-dist, resolve-test-dependencies, make-intermediate-dir">
-        <javac destdir="${build.test.dir}" encoding="utf-8" debug="${debug}">
+        <javac destdir="${build.test.dir}" encoding="utf-8" debug="${debug}" target="${target.version}" source="${target.version}">
             <src path="${src.test.dir}" />
             <classpath>
                 <path refid="libraries" />
