@@ -19,14 +19,22 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 
 class PointParser implements Parser<Point> {
+
+    private static final String UNDEFINED = "undefined";
 
     // simple comma-separated pair x,y
     ListParser<Integer> internalListParser = new ListParser<Integer>(Parsers.integerParser);
 
     @Override
     public Point read(String value) {
+        value = StringUtils.trimToNull(value);
+        if (value == null || UNDEFINED.equalsIgnoreCase(value)) {
+            return null;
+        }
         List<Integer> coords = internalListParser.read(value);
         if (coords.size() != 2) {
             throw new IllegalArgumentException("Expecting two coords, found " + coords.size());
@@ -36,6 +44,9 @@ class PointParser implements Parser<Point> {
 
     @Override
     public String write(Point value) {
+        if (value == null) {
+            return UNDEFINED;
+        }
         return internalListParser.write(Arrays.asList(value.x, value.y));
     }
 
