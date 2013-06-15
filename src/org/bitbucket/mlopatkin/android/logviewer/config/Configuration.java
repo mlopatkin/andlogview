@@ -209,7 +209,12 @@ public class Configuration {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                Configuration.save();
+                try {
+                    Configuration.save();
+                } catch (Throwable e) {
+                    // exception in shutdown hook is bad
+                    logger.error("Exception while saving configuration", e);
+                }
             }
         });
 
