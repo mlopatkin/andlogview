@@ -1,11 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 if [ "$ANDROID_HOME" == "" ]; then
-    DDMLIB=lib/ddmlib.jar
+    DDMLIB=$DIR/lib/ddmlib.jar
 else
     DDMLIB=$ANDROID_HOME/tools/lib/ddmlib.jar
-fi	
+fi
 
-CLASSES=$DDMLIB:lib/logview.jar
+CLASSES=$DDMLIB:$DIR/lib/logview.jar
 
-java -cp $CLASSES org.bitbucket.mlopatkin.android.logviewer.Main $@ 
+java -cp $CLASSES org.bitbucket.mlopatkin.android.logviewer.Main $@
