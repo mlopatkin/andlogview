@@ -23,6 +23,7 @@
 
     <!-- Source files locations -->
     <property name="src.main.dir" location="src" />
+    <property name="src.android-json.dir" location="android.org.json/src/main/java" />
     <property name="src.utils.dir" location="utils" />
     <property name="src.test.dir" location="test" />
 
@@ -110,6 +111,7 @@
                source="${target.version}"
                debug="${debug}">
             <src path="${src.main.dir}" />
+            <src path="${src.android-json.dir}" />
             <src path="${src.utils.dir}" />
         </javac>
     </target>
