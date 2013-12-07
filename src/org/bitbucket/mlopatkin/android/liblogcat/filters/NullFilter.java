@@ -16,33 +16,22 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.EnumSet;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
 /**
- * Performs filtering based on the buffer of the record.
+ * Special filter that includes every record passed to it.
  */
-public class LogBufferFilter implements LogRecordFilter {
+public class NullFilter implements LogRecordFilter {
 
-    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
+    public static final NullFilter INSTANCE = new NullFilter();
 
     @Override
     public boolean include(LogRecord record) {
-        return buffers.contains(record.getBuffer());
-    }
-
-    public void setBufferEnabled(Buffer buffer, boolean enabled) {
-        if (enabled) {
-            buffers.add(buffer);
-        } else {
-            buffers.remove(buffer);
-        }
+        return true;
     }
 
     @Override
     public LogRecordFilter and(LogRecordFilter other) {
-        return other != null ? new ComposeFilter(this, other) : this;
+        return other != null ? other : this;
     }
 }

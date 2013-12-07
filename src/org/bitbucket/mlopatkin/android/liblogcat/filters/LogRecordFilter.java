@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Mikhail Lopatkin
+ * Copyright 2013 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -21,12 +22,21 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
  * Generic filter interface.
  */
 public interface LogRecordFilter {
+
     /**
      * Checks if the record matches the filter.
-     * 
-     * @param record
-     *            the record to match
+     *
+     * @param record the record to match
      * @return {@code true} if the records matched the filter
      */
     boolean include(LogRecord record);
+
+    /**
+     * Combines existing filter and the other filter using "AND" logical operation. The resulting
+     * filter will include a record only if it is included by this and other filter.
+     *
+     * @param other the filter to append
+     * @return the new filter that combines this and other
+     */
+    LogRecordFilter and(LogRecordFilter other);
 }

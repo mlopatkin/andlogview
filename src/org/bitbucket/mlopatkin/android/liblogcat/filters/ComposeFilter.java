@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Mikhail Lopatkin
+ * Copyright 2013 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 /**
  * This filter performs AND operation upon all included filters.
- * 
  */
 public class ComposeFilter extends AbstractFilter implements LogRecordFilter {
 
@@ -64,5 +64,10 @@ public class ComposeFilter extends AbstractFilter implements LogRecordFilter {
                 ((AbstractFilter) filter).dumpFilter(data);
             }
         }
+    }
+
+    @Override
+    public LogRecordFilter and(LogRecordFilter other) {
+        return other != null ? append(other) : this;
     }
 }

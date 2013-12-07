@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Mikhail Lopatkin
+ * Copyright 2013 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 /**
  * Base class for filters that allows filter decomposition.
  */
-abstract class AbstractFilter {
+abstract class AbstractFilter implements LogRecordFilter {
+
     /**
      * Fill {@code data} with filter data in this method.
-     * 
-     * @param data
-     *            object to be filled
+     *
+     * @param data object to be filled
      */
     protected abstract void dumpFilter(FilterData data);
 
@@ -31,5 +32,10 @@ abstract class AbstractFilter {
         FilterData data = new FilterData();
         dumpFilter(data);
         return data;
+    }
+
+    @Override
+    public LogRecordFilter and(LogRecordFilter other) {
+        return other != null ? new ComposeFilter(this, other) : this;
     }
 }
