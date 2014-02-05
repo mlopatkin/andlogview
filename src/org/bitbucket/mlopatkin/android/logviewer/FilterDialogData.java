@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Mikhail Lopatkin
+ * Copyright 2013, 2014 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,12 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameOrPidFilter;
@@ -33,6 +38,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.NullFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.utils.JsonUtils;
 
 public class FilterDialogData {
 
@@ -45,8 +51,59 @@ public class FilterDialogData {
     private String message = null;
     private Priority selectedPriority = null;
 
-
     public FilterDialogData() {
+    }
+
+    public FilterDialogData(JSONObject json) throws JSONException {
+        mode = FilteringMode.valueOf(json.getString("mode"));
+        highlightColor = stringToColor(json.getString("highlight"));
+        tags = Lists.newArrayList(JsonUtils.asStringIterable(json.getJSONArray("tags")));
+        applications = Lists
+                .newArrayList(JsonUtils.asStringIterable(json.getJSONArray("applications")));
+        pids = Lists.newArrayList(JsonUtils.asIntIterable(json.getJSONArray("pids")));
+        message = json.optString("message", null);
+        selectedPriority = safeFromString(json.optString("selectedPriority"));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+
+        FilterDialogData other = (FilterDialogData) obj;
+
+        return Objects.equal(mode, other.mode)
+                && Objects.equal(highlightColor, other.highlightColor)
+                && Objects.equal(tags, other.tags)
+                && Objects.equal(applications, other.applications)
+                && Objects.equal(pids, other.pids)
+                && Objects.equal(message, other.message)
+                && Objects.equal(selectedPriority, other.selectedPriority);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(mode, highlightColor, tags, applications, pids, message,
+                selectedPriority);
+    }
+
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("mode", mode)
+                .add("highlight", highlightColor)
+                .add("tags", tags)
+                .add("apps", applications)
+                .add("pids", pids)
+                .add("msg", message)
+                .add("priority", selectedPriority)
+                .toString();
     }
 
     public FilteringMode getMode() {
@@ -145,9 +202,40 @@ public class FilterDialogData {
     }
 
     private LogRecordFilter makePriorityFilter() {
-        if (selectedPriority != null) {
+        if (selectedPriority != null && selectedPriority != Priority.LOWEST) {
             return new PriorityFilter(selectedPriority);
         }
         return null;
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("mode", mode.toString());
+        result.putOpt("highlight", colorToString(highlightColor));
+        result.put("applications", new JSONArray(applications));
+        result.put("pids", new JSONArray(pids));
+        result.put("tags", new JSONArray(tags));
+        result.putOpt("message", message);
+        result.putOpt("selectedPriority", safeToString(selectedPriority));
+        return result;
+    }
+
+    private static String colorToString(Color color) {
+        if (color == null) {
+            return null;
+        }
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    private static Color stringToColor(String str) {
+        return str != null ? Color.decode(str) : null;
+    }
+
+    private static <T> String safeToString(T object) {
+        return object != null ? object.toString() : null;
+    }
+
+    private static Priority safeFromString(String value) {
+        return value != null ? Priority.valueOf(value) : null;
     }
 }

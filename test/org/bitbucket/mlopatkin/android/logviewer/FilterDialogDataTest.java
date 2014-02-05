@@ -18,12 +18,14 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.NO_ID;
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Date;
 
+import org.json.JSONObject;
 import org.junit.Test;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -192,5 +194,20 @@ public class FilterDialogDataTest {
         assertFalse(filter.include(invalidPid));
         assertFalse(filter.include(invalidPriority));
         assertFalse(filter.include(invalidTag));
+    }
+
+    @Test
+    public void testSerializeDeserialize() throws Exception {
+        data.setSelectedPriority(Priority.ERROR);
+        data.setMessage("abc");
+        data.setTags(Arrays.asList("tag1", "tag2"));
+        data.setPids(Arrays.asList(1, 2));
+        data.setApplications(Arrays.asList("app1"));
+
+        JSONObject json = data.toJson();
+
+        FilterDialogData deserializedData = new FilterDialogData(json);
+
+        assertEquals(data, deserializedData);
     }
 }

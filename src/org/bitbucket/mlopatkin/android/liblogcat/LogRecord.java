@@ -30,6 +30,8 @@ public class LogRecord implements Comparable<LogRecord> {
         String getLetter() {
             return toString().substring(0, 1);
         }
+
+        public static final Priority LOWEST = VERBOSE;
     }
 
     public enum Buffer {
