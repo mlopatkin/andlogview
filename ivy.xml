@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2013 Mikhail Lopatkin
+  ~ Copyright 2014 Mikhail Lopatkin
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@
 
         <dependency org="com.google.android.tools" name="ddmlib" rev="latest.integration"
                     conf="${libs.compile}, ${libs.dist}"/>
+        <dependency org="com.google.code.findbugs" name="jsr305" rev="2.0.3"
+                    conf="${libs.compile}"/>
 
         <dependency org="junit" name="junit" rev="latest.integration" conf="${libs.test}"/>
         <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="${libs.test}"/>
