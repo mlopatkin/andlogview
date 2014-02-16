@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Mikhail Lopatkin
+ * Copyright 2013, 2014 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.NO_ID;
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
@@ -47,5 +48,9 @@ public final class LogRecordUtils {
 
     public static LogRecord forPriority(Priority priority) {
         return new LogRecord(new Date(), NO_ID, NO_ID, "", priority, "", "");
+    }
+
+    public static LogRecord forBuffer(Buffer buffer) {
+        return new LogRecord(new Date(), NO_ID, NO_ID, "", Priority.INFO, "", "", buffer);
     }
 }
