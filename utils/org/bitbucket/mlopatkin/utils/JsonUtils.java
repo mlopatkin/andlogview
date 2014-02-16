@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.utils;
 
 import java.util.Iterator;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.AbstractIterator;
@@ -32,103 +31,62 @@ public final class JsonUtils {
     private JsonUtils() {
     }
 
-    private static abstract class JsonArrayIterator<T> extends AbstractIterator<T> {
-
-        protected final JSONArray array;
-        private final int length;
-        private int position;
-
-        JsonArrayIterator(JSONArray array) {
-            this.array = array;
-            this.length = array.length();
-            this.position = 0;
-        }
-
-        protected abstract T get(int position) throws JSONException;
-
-        @Override
-        protected T computeNext() {
-            if (position < length) {
-                try {
-                    return get(position++);
-                } catch (JSONException e) {
-                    throw Throwables.propagate(e);
-                }
-            }
-            return endOfData();
-        }
-    }
-
-
-    private static class JsonArrayIterable<T> extends FluentIterable<T> {
+    private static abstract class JsonArrayIterable<T> extends FluentIterable<T> {
 
         private final JSONArray array;
-        private final Function<JSONArray, Iterator<T>> factory;
 
-        JsonArrayIterable(JSONArray array, Function<JSONArray, Iterator<T>> iteratorFactory) {
-            this.factory = Preconditions.checkNotNull(iteratorFactory);
+        JsonArrayIterable(JSONArray array) {
             this.array = Preconditions.checkNotNull(array);
         }
 
         @Override
         public Iterator<T> iterator() {
-            return factory.apply(array);
+            return new AbstractIterator<T>() {
+                private final int length = array.length();
+                private int position = 0;
+
+                @Override
+                protected T computeNext() {
+                    if (position < length) {
+                        try {
+                            return JsonArrayIterable.this.get(array, position++);
+                        } catch (JSONException e) {
+                            throw Throwables.propagate(e);
+                        }
+                    }
+                    return endOfData();
+                }
+            };
         }
 
-        static <T1> JsonArrayIterable<T1> forArray(JSONArray array,
-                Function<JSONArray, Iterator<T1>> iteratorFactory) {
-            return new JsonArrayIterable<T1>(array, iteratorFactory);
-        }
+        protected abstract T get(JSONArray array, int position) throws JSONException;
+
     }
 
-    private static final Function<JSONArray, Iterator<String>> STRING_ITERATOR_MAKER
-            = new Function<JSONArray, Iterator<String>>() {
-        @Override
-        public Iterator<String> apply(JSONArray jsonArray) {
-            return new JsonArrayIterator<String>(jsonArray) {
-                @Override
-                protected String get(int position) throws JSONException {
-                    return array.getString(position);
-                }
-            };
-        }
-    };
-
-    private static final Function<JSONArray, Iterator<JSONObject>> OBJECT_ITERATOR_MAKER
-            = new Function<JSONArray, Iterator<JSONObject>>() {
-        @Override
-        public Iterator<JSONObject> apply(JSONArray jsonArray) {
-            return new JsonArrayIterator<JSONObject>(jsonArray) {
-                @Override
-                protected JSONObject get(int position) throws JSONException {
-                    return array.getJSONObject(position);
-                }
-            };
-        }
-    };
-
-    private static final Function<JSONArray, Iterator<Integer>> INT_ITERATOR_MAKER
-            = new Function<JSONArray, Iterator<Integer>>() {
-        @Override
-        public Iterator<Integer> apply(JSONArray jsonArray) {
-            return new JsonArrayIterator<Integer>(jsonArray) {
-                @Override
-                protected Integer get(int position) throws JSONException {
-                    return array.getInt(position);
-                }
-            };
-        }
-    };
-
     public static FluentIterable<String> asStringIterable(JSONArray array) {
-        return JsonArrayIterable.forArray(array, STRING_ITERATOR_MAKER);
+        return new JsonArrayIterable<String>(array) {
+            @Override
+            protected String get(JSONArray array, int position) throws JSONException {
+                return array.getString(position);
+            }
+        };
     }
 
     public static FluentIterable<Integer> asIntIterable(JSONArray array) {
-        return JsonArrayIterable.forArray(array, INT_ITERATOR_MAKER);
+        return new JsonArrayIterable<Integer>(array) {
+            @Override
+            protected Integer get(JSONArray array, int position) throws JSONException {
+                return array.getInt(position);
+            }
+        };
     }
 
     public static FluentIterable<JSONObject> asObjectIterable(JSONArray array) {
-        return JsonArrayIterable.forArray(array, OBJECT_ITERATOR_MAKER);
+        return new JsonArrayIterable<JSONObject>(array) {
+            @Override
+            protected JSONObject get(JSONArray array, int position) throws JSONException {
+                return array.getJSONObject(position);
+            }
+        };
     }
 }
