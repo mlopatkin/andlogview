@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2014 Mikhail Lopatkin
+ * Copyright 2014 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class FilterDialogData {
 
     public FilterDialogData(JSONObject json) throws JSONException {
         mode = FilteringMode.valueOf(json.getString("mode"));
-        highlightColor = stringToColor(json.getString("highlight"));
+        highlightColor = stringToColor(json.optString("highlight"));
         tags = Lists.newArrayList(JsonUtils.asStringIterable(json.getJSONArray("tags")));
         applications = Lists
                 .newArrayList(JsonUtils.asStringIterable(json.getJSONArray("applications")));
@@ -228,6 +228,7 @@ public class FilterDialogData {
     }
 
     private static Color stringToColor(String str) {
+        str = Strings.emptyToNull(str);
         return str != null ? Color.decode(str) : null;
     }
 
