@@ -25,6 +25,7 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.FluentIterable;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public final class JsonUtils {
 
@@ -93,6 +94,19 @@ public final class JsonUtils {
         }
     };
 
+    private static final Function<JSONArray, Iterator<JSONObject>> OBJECT_ITERATOR_MAKER
+            = new Function<JSONArray, Iterator<JSONObject>>() {
+        @Override
+        public Iterator<JSONObject> apply(JSONArray jsonArray) {
+            return new JsonArrayIterator<JSONObject>(jsonArray) {
+                @Override
+                protected JSONObject get(int position) throws JSONException {
+                    return array.getJSONObject(position);
+                }
+            };
+        }
+    };
+
     private static final Function<JSONArray, Iterator<Integer>> INT_ITERATOR_MAKER
             = new Function<JSONArray, Iterator<Integer>>() {
         @Override
@@ -112,5 +126,9 @@ public final class JsonUtils {
 
     public static FluentIterable<Integer> asIntIterable(JSONArray array) {
         return JsonArrayIterable.forArray(array, INT_ITERATOR_MAKER);
+    }
+
+    public static FluentIterable<JSONObject> asObjectIterable(JSONArray array) {
+        return JsonArrayIterable.forArray(array, OBJECT_ITERATOR_MAKER);
     }
 }
