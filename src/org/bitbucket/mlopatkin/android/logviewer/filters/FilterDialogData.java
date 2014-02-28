@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Mikhail Lopatkin
+ * Copyright 2013, 2014 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameOrPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MessageFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.NullFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
+import org.bitbucket.mlopatkin.android.logviewer.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategy;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+import org.bitbucket.mlopatkin.utils.FluentPredicate;
 import org.bitbucket.mlopatkin.utils.JsonUtils;
 
 public class FilterDialogData {
@@ -163,47 +165,59 @@ public class FilterDialogData {
     }
 
     public LogRecordFilter makeFilter() {
-        LogRecordFilter filter = NullFilter.INSTANCE;
-        filter = filter.and(makeFilterForAppNamesAndPids());
-        filter = filter.and(makeTagsFilter());
-        filter = filter.and(makeMessageFilter());
-        filter = filter.and(makePriorityFilter());
-        return filter;
+        FluentPredicate<LogRecord> predicate = FluentPredicate.alwaysTrue();
+        predicate = predicate.and(makeFilterForAppNamesAndPids());
+        predicate = predicate.and(makeTagsFilter());
+        predicate = predicate.and(makeMessageFilter());
+        predicate = predicate.and(makePriorityFilter());
+        return new LogRecordFilter(predicate);
     }
 
-    private LogRecordFilter makeFilterForAppNamesAndPids() {
-        try {
-            return AppNameOrPidFilter
-                    .or(AppNameFilter.fromList(applications),
-                            MultiPidFilter.fromList(pids));
-        } catch (RequestCompilationException e) {
-            // request must be validated
-            throw new AssertionError(e);
+    @Nullable
+    private FluentPredicate<LogRecord> makeFilterForAppNames() {
+        if (applications == null || applications.isEmpty()) {
+            return null;
         }
+        Predicate<String> appNamePredicate = makeCompoundStringSearchPattern(getApplications());
+        return LogRecordPredicates.matchAppName(appNamePredicate);
     }
 
-    private LogRecordFilter makeTagsFilter() {
-        if (!tags.isEmpty()) {
-            return new MultiTagFilter(tags.toArray(new String[tags.size()]));
+    @Nullable
+    private FluentPredicate<LogRecord> makeFilterForPids() {
+        if (pids != null && !pids.isEmpty()) {
+            return LogRecordPredicates.withAnyOfPids(pids);
         }
         return null;
     }
 
-    private LogRecordFilter makeMessageFilter() {
+    @Nullable
+    private FluentPredicate<LogRecord> makeFilterForAppNamesAndPids() {
+        FluentPredicate<LogRecord> appNames = makeFilterForAppNames();
+        FluentPredicate<LogRecord> pids = makeFilterForPids();
+
+        return appNames != null ? appNames.or(pids) : pids;
+    }
+
+    @Nullable
+    private FluentPredicate<LogRecord> makeTagsFilter() {
+        if (tags != null && !tags.isEmpty()) {
+            return LogRecordPredicates.matchTag(Predicates.in(Sets.newHashSet(tags)));
+        }
+        return null;
+    }
+
+    @Nullable
+    private FluentPredicate<LogRecord> makeMessageFilter() {
         if (!Strings.isNullOrEmpty(message)) {
-            try {
-                return new MessageFilter(message);
-            } catch (RequestCompilationException e) {
-                // request must be validated
-                throw new AssertionError(e);
-            }
+            return LogRecordPredicates.matchMessage(makeStringSearchPredicate(message));
         }
         return null;
     }
 
-    private LogRecordFilter makePriorityFilter() {
+    @Nullable
+    private FluentPredicate<LogRecord> makePriorityFilter() {
         if (selectedPriority != null && selectedPriority != Priority.LOWEST) {
-            return new PriorityFilter(selectedPriority);
+            return LogRecordPredicates.moreSevereThan(selectedPriority);
         }
         return null;
     }
@@ -238,5 +252,34 @@ public class FilterDialogData {
 
     private static Priority safeFromString(String value) {
         return value != null ? Priority.valueOf(value) : null;
+    }
+
+    private static Predicate<String> makeStringSearchPredicate(String pattern) {
+        try {
+            final SearchStrategy searchStrategy = SearchStrategyFactory
+                    .createSearchStrategy(pattern);
+            return new FluentPredicate<String>() {
+                @Override
+                public boolean apply(@Nullable String input) {
+                    return searchStrategy.isStringMatched(input);
+                }
+            };
+        } catch (RequestCompilationException e) {
+            // request must be validated
+            throw new AssertionError(e);
+        }
+    }
+
+
+    @Nullable
+    private static Predicate<String> makeCompoundStringSearchPattern(List<String> patterns) {
+        if (patterns == null || patterns.isEmpty()) {
+            return null;
+        }
+        List<Predicate<String>> patternPredicates = Lists.newArrayListWithCapacity(patterns.size());
+        for (String pattern : patterns) {
+            patternPredicates.add(makeStringSearchPredicate(pattern));
+        }
+        return Predicates.or(patternPredicates);
     }
 }

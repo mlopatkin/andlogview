@@ -32,6 +32,10 @@ public abstract class FluentPredicate<T> implements Predicate<T> {
     private static final FluentPredicate<Object> ALWAYS_TRUE = new FluentPredicateWrapper<Object>(
             Predicates.alwaysTrue());
 
+    public static <T> FluentPredicate<T> alwaysTrue() {
+        return ALWAYS_TRUE.narrow();
+    }
+
     public static <T> FluentPredicate<T> from(@Nullable Predicate<T> inner) {
         if (inner instanceof FluentPredicate) {
             return (FluentPredicate<T>) inner;

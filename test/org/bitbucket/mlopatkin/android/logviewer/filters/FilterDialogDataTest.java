@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Mikhail Lopatkin
+ * Copyright 2013, 2014 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.NO_ID;
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordUtils;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 
 public class FilterDialogDataTest {
 
