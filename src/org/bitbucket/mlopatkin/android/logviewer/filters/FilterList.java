@@ -16,6 +16,7 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,33 +29,71 @@ import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
 /**
- * FilterList maintains a set of all filters in the application, including special ones (like buffer
- * filtering).
+ * FilterList maintains a set of all filters in the application, including special ones (like
+ * buffer filtering).
  *
  * In particular, it is responsible for saving and restoring the state.
  */
 public class FilterList {
 
+    public interface FilterListChangedListener<T> {
+
+        void onFilterAdded(T filter);
+
+        void onFilterReplaced(T oldFilter, T newFilter);
+
+        void onFilterRemoved(T filter);
+    }
+
     private final ListMultimap<Class<?>, Filter> filtersByClass = ArrayListMultimap.create();
     private final SetMultimap<Filter, Class<?>> filters = HashMultimap.create();
+    private final SetMultimap<Class<?>, FilterListChangedListener<?>> listeners = HashMultimap
+            .create();
 
-
-    public <T extends Filter> void registerFilter(T filter, Class<? super T> firstClass,
+    public <T extends Filter> void addFilter(T filter, Class<? super T> firstClass,
             Class<? super T>... moreClasses) {
         Preconditions.checkArgument(!filters.containsKey(filter));
 
         Set<Class<? super T>> allClasses = Sets.newHashSet(moreClasses);
         allClasses.add(firstClass);
 
-        for (Class<?> clazz : allClasses) {
+        Set<FilterListChangedListener<? super T>> toNotify = Sets.newHashSet();
+
+        for (Class<? super T> clazz : allClasses) {
             filtersByClass.put(clazz, filter);
+            toNotify.addAll(getListenersFor(clazz));
         }
+
+        for (FilterListChangedListener<? super T> listener : toNotify) {
+            listener.onFilterAdded(filter);
+        }
+
         filters.putAll(filter, allClasses);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Filter> List<T> getFiltersFor(Class<T> clazz) {
-        // type-safety is guaranteed by registerFilter
+        // type-safety is guaranteed by addFilter
         return (List<T>) Collections.unmodifiableList(filtersByClass.get(clazz));
     }
+
+    public <T extends Filter> void addListener(FilterListChangedListener<? super T> listener,
+            Class<T> clazz) {
+        listeners.put(clazz, listener);
+    }
+
+    public <T extends Filter> void removeListener(FilterListChangedListener<? super T> listener) {
+        while (listeners.values().remove(listener)) {
+        }
+        ;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Collection<FilterListChangedListener<T>> getListenersFor(
+            Class<T> clazz) {
+        // type-safety provided by addListener
+        Set<?> result = listeners.get(clazz);
+        return (Set<FilterListChangedListener<T>>) result;
+    }
+
 }
