@@ -19,9 +19,7 @@ package org.bitbucket.mlopatkin.utils.jsonp;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public interface JsonBinder<T> {
+public interface JsonWritable {
 
-    T get(JSONObject obj) throws JSONException;
-
-    JSONObject put(T value, JSONObject object) throws JSONException;
+    void toJson(JSONObject obj) throws JSONException;
 }

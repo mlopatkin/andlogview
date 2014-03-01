@@ -39,7 +39,46 @@ public final class Json {
     private Json() {
     }
 
-    public static <T> JsonBinder<List<T>> bindList(final String fieldName, Class<T> elementClass) {
+    public static JsonBinder<List<String>> bindStringList(final String fieldName) {
+        return new JsonBinder<List<String>>() {
+            @Override
+            public List<String> get(JSONObject obj) throws JSONException {
+                return Lists.newArrayList(JsonUtils.asStringIterable(obj.getJSONArray(fieldName)));
+            }
+
+            @Override
+            public JSONObject put(List<String> value, JSONObject object) throws JSONException {
+                return object.put(fieldName, new JSONArray(value));
+            }
+        };
+    }
+
+    public static <T extends JsonWritable> JsonBinder<T> bindWithForClassNameFactory(
+            String classFieldName,
+            String dataFieldName, Class<T> lowerBoundClass) {
+        return new ForClassNameFactory<T>(classFieldName, dataFieldName, lowerBoundClass);
+    }
+
+    public static <T extends JsonWritable> JsonBinder<T> bindClass(Class<T> clazz) {
+        final Constructor<T> constructor = getConstructorFromJson(clazz);
+
+        return new JsonBinder<T>() {
+            @Override
+            public T get(JSONObject obj) throws JSONException {
+                return newInstance(constructor, obj);
+
+            }
+
+            @Override
+            public JSONObject put(T value, JSONObject object) throws JSONException {
+                value.toJson(object);
+                return object;
+            }
+        };
+    }
+
+    public static <T extends JsonWritable> JsonBinder<List<T>> bindList(final String fieldName,
+            Class<T> elementClass) {
 
         final Constructor<T> elementConstructor = getConstructorFromJson(elementClass);
 
@@ -52,6 +91,18 @@ public final class Json {
                     result.add(newInstance(elementConstructor, element));
                 }
                 return result;
+            }
+
+            @Override
+            public JSONObject put(List<T> value, JSONObject object) throws JSONException {
+                JSONArray array = new JSONArray();
+                for (T val : value) {
+                    JSONObject obj = new JSONObject();
+                    val.toJson(obj);
+                    array.put(obj);
+                }
+                object.put(fieldName, array);
+                return object;
             }
         };
     }

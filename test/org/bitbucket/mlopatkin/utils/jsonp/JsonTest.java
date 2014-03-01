@@ -27,7 +27,14 @@ import org.junit.Test;
 
 public class JsonTest {
 
-    private static class Dummy {
+    private static abstract class Base implements JsonWritable {
+
+        @Override
+        public void toJson(JSONObject obj) {
+        }
+    }
+
+    private static class Dummy extends Base {
 
         final JSONObject object;
 
@@ -36,11 +43,11 @@ public class JsonTest {
         }
     }
 
-    private static class Invalid {
+    private static class Invalid extends Base {
 
     }
 
-    private static class InvalidConstructor {
+    private static class InvalidConstructor extends Base {
 
         private final JSONObject obj;
         private final String dummy;
@@ -51,7 +58,7 @@ public class JsonTest {
         }
     }
 
-    private static class InvalidForExceptions1 {
+    private static class InvalidForExceptions1 extends Base {
 
         private final JSONObject object;
 
@@ -60,7 +67,7 @@ public class JsonTest {
         }
     }
 
-    private static class InvalidForExceptions2 {
+    private static class InvalidForExceptions2 extends Base {
 
         private final JSONObject object;
 
@@ -69,7 +76,7 @@ public class JsonTest {
         }
     }
 
-    private static class InvalidForExceptions3 {
+    private static class InvalidForExceptions3 extends Base {
 
         private final JSONObject object;
 
@@ -78,7 +85,7 @@ public class JsonTest {
         }
     }
 
-    private static class Valid {
+    private static class Valid extends Base {
 
         private final JSONObject object;
 
@@ -87,7 +94,7 @@ public class JsonTest {
         }
     }
 
-    private static class ValidWithNpe {
+    private static class ValidWithNpe extends Base {
 
         private final JSONObject object;
 

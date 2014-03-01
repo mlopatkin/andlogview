@@ -20,12 +20,31 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
 public class FilterListTest {
 
-    private static class Filter1 extends Filter {
+    public static final Predicate<LogRecord> PREDICATE = Predicates.alwaysTrue();
+
+    private static class BaseFilter extends Filter {
+
+        public BaseFilter() {
+            super(PREDICATE);
+        }
+
+        @Override
+        public void toJson(JSONObject obj) throws JSONException {
+        }
+    }
+
+    private static class Filter1 extends BaseFilter {
 
     }
 
@@ -33,7 +52,7 @@ public class FilterListTest {
 
     }
 
-    private static class Filter3 extends Filter {
+    private static class Filter3 extends BaseFilter {
 
     }
 
@@ -60,7 +79,7 @@ public class FilterListTest {
         filterList.registerFilter(filter2, Filter.class, Filter1.class, Filter2.class);
         filterList.registerFilter(filter3, Filter.class, Filter3.class);
 
-        Assert.assertEquals(Arrays.asList(filter1, filter2, filter3),
+        Assert.assertEquals(Arrays.<Filter>asList(filter1, filter2, filter3),
                 filterList.getFiltersFor(Filter.class));
         Assert.assertEquals(Arrays.asList(filter1, filter2),
                 filterList.getFiltersFor(Filter1.class));
@@ -77,7 +96,7 @@ public class FilterListTest {
         filterList.registerFilter(filter2, Filter1.class, Filter2.class);
         filterList.registerFilter(filter3, Filter.class, Filter3.class);
 
-        Assert.assertEquals(Arrays.asList(filter1, filter3),
+        Assert.assertEquals(Arrays.<Filter>asList(filter1, filter3),
                 filterList.getFiltersFor(Filter.class));
         Assert.assertEquals(Arrays.asList(filter1, filter2),
                 filterList.getFiltersFor(Filter1.class));
@@ -96,7 +115,7 @@ public class FilterListTest {
         Assert.assertEquals("Sanity check", Arrays.<Filter>asList(filter1), filters);
 
         filterList.registerFilter(filter2, Filter.class, Filter1.class);
-        Assert.assertEquals(Arrays.asList(filter1, filter2),
+        Assert.assertEquals(Arrays.<Filter>asList(filter1, filter2),
                 filters);
     }
 }

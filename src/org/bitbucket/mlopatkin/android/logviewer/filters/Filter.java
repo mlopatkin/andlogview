@@ -16,6 +16,31 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-public class Filter {
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.utils.jsonp.JsonWritable;
+
+/**
+ * Filter is just a predicate with metadata. The metadata tells other machinery what to do with the
+ * records that satisfy the predicate.
+ * <p>
+ * Another important property of filter is the ability to serialize itself to JSON.
+ */
+public abstract class Filter implements JsonWritable {
+    // examples of what this system is designed for:
+    // - interface for FilterPanel that allows toggling filters on/off temporarily
+    // - interface for opening filters in the dialogs
+    // - (?) interfaces for FilterHandlers to reach necessary action-specific data
+
+    private final Predicate<LogRecord> predicate;
+
+    public Filter(Predicate<LogRecord> predicate) {
+        this.predicate = Preconditions.checkNotNull(predicate);
+    }
+
+    public boolean apply(LogRecord logRecord) {
+        return predicate.apply(logRecord);
+    }
 }
