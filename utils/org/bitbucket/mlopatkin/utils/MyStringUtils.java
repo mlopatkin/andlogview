@@ -15,13 +15,16 @@
  */
 package org.bitbucket.mlopatkin.utils;
 
-import org.apache.commons.lang3.SystemUtils;
+import com.google.common.base.Joiner;
 
 public class MyStringUtils {
+
     private MyStringUtils() {
     }
 
     public static final int NOT_FOUND = -1;
+
+    private static final Joiner CONCAT = Joiner.on("");
 
     public static String escRegexChars(String inStr) {
         return inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
@@ -57,5 +60,9 @@ public class MyStringUtils {
             b.append(elem);
         }
         return b.toString();
+    }
+
+    public static String join(String[] args) {
+        return CONCAT.join(args);
     }
 }

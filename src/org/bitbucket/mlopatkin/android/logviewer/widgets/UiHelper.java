@@ -20,7 +20,6 @@ import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -30,7 +29,7 @@ import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import com.google.common.html.HtmlEscapers;
 
 public class UiHelper {
 
@@ -60,7 +59,7 @@ public class UiHelper {
     }
 
     public static String covertToHtml(String value) {
-        String escaped = StringEscapeUtils.escapeHtml4(value);
+        String escaped = HtmlEscapers.htmlEscaper().escape(value);
         String result = escaped.replace("\n", "<br>");
         return result;
     }
@@ -77,6 +76,7 @@ public class UiHelper {
     }
 
     public interface DoubleClickListener {
+
         void mouseClicked(MouseEvent e);
     }
 
@@ -88,7 +88,8 @@ public class UiHelper {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getClickCount() == DOUBLE_CLICK_COUNT
+                        && e.getButton() == MouseEvent.BUTTON1) {
                     listener.mouseClicked(e);
                 }
             }
@@ -99,11 +100,12 @@ public class UiHelper {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getClickCount() == DOUBLE_CLICK_COUNT
+                        && e.getButton() == MouseEvent.BUTTON1) {
                     action.actionPerformed(new ActionEvent(e.getSource(),
                             ActionEvent.ACTION_PERFORMED, (String) action
-                                    .getValue(Action.ACTION_COMMAND_KEY), e.getWhen(), e
-                                    .getModifiers()));
+                            .getValue(Action.ACTION_COMMAND_KEY), e.getWhen(), e
+                            .getModifiers()));
                 }
             }
         });
@@ -112,15 +114,11 @@ public class UiHelper {
     /**
      * Creates a wrapper around an existing action of the component to be used
      * in menus.
-     * 
-     * @param c
-     *            base component
-     * @param actionKey
-     *            key in the component's ActionMap
-     * @param caption
-     *            caption of the action wrapper
-     * @param acceleratorKey
-     *            accelerator key of the action wrapper
+     *
+     * @param c              base component
+     * @param actionKey      key in the component's ActionMap
+     * @param caption        caption of the action wrapper
+     * @param acceleratorKey accelerator key of the action wrapper
      * @return action that translates its
      *         {@link Action#actionPerformed(ActionEvent)} to the underlaying
      *         existing action.

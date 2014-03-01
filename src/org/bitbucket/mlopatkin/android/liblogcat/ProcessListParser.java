@@ -18,13 +18,15 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Joiner;
 
 /**
  * Utility class that parses ps output in dumpstate files.
  */
 public class ProcessListParser {
-    private static final String HEADER_REGEX = "^USER\\s+PID\\s+PPID\\s+VSIZE\\s+RSS\\s+PCY\\s+WCHAN\\s+PC\\s+NAME$";
+
+    private static final String HEADER_REGEX
+            = "^USER\\s+PID\\s+PPID\\s+VSIZE\\s+RSS\\s+PCY\\s+WCHAN\\s+PC\\s+NAME$";
 
     private static final String NUMBER_REGEX = "[\\-]?\\d+";
     private static final String HEX_NUMBER_REGEX = "\\p{XDigit}+";
@@ -51,11 +53,11 @@ public class ProcessListParser {
     private static final String PROCESS_STATUS_REGEX = "[DRSTWXZ]";
     private static final String PROCESS_NAME = "(.*)";
 
-    private static final String[] PS_LINE_FIELDS = { USERNAME_REGEX, PID_REGEX, PPID_REGEX,
+    private static final String[] PS_LINE_FIELDS = {USERNAME_REGEX, PID_REGEX, PPID_REGEX,
             VSIZE_REGEX, RSS_REGEX, PCY_REGEX, WCHAN_REGEX, PC_REGEX, PROCESS_STATUS_REGEX,
-            PROCESS_NAME };
+            PROCESS_NAME};
 
-    private static final String PS_LINE_REGEX = "^" + StringUtils.join(PS_LINE_FIELDS, SEP) + "$";
+    private static final String PS_LINE_REGEX = "^" + Joiner.on(SEP).join(PS_LINE_FIELDS) + "$";
 
     private static final Pattern PS_LINE_PATTERN = Pattern.compile(PS_LINE_REGEX);
 

@@ -28,8 +28,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
 import org.apache.log4j.Logger;
+
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
@@ -40,6 +41,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
+
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
     private static final int READ_AHEAD_LIMIT = 65536;
 
@@ -50,7 +52,8 @@ public class DumpstateFileDataSource implements DataSource {
 
     private File file;
 
-    public DumpstateFileDataSource(File file, BufferedReader in) throws IOException, ParseException {
+    public DumpstateFileDataSource(File file, BufferedReader in)
+            throws IOException, ParseException {
         this.file = file;
         initSectionHandlers();
         parseFile(in);
@@ -68,7 +71,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private void parseSection(BufferedReader in, String sectionName) throws IOException,
-    ParseException {
+            ParseException {
         SectionHandler handler = getSectionHandler(sectionName);
         if (handler == null) {
             return;
@@ -141,12 +144,12 @@ public class DumpstateFileDataSource implements DataSource {
      * Handles one section of the dumpstate file
      */
     private interface SectionHandler {
+
         /**
          * Checks if the implementation supports some section.
          *
-         * @param sectionName
-         *            section name as appears in the file without wrapping
-         *            dashes
+         * @param sectionName section name as appears in the file without wrapping
+         *                    dashes
          * @return {@code true} if the implementation can handle this section
          */
         boolean isSupportedSection(String sectionName);
@@ -154,8 +157,7 @@ public class DumpstateFileDataSource implements DataSource {
         /**
          * Handles one line from the file.
          *
-         * @param line
-         *            one line from the file (not null but can be empty)
+         * @param line one line from the file (not null but can be empty)
          * @return {@code true} if the line wasn't last line in section and the
          *         handler is expecting more
          */
@@ -210,7 +212,8 @@ public class DumpstateFileDataSource implements DataSource {
             if (isEnd(line)) {
                 return false;
             }
-            if (StringUtils.isBlank(line) || LogRecordParser.isLogBeginningLine(line)) {
+            if (CharMatcher.WHITESPACE.matchesAllOf(line)
+                    || LogRecordParser.isLogBeginningLine(line)) {
                 return true;
             }
             if (parsingStrategy == null) {
@@ -282,7 +285,8 @@ public class DumpstateFileDataSource implements DataSource {
                 return false;
             }
 
-            if (StringUtils.isBlank(line) || ProcessListParser.isProcessListHeader(line)) {
+            if (CharMatcher.WHITESPACE.matchesAllOf(line)
+                    || ProcessListParser.isProcessListHeader(line)) {
                 return true;
             }
             Matcher m = ProcessListParser.parseProcessListLine(line);

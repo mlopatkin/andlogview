@@ -15,10 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
+
     private String textToSearch;
 
     public IgnoreCaseSearcher(String text) {
@@ -27,7 +27,7 @@ class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
 
     @Override
     public boolean isStringMatched(String s) {
-        return StringUtils.containsIgnoreCase(s, textToSearch);
+        return MyStringUtils.indexOfIgnoreCase(s, textToSearch) >= 0;
     }
 
     @Override

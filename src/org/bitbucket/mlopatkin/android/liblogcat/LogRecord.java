@@ -17,13 +17,15 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 
 /**
  * This class contains all available log record data like timestamp, tag,
  * message, etc.
  */
 public class LogRecord implements Comparable<LogRecord> {
+
     public enum Priority {
         VERBOSE, DEBUG, INFO, WARN, ERROR, FATAL;
 
@@ -68,12 +70,13 @@ public class LogRecord implements Comparable<LogRecord> {
         this(time, pid, tid, appName, priority, tag, message, Buffer.UNKNOWN);
     }
 
-    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message,
+    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag,
+            String message,
             Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
-        this.appName = StringUtils.defaultIfBlank(appName, "");
+        this.appName = CharMatcher.WHITESPACE.trimFrom(Strings.nullToEmpty(appName));
         this.priority = priority;
         this.tag = tag;
         this.message = message;
@@ -147,6 +150,8 @@ public class LogRecord implements Comparable<LogRecord> {
         } else {
             return timeCompare;
         }
-    };
+    }
+
+    ;
 
 }

@@ -16,18 +16,16 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 class BooleanParser implements Parser<Boolean> {
 
     @Override
     public Boolean read(String value) {
-        return BooleanUtils.toBooleanObject(value);
+        return Boolean.parseBoolean(value);
     }
 
     @Override
     public String write(Boolean value) {
-        return BooleanUtils.toStringTrueFalse(value);
+        return value ? "true" : "false";
     }
 
 }

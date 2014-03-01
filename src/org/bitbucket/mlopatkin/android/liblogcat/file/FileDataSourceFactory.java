@@ -21,13 +21,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
+
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 public class FileDataSourceFactory {
 
-    private static final String DUMPSTATE_FIRST_LINE = "========================================================";
+    private static final String DUMPSTATE_FIRST_LINE
+            = "========================================================";
     private static final int READ_AHEAD_LIMIT = 65536;
 
     private FileDataSourceFactory() {
@@ -35,10 +37,10 @@ public class FileDataSourceFactory {
 
     private static String getFirstNonEmptyLine(BufferedReader in) throws IOException {
         String cur = in.readLine();
-        while (cur != null && StringUtils.isBlank(cur)) {
+        while (cur != null && CharMatcher.WHITESPACE.matchesAllOf(cur)) {
             cur = in.readLine();
         }
-        return StringUtils.trim(cur);
+        return CharMatcher.WHITESPACE.trimFrom(cur);
     }
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException,

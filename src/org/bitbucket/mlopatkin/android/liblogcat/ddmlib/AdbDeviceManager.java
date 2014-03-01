@@ -20,14 +20,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.google.common.base.Joiner;
+import org.apache.log4j.Logger;
 
 public class AdbDeviceManager {
+
     private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
 
     private AdbDeviceManager() {
@@ -120,7 +120,7 @@ public class AdbDeviceManager {
             if ((changeMask & IDevice.CHANGE_STATE) != 0) {
                 changes.add("CHANGE_STATE");
             }
-            logger.debug(StringUtils.join(changes, " | "));
+            logger.debug(Joiner.on(" | ").join(changes));
         }
     }
 

@@ -28,10 +28,11 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Logger;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.utils.SystemUtils;
 import org.bitbucket.mlopatkin.utils.properties.ConfigurationMap;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.Parsers;
@@ -42,6 +43,7 @@ import org.bitbucket.mlopatkin.utils.properties.SynchronizedConfiguration;
 public class Configuration {
 
     public static class ui {
+
         private static final String PREFIX = "ui.";
 
         private static final String HIDE_LOGGING_PROCESSES_KEY = PREFIX + "hide_logging_processes";
@@ -130,6 +132,7 @@ public class Configuration {
     }
 
     public static class adb {
+
         private static final String PREFIX = "adb.";
 
         private static final String SHOW_SETUP_DIALOG_KEY = PREFIX + "show_setup_dialog";
@@ -186,6 +189,7 @@ public class Configuration {
     }
 
     public static class dump {
+
         private static final String PREFIX = "dump.";
         private static final String BUFFER_HEADER_KEY = PREFIX + "buffer";
 
@@ -232,6 +236,7 @@ public class Configuration {
     }
 
     private static final org.bitbucket.mlopatkin.utils.properties.Configuration config;
+
     static {
         PropertyBuilder<Color> color = type(Color.class, colorParser);
         ConfigurationMap cfg = new ConfigurationMap();
@@ -249,7 +254,7 @@ public class Configuration {
                 enumMap(Priority.class, Color.class, colorParser));
         cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
 
-        cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(new Point(0,0)));
+        cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(new Point(0, 0)));
         cfg.property(ui.PROCESS_LIST_WINDOW_POSITION_KEY, point().defaultVal(null));
         cfg.property(ui.MAIN_WINDOW_WIDTH_KEY, integer(800));
         cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));

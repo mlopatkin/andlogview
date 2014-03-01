@@ -19,7 +19,7 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 
 class PointParser implements Parser<Point> {
@@ -31,7 +31,7 @@ class PointParser implements Parser<Point> {
 
     @Override
     public Point read(String value) {
-        value = StringUtils.trimToNull(value);
+        value = Strings.emptyToNull(Strings.nullToEmpty(value).trim());
         if (value == null || UNDEFINED.equalsIgnoreCase(value)) {
             return null;
         }

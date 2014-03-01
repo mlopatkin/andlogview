@@ -18,7 +18,8 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 
 /**
  * Creates {@link SearchStrategy}s and {@link HighlightStrategy}s according to
@@ -30,13 +31,15 @@ import org.apache.commons.lang3.StringUtils;
  * regex-based searcher/highlighter. All between slashes is treated as the
  * regular expression.
  * <li>If the string doesn't fall into any of the categories above then the
- * method returns searcher/highlighter that checks for the request with
- * {@link StringUtils#containsIgnoreCase(CharSequence, CharSequence)}.
+ * method returns searcher/highlighter that searches for a verbatim occurence of
+ * the pattern (case-insensitive)
+ *
  * </ol>
  *
  * @see Pattern
  */
 public class SearchStrategyFactory {
+
     // this is static-only class
     private SearchStrategyFactory() {
     }
@@ -62,11 +65,11 @@ public class SearchStrategyFactory {
 
     public static HighlightStrategy createHighlightStrategy(String request)
             throws RequestCompilationException {
-        if (StringUtils.isNotBlank(request)) {
+        if (!CharMatcher.WHITESPACE.matchesAllOf(Strings.nullToEmpty(request))) {
             if (isRegexRequest(request)) {
                 try {
                     String regexRequest = extractRegexRequest(request);
-                    if (StringUtils.isNotBlank(regexRequest)) {
+                    if (!CharMatcher.WHITESPACE.matchesAllOf(regexRequest)) {
                         return new RegExpSearcher(regexRequest);
                     } else {
                         throw new RequestCompilationException(request + " contains blank regex");
@@ -82,7 +85,8 @@ public class SearchStrategyFactory {
         }
     }
 
-    public static SearchStrategy createSearchStrategy(String request) throws RequestCompilationException {
+    public static SearchStrategy createSearchStrategy(String request)
+            throws RequestCompilationException {
         return createHighlightStrategy(request);
     }
 }

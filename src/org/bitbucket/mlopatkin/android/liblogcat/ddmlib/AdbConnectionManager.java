@@ -15,15 +15,17 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import java.lang.reflect.Field;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
+import org.apache.log4j.Logger;
+
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class AdbConnectionManager {
+
     private static final Logger logger = Logger.getLogger(AdbConnectionManager.class);
 
     private AdbConnectionManager() {
@@ -39,9 +41,14 @@ public class AdbConnectionManager {
         // hack below - there is no explicit way to check if the bridge was
         // created succesfully
         try {
-            return (Boolean) FieldUtils.readField(FieldUtils.getDeclaredField(
-                    AndroidDebugBridge.class, "mStarted", true), adb, true);
+            Field started = AndroidDebugBridge.class.getDeclaredField("mStarted");
+            started.setAccessible(true);
+            return started.getBoolean(adb);
         } catch (IllegalAccessException e) {
+            logger.fatal("The DDMLIB is unsupported", e);
+            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: "
+                    + System.getenv("DDMLIB"));
+        } catch (NoSuchFieldException e) {
             logger.fatal("The DDMLIB is unsupported", e);
             throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: "
                     + System.getenv("DDMLIB"));

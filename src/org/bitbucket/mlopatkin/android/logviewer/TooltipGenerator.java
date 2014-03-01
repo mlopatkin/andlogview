@@ -18,9 +18,9 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.collect.Range;
+import com.google.common.html.HtmlEscapers;
+
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
 
@@ -38,7 +38,7 @@ public class TooltipGenerator implements TextHighlighter {
 
     @Override
     public void highlightText(int from, int to) {
-        highlightRanges.add(Range.between(from, to));
+        highlightRanges.add(Range.closedOpen(from, to));
 
     }
 
@@ -57,13 +57,13 @@ public class TooltipGenerator implements TextHighlighter {
     private static final int WIDTH = Configuration.ui.tooltipMaxWidth();
 
     private static StringBuilder appendEnc(StringBuilder b, String text) {
-        return b.append(StringEscapeUtils.escapeHtml3(text));
+        return b.append(HtmlEscapers.htmlEscaper().escape(text));
     }
 
     /**
      * Splits the text into several parts: unhighlighted - highlighted -
      * unhighlighted - ... Each part can be empty.
-     * 
+     *
      * @return parts of the text splitted accorded to highlighting
      */
     private String[] splitWithHighlights() {
@@ -71,9 +71,9 @@ public class TooltipGenerator implements TextHighlighter {
         int strPos = 0;
         int resultPos = 0;
         for (Range<Integer> r : highlightRanges) {
-            result[resultPos++] = text.substring(strPos, r.getMinimum());
-            result[resultPos++] = text.substring(r.getMinimum(), r.getMaximum());
-            strPos = r.getMaximum();
+            result[resultPos++] = text.substring(strPos, r.lowerEndpoint());
+            result[resultPos++] = text.substring(r.lowerEndpoint(), r.upperEndpoint());
+            strPos = r.upperEndpoint();
         }
         result[resultPos] = text.substring(strPos);
         return result;
@@ -105,10 +105,10 @@ public class TooltipGenerator implements TextHighlighter {
             }
             shouldHighlight = !shouldHighlight;
         }
-        if (StringUtils.endsWith(result, BR)) {
+        if (result.toString().endsWith(BR)) {
             result.setLength(result.length() - BR.length());
         }
-        if (StringUtils.endsWith(result, BR + SPAN_END)) {
+        if (result.toString().endsWith(BR + SPAN_END)) {
             result.replace(result.length() - (BR + SPAN_END).length(), result.length(), SPAN_END);
         }
         result.append("</html>");

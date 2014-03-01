@@ -4,7 +4,8 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 
 /**
  * Grammar:
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
  * </pre>
  */
 public final class RowSearchStrategyFactory {
+
     private RowSearchStrategyFactory() {
     }
 
@@ -31,7 +33,7 @@ public final class RowSearchStrategyFactory {
     private static final List<String> PREFIXES = Arrays.asList(PREFIX_APP, PREFIX_MSG, PREFIX_TAG);
 
     public static RowSearchStrategy compile(String pattern) throws RequestCompilationException {
-        if (StringUtils.isBlank(pattern)) {
+        if (CharMatcher.WHITESPACE.matchesAllOf(Strings.nullToEmpty(pattern))) {
             return null;
         }
         pattern = pattern.trim();
@@ -67,7 +69,7 @@ public final class RowSearchStrategyFactory {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(pattern);
         if (strategy != null) {
             return new OrSearcher(new AppNameSearcher(strategy), new TagSearcher(strategy),
-                new MessageSearcher(strategy));
+                    new MessageSearcher(strategy));
         } else {
             return null;
         }

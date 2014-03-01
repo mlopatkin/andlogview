@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Splitter;
 
 /**
  * Parses comma-separated list of values. No value should contain comma.
- * 
- * @param <T>
  */
 class ListParser<T> implements Parser<List<T>> {
 
@@ -38,8 +36,8 @@ class ListParser<T> implements Parser<List<T>> {
     @Override
     public List<T> read(String value) {
         List<T> result = new ArrayList<T>();
-        for (String s : StringUtils.split(value, ',')) {
-            result.add(internal.read(s.trim()));
+        for (String s : Splitter.on(',').trimResults().split(value)) {
+            result.add(internal.read(s));
         }
         return result;
     }
@@ -47,7 +45,7 @@ class ListParser<T> implements Parser<List<T>> {
     @Override
     public String write(List<T> values) {
         StringBuilder builder = new StringBuilder();
-        for (Iterator<T> iter = values.iterator(); iter.hasNext();) {
+        for (Iterator<T> iter = values.iterator(); iter.hasNext(); ) {
             builder.append(internal.write(iter.next()));
             if (iter.hasNext()) {
                 builder.append(", ");

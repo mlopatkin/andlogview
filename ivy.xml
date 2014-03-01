@@ -21,7 +21,7 @@
             organisation="org.bitbucket.mlopatkin"
             module="androidlogviewer"/>
 
-    <configurations defaultconfmapping="*->default">
+    <configurations defaultconfmapping="*->default,sources">
         <conf name="${libs.core}" visibility="private"
               description="Basic libraries that should be built into the resulting archive"/>
         <conf name="${libs.compile}" extends="${libs.core}"
@@ -32,8 +32,6 @@
     </configurations>
 
     <dependencies>
-        <dependency org="org.apache.commons" name="commons-lang3" rev="latest.integration"
-                    conf="${libs.core}"/>
         <dependency org="com.google.guava" name="guava" rev="15.0" conf="${libs.core}"/>
         <dependency org="log4j" name="log4j" rev="latest.integration" conf="${libs.core}"/>
         <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="latest.integration"

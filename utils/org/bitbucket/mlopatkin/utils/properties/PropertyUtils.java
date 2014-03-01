@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.lang3.SystemUtils;
+import org.bitbucket.mlopatkin.utils.SystemUtils;
 
 public class PropertyUtils {
+
     private PropertyUtils() {
     }
 

@@ -16,13 +16,13 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 public class IntegerParser implements Parser<Integer> {
 
     @Override
     public Integer read(String value) {
-        return Integer.valueOf(StringUtils.trimToNull(value));
+        return Integer.valueOf(Strings.emptyToNull(value.trim()));
     }
 
     @Override

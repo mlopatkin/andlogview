@@ -17,7 +17,8 @@ package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Joiner;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 /**
@@ -44,7 +45,7 @@ public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
 
     @Override
     public String toString() {
-        return "Tag" + (tags.length > 1 ? "s" : "") + ": " + StringUtils.join(tags, ", ");
+        return "Tag" + (tags.length > 1 ? "s" : "") + ": " + Joiner.on(", ").join(tags);
     }
 
     @Override

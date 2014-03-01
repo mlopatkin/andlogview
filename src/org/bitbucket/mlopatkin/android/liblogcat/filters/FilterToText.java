@@ -19,16 +19,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Joiner;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 /**
  * Translates filtering params into text strings. Main goal is to load
  * complex filters into NewFilterDialog.
- * 
  */
 public class FilterToText {
+
+    private static final Joiner commaJoiner = Joiner.on(", ");
 
     public static String getTags(LogRecordFilter filter) {
         return getTags(getData(filter));
@@ -49,6 +51,7 @@ public class FilterToText {
     public static String getAppNamesAndPids(LogRecordFilter filter) {
         return getAppNamesAndPids(getData(filter));
     }
+
     public static LogRecord.Priority getPriority(LogRecordFilter filter) {
         return getPriority(getData(filter));
     }
@@ -62,7 +65,7 @@ public class FilterToText {
 
     private static String getTags(FilterData data) {
         if (data != null) {
-            return StringUtils.join(data.tags, ", ");
+            return commaJoiner.join(data.tags);
         } else {
             return null;
         }
@@ -70,7 +73,7 @@ public class FilterToText {
 
     private static String getPids(FilterData data) {
         if (data != null) {
-            return StringUtils.join(data.pids, ", ");
+            return commaJoiner.join(data.pids);
         } else {
             return null;
         }
@@ -86,7 +89,7 @@ public class FilterToText {
 
     private static String getAppNames(FilterData data) {
         if (data != null) {
-            return StringUtils.join(data.appNames, ", ");
+            return commaJoiner.join(data.appNames);
         } else {
             return null;
         }
@@ -102,9 +105,10 @@ public class FilterToText {
 
     private static String getAppNamesAndPids(FilterData data) {
         if (data != null) {
-            List<Object> allItems = new ArrayList<Object>(data.pids != null ? data.pids : Collections.emptyList());
+            List<Object> allItems = new ArrayList<Object>(
+                    data.pids != null ? data.pids : Collections.emptyList());
             allItems.addAll(data.appNames != null ? data.appNames : Collections.emptyList());
-            return StringUtils.join(allItems, ", ");
+            return commaJoiner.join(allItems);
         } else {
             return null;
         }

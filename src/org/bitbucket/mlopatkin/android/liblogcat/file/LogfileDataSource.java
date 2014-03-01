@@ -24,8 +24,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
 import org.apache.log4j.Logger;
+
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
@@ -35,7 +36,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 /**
  * This class implements simple log parser with the ability to determine actual
  * logcat output format used.
- * 
  */
 public class LogfileDataSource implements DataSource {
 
@@ -57,8 +57,10 @@ public class LogfileDataSource implements DataSource {
     void parse(BufferedReader in) throws IOException {
         String line = in.readLine();
         while (line != null) {
-            if (!LogRecordParser.isLogBeginningLine(line) && !StringUtils.isBlank(line)) {
-                LogRecord record = strategy.parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
+            if (!LogRecordParser.isLogBeginningLine(line)
+                    && !CharMatcher.WHITESPACE.matchesAllOf(line)) {
+                LogRecord record = strategy
+                        .parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
                 // sometimes we cannot handle the line well: if we didn't guess
                 // the log type correctly or if there is some weird formatting
                 // (probably binary output)
