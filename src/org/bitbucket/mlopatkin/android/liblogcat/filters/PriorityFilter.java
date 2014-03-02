@@ -30,7 +30,7 @@ public class PriorityFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         LogRecord.Priority p = record.getPriority();
         return p.ordinal() >= priority.ordinal();
     }

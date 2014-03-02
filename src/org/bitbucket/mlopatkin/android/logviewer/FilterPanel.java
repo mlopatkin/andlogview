@@ -29,7 +29,6 @@ import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -43,13 +42,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.JViewport;
 
+import com.google.common.base.Predicate;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 class FilterPanel extends JPanel {
 
     private FilterController controller;
-    private Map<LogRecordFilter, FilterButton> buttons = new HashMap<LogRecordFilter, FilterButton>();
+    private Map<Predicate<LogRecord>, FilterButton> buttons
+            = new HashMap<Predicate<LogRecord>, FilterButton>();
 
     private static final int SEPARATOR_HEIGHT = 42;
     private static final int SEPARATOR_WIDTH = 5;
@@ -93,7 +96,7 @@ class FilterPanel extends JPanel {
         validate();
     }
 
-    public void removeFilterButton(LogRecordFilter filter) {
+    public void removeFilterButton(Predicate<LogRecord> filter) {
         FilterButton button = buttons.get(filter);
         buttons.remove(filter);
         if (button != null) {
@@ -103,7 +106,7 @@ class FilterPanel extends JPanel {
         repaint();
     }
 
-    public JToggleButton getFilterButton(LogRecordFilter filter) {
+    public JToggleButton getFilterButton(Predicate<LogRecord> filter) {
         return buttons.get(filter);
     }
 
@@ -148,6 +151,7 @@ class FilterPanel extends JPanel {
     }
 
     private class PopupMenuHandler {
+
         private JPopupMenu menu = new JPopupMenu();
         private JMenuItem editItem = new JMenuItem("Edit filter");
         private JMenuItem removeItem = new JMenuItem("Remove filter");
@@ -264,7 +268,9 @@ class FilterPanel extends JPanel {
     private ComponentListener resizeListener = new ComponentAdapter() {
         public void componentResized(ComponentEvent e) {
             updateScrollState();
-        };
+        }
+
+        ;
     };
 
     private Action acCreateFilter = new AbstractAction("", ADD_ICON) {

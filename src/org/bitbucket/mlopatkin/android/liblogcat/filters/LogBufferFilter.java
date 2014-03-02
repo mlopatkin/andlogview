@@ -29,7 +29,7 @@ public class LogBufferFilter implements LogRecordFilter {
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         return buffers.contains(record.getBuffer());
     }
 

@@ -16,12 +16,14 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import com.google.common.base.Predicate;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 /**
  * Generic filter interface.
  */
-public interface LogRecordFilter {
+public interface LogRecordFilter extends Predicate<LogRecord> {
 
     /**
      * Checks if the record matches the filter.
@@ -29,7 +31,7 @@ public interface LogRecordFilter {
      * @param record the record to match
      * @return {@code true} if the records matched the filter
      */
-    boolean include(LogRecord record);
+    boolean apply(LogRecord record);
 
     /**
      * Combines existing filter and the other filter using "AND" logical operation. The resulting

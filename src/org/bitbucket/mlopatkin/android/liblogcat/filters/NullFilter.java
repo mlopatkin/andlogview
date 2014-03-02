@@ -26,7 +26,7 @@ public class NullFilter implements LogRecordFilter {
     public static final NullFilter INSTANCE = new NullFilter();
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         return true;
     }
 

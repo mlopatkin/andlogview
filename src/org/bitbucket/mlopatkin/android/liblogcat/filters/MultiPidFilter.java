@@ -43,7 +43,7 @@ public class MultiPidFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         return pids.contains(record.getPid());
     }
 

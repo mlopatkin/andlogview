@@ -39,10 +39,10 @@ public class AppNameFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         String appName = record.getAppName();
-        for(SearchStrategy strategy : strategies) {
-            if(strategy.isStringMatched(appName)) {
+        for (SearchStrategy strategy : strategies) {
+            if (strategy.isStringMatched(appName)) {
                 return true;
             }
         }

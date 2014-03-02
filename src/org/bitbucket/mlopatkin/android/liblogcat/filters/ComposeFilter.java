@@ -39,9 +39,9 @@ public class ComposeFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         for (LogRecordFilter filter : filters) {
-            if (!filter.include(record)) {
+            if (!filter.apply(record)) {
                 return false;
             }
         }

@@ -19,17 +19,19 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 
 public class FilterChain {
 
-    private EnumMap<FilteringMode, Set<LogRecordFilter>> filters = new EnumMap<FilteringMode, Set<LogRecordFilter>>(
-            FilteringMode.class);
+    private EnumMap<FilteringMode, Set<Predicate<LogRecord>>> filters = Maps
+            .newEnumMap(FilteringMode.class);
 
-    private boolean include(Set<LogRecordFilter> filters, LogRecord record) {
-        for (LogRecordFilter filter : filters) {
-            if (filter.include(record)) {
+    private boolean include(Set<Predicate<LogRecord>> filters, LogRecord record) {
+        for (Predicate<LogRecord> filter : filters) {
+            if (filter.apply(record)) {
                 return true;
             }
 
@@ -37,25 +39,25 @@ public class FilterChain {
         return false;
     }
 
-    public void addFilter(FilteringMode mode, LogRecordFilter filter) {
-        Set<LogRecordFilter> concreteFilters = filters.get(mode);
+    public void addFilter(FilteringMode mode, Predicate<LogRecord> filter) {
+        Set<Predicate<LogRecord>> concreteFilters = filters.get(mode);
         if (concreteFilters == null) {
-            concreteFilters = new HashSet<LogRecordFilter>();
+            concreteFilters = new HashSet<Predicate<LogRecord>>();
             filters.put(mode, concreteFilters);
         }
         concreteFilters.add(filter);
     }
 
     public boolean checkFilter(FilteringMode mode, LogRecord record) {
-        Set<LogRecordFilter> concreteFilters = filters.get(mode);
+        Set<Predicate<LogRecord>> concreteFilters = filters.get(mode);
         if (concreteFilters == null || concreteFilters.isEmpty()) {
             return mode.getDefaultResult();
         }
         return include(concreteFilters, record);
     }
 
-    public void removeFilter(LogRecordFilter filter) {
-        for (Set<LogRecordFilter> concreteFilters : filters.values()) {
+    public void removeFilter(Predicate<LogRecord> filter) {
+        for (Set<Predicate<LogRecord>> concreteFilters : filters.values()) {
             concreteFilters.remove(filter);
         }
     }

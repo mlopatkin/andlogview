@@ -31,7 +31,7 @@ public class SingleTagFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         return tag.equals(record.getTag());
     }
 

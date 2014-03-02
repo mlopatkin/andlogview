@@ -34,7 +34,7 @@ public class MessageFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         String message = record.getMessage();
         return strategy.isStringMatched(message);
     }

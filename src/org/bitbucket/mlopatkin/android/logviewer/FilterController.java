@@ -19,14 +19,16 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JFrame;
 import javax.swing.table.TableRowSorter;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameOrPidFilter;
@@ -64,7 +66,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     // buffers
     private LogBufferFilter bufferFilter = new LogBufferFilter();
 
-    private EnumMap<FilteringMode, FilteringModeHandler<?>> handlers = new EnumMap<FilteringMode, FilteringModeHandler<?>>(
+    private EnumMap<FilteringMode, FilteringModeHandler<?>> handlers
+            = new EnumMap<FilteringMode, FilteringModeHandler<?>>(
             FilteringMode.class);
 
     private FilterChainHandler showHideHandler = new FilterChainHandler();
@@ -218,7 +221,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         onFilteringStateUpdated();
     }
 
-    void disableFilter(FilteringMode mode, LogRecordFilter filter) {
+    void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
         getHandler(mode).disableFilter(mode, filter);
         onFilteringStateUpdated();
     }
@@ -240,41 +243,42 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
      * on mode.
      */
     interface FilteringModeHandler<T> {
-        void addFilter(FilteringMode mode, LogRecordFilter filter, T data);
 
-        void removeFilter(FilteringMode mode, LogRecordFilter filter);
+        void addFilter(FilteringMode mode, Predicate<LogRecord> filter, T data);
 
-        void enableFilter(FilteringMode mode, LogRecordFilter filter);
+        void removeFilter(FilteringMode mode, Predicate<LogRecord> filter);
 
-        void disableFilter(FilteringMode mode, LogRecordFilter filter);
+        void enableFilter(FilteringMode mode, Predicate<LogRecord> filter);
 
-        T getData(FilteringMode mode, LogRecordFilter filter);
+        void disableFilter(FilteringMode mode, Predicate<LogRecord> filter);
+
+        T getData(FilteringMode mode, Predicate<LogRecord> filter);
     }
 
     private class FilterChainHandler implements FilteringModeHandler<Object> {
 
         @Override
-        public void addFilter(FilteringMode mode, LogRecordFilter filter, Object data) {
+        public void addFilter(FilteringMode mode, Predicate<LogRecord> filter, Object data) {
             filters.addFilter(mode, filter);
         }
 
         @Override
-        public void removeFilter(FilteringMode mode, LogRecordFilter filter) {
+        public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
             filters.removeFilter(filter);
         }
 
         @Override
-        public void enableFilter(FilteringMode mode, LogRecordFilter filter) {
+        public void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
             filters.addFilter(mode, filter);
         }
 
         @Override
-        public void disableFilter(FilteringMode mode, LogRecordFilter filter) {
+        public void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
             filters.removeFilter(filter);
         }
 
         @Override
-        public Object getData(FilteringMode mode, LogRecordFilter filter) {
+        public Object getData(FilteringMode mode, Predicate<LogRecord> filter) {
             return null;
         }
 
@@ -282,10 +286,11 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
 
     private class IndexWindowHandler implements FilteringModeHandler<Object> {
 
-        private Map<LogRecordFilter, WindowFilterController> windowControllers = new HashMap<LogRecordFilter, WindowFilterController>();
+        private Map<Predicate<LogRecord>, WindowFilterController> windowControllers = Maps
+                .newHashMap();
 
         @Override
-        public void addFilter(FilteringMode mode, LogRecordFilter filter, Object data) {
+        public void addFilter(FilteringMode mode, Predicate<LogRecord> filter, Object data) {
             WindowFilterController controller = new WindowFilterController(main, table, tableModel,
                     null,
                     FilterController.this, filter);
@@ -294,7 +299,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         }
 
         @Override
-        public void removeFilter(FilteringMode mode, LogRecordFilter filter) {
+        public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
             WindowFilterController windowController = windowControllers.remove(filter);
             if (windowController != null) {
                 windowController.dispose();
@@ -302,13 +307,13 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         }
 
         @Override
-        public void enableFilter(FilteringMode mode, LogRecordFilter filter) {
+        public void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
             WindowFilterController windowController = windowControllers.get(filter);
             windowController.showWindow();
         }
 
         @Override
-        public void disableFilter(FilteringMode mode, LogRecordFilter filter) {
+        public void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
             logger.debug("Disable filter");
             WindowFilterController windowController = windowControllers.get(filter);
             windowController.hideWindow();
@@ -316,7 +321,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         }
 
         @Override
-        public Object getData(FilteringMode mode, LogRecordFilter filter) {
+        public Object getData(FilteringMode mode, Predicate<LogRecord> filter) {
             return null;
         }
 

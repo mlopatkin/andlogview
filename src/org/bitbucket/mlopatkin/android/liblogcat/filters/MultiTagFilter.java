@@ -34,7 +34,7 @@ public class MultiTagFilter extends AbstractFilter implements LogRecordFilter {
     }
 
     @Override
-    public boolean include(LogRecord record) {
+    public boolean apply(LogRecord record) {
         for (String tag : tags) {
             if (tag.equalsIgnoreCase(record.getTag())) {
                 return true;

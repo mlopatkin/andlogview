@@ -16,14 +16,15 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.util.Arrays;
-
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
+import com.google.common.base.Predicate;
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
@@ -32,11 +33,12 @@ public class WindowFilterController extends AbstractIndexController implements I
     private static final Logger logger = Logger.getLogger(WindowFilterController.class);
     private TableRowSorter<LogRecordTableModel> rowSorter;
     private FilterController filterController;
-    private LogRecordFilter filter;
+    private Predicate<LogRecord> filter;
 
     @SuppressWarnings("unchecked")
     public WindowFilterController(JFrame owner, JTable mainTable, LogRecordTableModel model,
-            PidToProcessMapper mapper, FilterController filterController, LogRecordFilter filter) {
+            PidToProcessMapper mapper, FilterController filterController,
+            Predicate<LogRecord> filter) {
         super(owner, mainTable, model, mapper, filterController);
         this.filterController = filterController;
         this.filter = filter;

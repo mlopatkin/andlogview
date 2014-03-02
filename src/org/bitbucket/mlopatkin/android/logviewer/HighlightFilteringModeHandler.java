@@ -16,16 +16,19 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.awt.Color;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.FilterController.FilteringModeHandler;
 
 class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
+
     private class FilterInfo {
+
         Color color;
         boolean enabled = true;
 
@@ -34,34 +37,34 @@ class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
         }
     }
 
-    private Map<LogRecordFilter, FilterInfo> filterColors = new LinkedHashMap<LogRecordFilter, FilterInfo>();
+    private Map<Predicate<LogRecord>, FilterInfo> filterColors = Maps.newLinkedHashMap();
 
     @Override
-    public void addFilter(FilteringMode mode, LogRecordFilter filter, Color data) {
+    public void addFilter(FilteringMode mode, Predicate<LogRecord> filter, Color data) {
         filterColors.put(filter, new FilterInfo(data));
     }
 
     @Override
-    public void removeFilter(FilteringMode mode, LogRecordFilter filter) {
+    public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
         filterColors.remove(filter);
     }
 
     @Override
-    public void enableFilter(FilteringMode mode, LogRecordFilter filter) {
+    public void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
         filterColors.get(filter).enabled = true;
     }
 
     @Override
-    public void disableFilter(FilteringMode mode, LogRecordFilter filter) {
+    public void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
         filterColors.get(filter).enabled = false;
     }
 
     public Color getColor(LogRecord record) {
         Color result = null;
-        for (Entry<LogRecordFilter, FilterInfo> entry : filterColors.entrySet()) {
-            LogRecordFilter filter = entry.getKey();
+        for (Entry<Predicate<LogRecord>, FilterInfo> entry : filterColors.entrySet()) {
+            Predicate<LogRecord> filter = entry.getKey();
             FilterInfo info = entry.getValue();
-            if (info.enabled && filter.include(record)) {
+            if (info.enabled && filter.apply(record)) {
                 result = info.color;
             }
         }
@@ -69,7 +72,7 @@ class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
     }
 
     @Override
-    public Color getData(FilteringMode mode, LogRecordFilter filter) {
+    public Color getData(FilteringMode mode, Predicate<LogRecord> filter) {
         return filterColors.get(filter).color;
     }
 }

@@ -31,6 +31,7 @@ public class AppNameOrPidFilter extends AbstractFilter implements LogRecordFilte
         this.multiPidFilter = multiPidFilter;
 
     }
+
     @Override
     protected void dumpFilter(FilterData data) {
         appNameFilter.dumpFilter(data);
@@ -38,8 +39,8 @@ public class AppNameOrPidFilter extends AbstractFilter implements LogRecordFilte
     }
 
     @Override
-    public boolean include(LogRecord record) {
-        return appNameFilter.include(record) || multiPidFilter.include(record);
+    public boolean apply(LogRecord record) {
+        return appNameFilter.apply(record) || multiPidFilter.apply(record);
     }
 
     @Override

@@ -17,24 +17,25 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import javax.swing.RowFilter;
 
+import com.google.common.base.Predicate;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 
 /**
  * Wrapper over {@link LogRecordFilter} to match {@link RowFilter} interface.
- * 
  */
 public class LogRecordFilterWrapper extends RowFilter<LogRecordTableModel, Integer> {
 
-    private LogRecordFilter filter;
+    private Predicate<LogRecord> filter;
 
-    public LogRecordFilterWrapper(LogRecordFilter filter) {
+    public LogRecordFilterWrapper(Predicate<LogRecord> filter) {
         this.filter = filter;
     }
 
     @Override
     public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
         LogRecord record = entry.getModel().getRowData(entry.getIdentifier());
-        return filter.include(record);
+        return filter.apply(record);
     }
 }
