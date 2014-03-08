@@ -21,7 +21,7 @@
             organisation="org.bitbucket.mlopatkin"
             module="androidlogviewer"/>
 
-    <configurations defaultconfmapping="*->default,sources">
+    <configurations defaultconfmapping="*->default">
         <conf name="${libs.core}" visibility="private"
               description="Basic libraries that should be built into the resulting archive"/>
         <conf name="${libs.compile}" extends="${libs.core}"

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils.jsonp;
+package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+public class FilterStorage {
 
-public interface JsonBinder<T> {
-
-    T get(JSONObject obj) throws JSONException;
-
-    JSONObject put(T value, JSONObject object) throws JSONException;
 }

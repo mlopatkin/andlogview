@@ -2,104 +2,103 @@
 <project name="Android Log Viewer" xmlns:ivy="antlib:org.apache.ivy.ant" default="all">
 
     <!-- Include debug info into compiled sources -->
-    <property name="debug" value="yes" />
+    <property name="debug" value="yes"/>
 
     <!-- Location for libraries used for compilation -->
-    <property name="lib.dir" location="lib" />
+    <property name="lib.dir" location="lib"/>
 
     <!-- Location for intermediate build products -->
-    <property name="build.intermediate.dir" location="build" />
+    <property name="build.intermediate.dir" location="build"/>
 
     <!-- Location for a distributive package output -->
-    <property name="dist.dir" location="dist" />
+    <property name="dist.dir" location="dist"/>
     <!-- The name of the distributive package -->
-    <property name="dist.name" value="logview.zip" />
+    <property name="dist.name" value="logview.zip"/>
 
     <!-- Location for libraries used for compilation -->
-    <property name="report.dir" location="${build.intermediate.dir}/report" />
+    <property name="report.dir" location="${build.intermediate.dir}/report"/>
 
     <!-- Main jar file for the application -->
-    <property name="main.jar.name" value="logview.jar" />
+    <property name="main.jar.name" value="logview.jar"/>
 
     <!-- Source files locations -->
-    <property name="src.main.dir" location="src" />
-    <property name="src.android-json.dir" location="android.org.json/src/main/java" />
-    <property name="src.utils.dir" location="utils" />
-    <property name="src.test.dir" location="test" />
+    <property name="src.main.dir" location="src"/>
+    <property name="src.utils.dir" location="utils"/>
+    <property name="src.test.dir" location="test"/>
 
     <!-- Resources to be embedded into the package -->
-    <property name="res.dir" location="resources" />
+    <property name="res.dir" location="resources"/>
 
     <!-- Target java version -->
-    <property name="target.version" value="1.6" />
+    <property name="target.version" value="1.6"/>
 
     <!-- Ivy configurations -->
 
     <!-- Core libraries that are embedded into resulting jar -->
-    <property name="libs.core" value="core" />
+    <property name="libs.core" value="core"/>
     <!-- All compile-time dependecies -->
-    <property name="libs.compile" value="compile" />
+    <property name="libs.compile" value="compile"/>
     <!-- Libraries included into distributive package as is -->
-    <property name="libs.dist" value="dist" />
+    <property name="libs.dist" value="dist"/>
     <!-- Libraries used for testing -->
-    <property name="libs.test" value="test" />
+    <property name="libs.test" value="test"/>
 
-    <property name="build.sysclasspath" value="ignore" />
+    <property name="build.sysclasspath" value="ignore"/>
 
     <!-- Locations for intermediate libraries and compiled files -->
-    <property name="build.classes.dir" location="${build.intermediate.dir}/bin" />
-    <property name="build.lib.dir" location="${build.intermediate.dir}/lib" />
-    <property name="build.test.dir" location="${build.intermediate.dir}/test" />
+    <property name="build.classes.dir" location="${build.intermediate.dir}/bin"/>
+    <property name="build.lib.dir" location="${build.intermediate.dir}/lib"/>
+    <property name="build.test.dir" location="${build.intermediate.dir}/test"/>
 
     <path id="libraries">
-        <fileset dir="${lib.dir}" />
+        <fileset dir="${lib.dir}"/>
     </path>
 
     <!-- Files that should be included into distributive package as is -->
     <zipfileset dir="." id="dist.resources">
-        <include name="HISTORY" />
-        <include name="NOTICE" />
-        <include name="README" />
-        <include name="LICENSE" />
-        <include name="logview.bat" />
-        <include name="logview" />
+        <include name="HISTORY"/>
+        <include name="NOTICE"/>
+        <include name="README"/>
+        <include name="LICENSE"/>
+        <include name="logview.bat"/>
+        <include name="logview"/>
     </zipfileset>
 
     <target name="all"
             depends="test, dist"
-            description="Run tests then prepare the distributive package" />
+            description="Run tests then prepare the distributive package"/>
 
     <target name="test" description="Run unit tests" depends="compile-test">
         <junit failureproperty="tests.failed" errorproperty="tests.failed">
             <classpath>
-                <path refid="libraries" />
-                <path location="${build.classes.dir}" />
-                <path location="${build.test.dir}" />
+                <path refid="libraries"/>
+                <path location="${build.classes.dir}"/>
+                <path location="${build.test.dir}"/>
             </classpath>
-            <formatter type="brief" />
+            <formatter type="brief"/>
             <batchtest todir="${report.dir}">
-                <fileset dir="${build.test.dir}" includes="**/*Test.class" />
+                <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
             </batchtest>
         </junit>
-        <fail if="tests.failed" />
+        <fail if="tests.failed"/>
     </target>
 
     <target name="dist"
             description="Prepare the distributive package"
             depends="make-jar, resolve-dist-dependencies, make-dist-dir">
         <zip destfile="${dist.dir}/${dist.name}">
-            <zipfileset refid="dist.resources" />
-            <zipfileset dir="${build.lib.dir}" includes="*.jar" prefix="lib" />
+            <zipfileset refid="dist.resources"/>
+            <zipfileset dir="${build.lib.dir}" includes="*.jar" prefix="lib"/>
         </zip>
     </target>
 
     <target name="resolve-dist-dependencies" depends="make-dist-dir">
-        <ivy:retrieve conf="${libs.dist}" pattern="${build.lib.dir}/[artifact].[ext]" />
+        <ivy:retrieve conf="${libs.dist}" pattern="${build.lib.dir}/[artifact].[ext]"/>
     </target>
 
     <target name="make-jar" depends="compile-dist, unpack-libs, copy-res, make-dist-dir">
         <jar destfile="${build.lib.dir}/${main.jar.name}">
-            <fileset dir="${build.classes.dir}" />
+            <fileset dir="${build.classes.dir}"/>
         </jar>
     </target>
 
@@ -110,67 +109,67 @@
                target="${target.version}"
                source="${target.version}"
                debug="${debug}">
-            <src path="${src.main.dir}" />
-            <src path="${src.android-json.dir}" />
-            <src path="${src.utils.dir}" />
+            <src path="${src.main.dir}"/>
+            <src path="${src.utils.dir}"/>
         </javac>
     </target>
 
     <target name="resolve-compile-dependencies">
-        <ivy:retrieve conf="${libs.compile}" pattern="${lib.dir}/[artifact].[ext]" />
+        <ivy:retrieve conf="${libs.compile}" pattern="${lib.dir}/[artifact].[ext]"/>
     </target>
 
     <target name="compile-test"
             depends="compile-dist, resolve-test-dependencies, make-intermediate-dir">
-        <javac destdir="${build.test.dir}" encoding="utf-8" debug="${debug}" target="${target.version}" source="${target.version}">
-            <src path="${src.test.dir}" />
+        <javac destdir="${build.test.dir}" encoding="utf-8" debug="${debug}"
+               target="${target.version}" source="${target.version}">
+            <src path="${src.test.dir}"/>
             <classpath>
-                <path refid="libraries" />
-                <path location="${build.classes.dir}" />
+                <path refid="libraries"/>
+                <path location="${build.classes.dir}"/>
             </classpath>
         </javac>
     </target>
 
     <target name="resolve-test-dependencies">
-        <ivy:retrieve conf="${libs.test}" pattern="${lib.dir}/[artifact].[ext]" />
+        <ivy:retrieve conf="${libs.test}" pattern="${lib.dir}/[artifact].[ext]"/>
     </target>
 
     <target name="unpack-libs" depends="resolve-core-libs, make-intermediate-dir">
         <unjar dest="${build.classes.dir}">
             <patternset>
-                <exclude name="META-INF/**" />
-                <exclude name="*.txt" />
+                <exclude name="META-INF/**"/>
+                <exclude name="*.txt"/>
             </patternset>
-            <fileset refid="${libs.core}.files" />
+            <fileset refid="${libs.core}.files"/>
         </unjar>
     </target>
 
     <target name="resolve-core-libs">
-        <ivy:resolve conf="${libs.core}" />
-        <ivy:cachefileset setid="${libs.core}.files" />
+        <ivy:resolve conf="${libs.core}"/>
+        <ivy:cachefileset setid="${libs.core}.files"/>
     </target>
 
     <target name="copy-res" depends="make-intermediate-dir">
         <copy todir="${build.classes.dir}/">
-            <fileset dir="${res.dir}" includes="**/*.*" />
+            <fileset dir="${res.dir}" includes="**/*.*"/>
         </copy>
     </target>
 
     <target name="make-intermediate-dir">
-        <mkdir dir="${build.intermediate.dir}" />
-        <mkdir dir="${build.classes.dir}" />
-        <mkdir dir="${build.lib.dir}" />
-        <mkdir dir="${build.test.dir}" />
-        <mkdir dir="${report.dir}" />
+        <mkdir dir="${build.intermediate.dir}"/>
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.lib.dir}"/>
+        <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${report.dir}"/>
     </target>
 
     <target name="make-dist-dir">
-        <mkdir dir="${dist.dir}" />
+        <mkdir dir="${dist.dir}"/>
     </target>
 
     <target name="clean" description="Clean up all generated files">
-        <delete dir="${build.intermediate.dir}" />
-        <delete dir="${dist.dir}" />
+        <delete dir="${build.intermediate.dir}"/>
+        <delete dir="${dist.dir}"/>
     </target>
 
 </project>

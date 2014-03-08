@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.utils.jsonp.JsonWritable;
 
 /**
  * Filter is just a predicate with metadata. The metadata tells other machinery what to do with the
@@ -28,7 +27,7 @@ import org.bitbucket.mlopatkin.utils.jsonp.JsonWritable;
  * <p>
  * Another important property of filter is the ability to serialize itself to JSON.
  */
-public abstract class Filter implements JsonWritable {
+public abstract class Filter {
     // examples of what this system is designed for:
     // - interface for FilterPanel that allows toggling filters on/off temporarily
     // - interface for opening filters in the dialogs
