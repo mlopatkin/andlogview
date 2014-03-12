@@ -16,6 +16,219 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
+import com.google.common.io.CharSink;
+import com.google.common.io.CharSource;
+import com.google.common.io.Closer;
+import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonWriter;
+import org.apache.log4j.Logger;
+
+import org.bitbucket.mlopatkin.utils.Threads;
+
+/**
+ * Provides an access to a persistent storage for filters.
+ */
+@ThreadSafe
 public class FilterStorage {
 
+    private static final Logger logger = Logger.getLogger(FilterStorage.class);
+
+    public interface FilterStorageClient<T> {
+
+        String getName();
+
+        T fromJson(Gson gson, JsonElement element);
+
+        T getDefault();
+
+        JsonElement toJson(Gson gson, T value);
+    }
+
+    private final CharSource inStorage;
+    private final CharSink outStorage;
+    private final ExecutorService fileWorker;
+    private final Gson gson = new Gson();
+
+    @GuardedBy("serializedFilters")
+    private final Map<String, JsonElement> serializedFilters = Maps.newHashMap();
+    @GuardedBy("serializedFilters")
+    private boolean dirty = false;
+
+    private final Runnable fileSaver = new Runnable() {
+        @Override
+        public void run() {
+            save();
+        }
+    };
+
+    FilterStorage(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
+        this.inStorage = inStorage;
+        this.outStorage = outStorage;
+        this.fileWorker = fileWorker;
+    }
+
+    public static FilterStorage createForFile(File file) {
+        final FilterStorage result = new FilterStorage(
+                Files.asCharSource(file, Charsets.UTF_8),
+                Files.asCharSink(file, Charsets.UTF_8),
+                Executors.newSingleThreadExecutor(Threads.withName("FilterStorageFileWorker")));
+        Runtime.getRuntime().addShutdownHook(new Thread("OnExitCommiter") {
+            @Override
+            public void run() {
+                try {
+                    result.shutdown(true);
+                } catch (InterruptedException e) {
+                    interrupt();
+                }
+            }
+        });
+        return result;
+    }
+
+    public void load() {
+        JsonParser parser = new JsonParser();
+        try {
+            Reader in = inStorage.openBufferedStream();
+            try {
+                load(parser.parse(in));
+                logger.debug("Successfully parsed filter data");
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
+            logger.error("Failed to open JSON filter data file", e);
+        } catch (JsonParseException e) {
+            logger.error("Failed to parse JSON data", e);
+        }
+    }
+
+    private void load(JsonElement element) {
+        if (element.isJsonNull()) {
+            // a case of empty stream
+            return;
+        }
+        if (!element.isJsonObject()) {
+            logger.error("Root element is not an object");
+            return;
+        }
+
+        JsonObject obj = element.getAsJsonObject();
+        synchronized (serializedFilters) {
+            serializedFilters.clear();
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                serializedFilters.put(entry.getKey(), entry.getValue());
+            }
+            scheduleCommitLocked();
+        }
+    }
+
+    public void save() {
+        Map<String, JsonElement> elements;
+        synchronized (serializedFilters) {
+            elements = Maps.newHashMap(serializedFilters);
+            dirty = false;
+        }
+        saveImpl(elements);
+    }
+
+    private void saveImpl(Map<String, JsonElement> filters) {
+        try {
+            Closer closer = Closer.create();
+            try {
+                Writer out = closer.register(outStorage.openBufferedStream());
+                JsonWriter writer = closer.register(new JsonWriter(out));
+                saveToJsonWriter(writer, filters);
+                logger.debug("Successfully written filter data, commiting");
+            } finally {
+                closer.close();
+            }
+        } catch (IOException e) {
+            logger.error("Failed to open storage for writing", e);
+        }
+    }
+
+    private void saveToJsonWriter(JsonWriter writer, Map<String, JsonElement> filters)
+            throws IOException {
+        try {
+            writer.beginObject();
+            for (Map.Entry<String, JsonElement> entry : filters.entrySet()) {
+                writer.name(entry.getKey());
+                gson.toJson(entry.getValue(), writer);
+            }
+            writer.endObject();
+        } catch (JsonIOException e) {
+            logger.error("Failed to save JSON data", e);
+        }
+    }
+
+    @GuardedBy("serializedFilters")
+    private void scheduleCommitLocked() {
+        if (!dirty) {
+            dirty = true;
+            fileWorker.submit(fileSaver);
+        }
+    }
+
+    // in both saveFilters and loadFilters we avoid to call alien methods with the lock held
+    public <T> void saveFilters(FilterStorageClient<T> client, T value) {
+        String name = client.getName();
+        JsonElement json = client.toJson(gson, value);
+        synchronized (serializedFilters) {
+            serializedFilters.put(name, json);
+            scheduleCommitLocked();
+        }
+    }
+
+    public <T> T loadFilters(FilterStorageClient<T> client) {
+        String clientName = client.getName();
+        JsonElement element;
+        synchronized (serializedFilters) {
+            element = serializedFilters.get(clientName);
+        }
+        try {
+            if (element != null) {
+                return client.fromJson(gson, element);
+            }
+        } catch (JsonSyntaxException e) {
+            // We have some weird JSON for this client. Discard it unless somebody updated it in
+            // background.
+            synchronized (serializedFilters) {
+                if (serializedFilters.get(clientName) == element) {
+                    serializedFilters.remove(clientName);
+                    scheduleCommitLocked();
+                }
+            }
+            logger.error("Failed to parse filter data of " + client.getName());
+        }
+        // failed to load/parse, provide fallback
+        return client.getDefault();
+    }
+
+    public void shutdown(boolean waitForCompletion) throws InterruptedException {
+        fileWorker.submit(fileSaver);
+        fileWorker.shutdown();
+        if (waitForCompletion && !fileWorker.awaitTermination(120, TimeUnit.SECONDS)) {
+            logger.warn("Failed to terminate file worker properly");
+        }
+    }
 }

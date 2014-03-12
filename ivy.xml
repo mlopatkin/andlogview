@@ -33,16 +33,17 @@
 
     <dependencies>
         <dependency org="com.google.guava" name="guava" rev="15.0" conf="${libs.core}"/>
-        <dependency org="log4j" name="log4j" rev="latest.integration" conf="${libs.core}"/>
-        <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="latest.integration"
+        <dependency org="log4j" name="log4j" rev="1.2.17" conf="${libs.core}"/>
+        <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="4.6"
                     conf="${libs.core}"/>
+        <dependency org="com.google.code.gson" name="gson" rev="2.2.4" conf="${libs.core}"/>
 
-        <dependency org="com.google.android.tools" name="ddmlib" rev="latest.integration"
+        <dependency org="com.google.android.tools" name="ddmlib" rev="r13"
                     conf="${libs.compile}, ${libs.dist}"/>
         <dependency org="com.google.code.findbugs" name="jsr305" rev="2.0.3"
                     conf="${libs.compile}"/>
 
-        <dependency org="junit" name="junit" rev="latest.integration" conf="${libs.test}"/>
+        <dependency org="junit" name="junit" rev="4.11" conf="${libs.test}"/>
         <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="${libs.test}"/>
     </dependencies>
 </ivy-module>
