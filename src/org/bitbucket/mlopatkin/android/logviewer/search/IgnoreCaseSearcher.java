@@ -26,7 +26,7 @@ class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
     }
 
     @Override
-    public boolean isStringMatched(String s) {
+    public boolean apply(String s) {
         return MyStringUtils.indexOfIgnoreCase(s, textToSearch) >= 0;
     }
 

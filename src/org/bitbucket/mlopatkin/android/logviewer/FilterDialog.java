@@ -221,7 +221,7 @@ public abstract class FilterDialog extends JDialog {
     private static final Splitter commaSplitter =
             Splitter.on(',').trimResults(CharMatcher.WHITESPACE);
 
-    public String[] getTags() {
+    private String[] getTags() {
         String tagsString = Strings.nullToEmpty(tagTextField.getText());
         if (!CharMatcher.WHITESPACE.matchesAllOf(tagsString)) {
             return Iterables.toArray(commaSplitter.splitToList(tagsString), String.class);
@@ -229,7 +229,7 @@ public abstract class FilterDialog extends JDialog {
         return null;
     }
 
-    public String getMessageText() {
+    private String getMessageText() {
         String message = messageTextField.getText();
         if (!CharMatcher.WHITESPACE.matchesAllOf(message)) {
             return message;
@@ -237,7 +237,7 @@ public abstract class FilterDialog extends JDialog {
         return null;
     }
 
-    public List<Integer> getPids() {
+    private List<Integer> getPids() {
         String pidString = Strings.nullToEmpty(pidTextField.getText());
         if (!CharMatcher.WHITESPACE.matchesAllOf(pidString)) {
             List<Integer> pids = new ArrayList<Integer>();
@@ -254,7 +254,7 @@ public abstract class FilterDialog extends JDialog {
     }
 
 
-    public List<String> getAppNames() {
+    private List<String> getAppNames() {
         String pidString = pidTextField.getText();
         if (!CharMatcher.WHITESPACE.matchesAllOf(pidString)) {
             List<String> appNames = new ArrayList<String>();
@@ -269,11 +269,11 @@ public abstract class FilterDialog extends JDialog {
         }
     }
 
-    public LogRecord.Priority getPriority() {
+    private LogRecord.Priority getPriority() {
         return (Priority) logLevelList.getSelectedItem();
     }
 
-    public FilteringMode getFilteringMode() {
+    private FilteringMode getFilteringMode() {
         return modesPanel.getSelectedMode();
     }
 
@@ -384,7 +384,7 @@ public abstract class FilterDialog extends JDialog {
         }
     }
 
-    public Color getSelectedColor() {
+    private Color getSelectedColor() {
         if (getFilteringMode() == FilteringMode.HIGHLIGHT) {
             return Configuration.ui.highlightColors().get(colorsList.getSelectedIndex());
         } else {
@@ -404,8 +404,19 @@ public abstract class FilterDialog extends JDialog {
         }
     }
 
-    public Object getAdditionalData() {
-        return getSelectedColor();
+    public FilterFromDialog createFilter() {
+        FilterFromDialog filter = new FilterFromDialog();
+        filter.setPids(getPids());
+        filter.setApps(getAppNames());
+        filter.setMode(getFilteringMode());
+        filter.setPriority(getPriority());
+        filter.setHighlightColor(getSelectedColor());
+        filter.setMessagePattern(getMessageText());
+        try {
+            filter.initialize();
+        } catch (RequestCompilationException e) {
+            throw new AssertionError("Must be validated");
+        }
+        return filter;
     }
-
 }

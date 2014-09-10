@@ -30,7 +30,7 @@ abstract class ValueSearcher implements RowSearchStrategy {
 
     @Override
     public boolean isRowMatched(LogRecord record) {
-        return highlightStrategy.isStringMatched(getValue(record));
+        return highlightStrategy.apply(getValue(record));
     }
 
     protected abstract String getValue(LogRecord record);

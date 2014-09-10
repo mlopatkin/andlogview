@@ -51,8 +51,8 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 class FilterPanel extends JPanel {
 
     private FilterController controller;
-    private Map<Predicate<LogRecord>, FilterButton> buttons
-            = new HashMap<Predicate<LogRecord>, FilterButton>();
+    private Map<FilterFromDialog, FilterButton> buttons
+            = new HashMap<FilterFromDialog, FilterButton>();
 
     private static final int SEPARATOR_HEIGHT = 42;
     private static final int SEPARATOR_WIDTH = 5;
@@ -88,7 +88,7 @@ class FilterPanel extends JPanel {
         UiHelper.setWidths(btScrollRight, SCROLL_BUTTON_WIDTH);
     }
 
-    public void addFilterButton(FilteringMode mode, LogRecordFilter filter) {
+    public void addFilterButton(FilteringMode mode, FilterFromDialog filter) {
         FilterButton button = new FilterButton(mode, filter);
         content.add(button);
         menuHandler.addPopup(button);
@@ -122,16 +122,15 @@ class FilterPanel extends JPanel {
 
     private class FilterButton extends JToggleButton implements ActionListener {
 
-        final LogRecordFilter filter;
+        final FilterFromDialog filter;
         final FilteringMode mode;
 
-        public FilterButton(FilteringMode mode, LogRecordFilter filter) {
+        public FilterButton(FilterFromDialog filter) {
             super(FILTER_ICON, true);
             this.filter = filter;
-            this.mode = mode;
+            this.mode = filter.getMode();
             addActionListener(this);
-            setToolTipText("<html>" + mode.getDescription() + "<br>"
-                    + UiHelper.covertToHtml(filter.toString()) + "</html>");
+            setToolTipText(filter.getTooltip());
         }
 
         @Override

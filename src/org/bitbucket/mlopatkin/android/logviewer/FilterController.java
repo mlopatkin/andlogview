@@ -113,7 +113,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         addFilter(mode, filter, null);
     }
 
-    <T> void addFilter(FilteringMode mode, LogRecordFilter filter, T data) {
+    <T> void addFilter(FilteringMode mode, FilterFromDialog filter, T data) {
         @SuppressWarnings("unchecked")
         FilteringModeHandler<T> handler = (FilteringModeHandler<T>) getHandler(mode);
         handler.addFilter(mode, filter, data);
@@ -121,52 +121,16 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         onFilteringStateUpdated();
     }
 
-    private static LogRecordFilter appendFilter(LogRecordFilter a, LogRecordFilter b) {
-        if (a == null) {
-            return b;
-        } else if (a instanceof ComposeFilter) {
-            return ((ComposeFilter) a).append(b);
-        } else {
-            return new ComposeFilter(a, b);
-        }
-    }
-
-    private LogRecordFilter createFilterFromDialog(FilterDialog dialog) {
-        LogRecordFilter filter = null;
-        if (dialog.getTags() != null) {
-            filter = appendFilter(filter, new MultiTagFilter(dialog.getTags()));
-        }
-        try {
-            if (dialog.getMessageText() != null) {
-                filter = appendFilter(filter, new MessageFilter(dialog.getMessageText()));
-            }
-            if (!dialog.getPids().isEmpty() || !dialog.getAppNames().isEmpty()) {
-                AppNameFilter appNames = AppNameFilter.fromList(dialog.getAppNames());
-                MultiPidFilter pids = MultiPidFilter.fromList(dialog.getPids());
-                filter = appendFilter(filter, AppNameOrPidFilter.or(appNames, pids));
-            }
-        } catch (RequestCompilationException e) {
-            logger.error("Unexpected exception, must be validated");
-            throw new AssertionError(e);
-        }
-        if (dialog.getPriority() != null) {
-            filter = appendFilter(filter, new PriorityFilter(dialog.getPriority()));
-        }
-        return filter;
-    }
-
-    private FilteringMode getModeFromDialog(FilterDialog dialog) {
-        return dialog.getFilteringMode();
+    private FilterFromDialog createFilterFromDialog(FilterDialog dialog) {
+        return dialog.createFilter();
     }
 
     @Override
     public void onDialogResult(CreateFilterDialog dialog, boolean success) {
         if (success) {
-            LogRecordFilter filter = createFilterFromDialog(dialog);
-            FilteringMode mode = getModeFromDialog(dialog);
-            if (filter != null) {
-                addFilter(mode, filter, dialog.getAdditionalData());
-            }
+            FilterFromDialog filter = createFilterFromDialog(dialog);
+            FilteringMode mode = filter.getMode();
+            addFilter(mode, filter, filter.getHighlightColor());
         }
     }
 
@@ -184,7 +148,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         onFilteringStateUpdated();
     }
 
-    public void startEditFilterDialog(FilteringMode mode, LogRecordFilter filter) {
+    public void startEditFilterDialog(FilteringMode mode, FilterFromDialog filter) {
         Object data = getHandler(mode).getData(mode, filter);
         EditFilterDialog.startEditFilterDialog(main, mode, filter, this, data);
     }
@@ -216,7 +180,7 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
         refreshActionListeners.remove(listener);
     }
 
-    void enableFilter(FilteringMode mode, LogRecordFilter filter) {
+    void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
         getHandler(mode).enableFilter(mode, filter);
         onFilteringStateUpdated();
     }

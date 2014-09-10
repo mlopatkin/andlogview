@@ -42,7 +42,7 @@ public class AppNameFilter extends AbstractFilter implements LogRecordFilter {
     public boolean apply(LogRecord record) {
         String appName = record.getAppName();
         for (SearchStrategy strategy : strategies) {
-            if (strategy.isStringMatched(appName)) {
+            if (strategy.apply(appName)) {
                 return true;
             }
         }
