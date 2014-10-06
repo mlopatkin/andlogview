@@ -50,7 +50,7 @@ import org.bitbucket.mlopatkin.utils.Threads;
  */
 @ThreadSafe
 public class FilterStorage {
-
+    // TODO this has little to do with filters per se, rename to storage
     private static final Logger logger = Logger.getLogger(FilterStorage.class);
 
     public interface FilterStorageClient<T> {
