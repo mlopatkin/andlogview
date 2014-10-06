@@ -45,7 +45,7 @@ import javax.swing.JViewport;
 import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 class FilterPanel extends JPanel {

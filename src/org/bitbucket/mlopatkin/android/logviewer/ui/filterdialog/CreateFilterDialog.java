@@ -1,4 +1,4 @@
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import java.awt.Frame;
 

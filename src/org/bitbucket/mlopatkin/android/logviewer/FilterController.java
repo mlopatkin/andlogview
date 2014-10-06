@@ -30,17 +30,13 @@ import org.apache.log4j.Logger;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameOrPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.ComposeFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MessageFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.PriorityFilter;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
@@ -157,8 +153,8 @@ class FilterController implements CreateFilterDialog.DialogResultReceiver,
     public void onDialogResult(EditFilterDialog dialog, FilteringMode oldMode,
             LogRecordFilter oldFilter, boolean success) {
         if (success) {
-            LogRecordFilter filter = createFilterFromDialog(dialog);
-            FilteringMode mode = getModeFromDialog(dialog);
+            FilterFromDialog filter = createFilterFromDialog(dialog);
+            FilteringMode mode = filter.getMode();
             if (filter != null) {
                 removeFilter(oldMode, oldFilter);
                 addFilter(mode, filter, dialog.getAdditionalData());

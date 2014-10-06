@@ -27,11 +27,11 @@ import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
  * to the user.
  * 
  */
-class ErrorDialogsHelper {
+public class ErrorDialogsHelper {
     private ErrorDialogsHelper() {
     }
 
-    static void showError(Component owner, String format, Object... vals) {
+    public static void showError(Component owner, String format, Object... vals) {
         String message = String.format(format, vals);
         showError(owner, message);
     }
