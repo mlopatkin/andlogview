@@ -37,6 +37,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDia
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 

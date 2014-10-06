@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 class TagSearcher extends ValueSearcher {
     public TagSearcher(HighlightStrategy highlightStrategy) {

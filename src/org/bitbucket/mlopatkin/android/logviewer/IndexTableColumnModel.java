@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import java.util.Arrays;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 public class IndexTableColumnModel extends LogRecordTableColumnModel {

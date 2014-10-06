@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -27,7 +27,7 @@ import javax.swing.table.TableCellEditor;
  * Utility methods for common table cell rendering issues: read-only editors,
  * etc.
  */
-class TableCellHelper {
+public class TableCellHelper {
     private TableCellHelper() {
     }
 
@@ -45,16 +45,15 @@ class TableCellHelper {
                         isSelected, row, column);
                 tf.setEditable(false);
                 return tf;
-            };
+            }
 
             public boolean isCellEditable(java.util.EventObject anEvent) {
                 // only allow double-click to toggle cell editing
                 if (anEvent instanceof MouseEvent) {
                     return super.isCellEditable(anEvent);
-                } else {
-                    return false;
                 }
-            };
+                return false;
+            }
         };
     }
 }

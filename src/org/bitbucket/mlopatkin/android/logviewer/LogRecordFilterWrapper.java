@@ -21,6 +21,7 @@ import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 /**
  * Wrapper over {@link LogRecordFilter} to match {@link RowFilter} interface.

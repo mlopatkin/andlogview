@@ -30,7 +30,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
  * @param <T>
  *            the actual type of records
  */
-interface BatchRecordsReceiver<T> {
+public interface BatchRecordsReceiver<T> {
     /**
      * @see RecordListener#addRecord(Object)
      */

@@ -25,6 +25,7 @@ import com.google.common.base.Predicate;
 import org.apache.log4j.Logger;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 

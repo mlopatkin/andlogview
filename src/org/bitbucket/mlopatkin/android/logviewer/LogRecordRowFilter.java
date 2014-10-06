@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import javax.swing.RowFilter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> {
 

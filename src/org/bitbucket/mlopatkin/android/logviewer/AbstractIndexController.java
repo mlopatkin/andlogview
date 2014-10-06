@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

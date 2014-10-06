@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
@@ -24,10 +24,11 @@ import javax.swing.table.AbstractTableModel;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.android.logviewer.BatchRecordsReceiver;
 import org.bitbucket.mlopatkin.utils.MyListUtils;
 
 public class LogRecordTableModel extends AbstractTableModel implements
-BatchRecordsReceiver<LogRecord> {
+        BatchRecordsReceiver<LogRecord> {
 
     private List<LogRecord> records;
 

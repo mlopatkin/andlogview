@@ -25,6 +25,7 @@ import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 public class LogRecordsTransferHandler extends TransferHandler {
 

@@ -19,6 +19,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategyFactory;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 
 public class SearchController {

@@ -24,6 +24,7 @@ import javax.swing.table.TableCellRenderer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 

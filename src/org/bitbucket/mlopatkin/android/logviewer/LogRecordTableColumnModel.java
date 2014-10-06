@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +26,6 @@ import java.util.Map;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 

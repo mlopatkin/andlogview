@@ -23,6 +23,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 
 class RowHighlightRenderer implements DecoratingCellRenderer {
