@@ -15,7 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.logviewer.FilteringMode;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 
 import java.util.EnumMap;
 import java.util.Map.Entry;

@@ -16,19 +16,25 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
-/**
- * This interface must be implemented by the filter instance that needs to be displayed in filter panel.
- */
-public interface PanelFilter {
-    /**
-     * Returns a nicely formatted tooltip describing the filter. This tooltip is used for the filter button.
-     * @return tooltip for the filter
-     */
-    String getTooltip();
+public class FilterPanelModel {
 
-    void setEnabled(boolean enabled);
+    public interface FilterPanelModelListener {
+        void onFilterAdded(PanelFilter newFilter);
 
-    boolean isEnabled();
+        void onFilterRemoved(PanelFilter filter);
 
-    void openFilterEditor();
+        void onFilterReplaced(PanelFilter oldFilter, PanelFilter newFilter);
+    }
+
+    public void addFilter(PanelFilter filter) {
+    }
+
+    public void removeFilter(PanelFilter filter) {
+    }
+
+    public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
+    }
+
+    public void addListener(FilterPanelModelListener listener) {
+    }
 }

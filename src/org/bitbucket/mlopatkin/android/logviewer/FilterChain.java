@@ -23,6 +23,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 
 public class FilterChain {
 

@@ -26,6 +26,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.junit.Test;
 
 public class FilterChainTest {

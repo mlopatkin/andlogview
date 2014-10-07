@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.FilterController.FilteringModeHandler;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 
 class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
 
