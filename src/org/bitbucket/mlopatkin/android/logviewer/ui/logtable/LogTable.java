@@ -25,25 +25,38 @@ import javax.swing.RowFilter;
 /**
  * The ultimate log displaying table.
  */
-public class LogTable extends DecoratingRendererTable {
+public class LogTable extends DecoratingRendererTable implements FilteredLogModel.Observer {
 
     private final FilteredLogModel filterModel;
-
-    private final RowFilter<LogRecordTableModel, Integer> rowFilter = new RowFilter<LogRecordTableModel, Integer>() {
-        @Override
-        public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
-            return filterModel.shouldShowRecord(entry.getModel().getRowData(entry.getIdentifier()));
-        }
-    };
+    private final SortingDisableSorter<LogRecordTableModel> sorter;
 
     public LogTable(LogRecordTableModel dataModel, FilteredLogModel filterModel) {
         this.filterModel = filterModel;
 
+        filterModel.addObserver(this);
         addDecorator(new PriorityColoredCellRenderer());
 
         setModel(dataModel);
-        SortingDisableSorter<LogRecordTableModel> sorter = new SortingDisableSorter<>(dataModel);
+        sorter = new SortingDisableSorter<>(dataModel);
+
+        RowFilter<LogRecordTableModel, Integer> rowFilter = new RowFilter<LogRecordTableModel, Integer>() {
+            @Override
+            public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
+                return LogTable.this.filterModel.shouldShowRecord(entry.getModel().getRowData(entry.getIdentifier()));
+            }
+        };
+
         sorter.setRowFilter(rowFilter);
         setRowSorter(sorter);
+    }
+
+    @Override
+    public void onModelChange() {
+        sorter.sort();
+        repaint();
+        // if the filtering state has changed and row is selected - scroll to selected row to avoid "get lost" syndrome
+        if (getSelectedRow() != -1) {
+            scrollRectToVisible(getCellRect(getSelectedRow(), getSelectedColumn(), false));
+        }
     }
 }

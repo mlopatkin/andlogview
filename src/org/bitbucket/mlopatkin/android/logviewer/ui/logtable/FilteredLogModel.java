@@ -26,8 +26,17 @@ import javax.annotation.Nullable;
  * Implementation of this interface controls the appearance of the table model.
  */
 public interface FilteredLogModel {
+
+    public interface Observer {
+        void onModelChange();
+    }
+
     boolean shouldShowRecord(LogRecord record);
 
     @Nullable
     Color getHighlightColor(LogRecord record);
+
+    void addObserver(Observer observer);
+
+    void removeObserver(Observer observer);
 }
