@@ -16,6 +16,10 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
+/**
+ * This is a state of the panel with filter buttons. It only knows what PanelFilter provides so it can remove
+ * filters, enable or disable them. But it cannot, e.g. persist filters, it is the responsibility of the higher level.
+ */
 public class FilterPanelModel {
 
     public interface FilterPanelModelListener {
@@ -33,6 +37,9 @@ public class FilterPanelModel {
     }
 
     public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
+    }
+
+    public void setFilterEnabled(PanelFilter filter, boolean enabled) {
     }
 
     public void addListener(FilterPanelModelListener listener) {

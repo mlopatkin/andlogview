@@ -26,9 +26,11 @@ public interface PanelFilter {
      */
     String getTooltip();
 
+    // TODO do not call from anywhere except model
     void setEnabled(boolean enabled);
 
     boolean isEnabled();
 
+    // TODO do not call from anywhere except model
     void openFilterEditor();
 }

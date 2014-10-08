@@ -48,6 +48,44 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private final FilterPanelModel model;
     private final Map<PanelFilter, FilterButton> buttonByFilter = new HashMap<>();
 
+    private ComponentListener resizeListener = new ComponentAdapter() {
+        public void componentResized(ComponentEvent e) {
+            updateScrollState();
+        }
+    };
+
+    private Action acCreateFilter = new AbstractAction("", ADD_ICON) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+//            controller.startFilterCreationDialog();
+        }
+    };
+
+    private Action acScrollLeft = new AbstractAction("", PREV_ICON) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            computeButtonIndices();
+            if (leftmostButton > 0) {
+                scrollTo(leftmostButton - 1);
+            }
+        }
+    };
+
+    private Action acScrollRight = new AbstractAction("", NEXT_ICON) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            computeButtonIndices();
+            if (rightmostButton < content.getComponentCount() - 1) {
+                scrollTo(rightmostButton + 1);
+            }
+        }
+    };
+
+    private PopupMenuHandler menuHandler = new PopupMenuHandler();
+
+    private int leftmostButton = -1;
+    private int rightmostButton = -1;
+
     public FilterPanel(FilterPanelModel model) {
         this.model = model;
 
@@ -78,18 +116,66 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
     @Override
     public void onFilterRemoved(PanelFilter filter) {
-        FilterButton button = buttonByFilter.get(filter);
-        buttonByFilter.remove(filter);
+        FilterButton button = buttonByFilter.remove(filter);
         if (button != null) {
             content.remove(button);
+            revalidate();
+            repaint();
         }
-        revalidate();
-        repaint();
     }
 
     @Override
     public void onFilterReplaced(PanelFilter oldFilter, PanelFilter newFilter) {
+        assert oldFilter != null;
+        assert newFilter != null;
 
+        FilterButton button = buttonByFilter.remove(oldFilter);
+        assert button != null;
+        assert button.getFilter() == oldFilter;
+        assert buttonByFilter.get(newFilter) == null;
+
+        button.setFilter(newFilter);
+        buttonByFilter.put(newFilter, button);
+    }
+
+
+    private void computeButtonIndices() {
+        Rectangle viewportRect = contentViewport.getBounds();
+        Rectangle contentsRect = content.getBounds();
+        viewportRect.x -= contentsRect.x;
+        viewportRect.y -= contentsRect.y;
+        int cur = 0;
+        leftmostButton = -1;
+        rightmostButton = -1;
+        for (Component button : content.getComponents()) {
+            Rectangle buttonRect = button.getBounds();
+            if (viewportRect.contains(buttonRect)) {
+                if (leftmostButton < 0) {
+                    leftmostButton = cur;
+                }
+                rightmostButton = cur;
+            }
+            ++cur;
+        }
+    }
+
+    private void scrollTo(int i) {
+        Component button = content.getComponent(i);
+        content.scrollRectToVisible(button.getBounds());
+        updateScrollState();
+    }
+
+    private void updateScrollState() {
+        computeButtonIndices();
+        boolean canScrollLeft = leftmostButton > 0;
+        boolean canScrollRight = rightmostButton < content.getComponentCount() - 1;
+        boolean canScroll = canScrollLeft | canScrollRight;
+
+        acScrollLeft.setEnabled(canScrollLeft);
+        acScrollRight.setEnabled(canScrollRight);
+
+        btScrollRight.setVisible(canScroll);
+        btScrollLeft.setVisible(canScroll);
     }
 
 
@@ -100,6 +186,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
             super(FILTER_ICON, true);
 
             addActionListener(this);
+            setSelected(filter.isEnabled());
             setFilter(filter);
         }
 
@@ -171,83 +258,4 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         }
     }
 
-    private PopupMenuHandler menuHandler = new PopupMenuHandler();
-
-
-    private int leftmostButton = -1;
-    private int rightmostButton = -1;
-
-    private void computeButtonIndices() {
-        Rectangle viewportRect = contentViewport.getBounds();
-        Rectangle contentsRect = content.getBounds();
-        viewportRect.x -= contentsRect.x;
-        viewportRect.y -= contentsRect.y;
-        int cur = 0;
-        leftmostButton = -1;
-        rightmostButton = -1;
-        for (Component button : content.getComponents()) {
-            Rectangle buttonRect = button.getBounds();
-            if (viewportRect.contains(buttonRect)) {
-                if (leftmostButton < 0) {
-                    leftmostButton = cur;
-                }
-                rightmostButton = cur;
-            }
-            ++cur;
-        }
-    }
-
-    private void scrollTo(int i) {
-        Component button = content.getComponent(i);
-        content.scrollRectToVisible(button.getBounds());
-        updateScrollState();
-    }
-
-    private Action acScrollLeft = new AbstractAction("", PREV_ICON) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeButtonIndices();
-            if (leftmostButton > 0) {
-                scrollTo(leftmostButton - 1);
-            }
-        }
-    };
-
-    private Action acScrollRight = new AbstractAction("", NEXT_ICON) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeButtonIndices();
-            if (rightmostButton < content.getComponentCount() - 1) {
-                scrollTo(rightmostButton + 1);
-            }
-        }
-    };
-
-    private void updateScrollState() {
-        computeButtonIndices();
-        boolean canScrollLeft = leftmostButton > 0;
-        boolean canScrollRight = rightmostButton < content.getComponentCount() - 1;
-        boolean canScroll = canScrollLeft | canScrollRight;
-
-        acScrollLeft.setEnabled(canScrollLeft);
-        acScrollRight.setEnabled(canScrollRight);
-
-        btScrollRight.setVisible(canScroll);
-        btScrollLeft.setVisible(canScroll);
-    }
-
-    private ComponentListener resizeListener = new ComponentAdapter() {
-        public void componentResized(ComponentEvent e) {
-            updateScrollState();
-        }
-
-        ;
-    };
-
-    private Action acCreateFilter = new AbstractAction("", ADD_ICON) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-//            controller.startFilterCreationDialog();
-        }
-    };
 }
