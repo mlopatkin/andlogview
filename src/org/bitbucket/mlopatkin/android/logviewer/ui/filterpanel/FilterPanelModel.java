@@ -16,6 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * This is a state of the panel with filter buttons. It only knows what PanelFilter provides so it can remove
  * filters, enable or disable them. But it cannot, e.g. persist filters, it is the responsibility of the higher level.
@@ -30,18 +35,39 @@ public class FilterPanelModel {
         void onFilterReplaced(PanelFilter oldFilter, PanelFilter newFilter);
     }
 
+    private final Set<FilterPanelModelListener> listeners = new HashSet<>();
+    private final List<PanelFilter> filters = new ArrayList<>();
+
     public void addFilter(PanelFilter filter) {
+        filters.add(filter);
+        for (FilterPanelModelListener listener : listeners) {
+            listener.onFilterAdded(filter);
+        }
     }
 
     public void removeFilter(PanelFilter filter) {
+        if (filters.remove(filter)) {
+            for (FilterPanelModelListener listener : listeners) {
+                listener.onFilterRemoved(filter);
+            }
+        }
     }
 
     public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
+        int oldPos = filters.indexOf(oldFilter);
+        assert oldPos >= 0;
+
+        filters.set(oldPos, newFilter);
+
+        for (FilterPanelModelListener listener : listeners) {
+            listener.onFilterReplaced(oldFilter, newFilter);
+        }
     }
 
     public void setFilterEnabled(PanelFilter filter, boolean enabled) {
     }
 
     public void addListener(FilterPanelModelListener listener) {
+        listeners.add(listener);
     }
 }

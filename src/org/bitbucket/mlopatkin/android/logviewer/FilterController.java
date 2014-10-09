@@ -26,9 +26,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
@@ -109,32 +106,18 @@ class FilterController {
     }
 
     void addFilter(FilteringMode mode, LogRecordFilter filter) {
-        addFilter(mode, filter, null);
+
     }
 
     <T> void addFilter(FilteringMode mode, FilterFromDialog filter, T data) {
         @SuppressWarnings("unchecked")
         FilteringModeHandler<T> handler = (FilteringModeHandler<T>) getHandler(mode);
         handler.addFilter(mode, filter, data);
-        panel.addFilterButton(mode, filter);
         onFilteringStateUpdated();
     }
 
-    private FilterFromDialog createFilterFromDialog(FilterDialog dialog) {
-        return dialog.createFilter();
-    }
-
-    @Override
-    public void onDialogResult(CreateFilterDialog dialog, boolean success) {
-        if (success) {
-            FilterFromDialog filter = createFilterFromDialog(dialog);
-            FilteringMode mode = filter.getMode();
-            addFilter(mode, filter, filter.getHighlightColor());
-        }
-    }
-
     public void startFilterCreationDialog() {
-        CreateFilterDialog.startCreateFilterDialog(main, this);
+//        CreateFilterDialog.startCreateFilterDialog(main, this);
     }
 
     void setPanel(FilterPanel panel) {
@@ -142,29 +125,14 @@ class FilterController {
     }
 
     public void removeFilter(FilteringMode mode, LogRecordFilter filter) {
-        panel.removeFilterButton(filter);
+//        panel.removeFilterButton(filter);
         getHandler(mode).removeFilter(mode, filter);
         onFilteringStateUpdated();
     }
 
     public void startEditFilterDialog(FilteringMode mode, FilterFromDialog filter) {
         Object data = getHandler(mode).getData(mode, filter);
-        EditFilterDialog.startEditFilterDialog(main, mode, filter, this, data);
-    }
-
-    @Override
-    public void onDialogResult(EditFilterDialog dialog, FilteringMode oldMode,
-            LogRecordFilter oldFilter, boolean success) {
-        if (success) {
-            FilterFromDialog filter = createFilterFromDialog(dialog);
-            FilteringMode mode = filter.getMode();
-            if (filter != null) {
-                removeFilter(oldMode, oldFilter);
-                addFilter(mode, filter, dialog.getAdditionalData());
-            } else {
-                removeFilter(oldMode, oldFilter);
-            }
-        }
+//        EditFilterDialog.startEditFilterDialog(main, mode, filter, this, data);
     }
 
     LogRecordRowFilter getRowFilter() {
@@ -280,7 +248,6 @@ class FilterController {
             logger.debug("Disable filter");
             WindowFilterController windowController = windowControllers.get(filter);
             windowController.hideWindow();
-            panel.getFilterButton(filter).setSelected(false);
         }
 
         @Override

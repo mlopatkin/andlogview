@@ -61,6 +61,7 @@ import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResult
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -185,7 +186,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         instantSearchTextField.setColumns(10);
         instantSearchTextField.setVisible(false);
 
-        JComponent filterPanel = new FilterPanel(filterController);
+        JComponent filterPanel = new FilterPanel(new FilterPanelModel());
         controlsPanel.add(filterPanel);
 
         statusPanel = new JPanel();
