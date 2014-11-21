@@ -33,6 +33,8 @@ public class FilterPanelModel {
         void onFilterRemoved(PanelFilter filter);
 
         void onFilterReplaced(PanelFilter oldFilter, PanelFilter newFilter);
+
+        void onFilterEnabled(PanelFilter filter, boolean enabled);
     }
 
     private final Set<FilterPanelModelListener> listeners = new HashSet<>();
@@ -65,6 +67,9 @@ public class FilterPanelModel {
     }
 
     public void setFilterEnabled(PanelFilter filter, boolean enabled) {
+        for (FilterPanelModelListener listener : listeners) {
+            listener.onFilterEnabled(filter, enabled);
+        }
     }
 
     public void addListener(FilterPanelModelListener listener) {

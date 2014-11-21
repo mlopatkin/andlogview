@@ -85,4 +85,18 @@ public class FilterPanelModelTest {
         verify(listener).onFilterReplaced(filter, newFilter);
     }
 
+    @Test
+    public void testEnableFilter() throws Exception {
+        FilterPanelModel model = new FilterPanelModel();
+        model.addFilter(filter);
+        model.addListener(listener);
+
+        model.setFilterEnabled(filter, true);
+
+        verify(listener).onFilterEnabled(filter, true);
+
+        model.setFilterEnabled(filter, false);
+
+        verify(listener).onFilterEnabled(filter, false);
+    }
 }

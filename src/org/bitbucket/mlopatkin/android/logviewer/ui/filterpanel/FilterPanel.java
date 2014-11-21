@@ -138,6 +138,11 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         buttonByFilter.put(newFilter, button);
     }
 
+    @Override
+    public void onFilterEnabled(PanelFilter filter, boolean enabled) {
+        // TODO
+    }
+
 
     private void computeButtonIndices() {
         Rectangle viewportRect = contentViewport.getBounds();
