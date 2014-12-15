@@ -33,7 +33,7 @@ public class LogRecord implements Comparable<LogRecord> {
     }
 
     public enum Buffer {
-        UNKNOWN, MAIN("Main"), SYSTEM("System"), RADIO("Radio"), EVENTS("Events");
+        UNKNOWN, MAIN("Main"), SYSTEM("System"), RADIO("Radio"), EVENTS("Events"), CRASH("Crash");
 
         private String name;
 

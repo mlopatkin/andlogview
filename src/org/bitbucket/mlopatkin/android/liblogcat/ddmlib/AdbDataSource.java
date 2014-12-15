@@ -15,9 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,37 +41,9 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     private AdbPidToProcessConverter converter;
     private EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
 
-    private void checkBuffers() {
-        ShellInputStream shellIn = new ShellInputStream();
-        AdbShellCommand<?> listBuffers = new AutoClosingAdbShellCommand(device, "ls /dev/log/",
-                shellIn);
-        listBuffers.start();
-        BufferedReader in = new BufferedReader(new InputStreamReader(shellIn));
-        try {
-            String line = in.readLine();
-            while (line != null) {
-                for (Buffer buffer : Buffer.values()) {
-                    if (line.equalsIgnoreCase(Configuration.adb.bufferName(buffer))) {
-                        availableBuffers.add(buffer);
-                    }
-                }
-                line = in.readLine();
-            }
-        } catch (IOException e) {
-            logger.warn("Exception while reading buffers list", e);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                logger.warn("Exception while closing input stream", e);
-            }
-        }
-    }
-
     private void initStreams() {
-        checkBuffers();
         converter = new AdbPidToProcessConverter(device);
-        for (LogRecord.Buffer buffer : availableBuffers) {
+        for (LogRecord.Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }
     }
@@ -134,12 +103,24 @@ public class AdbDataSource implements DataSource, BufferReceiver {
 
     private Set<AdbBuffer> buffers = new HashSet<AdbBuffer>();
 
+    private boolean isBufferHere(String bufferName) {    	
+    	String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null || echo 0";
+    	if (SyncAdbShellCommand.execute(device, cmd).isEmpty()) {
+    		return true;
+    	}
+    	return false;
+    }
     private void setUpStream(LogRecord.Buffer buffer) {
         String bufferName = Configuration.adb.bufferName(buffer);
         if (bufferName == null) {
             logger.warn("This kind of log isn't supported by adb source: " + buffer);
         }
 
+        // check buffer for existence first
+        if (!isBufferHere(bufferName)) {
+        	return;
+        }
+        availableBuffers.add(buffer);
         final String commandLine = createLogcatCommandLine(bufferName);
         final AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
         buffers.add(adbBuffer);
