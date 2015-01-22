@@ -30,7 +30,7 @@
     <property name="res.dir" location="resources"/>
 
     <!-- Target java version -->
-    <property name="target.version" value="1.6"/>
+    <property name="target.version" value="1.7"/>
 
     <!-- Ivy configurations -->
 

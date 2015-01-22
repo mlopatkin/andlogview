@@ -17,7 +17,7 @@ FEATURES
 INSTALLATION
 
 Requirements:
-    - JRE 6 
+    - JRE 7
     - Android SDK (to work with a device or an emulator) 
 
 Unpack a zip archive to any folder. 
