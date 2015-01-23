@@ -28,13 +28,13 @@ import java.util.Set;
 public class FilterPanelModel {
 
     public interface FilterPanelModelListener {
-        void onFilterAdded(PanelFilter newFilter);
+        void onFilterAdded(PanelFilterView newFilter);
 
-        void onFilterRemoved(PanelFilter filter);
+        void onFilterRemoved(PanelFilterView filter);
 
-        void onFilterReplaced(PanelFilter oldFilter, PanelFilter newFilter);
+        void onFilterReplaced(PanelFilterView oldFilter, PanelFilterView newFilter);
 
-        void onFilterEnabled(PanelFilter filter, boolean enabled);
+        void onFilterEnabled(PanelFilterView filter, boolean enabled);
     }
 
     private final Set<FilterPanelModelListener> listeners = new HashSet<>();
@@ -47,8 +47,10 @@ public class FilterPanelModel {
         }
     }
 
-    public void removeFilter(PanelFilter filter) {
-        if (filters.remove(filter)) {
+    public void removeFilter(PanelFilterView filter) {
+        PanelFilter panelFilter = getPanelFilterForView(filter);
+        if (filters.remove(panelFilter)) {
+            panelFilter.delete();
             for (FilterPanelModelListener listener : listeners) {
                 listener.onFilterRemoved(filter);
             }
@@ -66,13 +68,24 @@ public class FilterPanelModel {
         }
     }
 
-    public void setFilterEnabled(PanelFilter filter, boolean enabled) {
+    public void setFilterEnabled(PanelFilterView filter, boolean enabled) {
+        getPanelFilterForView(filter).setEnabled(enabled);
+
         for (FilterPanelModelListener listener : listeners) {
             listener.onFilterEnabled(filter, enabled);
         }
     }
 
-    public void addListener(FilterPanelModelListener listener) {
+
+    void addListener(FilterPanelModelListener listener) {
         listeners.add(listener);
+    }
+
+    void editFilter(PanelFilterView filter) {
+        getPanelFilterForView(filter).openFilterEditor();
+    }
+
+    private PanelFilter getPanelFilterForView(PanelFilterView filterView) {
+        return (PanelFilter) filterView;
     }
 }

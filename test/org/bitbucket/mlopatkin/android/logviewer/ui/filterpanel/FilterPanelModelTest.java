@@ -19,10 +19,8 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,7 +38,6 @@ public class FilterPanelModelTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
     }
-
 
     @Test
     public void testAddFilterNotifies() throws Exception {
@@ -61,6 +58,7 @@ public class FilterPanelModelTest {
         model.removeFilter(filter);
 
         verify(listener).onFilterRemoved(filter);
+        verify(filter).delete();
     }
 
     @Test
@@ -71,6 +69,7 @@ public class FilterPanelModelTest {
         model.removeFilter(filter);
 
         verify(listener, never()).onFilterRemoved(any(PanelFilter.class));
+        verify(filter, never()).delete();
     }
 
     @Test
@@ -93,10 +92,12 @@ public class FilterPanelModelTest {
 
         model.setFilterEnabled(filter, true);
 
+        verify(filter).setEnabled(true);
         verify(listener).onFilterEnabled(filter, true);
 
         model.setFilterEnabled(filter, false);
 
+        verify(filter).setEnabled(false);
         verify(listener).onFilterEnabled(filter, false);
     }
 }

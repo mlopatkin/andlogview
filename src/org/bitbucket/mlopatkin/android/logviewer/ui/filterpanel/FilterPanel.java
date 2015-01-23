@@ -46,7 +46,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private static final ImageIcon PREV_ICON = new ImageIcon(getResource("/icons/go-previous.png"));
 
     private final FilterPanelModel model;
-    private final Map<PanelFilter, FilterButton> buttonByFilter = new HashMap<>();
+    private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
 
     private ComponentListener resizeListener = new ComponentAdapter() {
         public void componentResized(ComponentEvent e) {
@@ -106,7 +106,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     }
 
     @Override
-    public void onFilterAdded(PanelFilter newFilter) {
+    public void onFilterAdded(PanelFilterView newFilter) {
         FilterButton button = new FilterButton(newFilter);
         buttonByFilter.put(newFilter, button);
         content.add(button);
@@ -115,7 +115,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     }
 
     @Override
-    public void onFilterRemoved(PanelFilter filter) {
+    public void onFilterRemoved(PanelFilterView filter) {
         FilterButton button = buttonByFilter.remove(filter);
         if (button != null) {
             content.remove(button);
@@ -125,7 +125,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     }
 
     @Override
-    public void onFilterReplaced(PanelFilter oldFilter, PanelFilter newFilter) {
+    public void onFilterReplaced(PanelFilterView oldFilter, PanelFilterView newFilter) {
         assert oldFilter != null;
         assert newFilter != null;
 
@@ -139,8 +139,9 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     }
 
     @Override
-    public void onFilterEnabled(PanelFilter filter, boolean enabled) {
-        // TODO
+    public void onFilterEnabled(PanelFilterView filter, boolean enabled) {
+        FilterButton button = buttonByFilter.get(filter);
+        button.setSelected(enabled);
     }
 
 
@@ -185,29 +186,28 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
 
     private class FilterButton extends JToggleButton implements ActionListener {
-        private PanelFilter filter;
+        private PanelFilterView filter;
 
-        public FilterButton(PanelFilter filter) {
+        public FilterButton(PanelFilterView filter) {
             super(FILTER_ICON, true);
 
             addActionListener(this);
-            setSelected(filter.isEnabled());
             setFilter(filter);
         }
 
-        public PanelFilter getFilter() {
+        public PanelFilterView getFilter() {
             return filter;
         }
 
-        public void setFilter(PanelFilter newFilter) {
+        public void setFilter(PanelFilterView newFilter) {
             filter = newFilter;
-            filter.setEnabled(isSelected());
+            setSelected(filter.isEnabled());
             setToolTipText(filter.getTooltip());
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            filter.setEnabled(isSelected());
+            FilterPanel.this.model.setFilterEnabled(filter, !isSelected());
         }
 
         @Override
@@ -227,7 +227,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
             editItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    activeButton.filter.openFilterEditor();
+                    model.editFilter(activeButton.getFilter());
                 }
             });
 

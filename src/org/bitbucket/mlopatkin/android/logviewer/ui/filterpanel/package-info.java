@@ -16,5 +16,8 @@
 
 /**
  * The bottom panel that can be used to create/delete/toggle filters.
+ * <p/>
+ * Embedder pushes data via an instance of the
+ * {@link org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel}.
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;

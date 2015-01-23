@@ -10,12 +10,13 @@
     <!-- Location for intermediate build products -->
     <property name="build.intermediate.dir" location="build"/>
 
+    <property name="build.javadoc.dir" location="${build.intermediate.dir}/javadoc"/>
+
     <!-- Location for a distributive package output -->
     <property name="dist.dir" location="dist"/>
     <!-- The name of the distributive package -->
     <property name="dist.name" value="logview.zip"/>
 
-    <!-- Location for libraries used for compilation -->
     <property name="report.dir" location="${build.intermediate.dir}/report"/>
 
     <!-- Main jar file for the application -->
@@ -157,6 +158,7 @@
 
     <target name="make-intermediate-dir">
         <mkdir dir="${build.intermediate.dir}"/>
+        <mkdir dir="${build.javadoc.dir}"/>
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.lib.dir}"/>
         <mkdir dir="${build.test.dir}"/>
@@ -165,6 +167,13 @@
 
     <target name="make-dist-dir">
         <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="javadoc" depends="make-intermediate-dir">
+        <javadoc destdir="${build.javadoc.dir}">
+            <fileset dir="${src.main.dir}" defaultexcludes="true" />
+            <fileset dir="${src.utils.dir}" defaultexcludes="true" />
+        </javadoc>
     </target>
 
     <target name="clean" description="Clean up all generated files">

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Mikhail Lopatkin
+ * Copyright 2015 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,21 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
 /**
- * This interface must be implemented by the filter instance that needs to be displayed in filter panel.
- * <p/>
- * The {@link FilterPanelModel} talks to embedder via this interface.
+ * The instance of this interface represents a filter inside the FilterPanel. It provides information about how to
+ * display filter as a button.
  */
-public interface PanelFilter extends PanelFilterView {
+public interface PanelFilterView {
+    /**
+     * Returns a nicely formatted tooltip describing the filter. This tooltip is used for the filter button.
+     *
+     * @return tooltip for the filter
+     */
+    String getTooltip();
 
-    void setEnabled(boolean enabled);
-
-    void openFilterEditor();
-
-    void delete();
+    /**
+     * Returns the current state of the filter. The enabled filter is active so it is applied to the log data.
+     *
+     * @return {@code true} if the filter is enabled
+     */
+    boolean isEnabled();
 }
