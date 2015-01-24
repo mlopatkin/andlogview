@@ -15,53 +15,71 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.awt.Color;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 class LogRecordHighlighter extends AbstractFilterCollection<ColoringFilter> {
 
-    private class FilterInfo {
+    private static class FilterInfo {
+        public ColoringFilter filter;
+        public boolean isEnabled;
 
-        Color color;
-        boolean enabled = true;
-
-        public FilterInfo(Color color) {
-            this.color = color;
+        FilterInfo(ColoringFilter filter, boolean isEnabled) {
+            this.filter = filter;
+            this.isEnabled = isEnabled;
         }
     }
 
-    private Map<Predicate<LogRecord>, FilterInfo> filterColors = Maps.newLinkedHashMap();
+    private final List<FilterInfo> filters = new ArrayList<>();
+    private final List<FilterInfo> reversedView = Lists.reverse(filters);
 
     @Override
     public void addFilter(FilteringMode mode, ColoringFilter filter) {
-        filterColors.put(filter, new FilterInfo(filter.getHighlightColor()));
+        filters.add(new FilterInfo(filter, true));
     }
 
     @Override
     public void removeFilter(FilteringMode mode, ColoringFilter filter) {
-        filterColors.remove(filter);
+        filters.remove(findInfoForFilter(filter));
     }
 
     @Override
     public void setFilterEnabled(FilteringMode mode, ColoringFilter filter, boolean enable) {
-        filterColors.get(filter).enabled = enable;
+        FilterInfo info = findInfoForFilter(filter);
+        assert info != null;
+        info.isEnabled = enable;
+    }
+
+    @Override
+    public void replaceFilter(FilteringMode mode, ColoringFilter oldFilter, ColoringFilter newFilter) {
+        FilterInfo info = findInfoForFilter(oldFilter);
+        assert info != null;
+        info.filter = newFilter;
     }
 
     public Color getColor(LogRecord record) {
-        Color result = null;
-        for (Entry<Predicate<LogRecord>, FilterInfo> entry : filterColors.entrySet()) {
-            Predicate<LogRecord> filter = entry.getKey();
-            FilterInfo info = entry.getValue();
-            if (info.enabled && filter.apply(record)) {
-                result = info.color;
+        for (FilterInfo info : reversedView) {
+            if (info.isEnabled && info.filter.apply(record)) {
+                return info.filter.getHighlightColor();
             }
         }
-        return result;
+        return null;
+    }
+
+    @Nullable
+    private FilterInfo findInfoForFilter(ColoringFilter filter) {
+        for (FilterInfo item : filters) {
+            if (item.filter.equals(filter)) {
+                return item;
+            }
+        }
+        return null;
     }
 }

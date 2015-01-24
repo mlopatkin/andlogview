@@ -32,7 +32,10 @@ import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -52,7 +55,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     private final FilterChain filterChain = new FilterChain();
     private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
 
-    private final Set<BaseToggleFilter> filters = new LinkedHashSet<>();
+    private final List<BaseToggleFilter> filters = new ArrayList<>();
 
     @Inject
     public MainFilterController(FilterPanelModel filterPanelModel, DialogFactory dialogFactory) {
@@ -98,7 +101,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     private void addNewDialogFilter(FilterFromDialog filter) {
-        filterPanelModel.addFilter(createDialogPanelFilter(filter));
+        filterPanelModel.addFilter(createDialogPanelFilter(filter).addToCollection());
         notifyFiltersChanged();
     }
 
@@ -131,7 +134,6 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         private boolean isEnabled = true;
 
         protected BaseToggleFilter(FilterCollection<? super T> collection, FilteringMode mode, T filter) {
-            collection.addFilter(mode, filter);
             this.collection = collection;
             this.mode = mode;
             this.filter = filter;
@@ -159,12 +161,24 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
             notifyFiltersChanged();
         }
 
-        protected void replaceMeWith(BaseToggleFilter<?> replacement) {
-            collection.removeFilter(mode, filter);
-            filters.remove(this);
+        protected void replaceMeWith(BaseToggleFilter<T> replacement) {
+            replacement.isEnabled = isEnabled;
+            int myPos = filters.indexOf(this);
+            assert myPos >= 0;
+            filters.set(myPos, replacement);
             filterPanelModel.replaceFilter(this, replacement);
-            filters.add(replacement);
+            if (collection.equals(replacement.collection) && mode == replacement.mode) {
+                collection.replaceFilter(mode, filter, replacement.filter);
+            } else {
+                collection.removeFilter(mode, filter);
+                replacement.addToCollection();
+            }
             notifyFiltersChanged();
+        }
+
+        public BaseToggleFilter<T> addToCollection() {
+            collection.addFilter(mode, filter);
+            return this;
         }
     }
 
