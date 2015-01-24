@@ -17,31 +17,44 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.FilterChain;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.FilteredLogModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.awt.Color;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * The filter controller of the main window.
  */
-public class MainFilterController implements FilteredLogModel {
+@Singleton
+public class MainFilterController implements LogModelFilter, FilterCreator {
 
     private final FilterPanelModel filterPanelModel;
-    private final Subject<FilteredLogModel.Observer> observers = new Subject<>();
+    private final DialogFactory dialogFactory;
+    private final Subject<LogModelFilter.Observer> observers = new Subject<>();
+    private final FilterChain filterChain = new FilterChain();
 
-    public MainFilterController(FilterPanelModel filterPanelModel) {
+    @Inject
+    public MainFilterController(FilterPanelModel filterPanelModel, DialogFactory dialogFactory) {
         this.filterPanelModel = filterPanelModel;
+        this.dialogFactory = dialogFactory;
     }
 
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return false;
+        return true;
     }
 
     @Nullable
@@ -51,7 +64,47 @@ public class MainFilterController implements FilteredLogModel {
     }
 
     @Override
-    public Observable<FilteredLogModel.Observer> asObservable() {
+    public Observable<LogModelFilter.Observer> asObservable() {
         return observers.asObservable();
+    }
+
+    @Override
+    public void createFilterWithDialog() {
+        CreateFilterDialog.startCreateFilterDialog(
+                dialogFactory.getOwner(), new CreateFilterDialog.DialogResultReceiver() {
+                    @Override
+                    public void onDialogResult(CreateFilterDialog result,
+                                               boolean success) {
+                        if (success) {
+                            addNewDialogFilter(result.createFilter());
+                        }
+                    }
+                });
+    }
+
+    private void addNewDialogFilter(final FilterFromDialog filter) {
+        filterPanelModel.addFilter(new PanelFilter() {
+            @Override
+            public void setEnabled(boolean enabled) {
+            }
+
+            @Override
+            public void openFilterEditor() {
+            }
+
+            @Override
+            public void delete() {
+            }
+
+            @Override
+            public String getTooltip() {
+                return filter.getTooltip();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        });
     }
 }

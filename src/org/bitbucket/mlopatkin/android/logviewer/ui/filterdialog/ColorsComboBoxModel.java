@@ -16,40 +16,63 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
+import com.google.common.collect.Lists;
+
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
+import java.awt.Color;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
-import java.awt.Color;
 
-class ColorsComboBoxModel extends AbstractListModel<String> implements ComboBoxModel<String> {
+class ColorsComboBoxModel extends AbstractListModel<ColorsComboBoxModel.Item>
+        implements ComboBoxModel<ColorsComboBoxModel.Item> {
     // TODO having string here is kind of lame
-    private Color selected;
+    private Item selected;
+    private List<Item> items;
+
+    public ColorsComboBoxModel() {
+        items = Lists.newArrayListWithCapacity(Configuration.ui.highlightColors().size());
+        int index = 0;
+        for (Color color : Configuration.ui.highlightColors()) {
+            items.add(new Item(color, index++));
+        }
+    }
 
     @Override
-    public Color getSelectedItem() {
+    public Item getSelectedItem() {
         return selected;
     }
 
     @Override
     public void setSelectedItem(Object anItem) {
-        selected = (Color) anItem;
+        selected = ((Item) anItem);
     }
 
     @Override
-    public String getElementAt(int index) {
-        return "<html><span style='background-color: "
-                + toString(Configuration.ui.highlightColors().get(index)) + "'>Color " + index
-                + "</span></html>";
-
-    }
-
-    private String toString(Color color) {
-        return String.format("#%06x", color.getRGB() & 0x00FFFFFF);
+    public Item getElementAt(int index) {
+        return items.get(index);
     }
 
     @Override
     public int getSize() {
-        return Configuration.ui.highlightColors().size();
+        return items.size();
+    }
+
+    public static class Item {
+        private final Color color;
+        private final int index;
+
+        private Item(Color color, int index) {
+            this.color = color;
+            this.index = index;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("<html><span style='background-color: #%06x '>Color %d</span></html>",
+                                 color.getRGB() & 0x00FFFFFF, index);
+        }
     }
 }

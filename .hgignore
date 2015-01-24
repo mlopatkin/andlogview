@@ -6,6 +6,7 @@ docs/
 javadoc/
 build/
 dist/
+gen/
 *.orig
 *.log
 *.jar

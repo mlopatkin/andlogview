@@ -12,7 +12,7 @@ public class CreateFilterDialog extends FilterDialog {
         receiver = resultReceiver;
     }
 
-    interface DialogResultReceiver {
+    public interface DialogResultReceiver {
         void onDialogResult(CreateFilterDialog result, boolean success);
     }
 

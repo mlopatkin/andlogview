@@ -21,10 +21,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * This is a state of the panel with filter buttons. It only knows what PanelFilter provides so it can remove
  * filters, enable or disable them. But it cannot, e.g. persist filters, it is the responsibility of the higher level.
  */
+@Singleton
 public class FilterPanelModel {
 
     interface FilterPanelModelListener {
@@ -39,6 +43,10 @@ public class FilterPanelModel {
 
     private final Set<FilterPanelModelListener> listeners = new HashSet<>();
     private final List<PanelFilter> filters = new ArrayList<>();
+
+    @Inject
+    public FilterPanelModel() {
+    }
 
     public void addFilter(PanelFilter filter) {
         filters.add(filter);
@@ -75,7 +83,6 @@ public class FilterPanelModel {
             listener.onFilterEnabled(filter, enabled);
         }
     }
-
 
     void addListener(FilterPanelModelListener listener) {
         listeners.add(listener);

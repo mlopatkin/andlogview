@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.swing.table.AbstractTableModel;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -27,6 +29,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.android.logviewer.BatchRecordsReceiver;
 import org.bitbucket.mlopatkin.utils.MyListUtils;
 
+@Singleton
 public class LogRecordTableModel extends AbstractTableModel implements
         BatchRecordsReceiver<LogRecord> {
 
@@ -43,8 +46,9 @@ public class LogRecordTableModel extends AbstractTableModel implements
     public static final int COLUMN_LINE = 6;
     public static final int COLUMN_APPNAME = 7;
 
+    @Inject
     public LogRecordTableModel() {
-        this.records = new ArrayList<LogRecord>();
+        this.records = new ArrayList<>();
     }
 
     @Override

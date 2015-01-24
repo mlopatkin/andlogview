@@ -63,6 +63,10 @@ import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationExcept
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.Dagger_MainFrameDependencies;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
@@ -72,11 +76,10 @@ import com.android.ddmlib.IDevice;
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
-    private LogRecordTableModel recordsModel = new LogRecordTableModel();
+    private LogRecordTableModel recordsModel;
     private TableScrollController scrollController;
-    private FilterController filterController;
     private SearchController searchController;
-    private BookmarksController bookmarksController;
+//    private BookmarksController bookmarksController;
     private RecordListener<LogRecord> listener;
 
     private ProcessListFrame processListFrame;
@@ -105,9 +108,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         stopWaitingForDevice();
         source = newSource;
         recordsModel.clear();
-        bookmarksController.clear();
+//        bookmarksController.clear();
         source.setLogRecordListener(listener);
-        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
+//        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
         showSourceMessage(source.toString());
         updatingTimer.start();
         if (source != null && source.getPidToProcessConverter() != null) {
@@ -152,11 +155,13 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         setTitle("Android Log Viewer " + Main.APP_VERSION);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        logElements = new DecoratingRendererTable();
+        MainFrameDependencies dependencies =
+                Dagger_MainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).build();
+        recordsModel = dependencies.getLogModel();
+        logElements = dependencies.getLogTable();
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        logElements.setModel(recordsModel);
         logElements.addDecorator(new PriorityColoredCellRenderer());
         logElements
                 .setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), mapper));
@@ -169,13 +174,13 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         scrollController = new TableScrollController(logElements);
-        filterController = new FilterController(this, logElements, recordsModel);
-        bookmarksController = new BookmarksController(this, logElements, recordsModel, mapper,
-                filterController);
-        new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,
-                bookmarksController);
+//        filterController = new FilterController(this, logElements, recordsModel);
+//        bookmarksController = new BookmarksController(this, logElements, recordsModel, mapper,
+//                filterController);
+//        new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,
+//                bookmarksController);
         searchController = new SearchController(logElements, recordsModel);
-        listener = new BufferedListener<LogRecord>(recordsModel, scrollController);
+        listener = new BufferedListener<>(recordsModel, scrollController);
 
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);
@@ -186,7 +191,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         instantSearchTextField.setColumns(10);
         instantSearchTextField.setVisible(false);
 
-        JComponent filterPanel = new FilterPanel(new FilterPanelModel());
+        JComponent filterPanel = dependencies.getFilterPanel();
         controlsPanel.add(filterPanel);
 
         statusPanel = new JPanel();
@@ -366,9 +371,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
     public void reset() {
         recordsModel.clear();
-        if (!source.reset()) {
-            bookmarksController.clear();
-        }
+//        if (!source.reset()) {
+//            bookmarksController.clear();
+//        }
     }
 
     private BufferFilterMenu bufferMenu;
@@ -394,7 +399,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
-        bufferMenu = new BufferFilterMenu(mnFilters, filterController);
+//        bufferMenu = new BufferFilterMenu(mnFilters, filterController);
         mainMenu.add(mnFilters);
 
         setJMenuBar(mainMenu);
@@ -554,7 +559,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            bookmarksController.showWindow();
+//            bookmarksController.showWindow();
         }
     };
 

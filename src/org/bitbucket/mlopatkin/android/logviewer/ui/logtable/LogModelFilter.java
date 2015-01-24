@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 /**
  * Implementation of this interface controls the appearance of the table model.
  */
-public interface FilteredLogModel {
+public interface LogModelFilter {
 
     public interface Observer {
         void onModelChange();

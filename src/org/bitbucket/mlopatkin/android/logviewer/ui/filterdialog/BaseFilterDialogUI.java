@@ -45,7 +45,7 @@ abstract class BaseFilterDialogUi extends JDialog {
     protected final JComboBox<LogRecord.Priority> logLevelList;
 
     protected final FilteringModesPanel modesPanel;
-    protected final JComboBox<String> colorsList;
+    protected final JComboBox<ColorsComboBoxModel.Item> colorsList;
 
     protected final JButton okButton;
     protected final JButton cancelButton;
@@ -76,11 +76,11 @@ abstract class BaseFilterDialogUi extends JDialog {
 
         JLabel lblLogLevel = new JLabel("Log level");
 
-        logLevelList = new JComboBox<LogRecord.Priority>(new PriorityComboBoxModel());
+        logLevelList = new JComboBox<>(new PriorityComboBoxModel());
 
         JPanel modesWithDataPanel = new JPanel();
 
-        colorsList = new JComboBox<String>(new ColorsComboBoxModel());
+        colorsList = new JComboBox<>(new ColorsComboBoxModel());
         colorsList.setSelectedIndex(0);
 
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);

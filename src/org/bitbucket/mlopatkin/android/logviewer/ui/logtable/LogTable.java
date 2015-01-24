@@ -20,17 +20,19 @@ import org.bitbucket.mlopatkin.android.logviewer.PriorityColoredCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
+import javax.inject.Inject;
 import javax.swing.RowFilter;
 
 /**
  * The ultimate log displaying table.
  */
-public class LogTable extends DecoratingRendererTable implements FilteredLogModel.Observer {
+public class LogTable extends DecoratingRendererTable implements LogModelFilter.Observer {
 
-    private final FilteredLogModel filterModel;
+    private final LogModelFilter filterModel;
     private final SortingDisableSorter<LogRecordTableModel> sorter;
 
-    public LogTable(LogRecordTableModel dataModel, FilteredLogModel filterModel) {
+    @Inject
+    public LogTable(LogRecordTableModel dataModel, LogModelFilter filterModel) {
         this.filterModel = filterModel;
 
         filterModel.asObservable().addObserver(this);

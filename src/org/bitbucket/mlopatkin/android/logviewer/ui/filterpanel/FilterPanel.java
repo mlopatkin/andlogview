@@ -30,6 +30,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -46,6 +47,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private static final ImageIcon PREV_ICON = new ImageIcon(getResource("/icons/go-previous.png"));
 
     private final FilterPanelModel model;
+    private final FilterCreator filterCreator;
     private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
 
     private ComponentListener resizeListener = new ComponentAdapter() {
@@ -57,7 +59,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private Action acCreateFilter = new AbstractAction("", ADD_ICON) {
         @Override
         public void actionPerformed(ActionEvent e) {
-//            controller.startFilterCreationDialog();
+            filterCreator.createFilterWithDialog();
         }
     };
 
@@ -86,8 +88,10 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private int leftmostButton = -1;
     private int rightmostButton = -1;
 
-    public FilterPanel(FilterPanelModel model) {
+    @Inject
+    public FilterPanel(FilterPanelModel model, FilterCreator filterCreator) {
         this.model = model;
+        this.filterCreator = filterCreator;
 
         model.addListener(this);
 
