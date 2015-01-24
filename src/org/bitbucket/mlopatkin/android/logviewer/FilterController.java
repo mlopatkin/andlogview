@@ -25,6 +25,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilterChain;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
@@ -50,12 +51,9 @@ class FilterController {
 
     private DecoratingRendererTable table;
     private LogRecordTableModel tableModel;
-    private FilterPanel panel;
 
     private TableRowSorter<LogRecordTableModel> rowSorter;
-    private LogRecordRowFilter rowFilter;
 
-    private FilterChain filters = new FilterChain();
     private List<ActionListener> refreshActionListeners = new ArrayList<ActionListener>();
 
     // this filter acts as hiding filter, initially empty, but hides unselected
@@ -66,7 +64,6 @@ class FilterController {
             = new EnumMap<FilteringMode, FilteringModeHandler<?>>(
             FilteringMode.class);
 
-    private FilterChainHandler showHideHandler = new FilterChainHandler();
     private IndexWindowHandler windowHandler = new IndexWindowHandler();
     private HighlightFilteringModeHandler highlightHandler = new HighlightFilteringModeHandler();
 
@@ -76,15 +73,10 @@ class FilterController {
         this.main = main;
         this.table = table;
         this.tableModel = tableModel;
-        rowSorter = new SortingDisableSorter<LogRecordTableModel>(tableModel);
-        filters.addFilter(FilteringMode.HIDE, bufferFilter);
+        rowSorter = new SortingDisableSorter<>(tableModel);
         initBufferFilter();
         table.setRowSorter(rowSorter);
-        rowFilter = new LogRecordRowFilter(filters);
-        rowSorter.setRowFilter(rowFilter);
         table.addDecorator(new RowHighlightRenderer(highlightHandler));
-        handlers.put(FilteringMode.SHOW, showHideHandler);
-        handlers.put(FilteringMode.HIDE, showHideHandler);
         handlers.put(FilteringMode.HIGHLIGHT, highlightHandler);
         handlers.put(FilteringMode.WINDOW, windowHandler);
     }
@@ -109,47 +101,12 @@ class FilterController {
 
     }
 
-    <T> void addFilter(FilteringMode mode, FilterFromDialog filter, T data) {
-        @SuppressWarnings("unchecked")
-        FilteringModeHandler<T> handler = (FilteringModeHandler<T>) getHandler(mode);
-        handler.addFilter(mode, filter, data);
-        onFilteringStateUpdated();
-    }
-
-    public void startFilterCreationDialog() {
-//        CreateFilterDialog.startCreateFilterDialog(main, this);
-    }
-
-    void setPanel(FilterPanel panel) {
-        this.panel = panel;
-    }
-
-    public void removeFilter(FilteringMode mode, LogRecordFilter filter) {
-//        panel.removeFilterButton(filter);
-        getHandler(mode).removeFilter(mode, filter);
-        onFilteringStateUpdated();
-    }
-
-    public void startEditFilterDialog(FilteringMode mode, FilterFromDialog filter) {
-        Object data = getHandler(mode).getData(mode, filter);
-//        EditFilterDialog.startEditFilterDialog(main, mode, filter, this, data);
-    }
-
     LogRecordRowFilter getRowFilter() {
-        return rowFilter;
+        return null;
     }
 
     public void addRefreshListener(ActionListener listener) {
         refreshActionListeners.add(listener);
-    }
-
-    public void removeRefreshListener(ActionListener listener) {
-        refreshActionListeners.remove(listener);
-    }
-
-    void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-        getHandler(mode).enableFilter(mode, filter);
-        onFilteringStateUpdated();
     }
 
     void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
@@ -184,35 +141,6 @@ class FilterController {
         void disableFilter(FilteringMode mode, Predicate<LogRecord> filter);
 
         T getData(FilteringMode mode, Predicate<LogRecord> filter);
-    }
-
-    private class FilterChainHandler implements FilteringModeHandler<Object> {
-
-        @Override
-        public void addFilter(FilteringMode mode, Predicate<LogRecord> filter, Object data) {
-            filters.addFilter(mode, filter);
-        }
-
-        @Override
-        public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-            filters.removeFilter(filter);
-        }
-
-        @Override
-        public void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-            filters.addFilter(mode, filter);
-        }
-
-        @Override
-        public void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-            filters.removeFilter(filter);
-        }
-
-        @Override
-        public Object getData(FilteringMode mode, Predicate<LogRecord> filter) {
-            return null;
-        }
-
     }
 
     private class IndexWindowHandler implements FilteringModeHandler<Object> {

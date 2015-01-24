@@ -33,8 +33,8 @@ public enum FilteringMode {
      */
     WINDOW("Show index window", false);
 
-    private String description;
-    private boolean defaultResult;
+    private final String description;
+    private final boolean defaultResult;
 
     private FilteringMode(String description, boolean defaultResult) {
         this.description = description;
@@ -45,6 +45,14 @@ public enum FilteringMode {
         return description;
     }
 
+    /**
+     * Returns whether the record should match the combined list of filters if there are no active filters for this
+     * mode. For example we HIDE a record that matches any of the hiding filters in the collection but we should not
+     * HIDE a record if there is no HIDING filters. Contrary to that we SHOW only records that match any of the filters
+     * in the collection but if there is no SHOW filters at all whe still should SHOW the record.
+     *
+     * @return {@code true} if the record should be processed
+     */
     public boolean getDefaultResult() {
         return defaultResult;
     }

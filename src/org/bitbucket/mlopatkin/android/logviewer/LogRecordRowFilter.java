@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import javax.swing.RowFilter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilterChain;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
@@ -31,8 +32,6 @@ public class LogRecordRowFilter extends RowFilter<LogRecordTableModel, Integer> 
 
     @Override
     public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
-        LogRecord record = entry.getModel().getRowData(entry.getIdentifier());
-        return filters.checkFilter(FilteringMode.SHOW, record)
-                && !filters.checkFilter(FilteringMode.HIDE, record);
+        return true;
     }
 }

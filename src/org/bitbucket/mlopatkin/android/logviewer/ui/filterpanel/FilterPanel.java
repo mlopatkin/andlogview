@@ -211,7 +211,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            FilterPanel.this.model.setFilterEnabled(filter, !isSelected());
+            FilterPanel.this.model.setFilterEnabled(filter, isSelected());
         }
 
         @Override

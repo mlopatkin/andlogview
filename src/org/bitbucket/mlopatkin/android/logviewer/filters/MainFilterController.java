@@ -17,9 +17,9 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.FilterChain;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
@@ -32,13 +32,16 @@ import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.awt.Color;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * The filter controller of the main window.
+ * The filter controller of the main window. It knows about all existing filters and how they should be persisted,
+ * toggled and applied.
  */
 @Singleton
 public class MainFilterController implements LogModelFilter, FilterCreator {
@@ -47,6 +50,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     private final DialogFactory dialogFactory;
     private final Subject<LogModelFilter.Observer> observers = new Subject<>();
     private final FilterChain filterChain = new FilterChain();
+
+    private final Set<BaseToggleFilter> filters = new LinkedHashSet<>();
 
     @Inject
     public MainFilterController(FilterPanelModel filterPanelModel, DialogFactory dialogFactory) {
@@ -57,7 +62,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return true;
+        return filterChain.shouldShow(record);
     }
 
     @Nullable
@@ -86,47 +91,94 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     private void addNewDialogFilter(final FilterFromDialog filter) {
-        filterPanelModel.addFilter(convertDialogFilterToPanelFilter(filter));
+        DialogPanelFilter panelFilter = new DialogPanelFilter(filterChain, filter);
+        filters.add(panelFilter);
+        filterPanelModel.addFilter(panelFilter);
+        notifyFiltersChanged();
     }
 
-    private PanelFilter convertDialogFilterToPanelFilter(final FilterFromDialog filter) {
-        return new PanelFilter() {
-            @Override
-            public void setEnabled(boolean enabled) {
-            }
+    private void completeFilterRemoval(BaseToggleFilter<?> filter) {
+        filters.remove(filter);
+        filterPanelModel.removeFilter(filter);
+        notifyFiltersChanged();
+    }
 
-            @Override
-            public void openFilterEditor() {
-                final PanelFilter original = this;
-                EditFilterDialog.startEditFilterDialog(
-                        dialogFactory.getOwner(), filter,
-                        new EditFilterDialog.DialogResultReceiver() {
-                            @Override
-                            public void onDialogResult(FilterFromDialog oldFilter,
-                                                       Optional<FilterFromDialog>
-                                                               newFilter,
-                                                       boolean success) {
-                                if (success) {
-                                    filterPanelModel
-                                            .replaceFilter(original, convertDialogFilterToPanelFilter(newFilter.get()));
-                                }
+    private void notifyFiltersChanged() {
+        for (LogModelFilter.Observer observer : observers) {
+            observer.onModelChange();
+        }
+    }
+
+    /**
+     * Base class for {@link PanelFilter} wrappers for the DialogFilters and others.
+     */
+    abstract class BaseToggleFilter<T extends Predicate<LogRecord>> implements PanelFilter {
+        protected final FilteringMode mode;
+        protected final FilterCollection collection;
+        protected final T filter;
+
+        private boolean isEnabled = true;
+
+        protected BaseToggleFilter(FilterCollection collection, FilteringMode mode, T filter) {
+            collection.addFilter(mode, filter);
+            this.collection = collection;
+            this.mode = mode;
+            this.filter = filter;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return isEnabled;
+        }
+
+        @Override
+        public void setEnabled(boolean isEnabled) {
+            if (isEnabled != this.isEnabled) {
+                this.isEnabled = isEnabled;
+                if (isEnabled()) {
+                    collection.addFilter(mode, filter);
+                } else {
+                    collection.removeFilter(mode, filter);
+                }
+                notifyFiltersChanged();
+            }
+        }
+
+        @Override
+        public void delete() {
+            collection.removeFilter(mode, filter);
+            completeFilterRemoval(this);
+        }
+    }
+
+
+    class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
+
+        protected DialogPanelFilter(FilterCollection collection,
+                                    FilterFromDialog filter) {
+            super(collection, filter.getMode(), filter);
+        }
+
+        @Override
+        public void openFilterEditor() {
+            EditFilterDialog.startEditFilterDialog(
+                    dialogFactory.getOwner(), filter,
+                    new EditFilterDialog.DialogResultReceiver() {
+                        @Override
+                        public void onDialogResult(FilterFromDialog oldFilter,
+                                                   Optional<FilterFromDialog> newFilter,
+                                                   boolean success) {
+                            if (success) {
+                                delete();
+                                addNewDialogFilter(newFilter.get());
                             }
-                        });
-            }
+                        }
+                    });
+        }
 
-            @Override
-            public void delete() {
-            }
-
-            @Override
-            public String getTooltip() {
-                return filter.getTooltip();
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        };
+        @Override
+        public String getTooltip() {
+            return filter.getTooltip();
+        }
     }
 }
