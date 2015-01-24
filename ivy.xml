@@ -22,29 +22,28 @@
             module="androidlogviewer"/>
 
     <configurations defaultconfmapping="*->default">
-        <conf name="${libs.core}" visibility="private"
+        <conf name="core" visibility="private"
               description="Basic libraries that should be built into the resulting archive"/>
-        <conf name="${libs.compile}" extends="${libs.core}"
+        <conf name="compile" extends="core"
               description="All libraries required to build distributive package"/>
-        <conf name="${libs.dist}"
-              description="Libraries that should be included into distribution"/>
-        <conf name="${libs.test}" description="Libraries that are used for testing"/>
+        <conf name="test" description="Libraries that are used for testing"/>
+        <conf name="apt" description="Compile-time dependencies - e.g. annotation processors" />
     </configurations>
 
     <dependencies>
-        <dependency org="com.google.guava" name="guava" rev="15.0" conf="${libs.core}"/>
-        <dependency org="log4j" name="log4j" rev="1.2.17" conf="${libs.core}"/>
-        <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="4.6"
-                    conf="${libs.core}"/>
-        <dependency org="com.google.code.gson" name="gson" rev="2.2.4" conf="${libs.core}"/>
+        <dependency org="com.google.dagger" name="dagger" rev="2.0-SNAPSHOT" conf="core"/>
+        <dependency org="com.google.dagger" name="dagger-compiler" rev="2.0-SNAPSHOT" conf="apt"/>
 
-        <dependency org="com.google.android.tools" name="ddmlib" rev="r13"
-                    conf="${libs.compile}, ${libs.dist}"/>
-        <dependency org="com.google.code.findbugs" name="jsr305" rev="2.0.3"
-                    conf="${libs.compile}"/>
+        <dependency org="com.google.guava" name="guava" rev="15.0" conf="core"/>
+        <dependency org="log4j" name="log4j" rev="1.2.17" conf="core"/>
+        <dependency org="net.sf.jopt-simple" name="jopt-simple" rev="4.6" conf="core"/>
+        <dependency org="com.google.code.gson" name="gson" rev="2.2.4" conf="core"/>
 
-        <dependency org="junit" name="junit" rev="4.11" conf="${libs.test}"/>
-        <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="${libs.test}"/>
+        <dependency org="com.google.android.tools" name="ddmlib" rev="r13" conf="core"/>
+        <dependency org="com.google.code.findbugs" name="jsr305" rev="2.0.3" conf="compile"/>
+
+        <dependency org="junit" name="junit" rev="4.11" conf="test"/>
+        <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test"/>
     </dependencies>
 </ivy-module>
 

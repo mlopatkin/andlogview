@@ -6,6 +6,7 @@
 
     <!-- Location for libraries used for compilation -->
     <property name="lib.dir" location="lib"/>
+    <property name="apt.lib.dir" location="${lib.dir}/apt-lib"/>
 
     <!-- Location for intermediate build products -->
     <property name="build.intermediate.dir" location="build"/>
@@ -34,25 +35,21 @@
     <property name="target.version" value="1.7"/>
 
     <!-- Ivy configurations -->
-
-    <!-- Core libraries that are embedded into resulting jar -->
-    <property name="libs.core" value="core"/>
-    <!-- All compile-time dependecies -->
-    <property name="libs.compile" value="compile"/>
-    <!-- Libraries included into distributive package as is -->
-    <property name="libs.dist" value="dist"/>
-    <!-- Libraries used for testing -->
-    <property name="libs.test" value="test"/>
-
+    
     <property name="build.sysclasspath" value="ignore"/>
 
-    <!-- Locations for intermediate libraries and compiled files -->
+    <!-- Locations for intermediate libraries and compiled files - what goes to the jar -->
     <property name="build.classes.dir" location="${build.intermediate.dir}/bin"/>
+    <property name="build.gen.dir" location="${build.intermediate.dir}/gen"/>
     <property name="build.lib.dir" location="${build.intermediate.dir}/lib"/>
     <property name="build.test.dir" location="${build.intermediate.dir}/test"/>
 
     <path id="libraries">
-        <fileset dir="${lib.dir}"/>
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+
+    <path id="apt.libraries">
+        <fileset dir="${apt.lib.dir}" />
     </path>
 
     <!-- Files that should be included into distributive package as is -->
@@ -64,6 +61,8 @@
         <include name="logview.bat"/>
         <include name="logview"/>
     </zipfileset>
+
+    <ivy:settings file="ivysettings.xml" />
 
     <target name="all"
             depends="test, dist"
@@ -86,15 +85,11 @@
 
     <target name="dist"
             description="Prepare the distributive package"
-            depends="make-jar, resolve-dist-dependencies, make-dist-dir">
+            depends="make-jar, make-dist-dir">
         <zip destfile="${dist.dir}/${dist.name}">
             <zipfileset refid="dist.resources"/>
             <zipfileset dir="${build.lib.dir}" includes="*.jar" prefix="lib"/>
         </zip>
-    </target>
-
-    <target name="resolve-dist-dependencies" depends="make-dist-dir">
-        <ivy:retrieve conf="${libs.dist}" pattern="${build.lib.dir}/[artifact].[ext]"/>
     </target>
 
     <target name="make-jar" depends="compile-dist, unpack-libs, copy-res, make-dist-dir">
@@ -111,12 +106,15 @@
                source="${target.version}"
                debug="${debug}">
             <src path="${src.main.dir}"/>
-            <src path="${src.utils.dir}"/>
+            <src path="${src.utils.dir}"/>        	        	
+        	<compilerarg line="-processorpath ${toString:apt.libraries}" />
+        	<compilerarg line="-s ${build.gen.dir}"/>
         </javac>
     </target>
 
     <target name="resolve-compile-dependencies">
-        <ivy:retrieve conf="${libs.compile}" pattern="${lib.dir}/[artifact].[ext]"/>
+        <ivy:retrieve conf="compile" pattern="${lib.dir}/[artifact].[ext]"/>
+        <ivy:retrieve conf="apt" pattern="${apt.lib.dir}/[artifact].[ext]"/>
     </target>
 
     <target name="compile-test"
@@ -132,7 +130,7 @@
     </target>
 
     <target name="resolve-test-dependencies">
-        <ivy:retrieve conf="${libs.test}" pattern="${lib.dir}/[artifact].[ext]"/>
+        <ivy:retrieve conf="test" pattern="${lib.dir}/[artifact].[ext]"/>
     </target>
 
     <target name="unpack-libs" depends="resolve-core-libs, make-intermediate-dir">
@@ -141,13 +139,13 @@
                 <exclude name="META-INF/**"/>
                 <exclude name="*.txt"/>
             </patternset>
-            <fileset refid="${libs.core}.files"/>
+            <fileset refid="core.files"/>
         </unjar>
     </target>
 
     <target name="resolve-core-libs">
-        <ivy:resolve conf="${libs.core}"/>
-        <ivy:cachefileset setid="${libs.core}.files"/>
+        <ivy:resolve conf="core"/>
+        <ivy:cachefileset setid="core.files"/>
     </target>
 
     <target name="copy-res" depends="make-intermediate-dir">
@@ -162,6 +160,7 @@
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.lib.dir}"/>
         <mkdir dir="${build.test.dir}"/>
+    	<mkdir dir="${build.gen.dir}"/>
         <mkdir dir="${report.dir}"/>
     </target>
 
