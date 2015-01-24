@@ -57,6 +57,15 @@ public class FilterChain implements FilterCollection {
         filters.put(mode, filter);
     }
 
+    @Override
+    public void setFilterEnabled(FilteringMode mode, Predicate<LogRecord> filter, boolean enabled) {
+        if (enabled) {
+            addFilter(mode, filter);
+        } else {
+            removeFilter(mode, filter);
+        }
+    }
+
     public boolean shouldShow(LogRecord record) {
         return !include(FilteringMode.HIDE, record) && include(FilteringMode.SHOW, record);
     }

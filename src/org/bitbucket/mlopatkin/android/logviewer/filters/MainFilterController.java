@@ -90,16 +90,14 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
                 });
     }
 
-    private void addNewDialogFilter(final FilterFromDialog filter) {
+    private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
         DialogPanelFilter panelFilter = new DialogPanelFilter(filterChain, filter);
         filters.add(panelFilter);
-        filterPanelModel.addFilter(panelFilter);
-        notifyFiltersChanged();
+        return panelFilter;
     }
 
-    private void completeFilterRemoval(BaseToggleFilter<?> filter) {
-        filters.remove(filter);
-        filterPanelModel.removeFilter(filter);
+    private void addNewDialogFilter(FilterFromDialog filter) {
+        filterPanelModel.addFilter(createDialogPanelFilter(filter));
         notifyFiltersChanged();
     }
 
@@ -135,11 +133,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         public void setEnabled(boolean isEnabled) {
             if (isEnabled != this.isEnabled) {
                 this.isEnabled = isEnabled;
-                if (isEnabled()) {
-                    collection.addFilter(mode, filter);
-                } else {
-                    collection.removeFilter(mode, filter);
-                }
+                collection.setFilterEnabled(mode, filter, isEnabled);
                 notifyFiltersChanged();
             }
         }
@@ -147,7 +141,17 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         @Override
         public void delete() {
             collection.removeFilter(mode, filter);
-            completeFilterRemoval(this);
+            filters.remove(this);
+            filterPanelModel.removeFilter(this);
+            notifyFiltersChanged();
+        }
+
+        protected void replaceMeWith(BaseToggleFilter<?> replacement) {
+            collection.removeFilter(mode, filter);
+            filters.remove(this);
+            filterPanelModel.replaceFilter(this, replacement);
+            filters.add(replacement);
+            notifyFiltersChanged();
         }
     }
 
@@ -169,8 +173,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
                                                    Optional<FilterFromDialog> newFilter,
                                                    boolean success) {
                             if (success) {
-                                delete();
-                                addNewDialogFilter(newFilter.get());
+                                DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
+                                replaceMeWith(newPanelFilter);
                             }
                         }
                     });

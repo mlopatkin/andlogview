@@ -22,5 +22,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public interface FilterCollection {
     void addFilter(FilteringMode mode, Predicate<LogRecord> filter);
+    void setFilterEnabled(FilteringMode mode, Predicate<LogRecord> filter, boolean enabled);
     void removeFilter(FilteringMode mode, Predicate<LogRecord> filter);
+    // TODO make setFilterEnabled a default method when migrating to Java 8
 }
