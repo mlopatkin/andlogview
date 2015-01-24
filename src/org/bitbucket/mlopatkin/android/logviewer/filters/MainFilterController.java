@@ -17,7 +17,10 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.FilteredLogModel;
+import org.bitbucket.mlopatkin.utils.events.Observable;
+import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.awt.Color;
 
@@ -27,6 +30,14 @@ import javax.annotation.Nullable;
  * The filter controller of the main window.
  */
 public class MainFilterController implements FilteredLogModel {
+
+    private final FilterPanelModel filterPanelModel;
+    private final Subject<FilteredLogModel.Observer> observers = new Subject<>();
+
+    public MainFilterController(FilterPanelModel filterPanelModel) {
+        this.filterPanelModel = filterPanelModel;
+    }
+
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
@@ -40,10 +51,7 @@ public class MainFilterController implements FilteredLogModel {
     }
 
     @Override
-    public void addObserver(FilteredLogModel.Observer observer) {
-    }
-
-    @Override
-    public void removeObserver(FilteredLogModel.Observer observer) {
+    public Observable<FilteredLogModel.Observer> asObservable() {
+        return observers.asObservable();
     }
 }

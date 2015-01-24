@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.utils.events.Observable;
 
 import java.awt.Color;
 
@@ -36,7 +37,5 @@ public interface FilteredLogModel {
     @Nullable
     Color getHighlightColor(LogRecord record);
 
-    void addObserver(Observer observer);
-
-    void removeObserver(Observer observer);
+    Observable<Observer> asObservable();
 }

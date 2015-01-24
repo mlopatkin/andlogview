@@ -33,7 +33,7 @@ public class LogTable extends DecoratingRendererTable implements FilteredLogMode
     public LogTable(LogRecordTableModel dataModel, FilteredLogModel filterModel) {
         this.filterModel = filterModel;
 
-        filterModel.addObserver(this);
+        filterModel.asObservable().addObserver(this);
         addDecorator(new PriorityColoredCellRenderer());
 
         setModel(dataModel);

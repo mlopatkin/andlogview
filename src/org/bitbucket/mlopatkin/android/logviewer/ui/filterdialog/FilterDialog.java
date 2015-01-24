@@ -79,12 +79,12 @@ abstract class FilterDialog extends BaseFilterDialogUi {
     private static final Splitter commaSplitter =
             Splitter.on(',').trimResults(CharMatcher.WHITESPACE);
 
-    private String[] getTags() {
+    private List<String> getTags() {
         String tagsString = Strings.nullToEmpty(tagTextField.getText());
         if (!CharMatcher.WHITESPACE.matchesAllOf(tagsString)) {
-            return Iterables.toArray(commaSplitter.splitToList(tagsString), String.class);
+            return commaSplitter.splitToList(tagsString);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     private String getMessageText() {
@@ -204,6 +204,7 @@ abstract class FilterDialog extends BaseFilterDialogUi {
 
     public FilterFromDialog createFilter() {
         FilterFromDialog filter = new FilterFromDialog();
+        filter.setTags(getTags());
         filter.setPids(getPids());
         filter.setApps(getAppNames());
         filter.setMode(getFilteringMode());

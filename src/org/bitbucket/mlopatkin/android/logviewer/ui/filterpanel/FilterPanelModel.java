@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class FilterPanelModel {
 
-    public interface FilterPanelModelListener {
+    interface FilterPanelModelListener {
         void onFilterAdded(PanelFilterView newFilter);
 
         void onFilterRemoved(PanelFilterView filter);
