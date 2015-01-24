@@ -15,39 +15,17 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
+import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.MATCH_ALL;
+import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.MATCH_FIRST;
+import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.RECORD1;
+import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.RECORD2;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class FilterChainTest {
-
-    private static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(
-            Buffer.UNKNOWN,
-            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172",
-            Collections.<Integer, String>emptyMap());
-
-    private static final LogRecord RECORD2 = LogRecordParser.parseThreadTime(
-            Buffer.UNKNOWN,
-            "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172",
-            Collections.<Integer, String>emptyMap());
-
-    private static final LogRecordFilter MATCH_FIRST = new SingleTagFilter("AudioFlinger");
-    private static final LogRecordFilter MATCH_SECOND = new SingleTagFilter("NotAudioFlinger");
-
-    private static final Predicate<LogRecord> MATCH_ALL = Predicates.alwaysTrue();
-    private static final Predicate<LogRecord> MATCH_NONE = Predicates.alwaysFalse();
 
     private FilterChain chain;
 
