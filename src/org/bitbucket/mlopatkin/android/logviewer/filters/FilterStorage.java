@@ -33,6 +33,7 @@ import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -91,7 +92,9 @@ public class FilterStorage {
         final FilterStorage result = new FilterStorage(
                 Files.asCharSource(file, Charsets.UTF_8),
                 Files.asCharSink(file, Charsets.UTF_8),
-                Executors.newSingleThreadExecutor(Threads.withName("FilterStorageFileWorker")));
+                Executors.newSingleThreadExecutor(
+                        new ThreadFactoryBuilder().setThreadFactory(Threads.withName("FilterStorageFileWorker"))
+                                                  .setDaemon(true).build()));
         Runtime.getRuntime().addShutdownHook(new Thread("OnExitCommiter") {
             @Override
             public void run() {
