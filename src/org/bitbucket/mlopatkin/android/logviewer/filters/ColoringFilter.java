@@ -20,10 +20,8 @@ import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-public interface FilterCollection<T extends Predicate<LogRecord>> {
-    void addFilter(FilteringMode mode, T filter);
-    void setFilterEnabled(FilteringMode mode, T filter, boolean enabled);
-    void replaceFilter(FilteringMode mode, T oldFilter, T newFilter);
-    void removeFilter(FilteringMode mode, T filter);
-    // TODO make setFilterEnabled a default method when migrating to Java 8
+import java.awt.Color;
+
+public interface ColoringFilter extends Predicate<LogRecord> {
+    Color getHighlightColor();
 }

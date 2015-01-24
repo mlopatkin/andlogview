@@ -17,11 +17,16 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import org.bitbucket.mlopatkin.android.logviewer.PriorityColoredCellRenderer;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
+import java.awt.Component;
+
 import javax.inject.Inject;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.table.TableCellRenderer;
 
 /**
  * The ultimate log displaying table.
@@ -37,6 +42,7 @@ public class LogTable extends DecoratingRendererTable implements LogModelFilter.
 
         filterModel.asObservable().addObserver(this);
         addDecorator(new PriorityColoredCellRenderer());
+        addDecorator(new RowHighlightRenderer(filterModel));
 
         setModel(dataModel);
         sorter = new SortingDisableSorter<>(dataModel);

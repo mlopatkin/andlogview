@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -30,9 +30,9 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
 
     private TableCellRenderer inner;
     private Color backgroundColor = Configuration.ui.backgroundColor();
-    private HighlightFilteringModeHandler colorer;
+    private LogModelFilter colorer;
 
-    public RowHighlightRenderer(HighlightFilteringModeHandler colorer) {
+    public RowHighlightRenderer(LogModelFilter colorer) {
         this.colorer = colorer;
     }
 
@@ -50,7 +50,7 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
             LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
             int modelRow = table.convertRowIndexToModel(row);
             LogRecord record = tableModel.getRowData(modelRow);
-            Color targetColor = colorer.getColor(record);
+            Color targetColor = colorer.getHighlightColor(record);
             if (targetColor != null) {
                 result.setBackground(targetColor);
             } else {

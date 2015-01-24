@@ -20,10 +20,23 @@ import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
-public interface FilterCollection<T extends Predicate<LogRecord>> {
-    void addFilter(FilteringMode mode, T filter);
-    void setFilterEnabled(FilteringMode mode, T filter, boolean enabled);
-    void replaceFilter(FilteringMode mode, T oldFilter, T newFilter);
-    void removeFilter(FilteringMode mode, T filter);
-    // TODO make setFilterEnabled a default method when migrating to Java 8
+/**
+ * Poor man's defender methods.
+ */
+abstract class AbstractFilterCollection<T extends Predicate<LogRecord>> implements FilterCollection<T> {
+
+    @Override
+    public void setFilterEnabled(FilteringMode mode, T filter, boolean enabled) {
+        if (enabled) {
+            addFilter(mode, filter);
+        } else {
+            removeFilter(mode, filter);
+        }
+    }
+
+    @Override
+    public void replaceFilter(FilteringMode mode, T oldFilter, T newFilter) {
+        removeFilter(mode, oldFilter);
+        addFilter(mode, newFilter);
+    }
 }

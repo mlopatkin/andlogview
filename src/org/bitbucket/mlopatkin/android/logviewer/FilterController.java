@@ -25,10 +25,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterChain;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
@@ -65,7 +62,6 @@ class FilterController {
             FilteringMode.class);
 
     private IndexWindowHandler windowHandler = new IndexWindowHandler();
-    private HighlightFilteringModeHandler highlightHandler = new HighlightFilteringModeHandler();
 
     private JFrame main;
 
@@ -76,8 +72,6 @@ class FilterController {
         rowSorter = new SortingDisableSorter<>(tableModel);
         initBufferFilter();
         table.setRowSorter(rowSorter);
-        table.addDecorator(new RowHighlightRenderer(highlightHandler));
-        handlers.put(FilteringMode.HIGHLIGHT, highlightHandler);
         handlers.put(FilteringMode.WINDOW, windowHandler);
     }
 

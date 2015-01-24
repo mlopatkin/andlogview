@@ -50,6 +50,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     private final DialogFactory dialogFactory;
     private final Subject<LogModelFilter.Observer> observers = new Subject<>();
     private final FilterChain filterChain = new FilterChain();
+    private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
 
     private final Set<BaseToggleFilter> filters = new LinkedHashSet<>();
 
@@ -68,7 +69,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     @Nullable
     @Override
     public Color getHighlightColor(LogRecord record) {
-        return null;
+        return highlighter.getColor(record);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
-        DialogPanelFilter panelFilter = new DialogPanelFilter(filterChain, filter);
+        DialogPanelFilter panelFilter = new DialogPanelFilter(getFilterCollectionForFilter(filter), filter);
         filters.add(panelFilter);
         return panelFilter;
     }
@@ -107,17 +108,29 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         }
     }
 
+    private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {
+        switch (filter.getMode()) {
+            case SHOW:
+            case HIDE:
+                return filterChain;
+            case HIGHLIGHT:
+                return highlighter;
+        }
+        assert false;
+        return null;
+    }
+
     /**
      * Base class for {@link PanelFilter} wrappers for the DialogFilters and others.
      */
     abstract class BaseToggleFilter<T extends Predicate<LogRecord>> implements PanelFilter {
         protected final FilteringMode mode;
-        protected final FilterCollection collection;
+        protected final FilterCollection<? super T> collection;
         protected final T filter;
 
         private boolean isEnabled = true;
 
-        protected BaseToggleFilter(FilterCollection collection, FilteringMode mode, T filter) {
+        protected BaseToggleFilter(FilterCollection<? super T> collection, FilteringMode mode, T filter) {
             collection.addFilter(mode, filter);
             this.collection = collection;
             this.mode = mode;
@@ -158,7 +171,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
     class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
 
-        protected DialogPanelFilter(FilterCollection collection,
+        protected DialogPanelFilter(FilterCollection<? super FilterFromDialog> collection,
                                     FilterFromDialog filter) {
             super(collection, filter.getMode(), filter);
         }

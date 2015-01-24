@@ -35,12 +35,13 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
+import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
-public class FilterFromDialog implements Predicate<LogRecord> {
+public class FilterFromDialog implements ColoringFilter {
 
     private static final Joiner commaJoiner = Joiner.on(", ");
     public static final FilterStorage.FilterStorageClient<List<FilterFromDialog>> STORAGE_CLIENT =
@@ -206,6 +207,7 @@ public class FilterFromDialog implements Predicate<LogRecord> {
         this.mode = mode;
     }
 
+    @Override
     public Color getHighlightColor() {
         return highlightColor;
     }

@@ -31,7 +31,7 @@ import java.util.Set;
  * <p/>
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
-public class FilterChain implements FilterCollection {
+public class FilterChain extends AbstractFilterCollection<Predicate<LogRecord>> {
 
     private final SetMultimap<FilteringMode, Predicate<LogRecord>> filters =
             MultimapBuilder.enumKeys(FilteringMode.class)
@@ -64,6 +64,11 @@ public class FilterChain implements FilterCollection {
         } else {
             removeFilter(mode, filter);
         }
+    }
+
+    @Override
+    public void replaceFilter(FilteringMode mode, Predicate<LogRecord> oldFilter, Predicate<LogRecord> newFilter) {
+
     }
 
     public boolean shouldShow(LogRecord record) {

@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
-
-import java.awt.Color;
-import java.util.Map;
-import java.util.Map.Entry;
+package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.FilterController.FilteringModeHandler;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 
-class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
+import java.awt.Color;
+import java.util.Map;
+import java.util.Map.Entry;
+
+class LogRecordHighlighter extends AbstractFilterCollection<ColoringFilter> {
 
     private class FilterInfo {
 
@@ -41,23 +39,18 @@ class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
     private Map<Predicate<LogRecord>, FilterInfo> filterColors = Maps.newLinkedHashMap();
 
     @Override
-    public void addFilter(FilteringMode mode, Predicate<LogRecord> filter, Color data) {
-        filterColors.put(filter, new FilterInfo(data));
+    public void addFilter(FilteringMode mode, ColoringFilter filter) {
+        filterColors.put(filter, new FilterInfo(filter.getHighlightColor()));
     }
 
     @Override
-    public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
+    public void removeFilter(FilteringMode mode, ColoringFilter filter) {
         filterColors.remove(filter);
     }
 
     @Override
-    public void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-        filterColors.get(filter).enabled = true;
-    }
-
-    @Override
-    public void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-        filterColors.get(filter).enabled = false;
+    public void setFilterEnabled(FilteringMode mode, ColoringFilter filter, boolean enable) {
+        filterColors.get(filter).enabled = enable;
     }
 
     public Color getColor(LogRecord record) {
@@ -70,10 +63,5 @@ class HighlightFilteringModeHandler implements FilteringModeHandler<Color> {
             }
         }
         return result;
-    }
-
-    @Override
-    public Color getData(FilteringMode mode, Predicate<LogRecord> filter) {
-        return filterColors.get(filter).color;
     }
 }
