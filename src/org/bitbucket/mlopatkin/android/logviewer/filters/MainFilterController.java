@@ -16,9 +16,12 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
+import com.google.common.base.Optional;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.FilterChain;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
@@ -83,13 +86,32 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     private void addNewDialogFilter(final FilterFromDialog filter) {
-        filterPanelModel.addFilter(new PanelFilter() {
+        filterPanelModel.addFilter(convertDialogFilterToPanelFilter(filter));
+    }
+
+    private PanelFilter convertDialogFilterToPanelFilter(final FilterFromDialog filter) {
+        return new PanelFilter() {
             @Override
             public void setEnabled(boolean enabled) {
             }
 
             @Override
             public void openFilterEditor() {
+                final PanelFilter original = this;
+                EditFilterDialog.startEditFilterDialog(
+                        dialogFactory.getOwner(), filter,
+                        new EditFilterDialog.DialogResultReceiver() {
+                            @Override
+                            public void onDialogResult(FilterFromDialog oldFilter,
+                                                       Optional<FilterFromDialog>
+                                                               newFilter,
+                                                       boolean success) {
+                                if (success) {
+                                    filterPanelModel
+                                            .replaceFilter(original, convertDialogFilterToPanelFilter(newFilter.get()));
+                                }
+                            }
+                        });
             }
 
             @Override
@@ -105,6 +127,6 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
             public boolean isEnabled() {
                 return true;
             }
-        });
+        };
     }
 }

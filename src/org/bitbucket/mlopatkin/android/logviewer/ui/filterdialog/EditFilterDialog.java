@@ -16,19 +16,28 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 
 import java.awt.Frame;
 
+import javax.swing.SwingUtilities;
+
 public class EditFilterDialog extends FilterDialog {
-    private FilterFromDialog filter;
+    public interface DialogResultReceiver {
+
+        void onDialogResult(FilterFromDialog oldFilter, Optional<FilterFromDialog> newFilter, boolean success);
+    }
+    private final FilterFromDialog originalFilter;
+    private final DialogResultReceiver receiver;
 
     private static final Joiner ITEM_JOINER = Joiner.on(", ");
 
-    protected EditFilterDialog(Frame owner, FilterFromDialog filter) {
+    protected EditFilterDialog(Frame owner, FilterFromDialog filter, DialogResultReceiver receiver) {
         super(owner);
+        this.receiver = receiver;
         setTitle("Edit filter");
-        this.filter = filter;
+        this.originalFilter = filter;
 
         getMessageTextField().setText(filter.getMessagePattern());
         getPidTextField().setText(ITEM_JOINER.join(Iterables.concat(filter.getPids(), filter.getApps())));
@@ -44,25 +53,21 @@ public class EditFilterDialog extends FilterDialog {
             return;
         }
         setVisible(false);
+        receiver.onDialogResult(originalFilter, Optional.of(createFilter()), true);
     }
 
     @Override
     protected void onNegativeResult() {
         setVisible(false);
+        receiver.onDialogResult(originalFilter, Optional.<FilterFromDialog>absent(), false);
     }
 
-//    public static void startEditFilterDialog(Frame owner, FilteringMode mode,
-//            FilterFromDialog filter, DialogResultReceiver resultReceiver, Object data) {
-//        if (filter == null) {
-//            throw new NullPointerException("Filter should be not null");
-//        }
-//        if (resultReceiver == null) {
-//            throw new NullPointerException("resultReceiver should be not null");
-//        }
-//        if (mode == null) {
-//            throw new NullPointerException("mode should be not null");
-//        }
-//        EditFilterDialog dialog = new EditFilterDialog(owner, mode, filter, resultReceiver, data);
-//        dialog.setVisible(true);
-//    }
+    public static void startEditFilterDialog(Frame owner,
+                                             FilterFromDialog filter,
+                                             DialogResultReceiver resultReceiver) {
+        assert SwingUtilities.isEventDispatchThread();
+
+        EditFilterDialog editFilterDialog = new EditFilterDialog(owner, filter, resultReceiver);
+        editFilterDialog.setVisible(true);
+    }
 }
