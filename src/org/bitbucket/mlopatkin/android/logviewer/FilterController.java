@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Maps;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -34,7 +33,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.table.TableRowSorter;
@@ -61,8 +59,6 @@ class FilterController {
             = new EnumMap<FilteringMode, FilteringModeHandler<?>>(
             FilteringMode.class);
 
-    private IndexWindowHandler windowHandler = new IndexWindowHandler();
-
     private JFrame main;
 
     FilterController(JFrame main, DecoratingRendererTable table, LogRecordTableModel tableModel) {
@@ -72,7 +68,6 @@ class FilterController {
         rowSorter = new SortingDisableSorter<>(tableModel);
         initBufferFilter();
         table.setRowSorter(rowSorter);
-        handlers.put(FilteringMode.WINDOW, windowHandler);
     }
 
     private void onFilteringStateUpdated() {
@@ -135,47 +130,5 @@ class FilterController {
         void disableFilter(FilteringMode mode, Predicate<LogRecord> filter);
 
         T getData(FilteringMode mode, Predicate<LogRecord> filter);
-    }
-
-    private class IndexWindowHandler implements FilteringModeHandler<Object> {
-
-        private Map<Predicate<LogRecord>, WindowFilterController> windowControllers = Maps
-                .newHashMap();
-
-        @Override
-        public void addFilter(FilteringMode mode, Predicate<LogRecord> filter, Object data) {
-            WindowFilterController controller = new WindowFilterController(main, table, tableModel,
-                    null,
-                    FilterController.this, filter);
-            controller.showWindow();
-            windowControllers.put(filter, controller);
-        }
-
-        @Override
-        public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-            WindowFilterController windowController = windowControllers.remove(filter);
-            if (windowController != null) {
-                windowController.dispose();
-            }
-        }
-
-        @Override
-        public void enableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-            WindowFilterController windowController = windowControllers.get(filter);
-            windowController.showWindow();
-        }
-
-        @Override
-        public void disableFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-            logger.debug("Disable filter");
-            WindowFilterController windowController = windowControllers.get(filter);
-            windowController.hideWindow();
-        }
-
-        @Override
-        public Object getData(FilteringMode mode, Predicate<LogRecord> filter) {
-            return null;
-        }
-
     }
 }

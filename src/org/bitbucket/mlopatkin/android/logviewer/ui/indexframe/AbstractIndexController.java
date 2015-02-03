@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
+import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -31,19 +29,9 @@ public abstract class AbstractIndexController implements IndexController {
     private IndexFrame indexFrame;
 
     public AbstractIndexController(JFrame owner, JTable mainTable, LogRecordTableModel model,
-            PidToProcessMapper mapper, FilterController filterController) {
+            PidToProcessMapper mapper) {
         this.mainTable = mainTable;
         this.model = model;
-
-        indexFrame = new IndexFrame(owner, this.model, new IndexTableColumnModel(mapper), this);
-
-        filterController.addRefreshListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onMainTableUpdate();
-            }
-        });
     }
 
     @Override

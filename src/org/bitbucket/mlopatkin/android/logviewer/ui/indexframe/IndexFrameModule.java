@@ -14,37 +14,40 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 
-import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
-/**
- * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
- */
-@Singleton
-@Component(modules = MainFrameModule.class)
-public interface MainFrameDependencies {
-    public static final String FOR_MAIN_FRAME = "Main frame";
+@Module
+public class IndexFrameModule {
 
-    MainFilterController getFilterController();
+    private final IndexController indexController;
 
-    @Named(FOR_MAIN_FRAME)
-    LogTable getLogTable();
+    public IndexFrameModule(IndexController indexController) {
+        this.indexController = indexController;
+    }
 
-    FilterPanel getFilterPanel();
+    @Provides
+    @IndexFrameScoped
+    @Named(IndexFrameComponent.FOR_INDEX_FRAME)
+    LogTable getIndexWindowTable(LogRecordTableModel model, LogModelFilter filter) {
+        return new LogTable(model, filter);
+    }
 
-    LogRecordTableModel getLogModel();
+    @Provides
+    IndexTableColumnModel getColumnModel() {
+        return null;
+    }
 
-    LogModelFilter getFilter();
-
-    DialogFactory getDialogFactory();
+    @Provides
+    IndexController getIndexController() {
+        return indexController;
+    }
 }

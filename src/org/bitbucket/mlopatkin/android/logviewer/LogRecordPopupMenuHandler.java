@@ -25,6 +25,7 @@ import javax.swing.JTable;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
@@ -52,22 +53,22 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     private Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int rowIndex : getSelectedRows())
-                bookmarksController.markRecord(table.convertRowIndexToModel(rowIndex));
+//            for (int rowIndex : getSelectedRows())
+//                bookmarksController.markRecord(table.convertRowIndexToModel(rowIndex));
         }
     };
 
     private Action acRemoveFromBookmarks = new AbstractAction("Remove from bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int rowIndex : getSelectedRows())
-                bookmarksController.unmarkRecord(table.convertRowIndexToModel(rowIndex));
+//            for (int rowIndex : getSelectedRows())
+//                bookmarksController.unmarkRecord(table.convertRowIndexToModel(rowIndex));
         }
     };
 
     private Action acCopy;
 
-    private BookmarksController bookmarksController;
+    private BookmarkController bookmarksController;
     private FilterController filterController;
     private JTable table;
     private LogRecordTableModel model;
@@ -102,7 +103,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     }
 
     public LogRecordPopupMenuHandler(JTable table, LogRecordTableModel model,
-            final FilterController filterController, final BookmarksController bookmarksController) {
+            final FilterController filterController, final BookmarkController bookmarksController) {
         this.table = table;
         this.model = model;
         this.filterController = filterController;
@@ -142,8 +143,8 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     private void adjustAddRemoveVisibilty() {
         assert table.getSelectedRowCount() == 1;
         int row = table.convertRowIndexToModel(table.getSelectedRow());
-        boolean marked = bookmarksController.isMarked(row);
-        toggleAddRemoveState(!marked);
+//        boolean marked = bookmarksController.isMarked(row);
+//        toggleAddRemoveState(!marked);
     }
 
     private void toggleAddRemoveState(boolean canAdd) {

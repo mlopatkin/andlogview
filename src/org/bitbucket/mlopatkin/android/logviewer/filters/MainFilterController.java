@@ -33,10 +33,7 @@ import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

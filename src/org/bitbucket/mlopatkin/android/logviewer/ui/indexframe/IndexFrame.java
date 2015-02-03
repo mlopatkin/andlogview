@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
+
+import org.bitbucket.mlopatkin.android.logviewer.LogRecordsTransferHandler;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -24,6 +33,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -32,29 +43,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
-
+@IndexFrameScoped
 public class IndexFrame extends JFrame implements ItemsUpdater {
-
-    private JPanel contentPane;
-    private DecoratingRendererTable indexedRecordsTable;
-    private IndexController controller;
+    private final DecoratingRendererTable indexedRecordsTable;
+    private final IndexController controller;
     private TablePopupMenu popupMenu = new TablePopupMenu();
     private Action acCopy;
     private Component owner;
     private boolean isFirstShow = true;
 
-    public IndexFrame(JFrame owner, LogRecordTableModel model, IndexTableColumnModel columnsModel,
-            IndexController controller) {
-        this.owner = owner;
+    @Inject
+    public IndexFrame(DialogFactory dialogFactory,
+                      IndexTableColumnModel columnsModel,
+                      @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable,
+                      IndexController controller) {
+        // TODO rethink this dependency
+        this.owner = dialogFactory.getOwner();
         this.controller = controller;
+        this.indexedRecordsTable = logTable;
         initialize();
-        indexedRecordsTable.setModel(model);
         indexedRecordsTable.setColumnModel(columnsModel);
         indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
         acCopy = UiHelper.createActionWrapper(indexedRecordsTable, "copy", "Copy", "control C");
@@ -65,7 +72,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
 
     private void initialize() {
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
@@ -73,8 +80,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         JScrollPane scrollPane = new JScrollPane();
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        indexedRecordsTable = new DecoratingRendererTable();
-        indexedRecordsTable.addDecorator(new PriorityColoredCellRenderer());
         indexedRecordsTable.setFillsViewportHeight(true);
         indexedRecordsTable.setShowGrid(false);
         UiHelper.addDoubleClickListener(indexedRecordsTable, new LineDoubleClickListener());
@@ -109,7 +114,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         @Override
         public void windowClosing(WindowEvent e) {
             controller.onWindowClosed();
-        };
+        }
     };
 
     private static final String KEY_JUMP_TO_LINE = "ENTER";
@@ -117,16 +122,16 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
 
     private void setupKeys() {
         UiHelper.bindKeyFocused(indexedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
-                new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        int row = indexedRecordsTable.getSelectedRow();
-                        if (row >= 0) {
-                            row = indexedRecordsTable.convertRowIndexToModel(row);
-                            controller.activateRow(row);
-                        }
-                    }
-                });
+                                new AbstractAction() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        int row = indexedRecordsTable.getSelectedRow();
+                                        if (row >= 0) {
+                                            row = indexedRecordsTable.convertRowIndexToModel(row);
+                                            controller.activateRow(row);
+                                        }
+                                    }
+                                });
     }
 
     @Override

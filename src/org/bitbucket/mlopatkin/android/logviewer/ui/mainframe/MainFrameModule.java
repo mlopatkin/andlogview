@@ -20,10 +20,13 @@ import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 
 import dagger.Module;
 import dagger.Provides;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.swing.JFrame;
 
@@ -47,6 +50,7 @@ public class MainFrameModule {
     }
 
     @Provides
+    @Singleton
     LogModelFilter provideLogModelFilter(MainFilterController mainFilterController) {
         return mainFilterController;
     }
@@ -55,4 +59,12 @@ public class MainFrameModule {
     FilterCreator provideFilterCreator(MainFilterController mainFilterController) {
         return mainFilterController;
     }
+
+    @Provides
+    @Singleton
+    @Named(MainFrameDependencies.FOR_MAIN_FRAME)
+    LogTable getMainLogTable(LogRecordTableModel model, LogModelFilter filter) {
+        return new LogTable(model, filter);
+    }
+
 }

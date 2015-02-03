@@ -26,11 +26,13 @@ import org.apache.log4j.Logger;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
-public class WindowFilterController extends AbstractIndexController implements IndexController {
+public class WindowFilterController {
 
     private static final Logger logger = Logger.getLogger(WindowFilterController.class);
     private TableRowSorter<LogRecordTableModel> rowSorter;
@@ -41,33 +43,33 @@ public class WindowFilterController extends AbstractIndexController implements I
     public WindowFilterController(JFrame owner, JTable mainTable, LogRecordTableModel model,
             PidToProcessMapper mapper, FilterController filterController,
             Predicate<LogRecord> filter) {
-        super(owner, mainTable, model, mapper, filterController);
-        this.filterController = filterController;
-        this.filter = filter;
-
-        getFrame().setTitle(UiHelper.convertToSafe(filter.toString()));
-        JTable table = getFrame().getTable();
-        rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
-        LogRecordRowFilter showHideFilter = filterController.getRowFilter();
-
-        rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(
-                new LogRecordFilterWrapper(filter), showHideFilter)));
-        table.setRowSorter(rowSorter);
+//        super(owner, mainTable, model, mapper, filterController);
+//        this.filterController = filterController;
+//        this.filter = filter;
+//
+//        getFrame().setTitle(UiHelper.convertToSafe(filter.toString()));
+//        JTable table = getFrame().getTable();
+//        rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);
+//        LogRecordRowFilter showHideFilter = filterController.getRowFilter();
+//
+//        rowSorter.setRowFilter(RowFilter.andFilter(Arrays.asList(
+//                new LogRecordFilterWrapper(filter), showHideFilter)));
+//        table.setRowSorter(rowSorter);
     }
 
-    @Override
-    protected void onMainTableUpdate() {
-        rowSorter.sort();
-    }
-
-    @Override
-    public void onWindowClosed() {
-        logger.debug("onWindowClosed");
-        filterController.disableFilter(FilteringMode.WINDOW, filter);
-    }
-
-    public void dispose() {
-        getFrame().dispose();
-    }
+//    @Override
+//    protected void onMainTableUpdate() {
+//        rowSorter.sort();
+//    }
+//
+//    @Override
+//    public void onWindowClosed() {
+//        logger.debug("onWindowClosed");
+//        filterController.disableFilter(FilteringMode.WINDOW, filter);
+//    }
+//
+//    public void dispose() {
+//        getFrame().dispose();
+//    }
 
 }
