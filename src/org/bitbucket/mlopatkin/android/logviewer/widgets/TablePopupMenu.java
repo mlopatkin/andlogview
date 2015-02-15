@@ -68,7 +68,7 @@ public class TablePopupMenu extends JPopupMenu {
 
     private static final int NO_ROW = -1;
 
-    private List<ItemsUpdater> updaters = new ArrayList<ItemsUpdater>();
+    private List<ItemsUpdater> updaters = new ArrayList<>();
 
     /**
      * Adds an updater.

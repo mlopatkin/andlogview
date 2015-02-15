@@ -43,7 +43,7 @@ public class IndexFrameModule {
 
     @Provides
     IndexTableColumnModel getColumnModel() {
-        return null;
+        return new IndexTableColumnModel(null);
     }
 
     @Provides

@@ -19,9 +19,11 @@ import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.Dagger_IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -31,6 +33,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -42,19 +45,25 @@ import javax.swing.table.TableRowSorter;
 @Singleton
 public class BookmarkController implements IndexController {
 
+    private final BookmarkModel bookmarksModel;
+    private final LogTable mainLogTable;
     private JTable table;
 
     private TableRowSorter<LogRecordTableModel> rowSorter;
+    private final IndexFrame indexFrame;
 
     @Inject
-    public BookmarkController(MainFrameDependencies mainFrameDependencies, BookmarkModel bookmarksModel) {
-        IndexFrameComponent indexFrame = Dagger_IndexFrameComponent.builder()
+    public BookmarkController(MainFrameDependencies mainFrameDependencies,
+                              BookmarkModel bookmarksModel,
+                              @Named(MainFrameDependencies.FOR_MAIN_FRAME) LogTable mainLogTable) {
+        this.bookmarksModel = bookmarksModel;
+        this.mainLogTable = mainLogTable;
+        IndexFrameComponent indexFrameComponent = Dagger_IndexFrameComponent.builder()
                                                                    .mainFrameDependencies(mainFrameDependencies)
                                                                    .indexFrameModule(new IndexFrameModule(this))
                                                                    .build();
-        indexFrame.createFrame();
-
-//        getFrame().setTitle("Bookmarks");
+        indexFrame = indexFrameComponent.createFrame();
+        indexFrame.setTitle("Bookmarks");
 
 //        table = getFrame().getTable();
 //        rowSorter = new SortingDisableSorter<LogRecordTableModel>(model);

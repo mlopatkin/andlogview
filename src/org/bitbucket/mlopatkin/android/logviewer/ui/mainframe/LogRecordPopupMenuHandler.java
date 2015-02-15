@@ -13,68 +13,73 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 import java.awt.event.ActionEvent;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JTable;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiPidFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
-
 public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
-    private Action acHideByTag = new AbstractAction("Hide with this tag") {
+    private final Action acHideByTag = new AbstractAction("Hide with this tag") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
-                    getSelectedLogRecord().getTag()));
+//            filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
+//                    getSelectedLogRecord().getTag()));
         }
     };
 
-    private Action acHideByPid = new AbstractAction("Hide with this pid") {
+    private final Action acHideByPid = new AbstractAction("Hide with this pid") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
-                    new int[] { getSelectedLogRecord().getPid() }));
+//            filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
+//                    new int[] { getSelectedLogRecord().getPid() }));
         }
     };
 
-    private Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
+    private final Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-//            for (int rowIndex : getSelectedRows())
-//                bookmarksController.markRecord(table.convertRowIndexToModel(rowIndex));
+            for (int rowIndex : getSelectedRows())
+               bookmarkModel.addRecord(getRecord(rowIndex));
         }
     };
 
-    private Action acRemoveFromBookmarks = new AbstractAction("Remove from bookmarks") {
+    private final Action acRemoveFromBookmarks = new AbstractAction("Remove from bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-//            for (int rowIndex : getSelectedRows())
-//                bookmarksController.unmarkRecord(table.convertRowIndexToModel(rowIndex));
+            for (int rowIndex : getSelectedRows())
+                bookmarkModel.removeRecord(getRecord(rowIndex));
         }
     };
 
     private Action acCopy;
 
-    private BookmarkController bookmarksController;
-    private FilterController filterController;
     private JTable table;
     private LogRecordTableModel model;
+    private final BookmarkModel bookmarkModel;
 
     private JMenuItem itemAddToBookmarks = new JMenuItem(acAddToBookmarks);
     private JMenuItem itemRemoveBookmarks = new JMenuItem(acRemoveFromBookmarks);
+
+    private LogRecordPopupMenuHandler(LogTable table, LogRecordTableModel model, BookmarkModel bookmarkModel) {
+        this.table = table;
+        this.model = model;
+        this.bookmarkModel = bookmarkModel;
+    }
 
     private void setUpMenu() {
         TablePopupMenu popupMenu = new TablePopupMenu();
@@ -96,19 +101,6 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
     protected int getSelectedRow() {
         return table.getSelectedRow();
-    }
-
-    protected LogRecord getSelectedLogRecord() {
-        return model.getRowData(table.convertRowIndexToModel(getSelectedRow()));
-    }
-
-    public LogRecordPopupMenuHandler(JTable table, LogRecordTableModel model,
-            final FilterController filterController, final BookmarkController bookmarksController) {
-        this.table = table;
-        this.model = model;
-        this.filterController = filterController;
-        this.bookmarksController = bookmarksController;
-        setUpMenu();
     }
 
     @Override
@@ -142,13 +134,34 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
     private void adjustAddRemoveVisibilty() {
         assert table.getSelectedRowCount() == 1;
-        int row = table.convertRowIndexToModel(table.getSelectedRow());
-//        boolean marked = bookmarksController.isMarked(row);
-//        toggleAddRemoveState(!marked);
+        boolean marked = bookmarkModel.containsRecord(getRecord(getSelectedRow()));
+        toggleAddRemoveState(!marked);
     }
 
     private void toggleAddRemoveState(boolean canAdd) {
         itemAddToBookmarks.setVisible(canAdd);
         itemRemoveBookmarks.setVisible(!canAdd);
+    }
+
+    private LogRecord getRecord(int tableRowIndex) {
+        return model.getRowData(table.convertRowIndexToModel(tableRowIndex));
+    }
+
+    @Singleton
+    public static class Factory {
+
+        private final LogRecordTableModel tableModel;
+        private final BookmarkModel bookmarkModel;
+
+        @Inject
+        public Factory(LogRecordTableModel tableModel, BookmarkModel bookmarkModel) {
+            this.tableModel = tableModel;
+            this.bookmarkModel = bookmarkModel;
+        }
+
+        public void attachMenuHandle(LogTable table) {
+            LogRecordPopupMenuHandler handler = new LogRecordPopupMenuHandler(table, tableModel, bookmarkModel);
+            handler.setUpMenu();
+        }
     }
 }

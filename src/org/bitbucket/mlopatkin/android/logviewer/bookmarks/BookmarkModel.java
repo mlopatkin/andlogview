@@ -21,33 +21,29 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
-import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class BookmarkModel implements LogModelFilter {
+public class BookmarkModel {
 
     private final Set<LogRecord> records = new HashSet<>();
-    private final Subject<Observer> observers = new Subject<>();
+    private final Subject<LogModelFilter.Observer> observers = new Subject<>();
 
-    @Override
-    public boolean shouldShowRecord(LogRecord record) {
-        return records.contains(record);
+    @Inject
+    public BookmarkModel() {
     }
 
-    @Nullable
-    @Override
-    public Color getHighlightColor(LogRecord record) {
-        return null;
-    }
 
-    @Override
-    public Observable<Observer> asObservable() {
+    public Observable<LogModelFilter.Observer> asObservable() {
         return observers.asObservable();
+    }
+
+    public boolean containsRecord(LogRecord record) {
+        return records.contains(record);
     }
 
     public void addRecord(LogRecord record) {
@@ -66,7 +62,7 @@ public class BookmarkModel implements LogModelFilter {
     }
 
     private void notifyListeners() {
-        for (Observer l : observers) {
+        for (LogModelFilter.Observer l : observers) {
             l.onModelChange();
         }
     }

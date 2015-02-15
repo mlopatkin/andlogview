@@ -30,7 +30,9 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatExceptio
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.Dagger_MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
@@ -76,14 +78,14 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private LogRecordTableModel recordsModel;
     private TableScrollController scrollController;
     private SearchController searchController;
-//    private BookmarksController bookmarksController;
     private RecordListener<LogRecord> listener;
 
+    private BookmarkController bookmarkController;
     private ProcessListFrame processListFrame;
 
     private DataSource source;
 
-    private DecoratingRendererTable logElements;
+    private LogTable logElements;
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
@@ -154,12 +156,12 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         MainFrameDependencies dependencies =
                 Dagger_MainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).build();
+        bookmarkController = dependencies.getBookmarkController();
         recordsModel = dependencies.getLogModel();
         logElements = dependencies.getLogTable();
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        logElements.addDecorator(new PriorityColoredCellRenderer());
         logElements
                 .setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), mapper));
 
@@ -167,15 +169,15 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
 
+        logElements.addDecorator(dependencies.getBookmarkHighlighter());
+
+        dependencies.getPopupMenuHandlerFactory().attachMenuHandle(logElements);
+
         JScrollPane scrollPane = new JScrollPane(logElements);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         scrollController = new TableScrollController(logElements);
-//        filterController = new FilterController(this, logElements, recordsModel);
-//        bookmarksController = new BookmarksController(this, logElements, recordsModel, mapper,
-//                filterController);
-//        new LogRecordPopupMenuHandler(logElements, recordsModel, filterController,
-//                bookmarksController);
+
         searchController = new SearchController(logElements, recordsModel);
         listener = new BufferedListener<>(recordsModel, scrollController);
 
