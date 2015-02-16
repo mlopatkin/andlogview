@@ -20,6 +20,7 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,8 +28,8 @@ import java.awt.Color;
 
 import javax.annotation.Nullable;
 
-import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.RECORD1;
-import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.RECORD2;
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -41,12 +42,12 @@ public class LogRecordHighlighterTest {
     private static final Color COLOR3 = Color.BLACK;
 
     private static final ColoringFilter MATCH_FIRST_COLOR1 =
-            makeColorFilter(FilterCollectionTestUtils.MATCH_FIRST, COLOR1);
+            makeColorFilter(TestData.MATCH_FIRST, COLOR1);
     private static final ColoringFilter MATCH_FIRST_COLOR2 =
-            makeColorFilter(FilterCollectionTestUtils.MATCH_FIRST, COLOR2);
+            makeColorFilter(TestData.MATCH_FIRST, COLOR2);
     private static final ColoringFilter MATCH_FIRST_COLOR3 =
-            makeColorFilter(FilterCollectionTestUtils.MATCH_FIRST, COLOR3);
-    private static final ColoringFilter MATCH_ALL_COLOR1 = makeColorFilter(FilterCollectionTestUtils.MATCH_ALL, COLOR1);
+            makeColorFilter(TestData.MATCH_FIRST, COLOR3);
+    private static final ColoringFilter MATCH_ALL_COLOR1 = makeColorFilter(TestData.MATCH_ALL, COLOR1);
 
     @Before
     public void setUp() throws Exception {

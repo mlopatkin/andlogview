@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.test;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -26,8 +26,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
 
 import java.util.Collections;
 
-final class FilterCollectionTestUtils {
-    private FilterCollectionTestUtils() {
+public final class TestData {
+    private TestData() {
     }
 
     public static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(

@@ -18,10 +18,10 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.MATCH_ALL;
-import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.MATCH_FIRST;
-import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.RECORD1;
-import static org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollectionTestUtils.RECORD2;
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_ALL;
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_FIRST;
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

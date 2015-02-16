@@ -26,11 +26,16 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Contains the list of all bookmarks made for the given log. All changes to the bookmarks mut be made through this
+ * class.
+ */
 @Singleton
 public class BookmarkModel {
 
     public interface Observer {
         void onBookmarkAdded();
+
         void onBookmarkRemoved();
     }
 
