@@ -29,7 +29,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class BufferFilterMenu {
-    private FilterController controller;
     private JMenu parent;
 
     private class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
@@ -44,14 +43,14 @@ public class BufferFilterMenu {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            controller.setBufferEnabled(buffer, isSelected());
+//            controller.setBufferEnabled(buffer, isSelected());
         }
     }
 
-    private EnumMap<Buffer, JMenuItem> items = new EnumMap<Buffer, JMenuItem>(Buffer.class);
+    private EnumMap<Buffer, JMenuItem> items = new EnumMap<>(Buffer.class);
 
-    public BufferFilterMenu(JMenu parent, FilterController controller) {
-        this.controller = controller;
+    public BufferFilterMenu(JMenu parent) {
+
         this.parent = parent;
         for (Buffer buffer : Buffer.values()) {
             if (buffer != Buffer.UNKNOWN) {
@@ -66,7 +65,7 @@ public class BufferFilterMenu {
 
     private void resetBuffers() {
         for (Entry<Buffer, JMenuItem> entry : items.entrySet()) {
-            controller.setBufferEnabled(entry.getKey(), false);
+//            controller.setBufferEnabled(entry.getKey(), false);
             entry.getValue().setVisible(false);
         }
         parent.setVisible(false);
@@ -79,7 +78,7 @@ public class BufferFilterMenu {
             anyBufferAvailable = true;
             JMenuItem item = items.get(buffer);
             item.setVisible(true);
-            controller.setBufferEnabled(buffer, item.isSelected());
+//            controller.setBufferEnabled(buffer, item.isSelected());
         }
         parent.setVisible(anyBufferAvailable);
     }

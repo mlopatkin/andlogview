@@ -36,12 +36,11 @@ public class WindowFilterController {
 
     private static final Logger logger = Logger.getLogger(WindowFilterController.class);
     private TableRowSorter<LogRecordTableModel> rowSorter;
-    private FilterController filterController;
     private Predicate<LogRecord> filter;
 
     @SuppressWarnings("unchecked")
     public WindowFilterController(JFrame owner, JTable mainTable, LogRecordTableModel model,
-            PidToProcessMapper mapper, FilterController filterController,
+            PidToProcessMapper mapper,
             Predicate<LogRecord> filter) {
 //        super(owner, mainTable, model, mapper, filterController);
 //        this.filterController = filterController;
