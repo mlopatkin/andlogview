@@ -29,9 +29,11 @@ import javax.inject.Named;
 public class IndexFrameModule {
 
     private final IndexController indexController;
+    private final PopupBuilder popupBuilder;
 
-    public IndexFrameModule(IndexController indexController) {
+    public IndexFrameModule(IndexController indexController, PopupBuilder popupBuilder) {
         this.indexController = indexController;
+        this.popupBuilder = popupBuilder;
     }
 
     @Provides
@@ -49,5 +51,10 @@ public class IndexFrameModule {
     @Provides
     IndexController getIndexController() {
         return indexController;
+    }
+
+    @Provides
+    PopupBuilder getPopupBuilder() {
+        return popupBuilder;
     }
 }

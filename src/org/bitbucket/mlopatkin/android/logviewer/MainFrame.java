@@ -558,7 +558,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//            bookmarksController.showWindow();
+            bookmarkController.showWindow();
         }
     };
 

@@ -56,7 +56,8 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     public IndexFrame(DialogFactory dialogFactory,
                       IndexTableColumnModel columnsModel,
                       @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable,
-                      IndexController controller) {
+                      IndexController controller,
+                      PopupBuilder popupBuilder) {
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;
@@ -67,6 +68,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         acCopy = UiHelper.createActionWrapper(indexedRecordsTable, "copy", "Copy", "control C");
         popupMenu.add(acCopy);
         popupMenu.addItemsUpdater(this);
+        popupMenu = popupBuilder.appendPopupMenuItems(indexedRecordsTable, popupMenu);
         addWindowListener(closingListener);
     }
 
@@ -91,10 +93,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
 
     JTable getTable() {
         return indexedRecordsTable;
-    }
-
-    TablePopupMenu getPopupMenu() {
-        return popupMenu;
     }
 
     private class LineDoubleClickListener implements DoubleClickListener {

@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.bookmarks;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
@@ -30,15 +29,20 @@ import javax.inject.Singleton;
 @Singleton
 public class BookmarkModel {
 
+    public interface Observer {
+        void onBookmarkAdded();
+        void onBookmarkRemoved();
+    }
+
     private final Set<LogRecord> records = new HashSet<>();
-    private final Subject<LogModelFilter.Observer> observers = new Subject<>();
+    private final Subject<Observer> observers = new Subject<>();
 
     @Inject
     public BookmarkModel() {
     }
 
 
-    public Observable<LogModelFilter.Observer> asObservable() {
+    public Observable<Observer> asObservable() {
         return observers.asObservable();
     }
 
@@ -48,22 +52,28 @@ public class BookmarkModel {
 
     public void addRecord(LogRecord record) {
         records.add(record);
-        notifyListeners();
+        notifyAdd();
     }
 
     public void removeRecord(LogRecord record) {
         records.remove(record);
-        notifyListeners();
+        notifyRemove();
     }
 
     public void clear() {
         records.clear();
-        notifyListeners();
+        notifyRemove();
     }
 
-    private void notifyListeners() {
-        for (LogModelFilter.Observer l : observers) {
-            l.onModelChange();
+    private void notifyAdd() {
+        for (Observer o : observers) {
+            o.onBookmarkAdded();
+        }
+    }
+
+    private void notifyRemove() {
+        for (Observer o : observers) {
+            o.onBookmarkRemoved();
         }
     }
 }
