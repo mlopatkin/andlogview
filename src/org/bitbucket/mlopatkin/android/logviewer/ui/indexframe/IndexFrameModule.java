@@ -30,17 +30,19 @@ public class IndexFrameModule {
 
     private final IndexController indexController;
     private final PopupBuilder popupBuilder;
+    private final LogModelFilter logModelFilter;
 
-    public IndexFrameModule(IndexController indexController, PopupBuilder popupBuilder) {
+    public IndexFrameModule(IndexController indexController, PopupBuilder popupBuilder, LogModelFilter logModelFilter) {
         this.indexController = indexController;
         this.popupBuilder = popupBuilder;
+        this.logModelFilter = logModelFilter;
     }
 
     @Provides
     @IndexFrameScoped
     @Named(IndexFrameComponent.FOR_INDEX_FRAME)
-    LogTable getIndexWindowTable(LogRecordTableModel model, LogModelFilter filter) {
-        return new LogTable(model, filter);
+    LogTable getIndexWindowTable(LogRecordTableModel model) {
+        return new LogTable(model, logModelFilter);
     }
 
     @Provides

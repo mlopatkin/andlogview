@@ -15,23 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
-import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-
-import javax.swing.JFrame;
 import javax.swing.JTable;
 
 public abstract class AbstractIndexController implements IndexController {
 
     private JTable mainTable;
-    private LogRecordTableModel model;
 
-    private IndexFrame indexFrame;
-
-    public AbstractIndexController(JFrame owner, JTable mainTable, LogRecordTableModel model,
-            PidToProcessMapper mapper) {
+    public AbstractIndexController(JTable mainTable) {
         this.mainTable = mainTable;
-        this.model = model;
     }
 
     @Override
@@ -40,28 +31,6 @@ public abstract class AbstractIndexController implements IndexController {
         mainTable.getSelectionModel().setSelectionInterval(rowTable, rowTable);
         mainTable.scrollRectToVisible(mainTable.getCellRect(rowTable,
                 mainTable.getSelectedColumn(), false));
-    }
-
-    protected abstract void onMainTableUpdate();
-
-    public IndexFrame getFrame() {
-        return indexFrame;
-    }
-
-    protected LogRecordTableModel getModel() {
-        return model;
-    }
-
-    protected JTable getMainTable() {
-        return mainTable;
-    }
-
-    public void showWindow() {
-        indexFrame.setVisible(true);
-    }
-
-    public void hideWindow() {
-        indexFrame.setVisible(false);
     }
 
     @Override

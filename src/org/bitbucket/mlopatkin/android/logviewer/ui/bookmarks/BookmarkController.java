@@ -16,25 +16,22 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
 
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.Dagger_IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
-
-import java.awt.event.ActionEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.KeyStroke;
 
 @Singleton
-public class BookmarkController implements IndexController {
+public class BookmarkController extends AbstractIndexController implements IndexController {
 
     private final LogTable mainLogTable;
 
@@ -59,8 +56,10 @@ public class BookmarkController implements IndexController {
     @Inject
     public BookmarkController(MainFrameDependencies mainFrameDependencies,
                               BookmarkModel bookmarksModel,
+                              BookmarksLogModelFilter logModelFilter,
                               @Named(MainFrameDependencies.FOR_MAIN_FRAME) LogTable mainLogTable,
                               BookmarkFramePopupMenu.Factory popupMenuFactory) {
+        super(mainLogTable);
         this.mainLogTable = mainLogTable;
 
         bookmarksModel.asObservable().addObserver(bookmarkChangeObserver);
@@ -68,7 +67,8 @@ public class BookmarkController implements IndexController {
         IndexFrameComponent indexFrameComponent =
                 Dagger_IndexFrameComponent.builder()
                                           .mainFrameDependencies(mainFrameDependencies)
-                                          .indexFrameModule(new IndexFrameModule(this, popupMenuFactory))
+                                          .indexFrameModule(
+                                                  new IndexFrameModule(this, popupMenuFactory, logModelFilter))
                                           .build();
         indexFrame = indexFrameComponent.createFrame();
         indexFrame.setTitle("Bookmarks");
@@ -81,14 +81,5 @@ public class BookmarkController implements IndexController {
 
     public void showWindow() {
         indexFrame.setVisible(true);
-    }
-
-    @Override
-    public void activateRow(int row) {
-        // TODO
-    }
-
-    @Override
-    public void onWindowClosed() {
     }
 }
