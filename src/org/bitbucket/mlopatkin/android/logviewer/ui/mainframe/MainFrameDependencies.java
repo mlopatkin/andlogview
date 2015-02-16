@@ -16,6 +16,7 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
@@ -36,8 +37,6 @@ import javax.inject.Singleton;
 public interface MainFrameDependencies {
     public static final String FOR_MAIN_FRAME = "Main frame";
 
-    MainFilterController getFilterController();
-
     @Named(FOR_MAIN_FRAME)
     LogTable getLogTable();
 
@@ -49,9 +48,11 @@ public interface MainFrameDependencies {
 
     DialogFactory getDialogFactory();
 
-    BookmarkHighlighter getBookmarkHighlighter();
-
     LogRecordPopupMenuHandler.Factory getPopupMenuHandlerFactory();
 
+    BookmarkModel getBookmarkModel();
+
     BookmarkController getBookmarkController();
+
+    BookmarkHighlighter getBookmarkHighlighter();
 }

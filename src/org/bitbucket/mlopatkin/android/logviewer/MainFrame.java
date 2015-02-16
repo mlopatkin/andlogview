@@ -28,6 +28,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
+import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
@@ -81,6 +82,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private RecordListener<LogRecord> listener;
 
     private BookmarkController bookmarkController;
+    private BookmarkModel bookmarkModel;
     private ProcessListFrame processListFrame;
 
     private DataSource source;
@@ -107,7 +109,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         stopWaitingForDevice();
         source = newSource;
         recordsModel.clear();
-//        bookmarksController.clear();
+        bookmarkModel.clear();
         source.setLogRecordListener(listener);
 //        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
         showSourceMessage(source.toString());
@@ -156,6 +158,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         MainFrameDependencies dependencies =
                 Dagger_MainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).build();
+        bookmarkModel = dependencies.getBookmarkModel();
         bookmarkController = dependencies.getBookmarkController();
         recordsModel = dependencies.getLogModel();
         logElements = dependencies.getLogTable();
@@ -370,9 +373,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
     public void reset() {
         recordsModel.clear();
-//        if (!source.reset()) {
-//            bookmarksController.clear();
-//        }
+        if (!source.reset()) {
+            bookmarkModel.clear();
+        }
     }
 
     private BufferFilterMenu bufferMenu;
@@ -491,7 +494,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
                 if ((changeMask & IDevice.CHANGE_STATE) != 0 && device.isOnline()) {
                     connectDevicePending(device);
                 }
-            };
+            }
 
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
