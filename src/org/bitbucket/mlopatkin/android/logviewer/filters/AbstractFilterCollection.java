@@ -23,7 +23,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 /**
  * Poor man's defender methods.
  */
-abstract class AbstractFilterCollection<T extends Predicate<LogRecord>> implements FilterCollection<T> {
+public abstract class AbstractFilterCollection<T extends Predicate<LogRecord>> implements FilterCollection<T> {
 
     @Override
     public void setFilterEnabled(FilteringMode mode, T filter, boolean enabled) {

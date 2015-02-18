@@ -33,6 +33,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.AbstractAction;
@@ -57,7 +58,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
                       IndexTableColumnModel columnsModel,
                       @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable,
                       IndexController controller,
-                      PopupBuilder popupBuilder) {
+                      @Nullable PopupBuilder popupBuilder) {
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;
@@ -68,7 +69,9 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         acCopy = UiHelper.createActionWrapper(indexedRecordsTable, "copy", "Copy", "control C");
         popupMenu.add(acCopy);
         popupMenu.addItemsUpdater(this);
-        popupMenu = popupBuilder.appendPopupMenuItems(indexedRecordsTable, popupMenu);
+        if (popupBuilder != null) {
+            popupMenu = popupBuilder.appendPopupMenuItems(indexedRecordsTable, popupMenu);
+        }
         addWindowListener(closingListener);
     }
 

@@ -26,6 +26,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialo
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.utils.events.Observable;
@@ -34,6 +35,7 @@ import org.bitbucket.mlopatkin.utils.events.Subject;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -45,19 +47,34 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class MainFilterController implements LogModelFilter, FilterCreator {
-
+    // TODO separate "A filter for main table" and "bridge between all filters and panel"
     private final FilterPanelModel filterPanelModel;
     private final DialogFactory dialogFactory;
+    private final IndexFilterCollection indexFilterCollection;
     private final Subject<LogModelFilter.Observer> observers = new Subject<>();
     private final FilterChain filterChain = new FilterChain();
     private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
 
-    private final List<BaseToggleFilter> filters = new ArrayList<>();
+    private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
 
     @Inject
-    public MainFilterController(FilterPanelModel filterPanelModel, DialogFactory dialogFactory) {
+    public MainFilterController(final FilterPanelModel filterPanelModel,
+                                DialogFactory dialogFactory,
+                                IndexFilterCollection indexFilterCollection) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
+        this.indexFilterCollection = indexFilterCollection;
+
+        indexFilterCollection.asObservable().addObserver(new IndexFilterCollection.Observer() {
+            @Override
+            public void onFilterDisabled(Predicate<LogRecord> filter) {
+                for (BaseToggleFilter<?> registeredFilter : filters) {
+                    if (Objects.equals(registeredFilter.filter, filter)) {
+                        filterPanelModel.setFilterEnabled(registeredFilter, false);
+                    }
+                }
+            }
+        });
     }
 
 
@@ -115,6 +132,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
                 return filterChain;
             case HIGHLIGHT:
                 return highlighter;
+            case WINDOW:
+                return indexFilterCollection;
         }
         assert false;
         return null;

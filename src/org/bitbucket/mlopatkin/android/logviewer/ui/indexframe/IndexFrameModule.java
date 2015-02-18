@@ -23,6 +23,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 
 @Module
@@ -32,10 +33,16 @@ public class IndexFrameModule {
     private final PopupBuilder popupBuilder;
     private final LogModelFilter logModelFilter;
 
-    public IndexFrameModule(IndexController indexController, PopupBuilder popupBuilder, LogModelFilter logModelFilter) {
+    public IndexFrameModule(IndexController indexController,
+                            @Nullable PopupBuilder popupBuilder,
+                            LogModelFilter logModelFilter) {
         this.indexController = indexController;
         this.popupBuilder = popupBuilder;
         this.logModelFilter = logModelFilter;
+    }
+
+    public IndexFrameModule(IndexController indexController, LogModelFilter logModelFilter) {
+        this(indexController, null, logModelFilter);
     }
 
     @Provides
@@ -56,6 +63,7 @@ public class IndexFrameModule {
     }
 
     @Provides
+    @Nullable
     PopupBuilder getPopupBuilder() {
         return popupBuilder;
     }
