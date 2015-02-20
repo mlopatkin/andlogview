@@ -26,7 +26,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
  */
 public class LogBufferFilter implements LogRecordFilter {
 
-    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
+    private EnumSet<Buffer> buffers = EnumSet.of(Buffer.UNKNOWN);
 
     @Override
     public boolean apply(LogRecord record) {

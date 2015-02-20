@@ -30,14 +30,15 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatExceptio
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.BufferFilterMenu;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.Dagger_MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 import java.awt.BorderLayout;
@@ -87,6 +88,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
     private DataSource source;
 
+    private BufferFilterMenu bufferMenu;
     private LogTable logElements;
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
@@ -111,7 +113,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         recordsModel.clear();
         bookmarkModel.clear();
         source.setLogRecordListener(listener);
-//        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
+        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
         showSourceMessage(source.toString());
         updatingTimer.start();
         if (source != null && source.getPidToProcessConverter() != null) {
@@ -215,7 +217,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         statusPanel.add(rigidArea);
 
         setupSearchButtons();
-        setupMainMenu();
+        setupMainMenu(dependencies.getMainFilterController());
         setPreferredSize(new Dimension(Configuration.ui.mainWindowWidth(),
                 Configuration.ui.mainWindowHeight()));
         if (Configuration.ui.mainWindowPosition() != null) {
@@ -378,9 +380,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         }
     }
 
-    private BufferFilterMenu bufferMenu;
-
-    private void setupMainMenu() {
+    private void setupMainMenu(MainFilterController mainFilterController) {
         JMenuBar mainMenu = new JMenuBar();
 
         JMenu mnFile = new JMenu("File");
@@ -401,7 +401,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
-//        bufferMenu = new BufferFilterMenu(mnFilters, filterController);
+        bufferMenu = new BufferFilterMenu(mnFilters, mainFilterController);
         mainMenu.add(mnFilters);
 
         setJMenuBar(mainMenu);

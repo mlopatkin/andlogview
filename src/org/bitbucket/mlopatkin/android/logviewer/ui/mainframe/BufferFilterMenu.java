@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,9 +27,11 @@ import javax.swing.JMenuItem;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 
 public class BufferFilterMenu {
-    private JMenu parent;
+    private final JMenu parent;
+    private final MainFilterController controller;
 
     private class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
 
@@ -43,19 +45,18 @@ public class BufferFilterMenu {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//            controller.setBufferEnabled(buffer, isSelected());
+            controller.setBufferEnabled(buffer, isSelected());
         }
     }
 
     private EnumMap<Buffer, JMenuItem> items = new EnumMap<>(Buffer.class);
 
-    public BufferFilterMenu(JMenu parent) {
-
+    public BufferFilterMenu(JMenu parent, MainFilterController controller) {
         this.parent = parent;
+        this.controller = controller;
         for (Buffer buffer : Buffer.values()) {
             if (buffer != Buffer.UNKNOWN) {
-                JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui
-                        .bufferEnabled(buffer));
+                JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui.bufferEnabled(buffer));
                 items.put(buffer, item);
                 parent.add(item);
             }
@@ -65,7 +66,7 @@ public class BufferFilterMenu {
 
     private void resetBuffers() {
         for (Entry<Buffer, JMenuItem> entry : items.entrySet()) {
-//            controller.setBufferEnabled(entry.getKey(), false);
+            controller.setBufferEnabled(entry.getKey(), false);
             entry.getValue().setVisible(false);
         }
         parent.setVisible(false);
@@ -78,7 +79,7 @@ public class BufferFilterMenu {
             anyBufferAvailable = true;
             JMenuItem item = items.get(buffer);
             item.setVisible(true);
-//            controller.setBufferEnabled(buffer, item.isSelected());
+            controller.setBufferEnabled(buffer, item.isSelected());
         }
         parent.setVisible(anyBufferAvailable);
     }

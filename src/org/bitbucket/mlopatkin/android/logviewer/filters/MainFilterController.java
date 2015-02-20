@@ -20,6 +20,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
@@ -57,6 +58,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
 
+    private final LogBufferFilter bufferFilter = new LogBufferFilter();
+
     @Inject
     public MainFilterController(final FilterPanelModel filterPanelModel,
                                 DialogFactory dialogFactory,
@@ -77,10 +80,14 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         });
     }
 
+    public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
+        bufferFilter.setBufferEnabled(buffer, enabled);
+        notifyFiltersChanged();
+    }
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return filterChain.shouldShow(record);
+        return bufferFilter.apply(record) && filterChain.shouldShow(record);
     }
 
     @Nullable
