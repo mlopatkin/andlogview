@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-class LogRecordHighlighter extends AbstractFilterCollection<ColoringFilter> {
+class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
 
     private static class FilterInfo {
         public ColoringFilter filter;

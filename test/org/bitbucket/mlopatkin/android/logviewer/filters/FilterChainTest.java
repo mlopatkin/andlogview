@@ -70,4 +70,25 @@ public class FilterChainTest {
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
+
+    @Test
+    public void testReplace() throws Exception {
+        chain.addFilter(FilteringMode.HIDE, MATCH_ALL);
+        chain.replaceFilter(FilteringMode.HIDE, MATCH_ALL, MATCH_FIRST);
+
+        assertFalse(chain.shouldShow(RECORD1));
+        assertTrue(chain.shouldShow(RECORD2));
+    }
+
+    @Test
+    public void testSetEnabled() throws Exception {
+        chain.addFilter(FilteringMode.HIDE, MATCH_FIRST);
+        chain.setFilterEnabled(FilteringMode.HIDE, MATCH_FIRST, false);
+
+        assertTrue(chain.shouldShow(RECORD1));
+        assertTrue(chain.shouldShow(RECORD2));
+        chain.setFilterEnabled(FilteringMode.HIDE, MATCH_FIRST, true);
+        assertFalse(chain.shouldShow(RECORD1));
+        assertTrue(chain.shouldShow(RECORD2));
+    }
 }
