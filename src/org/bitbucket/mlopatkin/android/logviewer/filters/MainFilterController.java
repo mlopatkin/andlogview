@@ -23,13 +23,13 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
@@ -50,7 +50,7 @@ import javax.inject.Singleton;
 public class MainFilterController implements LogModelFilter, FilterCreator {
     // TODO separate "A filter for main table" and "bridge between all filters and panel"
     private final FilterPanelModel filterPanelModel;
-    private final DialogFactory dialogFactory;
+    private final FilterDialogFactory dialogFactory;
     private final IndexFilterCollection indexFilterCollection;
     private final Subject<LogModelFilter.Observer> observers = new Subject<>();
     private final FilterChain filterChain = new FilterChain();
@@ -62,8 +62,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
     @Inject
     public MainFilterController(final FilterPanelModel filterPanelModel,
-                                DialogFactory dialogFactory,
-                                IndexFilterCollection indexFilterCollection) {
+                                IndexFilterCollection indexFilterCollection,
+                                FilterDialogFactory dialogFactory) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.indexFilterCollection = indexFilterCollection;
@@ -103,16 +103,15 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
     @Override
     public void createFilterWithDialog() {
-        CreateFilterDialog.startCreateFilterDialog(
-                dialogFactory.getOwner(), new CreateFilterDialog.DialogResultReceiver() {
-                    @Override
-                    public void onDialogResult(CreateFilterDialog result,
-                                               boolean success) {
-                        if (success) {
-                            addNewDialogFilter(result.createFilter());
-                        }
-                    }
-                });
+        dialogFactory.startCreateFilterDialog(new CreateFilterDialog.DialogResultReceiver() {
+            @Override
+            public void onDialogResult(CreateFilterDialog result,
+                                       boolean success) {
+                if (success) {
+                    addNewDialogFilter(result.createFilter());
+                }
+            }
+        });
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
@@ -215,8 +214,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
         @Override
         public void openFilterEditor() {
-            EditFilterDialog.startEditFilterDialog(
-                    dialogFactory.getOwner(), filter,
+            dialogFactory.startEditFilterDialog(
+                    filter,
                     new EditFilterDialog.DialogResultReceiver() {
                         @Override
                         public void onDialogResult(FilterFromDialog oldFilter,

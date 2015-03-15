@@ -1,5 +1,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -31,7 +32,8 @@ import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.Filterin
 /**
  * Common GUI logic related to filtering.
  */
-abstract class FilterDialog extends BaseFilterDialogUi {
+@VisibleForTesting
+public abstract class FilterDialog extends BaseFilterDialogUi {
 
     /**
      * Create the dialog.

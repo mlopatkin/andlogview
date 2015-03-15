@@ -40,6 +40,11 @@ public final class TestData {
             "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172",
             Collections.<Integer, String>emptyMap());
 
+    public static final LogRecord RECORD1_IN_MAIN =
+            new LogRecord(RECORD1.getTime(), RECORD1.getPid(), RECORD1.getTid(), RECORD1.getAppName(),
+                          RECORD1.getPriority(), RECORD1.getTag(), RECORD1.getMessage(),
+                          LogRecord.Buffer.MAIN);
+
     public static final LogRecordFilter MATCH_FIRST = new SingleTagFilter("AudioFlinger");
     public static final LogRecordFilter MATCH_SECOND = new SingleTagFilter("NotAudioFlinger");
 
