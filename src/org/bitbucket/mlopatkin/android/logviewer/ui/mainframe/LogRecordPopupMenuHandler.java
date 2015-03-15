@@ -34,22 +34,6 @@ import javax.swing.JTable;
 
 public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
-    private final Action acHideByTag = new AbstractAction("Hide with this tag") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-//            filterController.addFilter(FilteringMode.HIDE, new SingleTagFilter(
-//                    getSelectedLogRecord().getTag()));
-        }
-    };
-
-    private final Action acHideByPid = new AbstractAction("Hide with this pid") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-//            filterController.addFilter(FilteringMode.HIDE, new MultiPidFilter(
-//                    new int[] { getSelectedLogRecord().getPid() }));
-        }
-    };
-
     private final Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -87,9 +71,6 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
         acCopy = UiHelper.createActionWrapper(table, "copy", "Copy", "control C");
         popupMenu.add(acCopy);
         popupMenu.addSeparator();
-        popupMenu.add(acHideByTag);
-        popupMenu.add(acHideByPid);
-        popupMenu.addSeparator();
         popupMenu.add(itemAddToBookmarks);
         popupMenu.add(itemRemoveBookmarks);
         UiHelper.addPopupMenu(table, popupMenu);
@@ -107,24 +88,18 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     public void updateItemsState(JTable source) {
         switch (source.getSelectedRowCount()) {
         case 0:
-            acHideByTag.setEnabled(false);
-            acHideByPid.setEnabled(false);
             acAddToBookmarks.setEnabled(false);
             acRemoveFromBookmarks.setEnabled(false);
             acCopy.setEnabled(false);
             toggleAddRemoveState(true);
             break;
         case 1:
-            acHideByTag.setEnabled(true);
-            acHideByPid.setEnabled(true);
             acAddToBookmarks.setEnabled(true);
             acRemoveFromBookmarks.setEnabled(true);
             acCopy.setEnabled(true);
             adjustAddRemoveVisibilty();
             break;
         default:
-            acHideByTag.setEnabled(false);
-            acHideByPid.setEnabled(false);
             acAddToBookmarks.setEnabled(false);
             acRemoveFromBookmarks.setEnabled(false);
             acCopy.setEnabled(true);
