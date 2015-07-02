@@ -16,12 +16,12 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.bitbucket.mlopatkin.utils.SystemUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import org.bitbucket.mlopatkin.utils.SystemUtils;
 
 public class PropertyUtils {
 

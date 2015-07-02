@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EnumMap;
@@ -24,10 +28,6 @@ import java.util.Map.Entry;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 
 public class BufferFilterMenu {
     private final JMenu parent;

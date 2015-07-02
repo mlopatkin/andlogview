@@ -15,11 +15,11 @@
  */
 package org.bitbucket.mlopatkin.utils.properties;
 
+import com.google.common.base.Strings;
+
 import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
-
-import com.google.common.base.Strings;
 
 
 class PointParser implements Parser<Point> {

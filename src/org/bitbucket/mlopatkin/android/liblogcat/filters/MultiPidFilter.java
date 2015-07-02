@@ -15,14 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import com.google.common.base.Joiner;
+
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.google.common.base.Joiner;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 /**
  * Performs filtering based on the PID value of the record. If multiple pids are

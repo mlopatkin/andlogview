@@ -15,15 +15,15 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.utils.MyStringUtils;
+
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 /**
  * Utility class to parse log record lines in different formats.

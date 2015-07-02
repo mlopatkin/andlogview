@@ -15,9 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import javax.swing.table.DefaultTableCellRenderer;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class LogRecordPriorityCellRenderer extends DefaultTableCellRenderer {
     @Override

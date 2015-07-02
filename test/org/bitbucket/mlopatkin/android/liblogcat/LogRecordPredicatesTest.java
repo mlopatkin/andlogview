@@ -16,17 +16,17 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+
+import org.bitbucket.mlopatkin.utils.FluentPredicate;
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.bitbucket.mlopatkin.utils.FluentPredicate;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class LogRecordPredicatesTest {
 

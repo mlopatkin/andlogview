@@ -15,6 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -23,9 +26,6 @@ import java.io.IOException;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 public class LogRecordsTransferHandler extends TransferHandler {
 

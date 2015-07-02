@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.StyledLabel;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -30,10 +34,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-
-import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.StyledLabel;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class HighlightCellRenderer extends StyledLabel implements TableCellRenderer,
         TextHighlighter {

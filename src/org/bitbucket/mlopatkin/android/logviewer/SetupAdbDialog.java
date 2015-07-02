@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -25,8 +27,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 

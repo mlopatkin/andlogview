@@ -15,16 +15,15 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+
 import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 
 class RowHighlightRenderer implements DecoratingCellRenderer {
 

@@ -15,9 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.Arrays;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
+import java.util.Arrays;
 
 /**
  * Performs filtering based on the tag value of the record.

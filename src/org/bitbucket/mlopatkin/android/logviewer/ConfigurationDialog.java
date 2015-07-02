@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import com.google.common.base.Objects;
+
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -22,6 +26,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.GroupLayout;
@@ -36,10 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
-
-import com.google.common.base.Objects;
-
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class ConfigurationDialog extends JDialog {
 

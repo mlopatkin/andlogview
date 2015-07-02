@@ -15,16 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
+import com.android.ddmlib.IDevice;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -41,7 +32,16 @@ import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
-import com.android.ddmlib.IDevice;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
+import java.awt.EventQueue;
+import java.io.File;
+import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);

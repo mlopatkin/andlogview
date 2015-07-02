@@ -15,11 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Creates {@link SearchStrategy}s and {@link HighlightStrategy}s according to

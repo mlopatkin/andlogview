@@ -16,13 +16,14 @@
 
 package org.bitbucket.mlopatkin.utils;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.annotation.Nullable;
 
 public class FluentPredicateTest {
 

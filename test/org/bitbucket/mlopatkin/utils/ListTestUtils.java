@@ -15,12 +15,12 @@
  */
 package org.bitbucket.mlopatkin.utils;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Generic routines to help testing {@link MyListUtils}.

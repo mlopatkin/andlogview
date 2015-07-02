@@ -15,15 +15,15 @@
  */
 package org.bitbucket.mlopatkin.utils;
 
-import static org.bitbucket.mlopatkin.utils.ListTestUtils.assertListEquals;
-import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import static org.bitbucket.mlopatkin.utils.ListTestUtils.assertListEquals;
+import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
+import static org.junit.Assert.assertEquals;
 
 public class MyListUtilsTest {
 

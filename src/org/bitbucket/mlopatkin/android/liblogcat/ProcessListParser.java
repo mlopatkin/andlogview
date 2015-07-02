@@ -15,10 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import com.google.common.base.Joiner;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Joiner;
 
 /**
  * Utility class that parses ps output in dumpstate files.

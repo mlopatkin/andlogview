@@ -1,11 +1,11 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Grammar:

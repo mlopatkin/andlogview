@@ -16,11 +16,11 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import com.google.common.base.Splitter;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.common.base.Splitter;
 
 /**
  * Parses comma-separated list of values. No value should contain comma.

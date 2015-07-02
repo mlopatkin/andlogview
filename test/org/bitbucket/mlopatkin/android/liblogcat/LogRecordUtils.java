@@ -16,11 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.Date;
+
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.NO_ID;
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-
-import java.util.Date;
 
 /**
  * Some factory methods to construct log records for tests.

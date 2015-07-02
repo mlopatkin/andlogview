@@ -15,13 +15,13 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Performs filtering based on the message of the record.

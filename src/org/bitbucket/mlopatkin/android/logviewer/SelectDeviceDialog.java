@@ -15,6 +15,17 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -33,17 +44,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
-
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
-import com.android.ddmlib.IDevice;
 
 public class SelectDeviceDialog extends JDialog {
 

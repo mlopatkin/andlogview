@@ -16,10 +16,10 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.EnumSet;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+
+import java.util.EnumSet;
 
 /**
  * Performs filtering based on the buffer of the record.

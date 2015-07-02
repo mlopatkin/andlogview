@@ -16,12 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import java.awt.Color;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nullable;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -36,10 +30,17 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+
+import java.awt.Color;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class FilterFromDialog implements ColoringFilter {
 

@@ -15,6 +15,15 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
+import com.google.common.base.CharMatcher;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -23,15 +32,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.CharMatcher;
-import org.apache.log4j.Logger;
-
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 
 /**
  * This class implements simple log parser with the ability to determine actual

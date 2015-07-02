@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.utils.events;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

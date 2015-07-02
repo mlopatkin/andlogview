@@ -15,14 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Range;
 import com.google.common.html.HtmlEscapers;
 
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

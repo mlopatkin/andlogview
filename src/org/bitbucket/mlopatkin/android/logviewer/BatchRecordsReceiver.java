@@ -15,9 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.util.List;
-
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+
+import java.util.List;
 
 /**
  * This interface represents models that can receive log records of any type. It

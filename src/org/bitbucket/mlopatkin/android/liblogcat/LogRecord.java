@@ -15,10 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import java.util.Date;
-
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+
+import java.util.Date;
 
 /**
  * This class contains all available log record data like timestamp, tag,

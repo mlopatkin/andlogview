@@ -16,11 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+
+import java.util.Arrays;
+import java.util.List;
 
 class TagSearcher extends ValueSearcher {
     public TagSearcher(HighlightStrategy highlightStrategy) {

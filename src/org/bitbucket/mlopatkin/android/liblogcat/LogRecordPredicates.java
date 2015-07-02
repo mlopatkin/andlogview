@@ -16,16 +16,17 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.List;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 
 import org.bitbucket.mlopatkin.utils.FluentPredicate;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Common predicates for LogRecords. All predicates throw NPE on null input.

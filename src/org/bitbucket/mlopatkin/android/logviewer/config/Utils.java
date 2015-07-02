@@ -15,6 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.config;
 
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.logviewer.Main;
+import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
+import org.bitbucket.mlopatkin.utils.properties.Parser;
+
 import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,12 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.logviewer.Main;
-import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
-import org.bitbucket.mlopatkin.utils.properties.Parser;
-import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
 class Utils {
     private static final Logger logger = Logger.getLogger(Configuration.class);

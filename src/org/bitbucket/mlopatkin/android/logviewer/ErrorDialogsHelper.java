@@ -15,12 +15,12 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 import java.awt.Component;
 import java.awt.Frame;
 
 import javax.swing.JOptionPane;
-
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 /**
  * This class contains helper methods to show error dialogs

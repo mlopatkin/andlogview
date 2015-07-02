@@ -16,21 +16,23 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import javax.annotation.Nullable;
-
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import javax.annotation.Nullable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class FilterStorageTest {
 

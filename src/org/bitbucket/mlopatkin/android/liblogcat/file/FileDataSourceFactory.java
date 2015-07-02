@@ -15,16 +15,16 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
+import com.google.common.base.CharMatcher;
+
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-
-import com.google.common.base.CharMatcher;
-
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 public class FileDataSourceFactory {
 

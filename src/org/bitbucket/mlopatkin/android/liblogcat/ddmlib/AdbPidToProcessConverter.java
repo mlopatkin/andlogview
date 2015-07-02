@@ -15,6 +15,13 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
+import com.android.ddmlib.IDevice;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.utils.MyStreamUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,13 +32,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.utils.MyStreamUtils;
-
-import com.android.ddmlib.IDevice;
 
 class AdbPidToProcessConverter {
 

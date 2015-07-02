@@ -15,11 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
-import java.util.Map;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+
+import java.util.Map;
 
 class ParsingStrategies {
 

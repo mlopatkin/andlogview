@@ -15,11 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.widgets;
 
+import com.google.common.html.HtmlEscapers;
+
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -28,8 +31,6 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-
-import com.google.common.html.HtmlEscapers;
 
 public class UiHelper {
 

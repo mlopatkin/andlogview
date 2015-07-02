@@ -15,9 +15,9 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import java.util.Collection;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
+import java.util.Collection;
 
 /**
  * Contains data associated with the filter that appears in filter edit dialogs

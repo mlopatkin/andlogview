@@ -15,18 +15,18 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
-import java.awt.Component;
-
-import javax.swing.JComponent;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+
+import java.awt.Component;
+
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 public class SearchResultsHighlightCellRenderer implements DecoratingCellRenderer {
 

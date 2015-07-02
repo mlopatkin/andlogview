@@ -18,6 +18,10 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,9 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Frame;
 
 /**
  * Base Filter Dialog UI class. Edit with WindowBuilder.

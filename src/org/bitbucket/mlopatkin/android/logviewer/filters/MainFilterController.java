@@ -16,7 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 

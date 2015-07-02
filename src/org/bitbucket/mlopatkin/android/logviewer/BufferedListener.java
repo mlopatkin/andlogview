@@ -15,6 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
+
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,10 +28,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.Timer;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 
 /**
  * This class tries to limit the number of events pushing records into the

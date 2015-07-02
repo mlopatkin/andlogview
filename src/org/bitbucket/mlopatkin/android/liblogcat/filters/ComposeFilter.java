@@ -16,10 +16,10 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 /**
  * This filter performs AND operation upon all included filters.

@@ -15,14 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+
 import java.awt.Component;
 import java.util.Date;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-
-import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 public class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
     @Override

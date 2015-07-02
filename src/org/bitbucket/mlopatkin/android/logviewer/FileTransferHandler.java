@@ -15,6 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
+import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -22,11 +27,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.TransferHandler;
-
-import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
-import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 
 public class FileTransferHandler extends TransferHandler {
     private static final Logger logger = Logger.getLogger(FileTransferHandler.class);

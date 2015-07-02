@@ -15,14 +15,14 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import java.lang.reflect.Field;
-
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
-import org.apache.log4j.Logger;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
+import java.lang.reflect.Field;
 
 public class AdbConnectionManager {
 

@@ -15,13 +15,13 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import com.android.ddmlib.IShellOutputReceiver;
 
 import org.apache.log4j.Logger;
 
-import com.android.ddmlib.IShellOutputReceiver;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 /**
  * This class represents the output of the running adb shell command.

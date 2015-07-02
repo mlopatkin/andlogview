@@ -15,13 +15,13 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import java.util.Map;
+import com.android.ddmlib.IDevice;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordStream;
 
-import com.android.ddmlib.IDevice;
+import java.util.Map;
 
 /**
  * This class retrieves log records from the device using a background thread

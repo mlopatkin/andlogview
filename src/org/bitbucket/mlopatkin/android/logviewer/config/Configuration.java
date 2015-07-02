@@ -15,21 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.config;
 
-import static org.bitbucket.mlopatkin.android.logviewer.config.Utils.colorParser;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.bool;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.enumMap;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.integer;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.list;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.point;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.string;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
-
-import java.awt.Color;
-import java.awt.Point;
-import java.util.List;
-
 import org.apache.log4j.Logger;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.utils.SystemUtils;
@@ -39,6 +25,19 @@ import org.bitbucket.mlopatkin.utils.properties.Parsers;
 import org.bitbucket.mlopatkin.utils.properties.PropertyBuilder;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 import org.bitbucket.mlopatkin.utils.properties.SynchronizedConfiguration;
+
+import java.awt.Color;
+import java.awt.Point;
+import java.util.List;
+
+import static org.bitbucket.mlopatkin.android.logviewer.config.Utils.colorParser;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.bool;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.enumMap;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.integer;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.list;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.point;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.string;
+import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
 
 public class Configuration {
 

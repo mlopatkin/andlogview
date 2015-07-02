@@ -15,14 +15,14 @@
  */
 package org.bitbucket.mlopatkin.utils;
 
-import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Test;
+import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
+import static org.junit.Assert.assertEquals;
 
 public class MyListUtilsUpperBoundTest {
 

@@ -15,10 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
-import org.apache.log4j.Logger;
-
 import com.android.ddmlib.Log.ILogOutput;
 import com.android.ddmlib.Log.LogLevel;
+
+import org.apache.log4j.Logger;
 
 class DdmlibToLog4jWrapper implements ILogOutput {
     private static final Logger logger = Logger.getLogger("DDMLIB");

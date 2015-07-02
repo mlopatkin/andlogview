@@ -15,6 +15,18 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
+import com.google.common.base.CharMatcher;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
+import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -27,18 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.CharMatcher;
-import org.apache.log4j.Logger;
-
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
-import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 public class DumpstateFileDataSource implements DataSource {
 
