@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.android.logviewer.Main;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.Parser;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
@@ -50,10 +51,9 @@ class Utils {
     };
 
     private static final String CONFIG_FILE_NAME = "logview.properties";
-    private static final String CONFIG_APP_NAME = "logview";
 
     static final void saveConfiguration(org.bitbucket.mlopatkin.utils.properties.Configuration cfg) {
-        File cfgDir = PropertyUtils.getAppConfigDir(CONFIG_APP_NAME);
+        File cfgDir = Main.getConfigurationDir();
         if (!cfgDir.exists()) {
             cfgDir.mkdirs();
         }
@@ -73,7 +73,7 @@ class Utils {
     public static void loadConfiguration(
             org.bitbucket.mlopatkin.utils.properties.Configuration config)
             throws IllegalConfigurationException {
-        File cfgDir = PropertyUtils.getAppConfigDir(CONFIG_APP_NAME);
+        File cfgDir = Main.getConfigurationDir();
         if (!cfgDir.exists()) {
             return;
         }

@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -90,6 +92,10 @@ public class FilterPanelModel {
 
     void editFilter(PanelFilterView filter) {
         getPanelFilterForView(filter).openFilterEditor();
+    }
+
+    ImmutableList<PanelFilterView> getFilters() {
+        return ImmutableList.<PanelFilterView>copyOf(filters);
     }
 
     private PanelFilter getPanelFilterForView(PanelFilterView filterView) {

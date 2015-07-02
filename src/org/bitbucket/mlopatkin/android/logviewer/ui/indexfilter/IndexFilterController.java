@@ -20,7 +20,7 @@ import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.Dagger_IndexFrameComponent;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
@@ -44,12 +44,12 @@ public class IndexFilterController extends AbstractIndexController {
         this.owner = owner;
         this.filter = filter;
         IndexFrameComponent component =
-                Dagger_IndexFrameComponent.builder()
-                                          .mainFrameDependencies(dependencies)
-                                          .indexFrameModule(
-                                                  new IndexFrameModule(this, null,
-                                                                       new IndexFilter(mainFilter, filter)))
-                                          .build();
+                DaggerIndexFrameComponent.builder()
+                                         .mainFrameDependencies(dependencies)
+                                         .indexFrameModule(
+                                                 new IndexFrameModule(this, null,
+                                                                      new IndexFilter(mainFilter, filter)))
+                                         .build();
 
         frame = component.createFrame();
     }

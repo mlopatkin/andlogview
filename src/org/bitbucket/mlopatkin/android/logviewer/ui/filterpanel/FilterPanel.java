@@ -103,6 +103,10 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
         UiHelper.addDoubleClickAction(this, acCreateFilter);
         UiHelper.addDoubleClickAction(content, acCreateFilter);
+
+        for (PanelFilterView filter : model.getFilters()) {
+            onFilterAdded(filter);
+        }
     }
 
     private static URL getResource(String name) {

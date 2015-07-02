@@ -16,11 +16,14 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
@@ -49,9 +52,14 @@ import javax.inject.Singleton;
 @Singleton
 public class MainFilterController implements LogModelFilter, FilterCreator {
     // TODO separate "A filter for main table" and "bridge between all filters and panel"
+
+    private static final Logger logger = Logger.getLogger(MainFilterController.class);
+
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
     private final IndexFilterCollection indexFilterCollection;
+    private final FilterStorage storage;
+
     private final Subject<LogModelFilter.Observer> observers = new Subject<>();
     private final FilterChain filterChain = new FilterChain();
     private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
@@ -60,13 +68,17 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
 
     private final LogBufferFilter bufferFilter = new LogBufferFilter();
 
+    private static final FilterListSerializer SERIALIZER = new FilterListSerializer();
+
     @Inject
     public MainFilterController(final FilterPanelModel filterPanelModel,
                                 IndexFilterCollection indexFilterCollection,
-                                FilterDialogFactory dialogFactory) {
+                                FilterDialogFactory dialogFactory,
+                                FilterStorage storage) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.indexFilterCollection = indexFilterCollection;
+        this.storage = storage;
 
         indexFilterCollection.asObservable().addObserver(new IndexFilterCollection.Observer() {
             @Override
@@ -78,6 +90,10 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
                 }
             }
         });
+
+        for (SavedFilterData savedFilterData : storage.loadFilters(SERIALIZER)) {
+            savedFilterData.appendMe(this);
+        }
     }
 
     public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
@@ -115,20 +131,26 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
-        DialogPanelFilter panelFilter = new DialogPanelFilter(getFilterCollectionForFilter(filter), filter);
-        filters.add(panelFilter);
-        return panelFilter;
+        return new DialogPanelFilter(getFilterCollectionForFilter(filter), filter);
     }
 
-    private void addNewDialogFilter(FilterFromDialog filter) {
-        filterPanelModel.addFilter(createDialogPanelFilter(filter).addToCollection());
+    private DialogPanelFilter addNewDialogFilter(FilterFromDialog filter) {
+        DialogPanelFilter dialogPanelFilter = createDialogPanelFilter(filter);
+        filters.add(dialogPanelFilter);
+        filterPanelModel.addFilter(dialogPanelFilter.addToCollection());
         notifyFiltersChanged();
+        return dialogPanelFilter;
     }
 
     private void notifyFiltersChanged() {
         for (LogModelFilter.Observer observer : observers) {
             observer.onModelChange();
         }
+        ArrayList<SavedFilterData> serializedFilters = new ArrayList<>(filters.size());
+        for (BaseToggleFilter<?> filter : filters) {
+            serializedFilters.add(filter.getSerializedVersion());
+        }
+        storage.saveFilters(SERIALIZER, serializedFilters);
     }
 
     private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {
@@ -148,7 +170,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     /**
      * Base class for {@link PanelFilter} wrappers for the DialogFilters and others.
      */
-    abstract class BaseToggleFilter<T extends Predicate<LogRecord>> implements PanelFilter {
+    private abstract class BaseToggleFilter<T extends Predicate<LogRecord>> implements PanelFilter {
         protected final FilteringMode mode;
         protected final FilterCollection<? super T> collection;
         protected final T filter;
@@ -202,10 +224,12 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
             collection.addFilter(mode, filter);
             return this;
         }
+
+        public abstract SavedFilterData getSerializedVersion();
     }
 
 
-    class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
+    private class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
 
         protected DialogPanelFilter(FilterCollection<? super FilterFromDialog> collection,
                                     FilterFromDialog filter) {
@@ -232,6 +256,41 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         @Override
         public String getTooltip() {
             return filter.getTooltip();
+        }
+
+        @Override
+        public SavedFilterData getSerializedVersion() {
+            return new SavedDialogFilterData(filter, isEnabled());
+        }
+    }
+
+    static abstract class SavedFilterData {
+        protected final boolean enabled;
+
+        protected SavedFilterData(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        abstract void appendMe(MainFilterController filterController);
+    }
+
+    private static class SavedDialogFilterData extends SavedFilterData {
+
+        private final FilterFromDialog filterData;
+
+        SavedDialogFilterData(FilterFromDialog filterData, boolean enabled) {
+            super(enabled);
+            this.filterData = filterData;
+        }
+
+        @Override
+        void appendMe(MainFilterController filterController) {
+            try {
+                filterData.initialize();
+                filterController.addNewDialogFilter(filterData).setEnabled(enabled);
+            } catch (RequestCompilationException e) {
+                logger.error("Invalid filter data", e);
+            }
         }
     }
 }

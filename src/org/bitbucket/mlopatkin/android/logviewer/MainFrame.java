@@ -30,13 +30,14 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatExceptio
 import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.BufferFilterMenu;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.Dagger_MainFrameDependencies;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DaggerMainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -76,6 +77,7 @@ import javax.swing.border.EtchedBorder;
 
 public class MainFrame extends JFrame implements DialogResultReceiver {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
+    private final FilterStorage storage;
 
     private LogRecordTableModel recordsModel;
     private TableScrollController scrollController;
@@ -97,8 +99,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
     private JLabel searchStatusLabel;
     private JLabel sourceStatusLabel;
 
-    public MainFrame() {
+    public MainFrame(FilterStorage storage) {
         super();
+        this.storage = storage;
         initialize();
         processListFrame = new ProcessListFrame(this);
     }
@@ -159,7 +162,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         MainFrameDependencies dependencies =
-                Dagger_MainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).build();
+                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this, storage)).build();
         bookmarkModel = dependencies.getBookmarkModel();
         bookmarkController = dependencies.getBookmarkController();
         recordsModel = dependencies.getLogModel();

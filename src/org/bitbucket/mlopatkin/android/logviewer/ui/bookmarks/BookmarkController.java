@@ -17,12 +17,11 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
 
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.Dagger_IndexFrameComponent;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 
@@ -65,7 +64,7 @@ public class BookmarkController extends AbstractIndexController implements Index
         bookmarksModel.asObservable().addObserver(bookmarkChangeObserver);
 
         IndexFrameComponent indexFrameComponent =
-                Dagger_IndexFrameComponent.builder()
+                DaggerIndexFrameComponent.builder()
                                           .mainFrameDependencies(mainFrameDependencies)
                                           .indexFrameModule(
                                                   new IndexFrameModule(this, popupMenuFactory, logModelFilter))

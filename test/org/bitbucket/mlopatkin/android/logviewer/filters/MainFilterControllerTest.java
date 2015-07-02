@@ -18,8 +18,13 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.io.CharSink;
+import com.google.common.io.CharSource;
+import com.google.common.io.CharStreams;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
@@ -35,9 +40,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -80,12 +90,22 @@ public class MainFilterControllerTest {
     @Captor
     ArgumentCaptor<FilterFromDialog> oldFilterCaptor;
 
+    @Captor
+    ArgumentCaptor<List<SavedFilterData>> savedFilterDataCaptor;
+
     InOrder order;
+
+    FilterStorage mockStorage;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
+        mockStorage = new FilterStorage(CharSource.empty(), new CharSink() {
+            @Override
+            public Writer openStream() throws IOException {
+                return CharStreams.nullWriter();
+            }
+        }, MoreExecutors.newDirectExecutorService());
         when(indexFilterCollection.asObservable()).thenReturn(indexFilterCollectionObservers);
     }
 
@@ -93,7 +113,7 @@ public class MainFilterControllerTest {
     @Test
     public void testInitialState() throws Exception {
         MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory);
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
 
         verify(indexFilterCollectionObservers).addObserver(any(IndexFilterCollection.Observer.class));
 
@@ -115,7 +135,7 @@ public class MainFilterControllerTest {
         // However if you change filter's mode from highlight to other and back - it becomes last in the highlight
         // chain. Its button however stays in the same place.
         MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory);
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog colorer1 = createColoringFilter(Color.BLACK, MATCH_ALL);
@@ -131,6 +151,36 @@ public class MainFilterControllerTest {
 
         assertTrue(controller.shouldShowRecord(RECORD2));
         assertEquals(Color.BLUE, controller.getHighlightColor(RECORD2));
+    }
+
+    @Test
+    public void testSavingAndInitializngFromSaved() throws Exception {
+        mockStorage = Mockito.mock(FilterStorage.class);
+
+        when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(
+                Collections.<SavedFilterData>emptyList());
+
+        MainFilterController controller =
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
+
+        order = inOrder(dialogFactory, filterPanelModel);
+
+        FilterFromDialog colorer = createColoringFilter(Color.BLACK, MATCH_ALL);
+        createFilterWithDialog(controller, colorer);
+
+        verify(mockStorage).saveFilters(Mockito.<FilterListSerializer>any(), savedFilterDataCaptor.capture());
+
+        List<SavedFilterData> savedFilterData = savedFilterDataCaptor.getValue();
+
+        mockStorage = Mockito.mock(FilterStorage.class);
+        when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
+
+        filterPanelModel = Mockito.mock(FilterPanelModel.class);
+        controller =
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
+
+        verify(filterPanelModel).addFilter(Mockito.<PanelFilter>any());
+        assertEquals(Color.BLACK, controller.getHighlightColor(RECORD2));
     }
 
     private PanelFilter createFilterWithDialog(MainFilterController controller, FilterFromDialog dialogResult) {

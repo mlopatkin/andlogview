@@ -16,6 +16,25 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
+import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
+import com.google.common.io.CharSink;
+import com.google.common.io.CharSource;
+import com.google.common.io.Files;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonWriter;
+
+import org.apache.log4j.Logger;
+import org.bitbucket.mlopatkin.utils.Threads;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -24,27 +43,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.Maps;
-import com.google.common.io.CharSink;
-import com.google.common.io.CharSource;
-import com.google.common.io.Closer;
-import com.google.common.io.Files;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonWriter;
-import org.apache.log4j.Logger;
-
-import org.bitbucket.mlopatkin.utils.Threads;
 
 /**
  * Provides an access to a persistent storage for filters.
@@ -54,11 +55,22 @@ public class FilterStorage {
     // TODO this has little to do with filters per se, rename to storage
     private static final Logger logger = Logger.getLogger(FilterStorage.class);
 
+    public static class InvalidJsonContentException extends Exception {
+
+        public InvalidJsonContentException(String message) {
+            super(message);
+        }
+
+        public InvalidJsonContentException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     public interface FilterStorageClient<T> {
 
         String getName();
 
-        T fromJson(Gson gson, JsonElement element);
+        T fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException;
 
         T getDefault();
 
@@ -86,9 +98,13 @@ public class FilterStorage {
         this.inStorage = inStorage;
         this.outStorage = outStorage;
         this.fileWorker = fileWorker;
+//        this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    public static FilterStorage createForFile(File file) {
+    public static FilterStorage createForFile(File file) throws IOException {
+        if (!file.exists()) {
+            Files.touch(file);
+        }
         final FilterStorage result = new FilterStorage(
                 Files.asCharSource(file, Charsets.UTF_8),
                 Files.asCharSink(file, Charsets.UTF_8),
@@ -105,19 +121,15 @@ public class FilterStorage {
                 }
             }
         });
+        result.load();
         return result;
     }
 
     public void load() {
         JsonParser parser = new JsonParser();
-        try {
-            Reader in = inStorage.openBufferedStream();
-            try {
-                load(parser.parse(in));
-                logger.debug("Successfully parsed filter data");
-            } finally {
-                in.close();
-            }
+        try (Reader in = inStorage.openBufferedStream()) {
+            load(parser.parse(in));
+            logger.debug("Successfully parsed filter data");
         } catch (IOException e) {
             logger.error("Failed to open JSON filter data file", e);
         } catch (JsonParseException e) {
@@ -155,16 +167,10 @@ public class FilterStorage {
     }
 
     private void saveImpl(Map<String, JsonElement> filters) {
-        try {
-            Closer closer = Closer.create();
-            try {
-                Writer out = closer.register(outStorage.openBufferedStream());
-                JsonWriter writer = closer.register(new JsonWriter(out));
-                saveToJsonWriter(writer, filters);
-                logger.debug("Successfully written filter data, commiting");
-            } finally {
-                closer.close();
-            }
+        try (Writer out = outStorage.openBufferedStream();
+             JsonWriter writer = new JsonWriter(out)) {
+            saveToJsonWriter(writer, filters);
+            logger.debug("Successfully written filter data, commiting");
         } catch (IOException e) {
             logger.error("Failed to open storage for writing", e);
         }
@@ -212,7 +218,7 @@ public class FilterStorage {
             if (element != null) {
                 return client.fromJson(gson, element);
             }
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | InvalidJsonContentException e) {
             // We have some weird JSON for this client. Discard it unless somebody updated it in
             // background.
             synchronized (serializedFilters) {
@@ -221,7 +227,7 @@ public class FilterStorage {
                     scheduleCommitLocked();
                 }
             }
-            logger.error("Failed to parse filter data of " + client.getName());
+            logger.error("Failed to parse filter data of " + client.getName(), e);
         }
         // failed to load/parse, provide fallback
         return client.getDefault();

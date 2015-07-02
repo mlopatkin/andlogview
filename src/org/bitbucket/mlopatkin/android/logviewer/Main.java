@@ -36,18 +36,26 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedExcepti
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
+import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
 import com.android.ddmlib.IDevice;
 
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
-    public static final String APP_VERSION = "0.18.1";
+    public static final String APP_VERSION = "0.19-SNAPSHOT";
+    private static final String SHORT_APP_NAME = "logview";
 
     private DataSource initialSource;
     private MainFrame window;
+    private FilterStorage storage;
+
+    public static File getConfigurationDir() {
+        return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
+    }
 
     public static void main(String[] args) {
         Configuration.init();
@@ -115,7 +123,13 @@ public class Main {
     }
 
     private void createAndShowWindow() {
-        window = new MainFrame();
+        try {
+            storage = FilterStorage.createForFile(new File(getConfigurationDir(), "filters.json"));
+        } catch (IOException e) {
+            logger.fatal("Cannot start at all", e);
+            System.exit(-1);
+        }
+        window = new MainFrame(storage);
         EventQueue.invokeLater(new Runnable() {
 
             @Override

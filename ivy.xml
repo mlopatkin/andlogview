@@ -31,8 +31,8 @@
     </configurations>
 
     <dependencies>
-        <dependency org="com.google.dagger" name="dagger" rev="2.0-SNAPSHOT" conf="core"/>
-        <dependency org="com.google.dagger" name="dagger-compiler" rev="2.0-SNAPSHOT" conf="apt"/>
+        <dependency org="com.google.dagger" name="dagger" rev="2.0" conf="core"/>
+        <dependency org="com.google.dagger" name="dagger-compiler" rev="2.0" conf="apt"/>
 
         <dependency org="com.google.guava" name="guava" rev="18.0" conf="core"/>
         <dependency org="log4j" name="log4j" rev="1.2.17" conf="core"/>
