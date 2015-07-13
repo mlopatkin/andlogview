@@ -23,9 +23,19 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
  */
 public interface PanelFilter extends PanelFilterView {
 
+    /**
+     * Enables or disables a filter represented by the button (typically by clicking it).
+     * @param enabled new state of the button
+     */
     void setEnabled(boolean enabled);
 
+    /**
+     * Opens editor for the button (when user selects the action from the context menu).
+     */
     void openFilterEditor();
 
+    /**
+     * Deletes filter (when user selects the action from the context menu).
+     */
     void delete();
 }

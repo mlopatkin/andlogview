@@ -19,5 +19,12 @@
  * <p/>
  * Embedder pushes data via an instance of the
  * {@link org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel}.
+ * <p/>
+ * Overall architectucture of the panel is quite complicated. FilterPanel holds buttons. Each button corresponds to the
+ * instance of the {@link org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilterView}. Toggling button
+ * or selecting context menu action is translated to a call to FilterPanelModel. FilterPanelModel maintains a mapping
+ * of PanelFilterViews to {@link org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter}s. Each method
+ * call translate to call to PanelFilter's method. PanelFilter is provided by the embedder and it will change internal
+ * state of the filter model. Then embedder will then change state of the FilterPanelModel via its public method.
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;

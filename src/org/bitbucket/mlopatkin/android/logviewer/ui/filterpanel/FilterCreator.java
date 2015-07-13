@@ -16,6 +16,14 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
+/**
+ * A facility to create filters with dialog. User can open dialog by clicking "plus" button or double-clicking filter
+ * panel.
+ */
 public interface FilterCreator {
+    /**
+     * Opens a filter creation dialog. Embedder expected to add {@link PanelFilter} to {@link FilterPanelModel} when
+     * dialog is completed successfully.
+     */
     void createFilterWithDialog();
 }

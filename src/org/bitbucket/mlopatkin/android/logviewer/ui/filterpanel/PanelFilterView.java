@@ -20,7 +20,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
  * The instance of this interface represents a filter inside the FilterPanel. It provides information about how to
  * display filter as a button.
  */
-public interface PanelFilterView {
+interface PanelFilterView {
     /**
      * Returns a nicely formatted tooltip describing the filter. This tooltip is used for the filter button.
      *

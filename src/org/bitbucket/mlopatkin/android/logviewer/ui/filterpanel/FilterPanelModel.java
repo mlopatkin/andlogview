@@ -57,16 +57,6 @@ public class FilterPanelModel {
         }
     }
 
-    public void removeFilter(PanelFilterView filter) {
-        PanelFilter panelFilter = getPanelFilterForView(filter);
-        if (filters.remove(panelFilter)) {
-            panelFilter.delete();
-            for (FilterPanelModelListener listener : listeners) {
-                listener.onFilterRemoved(filter);
-            }
-        }
-    }
-
     public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
         int oldPos = filters.indexOf(oldFilter);
         assert oldPos >= 0;
@@ -78,11 +68,22 @@ public class FilterPanelModel {
         }
     }
 
+    // TODO split into public and internal methods
     public void setFilterEnabled(PanelFilterView filter, boolean enabled) {
         getPanelFilterForView(filter).setEnabled(enabled);
 
         for (FilterPanelModelListener listener : listeners) {
             listener.onFilterEnabled(filter, enabled);
+        }
+    }
+
+    void removeFilter(PanelFilterView filter) {
+        PanelFilter panelFilter = getPanelFilterForView(filter);
+        if (filters.remove(panelFilter)) {
+            panelFilter.delete();
+            for (FilterPanelModelListener listener : listeners) {
+                listener.onFilterRemoved(filter);
+            }
         }
     }
 

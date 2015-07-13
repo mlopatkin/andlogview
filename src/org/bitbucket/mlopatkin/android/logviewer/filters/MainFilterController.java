@@ -200,7 +200,6 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         public void delete() {
             collection.removeFilter(mode, filter);
             filters.remove(this);
-            filterPanelModel.removeFilter(this);
             notifyFiltersChanged();
         }
 

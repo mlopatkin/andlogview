@@ -50,20 +50,20 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private final FilterCreator filterCreator;
     private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
 
-    private ComponentListener resizeListener = new ComponentAdapter() {
+    private final ComponentListener resizeListener = new ComponentAdapter() {
         public void componentResized(ComponentEvent e) {
             updateScrollState();
         }
     };
 
-    private Action acCreateFilter = new AbstractAction("", ADD_ICON) {
+    private final Action acCreateFilter = new AbstractAction("", ADD_ICON) {
         @Override
         public void actionPerformed(ActionEvent e) {
             filterCreator.createFilterWithDialog();
         }
     };
 
-    private Action acScrollLeft = new AbstractAction("", PREV_ICON) {
+    private final Action acScrollLeft = new AbstractAction("", PREV_ICON) {
         @Override
         public void actionPerformed(ActionEvent e) {
             computeButtonIndices();
@@ -73,7 +73,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         }
     };
 
-    private Action acScrollRight = new AbstractAction("", NEXT_ICON) {
+    private final Action acScrollRight = new AbstractAction("", NEXT_ICON) {
         @Override
         public void actionPerformed(ActionEvent e) {
             computeButtonIndices();
@@ -83,7 +83,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         }
     };
 
-    private PopupMenuHandler menuHandler = new PopupMenuHandler();
+    private final PopupMenuHandler menuHandler = new PopupMenuHandler();
 
     private int leftmostButton = -1;
     private int rightmostButton = -1;
