@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
+import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
+import org.bitbucket.mlopatkin.android.logviewer.ToolTippedPidCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.HighlightCellRenderer;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordPriorityCellRenderer;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTimeCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 

@@ -34,6 +34,7 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.BufferFilterMenu;
