@@ -134,7 +134,7 @@ public enum Column {
     /**
      * @return the list of all columns that are enabled by config file in the specified order
      */
-    static List<Column> getSelectedColumns() {
+    public static List<Column> getSelectedColumns() {
         List<String> columnKeys = Configuration.ui.columns();
         List<Column> columns = new ArrayList<>(columnKeys.size());
 
@@ -149,7 +149,7 @@ public enum Column {
         return columns;
     }
 
-    public TableColumnBuilder makeColumnBuilder() {
+    TableColumnBuilder makeColumnBuilder() {
         TableColumnBuilder builder = new TableColumnBuilder(getIndex());
         if (title != null) {
             builder.setHeader(title);

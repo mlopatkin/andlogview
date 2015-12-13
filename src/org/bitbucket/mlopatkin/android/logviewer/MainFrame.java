@@ -34,6 +34,7 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
@@ -171,8 +172,7 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        logElements
-                .setColumnModel(new LogRecordTableColumnModel(Configuration.ui.columns(), mapper));
+        logElements.setColumnModel(LogRecordTableColumnModel.create(mapper, Column.getSelectedColumns()));
 
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);

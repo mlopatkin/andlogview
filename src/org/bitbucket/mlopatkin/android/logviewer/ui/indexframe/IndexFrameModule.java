@@ -54,7 +54,7 @@ public class IndexFrameModule {
 
     @Provides
     IndexTableColumnModel getColumnModel() {
-        return new IndexTableColumnModel(null);
+        return IndexTableColumnModel.create(null);
     }
 
     @Provides
