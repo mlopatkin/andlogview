@@ -19,6 +19,7 @@ import com.google.common.base.CharMatcher;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
@@ -37,6 +38,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,6 +122,11 @@ public class DumpstateFileDataSource implements DataSource {
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
         return buffers;
+    }
+
+    @Override
+    public Set<Field> getAvailableFields() {
+        return EnumSet.allOf(Field.class);
     }
 
     @Override

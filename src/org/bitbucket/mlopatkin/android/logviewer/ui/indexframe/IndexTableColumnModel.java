@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
@@ -31,7 +32,7 @@ public class IndexTableColumnModel extends LogRecordTableColumnModel {
     @Override
     protected void initColumnInfo() {
         super.initColumnInfo();
-        addColumnInfo("row", new TableColumnBuilder(LogRecordTableModel.COLUMN_LINE, "line")
+        addColumnInfo("row", new TableColumnBuilder(Column.INDEX.getIndex(), "line")
                 .setWidth(30).setMaxWidth(50));
     }
 }

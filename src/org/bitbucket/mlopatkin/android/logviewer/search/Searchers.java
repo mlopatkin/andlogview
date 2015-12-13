@@ -16,45 +16,13 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
+import com.google.common.collect.ImmutableList;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 import java.util.Arrays;
 import java.util.List;
-
-class TagSearcher extends ValueSearcher {
-    public TagSearcher(HighlightStrategy highlightStrategy) {
-        super(highlightStrategy, LogRecordTableModel.COLUMN_TAG);
-    }
-
-    @Override
-    protected String getValue(LogRecord record) {
-        return record.getTag();
-    }
-}
-
-class AppNameSearcher extends ValueSearcher {
-
-    public AppNameSearcher(HighlightStrategy highlightStrategy) {
-        super(highlightStrategy, LogRecordTableModel.COLUMN_APPNAME);
-    }
-
-    @Override
-    protected String getValue(LogRecord record) {
-        return record.getAppName();
-    }
-}
-
-class MessageSearcher extends ValueSearcher {
-    public MessageSearcher(HighlightStrategy highlightStrategy) {
-        super(highlightStrategy, LogRecordTableModel.COLUMN_MSG);
-    }
-
-    @Override
-    protected String getValue(LogRecord record) {
-        return record.getMessage();
-    }
-}
 
 
 class OrSearcher implements RowSearchStrategy {
@@ -65,8 +33,8 @@ class OrSearcher implements RowSearchStrategy {
         this.searchers = Arrays.asList(searchers);
     }
 
-    public OrSearcher(List<RowSearchStrategy> searchers) {
-        this.searchers = searchers;
+    public OrSearcher(List<? extends RowSearchStrategy> searchers) {
+        this.searchers = ImmutableList.copyOf(searchers);
     }
 
     @Override

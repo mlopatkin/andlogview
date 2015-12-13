@@ -19,6 +19,7 @@ import com.google.common.base.CharMatcher;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
@@ -32,6 +33,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -87,6 +89,11 @@ public class LogfileDataSource implements DataSource {
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
         return EnumSet.noneOf(Buffer.class);
+    }
+
+    @Override
+    public Set<Field> getAvailableFields() {
+        return strategy.getAvailableFields();
     }
 
     @Override

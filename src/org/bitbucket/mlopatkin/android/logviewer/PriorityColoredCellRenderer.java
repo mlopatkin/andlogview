@@ -26,6 +26,7 @@ import java.util.EnumMap;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
 
@@ -43,8 +44,8 @@ public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
         Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                 row, column);
         row = table.convertRowIndexToModel(row);
-        Priority priority = (Priority) table.getModel().getValueAt(row,
-                LogRecordTableModel.COLUMN_PRIORITY);
+        LogRecordTableModel model = (LogRecordTableModel) table.getModel();
+        Priority priority = model.getRowData(row).getPriority();
         result.setForeground(COLOR_MAP.get(priority));
         return result;
     }

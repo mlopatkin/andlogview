@@ -17,15 +17,16 @@
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 
-abstract class ValueSearcher implements RowSearchStrategy {
+class ValueSearcher implements RowSearchStrategy {
 
     private final HighlightStrategy highlightStrategy;
-    private final int columnIndex;
+    private final Column column;
 
-    public ValueSearcher(HighlightStrategy highlightStrategy, int columnIndex) {
+    public ValueSearcher(HighlightStrategy highlightStrategy, Column column) {
         this.highlightStrategy = highlightStrategy;
-        this.columnIndex = columnIndex;
+        this.column = column;
     }
 
     @Override
@@ -33,11 +34,13 @@ abstract class ValueSearcher implements RowSearchStrategy {
         return highlightStrategy.apply(getValue(record));
     }
 
-    protected abstract String getValue(LogRecord record);
+    private String getValue(LogRecord record) {
+        return String.valueOf(column.getValue(0, record));
+    }
 
     @Override
     public void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter) {
-        if (columnIndex == this.columnIndex) {
+        if (columnIndex == column.getIndex()) {
             highlightStrategy.highlightOccurences(getValue(record), columnHighlighter);
         }
     }

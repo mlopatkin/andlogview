@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface that all log records producers like ADB or log files must
@@ -51,6 +52,11 @@ public interface DataSource {
      * @return a set of buffers
      */
     EnumSet<LogRecord.Buffer> getAvailableBuffers();
+
+    /**
+     * @return the set of fields available in LogRecords that are produced by this data source
+     */
+    Set<Field> getAvailableFields();
 
     /**
      * Resets internal data structures and resends all available records into

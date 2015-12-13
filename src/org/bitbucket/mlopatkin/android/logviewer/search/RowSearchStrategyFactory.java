@@ -4,6 +4,9 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,11 +57,11 @@ public final class RowSearchStrategyFactory {
             return null;
         }
         if (PREFIX_APP.equals(prefix)) {
-            return new AppNameSearcher(strategy);
+            return new ValueSearcher(strategy, Column.APP_NAME);
         } else if (PREFIX_MSG.equals(prefix)) {
-            return new MessageSearcher(strategy);
+            return new ValueSearcher(strategy, Column.MESSAGE);
         } else if (PREFIX_TAG.equals(prefix)) {
-            return new TagSearcher(strategy);
+            return new ValueSearcher(strategy, Column.TAG);
         } else {
             throw new AssertionError("Unrecognized prefix");
         }
@@ -68,8 +71,12 @@ public final class RowSearchStrategyFactory {
             throws RequestCompilationException {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(pattern);
         if (strategy != null) {
-            return new OrSearcher(new AppNameSearcher(strategy), new TagSearcher(strategy),
-                    new MessageSearcher(strategy));
+            Column[] searchableColumns = {Column.APP_NAME, Column.MESSAGE, Column.TAG};
+            List<ValueSearcher> searches = new ArrayList<>(searchableColumns.length);
+            for (Column c : searchableColumns) {
+                searches.add(new ValueSearcher(strategy, c));
+            }
+            return new OrSearcher(searches);
         } else {
             return null;
         }

@@ -20,6 +20,7 @@ import com.android.ddmlib.IDevice;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
@@ -130,6 +131,11 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
         return availableBuffers;
+    }
+
+    @Override
+    public Set<Field> getAvailableFields() {
+        return EnumSet.allOf(Field.class);
     }
 
     @Override

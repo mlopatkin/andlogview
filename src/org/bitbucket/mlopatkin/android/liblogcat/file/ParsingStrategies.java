@@ -15,16 +15,21 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
+import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 class ParsingStrategies {
 
     interface Strategy {
         LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess);
+
+        Set<Field> getAvailableFields();
     }
 
     static final ParsingStrategies.Strategy threadTime = new ParsingStrategies.Strategy() {
@@ -34,9 +39,14 @@ class ParsingStrategies {
         }
 
         @Override
+        public Set<Field> getAvailableFields() {
+            return EnumSet.complementOf(EnumSet.of(Field.APP_NAME));
+        }
+
+        @Override
         public String toString() {
             return "ThreadTimeStrategy";
-        };
+        }
     };
     static final ParsingStrategies.Strategy brief = new ParsingStrategies.Strategy() {
         @Override
@@ -45,9 +55,14 @@ class ParsingStrategies {
         }
 
         @Override
+        public Set<Field> getAvailableFields() {
+            return EnumSet.of(Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE);
+        }
+
+        @Override
         public String toString() {
             return "BriefStrategy";
-        };
+        }
     };
 
     static final ParsingStrategies.Strategy time = new ParsingStrategies.Strategy() {
@@ -57,9 +72,14 @@ class ParsingStrategies {
         }
 
         @Override
+        public Set<Field> getAvailableFields() {
+            return EnumSet.of(Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE);
+        }
+
+        @Override
         public String toString() {
             return "TimeStrategy";
-        };
+        }
     };
     static final ParsingStrategies.Strategy[] supportedStrategies = { threadTime, brief, time };
 

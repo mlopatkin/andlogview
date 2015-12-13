@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
@@ -43,19 +44,19 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     }
 
     protected void initColumnInfo() {
-        addColumnInfo("time", new TableColumnBuilder(LogRecordTableModel.COLUMN_TIME, "Time")
-        .setWidth(150).setMaxWidth(150).setRenderer(timeCellRenderer));
-        addColumnInfo("pid", new TableColumnBuilder(LogRecordTableModel.COLUMN_PID, "pid")
-        .setWidth(40).setMaxWidth(50).setRenderer(pidCellRender));
-        addColumnInfo("tid", new TableColumnBuilder(LogRecordTableModel.COLUMN_TID, "tid")
+        addColumnInfo("time", new TableColumnBuilder(Column.TIME.getIndex(), "Time")
+                .setWidth(150).setMaxWidth(150).setRenderer(timeCellRenderer));
+        addColumnInfo("pid", new TableColumnBuilder(Column.PID.getIndex(), "pid")
+                .setWidth(40).setMaxWidth(50).setRenderer(pidCellRender));
+        addColumnInfo("tid", new TableColumnBuilder(Column.TID.getIndex(), "tid")
         .setWidth(40).setMaxWidth(50));
-        addColumnInfo("priority", new TableColumnBuilder(LogRecordTableModel.COLUMN_PRIORITY)
+        addColumnInfo("priority", new TableColumnBuilder(Column.PRIORITY.getIndex())
         .setWidth(30).setMaxWidth(50).setRenderer(priorityCellRenderer));
-        addColumnInfo("tag", new TableColumnBuilder(LogRecordTableModel.COLUMN_TAG, "Tag")
+        addColumnInfo("tag", new TableColumnBuilder(Column.TAG.getIndex(), "Tag")
         .setWidth(120).setRenderer(tagCellRenderer));
-        addColumnInfo("app", new TableColumnBuilder(LogRecordTableModel.COLUMN_APPNAME, "Application")
+        addColumnInfo("app", new TableColumnBuilder(Column.APP_NAME.getIndex(), "Application")
         .setWidth(150).setRenderer(appCellRenderer));
-        addColumnInfo("message", new TableColumnBuilder(LogRecordTableModel.COLUMN_MSG, "Message")
+        addColumnInfo("message", new TableColumnBuilder(Column.MESSAGE.getIndex(), "Message")
         .setWidth(1000).setRenderer(messageCellRenderer));
     }
 

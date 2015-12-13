@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -46,9 +47,9 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
         int modelColumn = table.convertColumnIndexToModel(column);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
         LogRecord rowData = model.getRowData(table.convertRowIndexToModel(row));
-        if (modelColumn == LogRecordTableModel.COLUMN_MSG
-                || modelColumn == LogRecordTableModel.COLUMN_TAG
-                || modelColumn == LogRecordTableModel.COLUMN_APPNAME) {
+        if (modelColumn == Column.MESSAGE.getIndex()
+                || modelColumn == Column.TAG.getIndex()
+                || modelColumn == Column.APP_NAME.getIndex()) {
             if (value != null) {
                 String text = value.toString();
                 if (!UiHelper.isTextFit(c, table, row, column, text)) {

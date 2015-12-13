@@ -35,17 +35,6 @@ public class LogRecordTableModel extends AbstractTableModel implements
 
     private List<LogRecord> records;
 
-    private static final int COLUMNS_COUNT = 8;
-
-    public static final int COLUMN_TIME = 0;
-    public static final int COLUMN_PID = 1;
-    public static final int COLUMN_TID = 2;
-    public static final int COLUMN_PRIORITY = 3;
-    public static final int COLUMN_TAG = 4;
-    public static final int COLUMN_MSG = 5;
-    public static final int COLUMN_LINE = 6;
-    public static final int COLUMN_APPNAME = 7;
-
     @Inject
     public LogRecordTableModel() {
         this.records = new ArrayList<>();
@@ -53,7 +42,7 @@ public class LogRecordTableModel extends AbstractTableModel implements
 
     @Override
     public int getColumnCount() {
-        return COLUMNS_COUNT;
+        return Column.values().length;
     }
 
     @Override
@@ -64,37 +53,18 @@ public class LogRecordTableModel extends AbstractTableModel implements
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         LogRecord record = records.get(rowIndex);
-        switch (columnIndex) {
-        case COLUMN_TIME:
-            return record.getTime();
-        case COLUMN_PID:
-            return record.getPid();
-        case COLUMN_TID:
-            return record.getTid();
-        case COLUMN_PRIORITY:
-            return record.getPriority();
-        case COLUMN_TAG:
-            return record.getTag();
-        case COLUMN_MSG:
-            return record.getMessage();
-        case COLUMN_APPNAME:
-            return record.getAppName();
-        case COLUMN_LINE:
-            return rowIndex + 1;
-        default:
-            throw new IllegalArgumentException("Incorrect column number");
-        }
+        return Column.getByColumnIndex(columnIndex).getValue(rowIndex, record);
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (columnIndex) {
-        case COLUMN_TIME:
-            return Date.class;
-        case COLUMN_PRIORITY:
-            return Priority.class;
-        default:
-            return super.getColumnClass(columnIndex);
+        switch (Column.getByColumnIndex(columnIndex)) {
+            case TIME:
+                return Date.class;
+            case PRIORITY:
+                return Priority.class;
+            default:
+                return super.getColumnClass(columnIndex);
         }
     }
 
@@ -121,15 +91,15 @@ public class LogRecordTableModel extends AbstractTableModel implements
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-        case COLUMN_MSG:
-        case COLUMN_PID:
-        case COLUMN_TID:
-        case COLUMN_TAG:
-        case COLUMN_APPNAME:
-            return true;
-        default:
-            return false;
+        switch (Column.getByColumnIndex(columnIndex)) {
+            case MESSAGE:
+            case PID:
+            case TID:
+            case TAG:
+            case APP_NAME:
+                return true;
+            default:
+                return false;
         }
     }
 
