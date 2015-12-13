@@ -21,7 +21,6 @@ import com.google.common.base.Predicate;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
@@ -49,7 +48,7 @@ import javax.inject.Singleton;
  * toggled and applied.
  */
 @Singleton
-public class MainFilterController implements LogModelFilter, FilterCreator {
+public class MainFilterController implements FilterCreator {
     // TODO separate "A filter for main table" and "bridge between all filters and panel"
 
     private static final Logger logger = Logger.getLogger(MainFilterController.class);
@@ -58,14 +57,9 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     private final FilterDialogFactory dialogFactory;
     private final IndexFilterCollection indexFilterCollection;
     private final FilterStorage storage;
-
-    private final Subject<LogModelFilter.Observer> observers = new Subject<>();
-    private final FilterChain filterChain = new FilterChain();
-    private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
+    private final LogModelFilterImpl filter;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
-
-    private final LogBufferFilter bufferFilter = new LogBufferFilter();
 
     private static final FilterListSerializer SERIALIZER = new FilterListSerializer();
 
@@ -73,11 +67,13 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     public MainFilterController(final FilterPanelModel filterPanelModel,
                                 IndexFilterCollection indexFilterCollection,
                                 FilterDialogFactory dialogFactory,
-                                FilterStorage storage) {
+                                FilterStorage storage,
+                                LogModelFilterImpl logModelFilter) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.indexFilterCollection = indexFilterCollection;
         this.storage = storage;
+        this.filter = logModelFilter;
 
         indexFilterCollection.asObservable().addObserver(new IndexFilterCollection.Observer() {
             @Override
@@ -96,24 +92,8 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
-        bufferFilter.setBufferEnabled(buffer, enabled);
+        filter.bufferFilter.setBufferEnabled(buffer, enabled);
         notifyFiltersChanged();
-    }
-
-    @Override
-    public boolean shouldShowRecord(LogRecord record) {
-        return bufferFilter.apply(record) && filterChain.shouldShow(record);
-    }
-
-    @Nullable
-    @Override
-    public Color getHighlightColor(LogRecord record) {
-        return highlighter.getColor(record);
-    }
-
-    @Override
-    public Observable<LogModelFilter.Observer> asObservable() {
-        return observers.asObservable();
     }
 
     @Override
@@ -142,9 +122,7 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
     }
 
     private void notifyFiltersChanged() {
-        for (LogModelFilter.Observer observer : observers) {
-            observer.onModelChange();
-        }
+        filter.notifyObservers();
         ArrayList<SavedFilterData> serializedFilters = new ArrayList<>(filters.size());
         for (BaseToggleFilter<?> filter : filters) {
             serializedFilters.add(filter.getSerializedVersion());
@@ -156,9 +134,9 @@ public class MainFilterController implements LogModelFilter, FilterCreator {
         switch (filter.getMode()) {
             case SHOW:
             case HIDE:
-                return filterChain;
+                return this.filter.filterChain;
             case HIGHLIGHT:
-                return highlighter;
+                return this.filter.highlighter;
             case WINDOW:
                 return indexFilterCollection;
         }

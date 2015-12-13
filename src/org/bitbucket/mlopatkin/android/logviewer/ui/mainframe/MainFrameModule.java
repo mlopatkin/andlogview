@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
@@ -31,7 +32,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.swing.JFrame;
 
-@Module
+@Module(includes = FilterModule.class)
 public class MainFrameModule {
     private final MainFrame mainFrame;
     private final FilterStorage storage;
@@ -50,12 +51,6 @@ public class MainFrameModule {
                 return mainFrame;
             }
         };
-    }
-
-    @Provides
-    @Singleton
-    LogModelFilter provideLogModelFilter(MainFilterController mainFilterController) {
-        return mainFilterController;
     }
 
     @Provides

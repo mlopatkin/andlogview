@@ -32,7 +32,7 @@ public class BookmarksLogModelFilter implements LogModelFilter {
     private final Subject<Observer> observers = new Subject<>();
 
     private final BookmarkModel bookmarkModel;
-    private final MainFilterController mainFilterController;
+    private final LogModelFilter modelFilter;
 
     private final Observer mainFilterObserver = new Observer() {
         @Override
@@ -54,16 +54,16 @@ public class BookmarksLogModelFilter implements LogModelFilter {
     };
 
     @Inject
-    public BookmarksLogModelFilter(BookmarkModel bookmarkModel, MainFilterController mainFilterController) {
+    public BookmarksLogModelFilter(BookmarkModel bookmarkModel, LogModelFilter modelFilter) {
         this.bookmarkModel = bookmarkModel;
-        this.mainFilterController = mainFilterController;
+        this.modelFilter = modelFilter;
         bookmarkModel.asObservable().addObserver(bookmarkObserver);
-        mainFilterController.asObservable().addObserver(mainFilterObserver);
+        modelFilter.asObservable().addObserver(mainFilterObserver);
     }
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return bookmarkModel.containsRecord(record) && mainFilterController.shouldShowRecord(record);
+        return bookmarkModel.containsRecord(record) && modelFilter.shouldShowRecord(record);
     }
 
     @Nullable

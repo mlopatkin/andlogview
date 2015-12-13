@@ -93,6 +93,8 @@ public class MainFilterControllerTest {
     @Captor
     ArgumentCaptor<List<SavedFilterData>> savedFilterDataCaptor;
 
+    LogModelFilterImpl filterImpl = new LogModelFilterImpl();
+
     InOrder order;
 
     FilterStorage mockStorage;
@@ -113,17 +115,18 @@ public class MainFilterControllerTest {
     @Test
     public void testInitialState() throws Exception {
         MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
+                                         filterImpl);
 
         verify(indexFilterCollectionObservers).addObserver(any(IndexFilterCollection.Observer.class));
 
-        assertTrue(controller.shouldShowRecord(RECORD1));
+        assertTrue(filterImpl.shouldShowRecord(RECORD1));
         // default state for buffers is to be all disabled but unknown because we cannot read it
-        assertFalse(controller.shouldShowRecord(RECORD1_IN_MAIN));
-        assertTrue(controller.shouldShowRecord(RECORD2));
-        assertNull(controller.getHighlightColor(RECORD1));
-        assertNull(controller.getHighlightColor(RECORD1_IN_MAIN));
-        assertNull(controller.getHighlightColor(RECORD2));
+        assertFalse(filterImpl.shouldShowRecord(RECORD1_IN_MAIN));
+        assertTrue(filterImpl.shouldShowRecord(RECORD2));
+        assertNull(filterImpl.getHighlightColor(RECORD1));
+        assertNull(filterImpl.getHighlightColor(RECORD1_IN_MAIN));
+        assertNull(filterImpl.getHighlightColor(RECORD2));
     }
 
     @Test
@@ -135,7 +138,8 @@ public class MainFilterControllerTest {
         // However if you change filter's mode from highlight to other and back - it becomes last in the highlight
         // chain. Its button however stays in the same place.
         MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
+                                         filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog colorer1 = createColoringFilter(Color.BLACK, MATCH_ALL);
@@ -149,8 +153,8 @@ public class MainFilterControllerTest {
         PanelFilter editedPanel = editFilterWithDialog(editedColorer1, colorer1Panel);
         editFilterWithDialog(colorer1, editedPanel);
 
-        assertTrue(controller.shouldShowRecord(RECORD2));
-        assertEquals(Color.BLUE, controller.getHighlightColor(RECORD2));
+        assertTrue(filterImpl.shouldShowRecord(RECORD2));
+        assertEquals(Color.BLUE, filterImpl.getHighlightColor(RECORD2));
     }
 
     @Test
@@ -161,7 +165,8 @@ public class MainFilterControllerTest {
                 Collections.<SavedFilterData>emptyList());
 
         MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
+                                         filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
 
@@ -177,10 +182,11 @@ public class MainFilterControllerTest {
 
         filterPanelModel = Mockito.mock(FilterPanelModel.class);
         controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage);
+                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
+                                         filterImpl);
 
         verify(filterPanelModel).addFilter(Mockito.<PanelFilter>any());
-        assertEquals(Color.BLACK, controller.getHighlightColor(RECORD2));
+        assertEquals(Color.BLACK, filterImpl.getHighlightColor(RECORD2));
     }
 
     private PanelFilter createFilterWithDialog(MainFilterController controller, FilterFromDialog dialogResult) {
