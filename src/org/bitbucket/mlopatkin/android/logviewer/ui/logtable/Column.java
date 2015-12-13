@@ -18,8 +18,12 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -118,11 +122,39 @@ public enum Column {
     public abstract Object getValue(int rowIndex, LogRecord record);
 
     // TODO: reduce visibility
+    // For now it is used by ValueSearcher and in SearchResultsHighlightCell renderer
     public int getIndex() {
         return ordinal();
     }
 
     static Column getByColumnIndex(int index) {
         return values()[index];
+    }
+
+    /**
+     * @return the list of all columns that are enabled by config file in the specified order
+     */
+    static List<Column> getSelectedColumns() {
+        List<String> columnKeys = Configuration.ui.columns();
+        List<Column> columns = new ArrayList<>(columnKeys.size());
+
+        for (String key : columnKeys) {
+            // Can be replacing with map lookup if there is performance bottleneck
+            for (Column c : values()) {
+                if (c.columnName.equals(key)) {
+                    columns.add(c);
+                }
+            }
+        }
+        return columns;
+    }
+
+    public TableColumnBuilder makeColumnBuilder() {
+        TableColumnBuilder builder = new TableColumnBuilder(getIndex());
+        if (title != null) {
+            builder.setHeader(title);
+        }
+
+        return builder;
     }
 }
