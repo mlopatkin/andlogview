@@ -1,0 +1,78 @@
+/*
+ * Copyright 2015 Mikhail Lopatkin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.4'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'net.ltgt.apt'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.dagger:dagger:2.0'
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'log4j:log4j:1.2.17'
+    compile 'net.sf.jopt-simple:jopt-simple:4.6'
+    compile 'com.google.android.tools:ddmlib:r13'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+
+    apt 'com.google.dagger:dagger-compiler:2.0'
+}
+
+applicationName = 'logview'
+version = '0.19-SNAPSHOT'
+mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+            srcDir 'utils'
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+    test {
+        java {
+            srcDir 'test'
+        }
+    }
+}
+
+shadow.applicationDistribution.from(project.getProjectDir()) {
+    include 'HISTORY', 'LICENSE', 'NOTICE', 'README'
+}

@@ -95,6 +95,9 @@
     <target name="make-jar" depends="compile-dist, unpack-libs, copy-res, make-dist-dir">
         <jar destfile="${build.lib.dir}/${main.jar.name}">
             <fileset dir="${build.classes.dir}"/>
+            <manifest>
+                <attribute name="Main-Class" value="org.bitbucket.mlopatkin.android.logviewer.Main"/>
+            </manifest>
         </jar>
     </target>
 
