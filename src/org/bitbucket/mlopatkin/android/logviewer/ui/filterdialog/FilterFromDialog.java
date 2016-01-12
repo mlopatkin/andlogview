@@ -28,18 +28,20 @@ import com.google.gson.reflect.TypeToken;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.MultiTagFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
+import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
 
 import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FilterFromDialog implements ColoringFilter {
@@ -47,6 +49,29 @@ public class FilterFromDialog implements ColoringFilter {
     private static final Joiner commaJoiner = Joiner.on(", ");
     public static final FilterStorage.FilterStorageClient<List<FilterFromDialog>> STORAGE_CLIENT =
             new FilterFromDialogStorageClient();
+
+    private static final SearchRequestParser.Delegate<Predicate<String>> tagParserDelegate =
+            new SearchRequestParser.Delegate<Predicate<String>>() {
+                private SearcherBuilder matchWhole =
+                        new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(true);
+                private SearcherBuilder matchSubstring =
+                        new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(false);
+
+                @Override
+                public Predicate<String> createRegexpSearcher(@Nonnull String pattern)
+                        throws RequestCompilationException {
+                    return matchSubstring.buildRegexp(pattern);
+                }
+
+                @Override
+                public Predicate<String> createPlainSearcher(@Nonnull String pattern)
+                        throws RequestCompilationException {
+                    return matchWhole.buildPlain(pattern);
+                }
+            };
+
+    private static final SearchRequestParser<Predicate<String>> tagParser =
+            new SearchRequestParser<>(tagParserDelegate);
 
     private List<String> tags;
     private List<Integer> pids;
@@ -61,7 +86,6 @@ public class FilterFromDialog implements ColoringFilter {
     private transient Predicate<LogRecord> compiledPredicate;
     private transient String tooltipRepresentation;
 
-    // for JSON deserialization
     public FilterFromDialog() {
     }
 
@@ -80,7 +104,11 @@ public class FilterFromDialog implements ColoringFilter {
     private Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
         List<Predicate<LogRecord>> predicates = Lists.newArrayListWithCapacity(6);
         if (tags != null && !tags.isEmpty()) {
-            predicates.add(new MultiTagFilter(tags.toArray(new String[tags.size()])));
+            List<Predicate<String>> tagPredicates = Lists.newArrayListWithCapacity(tags.size());
+            for (String tagPattern : tags) {
+                tagPredicates.add(tagParser.parse(tagPattern));
+            }
+            predicates.add(LogRecordPredicates.matchTag(Predicates.or(tagPredicates)));
         }
         if (pids != null && !pids.isEmpty()) {
             predicates.add(LogRecordPredicates.withAnyOfPids(pids));
@@ -126,7 +154,8 @@ public class FilterFromDialog implements ColoringFilter {
             implements FilterStorage.FilterStorageClient<List<FilterFromDialog>> {
 
         private static final Type FILTER_LIST_TYPE =
-                new TypeToken<List<FilterFromDialog>>() {}.getType();
+                new TypeToken<List<FilterFromDialog>>() {
+                }.getType();
 
         FilterFromDialogStorageClient() {
         }

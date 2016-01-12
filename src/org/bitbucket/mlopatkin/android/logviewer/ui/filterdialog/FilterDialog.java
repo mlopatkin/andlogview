@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
@@ -88,6 +89,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         return Collections.emptyList();
     }
 
+    @Nullable
     private String getMessageText() {
         String message = messageTextField.getText();
         if (!CharMatcher.WHITESPACE.matchesAllOf(message)) {
@@ -149,12 +151,14 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
             }
         }
         String request = getMessageText();
-        try {
-            SearchStrategyFactory.createSearchStrategy(request);
-        } catch (RequestCompilationException e) {
-            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
-                    request, e.getMessage());
-            return false;
+        if (request != null) {
+            try {
+                SearchStrategyFactory.createSearchStrategy(request);
+            } catch (RequestCompilationException e) {
+                ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
+                        request, e.getMessage());
+                return false;
+            }
         }
         return true;
     }

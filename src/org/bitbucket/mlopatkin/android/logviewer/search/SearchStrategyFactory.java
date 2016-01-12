@@ -15,11 +15,10 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Strings;
-
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Creates {@link SearchStrategy}s and {@link HighlightStrategy}s according to
@@ -38,51 +37,39 @@ import java.util.regex.PatternSyntaxException;
  *
  * @see Pattern
  */
+@ParametersAreNonnullByDefault
+// TODO: this class should not be used for tag/appname filters
 public class SearchStrategyFactory {
+
+    private static class DelegateImpl implements SearchRequestParser.Delegate<HighlightStrategy> {
+        @Override
+        public HighlightStrategy createRegexpSearcher(String pattern) throws RequestCompilationException {
+            try {
+                return new RegExpSearcher(pattern);
+            } catch (PatternSyntaxException e) {
+                throw new RequestCompilationException(e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public HighlightStrategy createPlainSearcher(String pattern) throws RequestCompilationException {
+            return new IgnoreCaseSearcher(pattern);
+        }
+    }
+
+    private static final SearchRequestParser<HighlightStrategy> requestParser =
+            new SearchRequestParser<>(new DelegateImpl());
+
 
     // this is static-only class
     private SearchStrategyFactory() {
     }
 
-    private static final char REGEX_BOUND_CHAR = '/';
 
-    private static boolean isRegexRequest(String request) {
-        assert request != null;
-        final int length = request.length();
-        if (length > 1) {
-            if (request.charAt(0) == REGEX_BOUND_CHAR
-                    && request.charAt(length - 1) == REGEX_BOUND_CHAR) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String extractRegexRequest(String request) {
-        assert isRegexRequest(request) : request + " is not a regex";
-        return request.substring(1, request.length() - 1);
-    }
 
     public static HighlightStrategy createHighlightStrategy(String request)
             throws RequestCompilationException {
-        if (!CharMatcher.WHITESPACE.matchesAllOf(Strings.nullToEmpty(request))) {
-            if (isRegexRequest(request)) {
-                try {
-                    String regexRequest = extractRegexRequest(request);
-                    if (!CharMatcher.WHITESPACE.matchesAllOf(regexRequest)) {
-                        return new RegExpSearcher(regexRequest);
-                    } else {
-                        throw new RequestCompilationException(request + " contains blank regex");
-                    }
-                } catch (PatternSyntaxException e) {
-                    throw new RequestCompilationException(e.getMessage(), e);
-                }
-            } else {
-                return new IgnoreCaseSearcher(request);
-            }
-        } else {
-            return null;
-        }
+        return requestParser.parse(request);
     }
 
     public static SearchStrategy createSearchStrategy(String request)

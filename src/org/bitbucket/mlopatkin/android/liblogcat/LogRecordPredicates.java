@@ -37,7 +37,6 @@ public final class LogRecordPredicates {
     private LogRecordPredicates() {
     }
 
-
     public static FluentPredicate<LogRecord> matchTag(final Predicate<String> tagMatcher) {
         return new FluentPredicate<LogRecord>() {
             @Override
