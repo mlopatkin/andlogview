@@ -97,7 +97,6 @@ public class FilterStorage {
         this.inStorage = inStorage;
         this.outStorage = outStorage;
         this.fileWorker = fileWorker;
-//        this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
     public static FilterStorage createForFile(File file) throws IOException {
@@ -168,6 +167,7 @@ public class FilterStorage {
     private void saveImpl(Map<String, JsonElement> filters) {
         try (Writer out = outStorage.openBufferedStream();
              JsonWriter writer = new JsonWriter(out)) {
+            writer.setIndent("  "); // some pretty-print
             saveToJsonWriter(writer, filters);
             logger.debug("Successfully written filter data, commiting");
         } catch (IOException e) {

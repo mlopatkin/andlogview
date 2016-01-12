@@ -116,7 +116,11 @@ public class FilterStorageTest {
 
         storage.saveFilters(new TestClient(), new TestClientData("123456"));
 
-        assertEquals("{\"TestClient\":{\"s\":\"123456\"}}", out.getLastWrittenString());
+        assertEquals("{\n" +
+                     "  \"TestClient\": {\n" +
+                     "    \"s\": \"123456\"\n" +
+                     "  }\n" +
+                     "}", out.getLastWrittenString());
     }
 
     @Test
