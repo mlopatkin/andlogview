@@ -40,7 +40,7 @@ public class ProcessListParser {
     private static final String VSIZE_REGEX = NUMBER_REGEX;
     private static final String RSS_REGEX = NUMBER_REGEX;
     private static final String PCY_REGEX = "(?:\\w\\w)?";
-    private static final String WCHAN_REGEX = "(?:" + HEX_NUMBER_REGEX + '|' + IDENTIFIER_REGEX + ')';
+    private static final String WCHAN_REGEX = "(?:" + HEX_NUMBER_REGEX + '|' + IDENTIFIER_REGEX + ")?";
     private static final String PC_REGEX = HEX_NUMBER_REGEX;
     /*
      * D Uninterruptible sleep (usually IO)

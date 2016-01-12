@@ -26,6 +26,7 @@ public class ProcessListParserTest {
     private static final String PS_NO_PCY_LINE = "root      12    2     0      0         ffffffff 00000000 S sync_supers";
     private static final String PS_NO_NAME_LINE = "root      626   2     0      0     fg  ffffffff 00000000 S ";
     private static final String PS_WCHAN_SYMBOL_LINE = "root      29392 2     0      0     fg  cpu_stoppe 00000000 S migration/3";
+    private static final String PS_NO_WCHAN_LINE = "u0_a251   4851  216   884420 35064 bg             00000000 R com.mapswithme.maps.pro";
 
     @Test
     public void testParseProcessListLine() {
@@ -50,5 +51,10 @@ public class ProcessListParserTest {
     @Test
     public void testParseProcessListSymbolicWchan() throws Exception {
         assertTrue(ProcessListParser.parseProcessListLine(PS_WCHAN_SYMBOL_LINE).matches());
+    }
+
+    @Test
+    public void testParseProcessListMissingWchan() throws Exception {
+        assertTrue(ProcessListParser.parseProcessListLine(PS_NO_WCHAN_LINE).matches());
     }
 }
