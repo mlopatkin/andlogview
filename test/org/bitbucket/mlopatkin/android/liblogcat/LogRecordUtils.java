@@ -53,4 +53,8 @@ public final class LogRecordUtils {
     public static LogRecord forBuffer(Buffer buffer) {
         return new LogRecord(new Date(), NO_ID, NO_ID, "", Priority.INFO, "", "", buffer);
     }
+
+    public static LogRecord forPidAndAppName(int pid, String appName) {
+        return new LogRecord(new Date(), pid, NO_ID, appName, Priority.INFO, "", "");
+    }
 }

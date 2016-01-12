@@ -128,4 +128,19 @@ public class FilterFromDialogTest {
             assertTrue(r.toString(), filter.apply(r));
         }
     }
+
+    @Test
+    public void testPidsAppNames_ifAppNameAndPidAreSpecifiedThenEitherOneShouldMatch() throws Exception {
+        LogRecord record1 = LogRecordUtils.forPidAndAppName(1, "app1");
+        LogRecord record2 = LogRecordUtils.forPidAndAppName(2, "app2");
+        LogRecord record3 = LogRecordUtils.forPidAndAppName(3, "app3");
+
+        filter.setPids(Collections.singletonList(1));
+        filter.setApps(Collections.singletonList("app2"));
+
+        filter.initialize();
+        assertTrue(filter.apply(record1));
+        assertTrue(filter.apply(record2));
+        assertFalse(filter.apply(record3));
+    }
 }

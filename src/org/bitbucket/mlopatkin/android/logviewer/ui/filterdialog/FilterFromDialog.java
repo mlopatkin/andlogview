@@ -20,16 +20,11 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
@@ -37,8 +32,6 @@ import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
 
 import java.awt.Color;
-import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -47,8 +40,6 @@ import javax.annotation.Nullable;
 public class FilterFromDialog implements ColoringFilter {
 
     private static final Joiner commaJoiner = Joiner.on(", ");
-    public static final FilterStorage.FilterStorageClient<List<FilterFromDialog>> STORAGE_CLIENT =
-            new FilterFromDialogStorageClient();
 
     private static final SearchRequestParser.Delegate<Predicate<String>> tagParserDelegate =
             new SearchRequestParser.Delegate<Predicate<String>>() {
@@ -102,7 +93,7 @@ public class FilterFromDialog implements ColoringFilter {
     }
 
     private Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
-        List<Predicate<LogRecord>> predicates = Lists.newArrayListWithCapacity(6);
+        List<Predicate<LogRecord>> predicates = Lists.newArrayListWithCapacity(4);
         if (tags != null && !tags.isEmpty()) {
             List<Predicate<String>> tagPredicates = Lists.newArrayListWithCapacity(tags.size());
             for (String tagPattern : tags) {
@@ -110,11 +101,17 @@ public class FilterFromDialog implements ColoringFilter {
             }
             predicates.add(LogRecordPredicates.matchTag(Predicates.or(tagPredicates)));
         }
+        Predicate<LogRecord> appsAndPidsPredicate = null;
         if (pids != null && !pids.isEmpty()) {
-            predicates.add(LogRecordPredicates.withAnyOfPids(pids));
+            appsAndPidsPredicate = LogRecordPredicates.withAnyOfPids(pids);
         }
         if (apps != null && !apps.isEmpty()) {
-            predicates.add(new AppNameFilter(apps));
+            AppNameFilter appNameFilter = new AppNameFilter(apps);
+            appsAndPidsPredicate =
+                    appsAndPidsPredicate != null ? Predicates.or(appsAndPidsPredicate, appNameFilter) : appNameFilter;
+        }
+        if (appsAndPidsPredicate != null) {
+            predicates.add(appsAndPidsPredicate);
         }
         if (messagePattern != null && !messagePattern.isEmpty()) {
             predicates.add(LogRecordPredicates
@@ -148,45 +145,6 @@ public class FilterFromDialog implements ColoringFilter {
             builder.append("<br>Priority>=").append(priority);
         }
         return builder.append("</html>").toString();
-    }
-
-    private static class FilterFromDialogStorageClient
-            implements FilterStorage.FilterStorageClient<List<FilterFromDialog>> {
-
-        private static final Type FILTER_LIST_TYPE =
-                new TypeToken<List<FilterFromDialog>>() {
-                }.getType();
-
-        FilterFromDialogStorageClient() {
-        }
-
-        @Override
-        public String getName() {
-            return "dialog_filters";
-        }
-
-        @Override
-        public List<FilterFromDialog> fromJson(Gson gson, JsonElement element) {
-            List<FilterFromDialog> filters = gson.fromJson(element, FILTER_LIST_TYPE);
-            for (FilterFromDialog filter : filters) {
-                try {
-                    filter.initialize();
-                } catch (RequestCompilationException e) {
-                    throw new JsonSyntaxException("Can't compile filters", e);
-                }
-            }
-            return filters;
-        }
-
-        @Override
-        public List<FilterFromDialog> getDefault() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public JsonElement toJson(Gson gson, List<FilterFromDialog> value) {
-            return gson.toJsonTree(value, FILTER_LIST_TYPE);
-        }
     }
 
     public List<String> getTags() {
