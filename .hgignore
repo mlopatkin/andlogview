@@ -13,3 +13,4 @@ gen/
 *.zip
 *.iml
 logview.properties
+gradle.properties

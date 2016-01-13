@@ -56,6 +56,10 @@ applicationName = 'logview'
 version = '0.19-SNAPSHOT'
 mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
 
+def javaVersion = JavaVersion.VERSION_1_7;
+sourceCompatibility = javaVersion;
+targetCompatibility = javaVersion; // defaults to sourceCompatibility
+
 sourceSets {
     main {
         java {
@@ -76,3 +80,14 @@ sourceSets {
 shadow.applicationDistribution.from(project.getProjectDir()) {
     include 'HISTORY', 'LICENSE', 'NOTICE', 'README'
 }
+
+// Force Java 7
+task enforceVersion << {
+    def foundVersion = JavaVersion.current();
+    if (foundVersion != javaVersion)
+        throw new IllegalStateException("Wrong Java version; required is "
+            + javaVersion + ", but found " + foundVersion);
+}
+
+// Prevent distributive from being built with Java 8
+distShadowZip.dependsOn(enforceVersion);
