@@ -37,16 +37,18 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     private final Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int rowIndex : getSelectedRows())
-               bookmarkModel.addRecord(getRecord(rowIndex));
+            for (int rowIndex : getSelectedRows()) {
+                bookmarkModel.addRecord(getRecord(rowIndex));
+            }
         }
     };
 
     private final Action acRemoveFromBookmarks = new AbstractAction("Remove from bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int rowIndex : getSelectedRows())
+            for (int rowIndex : getSelectedRows()) {
                 bookmarkModel.removeRecord(getRecord(rowIndex));
+            }
         }
     };
 
@@ -87,23 +89,23 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     @Override
     public void updateItemsState(JTable source) {
         switch (source.getSelectedRowCount()) {
-        case 0:
-            acAddToBookmarks.setEnabled(false);
-            acRemoveFromBookmarks.setEnabled(false);
-            acCopy.setEnabled(false);
-            toggleAddRemoveState(true);
-            break;
-        case 1:
-            acAddToBookmarks.setEnabled(true);
-            acRemoveFromBookmarks.setEnabled(true);
-            acCopy.setEnabled(true);
-            adjustAddRemoveVisibilty();
-            break;
-        default:
-            acAddToBookmarks.setEnabled(false);
-            acRemoveFromBookmarks.setEnabled(false);
-            acCopy.setEnabled(true);
-            toggleAddRemoveState(true);
+            case 0:
+                acAddToBookmarks.setEnabled(false);
+                acRemoveFromBookmarks.setEnabled(false);
+                acCopy.setEnabled(false);
+                toggleAddRemoveState(true);
+                break;
+            case 1:
+                acAddToBookmarks.setEnabled(true);
+                acRemoveFromBookmarks.setEnabled(true);
+                acCopy.setEnabled(true);
+                adjustAddRemoveVisibilty();
+                break;
+            default:
+                acAddToBookmarks.setEnabled(false);
+                acRemoveFromBookmarks.setEnabled(false);
+                acCopy.setEnabled(true);
+                toggleAddRemoveState(true);
         }
     }
 

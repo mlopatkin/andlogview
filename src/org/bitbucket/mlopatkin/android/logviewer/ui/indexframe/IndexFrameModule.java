@@ -16,12 +16,12 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
+import dagger.Module;
+import dagger.Provides;
+
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
-
-import dagger.Module;
-import dagger.Provides;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;

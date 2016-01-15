@@ -25,7 +25,6 @@ import javax.swing.JOptionPane;
 /**
  * This class contains helper methods to show error dialogs
  * to the user.
- * 
  */
 public class ErrorDialogsHelper {
     private ErrorDialogsHelper() {
@@ -45,7 +44,7 @@ public class ErrorDialogsHelper {
             SetupAdbDialog.showDialog(owner);
         } else {
             JOptionPane.showMessageDialog(owner, "The ADB executable was not found", "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                                          JOptionPane.ERROR_MESSAGE);
         }
     }
 

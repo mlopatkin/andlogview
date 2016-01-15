@@ -26,6 +26,9 @@ public final class MyStreamUtils {
 
     public static void consume(Reader reader) throws IOException {
         char[] buffer = new char[BUFFER_SIZE];
-        while (reader.read(buffer) != -1);
+        //noinspection StatementWithEmptyBody
+        while (reader.read(buffer) != -1) {
+            // do nothing, just read
+        }
     }
 }

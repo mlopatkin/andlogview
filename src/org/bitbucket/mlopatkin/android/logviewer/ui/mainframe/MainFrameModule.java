@@ -16,6 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import dagger.Module;
+import dagger.Provides;
+
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
@@ -24,9 +27,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
-
-import dagger.Module;
-import dagger.Provides;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

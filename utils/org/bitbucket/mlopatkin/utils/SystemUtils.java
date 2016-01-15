@@ -114,7 +114,7 @@ public class SystemUtils {
 
     /**
      * <p>
-     * The {@code file.separator} System Property. 
+     * The {@code file.separator} System Property.
      * The file separator is:
      * <ul>
      * <li>{@code "/"}</code> on UNIX</li>
@@ -725,63 +725,6 @@ public class SystemUtils {
      * @since Java 1.1
      */
     public static final String OS_VERSION = getSystemProperty("os.version");
-
-    /**
-     * <p>
-     * The {@code path.separator} System Property. Path separator (<code>&quot;:&quot;</code> on UNIX).
-     * </p>
-     * <p>
-     * Defaults to {@code null} if the runtime does not have security access to read this property or the property does
-     * not exist.
-     * </p>
-     * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
-     * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
-     * sync with that System property.
-     * </p>
-     *
-     * @since Java 1.1
-     */
-    public static final String PATH_SEPARATOR = getSystemProperty("path.separator");
-
-    /**
-     * <p>
-     * The {@code user.country} or {@code user.region} System Property. User's country code, such as {@code GB}. First
-     * in Java version 1.2 as {@code user.region}. Renamed to {@code user.country} in 1.4
-     * </p>
-     * <p>
-     * Defaults to {@code null} if the runtime does not have security access to read this property or the property does
-     * not exist.
-     * </p>
-     * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
-     * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
-     * sync with that System property.
-     * </p>
-     *
-     * @since 2.0
-     * @since Java 1.2
-     */
-    public static final String USER_COUNTRY = getSystemProperty("user.country") == null ?
-            getSystemProperty("user.region") : getSystemProperty("user.country");
-
-    /**
-     * <p>
-     * The {@code user.dir} System Property. User's current working directory.
-     * </p>
-     * <p>
-     * Defaults to {@code null} if the runtime does not have security access to read this property or the property does
-     * not exist.
-     * </p>
-     * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
-     * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
-     * sync with that System property.
-     * </p>
-     *
-     * @since Java 1.1
-     */
-    public static final String USER_DIR = getSystemProperty(USER_DIR_KEY);
 
     /**
      * <p>

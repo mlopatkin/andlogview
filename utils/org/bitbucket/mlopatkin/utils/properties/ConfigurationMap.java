@@ -41,7 +41,7 @@ public class ConfigurationMap implements Configuration {
 
     /**
      * Returns the value of the property.
-     * 
+     *
      * @param key
      * @return
      */
@@ -52,7 +52,7 @@ public class ConfigurationMap implements Configuration {
 
     /**
      * Sets the new value to the mutable property.
-     * 
+     *
      * @param key
      * @param value
      */
@@ -72,7 +72,7 @@ public class ConfigurationMap implements Configuration {
 
     /**
      * Set properties from {@link Properties} object.
-     * 
+     *
      * @param props
      */
     void assign(Properties props) {
@@ -123,7 +123,7 @@ public class ConfigurationMap implements Configuration {
             if (!property.isReadOnly()) {
                 try {
                     property.assign(key, props);
-                } catch (Exception e) {
+                } catch (Exception e) {  // OK to catch Exception here
                     throw new IllegalConfigurationException("Cannot read property: " + key, e);
                 }
             }

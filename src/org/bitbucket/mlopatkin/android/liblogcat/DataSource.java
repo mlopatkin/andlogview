@@ -26,18 +26,17 @@ import java.util.Set;
 public interface DataSource {
     /**
      * Sets the listener to which all output will be directed.
-     * 
-     * @param listener
-     *            the listener to set
+     *
+     * @param listener the listener to set
      */
     void setLogRecordListener(RecordListener<LogRecord> listener);
 
     /**
      * Returns the utility class that performs conversion from PID to process
      * name.
-     * 
+     *
      * @return {@link Map} or {@code null} if this feature is
-     *         not available
+     * not available
      */
     Map<Integer, String> getPidToProcessConverter();
 
@@ -48,7 +47,7 @@ public interface DataSource {
 
     /**
      * Returns a set of the buffers available in this source.
-     * 
+     *
      * @return a set of buffers
      */
     EnumSet<LogRecord.Buffer> getAvailableBuffers();
@@ -61,10 +60,10 @@ public interface DataSource {
     /**
      * Resets internal data structures and resends all available records into
      * the attached listener.
-     * 
+     *
      * @return {@code true} if the new are basically the same (e.g. reloading a
-     *         file), {@code false} if the records are completely new (so
-     *         bookmarks become invalid)
+     * file), {@code false} if the records are completely new (so
+     * bookmarks become invalid)
      */
     boolean reset();
 }

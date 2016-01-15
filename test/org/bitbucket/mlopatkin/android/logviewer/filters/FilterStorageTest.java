@@ -92,7 +92,7 @@ public class FilterStorageTest {
 
         assertEquals("", storage.loadFilters(new TestClient()).s);
         assertNull("Do not commit default entry if there is no entry at all",
-                out.getLastWrittenString());
+                   out.getLastWrittenString());
     }
 
     @Test
@@ -116,11 +116,12 @@ public class FilterStorageTest {
 
         storage.saveFilters(new TestClient(), new TestClientData("123456"));
 
-        assertEquals("{\n" +
-                     "  \"TestClient\": {\n" +
-                     "    \"s\": \"123456\"\n" +
-                     "  }\n" +
-                     "}", out.getLastWrittenString());
+        assertEquals(
+                "{\n"
+                        + "  \"TestClient\": {\n"
+                        + "    \"s\": \"123456\"\n"
+                        + "  }\n"
+                        + "}", out.getLastWrittenString());
     }
 
     @Test

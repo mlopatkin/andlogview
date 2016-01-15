@@ -41,7 +41,7 @@ import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
 
 public class Configuration {
 
-    public static class ui {
+    public static class ui {  // NO CHECKSTYLE
 
         private static final String PREFIX = "ui.";
 
@@ -130,7 +130,7 @@ public class Configuration {
         }
     }
 
-    public static class adb {
+    public static class adb {  // NO CHECKSTYLE
 
         private static final String PREFIX = "adb.";
 
@@ -187,7 +187,7 @@ public class Configuration {
         }
     }
 
-    public static class dump {
+    public static class dump {  // NO CHECKSTYLE
 
         private static final String PREFIX = "dump.";
         private static final String BUFFER_HEADER_KEY = PREFIX + "buffer";
@@ -214,7 +214,7 @@ public class Configuration {
             public void run() {
                 try {
                     Configuration.save();
-                } catch (Throwable e) {
+                } catch (Throwable e) {  // OK to catch Throwable here
                     // exception in shutdown hook is bad
                     logger.error("Exception while saving configuration", e);
                 }
@@ -245,12 +245,12 @@ public class Configuration {
         cfg.property(ui.BOOKMARK_BACKGROUND_KEY, color);
         cfg.property(ui.BOOKMARK_FOREGROUND_KEY, color);
         cfg.property(ui.BUFFER_ENABLED_KEY,
-                enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
+                     enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
         cfg.property(ui.COLUMNS_KEY, list(String.class, Parsers.stringParser));
         cfg.property(ui.HIDE_LOGGING_PROCESSES_KEY, bool().defaultVal(true));
         cfg.property(ui.HIGHLIGHT_FOREGROUNDS_KEY, list(Color.class, colorParser));
         cfg.property(ui.PRIORITY_FOREGROUND_KEY,
-                enumMap(Priority.class, Color.class, colorParser));
+                     enumMap(Priority.class, Color.class, colorParser));
         cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
 
         cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(new Point(0, 0)));
@@ -259,7 +259,7 @@ public class Configuration {
         cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
 
         cfg.property(adb.BUFFER_NAME_KEY,
-                enumMap(Buffer.class, String.class, Parsers.stringParser));
+                     enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.BUFFERSWITCH_KEY, string());
         cfg.property(adb.EXECUTABLE_KEY, string().defaultVal(adb.DEFAULT_EXECUTABLE));
         cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
@@ -269,7 +269,7 @@ public class Configuration {
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
 
         cfg.property(dump.BUFFER_HEADER_KEY,
-                enumMap(Buffer.class, String.class, Parsers.stringParser));
+                     enumMap(Buffer.class, String.class, Parsers.stringParser));
         // @formatter:on
 
         // setup default values from resource

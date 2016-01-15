@@ -19,25 +19,22 @@ package org.bitbucket.mlopatkin.utils.properties;
 /**
  * Interface to convert property values to and from strings to store them in
  * file.
- * 
- * @param <T>
- *            actual type of the property value.
+ *
+ * @param <T> actual type of the property value.
  */
 public interface Parser<T> {
     /**
      * Parses value string and converts it into property object
-     * 
-     * @param value
-     *            string to parse
+     *
+     * @param value string to parse
      * @return property value constructed from the string
      */
     T read(String value);
 
     /**
      * Encodes value into a string
-     * 
-     * @param value
-     *            value of a property
+     *
+     * @param value value of a property
      * @return value encoded into a string
      */
     String write(T value);

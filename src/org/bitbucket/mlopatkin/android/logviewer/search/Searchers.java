@@ -19,7 +19,6 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import com.google.common.collect.ImmutableList;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +38,7 @@ class OrSearcher implements RowSearchStrategy {
 
     @Override
     public boolean isRowMatched(LogRecord record) {
-        for(RowSearchStrategy s : searchers) {
+        for (RowSearchStrategy s : searchers) {
             if (s.isRowMatched(record)) {
                 return true;
             }
@@ -49,8 +48,8 @@ class OrSearcher implements RowSearchStrategy {
 
     @Override
     public void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter) {
-        for(RowSearchStrategy s : searchers) {
-           s.highlightColumn(record, columnIndex, columnHighlighter);
+        for (RowSearchStrategy s : searchers) {
+            s.highlightColumn(record, columnIndex, columnHighlighter);
         }
     }
 

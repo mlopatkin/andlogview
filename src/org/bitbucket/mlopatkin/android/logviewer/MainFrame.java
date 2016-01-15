@@ -17,8 +17,6 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;

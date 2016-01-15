@@ -31,16 +31,15 @@ import java.util.concurrent.Executors;
  * This class is a wrapper around the
  * {@link IDevice#executeShellCommand(String, IShellOutputReceiver)} method.
  * It allows to detect when the command is finished or failed.
- * <p>
+ * <p/>
  * Note that the {@link #run()} method will block until the command finishes.
  * Objects of this class are intended to be used in background threads.
  * Alternatively you can use {@link #start()} to run the command in background.
- * <p>
+ * <p/>
  * This class is immutable.
  *
- * @param <T>
- *            Subclass of {@link IShellOutputReceiver} to be passed into
- *            template methods to avoid unnecessary casts.
+ * @param <T> Subclass of {@link IShellOutputReceiver} to be passed into
+ * template methods to avoid unnecessary casts.
  */
 class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
 
@@ -63,7 +62,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
      */
     @Override
     public void run() {
-        logger.debug("Starting command "+ command);
+        logger.debug("Starting command " + command);
         try {
             device.executeShellCommand(command, receiver, timeOut);
         } catch (TimeoutException e) {
@@ -96,13 +95,11 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
     /**
      * Called when one of exceptions occured during shell command's execution.
      *
-     * @param e
-     *            exception (one of {@link TimeoutException},
-     *            {@link AdbCommandRejectedException},
-     *            {@link ShellCommandUnresponsiveException}, {@link IOException}
-     *            )
-     * @param outputReceiver
-     *            {@link IShellOutputReceiver} previously passed to constructor
+     * @param e exception (one of {@link TimeoutException},
+     * {@link AdbCommandRejectedException},
+     * {@link ShellCommandUnresponsiveException}, {@link IOException}
+     * )
+     * @param outputReceiver {@link IShellOutputReceiver} previously passed to constructor
      */
     protected void onException(Exception e, T outputReceiver) {
     }
@@ -110,8 +107,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
     /**
      * Called when execution of the command finishes.
      *
-     * @param outputReceiver
-     *            {@link IShellOutputReceiver} previously passed to constructor
+     * @param outputReceiver {@link IShellOutputReceiver} previously passed to constructor
      */
     protected void onCommandFinished(T outputReceiver) {
     }

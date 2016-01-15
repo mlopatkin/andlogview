@@ -31,11 +31,9 @@ public class MyListUtils {
 
     /**
      * Merges {@code elems} into {@code base} with respect to the sorting order.
-     * 
-     * @param base
-     *            sorted list
-     * @param elems
-     *            sorted list of elements to be merged into {@code base}
+     *
+     * @param base sorted list
+     * @param elems sorted list of elements to be merged into {@code base}
      * @return index of first inserted row
      */
     public static <T extends Comparable<? super T>> int mergeOrdered(List<T> base, List<T> elems) {
@@ -100,13 +98,11 @@ public class MyListUtils {
      * {@code items}. After that {@code items} should remain sorted and
      * {@code value} should be inserted after all equivalent elements already
      * presented in the {@code items}, if any.
-     * 
-     * @param items
-     *            non-{@code null} sorted list
-     * @param value
-     *            to be inserted into list
+     *
+     * @param items non-{@code null} sorted list
+     * @param value to be inserted into list
      * @return position in which {@code value} should be inserted into
-     *         {@code items} using {@link List#add(int, Object)}
+     * {@code items} using {@link List#add(int, Object)}
      */
     public static <T extends Comparable<? super T>> int getUpperBoundPos(List<T> items, T value) {
         if (items.isEmpty()) {

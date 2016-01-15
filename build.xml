@@ -35,7 +35,7 @@
     <property name="target.version" value="1.7"/>
 
     <!-- Ivy configurations -->
-    
+
     <property name="build.sysclasspath" value="ignore"/>
 
     <!-- Locations for intermediate libraries and compiled files - what goes to the jar -->
@@ -109,7 +109,7 @@
                source="${target.version}"
                debug="${debug}">
             <src path="${src.main.dir}"/>
-            <src path="${src.utils.dir}"/>        	        	
+            <src path="${src.utils.dir}"/>
         	<compilerarg line="-processorpath ${toString:apt.libraries}" />
         	<compilerarg line="-s ${build.gen.dir}"/>
         </javac>
@@ -163,7 +163,7 @@
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.lib.dir}"/>
         <mkdir dir="${build.test.dir}"/>
-    	<mkdir dir="${build.gen.dir}"/>
+        <mkdir dir="${build.gen.dir}"/>
         <mkdir dir="${report.dir}"/>
     </target>
 

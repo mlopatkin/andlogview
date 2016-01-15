@@ -171,15 +171,15 @@ public class MyListUtilsUpperBoundTest {
 
     @Test
     public void testGetUpperBoundPos_randomTest() {
-        final int N = 1000;
-        final int MAX = 100;
+        final int n = 1000;
+        final int max = 100;
         Random rnd = new Random();
         List<Integer> items = list();
-        for (int i = 0; i < N; ++i) {
-            items.add(rnd.nextInt(MAX));
+        for (int i = 0; i < n; ++i) {
+            items.add(rnd.nextInt(max));
         }
         Collections.sort(items);
-        int value = rnd.nextInt(MAX);
+        int value = rnd.nextInt(max);
         int expected = reliableGetUpperBound(items, value);
         int result = MyListUtils.getUpperBoundPos(items, value);
         assertEquals(expected, result);

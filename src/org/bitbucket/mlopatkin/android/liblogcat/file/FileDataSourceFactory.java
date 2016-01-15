@@ -28,8 +28,7 @@ import java.text.ParseException;
 
 public class FileDataSourceFactory {
 
-    private static final String DUMPSTATE_FIRST_LINE
-            = "========================================================";
+    private static final String DUMPSTATE_FIRST_LINE = "========================================================";
     private static final int READ_AHEAD_LIMIT = 65536;
 
     private FileDataSourceFactory() {
@@ -70,7 +69,7 @@ public class FileDataSourceFactory {
     private static DataSource createLogFileSource(File file, String checkLine, BufferedReader in)
             throws IOException, UnrecognizedFormatException {
         LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(file,
-                checkLine);
+                                                                                         checkLine);
         in.reset();
         source.parse(in);
         return source;

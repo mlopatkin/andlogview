@@ -1,16 +1,16 @@
 version 0.19
-	[+] Save filters between app runs
-	[+] Column isn't shown if there is no data for it, e.g. brief logcat dump
+    [+] Save filters between app runs
+    [+] Column isn't shown if there is no data for it, e.g. brief logcat dump
 
-	[*] Fixed compatibility with Android L
-	[*] Fixed compatibility with Android M
+    [*] Fixed compatibility with Android L
+    [*] Fixed compatibility with Android M
 
-	[*] LogView now requires Java 7 to run
+    [*] LogView now requires Java 7 to run
 
 version 0.18.1
-	[*] Recompiled with Java 6 compatibility
-	[*] Fixed NPE when saving configuration
-	[*] Improved Linux startup script
+    [*] Recompiled with Java 6 compatibility
+    [*] Fixed NPE when saving configuration
+    [*] Improved Linux startup script
 
 version 0.18
     [+] Application name is now displayed as column
@@ -23,7 +23,7 @@ version 0.18
 
 version 0.17.4
     [+] Ctrl+R now resets logs
-    
+
 version 0.17.3
     [*] Fixed classpath issue if the path to the bat file contains spaces
     [*] Fixed exception when viewing logs after the device was disconnected
@@ -31,28 +31,28 @@ version 0.17.3
     [*] Fixed app hanging when connecting to the running emulator
     [*] Fixed incorrect log output for DDMS errors and warnings
     [*] Started emulator now is added to the "Select device" dialog correctly
-    
+
 version 0.17.2
     [*] Ordering of the lines was reworked to be as natural as possible
     [*] Logs are now saved in native adb format
     [*] Fixed crash when opening ill-formated logfile
     [*] Added notification for the user on uncaught exceptions
-    
+
 version 0.17.1
     [*] Scrolling if there are many filters
     [*] Dialogs are shown over the main window after alt-tab
-    [*] Filtering process list from logging-related stuff 
-    
+    [*] Filtering process list from logging-related stuff
+
 version 0.17
     [+] Regular expression search and filter
     [+] List of processes
     [+] Copy lines with a context menu
-    
+
     [*] Tooltips for truncated cells
     [*] Matches are highlighted in tooltips too
     [*] Several bugs fixed
     [*] Multiple UI glitches fixed
-    
+
 version 0.16
     [+] Notification about current connection or opened file
     [+] Menu command to show bookmarks window
@@ -60,84 +60,84 @@ version 0.16
     [+] ADB library from the SDK can be connected instead of custom one
     [+] Properties are now stored in %APPDATA%\logview\logview.properties
         (~/.logview/logview.propeties)
-    
+
     [*] Improved responsiveness during the startup
     [*] Open and save dialogs remember last used directory
     [*] Bookmarks are cleared after reset if it makes sense (in the ADB mode)
-    
+
     [*] Distribution form changed
-    
+
 version 0.15
     [+] Saving logs
     [+] Keyboard shortcuts for main menu commands
     [+] Highlighting bookmarks
     [+] Copy text from PID, tag or message
     [+] Logs and dumpstates in old format are now supported
-    
+
     [*] Fixed crash when opening a dumpstate file specified from the command-line
     [*] "Pin" was renamed to "Bookmark"
     [*] Available buffers on the device are detected
     [*] Minor bugfixes and refactorings
-     
+
 version 0.14
-	[+] File opening via main menu
-	[+] Device selector
-	[+] Notification about disconnected device
-	[+] Drag&drop support for files
-	[+] Multiple colors for highlighting filters
-	
-	[*] "Reset logs" menu item moved into main menu
-	[*] Buffer type selection moved into main menu
-	[*] Status bar introduced
-	[*] Minor bugfixes and refactorings
-	
+    [+] File opening via main menu
+    [+] Device selector
+    [+] Notification about disconnected device
+    [+] Drag&drop support for files
+    [+] Multiple colors for highlighting filters
+
+    [*] "Reset logs" menu item moved into main menu
+    [*] Buffer type selection moved into main menu
+    [*] Status bar introduced
+    [*] Minor bugfixes and refactorings
+
 version 0.13
     [+] Reset log in adb mode
-    
-version 0.12	
-	[+] Case-insensitive search
+
+version 0.12
+    [+] Case-insensitive search
     [+] Index window for filter results
-     
+
 version 0.11
-	[+] Parse simple log files in threadtime and brief formats
-	[*] Show message if text not found
+    [+] Parse simple log files in threadtime and brief formats
+    [*] Show message if text not found
 
 version 0.10
     [+] Filtering by log type
     [+] New adb interaction library
 
-version 0.9.1    
+version 0.9.1
     [*] Copy from log fix
-    
+
 version 0.9
     [+] Disabling filters
     [*] Search hotkey changed to Ctrl+F
     [*] Minor bugfix
-    
+
 version 0.8
-	[+] Search back
-	[+] Highlight search results
-	[+] Pinned records window
+    [+] Search back
+    [+] Highlight search results
+    [+] Pinned records window
 
 version 0.7
-	[+] Full text search
+    [+] Full text search
 
 version 0.6
-	[+] Pid-to-name tooltip in dumpstate files
+    [+] Pid-to-name tooltip in dumpstate files
 
 version 0.5
-	[+] Filter editing
-    
+    [+] Filter editing
+
 version 0.4
-	[+] Hiding filter
+    [+] Hiding filter
 
 version 0.3
-	[+] Dumpstate parsing
+    [+] Dumpstate parsing
 
 version 0.2
-	[+] Filtering
+    [+] Filtering
 
 version 0.1
-	[+] Display adb output
-	[+] Autoscroll
-	[+] Coloring
+    [+] Display adb output
+    [+] Autoscroll
+    [+] Coloring

@@ -28,6 +28,7 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'checkstyle'
 apply plugin: 'net.ltgt.apt'
 apply plugin: 'eclipse'
 apply plugin: 'application'
@@ -50,6 +51,10 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.9.5'
 
     apt 'com.google.dagger:dagger-compiler:2.0'
+}
+
+checkstyle {
+    toolVersion = '6.5'
 }
 
 applicationName = 'logview'

@@ -17,6 +17,9 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import com.android.ddmlib.IDevice;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
@@ -31,9 +34,6 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -150,8 +150,8 @@ public class Main {
             @Override
             public void run() {
                 JOptionPane.showMessageDialog(null,
-                        "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
-                        "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
+                                              "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
+                                              "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -165,9 +165,9 @@ public class Main {
                         null,
                         "<html>Unhandled exception occured. Please collect log file at<br>"
                                 + MyStringUtils.joinPath(System.getProperty("java.io.tmpdir"),
-                                        "logview.log") + "<br>and send it to the authors, "
+                                                         "logview.log") + "<br>and send it to the authors, "
                                 + "then restart the program");
-            } catch (Throwable ex) {
+            } catch (Throwable ex) {  // OK to catch Throwable here
                 // bad idea to log something if we already failed with logging
                 // logger.error("Exception in exception handler", ex);
             }

@@ -3,7 +3,6 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.junit.Test;
 import org.mockito.Mockito;
 

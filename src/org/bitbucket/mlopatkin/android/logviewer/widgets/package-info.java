@@ -15,7 +15,7 @@
  */
 
 /**
- * This package contains generic extensions to the Swing widgets unrelated 
+ * This package contains generic extensions to the Swing widgets unrelated
  * to the logviewer app implementation.
  */
 package org.bitbucket.mlopatkin.android.logviewer.widgets;

@@ -26,8 +26,8 @@ import javax.swing.JTable;
 /**
  * This class implements context menu for {@link JTable} that follows specific
  * policy of selecting items with right-click.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * <ul>
  * <li>Nothing is selected
  * <ul>
@@ -59,9 +59,8 @@ public class TablePopupMenu extends JPopupMenu {
         /**
          * Called before menu is shown. Implement this method to adjust the
          * context menu's state according to the table's state.
-         * 
-         * @param source
-         *            the table for which the menu will be shown
+         *
+         * @param source the table for which the menu will be shown
          */
         void updateItemsState(JTable source);
     }
@@ -72,11 +71,9 @@ public class TablePopupMenu extends JPopupMenu {
 
     /**
      * Adds an updater.
-     * 
-     * @param updater
-     *            a non-{@code null} updater to add
-     * @throws NullPointerException
-     *             if {@code updater} is null
+     *
+     * @param updater a non-{@code null} updater to add
+     * @throws NullPointerException if {@code updater} is null
      */
     public void addItemsUpdater(ItemsUpdater updater) {
         if (updater == null) {
@@ -87,9 +84,8 @@ public class TablePopupMenu extends JPopupMenu {
 
     /**
      * Removes a previously added updater.
-     * 
-     * @param updater
-     *            an updater to remove
+     *
+     * @param updater an updater to remove
      */
     public void removeItemsUpdater(ItemsUpdater updater) {
         updaters.remove(updater);

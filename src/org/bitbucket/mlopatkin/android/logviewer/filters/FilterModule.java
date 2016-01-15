@@ -16,10 +16,10 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-
 import dagger.Module;
 import dagger.Provides;
+
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 
 import javax.inject.Singleton;
 

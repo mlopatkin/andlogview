@@ -26,7 +26,6 @@ import java.util.EnumMap;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 
 public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
 

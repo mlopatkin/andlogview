@@ -18,13 +18,11 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 import java.util.List;
 
 /**
- * 
  * This interface should be implemented by classes that perform log record
  * processing. {@link DataSource} objects will put all records via
  * {@link #addRecord(Object)} method invocations.
- * 
- * @param <T>
- *            the actual type of records
+ *
+ * @param <T> the actual type of records
  */
 public interface RecordListener<T> {
     /**
@@ -33,9 +31,8 @@ public interface RecordListener<T> {
      * doesn't match the actual order of records, i. e. there can be two
      * consequent calls "add record A" and "add record B" but the record B is
      * created earlier than the record A.
-     * 
-     * @param record
-     *            a non-null new record
+     *
+     * @param record a non-null new record
      */
     void addRecord(T record);
 
@@ -43,9 +40,8 @@ public interface RecordListener<T> {
      * Called when the {@link DataSource} sends all containing data to the
      * listener and guarantees that there never be any more. The list supplied
      * cannot be null or contain nulls.
-     * 
-     * @param records
-     *            list of records sorted by time in ascending order
+     *
+     * @param records list of records sorted by time in ascending order
      */
     void setRecords(List<T> records);
 }

@@ -122,17 +122,18 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     private static final String ACTION_JUMP_TO_LINE = "jump_to_line";
 
     private void setupKeys() {
-        UiHelper.bindKeyFocused(indexedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
-                                new AbstractAction() {
-                                    @Override
-                                    public void actionPerformed(ActionEvent e) {
-                                        int row = indexedRecordsTable.getSelectedRow();
-                                        if (row >= 0) {
-                                            row = indexedRecordsTable.convertRowIndexToModel(row);
-                                            controller.activateRow(row);
-                                        }
-                                    }
-                                });
+        UiHelper.bindKeyFocused(
+                indexedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int row = indexedRecordsTable.getSelectedRow();
+                        if (row >= 0) {
+                            row = indexedRecordsTable.convertRowIndexToModel(row);
+                            controller.activateRow(row);
+                        }
+                    }
+                });
     }
 
     @Override

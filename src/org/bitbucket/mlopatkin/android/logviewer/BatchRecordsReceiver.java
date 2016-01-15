@@ -24,11 +24,10 @@ import java.util.List;
  * allows batch processing for performance reasons. All methods of this
  * interface should be called on UI thread. This is not an extension of the
  * {@link RecordListener} because of this.
- * <p>
+ * <p/>
  * <b>Implementations of this interface are not thread-safe!</b>
- * 
- * @param <T>
- *            the actual type of records
+ *
+ * @param <T> the actual type of records
  */
 public interface BatchRecordsReceiver<T> {
     /**
@@ -39,7 +38,7 @@ public interface BatchRecordsReceiver<T> {
     /**
      * Add several records at once. It is guaranteed that these records are
      * correctly sorted.
-     * 
+     *
      * @param records
      */
     void addRecords(List<T> records);

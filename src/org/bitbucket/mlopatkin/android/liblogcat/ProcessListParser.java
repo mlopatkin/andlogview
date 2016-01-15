@@ -25,8 +25,7 @@ import java.util.regex.Pattern;
  */
 public class ProcessListParser {
 
-    private static final String HEADER_REGEX
-            = "^USER\\s+PID\\s+PPID\\s+VSIZE\\s+RSS\\s+PCY\\s+WCHAN\\s+PC\\s+NAME$";
+    private static final String HEADER_REGEX = "^USER\\s+PID\\s+PPID\\s+VSIZE\\s+RSS\\s+PCY\\s+WCHAN\\s+PC\\s+NAME$";
 
     private static final String NUMBER_REGEX = "[\\-]?\\d+";
     private static final String HEX_NUMBER_REGEX = "\\p{XDigit}+";
@@ -54,9 +53,16 @@ public class ProcessListParser {
     private static final String PROCESS_STATUS_REGEX = "[DRSTWXZ]";
     private static final String PROCESS_NAME = "(.*)";
 
-    private static final String[] PS_LINE_FIELDS = {USERNAME_REGEX, PID_REGEX, PPID_REGEX,
-            VSIZE_REGEX, RSS_REGEX, PCY_REGEX, WCHAN_REGEX, PC_REGEX, PROCESS_STATUS_REGEX,
-            PROCESS_NAME};
+    private static final String[] PS_LINE_FIELDS = {USERNAME_REGEX,
+                                                    PID_REGEX,
+                                                    PPID_REGEX,
+                                                    VSIZE_REGEX,
+                                                    RSS_REGEX,
+                                                    PCY_REGEX,
+                                                    WCHAN_REGEX,
+                                                    PC_REGEX,
+                                                    PROCESS_STATUS_REGEX,
+                                                    PROCESS_NAME};
 
     private static final String PS_LINE_REGEX = "^" + Joiner.on(SEP).join(PS_LINE_FIELDS) + "$";
 

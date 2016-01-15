@@ -74,7 +74,7 @@ class Property<T> {
     /**
      * Read-only property cannot be loaded from a file, only assigned from
      * resources
-     * 
+     *
      * @return
      */
     public boolean isReadOnly() {

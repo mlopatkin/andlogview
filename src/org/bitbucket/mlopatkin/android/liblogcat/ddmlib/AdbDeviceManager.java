@@ -62,7 +62,7 @@ public class AdbDeviceManager {
         }
     }
 
-    public static abstract class AbstractDeviceListener implements IDeviceChangeListener {
+    public abstract static class AbstractDeviceListener implements IDeviceChangeListener {
 
         @Override
         public void deviceConnected(IDevice device) {

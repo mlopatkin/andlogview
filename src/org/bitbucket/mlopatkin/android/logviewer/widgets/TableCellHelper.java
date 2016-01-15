@@ -34,15 +34,15 @@ public class TableCellHelper {
     /**
      * Creates read-only {@link JTextField}. Cell editing is toggled with double
      * click.
-     * 
+     *
      * @return {@link TableCellEditor} over {@link JTextField}
      */
     public static TableCellEditor createReadOnlyCellTextEditor() {
         return new DefaultCellEditor(new JTextField()) {
             public Component getTableCellEditorComponent(JTable table, Object value,
-                    boolean isSelected, int row, int column) {
+                                                         boolean isSelected, int row, int column) {
                 JTextField tf = (JTextField) super.getTableCellEditorComponent(table, value,
-                        isSelected, row, column);
+                                                                               isSelected, row, column);
                 tf.setEditable(false);
                 return tf;
             }

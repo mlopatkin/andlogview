@@ -32,7 +32,7 @@ import javax.swing.Timer;
 /**
  * This class tries to limit the number of events pushing records into the
  * model.
- * <p>
+ * <p/>
  * If the source produces records with high frequency (e. g.
  * {@link AdbDataSource} at the startup) and for each record we create an event
  * then the event queue becomes overloaded with these events. The UI becomes
@@ -78,21 +78,21 @@ public class BufferedListener<T> implements RecordListener<T> {
     // the number of records sent into eventqueue between watchdog invocations
     private volatile AtomicInteger immediateCount = new AtomicInteger(0);
 
-    private List<T> internalBuffer = new ArrayList<T>();;
+    private List<T> internalBuffer = new ArrayList<T>();
     private final Object lock = new Object();
 
     @Override
     public void addRecord(final T record) {
         assert record != null;
         switch (policy) {
-        case IMMEDIATE:
-            sendRecordImmediate(record);
-            break;
-        case BUFFER:
-            addRecordToBuffer(record);
-            break;
-        default:
-            throw new IllegalStateException("Invalid policy value: " + policy);
+            case IMMEDIATE:
+                sendRecordImmediate(record);
+                break;
+            case BUFFER:
+                addRecordToBuffer(record);
+                break;
+            default:
+                throw new IllegalStateException("Invalid policy value: " + policy);
         }
     }
 

@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

@@ -39,9 +39,9 @@ import javax.swing.text.StyledDocument;
 public class HighlightCellRenderer extends StyledLabel implements TableCellRenderer,
         TextHighlighter {
 
-    private final static Border NO_BORDER = new EmptyBorder(1, 1, 1, 1);
+    private static final Border NO_BORDER = new EmptyBorder(1, 1, 1, 1);
 
-    private final static Border FOCUSED_BORDER = getFocusedBorder();
+    private static final Border FOCUSED_BORDER = getFocusedBorder();
 
     private StyledDocument document = new DefaultStyledDocument();
     private static final Style BASE_STYLE = StyleContext.getDefaultStyleContext().getStyle(
@@ -61,7 +61,7 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
+                                                   boolean hasFocus, int row, int column) {
         clearHighlight();
         if (hasFocus) {
             setBorder(FOCUSED_BORDER);
@@ -111,7 +111,7 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
     /**
      * Hack to get a consistent focused border from
      * {@link DefaultTableCellRenderer}.
-     * 
+     *
      * @return the border for focuse cell
      */
     private static Border getFocusedBorder() {

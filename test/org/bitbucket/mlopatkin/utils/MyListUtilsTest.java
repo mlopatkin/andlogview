@@ -29,17 +29,17 @@ public class MyListUtilsTest {
 
     @Test
     public void testMergeOrdered_emptyBoth() {
-        genericTest(ListTestUtils.<Integer> list(), ListTestUtils.<Integer> list(), 0);
+        genericTest(ListTestUtils.<Integer>list(), ListTestUtils.<Integer>list(), 0);
     }
 
     @Test
     public void testMergeOrdered_emptyBase() {
-        genericTest(ListTestUtils.<Integer> list(), list(3, 4, 5), 0);
+        genericTest(ListTestUtils.<Integer>list(), list(3, 4, 5), 0);
     }
 
     @Test
     public void testMergeOrdered_emptyElems() {
-        genericTest(list(3, 4, 5), ListTestUtils.<Integer> list(), 3);
+        genericTest(list(3, 4, 5), ListTestUtils.<Integer>list(), 3);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class MyListUtilsTest {
     }
 
     public <T extends Comparable<? super T>> void genericTest(List<T> base, List<T> elems,
-            int expectedResultPos) {
+                                                              int expectedResultPos) {
         List<T> result = new ArrayList<T>(base);
         result.addAll(elems);
         Collections.sort(result);

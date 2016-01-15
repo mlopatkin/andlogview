@@ -104,13 +104,14 @@ public class AdbDataSource implements DataSource, BufferReceiver {
 
     private Set<AdbBuffer> buffers = new HashSet<AdbBuffer>();
 
-    private boolean isBufferHere(String bufferName) {    	
-    	String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null || echo 0";
-    	if (SyncAdbShellCommand.execute(device, cmd).isEmpty()) {
-    		return true;
-    	}
-    	return false;
+    private boolean isBufferHere(String bufferName) {
+        String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null || echo 0";
+        if (SyncAdbShellCommand.execute(device, cmd).isEmpty()) {
+            return true;
+        }
+        return false;
     }
+
     private void setUpStream(LogRecord.Buffer buffer) {
         String bufferName = Configuration.adb.bufferName(buffer);
         if (bufferName == null) {
@@ -119,7 +120,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
 
         // check buffer for existence first
         if (!isBufferHere(bufferName)) {
-        	return;
+            return;
         }
         availableBuffers.add(buffer);
         final String commandLine = createLogcatCommandLine(bufferName);
@@ -161,7 +162,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
                 AdbDeviceManager.removeDeviceChangeListener(this);
             }
 
-        };
+        }
 
         @Override
         public void deviceChanged(IDevice device, int changeMask) {
@@ -170,6 +171,6 @@ public class AdbDataSource implements DataSource, BufferReceiver {
                 close();
                 AdbDeviceManager.removeDeviceChangeListener(this);
             }
-        };
+        }
     };
 }
