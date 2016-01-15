@@ -173,11 +173,10 @@ public class ConfigurationDialog extends JDialog {
 
     private void notifyAboutChanges() {
         if (!Objects.equal(Configuration.adb.executable(), textAdbExecutable.getText())) {
-            JOptionPane
-                    .showMessageDialog(
-                            this,
-                            "You've changed the path to the ADB executable. Please restart the application to apply changes.",
-                            "Please restart", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                                          "You've changed the path to the ADB executable. Please restart the "
+                                                  + "application to apply changes.",
+                                          "Please restart", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

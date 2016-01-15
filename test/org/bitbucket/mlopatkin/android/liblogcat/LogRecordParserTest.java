@@ -77,7 +77,8 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserThreadTime() {
-        LogRecord record = LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD, Collections.<Integer, String>emptyMap());
+        LogRecord record =
+                LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD, Collections.<Integer, String>emptyMap());
 
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
@@ -104,7 +105,8 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserBriefPad() {
-        LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD_PAD, Collections.<Integer, String>emptyMap());
+        LogRecord record =
+                LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD_PAD, Collections.<Integer, String>emptyMap());
 
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getTid());
@@ -118,7 +120,8 @@ public class LogRecordParserTest {
 
     @Test
     public void testLogRecordParserProcess() {
-        LogRecord record = LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD, Collections.<Integer, String>emptyMap());
+        LogRecord record =
+                LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD, Collections.<Integer, String>emptyMap());
 
         assertEquals(LogRecord.NO_ID, record.getTid());
         assertNull(record.getTime());

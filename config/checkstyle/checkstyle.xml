@@ -54,11 +54,11 @@
       <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
-<!--     <module name="LineLength">
+    <module name="LineLength">
       <property name="severity" value="error"/>
       <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-      <property name="max" value="100"/>
-    </module> -->
+      <property name="max" value="120"/>
+    </module>
     <module name="LeftCurly">
       <property name="severity" value="error"/>
     </module>
