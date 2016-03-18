@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -29,27 +30,13 @@ class ListTestUtils {
     private ListTestUtils() {
     }
 
+    @SafeVarargs
     static <T> ArrayList<T> list(T... args) {
-        return new ArrayList<T>(Arrays.asList(args));
+        return new ArrayList<>(Arrays.asList(args));
     }
 
     static <T> ArrayList<T> list() {
-        return new ArrayList<T>();
-    }
-
-    static <T> void assertListEquals(List<T> expected, List<T> actual) {
-        if (expected == null) {
-            if (actual == null) {
-                return;
-            } else {
-                fail("null expected but found non-null");
-            }
-        }
-        if (expected != null && actual == null) {
-            fail("Non-null expected but found null");
-        }
-        Object[] expecteds = expected.toArray(), actuals = actual.toArray();
-        assertArrayEquals(expecteds, actuals);
+        return new ArrayList<>();
     }
 
 }

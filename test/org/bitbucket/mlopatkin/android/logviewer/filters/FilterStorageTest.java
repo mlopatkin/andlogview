@@ -76,7 +76,7 @@ public class FilterStorageTest {
         CharSource in = CharSource.wrap("{\"TestClient\":{\"s\":\"123456\"}}");
         CharSink out = new NullCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.sameThreadExecutor());
+        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
         assertEquals("123456", storage.loadFilters(new TestClient()).s);
@@ -87,7 +87,7 @@ public class FilterStorageTest {
         CharSource in = CharSource.empty();
         StringCharSink out = new StringCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.sameThreadExecutor());
+        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
         assertEquals("", storage.loadFilters(new TestClient()).s);
@@ -100,7 +100,7 @@ public class FilterStorageTest {
         CharSource in = CharSource.wrap("{\"TestClient\":[]}");
         StringCharSink out = new StringCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.sameThreadExecutor());
+        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
         assertEquals("", storage.loadFilters(new TestClient()).s);
@@ -112,7 +112,7 @@ public class FilterStorageTest {
         CharSource in = CharSource.empty();
         StringCharSink out = new StringCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.sameThreadExecutor());
+        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
 
         storage.saveFilters(new TestClient(), new TestClientData("123456"));
 
@@ -129,7 +129,7 @@ public class FilterStorageTest {
         CharSource in = CharSource.empty();
         CharSink out = new FailCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.sameThreadExecutor());
+        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
 
         storage.saveFilters(new TestClient(), new TestClientData("123456"));
     }

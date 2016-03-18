@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.bitbucket.mlopatkin.utils.ListTestUtils.assertListEquals;
 import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
 import static org.junit.Assert.assertEquals;
 
@@ -99,7 +98,7 @@ public class MyListUtilsTest {
         Collections.sort(result);
 
         int resultPos = MyListUtils.mergeOrdered(base, elems);
-        assertListEquals(result, base);
+        assertEquals(result, base);
         assertEquals(expectedResultPos, resultPos);
     }
 }

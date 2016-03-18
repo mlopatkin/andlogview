@@ -16,6 +16,7 @@
 
 package org.bitbucket.mlopatkin.utils;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -87,7 +88,7 @@ public class FluentPredicateTest {
         return new Predicate<Integer>() {
             @Override
             public boolean apply(@Nullable Integer integer) {
-                return Objects.firstNonNull(integer, 1) % 2 != 0;
+                return MoreObjects.firstNonNull(integer, 1) % 2 != 0;
             }
         };
     }
