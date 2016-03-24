@@ -38,17 +38,18 @@ public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
     }
 
     public ListPropertyBuilder<T> defaultVal(List<T> value) {
-        this.defaultVal = new ArrayList<T>(value);
+        this.defaultVal = new ArrayList<>(value);
         return this;
     }
 
-    public ListPropertyBuilder<T> defaultVal(T... value) {
+    @SafeVarargs
+    public final ListPropertyBuilder<T> defaultVal(T... value) {
         this.defaultVal = Arrays.asList(value);
         return this;
     }
 
     static <T> ListPropertyBuilder<T> newListPropertyBuilder(Class<T> type) {
-        return new ListPropertyBuilder<T>(type);
+        return new ListPropertyBuilder<>(type);
     }
 
     @Override

@@ -80,7 +80,7 @@ public class SelectDeviceDialog extends JDialog {
 
     private static SelectDeviceDialog dialog;
 
-    private JList deviceList;
+    private JList<String> deviceList;
     private DialogResultReceiver receiver;
 
     private DeviceListModel devices = new DeviceListModel();
@@ -95,7 +95,7 @@ public class SelectDeviceDialog extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
         {
-            deviceList = new JList();
+            deviceList = new JList<>();
             deviceList.setModel(devices);
             contentPanel.add(deviceList);
 
@@ -165,12 +165,12 @@ public class SelectDeviceDialog extends JDialog {
         }
     }
 
-    private static class DeviceListModel extends AbstractListModel implements IDeviceChangeListener {
+    private static class DeviceListModel extends AbstractListModel<String> implements IDeviceChangeListener {
 
         private List<IDevice> devices;
 
         public DeviceListModel() {
-            devices = new ArrayList<IDevice>();
+            devices = new ArrayList<>();
             for (IDevice device : AdbDeviceManager.getAvailableDevices()) {
                 devices.add(device);
             }
@@ -187,7 +187,7 @@ public class SelectDeviceDialog extends JDialog {
         }
 
         @Override
-        public Object getElementAt(int index) {
+        public String getElementAt(int index) {
             IDevice device = getDevice(index);
             String deviceName = AdbDeviceManager.getDeviceDisplayName(device);
             if (device.isOnline()) {
