@@ -21,6 +21,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordUtils;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,8 +29,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FilterFromDialogTest {
 
@@ -142,5 +145,34 @@ public class FilterFromDialogTest {
         assertTrue(filter.apply(record1));
         assertTrue(filter.apply(record2));
         assertFalse(filter.apply(record3));
+    }
+
+    @Test
+    public void testAppNamesRegexMatchThrowsAppropriateExceptions() throws Exception {
+        assertInitializeThrowsExceptionWithRequestValue(
+                new FilterFromDialog().setApps(Collections.singletonList(" ")), " ");
+
+        assertInitializeThrowsExceptionWithRequestValue(
+                new FilterFromDialog().setApps(Collections.singletonList("/?/")), "/?/");
+
+        assertInitializeThrowsExceptionWithRequestValue(
+                new FilterFromDialog().setTags(Collections.singletonList(" ")), " ");
+
+        assertInitializeThrowsExceptionWithRequestValue(
+                new FilterFromDialog().setTags(Collections.singletonList("/?/")), "/?/");
+
+        assertInitializeThrowsExceptionWithRequestValue(
+                new FilterFromDialog().setMessagePattern("/?/"), "/?/");
+    }
+
+
+    private static void assertInitializeThrowsExceptionWithRequestValue(FilterFromDialog filter,
+                                                                        String expectedRequest) {
+        try {
+            filter.initialize();
+            fail("Exception expected");
+        } catch (RequestCompilationException e) {
+            assertEquals(expectedRequest, e.getRequestValue());
+        }
     }
 }

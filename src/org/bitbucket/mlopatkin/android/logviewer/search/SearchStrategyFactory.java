@@ -47,7 +47,7 @@ public class SearchStrategyFactory {
             try {
                 return new RegExpSearcher(pattern);
             } catch (PatternSyntaxException e) {
-                throw new RequestCompilationException(e.getMessage(), e);
+                throw new RequestCompilationException(e.getMessage(), pattern, e);
             }
         }
 

@@ -63,7 +63,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -192,9 +191,7 @@ public class MainFilterControllerTest {
     private PanelFilter createFilterWithDialog(MainFilterController controller, FilterFromDialog dialogResult) {
         controller.createFilterWithDialog();
         order.verify(dialogFactory).startCreateFilterDialog(createResultReceiver.capture());
-        CreateFilterDialog dialog = mock(CreateFilterDialog.class);
-        when(dialog.createFilter()).thenReturn(dialogResult);
-        createResultReceiver.getValue().onDialogResult(dialog, true);
+        createResultReceiver.getValue().onDialogResult(Optional.of(dialogResult));
 
         order.verify(filterPanelModel).addFilter(panelFilterCaptor.capture());
         return panelFilterCaptor.getValue();
@@ -203,9 +200,7 @@ public class MainFilterControllerTest {
     private PanelFilter editFilterWithDialog(FilterFromDialog newFilter, PanelFilter oldFilter) {
         oldFilter.openFilterEditor();
         order.verify(dialogFactory).startEditFilterDialog(oldFilterCaptor.capture(), editResultReceiver.capture());
-        EditFilterDialog dialog = mock(EditFilterDialog.class);
-        when(dialog.createFilter()).thenReturn(newFilter);
-        editResultReceiver.getValue().onDialogResult(oldFilterCaptor.getValue(), Optional.of(newFilter), true);
+        editResultReceiver.getValue().onDialogResult(oldFilterCaptor.getValue(), Optional.of(newFilter));
 
         order.verify(filterPanelModel).replaceFilter(eq(oldFilter), panelFilterCaptor.capture());
         return panelFilterCaptor.getValue();

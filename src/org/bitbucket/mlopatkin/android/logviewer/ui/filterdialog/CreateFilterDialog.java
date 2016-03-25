@@ -1,5 +1,10 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
+import com.google.common.base.Optional;
+
+import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+
 import java.awt.Frame;
 
 public class CreateFilterDialog extends FilterDialog {
@@ -13,22 +18,25 @@ public class CreateFilterDialog extends FilterDialog {
     }
 
     public interface DialogResultReceiver {
-        void onDialogResult(CreateFilterDialog result, boolean success);
+        void onDialogResult(Optional<FilterFromDialog> filter);
     }
 
     protected void onPositiveResult() {
         assert receiver != null;
-        if (!isInputValid()) {
+        try {
+            receiver.onDialogResult(Optional.of(createFilter()));
+        } catch (RequestCompilationException e) {
+            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
+                    e.getRequestValue(), e.getMessage());
             return;
         }
-        receiver.onDialogResult(this, true);
         receiver = null;
         setVisible(false);
     }
 
     protected void onNegativeResult() {
         assert receiver != null;
-        receiver.onDialogResult(this, false);
+        receiver.onDialogResult(Optional.<FilterFromDialog>absent());
         receiver = null;
         setVisible(false);
     }

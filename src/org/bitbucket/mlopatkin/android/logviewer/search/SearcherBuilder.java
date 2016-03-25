@@ -88,7 +88,7 @@ public class SearcherBuilder {
 
     private Predicate<String> build(String pattern, boolean isPatternLiteral) throws RequestCompilationException {
         if (pattern.isEmpty()) {
-            throw new RequestCompilationException("Pattern is empty");
+            throw new RequestCompilationException("Pattern is empty", pattern);
         }
 
         int flags = 0;
@@ -102,7 +102,7 @@ public class SearcherBuilder {
         try {
             return buildRegexpSearcher(Pattern.compile(pattern, flags), matchWholeText);
         } catch (PatternSyntaxException e) {
-            throw new RequestCompilationException(e);
+            throw new RequestCompilationException(e.getMessage(), pattern, e);
         }
     }
 

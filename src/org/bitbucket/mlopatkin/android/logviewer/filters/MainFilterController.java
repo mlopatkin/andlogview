@@ -95,10 +95,9 @@ public class MainFilterController implements FilterCreator {
     public void createFilterWithDialog() {
         dialogFactory.startCreateFilterDialog(new CreateFilterDialog.DialogResultReceiver() {
             @Override
-            public void onDialogResult(CreateFilterDialog result,
-                                       boolean success) {
-                if (success) {
-                    addNewDialogFilter(result.createFilter());
+            public void onDialogResult(Optional<FilterFromDialog> filter) {
+                if (filter.isPresent()) {
+                    addNewDialogFilter(filter.get());
                 }
             }
         });
@@ -214,9 +213,8 @@ public class MainFilterController implements FilterCreator {
                     new EditFilterDialog.DialogResultReceiver() {
                         @Override
                         public void onDialogResult(FilterFromDialog oldFilter,
-                                                   Optional<FilterFromDialog> newFilter,
-                                                   boolean success) {
-                            if (success) {
+                                                   Optional<FilterFromDialog> newFilter) {
+                            if (newFilter.isPresent()) {
                                 DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
                                 replaceMeWith(newPanelFilter);
                             }

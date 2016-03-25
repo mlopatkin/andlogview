@@ -101,16 +101,21 @@ public class SearchRequestParser<T> {
         Preconditions.checkNotNull(request);
 
         if (CharMatcher.WHITESPACE.matchesAllOf(request)) {
-            throw new RequestCompilationException(
-                    String.format("Input string for searching is empty or blank: '%s'", request));
+            throw new RequestCompilationException("Input string for searching is empty or blank", request);
         }
         if (isRegexRequest(request)) {
             String regexRequest = extractRegexRequest(request);
             // TODO what if I really want to find two spaces in a log?
             if (CharMatcher.WHITESPACE.matchesAllOf(regexRequest)) {
-                throw new RequestCompilationException(request + " contains blank regex");
+                throw new RequestCompilationException("Blank regex", request);
             }
-            return delegate.createRegexpSearcher(regexRequest);
+            try {
+                return delegate.createRegexpSearcher(regexRequest);
+            } catch (RequestCompilationException e) {
+                // reset with original request string and rethrow
+                e.setRequestValue(request);
+                throw e;
+            }
         }
         return delegate.createPlainSearcher(request);
 

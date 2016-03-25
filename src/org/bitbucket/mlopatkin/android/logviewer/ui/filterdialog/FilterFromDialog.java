@@ -151,32 +151,36 @@ public class FilterFromDialog implements ColoringFilter {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public FilterFromDialog setTags(List<String> tags) {
         this.tags = tags;
+        return this;
     }
 
     public List<Integer> getPids() {
         return pids;
     }
 
-    public void setPids(List<Integer> pids) {
+    public FilterFromDialog setPids(List<Integer> pids) {
         this.pids = pids;
+        return this;
     }
 
     public List<String> getApps() {
         return apps;
     }
 
-    public void setApps(List<String> apps) {
+    public FilterFromDialog setApps(List<String> apps) {
         this.apps = apps;
+        return this;
     }
 
     public String getMessagePattern() {
         return messagePattern;
     }
 
-    public void setMessagePattern(String messagePattern) {
+    public FilterFromDialog setMessagePattern(String messagePattern) {
         this.messagePattern = messagePattern;
+        return this;
     }
 
     public LogRecord.Priority getPriority() {

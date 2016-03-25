@@ -19,14 +19,16 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 
+import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+
 import java.awt.Frame;
 
 import javax.swing.SwingUtilities;
 
 public class EditFilterDialog extends FilterDialog {
     public interface DialogResultReceiver {
-
-        void onDialogResult(FilterFromDialog oldFilter, Optional<FilterFromDialog> newFilter, boolean success);
+        void onDialogResult(FilterFromDialog oldFilter, Optional<FilterFromDialog> newFilter);
     }
     private final FilterFromDialog originalFilter;
     private final DialogResultReceiver receiver;
@@ -49,17 +51,20 @@ public class EditFilterDialog extends FilterDialog {
 
     @Override
     protected void onPositiveResult() {
-        if (!isInputValid()) {
+        try {
+            receiver.onDialogResult(originalFilter, Optional.of(createFilter()));
+        } catch (RequestCompilationException e) {
+            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
+                    e.getRequestValue(), e.getMessage());
             return;
         }
         setVisible(false);
-        receiver.onDialogResult(originalFilter, Optional.of(createFilter()), true);
     }
 
     @Override
     protected void onNegativeResult() {
+        receiver.onDialogResult(originalFilter, Optional.<FilterFromDialog>absent());
         setVisible(false);
-        receiver.onDialogResult(originalFilter, Optional.<FilterFromDialog>absent(), false);
     }
 
     public static void startEditFilterDialog(Frame owner,

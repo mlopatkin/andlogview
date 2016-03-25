@@ -7,11 +7,9 @@ import com.google.common.base.Strings;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 
 import java.awt.Color;
 import java.awt.Frame;
@@ -101,7 +99,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
     private List<Integer> getPids() {
         String pidString = Strings.nullToEmpty(pidTextField.getText());
         if (!CharMatcher.WHITESPACE.matchesAllOf(pidString)) {
-            List<Integer> pids = new ArrayList<Integer>();
+            List<Integer> pids = new ArrayList<>();
             for (String pid : commaSplitter.split(pidString)) {
                 try {
                     pids.add(Integer.parseInt(pid));
@@ -118,7 +116,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
     private List<String> getAppNames() {
         String pidString = pidTextField.getText();
         if (!CharMatcher.WHITESPACE.matchesAllOf(pidString)) {
-            List<String> appNames = new ArrayList<String>();
+            List<String> appNames = new ArrayList<>();
             for (String item : commaSplitter.split(pidString)) {
                 if (!CharMatcher.inRange('0', '9').matchesAllOf(item)) {
                     appNames.add(item);
@@ -136,31 +134,6 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
 
     private FilteringMode getFilteringMode() {
         return modesPanel.getSelectedMode();
-    }
-
-
-    protected boolean isInputValid() {
-        List<String> appNames = getAppNames();
-        for (String appName : appNames) {
-            try {
-                SearchStrategyFactory.createSearchStrategy(appName);
-            } catch (RequestCompilationException e) {
-                ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
-                        appName, e.getMessage());
-                return false;
-            }
-        }
-        String request = getMessageText();
-        if (request != null) {
-            try {
-                SearchStrategyFactory.createSearchStrategy(request);
-            } catch (RequestCompilationException e) {
-                ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
-                        request, e.getMessage());
-                return false;
-            }
-        }
-        return true;
     }
 
     protected JTextField getTagTextField() {
@@ -183,10 +156,6 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         return modesPanel;
     }
 
-    protected JComboBox getColorsList() {
-        return colorsList;
-    }
-
     private Color getSelectedColor() {
         if (getFilteringMode() == FilteringMode.HIGHLIGHT) {
             return Configuration.ui.highlightColors().get(colorsList.getSelectedIndex());
@@ -207,7 +176,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         }
     }
 
-    public FilterFromDialog createFilter() {
+    protected FilterFromDialog createFilter() throws RequestCompilationException {
         FilterFromDialog filter = new FilterFromDialog();
         filter.setTags(getTags());
         filter.setPids(getPids());
@@ -216,11 +185,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         filter.setPriority(getPriority());
         filter.setHighlightColor(getSelectedColor());
         filter.setMessagePattern(getMessageText());
-        try {
-            filter.initialize();
-        } catch (RequestCompilationException e) {
-            throw new AssertionError("Must be validated");
-        }
+        filter.initialize();
         return filter;
     }
 }
