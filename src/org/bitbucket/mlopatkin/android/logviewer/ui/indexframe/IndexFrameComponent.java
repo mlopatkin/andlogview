@@ -16,14 +16,14 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
-import dagger.Component;
-
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
+
+import dagger.Component;
 
 @Component(dependencies = MainFrameDependencies.class, modules = IndexFrameModule.class)
 @IndexFrameScoped
 public interface IndexFrameComponent {
-    public static final String FOR_INDEX_FRAME = "Index frame";
+    String FOR_INDEX_FRAME = "Index frame";
 
-    public IndexFrame createFrame();
+    IndexFrame createFrame();
 }

@@ -36,7 +36,7 @@ public enum FilteringMode {
     private final String description;
     private final boolean defaultResult;
 
-    private FilteringMode(String description, boolean defaultResult) {
+    FilteringMode(String description, boolean defaultResult) {
         this.description = description;
         this.defaultResult = defaultResult;
     }

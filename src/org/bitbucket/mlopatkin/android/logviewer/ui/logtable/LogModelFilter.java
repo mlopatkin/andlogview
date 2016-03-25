@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  */
 public interface LogModelFilter {
 
-    public interface Observer {
+    interface Observer {
         void onModelChange();
     }
 

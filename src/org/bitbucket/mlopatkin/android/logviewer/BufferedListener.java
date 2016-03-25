@@ -59,7 +59,7 @@ public class BufferedListener<T> implements RecordListener<T> {
         /**
          * Store a record in the buffer and send a batch of them in the merger.
          */
-        BUFFER;
+        BUFFER
     }
 
     private Policy policy = Policy.IMMEDIATE;

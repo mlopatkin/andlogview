@@ -52,7 +52,7 @@ class AdbPidToProcessConverter {
                 scheduleUpdate();
             }
             return super.get(key);
-        };
+        }
     };
 
     AdbPidToProcessConverter(IDevice device) {

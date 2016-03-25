@@ -16,5 +16,5 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 public interface PidToProcessMapper {
-    public String getProcessName(int pid);
+    String getProcessName(int pid);
 }

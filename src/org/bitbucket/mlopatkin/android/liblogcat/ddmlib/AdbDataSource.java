@@ -106,10 +106,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
 
     private boolean isBufferHere(String bufferName) {
         String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null || echo 0";
-        if (SyncAdbShellCommand.execute(device, cmd).isEmpty()) {
-            return true;
-        }
-        return false;
+        return SyncAdbShellCommand.execute(device, cmd).isEmpty();
     }
 
     private void setUpStream(LogRecord.Buffer buffer) {

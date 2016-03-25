@@ -41,7 +41,7 @@ public class ObserverList<E> implements Iterable<E> {
          * If we need to iterate multiple times, we can avoid iterator object reallocation by using
          * this method.
          */
-        public void rewind();
+        void rewind();
     }
 
     public final List<E> mObservers = new ArrayList<E>();

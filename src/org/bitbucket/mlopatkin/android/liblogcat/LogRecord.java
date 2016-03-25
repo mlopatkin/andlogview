@@ -45,11 +45,11 @@ public class LogRecord implements Comparable<LogRecord> {
             return name;
         }
 
-        private Buffer() {
+        Buffer() {
             name = null;
         }
 
-        private Buffer(String name) {
+        Buffer(String name) {
             this.name = name;
         }
     }
@@ -151,7 +151,5 @@ public class LogRecord implements Comparable<LogRecord> {
             return timeCompare;
         }
     }
-
-    ;
 
 }
