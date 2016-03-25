@@ -23,13 +23,13 @@ import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.AppNameFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
+import org.bitbucket.mlopatkin.utils.FluentPredicate;
 
 import java.awt.Color;
 import java.util.List;
@@ -101,14 +101,17 @@ public class FilterFromDialog implements ColoringFilter {
             }
             predicates.add(LogRecordPredicates.matchTag(Predicates.or(tagPredicates)));
         }
-        Predicate<LogRecord> appsAndPidsPredicate = null;
+        FluentPredicate<LogRecord> appsAndPidsPredicate = null;
         if (pids != null && !pids.isEmpty()) {
             appsAndPidsPredicate = LogRecordPredicates.withAnyOfPids(pids);
         }
         if (apps != null && !apps.isEmpty()) {
-            AppNameFilter appNameFilter = new AppNameFilter(apps);
-            appsAndPidsPredicate =
-                    appsAndPidsPredicate != null ? Predicates.or(appsAndPidsPredicate, appNameFilter) : appNameFilter;
+            List<Predicate<String>> appsPredicates = Lists.newArrayListWithCapacity(apps.size());
+            for (String appPattern : apps)  {
+                appsPredicates.add(tagParser.parse(appPattern));
+            }
+            FluentPredicate<LogRecord> appsPredicate = LogRecordPredicates.matchAppName(Predicates.or(appsPredicates));
+            appsAndPidsPredicate = appsPredicate.or(appsAndPidsPredicate);
         }
         if (appsAndPidsPredicate != null) {
             predicates.add(appsAndPidsPredicate);

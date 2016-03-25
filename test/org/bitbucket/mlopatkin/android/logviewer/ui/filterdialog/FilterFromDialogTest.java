@@ -133,6 +133,95 @@ public class FilterFromDialogTest {
     }
 
     @Test
+    public void testApp_Single() throws Exception {
+        LogRecord tag1 = LogRecordUtils.forAppName("TAG1");
+        LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
+
+        filter.setApps(Collections.singletonList("TAG1"));
+        filter.initialize();
+
+        assertTrue(filter.apply(tag1));
+        assertFalse(filter.apply(tag2));
+    }
+
+
+    @Test
+    public void testApp_Multiple() throws Exception {
+        LogRecord tag1 = LogRecordUtils.forAppName("TAG1");
+        LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
+        LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
+
+        filter.setApps(Arrays.asList("TAG1", "TAG2"));
+        filter.initialize();
+
+        assertTrue(filter.apply(tag1));
+        assertTrue(filter.apply(tag2));
+        assertFalse(filter.apply(tag3));
+    }
+
+    @Test
+    public void testApp_CaseInsensitive() throws Exception {
+        LogRecord tag1 = LogRecordUtils.forAppName("TAG1");
+        LogRecord tag2 = LogRecordUtils.forAppName("TaG1");
+        LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
+
+        filter.setApps(Collections.singletonList("tag1"));
+        filter.initialize();
+
+        assertTrue(filter.apply(tag1));
+        assertTrue(filter.apply(tag2));
+        assertFalse(filter.apply(tag3));
+    }
+
+    @Test
+    public void testApp_incompleteAppDoesntMatch() throws Exception {
+        List<LogRecord> tags = Arrays.asList(
+                LogRecordUtils.forAppName("Middle Tag Middle"),
+                LogRecordUtils.forAppName("Tag Begin"),
+                LogRecordUtils.forAppName("End Tag"),
+                LogRecordUtils.forAppName("middletagwithoutspaces"),
+                LogRecordUtils.forAppName("#tag#"));
+
+        filter.setApps(Collections.singletonList("Tag"));
+        filter.initialize();
+
+        for (LogRecord r : tags) {
+            assertFalse(filter.apply(r));
+        }
+    }
+
+    @Test
+    public void testApp_Regexp() throws Exception {
+        LogRecord tag1 = LogRecordUtils.forAppName("TAG1");
+        LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
+        LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
+
+        filter.setApps(Collections.singletonList("/TAG[12]/"));
+        filter.initialize();
+
+        assertTrue(filter.apply(tag1));
+        assertTrue(filter.apply(tag2));
+        assertFalse(filter.apply(tag3));
+    }
+
+    @Test
+    public void testApp_incompleteAppMatchRegexp() throws Exception {
+        List<LogRecord> tags = Arrays.asList(
+                LogRecordUtils.forAppName("Middle Tag Middle"),
+                LogRecordUtils.forAppName("Tag Begin"),
+                LogRecordUtils.forAppName("End Tag"),
+                LogRecordUtils.forAppName("middletagwithoutspaces"),
+                LogRecordUtils.forAppName("#tag#"));
+
+        filter.setApps(Collections.singletonList("/Tag/"));
+        filter.initialize();
+
+        for (LogRecord r : tags) {
+            assertTrue(r.toString(), filter.apply(r));
+        }
+    }
+
+    @Test
     public void testPidsAppNames_ifAppNameAndPidAreSpecifiedThenEitherOneShouldMatch() throws Exception {
         LogRecord record1 = LogRecordUtils.forPidAndAppName(1, "app1");
         LogRecord record2 = LogRecordUtils.forPidAndAppName(2, "app2");
