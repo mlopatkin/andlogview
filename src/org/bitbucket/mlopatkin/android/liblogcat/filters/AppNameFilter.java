@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import com.google.common.base.Predicate;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategy;
@@ -26,10 +28,10 @@ import java.util.List;
 /**
  * Performs filtering based on the message of the record.
  */
-public class AppNameFilter extends AbstractFilter implements LogRecordFilter {
+public class AppNameFilter implements Predicate<LogRecord> {
 
-    private List<SearchStrategy> strategies = new ArrayList<SearchStrategy>();
-    private List<String> requestTexts = new ArrayList<String>();
+    private final List<SearchStrategy> strategies = new ArrayList<>();
+    private final List<String> requestTexts = new ArrayList<>();
 
     public AppNameFilter(List<String> appNames) throws RequestCompilationException {
         for (String request : appNames) {
@@ -54,16 +56,4 @@ public class AppNameFilter extends AbstractFilter implements LogRecordFilter {
         return "Application name like " + requestTexts;
     }
 
-    @Override
-    protected void dumpFilter(FilterData data) {
-        data.appNames = requestTexts;
-    }
-
-    public static AppNameFilter fromList(List<String> appNames) throws RequestCompilationException {
-        if (appNames == null || appNames.isEmpty()) {
-            return null;
-        } else {
-            return new AppNameFilter(appNames);
-        }
-    }
 }

@@ -21,8 +21,7 @@ import com.google.common.base.Predicates;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogRecordFilter;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.SingleTagFilter;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 
 import java.util.Collections;
 
@@ -42,11 +41,13 @@ public final class TestData {
 
     public static final LogRecord RECORD1_IN_MAIN =
             new LogRecord(RECORD1.getTime(), RECORD1.getPid(), RECORD1.getTid(), RECORD1.getAppName(),
-                          RECORD1.getPriority(), RECORD1.getTag(), RECORD1.getMessage(),
-                          LogRecord.Buffer.MAIN);
+                    RECORD1.getPriority(), RECORD1.getTag(), RECORD1.getMessage(),
+                    LogRecord.Buffer.MAIN);
 
-    public static final LogRecordFilter MATCH_FIRST = new SingleTagFilter("AudioFlinger");
-    public static final LogRecordFilter MATCH_SECOND = new SingleTagFilter("NotAudioFlinger");
+    public static final Predicate<LogRecord> MATCH_FIRST =
+            LogRecordPredicates.matchTag(Predicates.equalTo("AudioFlinger"));
+    public static final Predicate<LogRecord> MATCH_SECOND =
+            LogRecordPredicates.matchTag(Predicates.equalTo("NotAudioFlinger"));
 
     public static final Predicate<LogRecord> MATCH_ALL = Predicates.alwaysTrue();
     public static final Predicate<LogRecord> MATCH_NONE = Predicates.alwaysFalse();

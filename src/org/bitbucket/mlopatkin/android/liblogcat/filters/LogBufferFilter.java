@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
+import com.google.common.base.Predicate;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
@@ -24,7 +26,7 @@ import java.util.EnumSet;
 /**
  * Performs filtering based on the buffer of the record.
  */
-public class LogBufferFilter implements LogRecordFilter {
+public class LogBufferFilter implements Predicate<LogRecord> {
 
     private EnumSet<Buffer> buffers = EnumSet.of(Buffer.UNKNOWN);
 
@@ -41,8 +43,4 @@ public class LogBufferFilter implements LogRecordFilter {
         }
     }
 
-    @Override
-    public LogRecordFilter and(LogRecordFilter other) {
-        return other != null ? new ComposeFilter(this, other) : this;
-    }
 }
