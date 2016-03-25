@@ -1,5 +1,7 @@
 # BUILDING LOGVIEWER
 
+[![Build Status](https://drone.io/bitbucket.org/mlopatkin/android-log-viewer/status.png)](https://drone.io/bitbucket.org/mlopatkin/android-log-viewer/latest)
+
 ## Prerequisites
 
  * Windows or Linux
