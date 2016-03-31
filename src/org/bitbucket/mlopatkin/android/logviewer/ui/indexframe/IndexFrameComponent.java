@@ -16,9 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
-
 import dagger.Component;
+
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 
 @Component(dependencies = MainFrameDependencies.class, modules = IndexFrameModule.class)
 @IndexFrameScoped
