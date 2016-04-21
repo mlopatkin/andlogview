@@ -38,6 +38,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableHeaderPopupMenuController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.BufferFilterMenu;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DaggerMainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
@@ -175,8 +176,9 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        logElements.setColumnModel(LogRecordTableColumnModel.create(mapper, Column.getSelectedColumns()));
-
+        LogRecordTableColumnModel columnModel = LogRecordTableColumnModel.create(mapper, Column.getSelectedColumns());
+        logElements.setColumnModel(columnModel);
+        UiHelper.addPopupMenu(logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));

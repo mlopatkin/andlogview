@@ -92,28 +92,43 @@ public enum Column {
     private final String columnName;
     @Nullable
     private final String title;
+    private final boolean toggleable;
 
     /**
-     * Constructor for computed column which doesn't correspond to a field in the logcat output.
+     * Constructor for computed column which doesn't correspond to a field in the logcat output. This column cannot be
+     * toggled on or off.
      *
      * @param name short name that is used as a key in preferences
      * @param title user-visible title of the column (can be empty)
      */
     Column(String name, @Nullable String title) {
-        this(null, name, title);
+        this(null, name, title, false);
     }
 
     /**
-     * Constructor for column that displays values from recordField of the logcat output.
+     * Constructor for column that displays values from recordField of the logcat output. This column can be toggled on
+     * or off with context menu.
      *
      * @param recordField the corresponding logcat field
      * @param name short name that is used as a key in preferences
      * @param title user-visible title of the column (can be empty)
      */
     Column(@Nullable Field recordField, String name, @Nullable String title) {
+        this(recordField, name, title, true);
+    }
+
+    /**
+     * Generic constructor for column.
+     * @param recordField corresponding logcat field or null if there is no one
+     * @param name short name that is used as a key in preferences
+     * @param title user-visible title of the column (can be empty or null)
+     * @param toggleable whether the visibility of the column can be toggled with popup menu
+     */
+    Column(@Nullable Field recordField, String name, @Nullable String title, boolean toggleable) {
         this.recordField = recordField;
         this.columnName = name;
         this.title = title;
+        this.toggleable = toggleable;
     }
 
     /**
@@ -170,5 +185,18 @@ public enum Column {
         }
 
         return builder;
+    }
+
+    public boolean isToggleable() {
+        return toggleable;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    @Nullable
+    public String getTitle() {
+        return title;
     }
 }
