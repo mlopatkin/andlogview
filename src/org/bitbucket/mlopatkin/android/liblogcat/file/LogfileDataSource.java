@@ -60,7 +60,7 @@ public class LogfileDataSource implements DataSource {
         String line = in.readLine();
         while (line != null) {
             if (!LogRecordParser.isLogBeginningLine(line)
-                    && !CharMatcher.WHITESPACE.matchesAllOf(line)) {
+                    && !CharMatcher.whitespace().matchesAllOf(line)) {
                 LogRecord record = strategy
                         .parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
                 // sometimes we cannot handle the line well: if we didn't guess

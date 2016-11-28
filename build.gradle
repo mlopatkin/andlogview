@@ -22,8 +22,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.4'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.9'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
     }
 }
 
@@ -35,22 +35,24 @@ apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
+def daggerVersion = '2.8'
+
 dependencies {
-    compile 'com.google.dagger:dagger:2.1'
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile "com.google.dagger:dagger:${daggerVersion}"
+    compile 'com.google.guava:guava:20.0'
+    compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'log4j:log4j:1.2.17'
     compile 'net.sf.jopt-simple:jopt-simple:4.6'
-    compile 'com.google.android.tools:ddmlib:r13'
+    compile 'com.android.tools.ddms:ddmlib:25.2.2'
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-core:1.9.5'
 
-    apt 'com.google.dagger:dagger-compiler:2.1'
+    apt "com.google.dagger:dagger-compiler:${daggerVersion}"
 }
 
 checkstyle {
@@ -61,7 +63,7 @@ applicationName = 'logview'
 version = '0.19-SNAPSHOT'
 mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
 
-def javaVersion = JavaVersion.VERSION_1_7;
+def javaVersion = JavaVersion.VERSION_1_8;
 sourceCompatibility = javaVersion;
 targetCompatibility = javaVersion; // defaults to sourceCompatibility
 
@@ -85,17 +87,6 @@ sourceSets {
 shadow.applicationDistribution.from(project.getProjectDir()) {
     include 'HISTORY', 'LICENSE', 'NOTICE', 'README'
 }
-
-// Force Java 7
-task enforceVersion << {
-    def foundVersion = JavaVersion.current();
-    if (foundVersion != javaVersion)
-        throw new IllegalStateException("Wrong Java version; required is "
-            + javaVersion + ", but found " + foundVersion);
-}
-
-// Prevent distributive from being built with Java 8
-distShadowZip.dependsOn(enforceVersion);
 
 // Treat warnings as errors
 compileJava {

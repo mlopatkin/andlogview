@@ -36,7 +36,7 @@ public final class RowSearchStrategyFactory {
     private static final List<String> PREFIXES = Arrays.asList(PREFIX_APP, PREFIX_MSG, PREFIX_TAG);
 
     public static RowSearchStrategy compile(String pattern) throws RequestCompilationException {
-        if (CharMatcher.WHITESPACE.matchesAllOf(Strings.nullToEmpty(pattern))) {
+        if (CharMatcher.whitespace().matchesAllOf(Strings.nullToEmpty(pattern))) {
             return null;
         }
         pattern = pattern.trim();

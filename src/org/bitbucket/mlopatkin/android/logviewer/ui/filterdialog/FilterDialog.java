@@ -77,11 +77,11 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
     protected abstract void onNegativeResult();
 
     private static final Splitter commaSplitter =
-            Splitter.on(',').trimResults(CharMatcher.WHITESPACE);
+            Splitter.on(',').trimResults(CharMatcher.whitespace());
 
     private List<String> getTags() {
         String tagsString = Strings.nullToEmpty(tagTextField.getText());
-        if (!CharMatcher.WHITESPACE.matchesAllOf(tagsString)) {
+        if (!CharMatcher.whitespace().matchesAllOf(tagsString)) {
             return commaSplitter.splitToList(tagsString);
         }
         return Collections.emptyList();
@@ -90,7 +90,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
     @Nullable
     private String getMessageText() {
         String message = messageTextField.getText();
-        if (!CharMatcher.WHITESPACE.matchesAllOf(message)) {
+        if (!CharMatcher.whitespace().matchesAllOf(message)) {
             return message;
         }
         return null;
@@ -98,7 +98,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
 
     private List<Integer> getPids() {
         String pidString = Strings.nullToEmpty(pidTextField.getText());
-        if (!CharMatcher.WHITESPACE.matchesAllOf(pidString)) {
+        if (!CharMatcher.whitespace().matchesAllOf(pidString)) {
             List<Integer> pids = new ArrayList<>();
             for (String pid : commaSplitter.split(pidString)) {
                 try {
@@ -115,7 +115,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
 
     private List<String> getAppNames() {
         String pidString = pidTextField.getText();
-        if (!CharMatcher.WHITESPACE.matchesAllOf(pidString)) {
+        if (!CharMatcher.whitespace().matchesAllOf(pidString)) {
             List<String> appNames = new ArrayList<>();
             for (String item : commaSplitter.split(pidString)) {
                 if (!CharMatcher.inRange('0', '9').matchesAllOf(item)) {

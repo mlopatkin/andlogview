@@ -219,7 +219,7 @@ public class DumpstateFileDataSource implements DataSource {
             if (isEnd(line)) {
                 return false;
             }
-            if (CharMatcher.WHITESPACE.matchesAllOf(line)
+            if (CharMatcher.whitespace().matchesAllOf(line)
                     || LogRecordParser.isLogBeginningLine(line)) {
                 return true;
             }
@@ -292,7 +292,7 @@ public class DumpstateFileDataSource implements DataSource {
                 return false;
             }
 
-            if (CharMatcher.WHITESPACE.matchesAllOf(line)
+            if (CharMatcher.whitespace().matchesAllOf(line)
                     || ProcessListParser.isProcessListHeader(line)) {
                 return true;
             }

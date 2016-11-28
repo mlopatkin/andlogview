@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is a wrapper around the
@@ -64,7 +65,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
     public void run() {
         logger.debug("Starting command " + command);
         try {
-            device.executeShellCommand(command, receiver, timeOut);
+            device.executeShellCommand(command, receiver, timeOut, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             logger.warn("Connection to adb failed due to timeout", e);
             onException(e, receiver);

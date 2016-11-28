@@ -178,7 +178,8 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         LogRecordTableColumnModel columnModel = LogRecordTableColumnModel.create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
-        UiHelper.addPopupMenu(logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
+        UiHelper.addPopupMenu(logElements.getTableHeader(),
+                              new LogTableHeaderPopupMenuController(columnModel).createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));

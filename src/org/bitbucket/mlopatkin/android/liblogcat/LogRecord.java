@@ -76,7 +76,7 @@ public class LogRecord implements Comparable<LogRecord> {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
-        this.appName = CharMatcher.WHITESPACE.trimFrom(Strings.nullToEmpty(appName));
+        this.appName = CharMatcher.whitespace().trimFrom(Strings.nullToEmpty(appName));
         this.priority = priority;
         this.tag = tag;
         this.message = message;

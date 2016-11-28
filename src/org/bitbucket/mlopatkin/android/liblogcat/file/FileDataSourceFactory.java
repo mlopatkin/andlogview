@@ -36,10 +36,10 @@ public class FileDataSourceFactory {
 
     private static String getFirstNonEmptyLine(BufferedReader in) throws IOException {
         String cur = in.readLine();
-        while (cur != null && CharMatcher.WHITESPACE.matchesAllOf(cur)) {
+        while (cur != null && CharMatcher.whitespace().matchesAllOf(cur)) {
             cur = in.readLine();
         }
-        return CharMatcher.WHITESPACE.trimFrom(cur);
+        return CharMatcher.whitespace().trimFrom(cur);
     }
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException,

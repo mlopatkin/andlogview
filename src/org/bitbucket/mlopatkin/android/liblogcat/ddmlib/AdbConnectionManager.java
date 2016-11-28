@@ -58,7 +58,7 @@ public class AdbConnectionManager {
 
     public static void init() throws AdbException, DdmlibUnsupportedException {
         if (!inited) {
-            Log.setLogOutput(new DdmlibToLog4jWrapper());
+            Log.addLogger(new DdmlibToLog4jWrapper());
             if (System.getProperty("logview.debug.ddmlib") != null) {
                 DdmPreferences.setLogLevel("debug");
             }
