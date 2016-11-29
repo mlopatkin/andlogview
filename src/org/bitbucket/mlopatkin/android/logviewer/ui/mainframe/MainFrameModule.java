@@ -62,7 +62,7 @@ public class MainFrameModule {
     @Singleton
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     LogTable getMainLogTable(LogRecordTableModel model, LogModelFilter filter) {
-        return new LogTable(model, filter);
+        return LogTable.create(model, filter);
     }
 
     @Provides

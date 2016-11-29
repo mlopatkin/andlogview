@@ -31,11 +31,9 @@ public class LogTable extends DecoratingRendererTable implements LogModelFilter.
     private final LogModelFilter filterModel;
     private final SortingDisableSorter<LogRecordTableModel> sorter;
 
-    @Inject
-    public LogTable(LogRecordTableModel dataModel, LogModelFilter filterModel) {
+    private LogTable(LogRecordTableModel dataModel, LogModelFilter filterModel) {
         this.filterModel = filterModel;
 
-        filterModel.asObservable().addObserver(this);
         addDecorator(new PriorityColoredCellRenderer());
         addDecorator(new RowHighlightRenderer(filterModel));
 
@@ -61,5 +59,11 @@ public class LogTable extends DecoratingRendererTable implements LogModelFilter.
         if (getSelectedRow() != -1) {
             scrollRectToVisible(getCellRect(getSelectedRow(), getSelectedColumn(), false));
         }
+    }
+
+    public static LogTable create(LogRecordTableModel dataModel, LogModelFilter filterModel) {
+        LogTable logTable = new LogTable(dataModel, filterModel);
+        filterModel.asObservable().addObserver(logTable);
+        return logTable;
     }
 }

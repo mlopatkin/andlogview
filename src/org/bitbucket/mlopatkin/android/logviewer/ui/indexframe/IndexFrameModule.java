@@ -49,7 +49,7 @@ public class IndexFrameModule {
     @IndexFrameScoped
     @Named(IndexFrameComponent.FOR_INDEX_FRAME)
     LogTable getIndexWindowTable(LogRecordTableModel model) {
-        return new LogTable(model, logModelFilter);
+        return LogTable.create(model, logModelFilter);
     }
 
     @Provides
