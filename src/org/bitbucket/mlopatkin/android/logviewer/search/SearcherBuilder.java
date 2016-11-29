@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -69,6 +68,7 @@ public class SearcherBuilder {
      *
      * @param pattern the plain-text pattern to use in predicate
      * @return the predicate
+     *
      * @throws RequestCompilationException if something is wrong with the pattern
      */
     public Predicate<String> buildPlain(String pattern) throws RequestCompilationException {
@@ -80,6 +80,7 @@ public class SearcherBuilder {
      *
      * @param pattern the regexp pattern to use in predicate
      * @return the predicate
+     *
      * @throws RequestCompilationException if something is wrong with the pattern
      */
     public Predicate<String> buildRegexp(String pattern) throws RequestCompilationException {

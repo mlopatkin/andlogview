@@ -20,7 +20,6 @@ import org.bitbucket.mlopatkin.android.logviewer.PriorityColoredCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
 
-import javax.inject.Inject;
 import javax.swing.RowFilter;
 
 /**
