@@ -184,8 +184,6 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
 
-        logElements.addDecorator(dependencies.getBookmarkHighlighter());
-
         dependencies.getPopupMenuHandlerFactory().attachMenuHandle(logElements);
 
         JScrollPane scrollPane = new JScrollPane(logElements);

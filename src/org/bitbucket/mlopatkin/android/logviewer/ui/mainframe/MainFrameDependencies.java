@@ -54,7 +54,5 @@ public interface MainFrameDependencies {
 
     BookmarkController getBookmarkController();
 
-    BookmarkHighlighter getBookmarkHighlighter();
-
     MainFilterController getMainFilterController();
 }
