@@ -38,7 +38,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @see Pattern
  */
 @ParametersAreNonnullByDefault
-// TODO: this class should not be used for tag/appname filters
 public class SearchStrategyFactory {
 
     private static class DelegateImpl implements SearchRequestParser.Delegate<HighlightStrategy> {
@@ -70,10 +69,5 @@ public class SearchStrategyFactory {
     public static HighlightStrategy createHighlightStrategy(String request)
             throws RequestCompilationException {
         return requestParser.parse(request);
-    }
-
-    public static SearchStrategy createSearchStrategy(String request)
-            throws RequestCompilationException {
-        return createHighlightStrategy(request);
     }
 }

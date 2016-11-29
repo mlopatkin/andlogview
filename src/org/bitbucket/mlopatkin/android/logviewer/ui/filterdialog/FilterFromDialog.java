@@ -27,7 +27,6 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
 import org.bitbucket.mlopatkin.utils.FluentPredicate;
 
@@ -41,28 +40,38 @@ public class FilterFromDialog implements ColoringFilter {
 
     private static final Joiner commaJoiner = Joiner.on(", ");
 
-    private static final SearchRequestParser.Delegate<Predicate<String>> tagParserDelegate =
-            new SearchRequestParser.Delegate<Predicate<String>>() {
-                private SearcherBuilder matchWhole =
-                        new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(true);
-                private SearcherBuilder matchSubstring =
-                        new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(false);
+    private static final SearchRequestParser<Predicate<String>> tagParser =
+            new SearchRequestParser<>(new SearchRequestParser.Delegate<Predicate<String>>() {
+                private SearcherBuilder matchIgnoreCase = new SearcherBuilder().setIgnoreCase(true);
 
                 @Override
                 public Predicate<String> createRegexpSearcher(@Nonnull String pattern)
                         throws RequestCompilationException {
-                    return matchSubstring.buildRegexp(pattern);
+                    return matchIgnoreCase.setMatchWholeText(false).buildRegexp(pattern);
                 }
 
                 @Override
                 public Predicate<String> createPlainSearcher(@Nonnull String pattern)
                         throws RequestCompilationException {
-                    return matchWhole.buildPlain(pattern);
+                    return matchIgnoreCase.setMatchWholeText(true).buildPlain(pattern);
                 }
-            };
+            });
 
-    private static final SearchRequestParser<Predicate<String>> tagParser =
-            new SearchRequestParser<>(tagParserDelegate);
+    private static final SearchRequestParser<Predicate<String>> messageParser = new SearchRequestParser<>(
+            new SearchRequestParser.Delegate<Predicate<String>>() {
+                private final SearcherBuilder matchSubstring =
+                        new SearcherBuilder().setMatchWholeText(false);
+
+                @Override
+                public Predicate<String> createRegexpSearcher(String pattern) throws RequestCompilationException {
+                    return matchSubstring.setIgnoreCase(false).buildRegexp(pattern);
+                }
+
+                @Override
+                public Predicate<String> createPlainSearcher(String pattern) throws RequestCompilationException {
+                    return matchSubstring.setIgnoreCase(true).buildPlain(pattern);
+                }
+            });
 
     private List<String> tags;
     private List<Integer> pids;
@@ -83,6 +92,7 @@ public class FilterFromDialog implements ColoringFilter {
     public void initialize() throws RequestCompilationException {
         assert compiledPredicate == null;
         assert tooltipRepresentation == null;
+        assert mode != null;
         compiledPredicate = compilePredicate();
         tooltipRepresentation = compileTooltip();
     }
@@ -118,7 +128,7 @@ public class FilterFromDialog implements ColoringFilter {
         }
         if (messagePattern != null && !messagePattern.isEmpty()) {
             predicates.add(LogRecordPredicates
-                    .matchMessage(SearchStrategyFactory.createSearchStrategy(messagePattern)));
+                    .matchMessage(messageParser.parse(messagePattern)));
         }
         if (priority != null && priority != LogRecord.Priority.LOWEST) {
             predicates.add(LogRecordPredicates.moreSevereThan(priority));

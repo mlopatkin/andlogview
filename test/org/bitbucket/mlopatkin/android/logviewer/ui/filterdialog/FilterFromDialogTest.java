@@ -236,6 +236,40 @@ public class FilterFromDialogTest {
         assertFalse(filter.apply(record3));
     }
 
+
+    @Test
+    public void testMessage_MatchesSubstringCaseInsensitive() throws Exception {
+        LogRecord record1 = LogRecordUtils.forMessage("test is good");
+        LogRecord record2 = LogRecordUtils.forMessage("there is no test");
+        LogRecord record3 = LogRecordUtils.forMessage("there is no Test but it is");
+        LogRecord recordNo = LogRecordUtils.forMessage("there is no T-e-s-t really");
+
+        filter.setMessagePattern("test");
+        filter.initialize();
+
+        assertTrue(filter.apply(record1));
+        assertTrue(filter.apply(record2));
+        assertTrue(filter.apply(record3));
+        assertFalse(filter.apply(recordNo));
+    }
+
+
+    @Test
+    public void testMessage_regexMatchesSubstringCaseSensitive() throws Exception {
+        LogRecord record1 = LogRecordUtils.forMessage("test is good");
+        LogRecord record2 = LogRecordUtils.forMessage("there is no test");
+        LogRecord record3 = LogRecordUtils.forMessage("there is no Test but it is");
+        LogRecord recordNo = LogRecordUtils.forMessage("there is no T-e-s-t really");
+
+        filter.setMessagePattern("/t[e]st/");
+        filter.initialize();
+
+        assertTrue(filter.apply(record1));
+        assertTrue(filter.apply(record2));
+        assertFalse(filter.apply(record3));
+        assertFalse(filter.apply(recordNo));
+    }
+
     @Test
     public void testAppNamesRegexMatchThrowsAppropriateExceptions() throws Exception {
         assertInitializeThrowsExceptionWithRequestValue(
@@ -254,10 +288,10 @@ public class FilterFromDialogTest {
                 new FilterFromDialog().setMessagePattern("/?/"), "/?/");
     }
 
-
     private static void assertInitializeThrowsExceptionWithRequestValue(FilterFromDialog filter,
                                                                         String expectedRequest) {
         try {
+            filter.setMode(FilteringMode.HIDE);
             filter.initialize();
             fail("Exception expected");
         } catch (RequestCompilationException e) {

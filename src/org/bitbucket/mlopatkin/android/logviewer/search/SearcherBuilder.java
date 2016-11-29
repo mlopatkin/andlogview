@@ -109,19 +109,9 @@ public class SearcherBuilder {
     // static to avoid reference to the enclosing builder instance
     private static Predicate<String> buildRegexpSearcher(final Pattern pattern, boolean matchWholeText) {
         if (matchWholeText) {
-            return new Predicate<String>() {
-                @Override
-                public boolean apply(@Nonnull String input) {
-                    return pattern.matcher(input).matches();
-                }
-            };
+            return input -> pattern.matcher(input).matches();
         } else {
-            return new Predicate<String>() {
-                @Override
-                public boolean apply(@Nonnull String input) {
-                    return pattern.matcher(input).find();
-                }
-            };
+            return input -> pattern.matcher(input).find();
         }
     }
 }
