@@ -23,7 +23,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
+class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
 
     private PidToProcessMapper mapper;
 

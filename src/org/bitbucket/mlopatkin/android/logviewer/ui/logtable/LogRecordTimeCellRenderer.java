@@ -24,7 +24,7 @@ import java.util.Date;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
+class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
     @Override
     protected void setValue(Object value) {
         if (value == null) {

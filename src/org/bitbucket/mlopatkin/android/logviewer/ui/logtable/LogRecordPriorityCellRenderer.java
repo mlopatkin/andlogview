@@ -19,7 +19,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class LogRecordPriorityCellRenderer extends DefaultTableCellRenderer {
+class LogRecordPriorityCellRenderer extends DefaultTableCellRenderer {
     @Override
     protected void setValue(Object value) {
         if (!(value instanceof Priority)) {
