@@ -5,10 +5,8 @@
 ## Prerequisites
 
  * Windows or Linux
- * OpenJDK 7 or Oracle JDK 7
+ * OpenJDK 8 or Oracle JDK 8
  * Internet connection to download dependencies from jcenter, Maven Central, etc.
-
-While the project can be built with Java 8, it still targets Java 7.
 
 ## Building with Gradle
 Run `./gradlew assemble` to build everything. First run takes some time because Gradle binaries and app dependencies
@@ -17,8 +15,8 @@ must be downloaded from repositories.
 Run `./gradlew check` to run tests.
 
 Run `./gradlew distShadowZip` to prepare distributive package. The output is placed into `build/distributions`.
-The build will fail if Java 8 or later is used. You can specify JDK to use with JAVA_HOME environment variable or
-by setting `org.gradle.java.home=path/to/jdk/7` in `gradle.settings` file in the root directory of the project.
+You can specify JDK to use with JAVA_HOME environment variable or by setting `org.gradle.java.home=path/to/jdk/8` in
+`gradle.settings` file in the root directory of the project.
 
 ## Building with Ant (deprecated)
 You'll need [Apache Ant (1.9+)][ant] with [Apache Ivy (2.4.0+)][ivy] plugin installed. Run `ant test` to build and execute tests, and
