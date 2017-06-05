@@ -34,6 +34,9 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,21 +70,26 @@ public class SelectDeviceDialog extends JDialog {
                 return;
             }
         }
-        if (dialog == null) {
-            dialog = new SelectDeviceDialog(owner);
-        }
+
+        SelectDeviceDialog dialog = new SelectDeviceDialog(owner);
         dialog.reset(receiver);
         dialog.setVisible(true);
     }
 
     private static final Logger logger = Logger.getLogger(SelectDeviceDialog.class);
 
-    private static SelectDeviceDialog dialog;
-
     private JList<String> deviceList;
     private DialogResultReceiver receiver;
 
-    private DeviceListModel devices = new DeviceListModel();
+    private final DeviceListModel devices = new DeviceListModel();
+
+    private final WindowListener closeListener = new WindowAdapter() {
+        @Override
+        public void windowClosed(WindowEvent e) {
+            devices.unsubscribe();
+            updater.stop();
+        }
+    };
 
     private SelectDeviceDialog(Frame owner) {
         super(owner, true);
@@ -133,6 +141,8 @@ public class SelectDeviceDialog extends JDialog {
         }
         pack();
         setLocationRelativeTo(owner);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addWindowListener(closeListener);
         updater.start();
     }
 
@@ -151,7 +161,7 @@ public class SelectDeviceDialog extends JDialog {
         IDevice selectedDevice = getSelectedDevice();
         if (selectedDevice == null || selectedDevice.isOnline()) {
             receiver.onDialogResult(this, getSelectedDevice());
-            setVisible(false);
+            dispose();
         } else {
             ErrorDialogsHelper.showError(this, "Can't connect to offline device");
         }
@@ -160,7 +170,7 @@ public class SelectDeviceDialog extends JDialog {
     private void onNegativeResult() {
         assert receiver != null;
         receiver.onDialogResult(this, null);
-        setVisible(false);
+        dispose();
     }
 
     private IDevice getSelectedDevice() {
@@ -271,6 +281,10 @@ public class SelectDeviceDialog extends JDialog {
                 }
             }
             return -1;
+        }
+
+        public void unsubscribe() {
+            AdbDeviceManager.removeDeviceChangeListener(this);
         }
     }
 
