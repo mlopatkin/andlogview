@@ -46,7 +46,6 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 public class SelectDeviceDialog extends JDialog {
-
     public interface DialogResultReceiver {
         void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice);
     }
@@ -71,8 +70,7 @@ public class SelectDeviceDialog extends JDialog {
         if (dialog == null) {
             dialog = new SelectDeviceDialog(owner);
         }
-        dialog.receiver = receiver;
-        dialog.deviceList.clearSelection();
+        dialog.reset(receiver);
         dialog.setVisible(true);
     }
 
@@ -138,6 +136,16 @@ public class SelectDeviceDialog extends JDialog {
         updater.start();
     }
 
+    private void reset(DialogResultReceiver receiver) {
+        this.receiver = receiver;
+        int firstAvailableDeviceIndex = devices.getFirstOnlineDeviceIndex();
+        if (firstAvailableDeviceIndex >= 0) {
+            deviceList.setSelectedIndex(firstAvailableDeviceIndex);
+        } else {
+            deviceList.clearSelection();
+        }
+    }
+
     private void onPositiveResult() {
         assert receiver != null;
         IDevice selectedDevice = getSelectedDevice();
@@ -147,7 +155,6 @@ public class SelectDeviceDialog extends JDialog {
         } else {
             ErrorDialogsHelper.showError(this, "Can't connect to offline device");
         }
-
     }
 
     private void onNegativeResult() {
@@ -256,6 +263,15 @@ public class SelectDeviceDialog extends JDialog {
             });
         }
 
+        public int getFirstOnlineDeviceIndex() {
+            for (int i = 0; i < devices.size(); ++i) {
+                IDevice device = devices.get(i);
+                if (device.isOnline()) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
     private static final int UPDATE_DELAY = 500;
