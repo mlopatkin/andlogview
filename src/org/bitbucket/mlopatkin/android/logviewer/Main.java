@@ -22,11 +22,8 @@ import joptsimple.OptionSet;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
@@ -101,9 +98,7 @@ public class Main {
 
     Main() {
         createAndShowWindow();
-        try {
-            AdbConnectionManager.init();
-
+        if (window.tryInitAdbBridge()) {
             IDevice device = AdbDeviceManager.getDefaultDevice();
             if (device != null) {
                 DeviceDisconnectedHandler.startWatching(window, device);
@@ -111,14 +106,6 @@ public class Main {
             } else {
                 window.waitForDevice();
             }
-        } catch (AdbException e) {
-            logger.warn("Cannot start in ADB mode", e);
-            window.disableAdbCommandsAsync();
-            ErrorDialogsHelper.showAdbNotFoundError(window);
-        } catch (DdmlibUnsupportedException e) {
-            logger.error("Cannot work with DDMLIB supplied", e);
-            window.disableAdbCommandsAsync();
-            ErrorDialogsHelper.showError(window, e.getMessage());
         }
     }
 

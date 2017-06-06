@@ -23,17 +23,20 @@ import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
+import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
-import org.bitbucket.mlopatkin.android.logviewer.SelectDeviceDialog.DialogResultReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
+import org.bitbucket.mlopatkin.android.logviewer.ui.device.SelectDeviceDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
@@ -78,7 +81,7 @@ import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.border.EtchedBorder;
 
-public class MainFrame extends JFrame implements DialogResultReceiver {
+public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
     private final FilterStorage storage;
 
@@ -450,17 +453,16 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            SelectDeviceDialog.showSelectDeviceDialog(MainFrame.this, MainFrame.this);
+            if (tryInitAdbBridge()) {
+                SelectDeviceDialog.showDialog(MainFrame.this, (dialog, selectedDevice) -> {
+                    if (selectedDevice != null) {
+                        DeviceDisconnectedHandler.startWatching(MainFrame.this, selectedDevice);
+                        setSource(new AdbDataSource(selectedDevice));
+                    }
+                });
+            }
         }
     };
-
-    @Override
-    public void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice) {
-        if (selectedDevice != null) {
-            DeviceDisconnectedHandler.startWatching(this, selectedDevice);
-            setSource(new AdbDataSource(selectedDevice));
-        }
-    }
 
     private Action acResetLogs = new AbstractAction("Reset logs") {
         {
@@ -615,5 +617,25 @@ public class MainFrame extends JFrame implements DialogResultReceiver {
 
     void setRecentDir(File dir) {
         recentDir = dir;
+    }
+
+    public boolean tryInitAdbBridge() {
+        if (AdbConnectionManager.isReady()) {
+            return true;
+        }
+
+        try {
+            AdbConnectionManager.init();
+            return true;
+        } catch (AdbException e) {
+            logger.warn("Cannot start in ADB mode", e);
+            disableAdbCommandsAsync();
+            ErrorDialogsHelper.showAdbNotFoundError(this);
+        } catch (DdmlibUnsupportedException e) {
+            logger.error("Cannot work with DDMLIB supplied", e);
+            disableAdbCommandsAsync();
+            ErrorDialogsHelper.showError(this, e.getMessage());
+        }
+        return false;
     }
 }

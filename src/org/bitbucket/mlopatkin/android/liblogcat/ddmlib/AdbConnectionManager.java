@@ -72,11 +72,14 @@ public class AdbConnectionManager {
 
             });
             inited = true;
-            AndroidDebugBridge adb = AndroidDebugBridge.createBridge(
-                    Configuration.adb.executable(), false);
-            if (isReady(adb)) {
-                ready = true;
-            } else {
+            try {
+                AndroidDebugBridge adb = AndroidDebugBridge.createBridge(
+                        Configuration.adb.executable(), false);
+                if (isReady(adb)) {
+                    ready = true;
+                }
+            } catch (IllegalArgumentException e) {
+                logger.error(e);
                 throw new AdbException("Cannot initialize ADB server. See logs for details");
             }
         }
