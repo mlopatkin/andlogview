@@ -56,7 +56,7 @@ dependencies {
 }
 
 checkstyle {
-    toolVersion = '6.5'
+    toolVersion = '7.8.1'
 }
 
 applicationName = 'logview'
