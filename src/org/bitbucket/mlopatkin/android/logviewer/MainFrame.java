@@ -83,18 +83,19 @@ import javax.swing.border.EtchedBorder;
 
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
+
     private final FilterStorage storage;
+    private final DataSourceHolder sourceHolder;
 
     private LogRecordTableModel recordsModel;
     private TableScrollController scrollController;
     private SearchController searchController;
-    private RecordListener<LogRecord> listener;
 
+    private RecordListener<LogRecord> listener;
     private BookmarkController bookmarkController;
     private BookmarkModel bookmarkModel;
-    private ProcessListFrame processListFrame;
 
-    private DataSource source;
+    private ProcessListFrame processListFrame;
 
     private BufferFilterMenu bufferMenu;
     private LogTable logElements;
@@ -104,37 +105,44 @@ public class MainFrame extends JFrame {
     private JPanel statusPanel;
     private JLabel searchStatusLabel;
     private JLabel sourceStatusLabel;
+    private final MainFrameDependencies dependencies;
 
     public MainFrame(FilterStorage storage) {
         super();
         this.storage = storage;
+        dependencies =
+                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this, storage)).build();
+        sourceHolder = dependencies.getDataSourceHolder();
+
         initialize();
         processListFrame = new ProcessListFrame(this);
     }
 
     public void setSource(DataSource newSource) {
         assert EventQueue.isDispatchThread();
-        if (source != null) {
-            source.close();
+        DataSource oldSource = sourceHolder.getDataSource();
+
+        if (oldSource != null) {
+            oldSource.close();
         }
         stopWaitingForDevice();
-        source = newSource;
+        sourceHolder.setDataSource(newSource);
         recordsModel.clear();
         bookmarkModel.clear();
-        source.setLogRecordListener(listener);
-        bufferMenu.setAvailableBuffers(source.getAvailableBuffers());
-        showSourceMessage(source.toString());
+        newSource.setLogRecordListener(listener);
+        bufferMenu.setAvailableBuffers(newSource.getAvailableBuffers());
+        showSourceMessage(newSource.toString());
         updatingTimer.start();
-        if (source != null && source.getPidToProcessConverter() != null) {
+        if (newSource != null && newSource.getPidToProcessConverter() != null) {
             acShowProcesses.setEnabled(true);
-            processListFrame.setSource(source);
+            processListFrame.setSource(newSource);
         } else {
             processListFrame.setSource(null);
             acShowProcesses.setEnabled(false);
         }
 
         LogRecordTableColumnModel columns = LogRecordTableColumnModel.create(
-                mapper, Column.getFilteredSelectedColumns(source.getAvailableFields()));
+                mapper, Column.getFilteredSelectedColumns(newSource.getAvailableFields()));
         logElements.setColumnModel(columns);
     }
 
@@ -155,6 +163,7 @@ public class MainFrame extends JFrame {
 
         @Override
         public String getProcessName(int pid) {
+            DataSource source = sourceHolder.getDataSource();
             if (source != null && source.getPidToProcessConverter() != null) {
                 return source.getPidToProcessConverter().get(pid);
             } else {
@@ -170,8 +179,6 @@ public class MainFrame extends JFrame {
         setTitle("Android Log Viewer " + Main.APP_VERSION);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        MainFrameDependencies dependencies =
-                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this, storage)).build();
         bookmarkModel = dependencies.getBookmarkModel();
         bookmarkController = dependencies.getBookmarkController();
         recordsModel = dependencies.getLogModel();
@@ -365,6 +372,7 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            DataSource source = sourceHolder.getDataSource();
             if (source != null) {
                 showSourceMessage(source.toString());
             }
@@ -386,6 +394,7 @@ public class MainFrame extends JFrame {
 
     public void reset() {
         recordsModel.clear();
+        DataSource source = sourceHolder.getDataSource();
         if (!source.reset()) {
             bookmarkModel.clear();
         }
@@ -582,6 +591,7 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            DataSource source = sourceHolder.getDataSource();
             assert source != null;
             assert source.getPidToProcessConverter() != null;
             processListFrame.setVisible(true);

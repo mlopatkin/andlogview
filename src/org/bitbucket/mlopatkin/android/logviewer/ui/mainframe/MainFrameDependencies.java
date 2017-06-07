@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import dagger.Component;
 
+import org.bitbucket.mlopatkin.android.logviewer.DataSourceHolder;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
@@ -55,4 +56,6 @@ public interface MainFrameDependencies {
     BookmarkController getBookmarkController();
 
     MainFilterController getMainFilterController();
+
+    DataSourceHolder getDataSourceHolder();
 }
