@@ -23,6 +23,8 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
  * Dialog that allows the user to select a connected device and retrieve live logs from it. This dialog is modal.
@@ -47,9 +49,29 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         deviceList.setModel(deviceListModel);
         deviceList.setCellRenderer(new DeviceListCellRenderer());
 
-        int firstOnlineIndex = deviceListModel.getFirstOnlineDeviceIndex();
-        if (firstOnlineIndex >= 0) {
-            deviceList.setSelectedIndex(firstOnlineIndex);
+        if (!trySelectFirstAvailableDevice()) {
+            deviceListModel.addListDataListener(new ListDataListener() {
+                @Override
+                public void intervalAdded(ListDataEvent e) {
+                    updateSelection();
+                }
+
+                @Override
+                public void intervalRemoved(ListDataEvent e) {
+                    updateSelection();
+                }
+
+                @Override
+                public void contentsChanged(ListDataEvent e) {
+                    updateSelection();
+                }
+
+                private void updateSelection() {
+                    if (trySelectFirstAvailableDevice()) {
+                        deviceListModel.removeListDataListener(this);
+                    }
+                }
+            });
         }
 
         okButton.addActionListener(e -> onPositiveResult());
@@ -65,6 +87,15 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         updater.start();
+    }
+
+    private boolean trySelectFirstAvailableDevice() {
+        int firstOnlineIndex = deviceListModel.getFirstOnlineDeviceIndex();
+        if (firstOnlineIndex >= 0) {
+            deviceList.setSelectedIndex(firstOnlineIndex);
+            return true;
+        }
+        return false;
     }
 
     /**
