@@ -92,3 +92,23 @@ shadow.applicationDistribution.from(project.getProjectDir()) {
 compileJava {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Werror"
 }
+
+// Tweak windows start script so it won't create console window.
+// Based on https://stackoverflow.com/a/27472895/200754
+// and http://mrhaki.blogspot.ru/2015/04/gradle-goodness-alter-start-scripts.html
+startShadowScripts {
+    def replaceJavaWithJavaW = {
+        if (it.contains("java.exe")) {
+            return it.replaceAll("java.exe", "javaw.exe")
+        } else if (it.startsWith("\"%JAVA_EXE%\"")) {
+            return "start \"\" /b " + it
+        }
+        return it
+    }
+    doLast {
+        windowsScript.text = windowsScript
+                .readLines()
+                .collect(replaceJavaWithJavaW)
+                .join('\r\n')
+    }
+}
