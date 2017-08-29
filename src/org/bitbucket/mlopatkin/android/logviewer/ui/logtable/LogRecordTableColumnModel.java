@@ -22,6 +22,7 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.swing.table.DefaultTableColumnModel;
@@ -34,6 +35,7 @@ import javax.swing.table.TableColumn;
  */
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private final EnumMap<Column, TableColumn> columnsCache = new EnumMap<>(Column.class);
+    private final EnumSet<Column> activeColumns = EnumSet.noneOf(Column.class);
 
     private final TableCellEditor readOnlyCellEditor = TableCellHelper.createReadOnlyCellTextEditor();
 
@@ -56,7 +58,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addTextColumn(Column.MESSAGE).setWidth(1000);
 
         for (Column column : columns) {
-            addColumn(columnsCache.get(column));
+            addColumnFor(column);
         }
     }
 
@@ -83,7 +85,32 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         return makeBuilder(column).setRenderer(pidCellRender);
     }
 
+    private void addColumnFor(Column column) {
+        Preconditions.checkArgument(!activeColumns.contains(column), "Column %s already addded", column.name());
+        activeColumns.add(column);
+        addColumn(columnsCache.get(column));
+    }
+
+    private void hideColumnFor(Column column) {
+        removeColumn(columnsCache.get(column));
+        activeColumns.remove(column);
+    }
+
     public static LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper, List<Column> columns) {
         return new LogRecordTableColumnModel(pidToProcessMapper, columns);
+    }
+
+    boolean isColumnVisible(Column column) {
+        return activeColumns.contains(column);
+    }
+
+    void setColumnVisibility(Column column, boolean isSelected) {
+        Preconditions.checkState(activeColumns.contains(column) != isSelected,
+                                 isSelected ? "Trying to show column that is here" : "Trying to hide hidden column");
+        if (isSelected) {
+            addColumnFor(column);
+        } else {
+            hideColumnFor(column);
+        }
     }
 }

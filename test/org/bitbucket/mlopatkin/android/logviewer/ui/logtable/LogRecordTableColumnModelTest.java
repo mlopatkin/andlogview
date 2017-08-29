@@ -29,7 +29,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableColumnTestUtils.areTableColumnsFor;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class LogRecordTableColumnModelTest {
 
@@ -45,7 +47,7 @@ public class LogRecordTableColumnModelTest {
     }
 
     @Test
-    public void testTableColumnModelOnlyContainsColumnsPasssedAsInput() throws Exception {
+    public void testModelOnlyContainsColumnsPasssedAsInput() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME);
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(mapper, columns);
@@ -53,7 +55,18 @@ public class LogRecordTableColumnModelTest {
         assertThat(getColumns(model), areTableColumnsFor(columns));
     }
 
+    @Test
+    public void testIsColumnVisible() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID);
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(mapper, columns);
+
+        assertTrue(model.isColumnVisible(Column.PID));
+        assertFalse(model.isColumnVisible(Column.TIME));
+    }
+
     private static Iterable<TableColumn> getColumns(TableColumnModel model) {
         return Collections.list(model.getColumns());
     }
+
 }
