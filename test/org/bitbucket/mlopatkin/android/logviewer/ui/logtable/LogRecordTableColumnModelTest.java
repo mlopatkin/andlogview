@@ -19,10 +19,17 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 import com.google.common.collect.ImmutableList;
 
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+
+import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableColumnTestUtils.areTableColumnsFor;
+import static org.junit.Assert.assertThat;
 
 public class LogRecordTableColumnModelTest {
 
@@ -30,14 +37,23 @@ public class LogRecordTableColumnModelTest {
 
     @Test
     public void testModelCanDisplayAllColumns() throws Exception {
-        new LogRecordTableColumnModel(mapper, Arrays.asList(Column.values()));
+        List<Column> columns = Arrays.asList(Column.values());
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(mapper, columns);
+
+        assertThat("All columns should be here", getColumns(model), areTableColumnsFor(columns));
     }
 
     @Test
     public void testTableColumnModelOnlyContainsColumnsPasssedAsInput() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME);
         LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, ImmutableList.of(Column.PID, Column.APP_NAME));
+                new LogRecordTableColumnModel(mapper, columns);
 
-        Assert.assertEquals(2, model.getColumnCount());
+        assertThat(getColumns(model), areTableColumnsFor(columns));
+    }
+
+    private static Iterable<TableColumn> getColumns(TableColumnModel model) {
+        return Collections.list(model.getColumns());
     }
 }
