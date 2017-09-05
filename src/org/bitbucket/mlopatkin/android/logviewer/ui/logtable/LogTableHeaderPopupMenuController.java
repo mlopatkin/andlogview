@@ -39,7 +39,7 @@ public class LogTableHeaderPopupMenuController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            boolean isSelected = ((JCheckBoxMenuItem)e.getSource()).isSelected();
+            boolean isSelected = ((JCheckBoxMenuItem) e.getSource()).isSelected();
             columnModel.setColumnVisibility(column, isSelected);
         }
 

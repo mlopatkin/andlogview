@@ -24,7 +24,8 @@ import java.util.Arrays;
 public class IndexTableColumnModel extends LogRecordTableColumnModel {
 
     private IndexTableColumnModel(PidToProcessMapper mapper) {
-        super(mapper, Arrays.asList(Column.INDEX, Column.TIME, Column.PID, Column.PRIORITY, Column.TAG, Column.MESSAGE));
+        super(mapper,
+              Arrays.asList(Column.INDEX, Column.TIME, Column.PID, Column.PRIORITY, Column.TAG, Column.MESSAGE));
     }
 
     public static IndexTableColumnModel create(PidToProcessMapper mapper) {
