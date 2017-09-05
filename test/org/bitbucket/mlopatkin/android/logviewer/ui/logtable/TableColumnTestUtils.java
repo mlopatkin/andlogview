@@ -21,6 +21,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,10 @@ import javax.swing.table.TableColumn;
 
 public final class TableColumnTestUtils {
     private TableColumnTestUtils() {
+    }
+
+    public static Matcher<Iterable<? extends TableColumn>> areTableColumnsFor(Column... columns) {
+        return areTableColumnsFor(Arrays.asList(columns));
     }
 
     public static Matcher<Iterable<? extends TableColumn>> areTableColumnsFor(Collection<Column> columns) {

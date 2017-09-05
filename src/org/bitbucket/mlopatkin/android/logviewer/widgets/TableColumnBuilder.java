@@ -75,6 +75,14 @@ public class TableColumnBuilder {
         return this;
     }
 
+    /**
+     * @see TableColumn#setIdentifier(Object)
+     */
+    public TableColumnBuilder setIdentifier(Object identifier) {
+        column.setIdentifier(identifier);
+        return this;
+    }
+
     public TableColumn get() {
         return column;
     }

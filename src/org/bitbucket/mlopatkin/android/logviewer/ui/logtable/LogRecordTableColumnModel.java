@@ -22,7 +22,6 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.swing.table.DefaultTableColumnModel;
@@ -35,7 +34,6 @@ import javax.swing.table.TableColumn;
  */
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private final EnumMap<Column, TableColumn> columnsCache = new EnumMap<>(Column.class);
-    private final EnumSet<Column> activeColumns = EnumSet.noneOf(Column.class);
 
     private final TableCellEditor readOnlyCellEditor = TableCellHelper.createReadOnlyCellTextEditor();
 
@@ -58,7 +56,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addTextColumn(Column.MESSAGE).setWidth(1000);
 
         for (Column column : columns) {
-            addColumnFor(column);
+            addColumn(columnsCache.get(column));
         }
     }
 
@@ -85,15 +83,31 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         return makeBuilder(column).setRenderer(pidCellRender);
     }
 
-    private void addColumnFor(Column column) {
-        Preconditions.checkArgument(!activeColumns.contains(column), "Column %s already addded", column.name());
-        activeColumns.add(column);
+    private void showColumnFor(Column column) {
+        Preconditions.checkArgument(!isColumnVisible(column), "Column %s already addded", column.name());
+        int desiredPosition = findPositionForColumn(column);
         addColumn(columnsCache.get(column));
+        int actualPosition = getColumnCount() - 1;
+        if (desiredPosition != actualPosition) {
+            moveColumn(actualPosition, desiredPosition);
+        }
     }
 
     private void hideColumnFor(Column column) {
         removeColumn(columnsCache.get(column));
-        activeColumns.remove(column);
+    }
+
+    private int findPositionForColumn(Column column) {
+        for (int i = 0; i < getColumnCount(); ++i) {
+            if (getColumnForIndex(i).compareTo(column) >= 0) {
+                return i;
+            }
+        }
+        return getColumnCount();
+    }
+
+    private Column getColumnForIndex(int columnIndex) {
+        return (Column) getColumn(columnIndex).getIdentifier();
     }
 
     public static LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper, List<Column> columns) {
@@ -101,14 +115,14 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     }
 
     boolean isColumnVisible(Column column) {
-        return activeColumns.contains(column);
+        return tableColumns.stream().anyMatch(tc -> column.equals(tc.getIdentifier()));
     }
 
-    void setColumnVisibility(Column column, boolean isSelected) {
-        Preconditions.checkState(activeColumns.contains(column) != isSelected,
-                                 isSelected ? "Trying to show column that is here" : "Trying to hide hidden column");
-        if (isSelected) {
-            addColumnFor(column);
+    void setColumnVisibility(Column column, boolean visible) {
+        Preconditions.checkState(isColumnVisible(column) != visible,
+                                 visible ? "Trying to show column that is here" : "Trying to hide hidden column");
+        if (visible) {
+            showColumnFor(column);
         } else {
             hideColumnFor(column);
         }

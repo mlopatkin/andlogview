@@ -179,7 +179,7 @@ public enum Column {
     }
 
     TableColumnBuilder makeColumnBuilder() {
-        TableColumnBuilder builder = new TableColumnBuilder(getIndex());
+        TableColumnBuilder builder = new TableColumnBuilder(getIndex()).setIdentifier(this);
         if (title != null) {
             builder.setHeader(title);
         }

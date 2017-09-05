@@ -47,8 +47,8 @@ public class LogRecordTableColumnModelTest {
     }
 
     @Test
-    public void testModelOnlyContainsColumnsPasssedAsInput() throws Exception {
-        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME);
+    public void testModelOnlyContainsColumnsPasssedAsInputInThatOrder() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.MESSAGE, Column.APP_NAME);
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(mapper, columns);
 
@@ -63,6 +63,53 @@ public class LogRecordTableColumnModelTest {
 
         assertTrue(model.isColumnVisible(Column.PID));
         assertFalse(model.isColumnVisible(Column.TIME));
+    }
+
+    @Test
+    public void testHideVisibleColumn() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME);
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(mapper, columns);
+
+        model.setColumnVisibility(Column.PID, false);
+
+        assertThat(getColumns(model), areTableColumnsFor(Column.APP_NAME));
+    }
+
+    @Test
+    public void testToggleFirstColumnKeepsItPosition() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(mapper, columns);
+
+        model.setColumnVisibility(Column.MESSAGE, false);
+        model.setColumnVisibility(Column.MESSAGE, true);
+
+        assertThat(getColumns(model), areTableColumnsFor(columns));
+    }
+
+    @Test
+    public void testToggleLastColumnKeepsItPosition() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(mapper, columns);
+
+        model.setColumnVisibility(Column.APP_NAME, false);
+        model.setColumnVisibility(Column.APP_NAME, true);
+
+        assertThat(getColumns(model), areTableColumnsFor(columns));
+    }
+
+    @Test
+    public void testToggleMiddleColumnKeepsItPosition() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(mapper, columns);
+
+        model.setColumnVisibility(Column.PID, false);
+        model.setColumnVisibility(Column.PID, true);
+
+        assertThat(getColumns(model), areTableColumnsFor(columns));
     }
 
     private static Iterable<TableColumn> getColumns(TableColumnModel model) {
