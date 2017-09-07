@@ -22,78 +22,95 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
+/**
+ * The column model for the main log table. It allows to temporarily hide columns.
+ */
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
+    private final EnumMap<Column, TableColumn> columnsCache = new EnumMap<>(Column.class);
+    private final EnumSet<Column> activeColumns = EnumSet.noneOf(Column.class);
 
-    protected static class Builder {
-        private final TableCellEditor readOnlyCellEditor = TableCellHelper.createReadOnlyCellTextEditor();
+    private final TableCellEditor readOnlyCellEditor = TableCellHelper.createReadOnlyCellTextEditor();
 
-        private final TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
-        private final TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
-        private final TableCellRenderer textCellRenderer = new HighlightCellRenderer();
-        private final TableCellRenderer pidCellRender;
+    private final TableCellRenderer timeCellRenderer = new LogRecordTimeCellRenderer();
+    private final TableCellRenderer priorityCellRenderer = new LogRecordPriorityCellRenderer();
+    private final TableCellRenderer textCellRenderer = new HighlightCellRenderer();
+    private final TableCellRenderer pidCellRender;
 
-        private final Map<Column, TableColumnBuilder> columnBuilders = new EnumMap<>(Column.class);
 
-        protected Builder(PidToProcessMapper mapper) {
-            pidCellRender = new ToolTippedPidCellRenderer(mapper);
-        }
+    protected LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, List<Column> columns) {
+        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
 
-        private TableColumnBuilder addColumn(Column column) {
-            Preconditions.checkArgument(!columnBuilders.containsKey(column), "Column %s already addded", column.name());
-            TableColumnBuilder columnBuilder = column.makeColumnBuilder();
-            columnBuilders.put(column, columnBuilder);
-            columnBuilder.setEditor(readOnlyCellEditor);
-            return columnBuilder;
-        }
+        addTextColumn(Column.INDEX).setWidth(30).setMaxWidth(50);
+        addTimeColumn(Column.TIME).setWidth(150).setMaxWidth(150);
+        addPidColumn(Column.PID).setWidth(40).setMaxWidth(50);
+        addTextColumn(Column.TID).setWidth(40).setMaxWidth(50);
+        addPriorityColumn(Column.PRIORITY).setWidth(30).setMaxWidth(50);
+        addTextColumn(Column.TAG).setWidth(120);
+        addTextColumn(Column.APP_NAME).setWidth(150);
+        addTextColumn(Column.MESSAGE).setWidth(1000);
 
-        public TableColumnBuilder addTimeColumn(Column column) {
-            return addColumn(column).setRenderer(timeCellRenderer);
-        }
-
-        public TableColumnBuilder addPriorityColumn(Column column) {
-            return addColumn(column).setRenderer(priorityCellRenderer);
-        }
-
-        public TableColumnBuilder addTextColumn(Column column) {
-            return addColumn(column).setRenderer(textCellRenderer);
-        }
-
-        public TableColumnBuilder addPidColumn(Column column) {
-            return addColumn(column).setRenderer(pidCellRender);
-        }
-
-        TableColumnBuilder getBuilder(Column column) {
-            return columnBuilders.get(column);
-        }
-    }
-
-    protected LogRecordTableColumnModel(Builder builder, List<Column> columns) {
         for (Column column : columns) {
-            addColumn(builder.getBuilder(column).build());
+            addColumnFor(column);
         }
     }
 
+    private TableColumnBuilder makeBuilder(Column column) {
+        Preconditions.checkArgument(!columnsCache.containsKey(column), "Column %s already addded", column.name());
+        TableColumnBuilder builder = column.makeColumnBuilder();
+        columnsCache.put(column, builder.get());
+        return builder.setEditor(readOnlyCellEditor);
+    }
 
-    protected static Builder makeDefaultBuilder(PidToProcessMapper mapper) {
-        Builder b = new Builder(mapper);
-        b.addTimeColumn(Column.TIME).setWidth(150).setMaxWidth(150);
-        b.addPidColumn(Column.PID).setWidth(40).setMaxWidth(50);
-        b.addTextColumn(Column.TID).setWidth(40).setMaxWidth(50);
-        b.addPriorityColumn(Column.PRIORITY).setWidth(30).setMaxWidth(50);
-        b.addTextColumn(Column.TAG).setWidth(120);
-        b.addTextColumn(Column.APP_NAME).setWidth(150);
-        b.addTextColumn(Column.MESSAGE).setWidth(1000);
-        return b;
+    private TableColumnBuilder addTimeColumn(Column column) {
+        return makeBuilder(column).setRenderer(timeCellRenderer);
+    }
+
+    private TableColumnBuilder addPriorityColumn(Column column) {
+        return makeBuilder(column).setRenderer(priorityCellRenderer);
+    }
+
+    private TableColumnBuilder addTextColumn(Column column) {
+        return makeBuilder(column).setRenderer(textCellRenderer);
+    }
+
+    private TableColumnBuilder addPidColumn(Column column) {
+        return makeBuilder(column).setRenderer(pidCellRender);
+    }
+
+    private void addColumnFor(Column column) {
+        Preconditions.checkArgument(!activeColumns.contains(column), "Column %s already addded", column.name());
+        activeColumns.add(column);
+        addColumn(columnsCache.get(column));
+    }
+
+    private void hideColumnFor(Column column) {
+        removeColumn(columnsCache.get(column));
+        activeColumns.remove(column);
     }
 
     public static LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper, List<Column> columns) {
-        return new LogRecordTableColumnModel(makeDefaultBuilder(pidToProcessMapper), columns);
+        return new LogRecordTableColumnModel(pidToProcessMapper, columns);
+    }
+
+    boolean isColumnVisible(Column column) {
+        return activeColumns.contains(column);
+    }
+
+    void setColumnVisibility(Column column, boolean isSelected) {
+        Preconditions.checkState(activeColumns.contains(column) != isSelected,
+                                 isSelected ? "Trying to show column that is here" : "Trying to hide hidden column");
+        if (isSelected) {
+            addColumnFor(column);
+        } else {
+            hideColumnFor(column);
+        }
     }
 }

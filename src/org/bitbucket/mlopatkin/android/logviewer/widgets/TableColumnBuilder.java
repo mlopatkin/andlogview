@@ -75,7 +75,7 @@ public class TableColumnBuilder {
         return this;
     }
 
-    public TableColumn build() {
+    public TableColumn get() {
         return column;
     }
 }

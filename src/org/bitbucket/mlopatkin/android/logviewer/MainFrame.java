@@ -144,6 +144,8 @@ public class MainFrame extends JFrame {
         LogRecordTableColumnModel columns = LogRecordTableColumnModel.create(
                 mapper, Column.getFilteredSelectedColumns(newSource.getAvailableFields()));
         logElements.setColumnModel(columns);
+        UiHelper.addPopupMenu(logElements.getTableHeader(),
+                              new LogTableHeaderPopupMenuController(columns).createMenu());
     }
 
     public void setSourceAsync(final DataSource newSource) {

@@ -23,14 +23,12 @@ import java.util.Arrays;
 
 public class IndexTableColumnModel extends LogRecordTableColumnModel {
 
-    private IndexTableColumnModel(Builder b) {
-        super(b, Arrays.asList(Column.INDEX, Column.TIME, Column.PID, Column.PRIORITY, Column.TAG, Column.MESSAGE));
+    private IndexTableColumnModel(PidToProcessMapper mapper) {
+        super(mapper,
+              Arrays.asList(Column.INDEX, Column.TIME, Column.PID, Column.PRIORITY, Column.TAG, Column.MESSAGE));
     }
 
     public static IndexTableColumnModel create(PidToProcessMapper mapper) {
-        Builder b = makeDefaultBuilder(mapper);
-        b.addTextColumn(Column.INDEX).setWidth(30).setMaxWidth(50);
-
-        return new IndexTableColumnModel(b);
+        return new IndexTableColumnModel(mapper);
     }
 }
