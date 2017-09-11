@@ -6,4 +6,4 @@ pipelines:
         caches:
           - gradle
         script:
-          - bash ./gradlew build bibucketUpload --continue
+          - bash ./gradlew build bitbucketUpload --continue
