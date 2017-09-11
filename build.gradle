@@ -19,11 +19,16 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        maven {
+            // TODO(mlopatkin) switch to JCenter
+            url 'https://dl.bintray.com/mlopatkin/bitbucket-plugin'
+        }
         jcenter()
     }
     dependencies {
         classpath 'net.ltgt.gradle:gradle-apt-plugin:0.9'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath 'name.mlopatkin.bitbucket:gradle-plugin:0.2'
     }
 }
 
@@ -33,6 +38,8 @@ apply plugin: 'net.ltgt.apt'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
+
+apply plugin: 'name.mlopatkin.bitbucket'
 
 repositories {
     jcenter()
@@ -113,3 +120,16 @@ startShadowScripts {
                 .join('\r\n')
     }
 }
+
+bitbucket {
+    repository = 'android-log-viewer'
+    username = project.hasProperty('bitbucket.user') ? project.property('bitbucket.user') : System.getenv('BITBUCKET_USER')
+    applicationPassword = project.hasProperty('bitbucket.password') ? project.property('bitbucket.password') : System.getenv('BITBUCKET_PASSWORD')
+}
+
+bitbucketUpload {
+    dependsOn distShadowZip
+    fileToUpload = distShadowZip.archivePath
+}
+
+
