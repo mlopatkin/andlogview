@@ -19,7 +19,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter;
 import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.filters.AbstractFilterCollection;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollection;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class IndexFilterCollection extends AbstractFilterCollection<Predicate<LogRecord>> {
+public class IndexFilterCollection implements FilterCollection<Predicate<LogRecord>> {
 
     public interface Observer {
         void onFilterDisabled(Predicate<LogRecord> filter);

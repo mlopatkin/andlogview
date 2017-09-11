@@ -31,7 +31,7 @@ import java.util.Set;
  * <p/>
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
-public class FilterChain extends AbstractFilterCollection<Predicate<LogRecord>> {
+public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
 
     private final SetMultimap<FilteringMode, Predicate<LogRecord>> filters =
             MultimapBuilder.enumKeys(FilteringMode.class)
