@@ -29,11 +29,8 @@ public class TimeFormatUtils {
     private TimeFormatUtils() {
     }
 
-    private static final ThreadLocal<DateFormat> LOGCAT_DATE_FORMAT = new ThreadLocal<DateFormat>() {
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("MM-dd HH:mm:ss.SSS");
-        }
-    };
+    private static final ThreadLocal<DateFormat> LOGCAT_DATE_FORMAT =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("MM-dd HH:mm:ss.SSS"));
 
     public static Date getTimeFromString(String s) throws ParseException {
         return LOGCAT_DATE_FORMAT.get().parse(s);

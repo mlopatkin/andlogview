@@ -34,8 +34,11 @@ public class LogRecordParserTest {
     static final String TAG_RECORD = "D/MediaScanner: postscan return";
     static final String THREAD_RECORD = "D(  417:0x494) postscan return";
     static final String THREADTIME_RECORD = "08-18 13:40:59.546   417  1172 D MediaScanner: postscan return";
+    static final String THREADTIME_RECORD_WITH_MCS =
+            "08-18 13:40:59.546789   417  1172 D MediaScanner: postscan return";
     static final String RAW_RECORD = "postscan return";
     static final String TIME_RECORD = "08-18 13:40:59.546 D/MediaScanner(417): postscan return";
+    static final String TIME_RECORD_WITH_MCS = "08-18 13:40:59.546789 D/MediaScanner(417): postscan return";
     static final String TIME_RECORD_PAD = "08-18 13:40:59.546 D/MediaScanner   (  417): postscan return";
     static final String LONG_RECORD = "[ 08-18 13:40:59.546   417:0x494 D/MediaScanner ]\n"
             + "postscan return";
@@ -183,5 +186,31 @@ public class LogRecordParserTest {
         assertFalse(LogRecordParser.isLogBeginningLine(BLANK_LINE));
         assertFalse(LogRecordParser.isLogBeginningLine(BRIEF_RECORD));
         assertFalse(LogRecordParser.isLogBeginningLine(THREADTIME_RECORD));
+    }
+
+    @Test
+    public void testTimeLogWithMicrosecondsTimestamp() {
+        LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD_WITH_MCS, Collections.emptyMap());
+
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PID, record.getPid());
+        assertTrue(isSameDate(DATE, record.getTime()));
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(BUFFER, record.getBuffer());
+    }
+
+    @Test
+    public void testThreadTimeLogWithMicrosecondsTimestamp() {
+        LogRecord record =
+                LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD_WITH_MCS, Collections.emptyMap());
+
+        assertEquals(TAG, record.getTag());
+        assertEquals(MESSAGE, record.getMessage());
+        assertEquals(PID, record.getPid());
+        assertEquals(TID, record.getTid());
+        assertTrue(isSameDate(DATE, record.getTime()));
+        assertEquals(PRIORITY, record.getPriority());
+        assertEquals(BUFFER, record.getBuffer());
     }
 }

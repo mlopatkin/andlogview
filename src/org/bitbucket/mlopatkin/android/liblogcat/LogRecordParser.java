@@ -33,7 +33,7 @@ public class LogRecordParser {
     private LogRecordParser() {
     }
 
-    private static final String TIMESTAMP_REGEX = "(\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)";
+    private static final String TIMESTAMP_REGEX = "(\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)(?:\\d\\d\\d)?";
     private static final String ID_REGEX = "(\\d+)";
     private static final String PID_REGEX = ID_REGEX;
     private static final String PID_BRACKETS = "\\(\\s*" + PID_REGEX + "\\)";
