@@ -56,7 +56,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addTextColumn(Column.MESSAGE).setWidth(1000);
 
         for (Column column : columns) {
-            addColumn(columnsCache.get(column));
+            showColumnFor(column);
         }
     }
 

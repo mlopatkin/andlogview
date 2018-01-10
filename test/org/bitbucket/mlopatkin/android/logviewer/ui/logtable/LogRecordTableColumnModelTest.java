@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -47,12 +48,12 @@ public class LogRecordTableColumnModelTest {
     }
 
     @Test
-    public void testModelOnlyContainsColumnsPasssedAsInputInThatOrder() throws Exception {
+    public void testModelOnlyContainsColumnsPasssedAsInputInSortedOrder() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.MESSAGE, Column.APP_NAME);
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(mapper, columns);
 
-        assertThat(getColumns(model), areTableColumnsFor(columns));
+        assertThat(getColumns(model), areTableColumnsFor(columns.stream().sorted().collect(Collectors.toList())));
     }
 
     @Test
@@ -82,8 +83,8 @@ public class LogRecordTableColumnModelTest {
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(mapper, columns);
 
-        model.setColumnVisibility(Column.MESSAGE, false);
-        model.setColumnVisibility(Column.MESSAGE, true);
+        model.setColumnVisibility(Column.PID, false);
+        model.setColumnVisibility(Column.PID, true);
 
         assertThat(getColumns(model), areTableColumnsFor(columns));
     }
@@ -94,8 +95,8 @@ public class LogRecordTableColumnModelTest {
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(mapper, columns);
 
-        model.setColumnVisibility(Column.APP_NAME, false);
-        model.setColumnVisibility(Column.APP_NAME, true);
+        model.setColumnVisibility(Column.MESSAGE, false);
+        model.setColumnVisibility(Column.MESSAGE, true);
 
         assertThat(getColumns(model), areTableColumnsFor(columns));
     }
@@ -106,8 +107,8 @@ public class LogRecordTableColumnModelTest {
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(mapper, columns);
 
-        model.setColumnVisibility(Column.PID, false);
-        model.setColumnVisibility(Column.PID, true);
+        model.setColumnVisibility(Column.APP_NAME, false);
+        model.setColumnVisibility(Column.APP_NAME, true);
 
         assertThat(getColumns(model), areTableColumnsFor(columns));
     }
