@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.LogRecordsTransferHandler;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
@@ -55,7 +56,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
 
     @Inject
     public IndexFrame(DialogFactory dialogFactory,
-                      IndexTableColumnModel columnsModel,
+                      LogRecordTableColumnModel columnsModel,
                       @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable,
                       IndexController controller,
                       @Nullable PopupBuilder popupBuilder) {
