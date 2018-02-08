@@ -53,7 +53,8 @@ public class LogTableHeaderPopupMenuController {
         }
     }
 
-    public LogTableHeaderPopupMenuController(LogRecordTableColumnModel columnModel, Collection<Column> availableColumns) {
+    public LogTableHeaderPopupMenuController(LogRecordTableColumnModel columnModel,
+            Collection<Column> availableColumns) {
         this.columnModel = columnModel;
         this.availableColumns = availableColumns;
     }

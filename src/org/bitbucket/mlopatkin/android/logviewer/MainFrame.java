@@ -60,7 +60,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.Collection;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -142,7 +142,7 @@ public class MainFrame extends JFrame {
             acShowProcesses.setEnabled(false);
         }
 
-        List<Column> availableColumns = Column.getFilteredSelectedColumns(newSource.getAvailableFields());
+        Collection<Column> availableColumns = Column.getColumnsForFields(newSource.getAvailableFields());
         LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(
                 mapper, availableColumns);
         logElements.setColumnModel(columns);

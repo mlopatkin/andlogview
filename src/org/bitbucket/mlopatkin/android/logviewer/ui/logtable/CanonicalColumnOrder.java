@@ -16,7 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,7 +27,7 @@ import javax.inject.Singleton;
  * Order of the columns in the table. It is somewhat independent of what columns are available in the data source.
  */
 @Singleton
-class CanonicalColumnOrder implements Comparator<Column> {
+class CanonicalColumnOrder implements Comparator<Column>, Iterable<Column> {
 
     @Inject
     public CanonicalColumnOrder() {
@@ -34,5 +36,10 @@ class CanonicalColumnOrder implements Comparator<Column> {
     @Override
     public int compare(Column o1, Column o2) {
         return o1.compareTo(o2);
+    }
+
+    @Override
+    public Iterator<Column> iterator() {
+        return Arrays.asList(Column.values()).iterator();
     }
 }
