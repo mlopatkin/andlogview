@@ -80,7 +80,8 @@ public enum Column {
             return record.getTag();
         }
     },
-    MESSAGE(Field.MESSAGE, "message", "Message") {
+    // Message isn't toggleable so the user cannot disable everything.
+    MESSAGE(Field.MESSAGE, "message", "Message", false) {
         @Override
         public String getValue(int rowIndex, LogRecord record) {
             return record.getMessage();

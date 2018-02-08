@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import java.awt.event.ActionEvent;
+import java.util.Collection;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -28,6 +29,7 @@ import javax.swing.JPopupMenu;
 public class LogTableHeaderPopupMenuController {
 
     private final LogRecordTableColumnModel columnModel;
+    private final Collection<Column> availableColumns;
 
     private class ToggleColumnAction extends AbstractAction {
         private final Column column;
@@ -46,20 +48,23 @@ public class LogTableHeaderPopupMenuController {
         public JCheckBoxMenuItem createMenuItem() {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(this);
             item.setSelected(columnModel.isColumnVisible(column));
+            item.setEnabled(column.isToggleable());
             return item;
         }
     }
 
-    public LogTableHeaderPopupMenuController(LogRecordTableColumnModel columnModel) {
+    public LogTableHeaderPopupMenuController(LogRecordTableColumnModel columnModel, Collection<Column> availableColumns) {
         this.columnModel = columnModel;
+        this.availableColumns = availableColumns;
     }
 
     public JPopupMenu createMenu() {
         JPopupMenu menu = new JPopupMenu();
         for (Column c : Column.values()) {
-            if (c.isToggleable()) {
-                menu.add(new ToggleColumnAction(c).createMenuItem());
+            if (!availableColumns.contains(c)) {
+                continue;
             }
+            menu.add(new ToggleColumnAction(c).createMenuItem());
         }
         return menu;
     }

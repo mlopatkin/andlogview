@@ -60,6 +60,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -141,11 +142,12 @@ public class MainFrame extends JFrame {
             acShowProcesses.setEnabled(false);
         }
 
+        List<Column> availableColumns = Column.getFilteredSelectedColumns(newSource.getAvailableFields());
         LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(
-                mapper, Column.getFilteredSelectedColumns(newSource.getAvailableFields()));
+                mapper, availableColumns);
         logElements.setColumnModel(columns);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columns).createMenu());
+                              new LogTableHeaderPopupMenuController(columns, availableColumns).createMenu());
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -192,7 +194,8 @@ public class MainFrame extends JFrame {
                 dependencies.getColumnModelFactory().create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columnModel).createMenu());
+                              new LogTableHeaderPopupMenuController(columnModel, Column.getSelectedColumns())
+                                      .createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
