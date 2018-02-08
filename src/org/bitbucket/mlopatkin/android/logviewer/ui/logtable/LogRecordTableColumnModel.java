@@ -24,6 +24,8 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 import java.util.EnumMap;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -42,9 +44,13 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private final TableCellRenderer textCellRenderer = new HighlightCellRenderer();
     private final TableCellRenderer pidCellRender;
 
+    private final CanonicalColumnOrder columnOrder;
 
-    protected LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, List<Column> columns) {
+
+    protected LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, List<Column> availableColumns,
+            CanonicalColumnOrder columnOrder) {
         pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
+        this.columnOrder = columnOrder;
 
         addTextColumn(Column.INDEX).setWidth(30).setMaxWidth(50);
         addTimeColumn(Column.TIME).setWidth(150).setMaxWidth(150);
@@ -55,7 +61,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addTextColumn(Column.APP_NAME).setWidth(150);
         addTextColumn(Column.MESSAGE).setWidth(1000);
 
-        for (Column column : columns) {
+        for (Column column : availableColumns) {
             showColumnFor(column);
         }
     }
@@ -99,7 +105,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     private int findPositionForColumn(Column column) {
         for (int i = 0; i < getColumnCount(); ++i) {
-            if (getColumnForIndex(i).compareTo(column) >= 0) {
+            if (columnOrder.compare(getColumnForIndex(i), column) >= 0) {
                 return i;
             }
         }
@@ -108,10 +114,6 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     private Column getColumnForIndex(int columnIndex) {
         return (Column) getColumn(columnIndex).getIdentifier();
-    }
-
-    public static LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper, List<Column> columns) {
-        return new LogRecordTableColumnModel(pidToProcessMapper, columns);
     }
 
     boolean isColumnVisible(Column column) {
@@ -125,6 +127,20 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
             showColumnFor(column);
         } else {
             hideColumnFor(column);
+        }
+    }
+
+    @Singleton
+    public static class Factory {
+        private final CanonicalColumnOrder columnOrder;
+
+        @Inject
+        public Factory(CanonicalColumnOrder columnOrder) {
+            this.columnOrder = columnOrder;
+        }
+
+        public LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper, List<Column> availableColumns) {
+            return new LogRecordTableColumnModel(pidToProcessMapper, availableColumns, columnOrder);
         }
     }
 }

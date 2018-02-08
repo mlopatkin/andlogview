@@ -59,8 +59,8 @@ public class IndexFrameModule {
     }
 
     @Provides
-    LogRecordTableColumnModel getColumnModel() {
-        return LogRecordTableColumnModel.create(null, INDEX_FRAME_COLUMNS);
+    LogRecordTableColumnModel getColumnModel(LogRecordTableColumnModel.Factory factory) {
+        return factory.create(null, INDEX_FRAME_COLUMNS);
     }
 
     @Provides

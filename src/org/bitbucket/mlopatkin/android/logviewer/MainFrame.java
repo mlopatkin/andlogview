@@ -141,7 +141,7 @@ public class MainFrame extends JFrame {
             acShowProcesses.setEnabled(false);
         }
 
-        LogRecordTableColumnModel columns = LogRecordTableColumnModel.create(
+        LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(
                 mapper, Column.getFilteredSelectedColumns(newSource.getAvailableFields()));
         logElements.setColumnModel(columns);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
@@ -188,7 +188,8 @@ public class MainFrame extends JFrame {
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        LogRecordTableColumnModel columnModel = LogRecordTableColumnModel.create(mapper, Column.getSelectedColumns());
+        LogRecordTableColumnModel columnModel =
+                dependencies.getColumnModelFactory().create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
                               new LogTableHeaderPopupMenuController(columnModel).createMenu());
