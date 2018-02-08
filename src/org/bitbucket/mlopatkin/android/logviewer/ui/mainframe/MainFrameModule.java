@@ -24,9 +24,11 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.UserColumnOrder;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -73,5 +75,11 @@ public class MainFrameModule {
     @Singleton
     public FilterStorage getStorage() {
         return storage;
+    }
+
+    @Provides
+    @Singleton
+    public ColumnOrder getColumnOrder(UserColumnOrder order) {
+        return order;
     }
 }

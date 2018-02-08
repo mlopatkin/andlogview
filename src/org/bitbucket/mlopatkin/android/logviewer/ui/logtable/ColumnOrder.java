@@ -16,21 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Comparator;
 
 /**
- * Non-customizable "natural" column order.
+ * The instance of this class represents a total order of the columns. It can also list all columns in this order
+ * (this can also be done with sorting but more convenient to have it here).
  */
-public class CanonicalColumnOrder implements ColumnOrder {
-
-    @Override
-    public Iterator<Column> iterator() {
-        return Arrays.asList(Column.values()).iterator();
-    }
-
-    @Override
-    public int compare(Column o1, Column o2) {
-        return o1.compareTo(o2);
-    }
+public interface ColumnOrder extends Comparator<Column>, Iterable<Column> {
 }

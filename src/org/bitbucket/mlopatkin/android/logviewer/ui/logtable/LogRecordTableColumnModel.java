@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -48,16 +47,15 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private final TableCellRenderer textCellRenderer = new HighlightCellRenderer();
     private final TableCellRenderer pidCellRender;
 
-    private final CanonicalColumnOrder columnOrder;
+    private final ColumnOrder columnOrder;
 
-
-    protected LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
-            CanonicalColumnOrder columnOrder) {
+    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
+            ColumnOrder columnOrder) {
         this(pidToProcessMapper, availableColumns, columnOrder, new HashSet<>(Column.getSelectedColumns()));
     }
 
-    private LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
-            CanonicalColumnOrder columnOrder, Set<Column> visibleColumns) {
+    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
+            ColumnOrder columnOrder, Set<Column> visibleColumns) {
         pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         this.columnOrder = columnOrder;
 
@@ -147,12 +145,11 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
-    @Singleton
     public static class Factory {
-        private final CanonicalColumnOrder columnOrder;
+        private final ColumnOrder columnOrder;
 
         @Inject
-        public Factory(CanonicalColumnOrder columnOrder) {
+        public Factory(ColumnOrder columnOrder) {
             this.columnOrder = columnOrder;
         }
 
