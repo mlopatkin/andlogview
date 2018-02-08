@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -36,14 +35,12 @@ import static org.junit.Assert.assertTrue;
 
 public class LogRecordTableColumnModelTest {
 
-    private PidToProcessMapper mapper = pid -> "";
     private final CanonicalColumnOrder columnOrder = new CanonicalColumnOrder();
 
     @Test
     public void testModelCanDisplayAllColumns() throws Exception {
         List<Column> columns = Arrays.asList(Column.values());
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         assertThat("All columns should be here", getColumns(model), areTableColumnsFor(columns));
     }
@@ -51,8 +48,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testModelOnlyContainsColumnsPasssedAsInputInSortedOrder() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.MESSAGE, Column.APP_NAME);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         assertThat(getColumns(model), areTableColumnsFor(columns.stream().sorted().collect(Collectors.toList())));
     }
@@ -60,8 +56,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testIsColumnVisible() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         assertTrue(model.isColumnVisible(Column.PID));
         assertFalse(model.isColumnVisible(Column.TIME));
@@ -70,8 +65,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testHideVisibleColumn() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.PID, false);
 
@@ -81,8 +75,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testToggleFirstColumnKeepsItPosition() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.PID, false);
         model.setColumnVisibility(Column.PID, true);
@@ -93,8 +86,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testToggleLastColumnKeepsItPosition() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.MESSAGE, false);
         model.setColumnVisibility(Column.MESSAGE, true);
@@ -105,8 +97,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testToggleMiddleColumnKeepsItPosition() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns, columnOrder);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.APP_NAME, false);
         model.setColumnVisibility(Column.APP_NAME, true);

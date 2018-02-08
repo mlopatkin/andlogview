@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
@@ -23,6 +24,9 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,6 +53,11 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     protected LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
             CanonicalColumnOrder columnOrder) {
+        this(pidToProcessMapper, availableColumns, columnOrder, new HashSet<>(Column.getSelectedColumns()));
+    }
+
+    private LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
+            CanonicalColumnOrder columnOrder, Set<Column> visibleColumns) {
         pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         this.columnOrder = columnOrder;
 
@@ -62,10 +71,16 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addTextColumn(Column.MESSAGE).setWidth(1000);
 
         for (Column column : columnOrder) {
-            if (availableColumns.contains(column)) {
+            if (availableColumns.contains(column) && visibleColumns.contains(column)) {
                 showColumnFor(column);
             }
         }
+    }
+
+    @VisibleForTesting
+    static LogRecordTableColumnModel createForTest(Collection<Column> availableColumns,
+            CanonicalColumnOrder columnOrder) {
+        return new LogRecordTableColumnModel(null, availableColumns, columnOrder, EnumSet.allOf(Column.class));
     }
 
     private TableColumnBuilder makeBuilder(Column column) {
