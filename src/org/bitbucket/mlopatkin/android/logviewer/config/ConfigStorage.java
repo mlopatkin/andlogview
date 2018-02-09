@@ -22,7 +22,6 @@ import com.google.common.collect.Maps;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -33,19 +32,24 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonWriter;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.utils.Threads;
+import org.bitbucket.mlopatkin.android.logviewer.AtExitManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * Provides an access to a persistent storage for filters.
@@ -95,31 +99,7 @@ public class ConfigStorage {
         this.fileWorker = fileWorker;
     }
 
-    public static ConfigStorage createForFile(File file) throws IOException {
-        if (!file.exists()) {
-            Files.touch(file);
-        }
-        final ConfigStorage result = new ConfigStorage(
-                Files.asCharSource(file, Charsets.UTF_8),
-                Files.asCharSink(file, Charsets.UTF_8),
-                Executors.newSingleThreadExecutor(
-                        new ThreadFactoryBuilder().setThreadFactory(Threads.withName("StorageFileWorker"))
-                                                  .setDaemon(true).build()));
-        Runtime.getRuntime().addShutdownHook(new Thread("OnExitCommiter") {
-            @Override
-            public void run() {
-                try {
-                    result.shutdown(true);
-                } catch (InterruptedException e) {
-                    interrupt();
-                }
-            }
-        });
-        result.load();
-        return result;
-    }
-
-    public void load() {
+    void load() {
         JsonParser parser = new JsonParser();
         try (Reader in = inStorage.openBufferedStream()) {
             load(parser.parse(in));
@@ -229,10 +209,46 @@ public class ConfigStorage {
     }
 
     public void shutdown(boolean waitForCompletion) throws InterruptedException {
-        fileWorker.submit(fileSaver);
-        fileWorker.shutdown();
-        if (waitForCompletion && !fileWorker.awaitTermination(120, TimeUnit.SECONDS)) {
-            logger.warn("Failed to terminate file worker properly");
+        Future<?> saveResult = fileWorker.submit(fileSaver);
+        if (waitForCompletion) {
+            try {
+                saveResult.get(120, TimeUnit.SECONDS);
+            } catch (ExecutionException e) {
+                logger.warn("Failed to terminate file worker properly", e);
+            } catch (TimeoutException e) {
+                logger.warn("Failed to terminate file worker in time");
+            }
+        }
+    }
+
+    @Singleton
+    public static class Factory {
+        private final ExecutorService ioThreadPool;
+        private final AtExitManager atExitManager;
+
+        @Inject
+        Factory(@Named(ConfigModule.CONFIG_THREAD_POOL) ExecutorService ioThreadPool, AtExitManager atExitManager) {
+            this.ioThreadPool = ioThreadPool;
+            this.atExitManager = atExitManager;
+        }
+
+        public ConfigStorage createForFile(File file) throws IOException {
+            if (!file.exists()) {
+                Files.touch(file);
+            }
+            final ConfigStorage result = new ConfigStorage(
+                    Files.asCharSource(file, Charsets.UTF_8),
+                    Files.asCharSink(file, Charsets.UTF_8),
+                    ioThreadPool);
+            atExitManager.registerExitAction(() -> {
+                try {
+                    result.shutdown(true);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+            result.load();
+            return result;
         }
     }
 }

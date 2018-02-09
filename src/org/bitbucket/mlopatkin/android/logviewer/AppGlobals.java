@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import dagger.Component;
 
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigModule;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 
 import javax.inject.Singleton;
@@ -26,7 +27,7 @@ import javax.inject.Singleton;
  * Global application services available for all.
  */
 @Singleton
-@Component(modules = GlobalsModule.class)
+@Component(modules = {GlobalsModule.class, ConfigModule.class})
 public interface AppGlobals {
     ConfigStorage getFilterStorage();
 }
