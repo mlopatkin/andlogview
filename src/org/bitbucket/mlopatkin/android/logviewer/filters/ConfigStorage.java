@@ -50,9 +50,8 @@ import javax.annotation.concurrent.ThreadSafe;
  * Provides an access to a persistent storage for filters.
  */
 @ThreadSafe
-public class FilterStorage {
-    // TODO this has little to do with filters per se, rename to storage
-    private static final Logger logger = Logger.getLogger(FilterStorage.class);
+public class ConfigStorage {
+    private static final Logger logger = Logger.getLogger(ConfigStorage.class);
 
     public static class InvalidJsonContentException extends Exception {
 
@@ -93,17 +92,17 @@ public class FilterStorage {
         }
     };
 
-    FilterStorage(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
+    ConfigStorage(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
         this.inStorage = inStorage;
         this.outStorage = outStorage;
         this.fileWorker = fileWorker;
     }
 
-    public static FilterStorage createForFile(File file) throws IOException {
+    public static ConfigStorage createForFile(File file) throws IOException {
         if (!file.exists()) {
             Files.touch(file);
         }
-        final FilterStorage result = new FilterStorage(
+        final ConfigStorage result = new ConfigStorage(
                 Files.asCharSource(file, Charsets.UTF_8),
                 Files.asCharSink(file, Charsets.UTF_8),
                 Executors.newSingleThreadExecutor(

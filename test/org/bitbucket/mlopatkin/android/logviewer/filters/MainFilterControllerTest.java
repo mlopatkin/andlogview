@@ -96,12 +96,12 @@ public class MainFilterControllerTest {
 
     InOrder order;
 
-    FilterStorage mockStorage;
+    ConfigStorage mockStorage;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mockStorage = new FilterStorage(CharSource.empty(), new CharSink() {
+        mockStorage = new ConfigStorage(CharSource.empty(), new CharSink() {
             @Override
             public Writer openStream() throws IOException {
                 return CharStreams.nullWriter();
@@ -158,7 +158,7 @@ public class MainFilterControllerTest {
 
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
-        mockStorage = Mockito.mock(FilterStorage.class);
+        mockStorage = Mockito.mock(ConfigStorage.class);
 
         when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(
                 Collections.<SavedFilterData>emptyList());
@@ -176,7 +176,7 @@ public class MainFilterControllerTest {
 
         List<SavedFilterData> savedFilterData = savedFilterDataCaptor.getValue();
 
-        mockStorage = Mockito.mock(FilterStorage.class);
+        mockStorage = Mockito.mock(ConfigStorage.class);
         when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
 
         filterPanelModel = Mockito.mock(FilterPanelModel.class);

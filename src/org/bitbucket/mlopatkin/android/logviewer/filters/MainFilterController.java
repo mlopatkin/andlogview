@@ -51,7 +51,7 @@ public class MainFilterController implements FilterCreator {
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
     private final IndexFilterCollection indexFilterCollection;
-    private final FilterStorage storage;
+    private final ConfigStorage storage;
     private final LogModelFilterImpl filter;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
@@ -62,7 +62,7 @@ public class MainFilterController implements FilterCreator {
     public MainFilterController(final FilterPanelModel filterPanelModel,
                                 IndexFilterCollection indexFilterCollection,
                                 FilterDialogFactory dialogFactory,
-                                FilterStorage storage,
+                                ConfigStorage storage,
                                 LogModelFilterImpl logModelFilter) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;

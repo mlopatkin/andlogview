@@ -32,7 +32,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
+import org.bitbucket.mlopatkin.android.logviewer.filters.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
@@ -85,7 +85,7 @@ import javax.swing.border.EtchedBorder;
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
-    private final FilterStorage storage;
+    private final ConfigStorage storage;
     private final DataSourceHolder sourceHolder;
 
     private LogRecordTableModel recordsModel;
@@ -108,7 +108,7 @@ public class MainFrame extends JFrame {
     private JLabel sourceStatusLabel;
     private final MainFrameDependencies dependencies;
 
-    public MainFrame(FilterStorage storage) {
+    public MainFrame(ConfigStorage storage) {
         super();
         this.storage = storage;
         dependencies =
