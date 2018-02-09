@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 class FilterListSerializer
-        implements ConfigStorage.FilterStorageClient<List<SavedFilterData>> {
+        implements ConfigStorage.ConfigStorageClient<List<SavedFilterData>> {
 
     public FilterListSerializer() {
     }

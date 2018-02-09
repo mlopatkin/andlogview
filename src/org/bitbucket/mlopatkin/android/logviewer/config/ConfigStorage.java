@@ -65,7 +65,7 @@ public class ConfigStorage {
         }
     }
 
-    public interface FilterStorageClient<T> {
+    public interface ConfigStorageClient<T> {
 
         String getName();
 
@@ -199,7 +199,7 @@ public class ConfigStorage {
     }
 
     // in both saveFilters and loadFilters we avoid to call alien methods with the lock held
-    public <T> void saveFilters(FilterStorageClient<T> client, T value) {
+    public <T> void saveFilters(ConfigStorageClient<T> client, T value) {
         String name = client.getName();
         JsonElement json = client.toJson(gson, value);
         synchronized (serializedFilters) {
@@ -208,7 +208,7 @@ public class ConfigStorage {
         }
     }
 
-    public <T> T loadFilters(FilterStorageClient<T> client) {
+    public <T> T loadFilters(ConfigStorageClient<T> client) {
         String clientName = client.getName();
         JsonElement element;
         synchronized (serializedFilters) {
