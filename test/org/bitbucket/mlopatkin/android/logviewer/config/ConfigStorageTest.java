@@ -79,7 +79,7 @@ public class ConfigStorageTest {
         ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
-        assertEquals("123456", storage.loadFilters(new TestClient()).s);
+        assertEquals("123456", storage.loadConfig(new TestClient()).s);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ConfigStorageTest {
         ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
-        assertEquals("", storage.loadFilters(new TestClient()).s);
+        assertEquals("", storage.loadConfig(new TestClient()).s);
         assertNull("Do not commit default entry if there is no entry at all",
                    out.getLastWrittenString());
     }
@@ -103,7 +103,7 @@ public class ConfigStorageTest {
         ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
-        assertEquals("", storage.loadFilters(new TestClient()).s);
+        assertEquals("", storage.loadConfig(new TestClient()).s);
         assertEquals("{}", out.getLastWrittenString());
     }
 
@@ -114,7 +114,7 @@ public class ConfigStorageTest {
 
         ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
 
-        storage.saveFilters(new TestClient(), new TestClientData("123456"));
+        storage.saveConfig(new TestClient(), new TestClientData("123456"));
 
         assertEquals(
                 "{\n"
@@ -131,7 +131,7 @@ public class ConfigStorageTest {
 
         ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
 
-        storage.saveFilters(new TestClient(), new TestClientData("123456"));
+        storage.saveConfig(new TestClient(), new TestClientData("123456"));
     }
 
     private static class NullCharSink extends CharSink {

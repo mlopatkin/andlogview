@@ -81,9 +81,9 @@ public class ConfigStorage {
     private final ExecutorService fileWorker;
     private final Gson gson = new Gson();
 
-    @GuardedBy("serializedFilters")
-    private final Map<String, JsonElement> serializedFilters = Maps.newHashMap();
-    @GuardedBy("serializedFilters")
+    @GuardedBy("serializedConfig")
+    private final Map<String, JsonElement> serializedConfig = Maps.newHashMap();
+    @GuardedBy("serializedConfig")
     private boolean dirty = false;
 
     private final Runnable fileSaver = this::save;
@@ -103,7 +103,7 @@ public class ConfigStorage {
                 Files.asCharSource(file, Charsets.UTF_8),
                 Files.asCharSink(file, Charsets.UTF_8),
                 Executors.newSingleThreadExecutor(
-                        new ThreadFactoryBuilder().setThreadFactory(Threads.withName("FilterStorageFileWorker"))
+                        new ThreadFactoryBuilder().setThreadFactory(Threads.withName("StorageFileWorker"))
                                                   .setDaemon(true).build()));
         Runtime.getRuntime().addShutdownHook(new Thread("OnExitCommiter") {
             @Override
@@ -123,9 +123,9 @@ public class ConfigStorage {
         JsonParser parser = new JsonParser();
         try (Reader in = inStorage.openBufferedStream()) {
             load(parser.parse(in));
-            logger.debug("Successfully parsed filter data");
+            logger.debug("Successfully parsed config data");
         } catch (IOException e) {
-            logger.error("Failed to open JSON filter data file", e);
+            logger.error("Failed to open JSON config data file", e);
         } catch (JsonParseException e) {
             logger.error("Failed to parse JSON data", e);
         }
@@ -142,10 +142,10 @@ public class ConfigStorage {
         }
 
         JsonObject obj = element.getAsJsonObject();
-        synchronized (serializedFilters) {
-            serializedFilters.clear();
+        synchronized (serializedConfig) {
+            serializedConfig.clear();
             for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-                serializedFilters.put(entry.getKey(), entry.getValue());
+                serializedConfig.put(entry.getKey(), entry.getValue());
             }
             scheduleCommitLocked();
         }
@@ -153,8 +153,8 @@ public class ConfigStorage {
 
     public void save() {
         Map<String, JsonElement> elements;
-        synchronized (serializedFilters) {
-            elements = Maps.newHashMap(serializedFilters);
+        synchronized (serializedConfig) {
+            elements = Maps.newHashMap(serializedConfig);
             dirty = false;
         }
         saveImpl(elements);
@@ -165,7 +165,7 @@ public class ConfigStorage {
              JsonWriter writer = new JsonWriter(out)) {
             writer.setIndent("  "); // some pretty-print
             saveToJsonWriter(writer, filters);
-            logger.debug("Successfully written filter data, commiting");
+            logger.debug("Successfully written config data, commiting");
         } catch (IOException e) {
             logger.error("Failed to open storage for writing", e);
         }
@@ -185,7 +185,7 @@ public class ConfigStorage {
         }
     }
 
-    @GuardedBy("serializedFilters")
+    @GuardedBy("serializedConfig")
     private void scheduleCommitLocked() {
         if (!dirty) {
             dirty = true;
@@ -193,21 +193,21 @@ public class ConfigStorage {
         }
     }
 
-    // in both saveFilters and loadFilters we avoid to call alien methods with the lock held
-    public <T> void saveFilters(ConfigStorageClient<T> client, T value) {
+    // in both saveConfig and loadConfig we avoid to call alien methods with the lock held
+    public <T> void saveConfig(ConfigStorageClient<T> client, T value) {
         String name = client.getName();
         JsonElement json = client.toJson(gson, value);
-        synchronized (serializedFilters) {
-            serializedFilters.put(name, json);
+        synchronized (serializedConfig) {
+            serializedConfig.put(name, json);
             scheduleCommitLocked();
         }
     }
 
-    public <T> T loadFilters(ConfigStorageClient<T> client) {
+    public <T> T loadConfig(ConfigStorageClient<T> client) {
         String clientName = client.getName();
         JsonElement element;
-        synchronized (serializedFilters) {
-            element = serializedFilters.get(clientName);
+        synchronized (serializedConfig) {
+            element = serializedConfig.get(clientName);
         }
         try {
             if (element != null) {
@@ -216,13 +216,13 @@ public class ConfigStorage {
         } catch (JsonSyntaxException | InvalidJsonContentException e) {
             // We have some weird JSON for this client. Discard it unless somebody updated it in
             // background.
-            synchronized (serializedFilters) {
-                if (serializedFilters.get(clientName) == element) {
-                    serializedFilters.remove(clientName);
+            synchronized (serializedConfig) {
+                if (serializedConfig.get(clientName) == element) {
+                    serializedConfig.remove(clientName);
                     scheduleCommitLocked();
                 }
             }
-            logger.error("Failed to parse filter data of " + client.getName(), e);
+            logger.error("Failed to parse config data of " + client.getName(), e);
         }
         // failed to load/parse, provide fallback
         return client.getDefault();

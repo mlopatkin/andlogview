@@ -82,7 +82,7 @@ public class MainFilterController implements FilterCreator {
             }
         });
 
-        for (SavedFilterData savedFilterData : storage.loadFilters(SERIALIZER)) {
+        for (SavedFilterData savedFilterData : storage.loadConfig(SERIALIZER)) {
             savedFilterData.appendMe(this);
         }
     }
@@ -122,7 +122,7 @@ public class MainFilterController implements FilterCreator {
         for (BaseToggleFilter<?> filter : filters) {
             serializedFilters.add(filter.getSerializedVersion());
         }
-        storage.saveFilters(SERIALIZER, serializedFilters);
+        storage.saveConfig(SERIALIZER, serializedFilters);
     }
 
     private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {

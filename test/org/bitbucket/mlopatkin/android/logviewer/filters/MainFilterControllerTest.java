@@ -162,7 +162,7 @@ public class MainFilterControllerTest {
     public void testSavingAndInitializngFromSaved() throws Exception {
         mockStorage = Mockito.mock(ConfigStorage.class);
 
-        when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(
+        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(
                 Collections.<SavedFilterData>emptyList());
 
         MainFilterController controller =
@@ -174,12 +174,12 @@ public class MainFilterControllerTest {
         FilterFromDialog colorer = createColoringFilter(Color.BLACK, MATCH_ALL);
         createFilterWithDialog(controller, colorer);
 
-        verify(mockStorage).saveFilters(Mockito.<FilterListSerializer>any(), savedFilterDataCaptor.capture());
+        verify(mockStorage).saveConfig(Mockito.<FilterListSerializer>any(), savedFilterDataCaptor.capture());
 
         List<SavedFilterData> savedFilterData = savedFilterDataCaptor.getValue();
 
         mockStorage = Mockito.mock(ConfigStorage.class);
-        when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
+        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
 
         filterPanelModel = Mockito.mock(FilterPanelModel.class);
         controller =
