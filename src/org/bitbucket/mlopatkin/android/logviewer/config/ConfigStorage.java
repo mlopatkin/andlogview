@@ -86,12 +86,7 @@ public class ConfigStorage {
     @GuardedBy("serializedFilters")
     private boolean dirty = false;
 
-    private final Runnable fileSaver = new Runnable() {
-        @Override
-        public void run() {
-            save();
-        }
-    };
+    private final Runnable fileSaver = this::save;
 
     @VisibleForTesting
     public ConfigStorage(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
