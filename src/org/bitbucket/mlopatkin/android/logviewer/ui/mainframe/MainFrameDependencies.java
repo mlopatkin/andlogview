@@ -29,12 +29,11 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 /**
  * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
  */
-@Singleton
+@MainFrameScoped
 @Component(modules = MainFrameModule.class)
 public interface MainFrameDependencies {
     String FOR_MAIN_FRAME = "Main frame";

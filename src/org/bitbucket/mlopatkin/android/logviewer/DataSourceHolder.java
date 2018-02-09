@@ -16,19 +16,19 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * A mutable holder for the data source. Notifies its subscriber when the data source changes.
  * <p>
  * This class is not thread-safe: it must be used on UI thread only.
  */
-@Singleton
+@MainFrameScoped
 @NotThreadSafe
 public class DataSourceHolder {
     private final Subject<Observer> observers = new Subject<>();

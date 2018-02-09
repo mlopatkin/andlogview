@@ -19,6 +19,7 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
@@ -26,9 +27,8 @@ import java.awt.Color;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
+@MainFrameScoped
 class LogModelFilterImpl implements LogModelFilter {
 
     final FilterChain filterChain = new FilterChain();

@@ -19,6 +19,8 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -27,12 +29,11 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Order of the columns in the table. It is somewhat independent of what columns are available in the data source.
  */
-@Singleton
+@MainFrameScoped
 public class UserColumnOrder implements ColumnOrder {
 
     private final List<Column> customizableOrder;

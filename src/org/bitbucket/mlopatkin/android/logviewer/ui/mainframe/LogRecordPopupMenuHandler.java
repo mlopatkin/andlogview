@@ -26,7 +26,6 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import java.awt.event.ActionEvent;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
@@ -124,7 +123,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
         return model.getRowData(table.convertRowIndexToModel(tableRowIndex));
     }
 
-    @Singleton
+    @MainFrameScoped
     public static class Factory {
 
         private final LogRecordTableModel tableModel;

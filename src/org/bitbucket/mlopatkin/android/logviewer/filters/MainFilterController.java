@@ -31,19 +31,19 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * The filter controller of the main window. It knows about all existing filters and how they should be persisted,
  * toggled and applied.
  */
-@Singleton
+@MainFrameScoped
 public class MainFilterController implements FilterCreator {
     // TODO separate "A filter for main table" and "bridge between all filters and panel"
 

@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.bookmarks;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
@@ -24,13 +25,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Contains the list of all bookmarks made for the given log. All changes to the bookmarks mut be made through this
  * class.
  */
-@Singleton
+@MainFrameScoped
 public class BookmarkModel {
 
     public interface Observer {

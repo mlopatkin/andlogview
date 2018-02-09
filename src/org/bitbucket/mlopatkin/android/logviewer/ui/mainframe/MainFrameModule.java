@@ -31,7 +31,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.UserColumnOrder;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.swing.JFrame;
 
 @Module(includes = FilterModule.class)
@@ -45,7 +44,7 @@ public class MainFrameModule {
     }
 
     @Provides
-    @Singleton
+    @MainFrameScoped
     DialogFactory provideDialogFactory() {
         return new DialogFactory() {
             @Override
@@ -61,7 +60,7 @@ public class MainFrameModule {
     }
 
     @Provides
-    @Singleton
+    @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     LogTable getMainLogTable(LogRecordTableModel model,
                              LogModelFilter filter,
@@ -72,13 +71,13 @@ public class MainFrameModule {
     }
 
     @Provides
-    @Singleton
+    @MainFrameScoped
     public ConfigStorage getStorage() {
         return storage;
     }
 
     @Provides
-    @Singleton
+    @MainFrameScoped
     public ColumnOrder getColumnOrder(UserColumnOrder order) {
         return order;
     }

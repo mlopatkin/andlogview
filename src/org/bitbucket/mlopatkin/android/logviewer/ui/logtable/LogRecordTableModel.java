@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.android.logviewer.BatchRecordsReceiver;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.utils.MyListUtils;
 
 import java.awt.EventQueue;
@@ -26,10 +27,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.table.AbstractTableModel;
 
-@Singleton
+@MainFrameScoped
 public class LogRecordTableModel extends AbstractTableModel implements
         BatchRecordsReceiver<LogRecord> {
 
