@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.config;
 
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;

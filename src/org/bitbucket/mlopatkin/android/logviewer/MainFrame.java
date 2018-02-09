@@ -31,8 +31,8 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedExcepti
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;

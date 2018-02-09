@@ -21,6 +21,7 @@ import com.google.common.base.Predicate;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;

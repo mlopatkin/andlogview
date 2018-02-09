@@ -24,6 +24,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
@@ -96,6 +97,7 @@ public class MainFilterControllerTest {
 
     InOrder order;
 
+    @Mock
     ConfigStorage mockStorage;
 
     @Before

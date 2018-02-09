@@ -21,7 +21,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
-import org.bitbucket.mlopatkin.android.logviewer.filters.ConfigStorage.InvalidJsonContentException;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
 
 import java.util.ArrayList;

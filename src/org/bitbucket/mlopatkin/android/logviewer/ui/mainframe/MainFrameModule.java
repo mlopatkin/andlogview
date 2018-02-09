@@ -20,7 +20,7 @@ import dagger.Module;
 import dagger.Provides;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
-import org.bitbucket.mlopatkin.android.logviewer.filters.ConfigStorage;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;

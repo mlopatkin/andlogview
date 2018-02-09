@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharSink;
@@ -92,7 +93,8 @@ public class ConfigStorage {
         }
     };
 
-    ConfigStorage(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
+    @VisibleForTesting
+    public ConfigStorage(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
         this.inStorage = inStorage;
         this.outStorage = outStorage;
         this.fileWorker = fileWorker;
