@@ -20,7 +20,6 @@ import dagger.Module;
 import dagger.Provides;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
@@ -36,11 +35,9 @@ import javax.swing.JFrame;
 @Module(includes = FilterModule.class)
 public class MainFrameModule {
     private final MainFrame mainFrame;
-    private final ConfigStorage storage;
 
-    public MainFrameModule(MainFrame mainFrame, ConfigStorage storage) {
+    public MainFrameModule(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.storage = storage;
     }
 
     @Provides
@@ -68,12 +65,6 @@ public class MainFrameModule {
         LogTable logTable = LogTable.create(model, filter);
         logTable.addDecorator(bookmarkHighlighter);
         return logTable;
-    }
-
-    @Provides
-    @MainFrameScoped
-    public ConfigStorage getStorage() {
-        return storage;
     }
 
     @Provides

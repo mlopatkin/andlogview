@@ -31,7 +31,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedExcepti
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
@@ -85,7 +84,6 @@ import javax.swing.border.EtchedBorder;
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
-    private final ConfigStorage storage;
     private final DataSourceHolder sourceHolder;
 
     private LogRecordTableModel recordsModel;
@@ -108,11 +106,10 @@ public class MainFrame extends JFrame {
     private JLabel sourceStatusLabel;
     private final MainFrameDependencies dependencies;
 
-    public MainFrame(ConfigStorage storage) {
-        super();
-        this.storage = storage;
+    public MainFrame(AppGlobals appGlobals) {
         dependencies =
-                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this, storage)).build();
+                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).appGlobals(appGlobals)
+                                           .build();
         sourceHolder = dependencies.getDataSourceHolder();
 
         initialize();

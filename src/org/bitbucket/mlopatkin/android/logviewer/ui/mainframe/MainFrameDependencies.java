@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import dagger.Component;
 
+import org.bitbucket.mlopatkin.android.logviewer.AppGlobals;
 import org.bitbucket.mlopatkin.android.logviewer.DataSourceHolder;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
@@ -34,7 +35,7 @@ import javax.inject.Named;
  * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
  */
 @MainFrameScoped
-@Component(modules = MainFrameModule.class)
+@Component(modules = MainFrameModule.class, dependencies = AppGlobals.class)
 public interface MainFrameDependencies {
     String FOR_MAIN_FRAME = "Main frame";
 
