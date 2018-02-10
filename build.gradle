@@ -64,6 +64,8 @@ dependencies {
     apt "com.google.dagger:dagger-compiler:${daggerVersion}"
 }
 
+import org.bitbucket.mlopatkin.android.logviewer.building.GenerateBuildMetadata
+
 checkstyle {
     toolVersion = '7.8.1'
 }
@@ -76,11 +78,14 @@ def javaVersion = JavaVersion.VERSION_1_8;
 sourceCompatibility = javaVersion;
 targetCompatibility = javaVersion; // defaults to sourceCompatibility
 
+def metadataBuildDir = "$buildDir/generated/source/metadata"
+
 sourceSets {
     main {
         java {
             srcDir 'src'
             srcDir 'utils'
+            srcDir metadataBuildDir
         }
         resources {
             srcDir 'resources'
@@ -92,6 +97,17 @@ sourceSets {
         }
     }
 }
+
+task generateBuildMetadata(type: GenerateBuildMetadata) {
+    packageName = 'org.bitbucket.mlopatkin.android.logviewer'
+    className = 'BuildInfo'
+    into = file(metadataBuildDir)
+    version = project.version
+}
+
+compileJava.dependsOn(generateBuildMetadata)
+
+idea.module.generatedSourceDirs += file(metadataBuildDir)
 
 shadow.applicationDistribution.from(project.getProjectDir()) {
     include 'HISTORY', 'LICENSE', 'NOTICE', 'README'
@@ -132,5 +148,3 @@ bitbucketUpload {
     dependsOn distShadowZip
     fileToUpload = distShadowZip.archivePath
 }
-
-

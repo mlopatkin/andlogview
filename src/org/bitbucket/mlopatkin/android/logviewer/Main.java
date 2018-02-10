@@ -43,7 +43,6 @@ import javax.swing.JOptionPane;
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
-    public static final String APP_VERSION = "0.19-SNAPSHOT";
     private static final String SHORT_APP_NAME = "logview";
 
     private DataSource initialSource;
@@ -67,7 +66,7 @@ public class Main {
             ErrorDialogsHelper.showError(null, "Error in configuration file: " + e.getMessage());
         }
 
-        logger.info("Android Log Viewer " + APP_VERSION);
+        logger.info("Android Log Viewer " + getVersionString());
         @SuppressWarnings("unchecked")
         List<String> files = (List<String>) result.nonOptionArguments();
         if (files.size() == 0) {
@@ -107,6 +106,14 @@ public class Main {
                 window.waitForDevice();
             }
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static String getVersionString() {
+        if (!BuildInfo.VERSION.endsWith("SNAPSHOT")) {
+            return BuildInfo.VERSION;
+        }
+        return BuildInfo.VERSION + " (build " + BuildInfo.BUILD + " " + BuildInfo.REVISION + ")";
     }
 
     private void createAndShowWindow() {
