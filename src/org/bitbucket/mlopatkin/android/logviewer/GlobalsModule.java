@@ -39,9 +39,9 @@ class GlobalsModule {
 
     @Provides
     @Singleton
-    ConfigStorage getFilterStorage(ConfigStorage.Factory factory) {
+    ConfigStorage getConfigStorage(ConfigStorage.Factory factory) {
         try {
-            return factory.createForFile(new File(appConfigDir, "filters.json"));
+            return factory.createForFile(new File(appConfigDir, "logview.json"));
         } catch (IOException e) {
             logger.fatal("Cannot start at all", e);
             System.exit(-1);

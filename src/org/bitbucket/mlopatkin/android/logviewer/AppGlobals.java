@@ -29,5 +29,5 @@ import javax.inject.Singleton;
 @Singleton
 @Component(modules = {GlobalsModule.class, ConfigModule.class})
 public interface AppGlobals {
-    ConfigStorage getFilterStorage();
+    ConfigStorage getConfigStorage();
 }
