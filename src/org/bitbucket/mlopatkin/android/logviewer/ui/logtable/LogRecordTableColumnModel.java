@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
+import org.bitbucket.mlopatkin.utils.events.Observable;
+import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -28,6 +30,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -37,6 +40,10 @@ import javax.swing.table.TableColumn;
  * The column model for the main log table. It allows to temporarily hide columns.
  */
 public class LogRecordTableColumnModel extends DefaultTableColumnModel {
+    public interface ColumnOrderChangedListener {
+        void onColumnOrderChanged(Column movedColumn, @Nullable Column nextColumn);
+    }
+
     private final EnumMap<Column, TableColumn> columnsCache = new EnumMap<>(Column.class);
 
     private final TableCellEditor readOnlyCellEditor = TableCellHelper.createReadOnlyCellTextEditor();
@@ -47,6 +54,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private final TableCellRenderer pidCellRender;
 
     private final ColumnOrder columnOrder;
+    private final Subject<ColumnOrderChangedListener> orderChangedListeners = new Subject<>();
 
     public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
             ColumnOrder columnOrder) {
@@ -144,4 +152,20 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
+    @Override
+    public void moveColumn(int columnIndex, int newIndex) {
+        Column movingColumn = getColumnForIndex(columnIndex);
+        super.moveColumn(columnIndex, newIndex);
+        if (columnIndex != newIndex) {
+            int nextColumnIndex = newIndex + 1;
+            Column nextColumn = nextColumnIndex < getColumnCount() ? getColumnForIndex(nextColumnIndex) : null;
+            for (ColumnOrderChangedListener orderChangedListener : orderChangedListeners) {
+                orderChangedListener.onColumnOrderChanged(movingColumn, nextColumn);
+            }
+        }
+    }
+
+    public Observable<ColumnOrderChangedListener> asColumnOrderChangeObservable() {
+        return orderChangedListeners.asObservable();
+    }
 }

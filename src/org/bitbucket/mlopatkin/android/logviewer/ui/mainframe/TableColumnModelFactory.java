@@ -19,8 +19,8 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.UserColumnOrder;
 
 import java.util.Collection;
 
@@ -30,16 +30,19 @@ import javax.inject.Inject;
  * The factory to produce {@link LogRecordTableColumnModel} for {@link MainFrame}.
  */
 @MainFrameScoped
-class TableColumnModelFactory {
-    private final ColumnOrder columnOrder;
+public class TableColumnModelFactory {
+    private final UserColumnOrder columnOrder;
 
     @Inject
-    public TableColumnModelFactory(ColumnOrder columnOrder) {
+    public TableColumnModelFactory(UserColumnOrder columnOrder) {
         this.columnOrder = columnOrder;
     }
 
     public LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper,
             Collection<Column> availableColumns) {
-        return new LogRecordTableColumnModel(pidToProcessMapper, availableColumns, columnOrder);
+        LogRecordTableColumnModel model =
+                new LogRecordTableColumnModel(pidToProcessMapper, availableColumns, columnOrder);
+        model.asColumnOrderChangeObservable().addObserver(columnOrder::setColumnBefore);
+        return model;
     }
 }

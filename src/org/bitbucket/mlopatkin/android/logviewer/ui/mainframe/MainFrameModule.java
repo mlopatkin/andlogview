@@ -23,11 +23,9 @@ import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.UserColumnOrder;
 
 import javax.inject.Named;
 import javax.swing.JFrame;
@@ -65,11 +63,5 @@ public class MainFrameModule {
         LogTable logTable = LogTable.create(model, filter);
         logTable.addDecorator(bookmarkHighlighter);
         return logTable;
-    }
-
-    @Provides
-    @MainFrameScoped
-    public ColumnOrder getColumnOrder(UserColumnOrder order) {
-        return order;
     }
 }

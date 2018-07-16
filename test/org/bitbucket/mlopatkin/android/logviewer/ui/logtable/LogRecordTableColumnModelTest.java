@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import com.google.common.collect.ImmutableList;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel.ColumnOrderChangedListener;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,6 +33,10 @@ import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableColumnT
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class LogRecordTableColumnModelTest {
 
@@ -109,4 +114,54 @@ public class LogRecordTableColumnModelTest {
         return Collections.list(model.getColumns());
     }
 
+    @Test
+    public void testColumnOrderChangeListenerIsInvokedWhenFirstColumnMovedToMiddle() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(0, 1);
+
+        verify(listener).onColumnOrderChanged(Column.PID, Column.MESSAGE);
+    }
+
+    @Test
+    public void testObserverNotCalledWhenMoveIsNoop() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(0, 0);
+        verify(listener, never()).onColumnOrderChanged(any(), any());
+    }
+
+    @Test
+    public void testColumnOrderChangeListenerIsInvokedWhenLastColumnIsMovedToFirst() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(2, 0);
+
+        verify(listener).onColumnOrderChanged(Column.MESSAGE, Column.PID);
+    }
+
+    @Test
+    public void testColumnOrderChangeListenerIsInvokedWhenMidColumnIsMovedToLast() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(1, 2);
+
+        verify(listener).onColumnOrderChanged(Column.APP_NAME, null);
+    }
 }
