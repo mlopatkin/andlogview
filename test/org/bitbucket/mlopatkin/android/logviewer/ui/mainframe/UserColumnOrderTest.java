@@ -16,14 +16,27 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class UserColumnOrderTest {
+
+    private final Gson gson = new Gson();
 
     @Test
     public void createdOrderIsConsistentWithInitialArray() {
@@ -85,7 +98,41 @@ public class UserColumnOrderTest {
         assertTrue(order.compare(Column.TAG, Column.PID) > 0);
     }
 
+    @Test
+    public void setColumnBeforeInvokesCallback() {
+        Runnable callback = mock(Runnable.class);
+        UserColumnOrder order = new UserColumnOrder(Arrays.asList(Column.INDEX, Column.TAG, Column.PID), callback);
+
+        order.setColumnBefore(Column.PID, Column.TAG);
+
+        verify(callback).run();
+    }
+
     private static UserColumnOrder makeOrder(Column... columns) {
-        return new UserColumnOrder(Arrays.asList(columns));
+        return new UserColumnOrder(Arrays.asList(columns), () -> {
+        });
+    }
+
+    @Test
+    public void validJsonValueIsParseable() throws Exception {
+        List<Column> columns =
+                UserColumnOrder.CLIENT.fromJson(gson, formatOrderAsJsonArray(Arrays.stream(Column.values())));
+
+        assertEquals(Arrays.asList(Column.values()), columns);
+    }
+
+    @Test(expected = ConfigStorage.InvalidJsonContentException.class)
+    public void missingValueCausesExceptionWhenParsing() throws Exception {
+        UserColumnOrder.CLIENT.fromJson(gson, formatOrderAsJsonArray(Arrays.stream(Column.values()).skip(1)));
+    }
+
+    @Test(expected = ConfigStorage.InvalidJsonContentException.class)
+    public void duplicateValueCausesExceptionWhenParsing() throws Exception {
+        UserColumnOrder.CLIENT.fromJson(gson, formatOrderAsJsonArray(
+                Stream.concat(Arrays.stream(Column.values()), Stream.of(Column.APP_NAME))));
+    }
+
+    private static JsonElement formatOrderAsJsonArray(Stream<Column> columns) {
+        return new JsonParser().parse(columns.map(Column::name).collect(Collectors.joining(", ", "[", "]")));
     }
 }
