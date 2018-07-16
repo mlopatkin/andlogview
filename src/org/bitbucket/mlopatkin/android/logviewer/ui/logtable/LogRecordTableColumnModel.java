@@ -28,7 +28,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -145,17 +144,4 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
-    public static class Factory {
-        private final ColumnOrder columnOrder;
-
-        @Inject
-        public Factory(ColumnOrder columnOrder) {
-            this.columnOrder = columnOrder;
-        }
-
-        public LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper,
-                Collection<Column> availableColumns) {
-            return new LogRecordTableColumnModel(pidToProcessMapper, availableColumns, columnOrder);
-        }
-    }
 }

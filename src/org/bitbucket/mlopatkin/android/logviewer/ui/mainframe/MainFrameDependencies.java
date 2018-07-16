@@ -25,7 +25,6 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 
@@ -60,5 +59,5 @@ public interface MainFrameDependencies {
 
     DataSourceHolder getDataSourceHolder();
 
-    LogRecordTableColumnModel.Factory getColumnModelFactory();
+    TableColumnModelFactory getColumnModelFactory();
 }
