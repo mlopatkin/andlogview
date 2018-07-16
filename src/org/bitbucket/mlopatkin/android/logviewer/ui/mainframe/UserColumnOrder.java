@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 
 import java.util.ArrayList;
 import java.util.Arrays;

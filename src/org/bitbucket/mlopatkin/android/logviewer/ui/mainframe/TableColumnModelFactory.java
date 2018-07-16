@@ -20,7 +20,6 @@ import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.UserColumnOrder;
 
 import java.util.Collection;
 

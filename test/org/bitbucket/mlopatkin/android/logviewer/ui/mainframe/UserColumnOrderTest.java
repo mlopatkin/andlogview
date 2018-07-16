@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.junit.Test;
 
 import java.util.Arrays;
