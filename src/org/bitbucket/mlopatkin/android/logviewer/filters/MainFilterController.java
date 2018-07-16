@@ -21,6 +21,7 @@ import com.google.common.base.Predicate;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
@@ -30,19 +31,19 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * The filter controller of the main window. It knows about all existing filters and how they should be persisted,
  * toggled and applied.
  */
-@Singleton
+@MainFrameScoped
 public class MainFilterController implements FilterCreator {
     // TODO separate "A filter for main table" and "bridge between all filters and panel"
 
@@ -51,7 +52,7 @@ public class MainFilterController implements FilterCreator {
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
     private final IndexFilterCollection indexFilterCollection;
-    private final FilterStorage storage;
+    private final ConfigStorage storage;
     private final LogModelFilterImpl filter;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
@@ -62,7 +63,7 @@ public class MainFilterController implements FilterCreator {
     public MainFilterController(final FilterPanelModel filterPanelModel,
                                 IndexFilterCollection indexFilterCollection,
                                 FilterDialogFactory dialogFactory,
-                                FilterStorage storage,
+                                ConfigStorage storage,
                                 LogModelFilterImpl logModelFilter) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
@@ -81,7 +82,7 @@ public class MainFilterController implements FilterCreator {
             }
         });
 
-        for (SavedFilterData savedFilterData : storage.loadFilters(SERIALIZER)) {
+        for (SavedFilterData savedFilterData : storage.loadConfig(SERIALIZER)) {
             savedFilterData.appendMe(this);
         }
     }
@@ -121,7 +122,7 @@ public class MainFilterController implements FilterCreator {
         for (BaseToggleFilter<?> filter : filters) {
             serializedFilters.add(filter.getSerializedVersion());
         }
-        storage.saveFilters(SERIALIZER, serializedFilters);
+        storage.saveConfig(SERIALIZER, serializedFilters);
     }
 
     private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {

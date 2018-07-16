@@ -18,12 +18,13 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel.ColumnOrderChangedListener;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -32,34 +33,35 @@ import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableColumnT
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class LogRecordTableColumnModelTest {
 
-    private PidToProcessMapper mapper = pid -> "";
+    private final CanonicalColumnOrder columnOrder = new CanonicalColumnOrder();
 
     @Test
     public void testModelCanDisplayAllColumns() throws Exception {
         List<Column> columns = Arrays.asList(Column.values());
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         assertThat("All columns should be here", getColumns(model), areTableColumnsFor(columns));
     }
 
     @Test
-    public void testModelOnlyContainsColumnsPasssedAsInputInThatOrder() throws Exception {
+    public void testModelOnlyContainsColumnsPasssedAsInputInSortedOrder() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.MESSAGE, Column.APP_NAME);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
-        assertThat(getColumns(model), areTableColumnsFor(columns));
+        assertThat(getColumns(model), areTableColumnsFor(columns.stream().sorted().collect(Collectors.toList())));
     }
 
     @Test
     public void testIsColumnVisible() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         assertTrue(model.isColumnVisible(Column.PID));
         assertFalse(model.isColumnVisible(Column.TIME));
@@ -68,8 +70,7 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testHideVisibleColumn() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.PID, false);
 
@@ -79,8 +80,18 @@ public class LogRecordTableColumnModelTest {
     @Test
     public void testToggleFirstColumnKeepsItPosition() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+
+        model.setColumnVisibility(Column.PID, false);
+        model.setColumnVisibility(Column.PID, true);
+
+        assertThat(getColumns(model), areTableColumnsFor(columns));
+    }
+
+    @Test
+    public void testToggleLastColumnKeepsItPosition() throws Exception {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.MESSAGE, false);
         model.setColumnVisibility(Column.MESSAGE, true);
@@ -89,25 +100,12 @@ public class LogRecordTableColumnModelTest {
     }
 
     @Test
-    public void testToggleLastColumnKeepsItPosition() throws Exception {
+    public void testToggleMiddleColumnKeepsItPosition() throws Exception {
         ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
 
         model.setColumnVisibility(Column.APP_NAME, false);
         model.setColumnVisibility(Column.APP_NAME, true);
-
-        assertThat(getColumns(model), areTableColumnsFor(columns));
-    }
-
-    @Test
-    public void testToggleMiddleColumnKeepsItPosition() throws Exception {
-        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
-        LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(mapper, columns);
-
-        model.setColumnVisibility(Column.PID, false);
-        model.setColumnVisibility(Column.PID, true);
 
         assertThat(getColumns(model), areTableColumnsFor(columns));
     }
@@ -116,4 +114,54 @@ public class LogRecordTableColumnModelTest {
         return Collections.list(model.getColumns());
     }
 
+    @Test
+    public void testColumnOrderChangeListenerIsInvokedWhenFirstColumnMovedToMiddle() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(0, 1);
+
+        verify(listener).onColumnOrderChanged(Column.PID, Column.MESSAGE);
+    }
+
+    @Test
+    public void testObserverNotCalledWhenMoveIsNoop() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(0, 0);
+        verify(listener, never()).onColumnOrderChanged(any(), any());
+    }
+
+    @Test
+    public void testColumnOrderChangeListenerIsInvokedWhenLastColumnIsMovedToFirst() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(2, 0);
+
+        verify(listener).onColumnOrderChanged(Column.MESSAGE, Column.PID);
+    }
+
+    @Test
+    public void testColumnOrderChangeListenerIsInvokedWhenMidColumnIsMovedToLast() {
+        ImmutableList<Column> columns = ImmutableList.of(Column.PID, Column.APP_NAME, Column.MESSAGE);
+        LogRecordTableColumnModel model = LogRecordTableColumnModel.createForTest(columns, columnOrder);
+        ColumnOrderChangedListener listener = mock(ColumnOrderChangedListener.class);
+
+        model.asColumnOrderChangeObservable().addObserver(listener);
+
+        model.moveColumn(1, 2);
+
+        verify(listener).onColumnOrderChanged(Column.APP_NAME, null);
+    }
 }

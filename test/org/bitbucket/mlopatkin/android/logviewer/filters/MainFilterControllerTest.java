@@ -24,6 +24,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
@@ -96,12 +97,13 @@ public class MainFilterControllerTest {
 
     InOrder order;
 
-    FilterStorage mockStorage;
+    @Mock
+    ConfigStorage mockStorage;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mockStorage = new FilterStorage(CharSource.empty(), new CharSink() {
+        mockStorage = new ConfigStorage(CharSource.empty(), new CharSink() {
             @Override
             public Writer openStream() throws IOException {
                 return CharStreams.nullWriter();
@@ -158,9 +160,9 @@ public class MainFilterControllerTest {
 
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
-        mockStorage = Mockito.mock(FilterStorage.class);
+        mockStorage = Mockito.mock(ConfigStorage.class);
 
-        when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(
+        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(
                 Collections.<SavedFilterData>emptyList());
 
         MainFilterController controller =
@@ -172,12 +174,12 @@ public class MainFilterControllerTest {
         FilterFromDialog colorer = createColoringFilter(Color.BLACK, MATCH_ALL);
         createFilterWithDialog(controller, colorer);
 
-        verify(mockStorage).saveFilters(Mockito.<FilterListSerializer>any(), savedFilterDataCaptor.capture());
+        verify(mockStorage).saveConfig(Mockito.<FilterListSerializer>any(), savedFilterDataCaptor.capture());
 
         List<SavedFilterData> savedFilterData = savedFilterDataCaptor.getValue();
 
-        mockStorage = Mockito.mock(FilterStorage.class);
-        when(mockStorage.loadFilters(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
+        mockStorage = Mockito.mock(ConfigStorage.class);
+        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
 
         filterPanelModel = Mockito.mock(FilterPanelModel.class);
         controller =

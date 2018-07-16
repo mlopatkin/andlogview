@@ -27,7 +27,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
@@ -47,7 +46,6 @@ public class Main {
 
     private DataSource initialSource;
     private MainFrame window;
-    private FilterStorage storage;
 
     public static File getConfigurationDir() {
         return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
@@ -117,13 +115,8 @@ public class Main {
     }
 
     private void createAndShowWindow() {
-        try {
-            storage = FilterStorage.createForFile(new File(getConfigurationDir(), "filters.json"));
-        } catch (IOException e) {
-            logger.fatal("Cannot start at all", e);
-            System.exit(-1);
-        }
-        window = new MainFrame(storage);
+        AppGlobals globals = DaggerAppGlobals.builder().globalsModule(new GlobalsModule(getConfigurationDir())).build();
+        window = new MainFrame(globals);
         EventQueue.invokeLater(new Runnable() {
 
             @Override

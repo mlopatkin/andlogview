@@ -24,12 +24,12 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameCompone
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
-@Singleton
+@MainFrameScoped
 public class BookmarkController extends AbstractIndexController implements IndexController {
 
     private final LogTable mainLogTable;

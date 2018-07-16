@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2018 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
-import dagger.Binds;
-import dagger.Module;
-
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
- * Provides LogModelFilter that can be used with MainFilterController.
+ * Non-customizable "natural" column order.
  */
-@Module
-public abstract class FilterModule {
+public class CanonicalColumnOrder implements ColumnOrder {
 
-    @Binds
-    @MainFrameScoped
-    public abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
+    @Override
+    public Iterator<Column> iterator() {
+        return Arrays.asList(Column.values()).iterator();
+    }
+
+    @Override
+    public int compare(Column o1, Column o2) {
+        return o1.compareTo(o2);
+    }
 }

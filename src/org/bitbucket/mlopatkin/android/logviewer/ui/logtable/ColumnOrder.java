@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2018 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
-import dagger.Binds;
-import dagger.Module;
-
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import java.util.Comparator;
 
 /**
- * Provides LogModelFilter that can be used with MainFilterController.
+ * The instance of this class represents a total order of the columns. It can also list all columns in this order
+ * (this can also be done with sorting but more convenient to have it here).
  */
-@Module
-public abstract class FilterModule {
-
-    @Binds
-    @MainFrameScoped
-    public abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
+public interface ColumnOrder extends Comparator<Column>, Iterable<Column> {
 }

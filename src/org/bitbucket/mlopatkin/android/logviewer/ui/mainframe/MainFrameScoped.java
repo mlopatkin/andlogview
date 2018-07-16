@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2018 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
-import dagger.Binds;
-import dagger.Module;
+import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
 
 /**
- * Provides LogModelFilter that can be used with MainFilterController.
+ * This annotation marks instances that are scoped to the concrete instance of {@link MainFrame}.
  */
-@Module
-public abstract class FilterModule {
-
-    @Binds
-    @MainFrameScoped
-    public abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
+@Scope
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.CLASS)
+public @interface MainFrameScoped {
 }

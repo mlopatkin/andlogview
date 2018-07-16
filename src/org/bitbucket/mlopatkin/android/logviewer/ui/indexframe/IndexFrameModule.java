@@ -16,18 +16,27 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
+import com.google.common.collect.ImmutableList;
+
 import dagger.Module;
 import dagger.Provides;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.CanonicalColumnOrder;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+
+import java.util.HashSet;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
 @Module
 public class IndexFrameModule {
+    private static final ImmutableList<Column> INDEX_FRAME_COLUMNS =
+            ImmutableList.of(Column.INDEX, Column.TIME, Column.PID, Column.PRIORITY, Column.TAG, Column.MESSAGE);
 
     private final IndexController indexController;
     private final PopupBuilder popupBuilder;
@@ -53,8 +62,9 @@ public class IndexFrameModule {
     }
 
     @Provides
-    IndexTableColumnModel getColumnModel() {
-        return IndexTableColumnModel.create(null);
+    LogRecordTableColumnModel getColumnModel() {
+        return new LogRecordTableColumnModel(null, INDEX_FRAME_COLUMNS, new CanonicalColumnOrder(),
+                                             new HashSet<>(INDEX_FRAME_COLUMNS));
     }
 
     @Provides

@@ -18,19 +18,20 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
 import com.google.common.collect.ImmutableList;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * This is a state of the panel with filter buttons. It only knows what PanelFilter provides so it can remove
  * filters, enable or disable them. But it cannot, e.g. persist filters, it is the responsibility of the higher level.
  */
-@Singleton
+@MainFrameScoped
 public class FilterPanelModel {
 
     interface FilterPanelModelListener {

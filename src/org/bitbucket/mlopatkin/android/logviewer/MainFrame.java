@@ -32,7 +32,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
@@ -60,6 +59,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -84,7 +84,6 @@ import javax.swing.border.EtchedBorder;
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
-    private final FilterStorage storage;
     private final DataSourceHolder sourceHolder;
 
     private LogRecordTableModel recordsModel;
@@ -107,11 +106,10 @@ public class MainFrame extends JFrame {
     private JLabel sourceStatusLabel;
     private final MainFrameDependencies dependencies;
 
-    public MainFrame(FilterStorage storage) {
-        super();
-        this.storage = storage;
+    public MainFrame(AppGlobals appGlobals) {
         dependencies =
-                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this, storage)).build();
+                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).appGlobals(appGlobals)
+                                           .build();
         sourceHolder = dependencies.getDataSourceHolder();
 
         initialize();
@@ -141,11 +139,12 @@ public class MainFrame extends JFrame {
             acShowProcesses.setEnabled(false);
         }
 
-        LogRecordTableColumnModel columns = LogRecordTableColumnModel.create(
-                mapper, Column.getFilteredSelectedColumns(newSource.getAvailableFields()));
+        Collection<Column> availableColumns = Column.getColumnsForFields(newSource.getAvailableFields());
+        LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(
+                mapper, availableColumns);
         logElements.setColumnModel(columns);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columns).createMenu());
+                              new LogTableHeaderPopupMenuController(columns, availableColumns).createMenu());
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -188,10 +187,12 @@ public class MainFrame extends JFrame {
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        LogRecordTableColumnModel columnModel = LogRecordTableColumnModel.create(mapper, Column.getSelectedColumns());
+        LogRecordTableColumnModel columnModel =
+                dependencies.getColumnModelFactory().create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columnModel).createMenu());
+                              new LogTableHeaderPopupMenuController(columnModel, Column.getSelectedColumns())
+                                      .createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));

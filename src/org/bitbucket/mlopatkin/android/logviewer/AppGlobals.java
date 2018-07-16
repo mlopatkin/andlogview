@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2018 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer;
 
-import dagger.Binds;
-import dagger.Module;
+import dagger.Component;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigModule;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
+
+import javax.inject.Singleton;
 
 /**
- * Provides LogModelFilter that can be used with MainFilterController.
+ * Global application services available for all.
  */
-@Module
-public abstract class FilterModule {
-
-    @Binds
-    @MainFrameScoped
-    public abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
+@Singleton
+@Component(modules = {GlobalsModule.class, ConfigModule.class})
+public interface AppGlobals {
+    ConfigStorage getConfigStorage();
 }

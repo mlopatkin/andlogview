@@ -21,7 +21,6 @@ import dagger.Provides;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
@@ -29,21 +28,18 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.swing.JFrame;
 
 @Module(includes = FilterModule.class)
 public class MainFrameModule {
     private final MainFrame mainFrame;
-    private final FilterStorage storage;
 
-    public MainFrameModule(MainFrame mainFrame, FilterStorage storage) {
+    public MainFrameModule(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.storage = storage;
     }
 
     @Provides
-    @Singleton
+    @MainFrameScoped
     DialogFactory provideDialogFactory() {
         return new DialogFactory() {
             @Override
@@ -59,7 +55,7 @@ public class MainFrameModule {
     }
 
     @Provides
-    @Singleton
+    @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     LogTable getMainLogTable(LogRecordTableModel model,
                              LogModelFilter filter,
@@ -67,11 +63,5 @@ public class MainFrameModule {
         LogTable logTable = LogTable.create(model, filter);
         logTable.addDecorator(bookmarkHighlighter);
         return logTable;
-    }
-
-    @Provides
-    @Singleton
-    public FilterStorage getStorage() {
-        return storage;
     }
 }

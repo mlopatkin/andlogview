@@ -16,10 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-
 import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
@@ -28,7 +24,9 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -80,7 +78,8 @@ public enum Column {
             return record.getTag();
         }
     },
-    MESSAGE(Field.MESSAGE, "message", "Message") {
+    // Message isn't toggleable so the user cannot disable everything.
+    MESSAGE(Field.MESSAGE, "message", "Message", false) {
         @Override
         public String getValue(int rowIndex, LogRecord record) {
             return record.getMessage();
@@ -169,13 +168,14 @@ public enum Column {
         return columns;
     }
 
-    public static List<Column> getFilteredSelectedColumns(final Collection<Field> availableFields) {
-        return ImmutableList.copyOf(Iterables.filter(getSelectedColumns(), new Predicate<Column>() {
-            @Override
-            public boolean apply(@Nullable Column input) {
-                return availableFields.contains(input.recordField);
+    public static Set<Column> getColumnsForFields(Collection<Field> fields) {
+        Set<Column> columns = EnumSet.noneOf(Column.class);
+        for (Column column : Column.values()) {
+            if (fields.contains(column.recordField)) {
+                columns.add(column);
             }
-        }));
+        }
+        return columns;
     }
 
     TableColumnBuilder makeColumnBuilder() {

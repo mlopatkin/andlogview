@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package org.bitbucket.mlopatkin.android.logviewer.config;
 
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class FilterStorageTest {
+public class ConfigStorageTest {
 
     public static class TestClientData {
 
@@ -48,7 +48,7 @@ public class FilterStorageTest {
         }
     }
 
-    public static class TestClient implements FilterStorage.FilterStorageClient<TestClientData> {
+    public static class TestClient implements ConfigStorage.ConfigStorageClient<TestClientData> {
 
         @Override
         public String getName() {
@@ -76,10 +76,10 @@ public class FilterStorageTest {
         CharSource in = CharSource.wrap("{\"TestClient\":{\"s\":\"123456\"}}");
         CharSink out = new NullCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
-        assertEquals("123456", storage.loadFilters(new TestClient()).s);
+        assertEquals("123456", storage.loadConfig(new TestClient()).s);
     }
 
     @Test
@@ -87,10 +87,10 @@ public class FilterStorageTest {
         CharSource in = CharSource.empty();
         StringCharSink out = new StringCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
-        assertEquals("", storage.loadFilters(new TestClient()).s);
+        assertEquals("", storage.loadConfig(new TestClient()).s);
         assertNull("Do not commit default entry if there is no entry at all",
                    out.getLastWrittenString());
     }
@@ -100,10 +100,10 @@ public class FilterStorageTest {
         CharSource in = CharSource.wrap("{\"TestClient\":[]}");
         StringCharSink out = new StringCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
-        assertEquals("", storage.loadFilters(new TestClient()).s);
+        assertEquals("", storage.loadConfig(new TestClient()).s);
         assertEquals("{}", out.getLastWrittenString());
     }
 
@@ -112,9 +112,9 @@ public class FilterStorageTest {
         CharSource in = CharSource.empty();
         StringCharSink out = new StringCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
 
-        storage.saveFilters(new TestClient(), new TestClientData("123456"));
+        storage.saveConfig(new TestClient(), new TestClientData("123456"));
 
         assertEquals(
                 "{\n"
@@ -129,9 +129,9 @@ public class FilterStorageTest {
         CharSource in = CharSource.empty();
         CharSink out = new FailCharSink();
 
-        FilterStorage storage = new FilterStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
 
-        storage.saveFilters(new TestClient(), new TestClientData("123456"));
+        storage.saveConfig(new TestClient(), new TestClientData("123456"));
     }
 
     private static class NullCharSink extends CharSink {
