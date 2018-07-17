@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.Icons;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 import java.awt.Component;
@@ -26,7 +27,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,11 +40,10 @@ import javax.swing.JToggleButton;
 
 public class FilterPanel extends FilterPanelUi implements FilterPanelModel.FilterPanelModelListener {
 
-    private static final ImageIcon FILTER_ICON = new ImageIcon(
-            getResource("/icons/system-search.png"));
-    private static final ImageIcon ADD_ICON = new ImageIcon(getResource("/icons/list-add.png"));
-    private static final ImageIcon NEXT_ICON = new ImageIcon(getResource("/icons/go-next.png"));
-    private static final ImageIcon PREV_ICON = new ImageIcon(getResource("/icons/go-previous.png"));
+    private static final ImageIcon FILTER_ICON = new ImageIcon(Icons.FILTER.getUrl());
+    private static final ImageIcon ADD_ICON = new ImageIcon(Icons.ADD.getUrl());
+    private static final ImageIcon NEXT_ICON = new ImageIcon(Icons.NEXT.getUrl());
+    private static final ImageIcon PREV_ICON = new ImageIcon(Icons.PREVIOUS.getUrl());
 
     private final FilterPanelModel model;
     private final FilterCreator filterCreator;
@@ -107,10 +106,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         for (PanelFilterView filter : model.getFilters()) {
             onFilterAdded(filter);
         }
-    }
-
-    private static URL getResource(String name) {
-        return FilterPanel.class.getResource(name);
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.bitbucket.mlopatkin.android.logviewer.Main;
 import org.bitbucket.mlopatkin.utils.SystemUtils;
 
 import java.io.File;
@@ -35,7 +36,8 @@ public class PropertyUtils {
     }
 
     public static Properties getPropertiesFromResources(String resourceName) {
-        InputStream resourceStream = PropertyUtils.class.getClass().getResourceAsStream(
+        // TODO(mlopatkin) remove reference to Main.class here
+        InputStream resourceStream = Main.class.getResourceAsStream(
                 resourceName);
         if (resourceStream == null) {
             throw new IllegalArgumentException("Couldn't load resource " + resourceName);

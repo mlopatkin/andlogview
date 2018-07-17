@@ -35,11 +35,11 @@ class Logging {
 
     static void loadNormal() {
         PropertyConfigurator.configure(PropertyUtils
-                .getPropertiesFromResources("/normal_log.properties"));
+                                               .getPropertiesFromResources("normal_log.properties"));
     }
 
     static void loadDebug() {
         PropertyConfigurator.configure(PropertyUtils
-                .getPropertiesFromResources("/debug_log.properties"));
+                                               .getPropertiesFromResources("debug_log.properties"));
     }
 }

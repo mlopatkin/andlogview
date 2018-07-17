@@ -273,7 +273,7 @@ public class Configuration {
         // @formatter:on
 
         // setup default values from resource
-        PropertyUtils.loadValuesFromResource(cfg, "/logview.properties");
+        PropertyUtils.loadValuesFromResource(cfg, "logview.properties");
 
         config = new SynchronizedConfiguration(cfg);
     }
