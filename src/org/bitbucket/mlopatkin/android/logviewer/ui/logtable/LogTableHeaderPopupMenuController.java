@@ -17,8 +17,8 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import java.awt.event.ActionEvent;
-import java.util.Collection;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
@@ -26,10 +26,9 @@ import javax.swing.JPopupMenu;
 /**
  * Controller for Popup menu of the log table header. This popup menu can be used to change displayed columns.
  */
+@ParametersAreNonnullByDefault
 public class LogTableHeaderPopupMenuController {
-
-    private final LogRecordTableColumnModel columnModel;
-    private final Collection<Column> availableColumns;
+    private final ColumnTogglesModel togglesModel;
 
     private class ToggleColumnAction extends AbstractAction {
         private final Column column;
@@ -42,27 +41,25 @@ public class LogTableHeaderPopupMenuController {
         @Override
         public void actionPerformed(ActionEvent e) {
             boolean isSelected = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-            columnModel.setColumnVisibility(column, isSelected);
+            togglesModel.setColumnVisibility(column, isSelected);
         }
 
         public JCheckBoxMenuItem createMenuItem() {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(this);
-            item.setSelected(columnModel.isColumnVisible(column));
+            item.setSelected(togglesModel.isColumnVisible(column));
             item.setEnabled(column.isToggleable());
             return item;
         }
     }
 
-    public LogTableHeaderPopupMenuController(LogRecordTableColumnModel columnModel,
-            Collection<Column> availableColumns) {
-        this.columnModel = columnModel;
-        this.availableColumns = availableColumns;
+    public LogTableHeaderPopupMenuController(ColumnTogglesModel togglesModel) {
+        this.togglesModel = togglesModel;
     }
 
     public JPopupMenu createMenu() {
         JPopupMenu menu = new JPopupMenu();
         for (Column c : Column.values()) {
-            if (!availableColumns.contains(c)) {
+            if (!togglesModel.isColumnAvailable(c)) {
                 continue;
             }
             menu.add(new ToggleColumnAction(c).createMenuItem());

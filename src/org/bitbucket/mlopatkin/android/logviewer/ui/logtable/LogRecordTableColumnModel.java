@@ -39,7 +39,7 @@ import javax.swing.table.TableColumn;
 /**
  * The column model for the main log table. It allows to temporarily hide columns.
  */
-public class LogRecordTableColumnModel extends DefaultTableColumnModel {
+public class LogRecordTableColumnModel extends DefaultTableColumnModel implements ColumnTogglesModel {
     public interface ColumnOrderChangedListener {
         void onColumnOrderChanged(Column movedColumn, @Nullable Column nextColumn);
     }
@@ -54,6 +54,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
     private final TableCellRenderer pidCellRender;
 
     private final ColumnOrder columnOrder;
+    private final ColumnTogglesModel columnTogglesModel;
     private final Subject<ColumnOrderChangedListener> orderChangedListeners = new Subject<>();
 
     public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
@@ -63,8 +64,35 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
 
     public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
             ColumnOrder columnOrder, Set<Column> visibleColumns) {
-        pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
+        this(pidToProcessMapper, columnOrder, new ColumnTogglesModel() {
+            private final HashSet<Column> visible = new HashSet<>(visibleColumns);
+
+            @Override
+            public boolean isColumnAvailable(Column column) {
+                return availableColumns.contains(column);
+            }
+
+            @Override
+            public boolean isColumnVisible(Column column) {
+                return visible.contains(column);
+            }
+
+            @Override
+            public void setColumnVisibility(Column column, boolean isVisible) {
+                if (isVisible) {
+                    visible.add(column);
+                } else {
+                    visible.remove(column);
+                }
+            }
+        });
+    }
+
+    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, ColumnOrder columnOrder,
+            ColumnTogglesModel columnTogglesModel) {
+        this.pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         this.columnOrder = columnOrder;
+        this.columnTogglesModel = columnTogglesModel;
 
         addTextColumn(Column.INDEX).setWidth(30).setMaxWidth(50);
         addTimeColumn(Column.TIME).setWidth(150).setMaxWidth(150);
@@ -76,7 +104,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         addTextColumn(Column.MESSAGE).setWidth(1000);
 
         for (Column column : columnOrder) {
-            if (availableColumns.contains(column) && visibleColumns.contains(column)) {
+            if (columnTogglesModel.isColumnVisible(column)) {
                 showColumnFor(column);
             }
         }
@@ -138,11 +166,18 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         return (Column) getColumn(columnIndex).getIdentifier();
     }
 
-    boolean isColumnVisible(Column column) {
-        return tableColumns.stream().anyMatch(tc -> column.equals(tc.getIdentifier()));
+    @Override
+    public boolean isColumnAvailable(Column column) {
+        return columnTogglesModel.isColumnAvailable(column);
     }
 
-    void setColumnVisibility(Column column, boolean visible) {
+    @Override
+    public boolean isColumnVisible(Column column) {
+        return columnTogglesModel.isColumnVisible(column);
+    }
+
+    @Override
+    public void setColumnVisibility(Column column, boolean visible) {
         Preconditions.checkState(isColumnVisible(column) != visible,
                                  visible ? "Trying to show column that is here" : "Trying to hide hidden column");
         if (visible) {
@@ -150,6 +185,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel {
         } else {
             hideColumnFor(column);
         }
+        columnTogglesModel.setColumnVisibility(column, visible);
     }
 
     @Override

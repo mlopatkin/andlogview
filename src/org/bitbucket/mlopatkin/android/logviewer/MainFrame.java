@@ -144,7 +144,7 @@ public class MainFrame extends JFrame {
                 mapper, availableColumns);
         logElements.setColumnModel(columns);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columns, availableColumns).createMenu());
+                              new LogTableHeaderPopupMenuController(columns).createMenu());
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -191,7 +191,7 @@ public class MainFrame extends JFrame {
                 dependencies.getColumnModelFactory().create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
         UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columnModel, Column.getSelectedColumns())
+                              new LogTableHeaderPopupMenuController(columnModel)
                                       .createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);
