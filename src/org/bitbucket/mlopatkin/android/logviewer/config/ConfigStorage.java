@@ -145,8 +145,7 @@ public class ConfigStorage {
     }
 
     private void saveImpl(Map<String, JsonElement> filters) {
-        try (Writer out = outStorage.openBufferedStream();
-             JsonWriter writer = new JsonWriter(out)) {
+        try (Writer out = outStorage.openBufferedStream(); JsonWriter writer = new JsonWriter(out)) {
             writer.setIndent("  "); // some pretty-print
             saveToJsonWriter(writer, filters);
             logger.debug("Successfully written config data, commiting");

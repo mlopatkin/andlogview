@@ -7,7 +7,6 @@
   <property name="severity" value="warning"/>
   <property name="charset" value="UTF-8"/>
   <module name="TreeWalker">
-    <module name="FileContentsHolder"/>
     <module name="AvoidStarImport">
       <property name="severity" value="error"/>
     </module>
@@ -168,25 +167,25 @@
     <module name="IllegalImport">
       <property name="illegalPkgs" value="junit"/>
     </module>
+      <module name="SuppressWithNearbyCommentFilter">
+          <property name="commentFormat" value="OK to catch (\w+) here"/>
+          <property name="checkFormat" value="IllegalCatchCheck"/>
+          <property name="messageFormat" value="$1"/>
+          <property name="influenceFormat" value="0"/>
+      </module>
+      <module name="SuppressWithNearbyCommentFilter">
+          <property name="commentFormat" value="NO CHECKSTYLE"/>
+          <property name="checkFormat" value=".*"/>
+          <property name="messageFormat" value="$1"/>
+          <property name="influenceFormat" value="0"/>
+      </module>
   </module>
-  <module name="FileTabCharacter">
-    <property name="severity" value="error"/>
-  </module>
-  <module name="RegexpSingleline">
-    <property name="severity" value="error"/>
-    <property name="format" value="[ \t]+$"/>
-    <property name="message" value="Trailing whitespace"/>
-  </module>
-  <module name="SuppressWithNearbyCommentFilter">
-    <property name="commentFormat" value="OK to catch (\w+) here"/>
-    <property name="checkFormat" value="IllegalCatchCheck"/>
-    <property name="messageFormat" value="$1"/>
-    <property name="influenceFormat" value="0"/>
-  </module>
-  <module name="SuppressWithNearbyCommentFilter">
-    <property name="commentFormat" value="NO CHECKSTYLE"/>
-    <property name="checkFormat" value=".*"/>
-    <property name="messageFormat" value="$1"/>
-    <property name="influenceFormat" value="0"/>
+    <module name="FileTabCharacter">
+        <property name="severity" value="error"/>
+    </module>
+    <module name="RegexpSingleline">
+        <property name="severity" value="error"/>
+        <property name="format" value="[ \t]+$"/>
+        <property name="message" value="Trailing whitespace"/>
   </module>
 </module>
