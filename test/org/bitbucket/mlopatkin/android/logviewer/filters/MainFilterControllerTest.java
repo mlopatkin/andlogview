@@ -18,13 +18,10 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.io.CharSink;
-import com.google.common.io.CharSource;
-import com.google.common.io.CharStreams;
-import com.google.common.util.concurrent.MoreExecutors;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
+import org.bitbucket.mlopatkin.android.logviewer.config.FakeDefaultConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
@@ -45,8 +42,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 
@@ -103,18 +98,13 @@ public class MainFilterControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mockStorage = new ConfigStorage(CharSource.empty(), new CharSink() {
-            @Override
-            public Writer openStream() throws IOException {
-                return CharStreams.nullWriter();
-            }
-        }, MoreExecutors.newDirectExecutorService());
         when(indexFilterCollection.asObservable()).thenReturn(indexFilterCollectionObservers);
     }
 
 
     @Test
     public void testInitialState() throws Exception {
+        mockStorage = new FakeDefaultConfigStorage();
         MainFilterController controller =
                 new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
                                          filterImpl);
@@ -160,8 +150,6 @@ public class MainFilterControllerTest {
 
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
-        mockStorage = Mockito.mock(ConfigStorage.class);
-
         when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(
                 Collections.<SavedFilterData>emptyList());
 

@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class ConfigStorageTest {
+public class ConfigStorageImplTest {
 
     public static class TestClientData {
 
@@ -48,7 +48,7 @@ public class ConfigStorageTest {
         }
     }
 
-    public static class TestClient implements ConfigStorage.ConfigStorageClient<TestClientData> {
+    public static class TestClient implements ConfigStorageImpl.ConfigStorageClient<TestClientData> {
 
         @Override
         public String getName() {
@@ -76,7 +76,7 @@ public class ConfigStorageTest {
         CharSource in = CharSource.wrap("{\"TestClient\":{\"s\":\"123456\"}}");
         CharSink out = new NullCharSink();
 
-        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorageImpl storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
         assertEquals("123456", storage.loadConfig(new TestClient()).s);
@@ -87,7 +87,7 @@ public class ConfigStorageTest {
         CharSource in = CharSource.empty();
         StringCharSink out = new StringCharSink();
 
-        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorageImpl storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
         assertEquals("", storage.loadConfig(new TestClient()).s);
@@ -100,7 +100,7 @@ public class ConfigStorageTest {
         CharSource in = CharSource.wrap("{\"TestClient\":[]}");
         StringCharSink out = new StringCharSink();
 
-        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorageImpl storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
         storage.load();
 
         assertEquals("", storage.loadConfig(new TestClient()).s);
@@ -112,7 +112,7 @@ public class ConfigStorageTest {
         CharSource in = CharSource.empty();
         StringCharSink out = new StringCharSink();
 
-        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
 
         storage.saveConfig(new TestClient(), new TestClientData("123456"));
 
@@ -129,7 +129,7 @@ public class ConfigStorageTest {
         CharSource in = CharSource.empty();
         CharSink out = new FailCharSink();
 
-        ConfigStorage storage = new ConfigStorage(in, out, MoreExecutors.newDirectExecutorService());
+        ConfigStorage storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
 
         storage.saveConfig(new TestClient(), new TestClientData("123456"));
     }
