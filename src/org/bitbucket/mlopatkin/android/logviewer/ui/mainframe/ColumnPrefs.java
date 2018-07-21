@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -25,9 +26,12 @@ import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.ConfigStorageClient;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -54,22 +58,15 @@ class ColumnPrefs implements ColumnTogglesModel {
                 Column.TAG,
                 Column.MESSAGE
         );
-        columnOrder = new UserColumnOrder(storage);
+        columnOrder = new UserColumnOrder(ColumnOrder.canonical(), this::commit);
     }
 
     private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient,
             @Nullable SerializableBase data) throws InvalidJsonContentException {
         this(storage, storageClient);
-        if (data == null || data.visible == null) {
-            throw new InvalidJsonContentException("Missing columns.visible field");
-        }
-        if (!data.visible.contains(Column.MESSAGE)) {
-            throw new InvalidJsonContentException("The columns.visible must contain %s column", Column.MESSAGE);
-        }
-        if (data.visible.contains(Column.INDEX)) {
-            throw new InvalidJsonContentException("The columns.visible must not contain %s column", Column.INDEX);
-        }
-        visibleColumns = new HashSet<>(data.visible);
+        checkJsonPrecondition(data != null, "Missing columns property");
+        visibleColumns = new HashSet<>(checkVisibleColumns(data.visible));
+        columnOrder = new UserColumnOrder(checkOrder(data.order), this::commit);
     }
 
     @Override
@@ -105,9 +102,12 @@ class ColumnPrefs implements ColumnTogglesModel {
 
     private static class SerializableBase {
         final Set<Column> visible;
+        final List<Column> order;
 
-        SerializableBase(Set<Column> visibleColumns) {
+        SerializableBase(Set<Column> visibleColumns,
+                List<Column> columnOrder) {
             visible = visibleColumns;
+            order = columnOrder;
         }
     }
 
@@ -137,11 +137,35 @@ class ColumnPrefs implements ColumnTogglesModel {
 
         @Override
         public JsonElement toJson(Gson gson, ColumnPrefs value) {
-            return gson.toJsonTree(new SerializableBase(value.visibleColumns));
+            return gson.toJsonTree(new SerializableBase(value.visibleColumns, ImmutableList.copyOf(value.columnOrder)));
         }
 
         public ColumnPrefs loadFromConfig() {
             return storage.loadConfig(this);
+        }
+    }
+
+    private static Set<Column> checkVisibleColumns(Set<Column> visibleColumns) throws InvalidJsonContentException {
+        checkJsonPrecondition(visibleColumns != null, "Missing columns.visible property");
+        checkJsonPrecondition(visibleColumns.contains(Column.MESSAGE), "The columns.visible must contain %s column",
+                              Column.MESSAGE);
+        checkJsonPrecondition(!visibleColumns.contains(Column.INDEX), "The columns.visible must not contain %s column",
+                              Column.INDEX);
+        return visibleColumns;
+    }
+
+    private static List<Column> checkOrder(List<Column> order) throws InvalidJsonContentException {
+        checkJsonPrecondition(order != null, "Missing columns.order property");
+        EnumSet<Column> allColumns = EnumSet.allOf(Column.class);
+        checkJsonPrecondition(order.size() == allColumns.size() && allColumns.equals(EnumSet.copyOf(order)),
+                              "columns.order isn't a permutation of all colums");
+        return order;
+    }
+
+    private static void checkJsonPrecondition(boolean precondition, String message, Object... args)
+            throws InvalidJsonContentException {
+        if (!precondition) {
+            throw new InvalidJsonContentException(message, args);
         }
     }
 }

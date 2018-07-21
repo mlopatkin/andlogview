@@ -16,16 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.ConfigStorageClient;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 
@@ -45,15 +38,9 @@ public class UserColumnOrder implements ColumnOrder {
     private final List<Column> customizableOrder;
     private final Runnable changeCommitter;
 
-    @VisibleForTesting
     UserColumnOrder(Iterable<Column> columnOrder, Runnable changeCommitter) {
         customizableOrder = Lists.newArrayList(columnOrder);
         this.changeCommitter = changeCommitter;
-    }
-
-    UserColumnOrder(ConfigStorage storage) {
-        customizableOrder = storage.loadConfig(CLIENT);
-        changeCommitter = () -> storage.saveConfig(CLIENT, customizableOrder);
     }
 
     public void setColumnBefore(@Nonnull Column movingColumn, @Nullable Column baseColumn) {
@@ -80,36 +67,4 @@ public class UserColumnOrder implements ColumnOrder {
     public Iterator<Column> iterator() {
         return customizableOrder.iterator();
     }
-
-    @VisibleForTesting
-    static final ConfigStorageClient<List<Column>> CLIENT = new ConfigStorageClient<List<Column>>() {
-        @Override
-        public String getName() {
-            return "columnOrder";
-        }
-
-        @Override
-        public List<Column> fromJson(Gson gson, JsonElement element)
-                throws InvalidJsonContentException {
-            List<Column> columns = Lists.newArrayList(gson.fromJson(element, Column[].class));
-            ImmutableSet<Column> uniqueColumns = ImmutableSet.copyOf(columns);
-            if (uniqueColumns.size() != columns.size()) {
-                throw new InvalidJsonContentException("Duplicate columns in preference");
-            }
-            if (uniqueColumns.size() != Column.values().length) {
-                throw new InvalidJsonContentException("Missing columns in preference");
-            }
-            return columns;
-        }
-
-        @Override
-        public List<Column> getDefault() {
-            return Lists.newArrayList(ColumnOrder.canonical());
-        }
-
-        @Override
-        public JsonElement toJson(Gson gson, List<Column> value) {
-            return gson.toJsonTree(value);
-        }
-    };
 }
