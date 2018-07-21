@@ -23,7 +23,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -82,7 +81,6 @@ public class FileDataSourceFactoryTest {
 
 
     @Test
-    @Ignore("Bug #129")
     public void openLogFileWithExtraStuffInTheBeginning() throws Exception {
         CharSource extraStuffLog = openTestData("huawei_p10_log_snippet.log");
 

@@ -15,36 +15,24 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import org.bitbucket.mlopatkin.android.liblogcat.LogFormatSniffer;
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-
-import javax.annotation.Nullable;
+import java.util.Collections;
 
 public class FileDataSourceFactory {
-
-    private static final String DUMPSTATE_FIRST_LINE = "========================================================";
     private static final int READ_AHEAD_LIMIT = 65536;
 
     private FileDataSourceFactory() {
-    }
-
-    @Nullable
-    private static String getFirstNonEmptyLine(BufferedReader in) throws IOException {
-        String cur = in.readLine();
-        while (cur != null && CharMatcher.whitespace().matchesAllOf(cur)) {
-            cur = in.readLine();
-        }
-        return cur != null ? CharMatcher.whitespace().trimFrom(cur) : null;
     }
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException,
@@ -54,22 +42,23 @@ public class FileDataSourceFactory {
 
     public static DataSource createDataSource(String fileName, CharSource file) throws UnrecognizedFormatException,
             IOException {
+        LogFormatSniffer dumpstateSniffer = new DumpstateSniffer();
+        LogFormatSniffer logfileSniffer = new LogFileSniffer();
+
         // check first non-empty line of the file
         try (BufferedReader in = file.openBufferedStream()) {
             in.mark(READ_AHEAD_LIMIT);
-            String checkLine = getFirstNonEmptyLine(in);
-            while (LogRecordParser.isLogBeginningLine(checkLine)) {
+            String checkLine = in.readLine();
+            while (checkLine != null) {
+                if (dumpstateSniffer.push(checkLine)) {
+                    return createDumpstateFileSource(fileName, in);
+                } else if (logfileSniffer.push(checkLine)) {
+                    return createLogFileSource(fileName, checkLine, in);
+                }
                 in.mark(READ_AHEAD_LIMIT);
-                checkLine = getFirstNonEmptyLine(in);
+                checkLine = in.readLine();
             }
-            if (checkLine == null) {
-                throw new UnrecognizedFormatException("There are no non-empty lines in the file");
-            }
-            if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
-                return createDumpstateFileSource(fileName, in);
-            } else {
-                return createLogFileSource(fileName, checkLine, in);
-            }
+            throw new UnrecognizedFormatException("There are no recognizable lines in the file");
         }
     }
 
@@ -88,6 +77,27 @@ public class FileDataSourceFactory {
             return new DumpstateFileDataSource(fileName, in);
         } catch (ParseException e) {
             throw new UnrecognizedFormatException("Cannot parse dumpstate file", e);
+        }
+    }
+
+    private static class DumpstateSniffer extends LogFormatSniffer.SkipNullOrEmpty {
+        private static final String DUMPSTATE_FIRST_LINE = "========================================================";
+
+        @Override
+        protected boolean pushNonEmpty(String nextLine) {
+            return DUMPSTATE_FIRST_LINE.equals(nextLine);
+        }
+    }
+
+    private static class LogFileSniffer extends LogFormatSniffer.SkipNullOrEmpty {
+        @Override
+        protected boolean pushNonEmpty(String nextLine) {
+            for (ParsingStrategies.Strategy strategy : ParsingStrategies.supportedStrategies) {
+                if (strategy.parse(LogRecord.Buffer.UNKNOWN, nextLine, Collections.emptyMap()) != null) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
