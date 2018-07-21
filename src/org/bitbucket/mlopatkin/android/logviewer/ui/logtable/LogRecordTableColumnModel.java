@@ -58,11 +58,6 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
     private final Subject<ColumnOrderChangedListener> orderChangedListeners = new Subject<>();
 
     public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
-            ColumnOrder columnOrder) {
-        this(pidToProcessMapper, availableColumns, columnOrder, new HashSet<>(Column.getSelectedColumns()));
-    }
-
-    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
             ColumnOrder columnOrder, Set<Column> visibleColumns) {
         this(pidToProcessMapper, columnOrder, new ColumnTogglesModel() {
             private final HashSet<Column> visible = new HashSet<>(visibleColumns);
@@ -74,7 +69,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
 
             @Override
             public boolean isColumnVisible(Column column) {
-                return visible.contains(column);
+                return isColumnAvailable(column) && visible.contains(column);
             }
 
             @Override
@@ -140,7 +135,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
     }
 
     private void showColumnFor(Column column) {
-        Preconditions.checkArgument(!isColumnVisible(column), "Column %s already addded", column.name());
+        Preconditions.checkArgument(!isColumnShown(column), "Column %s already addded", column.name());
         int desiredPosition = findPositionForColumn(column);
         addColumn(columnsCache.get(column));
         int actualPosition = getColumnCount() - 1;
@@ -174,6 +169,10 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
     @Override
     public boolean isColumnVisible(Column column) {
         return columnTogglesModel.isColumnVisible(column);
+    }
+
+    private boolean isColumnShown(Column column) {
+        return tableColumns.stream().anyMatch(tc -> column.equals(tc.getIdentifier()));
     }
 
     @Override

@@ -64,6 +64,10 @@ public class ConfigStorage {
             super(message);
         }
 
+        public InvalidJsonContentException(String message, Object... args) {
+            super(String.format(message, args));
+        }
+
         public InvalidJsonContentException(String message, Throwable cause) {
             super(message, cause);
         }

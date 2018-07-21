@@ -18,7 +18,9 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 
 import java.util.Collection;
@@ -30,18 +32,42 @@ import javax.inject.Inject;
  */
 @MainFrameScoped
 public class TableColumnModelFactory {
+    private final ConfigStorage storage;
     private final UserColumnOrder columnOrder;
+    private final ColumnPrefs columnPrefs;
 
     @Inject
-    public TableColumnModelFactory(UserColumnOrder columnOrder) {
+    public TableColumnModelFactory(ConfigStorage storage, UserColumnOrder columnOrder, ColumnPrefs columnPrefs) {
+        this.storage = storage;
         this.columnOrder = columnOrder;
+        this.columnPrefs = columnPrefs;
     }
 
     public LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper,
             Collection<Column> availableColumns) {
         LogRecordTableColumnModel model =
-                new LogRecordTableColumnModel(pidToProcessMapper, availableColumns, columnOrder);
+                new LogRecordTableColumnModel(pidToProcessMapper, columnOrder, buildTogglesModel(availableColumns));
         model.asColumnOrderChangeObservable().addObserver(columnOrder::setColumnBefore);
         return model;
+    }
+
+    private ColumnTogglesModel buildTogglesModel(Collection<Column> availableColumns) {
+        return new ColumnTogglesModel() {
+            @Override
+            public boolean isColumnAvailable(Column column) {
+                return availableColumns.contains(column) && columnPrefs.isColumnAvailable(column);
+            }
+
+            @Override
+            public boolean isColumnVisible(Column column) {
+                return isColumnAvailable(column) && columnPrefs.isColumnVisible(column);
+            }
+
+            @Override
+            public void setColumnVisibility(Column column, boolean isVisible) {
+                columnPrefs.setColumnVisibility(column, isVisible);
+                columnPrefs.saveToStorage(storage);
+            }
+        };
     }
 }

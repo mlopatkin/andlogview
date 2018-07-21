@@ -30,7 +30,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import javax.inject.Named;
 import javax.swing.JFrame;
 
-@Module(includes = FilterModule.class)
+@Module(includes = {FilterModule.class, MainFramePrefsModule.class})
 public class MainFrameModule {
     private final MainFrame mainFrame;
 

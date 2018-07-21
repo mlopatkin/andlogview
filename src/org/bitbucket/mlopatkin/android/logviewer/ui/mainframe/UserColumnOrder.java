@@ -30,7 +30,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.CanonicalColumnOrde
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,8 +49,8 @@ public class UserColumnOrder implements ColumnOrder {
     private final Runnable changeCommitter;
 
     @VisibleForTesting
-    UserColumnOrder(List<Column> columnOrder, Runnable changeCommitter) {
-        customizableOrder = new ArrayList<>(columnOrder);
+    UserColumnOrder(Iterable<Column> columnOrder, Runnable changeCommitter) {
+        customizableOrder = Lists.newArrayList(columnOrder);
         this.changeCommitter = changeCommitter;
     }
 
