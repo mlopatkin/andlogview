@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 
@@ -46,6 +47,11 @@ public enum Column {
         public Date getValue(int rowIndex, LogRecord record) {
             return record.getTime();
         }
+
+        @Override
+        public String getStrValue(int rowIndex, LogRecord record) {
+            return TimeFormatUtils.convertTimeToString(record.getTime());
+        }
     },
     PID(Field.PID, "pid", "pid") {
         @Override
@@ -70,6 +76,11 @@ public enum Column {
         @Override
         public LogRecord.Priority getValue(int rowIndex, LogRecord record) {
             return record.getPriority();
+        }
+
+        @Override
+        public String getStrValue(int rowIndex, LogRecord record) {
+            return record.getPriority().getLetter();
         }
     },
     TAG(Field.TAG, "tag", "Tag") {
@@ -139,6 +150,17 @@ public enum Column {
      * @return the value (can be of any type)
      */
     public abstract Object getValue(int rowIndex, LogRecord record);
+
+    /**
+     * Extracts a human-readable string representation from the record at the rowIndex.
+     *
+     * @param rowIndex the row index in model
+     * @param record the record
+     * @return the string representing a value
+     */
+    public String getStrValue(int rowIndex, LogRecord record) {
+        return String.valueOf(getValue(rowIndex, record));
+    }
 
     // TODO: reduce visibility
     // For now it is used by ValueSearcher and in SearchResultsHighlightCell renderer

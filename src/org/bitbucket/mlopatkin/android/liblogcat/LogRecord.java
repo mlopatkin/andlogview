@@ -29,7 +29,7 @@ public class LogRecord implements Comparable<LogRecord> {
     public enum Priority {
         VERBOSE, DEBUG, INFO, WARN, ERROR, FATAL;
 
-        String getLetter() {
+        public String getLetter() {
             return toString().substring(0, 1);
         }
 

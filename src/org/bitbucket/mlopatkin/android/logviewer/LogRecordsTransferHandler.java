@@ -16,6 +16,9 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordClipboardFormatter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 
 import java.awt.datatransfer.DataFlavor;
@@ -63,16 +66,24 @@ public class LogRecordsTransferHandler extends TransferHandler {
         }
         JTable table = (JTable) c;
 
-        LogRecordTableModel model = (LogRecordTableModel) table.getModel();
-
         int[] rows = table.getSelectedRows();
         if (rows == null || rows.length == 0) {
             return null;
         }
+
+        LogRecordTableModel model = (LogRecordTableModel) table.getModel();
+        ColumnTogglesModel togglesModel = (ColumnTogglesModel) table.getColumnModel();
+        LogRecordClipboardFormatter formatter = new LogRecordClipboardFormatter(togglesModel, ColumnOrder.canonical());
         StringBuilder plain = new StringBuilder();
-        for (int row : rows) {
-            LogRecord record = model.getRowData(table.convertRowIndexToModel(row));
-            plain.append(record.toString()).append('\n');
+        try {
+            for (int row : rows) {
+                int modelIndex = table.convertRowIndexToModel(row);
+                LogRecord record = model.getRowData(modelIndex);
+
+                formatter.formatLogRecord(modelIndex, record, plain).append('\n');
+            }
+        } catch (IOException e) {
+            throw new AssertionError("StringBuilder throws IOException", e);
         }
         plain.deleteCharAt(plain.length() - 1);
         return new LogRecordTransferable(plain.toString());
@@ -92,8 +103,7 @@ public class LogRecordsTransferHandler extends TransferHandler {
         }
 
         @Override
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException,
-                IOException {
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
             if (!isDataFlavorSupported(flavor)) {
                 throw new UnsupportedFlavorException(flavor);
             }
