@@ -37,15 +37,15 @@ import javax.inject.Inject;
  * Main frame's table columns preferences: visibility.
  */
 class ColumnPrefs implements ColumnTogglesModel {
-    private final transient ConfigStorage storage;
-    private final transient ConfigStorageClient<ColumnPrefs> storageClient;
+    private final ConfigStorage storage;
+    private final ConfigStorageClient<ColumnPrefs> storageClient;
 
-    private HashSet<Column> visible;
+    private HashSet<Column> visibleColumns;
 
     private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient) {
         this.storage = storage;
         this.storageClient = storageClient;
-        visible = Sets.newHashSet(
+        visibleColumns = Sets.newHashSet(
                 Column.TIME,
                 Column.PID,
                 Column.APP_NAME,
@@ -67,7 +67,7 @@ class ColumnPrefs implements ColumnTogglesModel {
         if (data.visible.contains(Column.INDEX)) {
             throw new InvalidJsonContentException("The columns.visible must not contain %s column", Column.INDEX);
         }
-        visible = new HashSet<>(data.visible);
+        visibleColumns = new HashSet<>(data.visible);
     }
 
     @Override
@@ -77,7 +77,7 @@ class ColumnPrefs implements ColumnTogglesModel {
 
     @Override
     public boolean isColumnVisible(Column column) {
-        return visible.contains(column);
+        return visibleColumns.contains(column);
     }
 
     @Override
@@ -85,17 +85,20 @@ class ColumnPrefs implements ColumnTogglesModel {
         Preconditions.checkArgument(!isVisible || isColumnAvailable(column));
         Preconditions.checkArgument(isVisible || column != Column.MESSAGE);
         if (isVisible) {
-            visible.add(column);
+            visibleColumns.add(column);
         } else {
-            visible.remove(column);
+            visibleColumns.remove(column);
         }
 
         storage.saveConfig(storageClient, this);
     }
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private static class SerializableBase {
-        Set<Column> visible;
+        final Set<Column> visible;
+
+        SerializableBase(Set<Column> visibleColumns) {
+            visible = visibleColumns;
+        }
     }
 
     static class Factory implements ConfigStorageClient<ColumnPrefs> {
@@ -124,7 +127,7 @@ class ColumnPrefs implements ColumnTogglesModel {
 
         @Override
         public JsonElement toJson(Gson gson, ColumnPrefs value) {
-            return gson.toJsonTree(value);
+            return gson.toJsonTree(new SerializableBase(value.visibleColumns));
         }
 
         public ColumnPrefs loadFromConfig() {
