@@ -21,8 +21,8 @@ import com.google.common.collect.ImmutableList;
 import dagger.Module;
 import dagger.Provides;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.CanonicalColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
@@ -63,7 +63,7 @@ public class IndexFrameModule {
 
     @Provides
     LogRecordTableColumnModel getColumnModel() {
-        return new LogRecordTableColumnModel(null, INDEX_FRAME_COLUMNS, new CanonicalColumnOrder(),
+        return new LogRecordTableColumnModel(null, INDEX_FRAME_COLUMNS, ColumnOrder.canonical(),
                                              new HashSet<>(INDEX_FRAME_COLUMNS));
     }
 

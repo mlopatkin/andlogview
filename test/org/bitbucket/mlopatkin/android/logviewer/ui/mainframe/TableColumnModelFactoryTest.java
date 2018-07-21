@@ -20,8 +20,8 @@ import com.google.common.collect.ImmutableList;
 
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.CanonicalColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +60,6 @@ public class TableColumnModelFactoryTest {
     }
 
     private UserColumnOrder createOrder() {
-        return new UserColumnOrder(new CanonicalColumnOrder(), mock(Runnable.class));
+        return new UserColumnOrder(ColumnOrder.canonical(), mock(Runnable.class));
     }
 }

@@ -106,9 +106,9 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
     }
 
     @VisibleForTesting
-    static LogRecordTableColumnModel createForTest(Collection<Column> availableColumns,
-            CanonicalColumnOrder columnOrder) {
-        return new LogRecordTableColumnModel(null, availableColumns, columnOrder, EnumSet.allOf(Column.class));
+    static LogRecordTableColumnModel createForTest(Collection<Column> availableColumns) {
+        return new LogRecordTableColumnModel(null, availableColumns, ColumnOrder.canonical(),
+                                             EnumSet.allOf(Column.class));
     }
 
     private TableColumnBuilder makeBuilder(Column column) {

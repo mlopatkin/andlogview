@@ -26,7 +26,6 @@ import com.google.gson.JsonElement;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.ConfigStorageClient;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.CanonicalColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 
@@ -108,7 +107,7 @@ public class UserColumnOrder implements ColumnOrder {
 
         @Override
         public List<Column> getDefault() {
-            return Lists.newArrayList(new CanonicalColumnOrder());
+            return Lists.newArrayList(ColumnOrder.canonical());
         }
 
         @Override

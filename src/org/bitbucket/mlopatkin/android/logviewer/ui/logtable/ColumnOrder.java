@@ -23,4 +23,8 @@ import java.util.Comparator;
  * (this can also be done with sorting but more convenient to have it here).
  */
 public interface ColumnOrder extends Comparator<Column>, Iterable<Column> {
+
+    static ColumnOrder canonical() {
+        return CanonicalColumnOrder.INSTANCE;
+    }
 }
