@@ -34,14 +34,12 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 /**
  * Order of the columns in the table. It is somewhat independent of what columns are available in the data source.
  * <p/>
  * This order is stored in the configuration file.
  */
-@MainFrameScoped
 public class UserColumnOrder implements ColumnOrder {
 
     private final List<Column> customizableOrder;
@@ -53,8 +51,7 @@ public class UserColumnOrder implements ColumnOrder {
         this.changeCommitter = changeCommitter;
     }
 
-    @Inject
-    public UserColumnOrder(ConfigStorage storage) {
+    UserColumnOrder(ConfigStorage storage) {
         customizableOrder = storage.loadConfig(CLIENT);
         changeCommitter = () -> storage.saveConfig(CLIENT, customizableOrder);
     }

@@ -20,8 +20,8 @@ import com.google.common.collect.ImmutableList;
 
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
+import org.bitbucket.mlopatkin.android.logviewer.config.FakeDefaultConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,12 +32,10 @@ import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModel
 import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModelTestUtils.visibleColumns;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class TableColumnModelFactoryTest {
 
-    @Mock
-    private ConfigStorage mockStorage;
+    private ConfigStorage mockStorage = new FakeDefaultConfigStorage();
     @Mock
     private PidToProcessMapper mockMapper;
 
@@ -47,8 +45,7 @@ public class TableColumnModelFactoryTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        factory = new TableColumnModelFactory(createOrder(),
-                                              new ColumnPrefs.Factory(mockStorage).getDefault());
+        factory = new TableColumnModelFactory(new ColumnPrefs.Factory(mockStorage).loadFromConfig());
     }
 
     @Test
@@ -58,9 +55,5 @@ public class TableColumnModelFactoryTest {
 
         assertThat(columnModel, availableColumns(containsInAnyOrder(Column.APP_NAME, Column.MESSAGE)));
         assertThat(columnModel, visibleColumns(containsInAnyOrder(Column.APP_NAME, Column.MESSAGE)));
-    }
-
-    private UserColumnOrder createOrder() {
-        return new UserColumnOrder(ColumnOrder.canonical(), mock(Runnable.class));
     }
 }

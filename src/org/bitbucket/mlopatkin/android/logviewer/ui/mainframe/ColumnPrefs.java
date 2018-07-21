@@ -41,6 +41,7 @@ class ColumnPrefs implements ColumnTogglesModel {
     private final ConfigStorageClient<ColumnPrefs> storageClient;
 
     private HashSet<Column> visibleColumns;
+    private UserColumnOrder columnOrder;
 
     private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient) {
         this.storage = storage;
@@ -53,6 +54,7 @@ class ColumnPrefs implements ColumnTogglesModel {
                 Column.TAG,
                 Column.MESSAGE
         );
+        columnOrder = new UserColumnOrder(storage);
     }
 
     private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient,
@@ -90,6 +92,14 @@ class ColumnPrefs implements ColumnTogglesModel {
             visibleColumns.remove(column);
         }
 
+        commit();
+    }
+
+    public UserColumnOrder getColumnOrder() {
+        return columnOrder;
+    }
+
+    private void commit() {
         storage.saveConfig(storageClient, this);
     }
 
