@@ -16,6 +16,19 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
+import com.google.common.io.CharSource;
+
+import org.junit.Test;
+
 public class FileDataSourceFactoryTest {
 
+    @Test(expected = UnrecognizedFormatException.class)
+    public void openEmptyFile() throws Exception {
+        FileDataSourceFactory.createDataSource("empty.log", CharSource.empty());
+    }
+
+    @Test(expected = UnrecognizedFormatException.class)
+    public void openBlankFile() throws Exception {
+        FileDataSourceFactory.createDataSource("blank.log", CharSource.wrap("    \n\n   \n\t\t"));
+    }
 }

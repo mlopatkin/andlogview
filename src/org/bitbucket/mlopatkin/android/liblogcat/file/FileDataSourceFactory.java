@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
+import javax.annotation.Nullable;
+
 public class FileDataSourceFactory {
 
     private static final String DUMPSTATE_FIRST_LINE = "========================================================";
@@ -36,12 +38,13 @@ public class FileDataSourceFactory {
     private FileDataSourceFactory() {
     }
 
+    @Nullable
     private static String getFirstNonEmptyLine(BufferedReader in) throws IOException {
         String cur = in.readLine();
         while (cur != null && CharMatcher.whitespace().matchesAllOf(cur)) {
             cur = in.readLine();
         }
-        return CharMatcher.whitespace().trimFrom(cur);
+        return cur != null ? CharMatcher.whitespace().trimFrom(cur) : null;
     }
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException,
@@ -55,7 +58,7 @@ public class FileDataSourceFactory {
         try (BufferedReader in = file.openBufferedStream()) {
             in.mark(READ_AHEAD_LIMIT);
             String checkLine = getFirstNonEmptyLine(in);
-            while (checkLine != null && LogRecordParser.isLogBeginningLine(checkLine)) {
+            while (LogRecordParser.isLogBeginningLine(checkLine)) {
                 in.mark(READ_AHEAD_LIMIT);
                 checkLine = getFirstNonEmptyLine(in);
             }
