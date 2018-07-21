@@ -24,6 +24,8 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
@@ -43,10 +45,11 @@ public class BookmarkFramePopupMenu implements TablePopupMenu.ItemsUpdater {
         }
         @Override
         public void actionPerformed(ActionEvent e) {
+            Set<LogRecord> recordsToRemove = new HashSet<>();
             for (int rowIndex : table.getSelectedRows()) {
-                LogRecord record = tableModel.getRowData(table.convertRowIndexToModel(rowIndex));
-                bookmarkModel.removeRecord(record);
+                recordsToRemove.add(tableModel.getRowData(table.convertRowIndexToModel(rowIndex)));
             }
+            recordsToRemove.forEach(bookmarkModel::removeRecord);
         }
     };
 
