@@ -1,0 +1,8 @@
+nt logctl_get(): open '/dev/hwlog_switch' fail -1, 13. Permission denied
+
+Note: log switch off, only log_main and log_events will have logs!
+--------- beginning of main
+02-06 11:22:50.508  1301  1507 I QosMonitor: postEventFromNative: msg=100,arg1=4,arg2=9
+02-06 11:22:50.508  1301  1507 W WifiProJNI: poll before: g_monitor_fd =248
+02-06 11:22:50.508  1301  1301 I WifiProJNI: ######### CMD_QUERY_PKTS ########
+02-06 11:22:50.509  1301  1507 I QosMonitor: postEventFromNative: msg=100,arg1=0,arg2=9

@@ -1,0 +1,10 @@
+--------- beginning of /dev/log/system
+W/ActivityManager(  380): Permission denied: checkComponentPermission() owningUid=10008
+W/BroadcastQueue(  380): Permission Denial: broadcasting Intent { act=com.google.android.location.internal.server.ACTION_RESTARTED flg=0x10 } from com.google.android.apps.maps (pid=32638, uid=10034) is not exported from uid 10008 due to receiver com.google.android.gms/.chimera.GmsIntentOperationService$PersistentInternalReceiver
+I/ActivityManager(  380): Start proc com.google.android.music:main for service com.google.android.music/.playback.MusicPlaybackService: pid=32676 uid=10037 gids={50037, 3003, 1015, 1028}
+D/ConnectivityService(  380): handleInetConditionChange: no active default network - ignore
+I/ActivityManager(  380): Start proc com.google.android.talk for service com.google.android.talk/com.google.android.apps.babel.realtimechat.RealTimeChatService$AlarmWrapperService: pid=32716 uid=10028 gids={50028, 3003, 1015, 1006, 3002, 1028}
+I/ActivityManager(  380): No longer want android.process.acore (pid 32501): empty for 1805s
+I/ActivityManager(  380): No longer want com.android.providers.calendar (pid 32521): empty for 1801s
+I/ActivityManager(  380): No longer want com.google.android.calendar (pid 32536): empty for 1805s
+I/ActivityManager(  380): No longer want android.process.media (pid 32610): empty for 1803s
