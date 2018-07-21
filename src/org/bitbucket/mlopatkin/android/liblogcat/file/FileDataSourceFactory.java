@@ -16,14 +16,16 @@
 package org.bitbucket.mlopatkin.android.liblogcat.file;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.io.CharSource;
+import com.google.common.io.Files;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 public class FileDataSourceFactory {
@@ -44,9 +46,13 @@ public class FileDataSourceFactory {
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException,
             IOException {
+        return createDataSource(file.getName(), Files.asCharSource(file, StandardCharsets.UTF_8));
+    }
+
+    public static DataSource createDataSource(String fileName, CharSource file) throws UnrecognizedFormatException,
+            IOException {
         // check first non-empty line of the file
-        BufferedReader in = new BufferedReader(new FileReader(file));
-        try {
+        try (BufferedReader in = file.openBufferedStream()) {
             in.mark(READ_AHEAD_LIMIT);
             String checkLine = getFirstNonEmptyLine(in);
             while (checkLine != null && LogRecordParser.isLogBeginningLine(checkLine)) {
@@ -57,28 +63,26 @@ public class FileDataSourceFactory {
                 throw new UnrecognizedFormatException("There are no non-empty lines in the file");
             }
             if (DUMPSTATE_FIRST_LINE.equals(checkLine)) {
-                return createDumpstateFileSource(file, in);
+                return createDumpstateFileSource(fileName, in);
             } else {
-                return createLogFileSource(file, checkLine, in);
+                return createLogFileSource(fileName, checkLine, in);
             }
-        } finally {
-            in.close();
         }
     }
 
-    private static DataSource createLogFileSource(File file, String checkLine, BufferedReader in)
+    private static DataSource createLogFileSource(String fileName, String checkLine, BufferedReader in)
             throws IOException, UnrecognizedFormatException {
-        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(file,
+        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(fileName,
                                                                                          checkLine);
         in.reset();
         source.parse(in);
         return source;
     }
 
-    private static DataSource createDumpstateFileSource(File file, BufferedReader in)
+    private static DataSource createDumpstateFileSource(String fileName, BufferedReader in)
             throws IOException, UnrecognizedFormatException {
         try {
-            return new DumpstateFileDataSource(file, in);
+            return new DumpstateFileDataSource(fileName, in);
         } catch (ParseException e) {
             throw new UnrecognizedFormatException("Cannot parse dumpstate file", e);
         }

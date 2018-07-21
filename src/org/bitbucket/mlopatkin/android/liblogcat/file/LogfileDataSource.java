@@ -26,7 +26,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,11 +47,11 @@ public class LogfileDataSource implements DataSource {
     private RecordListener<LogRecord> listener;
     private ParsingStrategies.Strategy strategy;
     private List<LogRecord> records = new ArrayList<LogRecord>();
-    private File file;
+    private String fileName;
 
-    private LogfileDataSource(File file, ParsingStrategies.Strategy strategy) {
+    private LogfileDataSource(String fileName, ParsingStrategies.Strategy strategy) {
         this.strategy = strategy;
-        this.file = file;
+        this.fileName = fileName;
         logger.debug("Strategy implemented: " + strategy);
     }
 
@@ -107,11 +106,11 @@ public class LogfileDataSource implements DataSource {
         this.listener.setRecords(records);
     }
 
-    static LogfileDataSource createLogfileDataSourceWithStrategy(File file, String checkLine)
+    static LogfileDataSource createLogfileDataSourceWithStrategy(String fileName, String checkLine)
             throws UnrecognizedFormatException {
         for (ParsingStrategies.Strategy current : ParsingStrategies.supportedStrategies) {
             if (current.parse(null, checkLine, Collections.<Integer, String>emptyMap()) != null) {
-                return new LogfileDataSource(file, current);
+                return new LogfileDataSource(fileName, current);
             }
         }
         throw new UnrecognizedFormatException();
@@ -125,6 +124,6 @@ public class LogfileDataSource implements DataSource {
 
     @Override
     public String toString() {
-        return file.getName();
+        return fileName;
     }
 }
