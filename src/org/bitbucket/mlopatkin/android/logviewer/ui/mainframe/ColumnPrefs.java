@@ -16,7 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -32,14 +31,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 /**
  * Main frame's table columns preferences: visibility.
  */
 class ColumnPrefs implements ColumnTogglesModel {
+    private final transient ConfigStorage storage;
+    private final transient ConfigStorageClient<ColumnPrefs> storageClient;
+
     private HashSet<Column> visible;
 
-    ColumnPrefs() {
+    private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient) {
+        this.storage = storage;
+        this.storageClient = storageClient;
         visible = Sets.newHashSet(
                 Column.TIME,
                 Column.PID,
@@ -50,7 +55,9 @@ class ColumnPrefs implements ColumnTogglesModel {
         );
     }
 
-    private ColumnPrefs(@Nullable SerializableBase data) throws InvalidJsonContentException {
+    private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient,
+            @Nullable SerializableBase data) throws InvalidJsonContentException {
+        this(storage, storageClient);
         if (data == null || data.visible == null) {
             throw new InvalidJsonContentException("Missing columns.visible field");
         }
@@ -62,30 +69,6 @@ class ColumnPrefs implements ColumnTogglesModel {
         }
         visible = new HashSet<>(data.visible);
     }
-
-    @VisibleForTesting
-    static final ConfigStorageClient<ColumnPrefs> CLIENT = new ConfigStorageClient<ColumnPrefs>() {
-        @Override
-        public String getName() {
-            return "columns";
-        }
-
-        @Override
-        public ColumnPrefs fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException {
-            SerializableBase data = gson.fromJson(element, SerializableBase.class);
-            return new ColumnPrefs(data);
-        }
-
-        @Override
-        public ColumnPrefs getDefault() {
-            return new ColumnPrefs();
-        }
-
-        @Override
-        public JsonElement toJson(Gson gson, ColumnPrefs value) {
-            return gson.toJsonTree(value);
-        }
-    };
 
     @Override
     public boolean isColumnAvailable(Column column) {
@@ -106,6 +89,8 @@ class ColumnPrefs implements ColumnTogglesModel {
         } else {
             visible.remove(column);
         }
+
+        storage.saveConfig(storageClient, this);
     }
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -113,11 +98,37 @@ class ColumnPrefs implements ColumnTogglesModel {
         Set<Column> visible;
     }
 
-    public static ColumnPrefs loadFromConfig(ConfigStorage storage) {
-        return storage.loadConfig(CLIENT);
-    }
+    static class Factory implements ConfigStorageClient<ColumnPrefs> {
+        private final ConfigStorage storage;
 
-    public void saveToStorage(ConfigStorage storage) {
-        storage.saveConfig(CLIENT, this);
+        @Inject
+        Factory(ConfigStorage storage) {
+            this.storage = storage;
+        }
+
+        @Override
+        public String getName() {
+            return "columns";
+        }
+
+        @Override
+        public ColumnPrefs fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException {
+            SerializableBase data = gson.fromJson(element, SerializableBase.class);
+            return new ColumnPrefs(storage, this, data);
+        }
+
+        @Override
+        public ColumnPrefs getDefault() {
+            return new ColumnPrefs(storage, this);
+        }
+
+        @Override
+        public JsonElement toJson(Gson gson, ColumnPrefs value) {
+            return gson.toJsonTree(value);
+        }
+
+        public ColumnPrefs loadFromConfig() {
+            return storage.loadConfig(this);
+        }
     }
 }

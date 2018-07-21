@@ -19,14 +19,12 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 import dagger.Module;
 import dagger.Provides;
 
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-
 @Module
 public class MainFramePrefsModule {
     @Provides
     @MainFrameScoped
-    public ColumnPrefs getColumnPrefs(ConfigStorage storage) {
-        return ColumnPrefs.loadFromConfig(storage);
+    public ColumnPrefs getColumnPrefs(ColumnPrefs.Factory factory) {
+        return factory.loadFromConfig();
     }
 
 }

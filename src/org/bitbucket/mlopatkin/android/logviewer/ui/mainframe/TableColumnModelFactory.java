@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
@@ -32,13 +31,11 @@ import javax.inject.Inject;
  */
 @MainFrameScoped
 public class TableColumnModelFactory {
-    private final ConfigStorage storage;
     private final UserColumnOrder columnOrder;
     private final ColumnPrefs columnPrefs;
 
     @Inject
-    public TableColumnModelFactory(ConfigStorage storage, UserColumnOrder columnOrder, ColumnPrefs columnPrefs) {
-        this.storage = storage;
+    public TableColumnModelFactory(UserColumnOrder columnOrder, ColumnPrefs columnPrefs) {
         this.columnOrder = columnOrder;
         this.columnPrefs = columnPrefs;
     }
@@ -66,7 +63,6 @@ public class TableColumnModelFactory {
             @Override
             public void setColumnVisibility(Column column, boolean isVisible) {
                 columnPrefs.setColumnVisibility(column, isVisible);
-                columnPrefs.saveToStorage(storage);
             }
         };
     }

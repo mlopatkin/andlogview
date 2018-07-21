@@ -47,7 +47,8 @@ public class TableColumnModelFactoryTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        factory = new TableColumnModelFactory(mockStorage, createOrder(), new ColumnPrefs());
+        factory = new TableColumnModelFactory(createOrder(),
+                                              new ColumnPrefs.Factory(mockStorage).getDefault());
     }
 
     @Test

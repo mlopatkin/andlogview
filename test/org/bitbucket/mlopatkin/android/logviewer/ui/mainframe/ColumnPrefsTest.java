@@ -21,7 +21,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
+import org.bitbucket.mlopatkin.android.logviewer.config.FakeInMemoryConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModelTestUtils;
 import org.junit.Assume;
@@ -39,11 +41,14 @@ import static org.junit.Assert.assertTrue;
 public class ColumnPrefsTest {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+    private ConfigStorage storage = new FakeInMemoryConfigStorage();
+    private ColumnPrefs.Factory factory = new ColumnPrefs.Factory(storage);
+
     @Test
     public void savedPrefsAreRestoredCorrectly() throws Exception {
-        ColumnPrefs prefs = new ColumnPrefs();
-        JsonElement jsonElement = ColumnPrefs.CLIENT.toJson(gson, prefs);
-        ColumnPrefs deserializedPrefs = ColumnPrefs.CLIENT.fromJson(gson, jsonElement);
+        ColumnPrefs prefs = factory.getDefault();
+        JsonElement jsonElement = factory.toJson(gson, prefs);
+        ColumnPrefs deserializedPrefs = factory.fromJson(gson, jsonElement);
 
         assertThat(prefs, TogglesModelTestUtils
                 .visibleColumns(equalTo(TogglesModelTestUtils.getVisibleColumns(deserializedPrefs))));
@@ -51,40 +56,40 @@ public class ColumnPrefsTest {
 
     @Test(expected = InvalidJsonContentException.class)
     public void nullJsonThrows() throws Exception {
-        ColumnPrefs.CLIENT.fromJson(gson, toJsonElement(""));
+        factory.fromJson(gson, toJsonElement(""));
     }
 
     @Test(expected = InvalidJsonContentException.class)
     public void emptyJsonThrows() throws Exception {
-        ColumnPrefs.CLIENT.fromJson(gson, toJsonElement("{}"));
+        factory.fromJson(gson, toJsonElement("{}"));
     }
 
     @Test(expected = InvalidJsonContentException.class)
     public void emptyVisibleListThrows() throws Exception {
-        ColumnPrefs.CLIENT.fromJson(gson, toJsonElement("{\"visible\": []}"));
+        factory.fromJson(gson, toJsonElement("{\"visible\": []}"));
     }
 
     @Test(expected = InvalidJsonContentException.class)
     public void missingMessageColumnThrows() throws Exception {
-        ColumnPrefs.CLIENT.fromJson(gson, toJsonElement("{\"visible\": [APP_NAME, TIME]}"));
+        factory.fromJson(gson, toJsonElement("{\"visible\": [APP_NAME, TIME]}"));
     }
 
     @Test
     public void havingOnlyMessageColumnIsValid() throws Exception {
-        ColumnPrefs prefs = ColumnPrefs.CLIENT.fromJson(gson, toJsonElement("{\"visible\": [MESSAGE]}"));
+        ColumnPrefs prefs = factory.fromJson(gson, toJsonElement("{\"visible\": [MESSAGE]}"));
 
         assertThat(prefs, TogglesModelTestUtils.visibleColumns(contains(Column.MESSAGE)));
     }
 
     @Test(expected = InvalidJsonContentException.class)
     public void havingIndexColumnIsNotValid() throws Exception {
-        ColumnPrefs.CLIENT.fromJson(gson, toJsonElement("{\"visible\": [MESSAGE, INDEX]}"));
+        factory.fromJson(gson, toJsonElement("{\"visible\": [MESSAGE, INDEX]}"));
     }
 
     @Test
     public void allParsedColumnsAreVisible() throws Exception {
         ColumnPrefs prefs =
-                ColumnPrefs.CLIENT.fromJson(gson, toJsonElement("{\"visible\": [MESSAGE, APP_NAME, TIME]}"));
+                factory.fromJson(gson, toJsonElement("{\"visible\": [MESSAGE, APP_NAME, TIME]}"));
 
         assertThat(prefs, TogglesModelTestUtils
                 .visibleColumns(containsInAnyOrder(Column.MESSAGE, Column.APP_NAME, Column.TIME)));
@@ -92,21 +97,21 @@ public class ColumnPrefsTest {
 
     @Test
     public void indexColumnIsNotAvailable() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
 
         assertFalse("Index column isn't available in MainFrame", prefs.isColumnAvailable(Column.INDEX));
     }
 
     @Test
     public void allButIndexColumnAreAvailable() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
         Set<Column> allButIndex = TogglesModelTestUtils.getMatchingColumns(c -> c != Column.INDEX);
         assertThat(TogglesModelTestUtils.getAvailableColumns(prefs), equalTo(allButIndex));
     }
 
     @Test
     public void makingColumnVisibleWorks() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
         Assume.assumeFalse(prefs.isColumnVisible(Column.TID));
 
         prefs.setColumnVisibility(Column.TID, true);
@@ -116,7 +121,7 @@ public class ColumnPrefsTest {
 
     @Test
     public void makingColumnHiddenWorks() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
         Assume.assumeTrue(prefs.isColumnVisible(Column.PID));
 
         prefs.setColumnVisibility(Column.PID, false);
@@ -126,40 +131,53 @@ public class ColumnPrefsTest {
 
     @Test
     public void messageColumnIsVisibleByDefault() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
 
         assertTrue(prefs.isColumnVisible(Column.MESSAGE));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void messageColumnCannotBeHidden() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
 
         prefs.setColumnVisibility(Column.MESSAGE, false);
     }
 
     @Test
     public void indexColumnIsHiddenByDefault() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
 
         assertFalse(prefs.isColumnVisible(Column.INDEX));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void indexColumnCannotBeShown() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
 
         prefs.setColumnVisibility(Column.INDEX, true);
     }
 
     @Test
     public void indexColumnCanBeHidden() {
-        ColumnPrefs prefs = new ColumnPrefs();
+        ColumnPrefs prefs = factory.getDefault();
 
         prefs.setColumnVisibility(Column.INDEX, false);
 
         assertFalse(prefs.isColumnAvailable(Column.INDEX));
         assertFalse(prefs.isColumnVisible(Column.INDEX));
+    }
+
+    @Test
+    public void changedVisibilityIsPersisted() {
+        ColumnPrefs prefs = factory.loadFromConfig();
+        Assume.assumeTrue(prefs.isColumnVisible(Column.APP_NAME));
+
+        prefs.setColumnVisibility(Column.APP_NAME, false);
+
+        ColumnPrefs reloadedPrefs = factory.loadFromConfig();
+
+        assertFalse("Expected hidden column to remain hidden after reload",
+                    reloadedPrefs.isColumnVisible(Column.APP_NAME));
     }
 
     private JsonElement toJsonElement(String s) {
