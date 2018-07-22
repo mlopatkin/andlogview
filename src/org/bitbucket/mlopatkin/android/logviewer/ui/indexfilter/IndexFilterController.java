@@ -28,6 +28,8 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 
+import java.awt.EventQueue;
+
 import javax.inject.Inject;
 
 public class IndexFilterController extends AbstractIndexController {
@@ -35,6 +37,8 @@ public class IndexFilterController extends AbstractIndexController {
     private final IndexFrame frame;
     private final IndexFilterCollection owner;
     private final Predicate<LogRecord> filter;
+
+    private boolean enabled = true;
 
     IndexFilterController(IndexFilterCollection owner, MainFrameDependencies dependencies,
                           LogTable mainTable,
@@ -55,9 +59,15 @@ public class IndexFilterController extends AbstractIndexController {
     }
 
     public void setEnabled(boolean enabled) {
-        if (enabled != frame.isVisible()) {
-            frame.setVisible(enabled);
-        }
+        this.enabled = enabled;
+        // Postpone actual visibility change for two reasons:
+        // 1. Main Frame may not be ready at this point (e.g. when restoring filters at startup).
+        // 2. Client code may want to immediately disable the filter, post-ing avoids flickering.
+        EventQueue.invokeLater(() -> {
+            if (this.enabled != frame.isVisible()) {
+                frame.setVisible(this.enabled);
+            }
+        });
     }
 
     public void destroy() {

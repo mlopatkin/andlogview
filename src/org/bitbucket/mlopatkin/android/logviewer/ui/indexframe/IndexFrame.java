@@ -145,6 +145,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     @Override
     public void setVisible(boolean b) {
         if (b && isFirstShow) {
+            assert owner.isVisible();
             setPreferredSize(new Dimension(owner.getWidth(), getPreferredSize().height));
             pack();
             setLocationRelativeTo(owner);

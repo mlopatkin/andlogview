@@ -69,10 +69,10 @@ public class Main {
         List<String> files = (List<String>) result.nonOptionArguments();
         if (files.size() == 0) {
             // ADB mode
-            new Main().start();
+            EventQueue.invokeLater(() -> new Main().start());
         } else if (files.size() == 1) {
             // File mode
-            new Main(new File(files.get(0))).start();
+            EventQueue.invokeLater(() -> new Main(new File(files.get(0))).start());
         } else {
             // Error
             showUsage();
@@ -117,13 +117,7 @@ public class Main {
     private void createAndShowWindow() {
         AppGlobals globals = DaggerAppGlobals.builder().globalsModule(new GlobalsModule(getConfigurationDir())).build();
         window = new MainFrame(globals);
-        EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                window.setVisible(true);
-            }
-        });
+        window.setVisible(true);
     }
 
     void start() {
