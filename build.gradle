@@ -53,10 +53,11 @@ dependencies {
     compile "com.google.dagger:dagger:${daggerVersion}"
     compile 'com.google.guava:guava:25.1-jre'
     compile 'com.google.code.gson:gson:2.8.5'
-    compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'log4j:log4j:1.2.17'
     compile 'net.sf.jopt-simple:jopt-simple:4.6'
     compile 'com.android.tools.ddms:ddmlib:26.1.3'
+
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.19.1'
@@ -139,6 +140,23 @@ startShadowScripts {
                 .readLines()
                 .collect(replaceJavaWithJavaW)
                 .join('\r\n')
+    }
+}
+
+shadowJar {
+    // NOTICES and licenses are included into ours NOTICE file manually.
+    // Maven metadata isn't necessary also.
+    exclude '**/NOTICE'
+    exclude '**/LICENSE'
+    exclude 'META-INF/maven/**'
+
+    // These annotations aren't needed in runtime
+    dependencies {
+        exclude(dependency('com.google.code.findbugs:jsr305'))
+        exclude(dependency('org.checkerframework:checker-qual'))
+        exclude(dependency('com.google.errorprone:error_prone_annotations'))
+        exclude(dependency('com.google.j2objc:j2objc-annotations'))
+        exclude(dependency('org.codehaus.mojo:animal-sniffer-annotations'))
     }
 }
 
