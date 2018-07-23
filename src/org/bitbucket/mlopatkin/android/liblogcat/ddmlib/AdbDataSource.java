@@ -105,7 +105,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     private Set<AdbBuffer> buffers = new HashSet<AdbBuffer>();
 
     private boolean isBufferHere(String bufferName) {
-        String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null || echo 0";
+        String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null 2> /dev/null || echo 0";
         return SyncAdbShellCommand.execute(device, cmd).isEmpty();
     }
 
