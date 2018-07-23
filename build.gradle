@@ -73,7 +73,7 @@ checkstyle {
 }
 
 applicationName = 'logview'
-version = '0.19-SNAPSHOT'
+version = '0.20-SNAPSHOT'
 mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
 
 def javaVersion = JavaVersion.VERSION_1_8
