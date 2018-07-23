@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import com.android.ddmlib.IDevice;
+import com.android.sdklib.AndroidVersion;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
@@ -36,12 +37,13 @@ class AdbPidToProcessConverter {
 
     private static final Logger logger = Logger.getLogger(AdbPidToProcessConverter.class);
 
-    private final ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
-
-    private final IDevice device;
-
     private static final String PS_COMMAND_LINE = "ps";
+    private static final String PS_COMMAND_LINE_API_26 = "ps -A";
     private static final String NO_INFO = "No info available";
+
+    private final ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
+    private final IDevice device;
+    private final String psCmdline;
 
     private Map<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
         @Override
@@ -56,6 +58,11 @@ class AdbPidToProcessConverter {
 
     AdbPidToProcessConverter(IDevice device) {
         this.device = device;
+        if (getAndroidVersionWithRetries(device, 10).getApiLevel() >= AndroidVersion.VersionCodes.O) {
+            psCmdline = PS_COMMAND_LINE_API_26;
+        } else {
+            psCmdline = PS_COMMAND_LINE;
+        }
     }
 
     public Map<Integer, String> getMap() {
@@ -68,8 +75,7 @@ class AdbPidToProcessConverter {
         if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
             ShellInputStream in = new ShellInputStream();
             BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
-            // TODO(mlopatkin) On 8+ ps -A has to be used
-            AdbShellCommand<?> command = new AutoClosingAdbShellCommand(device, PS_COMMAND_LINE, in);
+            AdbShellCommand<?> command = new AutoClosingAdbShellCommand(device, psCmdline, in);
 
             result = backgroundUpdater.submit(updateTask);
             command.start();
@@ -116,5 +122,15 @@ class AdbPidToProcessConverter {
 
     public void close() {
         backgroundUpdater.shutdown();
+    }
+
+    private static AndroidVersion getAndroidVersionWithRetries(IDevice device, int retryCount) {
+        AndroidVersion version;
+        int numRetry = 0;
+        do {
+            version = device.getVersion();
+        } while (AndroidVersion.DEFAULT.compareTo(version) == 0 && numRetry++ < retryCount);
+        logger.debug("Got version " + version + " with " + numRetry + " retries");
+        return version;
     }
 }
