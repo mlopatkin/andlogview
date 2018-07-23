@@ -27,7 +27,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
 import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.utils.MyStringUtils;
+import org.bitbucket.mlopatkin.utils.SystemUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
@@ -145,9 +145,8 @@ public class Main {
                 ErrorDialogsHelper.showError(
                         null,
                         "<html>Unhandled exception occured. Please collect log file at<br>"
-                                + MyStringUtils.joinPath(System.getProperty("java.io.tmpdir"),
-                                                         "logview.log") + "<br>and send it to the authors, "
-                                + "then restart the program");
+                                + new File(SystemUtils.getJavaIoTmpDir(), "logview.log").getAbsolutePath()
+                                + "<br>and send it to the authors, then restart the program");
             } catch (Throwable ex) {  // OK to catch Throwable here
                 // bad idea to log something if we already failed with logging
                 // logger.error("Exception in exception handler", ex);

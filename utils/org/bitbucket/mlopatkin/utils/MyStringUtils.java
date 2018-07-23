@@ -50,18 +50,6 @@ public class MyStringUtils {
         return src.indexOf(pattern, offset);
     }
 
-    public static String joinPath(String... elems) {
-        StringBuilder b = new StringBuilder();
-        for (String elem : elems) {
-            int l = b.length();
-            if (l > 0 && !SystemUtils.FILE_SEPARATOR.equals(b.substring(l - 1))) {
-                b.append(SystemUtils.FILE_SEPARATOR);
-            }
-            b.append(elem);
-        }
-        return b.toString();
-    }
-
     public static String join(String[] args) {
         return CONCAT.join(args);
     }
