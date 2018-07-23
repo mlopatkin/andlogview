@@ -1,11 +1,17 @@
 version 0.19
     [+] Save filters between app runs
     [+] Column isn't shown if there is no data for it, e.g. brief logcat dump
+    [+] Column order can be customized
+    [+] Columns can be toggled on and off
+    [+] Tag filter now understands regexps
 
     [*] Fixed compatibility with Android L
     [*] Fixed compatibility with Android M
+    [*] Fixed compatibility with Android O
+    [*] Fixed compatibility with Java 9
+    [*] Minor improvements to "Select device" dialog's usability
 
-    [*] LogView now requires Java 7 to run
+    [!] LogView now requires Java 8 to run
 
 version 0.18.1
     [*] Recompiled with Java 6 compatibility
