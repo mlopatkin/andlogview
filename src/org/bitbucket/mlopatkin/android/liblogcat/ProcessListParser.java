@@ -25,7 +25,8 @@ import java.util.regex.Pattern;
  */
 public class ProcessListParser {
 
-    private static final String HEADER_REGEX = "^USER\\s+PID\\s+PPID\\s+(VSIZE|VSZ)\\s+RSS\\s+(PCY\\s+)?WCHAN\\s+(PC|ADDR)\\s+(S\\s+)?NAME\\s*$";
+    private static final String HEADER_REGEX =
+            "^USER\\s+PID\\s+PPID\\s+(VSIZE|VSZ)\\s+RSS\\s+(PCY\\s+)?WCHAN\\s+(PC|ADDR)\\s+(S\\s+)?NAME\\s*$";
 
     private static final String NUMBER_REGEX = "[\\-]?\\d+";
     private static final String HEX_NUMBER_REGEX = "\\p{XDigit}+";
