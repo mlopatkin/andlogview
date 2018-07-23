@@ -19,7 +19,6 @@ import com.android.ddmlib.IDevice;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.utils.MyStreamUtils;
 
 import java.io.BufferedReader;
@@ -41,7 +40,7 @@ class AdbPidToProcessConverter {
 
     private final IDevice device;
 
-    private final String PS_COMMAND_LINE = Configuration.adb.psCommandLine();
+    private static final String PS_COMMAND_LINE = "ps";
     private static final String NO_INFO = "No info available";
 
     private Map<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
@@ -69,6 +68,7 @@ class AdbPidToProcessConverter {
         if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
             ShellInputStream in = new ShellInputStream();
             BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
+            // TODO(mlopatkin) On 8+ ps -A has to be used
             AdbShellCommand<?> command = new AutoClosingAdbShellCommand(device, PS_COMMAND_LINE, in);
 
             result = backgroundUpdater.submit(updateTask);

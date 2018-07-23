@@ -15,9 +15,13 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.regex.Matcher;
+
+import static org.junit.Assert.assertThat;
 
 public class ProcessListParserTest {
 
@@ -34,31 +38,66 @@ public class ProcessListParserTest {
 
     @Test
     public void testParseProcessListLine() {
-        assertTrue(ProcessListParser.parseProcessListLine(PS_LINE_1).matches());
+        assertThat(ProcessListParser.parseProcessListLine(PS_LINE_1), hasPidAndAppName(1, "/init"));
     }
 
     @Test
     public void testParseProcessNameWithSpaces() {
-        assertTrue(ProcessListParser.parseProcessListLine(PS_LINE_TWO_WORDS_PNAME).matches());
+        assertThat(ProcessListParser.parseProcessListLine(PS_LINE_TWO_WORDS_PNAME), hasPidAndAppName(279, "Two words"));
     }
 
     @Test
     public void testParseProcessListNoPCY() {
-        assertTrue(ProcessListParser.parseProcessListLine(PS_NO_PCY_LINE).matches());
+        assertThat(ProcessListParser.parseProcessListLine(PS_NO_PCY_LINE), hasPidAndAppName(12, "sync_supers"));
     }
 
     @Test
     public void testParseProcessListNoName() {
-        assertTrue(ProcessListParser.parseProcessListLine(PS_NO_NAME_LINE).matches());
+        assertThat(ProcessListParser.parseProcessListLine(PS_NO_NAME_LINE), hasPidAndAppName(626, ""));
     }
 
     @Test
     public void testParseProcessListSymbolicWchan() throws Exception {
-        assertTrue(ProcessListParser.parseProcessListLine(PS_WCHAN_SYMBOL_LINE).matches());
+        assertThat(ProcessListParser.parseProcessListLine(PS_WCHAN_SYMBOL_LINE),
+                   hasPidAndAppName(29392, "migration/3"));
     }
 
     @Test
     public void testParseProcessListMissingWchan() throws Exception {
-        assertTrue(ProcessListParser.parseProcessListLine(PS_NO_WCHAN_LINE).matches());
+        assertThat(ProcessListParser.parseProcessListLine(PS_NO_WCHAN_LINE),
+                   hasPidAndAppName(4851, "com.mapswithme.maps.pro"));
+    }
+
+    public static org.hamcrest.Matcher<Matcher> hasPidAndAppName(int expectedPid, String expectedAppname) {
+        return new TypeSafeDiagnosingMatcher<Matcher>() {
+            @Override
+            protected boolean matchesSafely(Matcher item, Description mismatchDescription) {
+                if (!item.matches()) {
+                    mismatchDescription.appendText("hasn't matched regexp");
+                    return false;
+                }
+                int actualPid = ProcessListParser.getPid(item);
+                String actualAppname = ProcessListParser.getProcessName(item);
+                boolean result = true;
+                if (actualPid != expectedPid) {
+                    mismatchDescription.appendText("actual pid=").appendValue(actualPid);
+                    result = false;
+                }
+                if (!expectedAppname.equals(actualAppname)) {
+                    if (!result) {
+                        mismatchDescription.appendText(" and ");
+                    }
+                    mismatchDescription.appendText("actual app name=").appendValue(actualAppname);
+                    result = false;
+                }
+                return result;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with pid=").appendValue(expectedPid).appendText(" and app name=")
+                           .appendValue(expectedAppname);
+            }
+        };
     }
 }

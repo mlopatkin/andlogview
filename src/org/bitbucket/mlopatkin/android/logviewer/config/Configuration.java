@@ -138,7 +138,6 @@ public class Configuration {
         private static final String EXECUTABLE_KEY = PREFIX + "executable";
         private static final String BUFFERSWITCH_KEY = PREFIX + "bufferswitch";
         private static final String LOGCAT_COMMANDLINE_KEY = PREFIX + "logcat_cmdline";
-        private static final String PS_COMMANDLINE_KEY = PREFIX + "ps_cmdline";
         private static final String KMSG_COMMANDLINE_KEY = PREFIX + "kmsg_cmdline";
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
@@ -156,10 +155,6 @@ public class Configuration {
 
         public static String bufferName(Buffer buffer) {
             return config.get(BUFFER_NAME_KEY, buffer);
-        }
-
-        public static String psCommandLine() {
-            return config.get(PS_COMMANDLINE_KEY);
         }
 
         public static String executable() {
@@ -264,7 +259,6 @@ public class Configuration {
         cfg.property(adb.EXECUTABLE_KEY, string().defaultVal(adb.DEFAULT_EXECUTABLE));
         cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
         cfg.property(adb.LOGCAT_COMMANDLINE_KEY, string());
-        cfg.property(adb.PS_COMMANDLINE_KEY, string());
         cfg.property(adb.SHOW_SETUP_DIALOG_KEY, bool().defaultVal(true));
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
 
