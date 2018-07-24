@@ -115,7 +115,7 @@ compileJava.dependsOn(generateBuildMetadata)
 idea.module.generatedSourceDirs += file(metadataBuildDir)
 
 shadow.applicationDistribution.from(project.getProjectDir()) {
-    include 'HISTORY', 'LICENSE', 'NOTICE', 'README'
+    include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
 }
 
 // Treat warnings as errors
