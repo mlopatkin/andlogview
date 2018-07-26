@@ -89,6 +89,7 @@ public class LogRecordsTransferHandler extends TransferHandler {
         return new LogRecordTransferable(plain.toString());
     }
 
+    @Override
     public int getSourceActions(JComponent c) {
         return COPY;
     }

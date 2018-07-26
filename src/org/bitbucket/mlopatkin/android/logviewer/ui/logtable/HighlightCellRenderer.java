@@ -90,21 +90,27 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
         return this;
     }
 
+    @Override
     public void invalidate() {
     }
 
+    @Override
     public void validate() {
     }
 
+    @Override
     public void revalidate() {
     }
 
+    @Override
     public void repaint(long tm, int x, int y, int width, int height) {
     }
 
+    @Override
     public void repaint(Rectangle r) {
     }
 
+    @Override
     public void repaint() {
     }
 

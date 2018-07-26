@@ -21,6 +21,7 @@ public class CreateFilterDialog extends FilterDialog {
         void onDialogResult(Optional<FilterFromDialog> filter);
     }
 
+    @Override
     protected void onPositiveResult() {
         assert receiver != null;
         try {
@@ -34,6 +35,7 @@ public class CreateFilterDialog extends FilterDialog {
         setVisible(false);
     }
 
+    @Override
     protected void onNegativeResult() {
         assert receiver != null;
         receiver.onDialogResult(Optional.<FilterFromDialog>absent());

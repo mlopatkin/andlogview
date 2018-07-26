@@ -26,6 +26,7 @@ import java.util.Properties;
 /**
  * Class to work with properties files in more type-safe manner.
  */
+@SuppressWarnings("TypeParameterUnusedInFormals")
 public class ConfigurationMap implements Configuration {
 
     private Map<String, Property<?>> properties = new LinkedHashMap<String, Property<?>>();
@@ -35,6 +36,7 @@ public class ConfigurationMap implements Configuration {
         return this;
     }
 
+    @Override
     public boolean hasProperty(String name) {
         return properties.containsKey(name);
     }
@@ -45,6 +47,7 @@ public class ConfigurationMap implements Configuration {
      * @param key
      * @return
      */
+    @Override
     public <T> T get(String key) {
         Property<T> p = getPropertyOrThrow(key);
         return p.getValue();
@@ -56,6 +59,7 @@ public class ConfigurationMap implements Configuration {
      * @param key
      * @param value
      */
+    @Override
     public <T> void set(String key, T value) {
         Property<T> p = getPropertyOrThrow(key);
         p.setValue(value);
@@ -91,16 +95,19 @@ public class ConfigurationMap implements Configuration {
         return enumProperty;
     }
 
+    @Override
     public <K extends Enum<K>, V> V get(String key, K enumKey) {
         EnumMapProperty<K, V> enumProperty = getEnumProperty(key);
         return enumProperty.getValue(enumKey);
     }
 
+    @Override
     public <K extends Enum<K>, V> void set(String key, K enumKey, V value) {
         EnumMapProperty<K, V> enumProperty = getEnumProperty(key);
         enumProperty.setValue(enumKey, value);
     }
 
+    @Override
     public void save(OutputStream output, String comments) throws IOException {
 
         Properties outputProperties = new Properties();

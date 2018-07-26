@@ -50,6 +50,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
 
     private final ComponentListener resizeListener = new ComponentAdapter() {
+        @Override
         public void componentResized(ComponentEvent e) {
             updateScrollState();
         }
@@ -178,7 +179,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         computeButtonIndices();
         boolean canScrollLeft = leftmostButton > 0;
         boolean canScrollRight = rightmostButton < content.getComponentCount() - 1;
-        boolean canScroll = canScrollLeft | canScrollRight;
+        boolean canScroll = canScrollLeft || canScrollRight;
 
         acScrollLeft.setEnabled(canScrollLeft);
         acScrollRight.setEnabled(canScrollRight);
@@ -246,12 +247,14 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
         void addPopup(final FilterButton button) {
             button.addMouseListener(new MouseAdapter() {
+                @Override
                 public void mousePressed(MouseEvent e) {
                     if (e.isPopupTrigger()) {
                         showMenu(e);
                     }
                 }
 
+                @Override
                 public void mouseReleased(MouseEvent e) {
                     if (e.isPopupTrigger()) {
                         showMenu(e);

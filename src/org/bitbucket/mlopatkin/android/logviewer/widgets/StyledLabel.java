@@ -45,6 +45,7 @@ public class StyledLabel extends JTextPane {
     private static class WrapEditorKit extends StyledEditorKit {
         ViewFactory defaultFactory = new WrapColumnFactory();
 
+        @Override
         public ViewFactory getViewFactory() {
             return defaultFactory;
         }
@@ -52,6 +53,7 @@ public class StyledLabel extends JTextPane {
     }
 
     private static class WrapColumnFactory implements ViewFactory {
+        @Override
         public View create(Element elem) {
             String kind = elem.getName();
             if (kind != null) {
@@ -72,6 +74,7 @@ public class StyledLabel extends JTextPane {
     }
 
     private static final FlowStrategy CROPPING_STRATEGY = new FlowStrategy() {
+        @Override
         protected int layoutRow(FlowView fv, int rowIndex, int pos) {
             super.layoutRow(fv, rowIndex, pos);
             return fv.getEndOffset();
@@ -90,6 +93,7 @@ public class StyledLabel extends JTextPane {
             super(elem, axis);
         }
 
+        @Override
         protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets, int[] spans) {
 
             super.layoutMajorAxis(targetSpan, axis, offsets, spans);
@@ -141,6 +145,7 @@ public class StyledLabel extends JTextPane {
 
         private boolean isEllipsisShown;
 
+        @Override
         public View breakView(int axis, int p0, float pos, float len) {
             if (axis == View.X_AXIS) {
                 checkPainter();
@@ -161,6 +166,7 @@ public class StyledLabel extends JTextPane {
             return this;
         }
 
+        @Override
         public float getPreferredSpan(int axis) {
             float span = super.getPreferredSpan(axis);
             if (axis == View.X_AXIS && isEllipsisShown) {
@@ -169,6 +175,7 @@ public class StyledLabel extends JTextPane {
             return span;
         }
 
+        @Override
         public void paint(Graphics g, Shape a) {
             super.paint(g, a);
             if (isEllipsisShown) {

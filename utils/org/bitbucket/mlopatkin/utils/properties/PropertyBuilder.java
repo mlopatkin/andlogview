@@ -36,6 +36,7 @@ public class PropertyBuilder<T> implements IPropertyBuilder<T> {
         return this;
     }
 
+    @Override
     public Property<T> build() {
         Property<T> result = new Property<T>(type, parser);
         result.setValue(defaultValue);

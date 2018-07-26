@@ -39,6 +39,7 @@ public class TableCellHelper {
      */
     public static TableCellEditor createReadOnlyCellTextEditor() {
         return new DefaultCellEditor(new JTextField()) {
+            @Override
             public Component getTableCellEditorComponent(JTable table, Object value,
                                                          boolean isSelected, int row, int column) {
                 JTextField tf = (JTextField) super.getTableCellEditorComponent(table, value,
@@ -47,6 +48,7 @@ public class TableCellHelper {
                 return tf;
             }
 
+            @Override
             public boolean isCellEditable(java.util.EventObject anEvent) {
                 // only allow double-click to toggle cell editing
                 if (anEvent instanceof MouseEvent) {

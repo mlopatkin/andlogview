@@ -27,8 +27,6 @@ import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
-
 public class SearcherBuilderTest {
     private static class Case {
         final String text;
@@ -46,7 +44,7 @@ public class SearcherBuilderTest {
 
     private static final String PLAIN_PATTERN = "Hello";
 
-    private static final List<Case> PLAIN_CASES = ImmutableList.of(
+    private static final ImmutableList<Case> PLAIN_CASES = ImmutableList.of(
             new Case("Hello", false, true, true),
             new Case("HelLo", true, true, true),
             new Case("hello", true, true, true),
@@ -63,7 +61,7 @@ public class SearcherBuilderTest {
 
     private static final String REGEXP_PATTERN = "Hel(l?)o";
 
-    private static final List<Case> REGEXP_CASES = ImmutableList.of(
+    private static final ImmutableList<Case> REGEXP_CASES = ImmutableList.of(
             new Case("Hello", false, true, true),
             new Case("Helo", false, true, true),
             new Case("HelLo", true, true, true),

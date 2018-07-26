@@ -31,12 +31,12 @@ import java.io.PipedOutputStream;
 class ShellInputStream extends PipedInputStream implements IShellOutputReceiver {
     private static final Logger logger = Logger.getLogger(ShellInputStream.class);
 
-    private PipedOutputStream out = new PipedOutputStream();
+    private PipedOutputStream myOut = new PipedOutputStream();
     private boolean closed = false;
 
     public ShellInputStream() {
         try {
-            out.connect(this);
+            myOut.connect(this);
         } catch (IOException e) {
             logger.error("Unexpected IO exception", e);
         }
@@ -45,7 +45,7 @@ class ShellInputStream extends PipedInputStream implements IShellOutputReceiver 
     @Override
     public void addOutput(byte[] data, int offset, int length) {
         try {
-            out.write(data, offset, length);
+            myOut.write(data, offset, length);
         } catch (IOException e) {
             logger.error("Unexpected IO exception", e);
         }
@@ -54,7 +54,7 @@ class ShellInputStream extends PipedInputStream implements IShellOutputReceiver 
     @Override
     public void flush() {
         try {
-            out.close();
+            myOut.close();
         } catch (IOException e) {
             logger.error("Unexpected IO exception", e);
         }
@@ -70,7 +70,7 @@ class ShellInputStream extends PipedInputStream implements IShellOutputReceiver 
         closed = true;
         try {
             super.close();
-            out.close();
+            myOut.close();
         } catch (IOException e) {
             logger.error("Unexpected IO exception", e);
         }

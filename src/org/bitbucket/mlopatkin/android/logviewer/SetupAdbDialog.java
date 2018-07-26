@@ -52,8 +52,9 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent we) {
-                optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
+                optionPane.setValue(JOptionPane.CLOSED_OPTION);
             }
         });
         optionPane.addPropertyChangeListener(this);
@@ -61,6 +62,7 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
 

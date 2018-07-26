@@ -124,7 +124,7 @@ public class ProcessListFrame extends JFrame {
     private static final Class<?>[] COLUMN_CLASSES = new Class<?>[] { Integer.class, String.class };
 
     @SuppressWarnings("rawtypes")
-    private class ProcessListModel extends AbstractTableModel {
+    private static class ProcessListModel extends AbstractTableModel {
         static final int COLUMN_PID = 0;
         static final int COLUMN_PROCESS = 1;
 

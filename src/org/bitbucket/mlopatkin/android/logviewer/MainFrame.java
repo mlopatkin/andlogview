@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
+import com.google.common.io.Files;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
@@ -59,6 +60,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import javax.swing.AbstractAction;
@@ -603,16 +605,12 @@ public class MainFrame extends JFrame {
 
     private void saveTableToFile(File file) {
         try {
-            PrintWriter out = new PrintWriter(file);
-            try {
+            try (PrintWriter out = new PrintWriter(Files.newWriter(file, StandardCharsets.UTF_8))) {
                 final int rowCount = logElements.getRowCount();
                 for (int i = 0; i < rowCount; ++i) {
-                    LogRecord record = recordsModel.getRowData(logElements
-                            .convertRowIndexToModel(i));
+                    LogRecord record = recordsModel.getRowData(logElements.convertRowIndexToModel(i));
                     out.println(LogRecordFormatter.formatAppropriate(record));
                 }
-            } finally {
-                out.close();
             }
         } catch (FileNotFoundException e) {
             logger.warn("Unexpected exception", e);

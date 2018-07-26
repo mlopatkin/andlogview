@@ -133,9 +133,11 @@ class ConfigStorageImpl implements ConfigStorage {
     }
 
     @GuardedBy("serializedConfig")
+    @SuppressWarnings("FutureReturnValueIgnored")
     private void scheduleCommitLocked() {
         if (!dirty) {
             dirty = true;
+            // There is no need to investigate the return value of the future, UncaughtExceptionHandler is okay
             fileWorker.submit(fileSaver);
         }
     }
