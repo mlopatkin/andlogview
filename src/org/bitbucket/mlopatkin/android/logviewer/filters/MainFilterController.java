@@ -184,6 +184,7 @@ public class MainFilterController implements FilterCreator {
             filterPanelModel.replaceFilter(this, replacement);
             if (collection.equals(replacement.collection) && mode == replacement.mode) {
                 collection.replaceFilter(mode, filter, replacement.filter);
+                collection.setFilterEnabled(mode, replacement.filter, replacement.isEnabled);
             } else {
                 collection.removeFilter(mode, filter);
                 replacement.addToCollection();
@@ -193,6 +194,7 @@ public class MainFilterController implements FilterCreator {
 
         public BaseToggleFilter<T> addToCollection() {
             collection.addFilter(mode, filter);
+            collection.setFilterEnabled(mode, filter, isEnabled);
             return this;
         }
 
