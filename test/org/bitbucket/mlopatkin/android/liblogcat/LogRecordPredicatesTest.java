@@ -152,4 +152,3 @@ public class LogRecordPredicatesTest {
         predicate.apply(null);
     }
 }
-

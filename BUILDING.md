@@ -19,7 +19,7 @@ You can specify JDK to use with JAVA_HOME environment variable or by setting `or
 ## Importing into IDE
 #### IDEA
 You can use [IDEA Community Edition][idea] 14 or later. I didn't check earlier versions. Use "File > New Project From Existing
-Sources... > (Select project folder) > Gradle"". Do not use "Create separate module per source set". Annotation 
+Sources... > (Select project folder) > Gradle"". Do not use "Create separate module per source set". Annotation
 processing should work "out-of-the-box".
 
 ### Eclipse

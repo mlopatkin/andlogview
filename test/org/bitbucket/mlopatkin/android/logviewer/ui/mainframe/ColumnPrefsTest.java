@@ -309,4 +309,3 @@ public class ColumnPrefsTest {
         return new AdaptingMatcher<>(ImmutableList::copyOf, Matchers.equalTo(ImmutableList.copyOf(expectedOrder)));
     }
 }
-
