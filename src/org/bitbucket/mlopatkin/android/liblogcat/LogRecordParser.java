@@ -17,7 +17,6 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-import org.bitbucket.mlopatkin.utils.MyStringUtils;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -51,7 +50,7 @@ public class LogRecordParser {
         private static final String[] LOG_RECORD_FIELDS = {TIMESTAMP_REGEX, SEP, PID_REGEX, SEP,
                                                            TID_REGEX, SEP, PRIORITY_REGEX, SEP, TAG, MESSAGE_REGEX};
         private static final Pattern threadTimeRecordPattern =
-                Pattern.compile("^" + MyStringUtils.join(LOG_RECORD_FIELDS) + "$");
+                Pattern.compile("^" + String.join("", LOG_RECORD_FIELDS) + "$");
 
         static Matcher matchLine(String line) {
             return threadTimeRecordPattern.matcher(line);
@@ -83,7 +82,7 @@ public class LogRecordParser {
         private static final String[] LOG_RECORD_FIELDS = {PRIORITY_REGEX, "/", TAG_REGEX,
                                                            SEP_OPT, PID_BRACKETS, ": ", MESSAGE_REGEX};
         private static final Pattern briefRecordPattern =
-                Pattern.compile("^" + MyStringUtils.join(LOG_RECORD_FIELDS) + "$");
+                Pattern.compile("^" + String.join("", LOG_RECORD_FIELDS) + "$");
 
         static Matcher matchLine(String line) {
             return briefRecordPattern.matcher(line);
@@ -110,7 +109,7 @@ public class LogRecordParser {
         private static final String[] LOG_RECORD_FIELDS = {PRIORITY_REGEX, PID_BRACKETS, " ",
                                                            MESSAGE_REGEX, "  ", TAG_BRACKETS};
         private static final Pattern processRecordPattern =
-                Pattern.compile("^" + MyStringUtils.join(LOG_RECORD_FIELDS) + "$");
+                Pattern.compile("^" + String.join("", LOG_RECORD_FIELDS) + "$");
 
         static Matcher matchLine(String line) {
             return processRecordPattern.matcher(line);
@@ -136,7 +135,7 @@ public class LogRecordParser {
         private static final String[] LOG_RECORD_FIELDS = {PRIORITY_REGEX, "/", TAG_REGEX, ": ",
                                                            MESSAGE_REGEX};
         private static final Pattern tagRecordPattern =
-                Pattern.compile("^" + MyStringUtils.join(LOG_RECORD_FIELDS) + "$");
+                Pattern.compile("^" + String.join("", LOG_RECORD_FIELDS) + "$");
 
         static Matcher matchLine(String line) {
             return tagRecordPattern.matcher(line);
@@ -160,7 +159,7 @@ public class LogRecordParser {
         private static final String[] LOG_RECORD_FIELDS = {TIMESTAMP_REGEX, SEP, PRIORITY_REGEX,
                                                            "/", TAG_REGEX, SEP_OPT, PID_BRACKETS, ": ", MESSAGE_REGEX};
         private static final Pattern timeRecordPattern =
-                Pattern.compile("^" + MyStringUtils.join(LOG_RECORD_FIELDS) + "$");
+                Pattern.compile("^" + String.join("", LOG_RECORD_FIELDS) + "$");
 
         static Matcher matchLine(String line) {
             return timeRecordPattern.matcher(line);

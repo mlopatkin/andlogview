@@ -17,10 +17,9 @@ package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 import com.android.ddmlib.IDevice;
 import com.android.sdklib.AndroidVersion;
-
+import com.google.common.io.CharStreams;
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.utils.MyStreamUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -98,7 +97,7 @@ class AdbPidToProcessConverter {
 
                 if (!ProcessListParser.isProcessListHeader(line)) {
                     logger.warn("Can't parse header");
-                    MyStreamUtils.consume(in);
+                    CharStreams.exhaust(in);
                     return;
                 }
                 line = in.readLine();

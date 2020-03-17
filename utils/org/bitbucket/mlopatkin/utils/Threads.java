@@ -28,11 +28,6 @@ public final class Threads {
      * @return
      */
     public static ThreadFactory withName(final String name) {
-        return new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, name);
-            }
-        };
+        return r -> new Thread(r, name);
     }
 }
