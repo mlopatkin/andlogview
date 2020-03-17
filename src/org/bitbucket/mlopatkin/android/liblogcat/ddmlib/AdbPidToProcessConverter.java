@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 import com.android.ddmlib.IDevice;
 import com.android.sdklib.AndroidVersion;
 import com.google.common.io.CharStreams;
+
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 
