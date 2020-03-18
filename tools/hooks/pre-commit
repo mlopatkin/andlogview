@@ -1,0 +1,4 @@
+#!/bin/sh
+
+git diff --cached --diff-filter=ACMR --name-only -z | xargs -0 \
+  python tools/hooks/lint.py --ignored-files-list .nolint --files || exit 1
