@@ -1,0 +1,6 @@
+# Test resources may have whatever format they want
+test_resources/*
+
+# Binary files
+*.png
+*.jar
