@@ -46,7 +46,7 @@ class GenerateBuildMetadata extends DefaultTask {
 
     @TaskAction
     def generate(IncrementalTaskInputs inputs) {
-        def buildEnv = new BuildEnvironment(project.projectDir, 'hg')
+        def buildEnv = new BuildEnvironment(project.projectDir)
         def fullClassName = ClassName.get(packageName, className)
         def metadataClass = TypeSpec.classBuilder(fullClassName).addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .addField(stringConstant('VERSION', version, 'Version of the application.'))

@@ -16,14 +16,20 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.building
 
+import groovy.transform.CompileStatic
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 /**
  * Helper methods to access environemnt parameters: is build run by CI server? what revision is checked out?
  */
+@CompileStatic
 class BuildEnvironment {
+    private static final Logger logger = LoggerFactory.getLogger('BuildEnvironment')
     private final File projectDir
     private final String mercurialExecutable
 
-    BuildEnvironment(File projectDir, String mercurialExecutable) {
+    BuildEnvironment(File projectDir) {
         this.projectDir = projectDir
         this.mercurialExecutable = mercurialExecutable
     }
@@ -37,31 +43,45 @@ class BuildEnvironment {
             return System.getenv('BITBUCKET_COMMIT')
         }
 
-        return runMercurial(
-                'id', '-i',
-                '--color=none',
-                '--encoding=utf-8')
+        return readRevWithGitDescribe()
     }
 
     String getBuildNumber() {
         if (isCiBuild()) {
             return System.getenv('BITBUCKET_BUILD_NUMBER')
         }
-        return 'Dev'
+        return '-'
     }
 
-    private String runMercurial(String... args) {
-        List<String> command = new ArrayList<String>(args.length + 1)
-        command.add(mercurialExecutable)
-        command.addAll(args)
+    private String readRevWithGitDescribe() {
+        List<String> command = [
+                'git',  // Only try to find Git in PATH
+                'describe',
+                '--always',  // Always output commit hash
+                '--exclude=*',  // Ignore all tags, only hash is sufficient for now
+                '--dirty=+'  // Add '+' suffix if the working copy is dirty
+        ]
+        try {
+            Process gitDescribe = new ProcessBuilder(command)
+                    .directory(projectDir) // Assume that projectDir is repo root as well
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                    .start()
 
-        Process process = new ProcessBuilder(command)
-                .directory(projectDir)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .start()
-
-        return process.getInputStream().getText('UTF-8').trim()
+            String result = gitDescribe.inputStream.getText('UTF-8').trim()
+            waitFor(gitDescribe)
+            return result
+        } catch (IOException e) {
+            // Git probably isn't installed but it isn't critical enough to fail build
+            logger.warn('Failed to get version info from Git', e)
+            return 'n/a'
+        }
     }
 
+    private static void waitFor(Process process) throws IOException, InterruptedException {
+        int result = process.waitFor()
+        if (result != 0) {
+            throw new IOException("Process exited with exit code=$result")
+        }
+    }
 }
