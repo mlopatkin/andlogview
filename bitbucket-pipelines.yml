@@ -1,9 +1,19 @@
 image: java:8
 
 pipelines:
-  default:
-    - step:
-        caches:
-          - gradle
-        script:
-          - bash ./gradlew build bitbucketUpload --continue
+  branches:
+    '{master,release/*}':  # SNAPSHOT builds for each checked-in pull request
+      - step:
+          caches:
+            - gradle
+          script:
+            - bash ./gradlew build bitbucketUpload --continue
+  pull-requests:
+    '**':
+      - step:
+          caches:
+            - gradle
+          script:
+            - bash ./gradlew check --continue
+          artifacts:
+            - build/reports/**
