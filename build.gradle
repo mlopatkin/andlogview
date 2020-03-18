@@ -100,27 +100,53 @@ compileJava.dependsOn(generateBuildMetadata)
 
 idea.module.generatedSourceDirs += file(metadataBuildDir)
 
-distributions {
-    shadow {
-        distributionBaseName = project.applicationName
-        contents {
-            // This monstrosity looks like the only working way to add files into shadow dist zip. Alternatives
-            // considered:
-            // - old way of shadow.applicationDistribution no longer works after 2.0.0
-            // - simply listing from/include in contents completely replaces the archive content
-            with copySpec {
-                from project.projectDir
-                include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
-            }
-        }
-    }
-}
-
 // Treat warnings as errors
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation' << '-Werror'
     options.errorprone.errorproneArgs.addAll('-Xep:JavaLangClash:OFF')
 }
+
+// Configure distribution (archive creation).
+distributions {
+    main {
+        // The application plugin resets main distribution basename to applicationName but I want to use it for shadow
+        // configuration because it is the primary one. These tasks are disabled though.
+        distributionBaseName = project.applicationName + '-noshadow'
+    }
+    shadow {
+        distributionBaseName = project.applicationName
+    }
+}
+
+// Using CopySpec.with(CopySpec) is the only way to add files into the distribution. Other approaches are:
+// - old way of shadow.applicationDistribution no longer works after 2.0.0. The applicationDistribution from application
+//   plugin still works though.
+// - simply listing from/include in contents completely replaces the archive content
+def additionalFiles = copySpec {
+    from project.projectDir
+    include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
+}
+
+distributions.all { it.contents.with(additionalFiles) }
+
+def disableTasks(String... taskNames) {
+    for (String taskName : taskNames) {
+        tasks.named(taskName).configure {
+            it.enabled = false
+        }
+    }
+}
+
+// Disable tasks from application plugin
+disableTasks(
+        ApplicationPlugin.TASK_DIST_ZIP_NAME,
+        ApplicationPlugin.TASK_DIST_TAR_NAME,
+        ApplicationPlugin.TASK_START_SCRIPTS_NAME,
+        'assembleDist',
+        'installDist')
+
+// TARs aren't shipped, so disable it
+disableTasks('shadowDistTar')
 
 // Tweak windows start script so it won't create console window.
 // Based on https://stackoverflow.com/a/27472895/200754
