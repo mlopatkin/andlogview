@@ -100,8 +100,20 @@ compileJava.dependsOn(generateBuildMetadata)
 
 idea.module.generatedSourceDirs += file(metadataBuildDir)
 
-shadow.applicationDistribution.from(project.getProjectDir()) {
-    include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
+distributions {
+    shadow {
+        distributionBaseName = project.applicationName
+        contents {
+            // This monstrosity looks like the only working way to add files into shadow dist zip. Alternatives
+            // considered:
+            // - old way of shadow.applicationDistribution no longer works after 2.0.0
+            // - simply listing from/include in contents completely replaces the archive content
+            with copySpec {
+                from project.projectDir
+                include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
+            }
+        }
+    }
 }
 
 // Treat warnings as errors
