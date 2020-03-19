@@ -40,8 +40,8 @@ public class TableColumnModelFactory {
         this.columnPrefs = columnPrefs;
     }
 
-    public LogRecordTableColumnModel create(PidToProcessMapper pidToProcessMapper,
-            Collection<Column> availableColumns) {
+    public LogRecordTableColumnModel create(
+            PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns) {
         LogRecordTableColumnModel model =
                 new LogRecordTableColumnModel(pidToProcessMapper, columnOrder, buildTogglesModel(availableColumns));
         model.asColumnOrderChangeObservable().addObserver(columnOrder::setColumnBefore);

@@ -31,11 +31,9 @@ import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
 public class LogRecordsTransferHandler extends TransferHandler {
-
     private TransferHandler globalHandler;
 
-    public LogRecordsTransferHandler() {
-    }
+    public LogRecordsTransferHandler() {}
 
     public LogRecordsTransferHandler(TransferHandler globalHandler) {
         this.globalHandler = globalHandler;
@@ -95,8 +93,7 @@ public class LogRecordsTransferHandler extends TransferHandler {
     }
 
     static class LogRecordTransferable implements Transferable {
-
-        private static final DataFlavor[] FLAVORS = { DataFlavor.stringFlavor };
+        private static final DataFlavor[] FLAVORS = {DataFlavor.stringFlavor};
         private String value;
 
         public LogRecordTransferable(String value) {
@@ -125,6 +122,5 @@ public class LogRecordsTransferHandler extends TransferHandler {
             }
             return false;
         }
-
     }
 }

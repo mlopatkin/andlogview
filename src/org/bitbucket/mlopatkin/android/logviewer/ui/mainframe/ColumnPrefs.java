@@ -50,14 +50,8 @@ class ColumnPrefs implements ColumnTogglesModel {
     private ColumnPrefs(ConfigStorage storage, ConfigStorageClient<ColumnPrefs> storageClient) {
         this.storage = storage;
         this.storageClient = storageClient;
-        visibleColumns = Sets.newHashSet(
-                Column.TIME,
-                Column.PID,
-                Column.APP_NAME,
-                Column.PRIORITY,
-                Column.TAG,
-                Column.MESSAGE
-        );
+        visibleColumns =
+                Sets.newHashSet(Column.TIME, Column.PID, Column.APP_NAME, Column.PRIORITY, Column.TAG, Column.MESSAGE);
         columnOrder = new UserColumnOrder(ColumnOrder.canonical(), this::commit);
     }
 
@@ -104,8 +98,7 @@ class ColumnPrefs implements ColumnTogglesModel {
         final Set<Column> visible;
         final List<Column> order;
 
-        SerializableBase(Set<Column> visibleColumns,
-                List<Column> columnOrder) {
+        SerializableBase(Set<Column> visibleColumns, List<Column> columnOrder) {
             visible = visibleColumns;
             order = columnOrder;
         }
@@ -147,10 +140,10 @@ class ColumnPrefs implements ColumnTogglesModel {
 
     private static Set<Column> checkVisibleColumns(Set<Column> visibleColumns) throws InvalidJsonContentException {
         checkJsonPrecondition(visibleColumns != null, "Missing columns.visible property");
-        checkJsonPrecondition(visibleColumns.contains(Column.MESSAGE), "The columns.visible must contain %s column",
-                              Column.MESSAGE);
-        checkJsonPrecondition(!visibleColumns.contains(Column.INDEX), "The columns.visible must not contain %s column",
-                              Column.INDEX);
+        checkJsonPrecondition(
+                visibleColumns.contains(Column.MESSAGE), "The columns.visible must contain %s column", Column.MESSAGE);
+        checkJsonPrecondition(
+                !visibleColumns.contains(Column.INDEX), "The columns.visible must not contain %s column", Column.INDEX);
         return visibleColumns;
     }
 
@@ -158,7 +151,7 @@ class ColumnPrefs implements ColumnTogglesModel {
         checkJsonPrecondition(order != null, "Missing columns.order property");
         EnumSet<Column> allColumns = EnumSet.allOf(Column.class);
         checkJsonPrecondition(order.size() == allColumns.size() && allColumns.equals(EnumSet.copyOf(order)),
-                              "columns.order isn't a permutation of all colums");
+                "columns.order isn't a permutation of all colums");
         return order;
     }
 

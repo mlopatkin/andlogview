@@ -21,8 +21,7 @@ package org.bitbucket.mlopatkin.android.logviewer.config;
  */
 public class FakeDefaultConfigStorage implements ConfigStorage {
     @Override
-    public <T> void saveConfig(ConfigStorageClient<T> client, T value) {
-    }
+    public <T> void saveConfig(ConfigStorageClient<T> client, T value) {}
 
     @Override
     public <T> T loadConfig(ConfigStorageClient<T> client) {

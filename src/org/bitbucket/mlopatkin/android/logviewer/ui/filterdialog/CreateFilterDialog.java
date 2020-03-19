@@ -8,7 +8,6 @@ import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationExcept
 import java.awt.Frame;
 
 public class CreateFilterDialog extends FilterDialog {
-
     private DialogResultReceiver receiver;
 
     protected CreateFilterDialog(Frame owner, DialogResultReceiver resultReceiver) {
@@ -27,8 +26,8 @@ public class CreateFilterDialog extends FilterDialog {
         try {
             receiver.onDialogResult(Optional.of(createFilter()));
         } catch (RequestCompilationException e) {
-            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
-                    e.getRequestValue(), e.getMessage());
+            ErrorDialogsHelper.showError(
+                    this, "%s is not a valid search expression: %s", e.getRequestValue(), e.getMessage());
             return;
         }
         receiver = null;

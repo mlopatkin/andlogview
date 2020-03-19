@@ -22,7 +22,6 @@ import java.io.OutputStream;
 
 @SuppressWarnings("TypeParameterUnusedInFormals")
 public class SynchronizedConfiguration implements Configuration {
-
     private Configuration cfg;
 
     public SynchronizedConfiguration(Configuration cfg) {
@@ -60,9 +59,7 @@ public class SynchronizedConfiguration implements Configuration {
     }
 
     @Override
-    public synchronized void load(InputStream input) throws IOException,
-            IllegalConfigurationException {
+    public synchronized void load(InputStream input) throws IOException, IllegalConfigurationException {
         cfg.load(input);
     }
-
 }

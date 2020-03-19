@@ -97,7 +97,6 @@ public class UserColumnOrderTest {
     }
 
     private static UserColumnOrder makeOrder(Column... columns) {
-        return new UserColumnOrder(Arrays.asList(columns), () -> {
-        });
+        return new UserColumnOrder(Arrays.asList(columns), () -> { });
     }
 }

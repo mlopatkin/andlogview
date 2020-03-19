@@ -23,7 +23,6 @@ import java.util.List;
 
 @SuppressWarnings("rawtypes")
 public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
-
     private Class<T> elemType;
     private Parser<T> parser;
     private List<T> defaultVal = Collections.emptyList();
@@ -58,5 +57,4 @@ public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
         p.setValue(defaultVal);
         return p;
     }
-
 }

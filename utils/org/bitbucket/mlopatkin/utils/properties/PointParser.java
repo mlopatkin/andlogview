@@ -21,9 +21,7 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 
-
 class PointParser implements Parser<Point> {
-
     private static final String UNDEFINED = "undefined";
 
     // simple comma-separated pair x,y
@@ -49,5 +47,4 @@ class PointParser implements Parser<Point> {
         }
         return internalListParser.write(Arrays.asList(value.x, value.y));
     }
-
 }

@@ -23,9 +23,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import java.util.Arrays;
 import java.util.List;
 
-
 class OrSearcher implements RowSearchStrategy {
-
     private final List<RowSearchStrategy> searchers;
 
     public OrSearcher(RowSearchStrategy... searchers) {
@@ -52,5 +50,4 @@ class OrSearcher implements RowSearchStrategy {
             s.highlightColumn(record, columnIndex, columnHighlighter);
         }
     }
-
 }

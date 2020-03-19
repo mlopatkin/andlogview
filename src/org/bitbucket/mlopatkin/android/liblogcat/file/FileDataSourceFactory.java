@@ -32,16 +32,14 @@ import java.util.Collections;
 public class FileDataSourceFactory {
     private static final int READ_AHEAD_LIMIT = 65536;
 
-    private FileDataSourceFactory() {
-    }
+    private FileDataSourceFactory() {}
 
-    public static DataSource createDataSource(File file) throws UnrecognizedFormatException,
-            IOException {
+    public static DataSource createDataSource(File file) throws UnrecognizedFormatException, IOException {
         return createDataSource(file.getName(), Files.asCharSource(file, StandardCharsets.UTF_8));
     }
 
-    public static DataSource createDataSource(String fileName, CharSource file) throws UnrecognizedFormatException,
-            IOException {
+    public static DataSource createDataSource(String fileName, CharSource file)
+            throws UnrecognizedFormatException, IOException {
         LogFormatSniffer dumpstateSniffer = new DumpstateSniffer();
         LogFormatSniffer logfileSniffer = new LogFileSniffer();
 
@@ -64,8 +62,7 @@ public class FileDataSourceFactory {
 
     private static DataSource createLogFileSource(String fileName, String checkLine, BufferedReader in)
             throws IOException, UnrecognizedFormatException {
-        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(fileName,
-                                                                                         checkLine);
+        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(fileName, checkLine);
         in.reset();
         source.parse(in);
         return source;

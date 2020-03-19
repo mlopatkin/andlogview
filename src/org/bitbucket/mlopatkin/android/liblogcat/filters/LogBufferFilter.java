@@ -27,7 +27,6 @@ import java.util.EnumSet;
  * Performs filtering based on the buffer of the record.
  */
 public class LogBufferFilter implements Predicate<LogRecord> {
-
     private EnumSet<Buffer> buffers = EnumSet.of(Buffer.UNKNOWN);
 
     @Override
@@ -42,5 +41,4 @@ public class LogBufferFilter implements Predicate<LogRecord> {
             buffers.remove(buffer);
         }
     }
-
 }

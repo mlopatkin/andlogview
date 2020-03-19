@@ -28,7 +28,6 @@ import java.util.List;
  *
  */
 public class TooltipGenerator implements TextHighlighter {
-
     private String text;
     private List<Range<Integer>> highlightRanges = new ArrayList<Range<Integer>>();
 
@@ -39,7 +38,6 @@ public class TooltipGenerator implements TextHighlighter {
     @Override
     public void highlightText(int from, int to) {
         highlightRanges.add(Range.closedOpen(from, to));
-
     }
 
     @Override
@@ -50,8 +48,7 @@ public class TooltipGenerator implements TextHighlighter {
     private static final String highlightBackgroundColor = "yellow";
     private static final String highlightTextColor = "red";
     private static final String SPAN_BEGIN = String.format(
-            "<span style='color: %s; background-color: %s'>", highlightTextColor,
-            highlightBackgroundColor);
+            "<span style='color: %s; background-color: %s'>", highlightTextColor, highlightBackgroundColor);
     private static final String SPAN_END = "</span>";
     private static final String BR = "<br>";
     private static final int WIDTH = Configuration.ui.tooltipMaxWidth();

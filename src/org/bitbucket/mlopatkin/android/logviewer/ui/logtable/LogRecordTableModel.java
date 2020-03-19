@@ -30,9 +30,7 @@ import javax.inject.Inject;
 import javax.swing.table.AbstractTableModel;
 
 @MainFrameScoped
-public class LogRecordTableModel extends AbstractTableModel implements
-        BatchRecordsReceiver<LogRecord> {
-
+public class LogRecordTableModel extends AbstractTableModel implements BatchRecordsReceiver<LogRecord> {
     private List<LogRecord> records;
 
     @Inject

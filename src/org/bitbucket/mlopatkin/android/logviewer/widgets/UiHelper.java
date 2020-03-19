@@ -33,9 +33,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 public class UiHelper {
-
-    private UiHelper() {
-    }
+    private UiHelper() {}
 
     public static void addPopupMenu(final JComponent component, final JPopupMenu menu) {
         component.addMouseListener(new MouseAdapter() {
@@ -70,27 +68,23 @@ public class UiHelper {
         return result;
     }
 
-    public static void bindKeyFocused(JComponent component, String key, String actionKey,
-            Action action) {
+    public static void bindKeyFocused(JComponent component, String key, String actionKey, Action action) {
         component.getInputMap().put(KeyStroke.getKeyStroke(key), actionKey);
         component.getActionMap().put(actionKey, action);
     }
 
     public interface DoubleClickListener {
-
         void mouseClicked(MouseEvent e);
     }
 
     private static final int DOUBLE_CLICK_COUNT = 2;
 
-    public static void addDoubleClickListener(JComponent component,
-            final DoubleClickListener listener) {
+    public static void addDoubleClickListener(JComponent component, final DoubleClickListener listener) {
         assert listener != null;
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == DOUBLE_CLICK_COUNT
-                        && e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
                     listener.mouseClicked(e);
                 }
             }
@@ -101,12 +95,9 @@ public class UiHelper {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == DOUBLE_CLICK_COUNT
-                        && e.getButton() == MouseEvent.BUTTON1) {
-                    action.actionPerformed(new ActionEvent(e.getSource(),
-                            ActionEvent.ACTION_PERFORMED, (String) action
-                            .getValue(Action.ACTION_COMMAND_KEY), e.getWhen(), e
-                            .getModifiers()));
+                if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
+                    action.actionPerformed(new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED,
+                            (String) action.getValue(Action.ACTION_COMMAND_KEY), e.getWhen(), e.getModifiers()));
                 }
             }
         });
@@ -116,16 +107,16 @@ public class UiHelper {
      * Creates a wrapper around an existing action of the component to be used
      * in menus.
      *
-     * @param c              base component
-     * @param actionKey      key in the component's ActionMap
-     * @param caption        caption of the action wrapper
+     * @param c base component
+     * @param actionKey key in the component's ActionMap
+     * @param caption caption of the action wrapper
      * @param acceleratorKey accelerator key of the action wrapper
      * @return action that translates its
      *         {@link Action#actionPerformed(ActionEvent)} to the underlaying
      *         existing action.
      */
-    public static Action createActionWrapper(final JComponent c, final String actionKey,
-            String caption, final String acceleratorKey) {
+    public static Action createActionWrapper(
+            final JComponent c, final String actionKey, String caption, final String acceleratorKey) {
         final Action baseAction = c.getActionMap().get(actionKey);
         Action result = new AbstractAction(caption) {
             {
@@ -134,8 +125,7 @@ public class UiHelper {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                ActionEvent newEvent = new ActionEvent(c, e.getID(), actionKey, e.getWhen(), e
-                        .getModifiers());
+                ActionEvent newEvent = new ActionEvent(c, e.getID(), actionKey, e.getWhen(), e.getModifiers());
                 baseAction.actionPerformed(newEvent);
             }
 
@@ -152,18 +142,15 @@ public class UiHelper {
         FontMetrics m = component.getFontMetrics(component.getFont());
         int textWidth = m.stringWidth(text);
         return textWidth <= width;
-
     }
 
     private static final int DEFAULT_PADDING_PX = 3;
 
-    public static boolean isTextFit(JComponent renderer, JTable table, int row, int column,
-            String text) {
+    public static boolean isTextFit(JComponent renderer, JTable table, int row, int column, String text) {
         return isTextFit(renderer, table, row, column, text, DEFAULT_PADDING_PX);
     }
 
-    public static boolean isTextFit(JComponent renderer, JTable table, int row, int column,
-            String text, int padding) {
+    public static boolean isTextFit(JComponent renderer, JTable table, int row, int column, String text, int padding) {
         return isTextFit(renderer, table.getCellRect(row, column, false).width - padding, text);
     }
 
@@ -176,5 +163,4 @@ public class UiHelper {
         component.setMaximumSize(dim);
         component.setMinimumSize(dim);
     }
-
 }

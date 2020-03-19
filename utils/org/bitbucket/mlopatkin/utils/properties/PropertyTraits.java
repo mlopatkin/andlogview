@@ -23,17 +23,14 @@ import java.awt.Point;
  * may use static import to simplify code.
  */
 public class PropertyTraits {
-    private PropertyTraits() {
-    }
+    private PropertyTraits() {}
 
     /**
      * Represents property of specified type. You may configure additional
      * options with chaining.
      *
-     * @param <T>
-     *            type of the property
-     * @param type
-     *            class object for the property
+     * @param <T> type of the property
+     * @param type class object for the property
      * @return object for chaining
      */
     public static <T> PropertyBuilder<T> type(Class<T> type) {
@@ -44,12 +41,9 @@ public class PropertyTraits {
      * Represents property of specified type. You may configure additional
      * options with chaining.
      *
-     * @param <T>
-     *            type of the property
-     * @param type
-     *            class object for the property
-     * @param parser
-     *            parser to convert value to and from string
+     * @param <T> type of the property
+     * @param type class object for the property
+     * @param parser parser to convert value to and from string
      * @return object for chaining
      */
     public static <T> PropertyBuilder<T> type(Class<T> type, Parser<T> parser) {
@@ -81,6 +75,7 @@ public class PropertyTraits {
     public static PropertyBuilder<Point> point() {
         return type(Point.class, Parsers.pointParser);
     }
+
     public static PropertyBuilder<String> string(String defaultValue) {
         return string().defaultVal(defaultValue);
     }
@@ -97,15 +92,12 @@ public class PropertyTraits {
         return ListPropertyBuilder.newListPropertyBuilder(type).parser(elemParser);
     }
 
-    public static <T extends Enum<T>, V> EnumMapPropertyBuilder<T, V> enumMap(Class<T> keyType,
-            Class<V> valueType) {
+    public static <T extends Enum<T>, V> EnumMapPropertyBuilder<T, V> enumMap(Class<T> keyType, Class<V> valueType) {
         return EnumMapPropertyBuilder.newEnumMapPropertyBuilder(keyType, valueType);
     }
 
-    public static <T extends Enum<T>, V> EnumMapPropertyBuilder<T, V> enumMap(Class<T> keyType,
-            Class<V> valueType, Parser<V> valueParser) {
-        return EnumMapPropertyBuilder.newEnumMapPropertyBuilder(keyType, valueType).parser(
-                valueParser);
+    public static <T extends Enum<T>, V> EnumMapPropertyBuilder<T, V> enumMap(
+            Class<T> keyType, Class<V> valueType, Parser<V> valueParser) {
+        return EnumMapPropertyBuilder.newEnumMapPropertyBuilder(keyType, valueType).parser(valueParser);
     }
-
 }

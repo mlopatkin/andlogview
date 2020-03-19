@@ -21,7 +21,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import javax.inject.Inject;
 
 public class FilterDialogFactory {
-
     private final DialogFactory dialogFactory;
 
     @Inject

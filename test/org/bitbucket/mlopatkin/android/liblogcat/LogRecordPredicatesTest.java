@@ -29,7 +29,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class LogRecordPredicatesTest {
-
     private static final String OK_STRING = "OK_STRING";
     private static final String FAIL_STRING = "FAIL_STRING";
 
@@ -74,8 +73,7 @@ public class LogRecordPredicatesTest {
 
     @Test
     public void testMoreSevereThan() throws Exception {
-        FluentPredicate<LogRecord> predicate = LogRecordPredicates.moreSevereThan(
-                LogRecord.Priority.DEBUG);
+        FluentPredicate<LogRecord> predicate = LogRecordPredicates.moreSevereThan(LogRecord.Priority.DEBUG);
 
         assertFalse(predicate.apply(LogRecordUtils.forPriority(LogRecord.Priority.VERBOSE)));
         assertTrue(predicate.apply(LogRecordUtils.forPriority(LogRecord.Priority.DEBUG)));
@@ -87,11 +85,10 @@ public class LogRecordPredicatesTest {
         assertNpe(LogRecordPredicates.moreSevereThan(LogRecord.Priority.DEBUG));
     }
 
-
     @Test
     public void testWithAnyOfPids() throws Exception {
-        FluentPredicate<LogRecord> predicate = LogRecordPredicates
-                .withAnyOfPids(Arrays.asList(OK_PID_VAL_1, OK_PID_VAL_2));
+        FluentPredicate<LogRecord> predicate =
+                LogRecordPredicates.withAnyOfPids(Arrays.asList(OK_PID_VAL_1, OK_PID_VAL_2));
 
         assertTrue(predicate.apply(OK_PID_1));
         assertTrue(predicate.apply(OK_PID_2));
@@ -100,14 +97,12 @@ public class LogRecordPredicatesTest {
 
     @Test(expected = NullPointerException.class)
     public void testWithAnyOfPids_NPE() throws Exception {
-        assertNpe(LogRecordPredicates.withAnyOfPids(
-                Arrays.asList(OK_PID_VAL_1, OK_PID_VAL_2)));
+        assertNpe(LogRecordPredicates.withAnyOfPids(Arrays.asList(OK_PID_VAL_1, OK_PID_VAL_2)));
     }
 
     @Test
     public void testMatchMessage() throws Exception {
-        FluentPredicate<LogRecord> predicate = LogRecordPredicates
-                .matchMessage(strMatcher);
+        FluentPredicate<LogRecord> predicate = LogRecordPredicates.matchMessage(strMatcher);
 
         assertTrue(predicate.apply(LogRecordUtils.forMessage(OK_STRING)));
         assertFalse(predicate.apply(LogRecordUtils.forMessage(FAIL_STRING)));
@@ -120,8 +115,7 @@ public class LogRecordPredicatesTest {
 
     @Test
     public void testMatchAppName() throws Exception {
-        FluentPredicate<LogRecord> predicate = LogRecordPredicates
-                .matchAppName(strMatcher);
+        FluentPredicate<LogRecord> predicate = LogRecordPredicates.matchAppName(strMatcher);
 
         assertTrue(predicate.apply(LogRecordUtils.forAppName(OK_STRING)));
         assertFalse(predicate.apply(LogRecordUtils.forAppName(FAIL_STRING)));
@@ -132,11 +126,9 @@ public class LogRecordPredicatesTest {
         assertNpe(LogRecordPredicates.matchAppName(strMatcher));
     }
 
-
     @Test
     public void testWithBuffer() throws Exception {
-        FluentPredicate<LogRecord> predicate = LogRecordPredicates
-                .withBuffer(LogRecord.Buffer.MAIN);
+        FluentPredicate<LogRecord> predicate = LogRecordPredicates.withBuffer(LogRecord.Buffer.MAIN);
 
         assertTrue(predicate.apply(LogRecordUtils.forBuffer(LogRecord.Buffer.MAIN)));
         assertFalse(predicate.apply(LogRecordUtils.forBuffer(LogRecord.Buffer.EVENTS)));

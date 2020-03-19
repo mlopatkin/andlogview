@@ -19,13 +19,4 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 /**
  * Fields in the log record.
  */
-public enum Field {
-    TIME,
-    PID,
-    TID,
-    PRIORITY,
-    TAG,
-    MESSAGE,
-    BUFFER,
-    APP_NAME
-}
+public enum Field {TIME, PID, TID, PRIORITY, TAG, MESSAGE, BUFFER, APP_NAME}

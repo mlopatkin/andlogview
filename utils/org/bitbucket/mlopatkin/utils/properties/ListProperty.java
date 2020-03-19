@@ -18,9 +18,8 @@ package org.bitbucket.mlopatkin.utils.properties;
 
 import java.util.List;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({"unchecked", "rawtypes"})
 class ListProperty<T> extends Property<List> {
-
     private final Class<T> elemType;
 
     ListProperty(Class<T> type, Parser<T> parser) {

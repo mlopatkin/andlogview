@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.utils.properties;
 
 public class IllegalConfigurationException extends Exception {
-
     public IllegalConfigurationException() {
         super();
     }
@@ -33,5 +32,4 @@ public class IllegalConfigurationException extends Exception {
     public IllegalConfigurationException(Throwable cause) {
         super(cause);
     }
-
 }

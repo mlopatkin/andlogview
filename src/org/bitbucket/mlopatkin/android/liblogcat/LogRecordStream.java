@@ -29,7 +29,6 @@ import java.util.Map;
  * lines are in threadtime format.
  */
 public class LogRecordStream {
-
     private static final Logger logger = Logger.getLogger(LogRecordStream.class);
 
     private BufferedReader in;

@@ -26,7 +26,6 @@ import javax.swing.table.TableCellRenderer;
  * enrich display, e. g. color rows or highlight them.
  */
 public class DecoratingRendererTable extends JTable {
-
     private static final long serialVersionUID = 2582491704714327034L;
 
     private List<DecoratingCellRenderer> decorators = new ArrayList<DecoratingCellRenderer>();

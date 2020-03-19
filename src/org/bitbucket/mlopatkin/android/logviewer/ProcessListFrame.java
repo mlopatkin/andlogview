@@ -84,8 +84,8 @@ public class ProcessListFrame extends JFrame {
         table.setModel(EMPTY_MODEL);
     }
 
-    private static final List<SortKey> DEFAULT_SORTING = Arrays.asList(new SortKey(
-            ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
+    private static final List<SortKey> DEFAULT_SORTING =
+            Arrays.asList(new SortKey(ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
 
     public void setSource(DataSource source) {
         assert SwingUtilities.isEventDispatchThread();
@@ -106,8 +106,7 @@ public class ProcessListFrame extends JFrame {
             }
             if (Configuration.ui.hideLoggingProcesses()) {
                 @SuppressWarnings("unchecked")
-                TableRowSorter<ProcessListModel> sorter = (TableRowSorter<ProcessListModel>) table
-                        .getRowSorter();
+                TableRowSorter<ProcessListModel> sorter = (TableRowSorter<ProcessListModel>) table.getRowSorter();
                 sorter.setRowFilter(new ProcessesRowFilter());
             }
             updateTimer.start();
@@ -120,8 +119,8 @@ public class ProcessListFrame extends JFrame {
 
     private ProcessListModel model;
 
-    private static final String[] COLUMN_NAMES = new String[] { "PID", "Process" };
-    private static final Class<?>[] COLUMN_CLASSES = new Class<?>[] { Integer.class, String.class };
+    private static final String[] COLUMN_NAMES = new String[] {"PID", "Process"};
+    private static final Class<?>[] COLUMN_CLASSES = new Class<?>[] {Integer.class, String.class};
 
     @SuppressWarnings("rawtypes")
     private static class ProcessListModel extends AbstractTableModel {
@@ -232,8 +231,8 @@ public class ProcessListFrame extends JFrame {
     }
 
     private static class ProcessesRowFilter extends RowFilter<ProcessListModel, Integer> {
-
         private static final Set<String> HIDDEN_PROCESSES = new HashSet<String>();
+
         static {
             HIDDEN_PROCESSES.add("ps");
             HIDDEN_PROCESSES.add("logcat");
@@ -242,14 +241,12 @@ public class ProcessListFrame extends JFrame {
         }
 
         @Override
-        public boolean include(
-                javax.swing.RowFilter.Entry<? extends ProcessListModel, ? extends Integer> entry) {
+        public boolean include(javax.swing.RowFilter.Entry<? extends ProcessListModel, ? extends Integer> entry) {
             ProcessListModel model = entry.getModel();
             int row = entry.getIdentifier();
             String processName = (String) model.getValueAt(row, ProcessListModel.COLUMN_PROCESS);
             return !HIDDEN_PROCESSES.contains(processName);
         }
-
     }
 
     @Override

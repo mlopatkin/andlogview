@@ -23,11 +23,9 @@ import javax.swing.event.ListDataListener;
  * Autoscrolling controller for a {@link JList}.
  */
 public class ListScrollController extends AutoScrollController {
-
     private JList list;
 
     private final ListDataListener modelListener = new ListDataListener() {
-
         @Override
         public void contentsChanged(ListDataEvent e) {
             scrollIfNeeded();
@@ -55,5 +53,4 @@ public class ListScrollController extends AutoScrollController {
         int lastIndex = list.getModel().getSize() - 1;
         list.scrollRectToVisible(list.getCellBounds(lastIndex, lastIndex));
     }
-
 }

@@ -28,7 +28,6 @@ import javax.swing.JOptionPane;
 /**
  * This class is responsible for showing notification dialog when device is
  * disconnected.
- *
  */
 public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceListener {
     private static final Logger logger = Logger.getLogger(DeviceDisconnectedHandler.class);

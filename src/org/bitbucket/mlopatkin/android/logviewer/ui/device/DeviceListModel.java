@@ -82,8 +82,7 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
 
     @Override
     public void deviceChanged(final IDevice device, final int changeMask) {
-        logger.debug("Device changed: " + device + " changeMask="
-                             + Integer.toHexString(changeMask));
+        logger.debug("Device changed: " + device + " changeMask=" + Integer.toHexString(changeMask));
         EventQueue.invokeLater(() -> updateState(device, changeMask));
     }
 

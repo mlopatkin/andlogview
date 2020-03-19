@@ -25,21 +25,18 @@ import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
  * Logging configuration routines
  */
 class Logging {
-    private Logging() {
-    }
+    private Logging() {}
 
     static void setUpDefault() {
-        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout(
-                PatternLayout.TTCC_CONVERSION_PATTERN), ConsoleAppender.SYSTEM_ERR));
+        BasicConfigurator.configure(new ConsoleAppender(
+                new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN), ConsoleAppender.SYSTEM_ERR));
     }
 
     static void loadNormal() {
-        PropertyConfigurator.configure(PropertyUtils
-                                               .getPropertiesFromResources("normal_log.properties"));
+        PropertyConfigurator.configure(PropertyUtils.getPropertiesFromResources("normal_log.properties"));
     }
 
     static void loadDebug() {
-        PropertyConfigurator.configure(PropertyUtils
-                                               .getPropertiesFromResources("debug_log.properties"));
+        PropertyConfigurator.configure(PropertyUtils.getPropertiesFromResources("debug_log.properties"));
     }
 }

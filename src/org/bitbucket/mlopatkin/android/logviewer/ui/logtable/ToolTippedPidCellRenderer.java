@@ -24,7 +24,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
-
     private PidToProcessMapper mapper;
 
     public ToolTippedPidCellRenderer(PidToProcessMapper mapper) {
@@ -43,8 +42,8 @@ class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (getToolTipText() == null) {
             if (UiHelper.isTextFit(this, table, row, column, getText())) {

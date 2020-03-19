@@ -35,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class FilterFromDialogTest {
-
     private FilterFromDialog filter = new FilterFromDialog();
 
     @Before
@@ -54,7 +53,6 @@ public class FilterFromDialogTest {
         assertTrue(filter.apply(tag1));
         assertFalse(filter.apply(tag2));
     }
-
 
     @Test
     public void testTag_Multiple() throws Exception {
@@ -86,12 +84,9 @@ public class FilterFromDialogTest {
 
     @Test
     public void testTag_incompleteTagDoesntMatch() throws Exception {
-        List<LogRecord> tags = Arrays.asList(
-                LogRecordUtils.forTag("Middle Tag Middle"),
-                LogRecordUtils.forTag("Tag Begin"),
-                LogRecordUtils.forTag("End Tag"),
-                LogRecordUtils.forTag("middletagwithoutspaces"),
-                LogRecordUtils.forTag("#tag#"));
+        List<LogRecord> tags = Arrays.asList(LogRecordUtils.forTag("Middle Tag Middle"),
+                LogRecordUtils.forTag("Tag Begin"), LogRecordUtils.forTag("End Tag"),
+                LogRecordUtils.forTag("middletagwithoutspaces"), LogRecordUtils.forTag("#tag#"));
 
         filter.setTags(Collections.singletonList("Tag"));
         filter.initialize();
@@ -117,12 +112,9 @@ public class FilterFromDialogTest {
 
     @Test
     public void testTag_incompleteTagMatchRegexp() throws Exception {
-        List<LogRecord> tags = Arrays.asList(
-                LogRecordUtils.forTag("Middle Tag Middle"),
-                LogRecordUtils.forTag("Tag Begin"),
-                LogRecordUtils.forTag("End Tag"),
-                LogRecordUtils.forTag("middletagwithoutspaces"),
-                LogRecordUtils.forTag("#tag#"));
+        List<LogRecord> tags = Arrays.asList(LogRecordUtils.forTag("Middle Tag Middle"),
+                LogRecordUtils.forTag("Tag Begin"), LogRecordUtils.forTag("End Tag"),
+                LogRecordUtils.forTag("middletagwithoutspaces"), LogRecordUtils.forTag("#tag#"));
 
         filter.setTags(Collections.singletonList("/Tag/"));
         filter.initialize();
@@ -143,7 +135,6 @@ public class FilterFromDialogTest {
         assertTrue(filter.apply(tag1));
         assertFalse(filter.apply(tag2));
     }
-
 
     @Test
     public void testApp_Multiple() throws Exception {
@@ -175,12 +166,9 @@ public class FilterFromDialogTest {
 
     @Test
     public void testApp_incompleteAppDoesntMatch() throws Exception {
-        List<LogRecord> tags = Arrays.asList(
-                LogRecordUtils.forAppName("Middle Tag Middle"),
-                LogRecordUtils.forAppName("Tag Begin"),
-                LogRecordUtils.forAppName("End Tag"),
-                LogRecordUtils.forAppName("middletagwithoutspaces"),
-                LogRecordUtils.forAppName("#tag#"));
+        List<LogRecord> tags = Arrays.asList(LogRecordUtils.forAppName("Middle Tag Middle"),
+                LogRecordUtils.forAppName("Tag Begin"), LogRecordUtils.forAppName("End Tag"),
+                LogRecordUtils.forAppName("middletagwithoutspaces"), LogRecordUtils.forAppName("#tag#"));
 
         filter.setApps(Collections.singletonList("Tag"));
         filter.initialize();
@@ -206,12 +194,9 @@ public class FilterFromDialogTest {
 
     @Test
     public void testApp_incompleteAppMatchRegexp() throws Exception {
-        List<LogRecord> tags = Arrays.asList(
-                LogRecordUtils.forAppName("Middle Tag Middle"),
-                LogRecordUtils.forAppName("Tag Begin"),
-                LogRecordUtils.forAppName("End Tag"),
-                LogRecordUtils.forAppName("middletagwithoutspaces"),
-                LogRecordUtils.forAppName("#tag#"));
+        List<LogRecord> tags = Arrays.asList(LogRecordUtils.forAppName("Middle Tag Middle"),
+                LogRecordUtils.forAppName("Tag Begin"), LogRecordUtils.forAppName("End Tag"),
+                LogRecordUtils.forAppName("middletagwithoutspaces"), LogRecordUtils.forAppName("#tag#"));
 
         filter.setApps(Collections.singletonList("/Tag/"));
         filter.initialize();
@@ -236,7 +221,6 @@ public class FilterFromDialogTest {
         assertFalse(filter.apply(record3));
     }
 
-
     @Test
     public void testMessage_MatchesSubstringCaseInsensitive() throws Exception {
         LogRecord record1 = LogRecordUtils.forMessage("test is good");
@@ -252,7 +236,6 @@ public class FilterFromDialogTest {
         assertTrue(filter.apply(record3));
         assertFalse(filter.apply(recordNo));
     }
-
 
     @Test
     public void testMessage_regexMatchesSubstringCaseSensitive() throws Exception {
@@ -284,12 +267,11 @@ public class FilterFromDialogTest {
         assertInitializeThrowsExceptionWithRequestValue(
                 new FilterFromDialog().setTags(Collections.singletonList("/?/")), "/?/");
 
-        assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialog().setMessagePattern("/?/"), "/?/");
+        assertInitializeThrowsExceptionWithRequestValue(new FilterFromDialog().setMessagePattern("/?/"), "/?/");
     }
 
-    private static void assertInitializeThrowsExceptionWithRequestValue(FilterFromDialog filter,
-                                                                        String expectedRequest) {
+    private static void assertInitializeThrowsExceptionWithRequestValue(
+            FilterFromDialog filter, String expectedRequest) {
         try {
             filter.setMode(FilteringMode.HIDE);
             filter.initialize();

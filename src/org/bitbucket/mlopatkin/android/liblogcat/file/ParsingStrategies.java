@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 class ParsingStrategies {
-
     interface Strategy {
         LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess);
 
@@ -81,6 +80,5 @@ class ParsingStrategies {
             return "TimeStrategy";
         }
     };
-    static final ParsingStrategies.Strategy[] supportedStrategies = { threadTime, brief, time };
-
+    static final ParsingStrategies.Strategy[] supportedStrategies = {threadTime, brief, time};
 }

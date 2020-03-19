@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-
 class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     private Pattern pattern;
 

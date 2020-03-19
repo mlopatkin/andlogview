@@ -19,11 +19,11 @@ package org.bitbucket.mlopatkin.utils;
 import java.util.concurrent.ThreadFactory;
 
 public final class Threads {
-    private Threads() {
-    }
+    private Threads() {}
 
     /**
      * Returns a thread factory that constructs threads with a given name. It should be used in singleThreadExecutor
+     *
      * @param name
      * @return
      */

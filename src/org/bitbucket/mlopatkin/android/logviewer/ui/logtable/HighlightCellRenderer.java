@@ -36,16 +36,13 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
-public class HighlightCellRenderer extends StyledLabel implements TableCellRenderer,
-        TextHighlighter {
-
+public class HighlightCellRenderer extends StyledLabel implements TableCellRenderer, TextHighlighter {
     private static final Border NO_BORDER = new EmptyBorder(1, 1, 1, 1);
 
     private static final Border FOCUSED_BORDER = getFocusedBorder();
 
     private StyledDocument document = new DefaultStyledDocument();
-    private static final Style BASE_STYLE = StyleContext.getDefaultStyleContext().getStyle(
-            StyleContext.DEFAULT_STYLE);
+    private static final Style BASE_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
     private Style highlighted;
 
@@ -56,12 +53,11 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
         highlighted = document.addStyle(null, null);
         StyleConstants.setBackground(highlighted, Color.YELLOW);
         StyleConstants.setForeground(highlighted, Color.RED);
-
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                   boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         clearHighlight();
         if (hasFocus) {
             setBorder(FOCUSED_BORDER);
@@ -91,28 +87,22 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
     }
 
     @Override
-    public void invalidate() {
-    }
+    public void invalidate() {}
 
     @Override
-    public void validate() {
-    }
+    public void validate() {}
 
     @Override
-    public void revalidate() {
-    }
+    public void revalidate() {}
 
     @Override
-    public void repaint(long tm, int x, int y, int width, int height) {
-    }
+    public void repaint(long tm, int x, int y, int width, int height) {}
 
     @Override
-    public void repaint(Rectangle r) {
-    }
+    public void repaint(Rectangle r) {}
 
     @Override
-    public void repaint() {
-    }
+    public void repaint() {}
 
     /**
      * Hack to get a consistent focused border from
@@ -136,5 +126,4 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
     public void clearHighlight() {
         document.setCharacterAttributes(0, document.getLength(), BASE_STYLE, true);
     }
-
 }

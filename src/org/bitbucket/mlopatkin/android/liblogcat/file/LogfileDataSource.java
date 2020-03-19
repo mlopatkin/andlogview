@@ -39,7 +39,6 @@ import java.util.Set;
  * logcat output format used.
  */
 public class LogfileDataSource implements DataSource {
-
     private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
 
     private static final Buffer DEFAULT_BUFFER = Buffer.UNKNOWN;
@@ -58,10 +57,8 @@ public class LogfileDataSource implements DataSource {
     void parse(BufferedReader in) throws IOException {
         String line = in.readLine();
         while (line != null) {
-            if (!LogRecordParser.isLogBeginningLine(line)
-                    && !CharMatcher.whitespace().matchesAllOf(line)) {
-                LogRecord record = strategy
-                        .parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
+            if (!LogRecordParser.isLogBeginningLine(line) && !CharMatcher.whitespace().matchesAllOf(line)) {
+                LogRecord record = strategy.parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
                 // sometimes we cannot handle the line well: if we didn't guess
                 // the log type correctly or if there is some weird formatting
                 // (probably binary output)
@@ -81,9 +78,7 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {

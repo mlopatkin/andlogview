@@ -27,8 +27,7 @@ import javax.swing.JOptionPane;
  * to the user.
  */
 public class ErrorDialogsHelper {
-    private ErrorDialogsHelper() {
-    }
+    private ErrorDialogsHelper() {}
 
     public static void showError(Component owner, String format, Object... vals) {
         String message = String.format(format, vals);
@@ -43,9 +42,8 @@ public class ErrorDialogsHelper {
         if (Configuration.adb.showSetupDialog()) {
             SetupAdbDialog.showDialog(owner);
         } else {
-            JOptionPane.showMessageDialog(owner, "The ADB executable was not found", "Error",
-                                          JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    owner, "The ADB executable was not found", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 }

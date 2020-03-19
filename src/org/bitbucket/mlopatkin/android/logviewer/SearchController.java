@@ -23,7 +23,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 
 public class SearchController {
-
     private DecoratingRendererTable table;
     private LogRecordTableModel model;
     private int curRow;

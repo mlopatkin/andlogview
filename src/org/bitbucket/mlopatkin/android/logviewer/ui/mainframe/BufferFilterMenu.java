@@ -34,7 +34,6 @@ public class BufferFilterMenu {
     private final MainFilterController controller;
 
     private class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
-
         private Buffer buffer;
 
         public BufferCheckBoxMenuItem(Buffer buffer, boolean selected) {

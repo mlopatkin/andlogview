@@ -63,7 +63,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MainFilterControllerTest {
-
     @Mock
     FilterPanelModel filterPanelModel;
     @Mock
@@ -101,13 +100,11 @@ public class MainFilterControllerTest {
         when(indexFilterCollection.asObservable()).thenReturn(indexFilterCollectionObservers);
     }
 
-
     @Test
     public void testInitialState() throws Exception {
         mockStorage = new FakeDefaultConfigStorage();
-        MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
-                                         filterImpl);
+        MainFilterController controller = new MainFilterController(
+                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
 
         verify(indexFilterCollectionObservers).addObserver(any(IndexFilterCollection.Observer.class));
 
@@ -128,9 +125,8 @@ public class MainFilterControllerTest {
         // Now filter editing preserves its place in the model.
         // However if you change filter's mode from highlight to other and back - it becomes last in the highlight
         // chain. Its button however stays in the same place.
-        MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
-                                         filterImpl);
+        MainFilterController controller = new MainFilterController(
+                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog colorer1 = createColoringFilter(Color.BLACK, MATCH_ALL);
@@ -150,12 +146,11 @@ public class MainFilterControllerTest {
 
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
-        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(
-                Collections.<SavedFilterData>emptyList());
+        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any()))
+                .thenReturn(Collections.<SavedFilterData>emptyList());
 
-        MainFilterController controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
-                                         filterImpl);
+        MainFilterController controller = new MainFilterController(
+                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
 
@@ -170,9 +165,8 @@ public class MainFilterControllerTest {
         when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
 
         filterPanelModel = Mockito.mock(FilterPanelModel.class);
-        controller =
-                new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, mockStorage,
-                                         filterImpl);
+        controller = new MainFilterController(
+                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
 
         verify(filterPanelModel).addFilter(Mockito.<PanelFilter>any());
         assertEquals(Color.BLACK, filterImpl.getHighlightColor(RECORD2));

@@ -32,7 +32,6 @@ import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.Filterin
  */
 @VisibleForTesting
 public abstract class FilterDialog extends BaseFilterDialogUi {
-
     /**
      * Create the dialog.
      */
@@ -53,7 +52,6 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         });
 
         ModeChangedListener modeListener = new ModeChangedListener() {
-
             @Override
             public void modeSelected(FilteringMode mode) {
                 colorsList.setVisible(mode == FilteringMode.HIGHLIGHT);
@@ -71,13 +69,11 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         });
     }
 
-
     protected abstract void onPositiveResult();
 
     protected abstract void onNegativeResult();
 
-    private static final Splitter commaSplitter =
-            Splitter.on(',').trimResults(CharMatcher.whitespace());
+    private static final Splitter commaSplitter = Splitter.on(',').trimResults(CharMatcher.whitespace());
 
     private List<String> getTags() {
         String tagsString = Strings.nullToEmpty(tagTextField.getText());
@@ -111,7 +107,6 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         }
         return Collections.emptyList();
     }
-
 
     private List<String> getAppNames() {
         String pidString = pidTextField.getText();

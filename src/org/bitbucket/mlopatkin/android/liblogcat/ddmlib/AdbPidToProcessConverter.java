@@ -35,7 +35,6 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 
 class AdbPidToProcessConverter {
-
     private static final Logger logger = Logger.getLogger(AdbPidToProcessConverter.class);
 
     private static final String PS_COMMAND_LINE = "ps";
@@ -84,7 +83,6 @@ class AdbPidToProcessConverter {
     }
 
     private class BackgroundUpdateTask implements Runnable {
-
         private BufferedReader in;
 
         BackgroundUpdateTask(InputStream in) {
@@ -116,9 +114,7 @@ class AdbPidToProcessConverter {
             } catch (IOException e) {
                 logger.error("Unexpected IO exception", e);
             }
-
         }
-
     }
 
     public void close() {

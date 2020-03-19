@@ -22,6 +22,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * The Subject is something that allows embedder to notify registered parties.
+ *
  * @param <T> the type of the observer
  */
 @NotThreadSafe
@@ -43,6 +44,7 @@ public class Subject<T> implements Iterable<T> {
     /**
      * Observable that can be passed to clients for subscribing. Note that it is impossible to cast returned observable
      * back to Subject.
+     *
      * @return the observable
      */
     public Observable<T> asObservable() {

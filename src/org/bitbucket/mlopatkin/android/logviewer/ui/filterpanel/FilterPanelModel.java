@@ -33,7 +33,6 @@ import javax.inject.Inject;
  */
 @MainFrameScoped
 public class FilterPanelModel {
-
     interface FilterPanelModelListener {
         void onFilterAdded(PanelFilterView newFilter);
 
@@ -48,8 +47,7 @@ public class FilterPanelModel {
     private final List<PanelFilter> filters = new ArrayList<>();
 
     @Inject
-    public FilterPanelModel() {
-    }
+    public FilterPanelModel() {}
 
     public void addFilter(PanelFilter filter) {
         filters.add(filter);

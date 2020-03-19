@@ -18,7 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public interface RowSearchStrategy {
-
     boolean isRowMatched(LogRecord record);
+
     void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter);
 }

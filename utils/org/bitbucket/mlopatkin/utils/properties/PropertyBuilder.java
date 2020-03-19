@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.utils.properties;
 
 public class PropertyBuilder<T> implements IPropertyBuilder<T> {
-
     private T defaultValue;
     private final Class<T> type;
     private Parser<T> parser;

@@ -60,8 +60,9 @@ public class ColumnPrefsTest {
         JsonElement jsonElement = factory.toJson(gson, prefs);
         ColumnPrefs deserializedPrefs = factory.fromJson(gson, jsonElement);
 
-        assertThat(prefs, TogglesModelTestUtils
-                .visibleColumns(equalTo(TogglesModelTestUtils.getVisibleColumns(deserializedPrefs))));
+        assertThat(prefs,
+                TogglesModelTestUtils.visibleColumns(
+                        equalTo(TogglesModelTestUtils.getVisibleColumns(deserializedPrefs))));
         assertThat(prefs.getColumnOrder(), matchesOrder(ColumnOrder.canonical()));
     }
 
@@ -99,11 +100,10 @@ public class ColumnPrefsTest {
 
     @Test
     public void allParsedColumnsAreVisible() throws Exception {
-        ColumnPrefs prefs =
-                factory.fromJson(gson, buildVisibilityConfig(Column.MESSAGE, Column.APP_NAME, Column.TIME));
+        ColumnPrefs prefs = factory.fromJson(gson, buildVisibilityConfig(Column.MESSAGE, Column.APP_NAME, Column.TIME));
 
-        assertThat(prefs, TogglesModelTestUtils
-                .visibleColumns(containsInAnyOrder(Column.MESSAGE, Column.APP_NAME, Column.TIME)));
+        assertThat(prefs,
+                TogglesModelTestUtils.visibleColumns(containsInAnyOrder(Column.MESSAGE, Column.APP_NAME, Column.TIME)));
     }
 
     // Tests for default prefs
@@ -195,8 +195,8 @@ public class ColumnPrefsTest {
 
         ColumnPrefs reloadedPrefs = factory.loadFromConfig();
 
-        assertFalse("Expected hidden column to remain hidden after reload",
-                    reloadedPrefs.isColumnVisible(Column.APP_NAME));
+        assertFalse(
+                "Expected hidden column to remain hidden after reload", reloadedPrefs.isColumnVisible(Column.APP_NAME));
     }
 
     @Test(expected = InvalidJsonContentException.class)
@@ -218,9 +218,8 @@ public class ColumnPrefsTest {
 
     @Test
     public void shuffledOrderParsesSucessfully() throws InvalidJsonContentException {
-        ImmutableList<Column> order =
-                ImmutableList.of(Column.APP_NAME, Column.INDEX, Column.MESSAGE, Column.PID, Column.PRIORITY,
-                                 Column.TAG, Column.TID, Column.TIME);
+        ImmutableList<Column> order = ImmutableList.of(Column.APP_NAME, Column.INDEX, Column.MESSAGE, Column.PID,
+                Column.PRIORITY, Column.TAG, Column.TID, Column.TIME);
         Assume.assumeThat(order, Matchers.iterableWithSize(Column.values().length));
 
         ColumnPrefs prefs = factory.fromJson(gson, buildOrderConfig(order));
@@ -231,9 +230,8 @@ public class ColumnPrefsTest {
     @Test(expected = InvalidJsonContentException.class)
     public void missingColumnThrows() throws InvalidJsonContentException {
         // missing INDEX
-        ImmutableList<Column> order =
-                ImmutableList.of(Column.APP_NAME, Column.MESSAGE, Column.PID, Column.PRIORITY,
-                                 Column.TAG, Column.TID, Column.TIME);
+        ImmutableList<Column> order = ImmutableList.of(
+                Column.APP_NAME, Column.MESSAGE, Column.PID, Column.PRIORITY, Column.TAG, Column.TID, Column.TIME);
         Assume.assumeThat(order, Matchers.iterableWithSize(Column.values().length - 1));
 
         factory.fromJson(gson, buildOrderConfig(order));
@@ -242,9 +240,8 @@ public class ColumnPrefsTest {
     @Test(expected = InvalidJsonContentException.class)
     public void duplicateColumnThrows() throws InvalidJsonContentException {
         // duplicate message
-        ImmutableList<Column> order =
-                ImmutableList.of(Column.APP_NAME, Column.INDEX, Column.MESSAGE, Column.PID, Column.PRIORITY,
-                                 Column.TAG, Column.TID, Column.TIME, Column.MESSAGE);
+        ImmutableList<Column> order = ImmutableList.of(Column.APP_NAME, Column.INDEX, Column.MESSAGE, Column.PID,
+                Column.PRIORITY, Column.TAG, Column.TID, Column.TIME, Column.MESSAGE);
         Assume.assumeThat(order, Matchers.iterableWithSize(Column.values().length + 1));
 
         factory.fromJson(gson, buildOrderConfig(order));
@@ -253,9 +250,8 @@ public class ColumnPrefsTest {
     @Test(expected = InvalidJsonContentException.class)
     public void duplicateColumnInsteadOfMissingThrows() throws InvalidJsonContentException {
         // duplicate message, missing index
-        ImmutableList<Column> order =
-                ImmutableList.of(Column.APP_NAME, Column.MESSAGE, Column.MESSAGE, Column.PID, Column.PRIORITY,
-                                 Column.TAG, Column.TID, Column.TIME);
+        ImmutableList<Column> order = ImmutableList.of(Column.APP_NAME, Column.MESSAGE, Column.MESSAGE, Column.PID,
+                Column.PRIORITY, Column.TAG, Column.TID, Column.TIME);
         Assume.assumeThat(order, Matchers.iterableWithSize(Column.values().length));
 
         factory.fromJson(gson, buildOrderConfig(order));

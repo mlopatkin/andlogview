@@ -28,7 +28,6 @@ import java.util.Map;
  * and pushes them back to creator.
  */
 class AdbBuffer {
-
     public interface BufferReceiver {
         void pushRecord(LogRecord record);
     }
@@ -42,13 +41,13 @@ class AdbBuffer {
     private final PollingThread pollingThread;
     private final Thread shellExecutor;
 
-    public AdbBuffer(BufferReceiver receiver, IDevice device, LogRecord.Buffer buffer,
-            String commandLine, Map<Integer, String> pidToProcess) {
+    public AdbBuffer(BufferReceiver receiver, IDevice device, LogRecord.Buffer buffer, String commandLine,
+            Map<Integer, String> pidToProcess) {
         this.receiver = receiver;
         this.buffer = buffer;
         in = new LogRecordStream(shellInput, pidToProcess);
-        shellExecutor = new Thread(new AutoClosingAdbShellCommand(device, commandLine, shellInput),
-                "Shell-reader-" + buffer);
+        shellExecutor =
+                new Thread(new AutoClosingAdbShellCommand(device, commandLine, shellInput), "Shell-reader-" + buffer);
         pollingThread = new PollingThread();
         shellExecutor.start();
         pollingThread.start();
@@ -60,7 +59,6 @@ class AdbBuffer {
     }
 
     private class PollingThread extends Thread {
-
         public PollingThread() {
             super("ADB-polling-" + buffer);
         }
@@ -77,7 +75,6 @@ class AdbBuffer {
             } else {
                 logger.warn(getName() + " ends due to null record");
             }
-
         }
 
         private volatile boolean closed = false;
@@ -86,5 +83,4 @@ class AdbBuffer {
             closed = true;
         }
     }
-
 }

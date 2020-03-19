@@ -35,7 +35,6 @@ import javax.annotation.Nullable;
  * Supported columns of the LogRecordTable.
  */
 public enum Column {
-
     INDEX("row", "line") {
         @Override
         public Integer getValue(int rowIndex, LogRecord record) {
@@ -69,7 +68,6 @@ public enum Column {
         @Override
         public String getValue(int rowIndex, LogRecord record) {
             return record.getAppName();
-
         }
     },
     PRIORITY(Field.PRIORITY, "priority", null) {
@@ -129,6 +127,7 @@ public enum Column {
 
     /**
      * Generic constructor for column.
+     *
      * @param recordField corresponding logcat field or null if there is no one
      * @param name short name that is used as a key in preferences
      * @param title user-visible title of the column (can be empty or null)

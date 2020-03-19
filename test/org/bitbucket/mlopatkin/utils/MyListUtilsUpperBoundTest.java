@@ -25,7 +25,6 @@ import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
 import static org.junit.Assert.assertEquals;
 
 public class MyListUtilsUpperBoundTest {
-
     @Test
     public void testGetUpperBoundPos_emptyList() {
         List<Integer> items = list();

@@ -39,7 +39,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 public class SearchStrategyFactory {
-
     private static class DelegateImpl implements SearchRequestParser.Delegate<HighlightStrategy> {
         @Override
         public HighlightStrategy createRegexpSearcher(String pattern) throws RequestCompilationException {
@@ -59,15 +58,10 @@ public class SearchStrategyFactory {
     private static final SearchRequestParser<HighlightStrategy> requestParser =
             new SearchRequestParser<>(new DelegateImpl());
 
-
     // this is static-only class
-    private SearchStrategyFactory() {
-    }
+    private SearchStrategyFactory() {}
 
-
-
-    public static HighlightStrategy createHighlightStrategy(String request)
-            throws RequestCompilationException {
+    public static HighlightStrategy createHighlightStrategy(String request) throws RequestCompilationException {
         return requestParser.parse(request);
     }
 }

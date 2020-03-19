@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 class RowHighlightRenderer implements DecoratingCellRenderer {
-
     private TableCellRenderer inner;
     private Color backgroundColor = Configuration.ui.backgroundColor();
     private LogModelFilter colorer;
@@ -41,10 +40,9 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
-        Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-                row, column);
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (!isSelected) {
             LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();
             int modelRow = table.convertRowIndexToModel(row);
@@ -58,5 +56,4 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
         }
         return result;
     }
-
 }

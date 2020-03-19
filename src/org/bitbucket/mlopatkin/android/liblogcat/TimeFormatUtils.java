@@ -25,9 +25,7 @@ import java.util.Date;
  * the logcat format.
  */
 public class TimeFormatUtils {
-
-    private TimeFormatUtils() {
-    }
+    private TimeFormatUtils() {}
 
     private static final ThreadLocal<DateFormat> LOGCAT_DATE_FORMAT =
             ThreadLocal.withInitial(() -> new SimpleDateFormat("MM-dd HH:mm:ss.SSS"));

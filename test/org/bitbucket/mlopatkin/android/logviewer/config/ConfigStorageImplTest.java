@@ -35,13 +35,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class ConfigStorageImplTest {
-
     public static class TestClientData {
-
         String s = "";
 
-        public TestClientData() {
-        }
+        public TestClientData() {}
 
         public TestClientData(String s) {
             this.s = s;
@@ -49,7 +46,6 @@ public class ConfigStorageImplTest {
     }
 
     public static class TestClient implements ConfigStorageImpl.ConfigStorageClient<TestClientData> {
-
         @Override
         public String getName() {
             return "TestClient";
@@ -91,8 +87,7 @@ public class ConfigStorageImplTest {
         storage.load();
 
         assertEquals("", storage.loadConfig(new TestClient()).s);
-        assertNull("Do not commit default entry if there is no entry at all",
-                   out.getLastWrittenString());
+        assertNull("Do not commit default entry if there is no entry at all", out.getLastWrittenString());
     }
 
     @Test
@@ -116,12 +111,12 @@ public class ConfigStorageImplTest {
 
         storage.saveConfig(new TestClient(), new TestClientData("123456"));
 
-        assertEquals(
-                "{\n"
+        assertEquals("{\n"
                         + "  \"TestClient\": {\n"
                         + "    \"s\": \"123456\"\n"
                         + "  }\n"
-                        + "}", out.getLastWrittenString());
+                        + "}",
+                out.getLastWrittenString());
     }
 
     @Test
@@ -135,7 +130,6 @@ public class ConfigStorageImplTest {
     }
 
     private static class NullCharSink extends CharSink {
-
         @Override
         public Writer openStream() throws IOException {
             return CharStreams.nullWriter();
@@ -143,7 +137,6 @@ public class ConfigStorageImplTest {
     }
 
     private static class StringCharSink extends CharSink {
-
         private StringWriter writer;
 
         @Override
@@ -159,7 +152,6 @@ public class ConfigStorageImplTest {
     }
 
     private static class FailCharSink extends CharSink {
-
         @Override
         public Writer openStream() throws IOException {
             throw new IOException("Expected");

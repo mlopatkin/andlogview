@@ -35,11 +35,10 @@ import java.io.File;
  * #ThreadSafe#
  * </p>
  *
- * @since 1.0
  * @version $Id: SystemUtils.java 1436770 2013-01-22 07:09:45Z ggregory $
+ * @since 1.0
  */
 public class SystemUtils {
-
     /**
      * The prefix String for all Windows OS.
      */
@@ -68,7 +67,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -86,7 +85,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -123,8 +122,9 @@ public class SystemUtils {
      * </p>
      *
      * @return a directory
-     * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
-     * access to the specified system property.
+     * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't
+     *         allow
+     *         access to the specified system property.
      * @see System#getProperty(String)
      * @since 2.1
      */
@@ -143,6 +143,7 @@ public class SystemUtils {
     }
 
     // -----------------------------------------------------------------------
+
     /**
      * <p>
      * Gets a System property, defaulting to {@code null} if the property cannot be read.
@@ -184,6 +185,7 @@ public class SystemUtils {
     }
 
     // -----------------------------------------------------------------------
+
     /**
      * <p>
      * SystemUtils instances should NOT be constructed in standard programming. Instead, the class should be used as
@@ -196,5 +198,4 @@ public class SystemUtils {
     public SystemUtils() {
         super();
     }
-
 }

@@ -31,13 +31,11 @@ import javax.inject.Named;
 
 @MainFrameScoped
 public class BookmarkController extends AbstractIndexController implements IndexController {
-
     private final LogTable mainLogTable;
 
     private final IndexFrame indexFrame;
 
     private final BookmarkModel.Observer bookmarkChangeObserver = new BookmarkModel.Observer() {
-
         @Override
         public void onBookmarkAdded() {
             if (!indexFrame.isVisible()) {
@@ -53,11 +51,9 @@ public class BookmarkController extends AbstractIndexController implements Index
     };
 
     @Inject
-    public BookmarkController(MainFrameDependencies mainFrameDependencies,
-                              BookmarkModel bookmarksModel,
-                              BookmarksLogModelFilter logModelFilter,
-                              @Named(MainFrameDependencies.FOR_MAIN_FRAME) LogTable mainLogTable,
-                              BookmarkFramePopupMenu.Factory popupMenuFactory) {
+    public BookmarkController(MainFrameDependencies mainFrameDependencies, BookmarkModel bookmarksModel,
+            BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) LogTable mainLogTable,
+            BookmarkFramePopupMenu.Factory popupMenuFactory) {
         super(mainLogTable);
         this.mainLogTable = mainLogTable;
 
@@ -65,13 +61,11 @@ public class BookmarkController extends AbstractIndexController implements Index
 
         IndexFrameComponent indexFrameComponent =
                 DaggerIndexFrameComponent.builder()
-                                          .mainFrameDependencies(mainFrameDependencies)
-                                          .indexFrameModule(
-                                                  new IndexFrameModule(this, popupMenuFactory, logModelFilter))
-                                          .build();
+                        .mainFrameDependencies(mainFrameDependencies)
+                        .indexFrameModule(new IndexFrameModule(this, popupMenuFactory, logModelFilter))
+                        .build();
         indexFrame = indexFrameComponent.createFrame();
         indexFrame.setTitle("Bookmarks");
-
     }
 
     private void redrawMainTable() {

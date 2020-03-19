@@ -109,9 +109,10 @@ public class MainFrame extends JFrame {
     private final MainFrameDependencies dependencies;
 
     public MainFrame(AppGlobals appGlobals) {
-        dependencies =
-                DaggerMainFrameDependencies.builder().mainFrameModule(new MainFrameModule(this)).appGlobals(appGlobals)
-                                           .build();
+        dependencies = DaggerMainFrameDependencies.builder()
+                .mainFrameModule(new MainFrameModule(this))
+                .appGlobals(appGlobals)
+                .build();
         sourceHolder = dependencies.getDataSourceHolder();
 
         initialize();
@@ -142,11 +143,10 @@ public class MainFrame extends JFrame {
         }
 
         Collection<Column> availableColumns = Column.getColumnsForFields(newSource.getAvailableFields());
-        LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(
-                mapper, availableColumns);
+        LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(mapper, availableColumns);
         logElements.setColumnModel(columns);
-        UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columns).createMenu());
+        UiHelper.addPopupMenu(
+                logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columns).createMenu());
     }
 
     public void setSourceAsync(final DataSource newSource) {
@@ -163,7 +163,6 @@ public class MainFrame extends JFrame {
     }
 
     private PidToProcessMapper mapper = new PidToProcessMapper() {
-
         @Override
         public String getProcessName(int pid) {
             DataSource source = sourceHolder.getDataSource();
@@ -192,9 +191,8 @@ public class MainFrame extends JFrame {
         LogRecordTableColumnModel columnModel =
                 dependencies.getColumnModelFactory().create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
-        UiHelper.addPopupMenu(logElements.getTableHeader(),
-                              new LogTableHeaderPopupMenuController(columnModel)
-                                      .createMenu());
+        UiHelper.addPopupMenu(
+                logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this);
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
@@ -241,8 +239,7 @@ public class MainFrame extends JFrame {
 
         setupSearchButtons();
         setupMainMenu(dependencies.getMainFilterController());
-        setPreferredSize(new Dimension(Configuration.ui.mainWindowWidth(),
-                Configuration.ui.mainWindowHeight()));
+        setPreferredSize(new Dimension(Configuration.ui.mainWindowWidth(), Configuration.ui.mainWindowHeight()));
         if (Configuration.ui.mainWindowPosition() != null) {
             setLocation(Configuration.ui.mainWindowPosition());
         } else {
@@ -306,8 +303,8 @@ public class MainFrame extends JFrame {
             }
         });
 
-        UiHelper.bindKeyFocused(instantSearchTextField, KEY_HIDE_AND_START_SEARCH,
-                ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
+        UiHelper.bindKeyFocused(
+                instantSearchTextField, KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         hideSearchField();
@@ -318,17 +315,15 @@ public class MainFrame extends JFrame {
                                 showSearchMessage(MESSAGE_NOT_FOUND);
                             }
                         } catch (RequestCompilationException e1) {
-                            ErrorDialogsHelper.showError(MainFrame.this,
-                                    "%s isn't a valid search expression: %s", request,
-                                    e1.getMessage());
+                            ErrorDialogsHelper.showError(
+                                    MainFrame.this, "%s isn't a valid search expression: %s", request, e1.getMessage());
                         }
                     }
                 });
     }
 
     private void bindKeyGlobal(String key, String actionKey, Action action) {
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(key), actionKey);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key), actionKey);
         getRootPane().getActionMap().put(actionKey, action);
     }
 
@@ -366,7 +361,6 @@ public class MainFrame extends JFrame {
     private static final int MESSAGE_DELAY = 2000;
     private static final String MESSAGE_NOT_FOUND = "Text not found";
     Timer hidingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             searchStatusLabel.setVisible(false);
@@ -374,7 +368,6 @@ public class MainFrame extends JFrame {
     });
 
     Timer updatingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             DataSource source = sourceHolder.getDataSource();
@@ -435,7 +428,6 @@ public class MainFrame extends JFrame {
     private File recentDir = null;
 
     private Action acOpenFile = new AbstractAction("Open...") {
-
         {
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
         }
@@ -452,19 +444,16 @@ public class MainFrame extends JFrame {
                     setSource(source);
                 } catch (UnrecognizedFormatException e) {
                     logger.error("Unrecognized source file " + file, e);
-                    ErrorDialogsHelper.showError(MainFrame.this, "Unrecognized file format for "
-                            + file);
+                    ErrorDialogsHelper.showError(MainFrame.this, "Unrecognized file format for " + file);
                 } catch (IOException e) {
                     logger.error("IO Exception while reading " + file, e);
                     ErrorDialogsHelper.showError(MainFrame.this, "Cannot read " + file);
                 }
-
             }
         }
     };
 
     private Action acConnectToDevice = new AbstractAction("Connect to device...") {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             if (tryInitAdbBridge()) {
@@ -490,7 +479,6 @@ public class MainFrame extends JFrame {
     };
 
     private Action acChangeConfiguration = new AbstractAction("Configuration...") {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             ConfigurationDialog.showConfigurationDialog(MainFrame.this);
@@ -519,7 +507,6 @@ public class MainFrame extends JFrame {
                     connectDevicePending(device);
                 }
             }
-
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
         EventQueue.invokeLater(new Runnable() {
@@ -554,7 +541,6 @@ public class MainFrame extends JFrame {
     }
 
     private Action acSaveToFile = new AbstractAction("Save...") {
-
         {
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control S"));
         }
@@ -567,8 +553,8 @@ public class MainFrame extends JFrame {
                 File file = fileChooser.getSelectedFile();
                 setRecentDir(file.getAbsoluteFile().getParentFile());
                 if (file.exists()) {
-                    result = JOptionPane.showConfirmDialog(MainFrame.this, "File " + file
-                            + " already exists, overwrite?");
+                    result = JOptionPane.showConfirmDialog(
+                            MainFrame.this, "File " + file + " already exists, overwrite?");
                     if (result != JOptionPane.YES_OPTION) {
                         return;
                     }

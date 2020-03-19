@@ -21,11 +21,9 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 class TableScrollController extends AutoScrollController {
-
     private final JTable table;
 
     private final TableModelListener modelListener = new TableModelListener() {
-
         @Override
         public void tableChanged(TableModelEvent e) {
             if (e.getType() == TableModelEvent.INSERT) {
@@ -45,8 +43,6 @@ class TableScrollController extends AutoScrollController {
 
     @Override
     protected void performScrollToTheEnd() {
-        table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1,
-                TableModelEvent.ALL_COLUMNS, true));
+        table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1, TableModelEvent.ALL_COLUMNS, true));
     }
-
 }

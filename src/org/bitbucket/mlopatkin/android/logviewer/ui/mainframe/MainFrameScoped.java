@@ -31,5 +31,4 @@ import javax.inject.Scope;
 @Scope
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
-public @interface MainFrameScoped {
-}
+public @interface MainFrameScoped {}

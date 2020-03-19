@@ -22,6 +22,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 public interface FilterCollection<T extends Predicate<LogRecord>> {
     void addFilter(FilteringMode mode, T filter);
+
     void removeFilter(FilteringMode mode, T filter);
 
     default void setFilterEnabled(FilteringMode mode, T filter, boolean enabled) {

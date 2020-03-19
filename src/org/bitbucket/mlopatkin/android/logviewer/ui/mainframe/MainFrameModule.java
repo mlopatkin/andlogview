@@ -57,9 +57,8 @@ public class MainFrameModule {
     @Provides
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
-    LogTable getMainLogTable(LogRecordTableModel model,
-                             LogModelFilter filter,
-                             BookmarkHighlighter bookmarkHighlighter) {
+    LogTable getMainLogTable(
+            LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter) {
         LogTable logTable = LogTable.create(model, filter);
         logTable.addDecorator(bookmarkHighlighter);
         return logTable;

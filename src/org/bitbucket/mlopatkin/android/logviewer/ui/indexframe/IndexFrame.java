@@ -55,11 +55,9 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     private boolean isFirstShow = true;
 
     @Inject
-    public IndexFrame(DialogFactory dialogFactory,
-                      LogRecordTableColumnModel columnsModel,
-                      @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable,
-                      IndexController controller,
-                      @Nullable PopupBuilder popupBuilder) {
+    public IndexFrame(DialogFactory dialogFactory, LogRecordTableColumnModel columnsModel,
+            @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable, IndexController controller,
+            @Nullable PopupBuilder popupBuilder) {
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;
@@ -100,7 +98,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     }
 
     private class LineDoubleClickListener implements DoubleClickListener {
-
         @Override
         public void mouseClicked(MouseEvent e) {
             int rowView = indexedRecordsTable.rowAtPoint(e.getPoint());
@@ -109,7 +106,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
                 controller.activateRow(row);
             }
         }
-
     }
 
     private WindowListener closingListener = new WindowAdapter() {
@@ -123,18 +119,16 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     private static final String ACTION_JUMP_TO_LINE = "jump_to_line";
 
     private void setupKeys() {
-        UiHelper.bindKeyFocused(
-                indexedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE,
-                new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        int row = indexedRecordsTable.getSelectedRow();
-                        if (row >= 0) {
-                            row = indexedRecordsTable.convertRowIndexToModel(row);
-                            controller.activateRow(row);
-                        }
-                    }
-                });
+        UiHelper.bindKeyFocused(indexedRecordsTable, KEY_JUMP_TO_LINE, ACTION_JUMP_TO_LINE, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = indexedRecordsTable.getSelectedRow();
+                if (row >= 0) {
+                    row = indexedRecordsTable.convertRowIndexToModel(row);
+                    controller.activateRow(row);
+                }
+            }
+        });
     }
 
     @Override

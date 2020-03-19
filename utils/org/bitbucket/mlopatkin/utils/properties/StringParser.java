@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.utils.properties;
 
 public class StringParser implements Parser<String> {
-
     @Override
     public String read(String value) {
         return value;
@@ -27,5 +26,4 @@ public class StringParser implements Parser<String> {
     public String write(String value) {
         return value;
     }
-
 }

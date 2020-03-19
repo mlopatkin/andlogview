@@ -29,7 +29,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 class SetupAdbDialog extends JDialog implements PropertyChangeListener {
-
     private JOptionPane optionPane;
 
     private String yesBtnString = "Yes";
@@ -40,13 +39,12 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
     private SetupAdbDialog(Frame aFrame) {
         super(aFrame, true);
 
-        Object[] array = { "The ADB executable cannot be found. Would you like to specify it now?",
-                checkBox };
+        Object[] array = {"The ADB executable cannot be found. Would you like to specify it now?", checkBox};
 
-        Object[] options = { yesBtnString, noBtnString };
+        Object[] options = {yesBtnString, noBtnString};
 
-        optionPane = new JOptionPane(array, JOptionPane.ERROR_MESSAGE, JOptionPane.YES_NO_OPTION,
-                null, options, options[0]);
+        optionPane =
+                new JOptionPane(array, JOptionPane.ERROR_MESSAGE, JOptionPane.YES_NO_OPTION, null, options, options[0]);
 
         setContentPane(optionPane);
 
@@ -59,17 +57,14 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
         });
         optionPane.addPropertyChangeListener(this);
         pack();
-
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
 
-        if (isVisible()
-                && (e.getSource() == optionPane)
-                && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY
-                        .equals(prop))) {
+        if (isVisible() && (e.getSource() == optionPane)
+                && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
             Object value = optionPane.getValue();
 
             if (value == JOptionPane.UNINITIALIZED_VALUE) {

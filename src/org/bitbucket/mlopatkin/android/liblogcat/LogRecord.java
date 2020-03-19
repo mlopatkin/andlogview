@@ -25,9 +25,13 @@ import java.util.Date;
  * message, etc.
  */
 public class LogRecord implements Comparable<LogRecord> {
-
     public enum Priority {
-        VERBOSE, DEBUG, INFO, WARN, ERROR, FATAL;
+        VERBOSE,
+        DEBUG,
+        INFO,
+        WARN,
+        ERROR,
+        FATAL;
 
         public String getLetter() {
             return toString().substring(0, 1);
@@ -37,7 +41,12 @@ public class LogRecord implements Comparable<LogRecord> {
     }
 
     public enum Buffer {
-        UNKNOWN, MAIN("Main"), SYSTEM("System"), RADIO("Radio"), EVENTS("Events"), CRASH("Crash");
+        UNKNOWN,
+        MAIN("Main"),
+        SYSTEM("System"),
+        RADIO("Radio"),
+        EVENTS("Events"),
+        CRASH("Crash");
 
         private final String name;
 
@@ -65,14 +74,12 @@ public class LogRecord implements Comparable<LogRecord> {
     private final Buffer buffer;
     private final String appName;
 
-    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag,
-            String message) {
+    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message) {
         this(time, pid, tid, appName, priority, tag, message, Buffer.UNKNOWN);
     }
 
-    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag,
-            String message,
-            Buffer buffer) {
+    public LogRecord(
+            Date time, int pid, int tid, String appName, Priority priority, String tag, String message, Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -151,5 +158,4 @@ public class LogRecord implements Comparable<LogRecord> {
             return timeCompare;
         }
     }
-
 }

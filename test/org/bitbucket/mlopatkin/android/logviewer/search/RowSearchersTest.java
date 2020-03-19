@@ -1,4 +1,3 @@
-
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -12,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class RowSearchersTest {
-
     static final String TAG_1 = "Tag1";
     static final String TAG_WITH_SPACE = "Tag with space";
     static final String TAG_CONTACTS = "contacts";
@@ -24,7 +22,6 @@ public class RowSearchersTest {
     static final String MSG_CONTACTS = "Starting activity com.android.contacts";
     static final String MSG_SYSTEM_SERVER = "System_server died";
 
-
     private static LogRecord makeRecord(String tag, String app, String msg) {
         return new LogRecord(null, -1, -1, app, LogRecord.Priority.FATAL, tag, msg);
     }
@@ -34,8 +31,8 @@ public class RowSearchersTest {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_NAME_SF, MSG_SYSTEM_SERVER);
         LogRecord recordNotMatch = makeRecord(TAG_1, APP_NAME_SF, MSG_CONTACTS);
 
-        RowSearchStrategy searcher = new ValueSearcher(
-                SearchStrategyFactory.createHighlightStrategy("contacts"), Column.TAG);
+        RowSearchStrategy searcher =
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.TAG);
         assertTrue(searcher.isRowMatched(record));
         assertFalse(searcher.isRowMatched(recordNotMatch));
     }
@@ -43,8 +40,8 @@ public class RowSearchersTest {
     @Test
     public void testTagSearcher_highlight() throws Exception {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_CONTACTS);
-        RowSearchStrategy searcher = new ValueSearcher(
-                SearchStrategyFactory.createHighlightStrategy("contacts"), Column.TAG);
+        RowSearchStrategy searcher =
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.TAG);
 
         TextHighlighter mockHighlighterTag = Mockito.mock(TextHighlighter.class);
         searcher.highlightColumn(record, Column.TAG.getIndex(), mockHighlighterTag);
@@ -64,8 +61,8 @@ public class RowSearchersTest {
         LogRecord record = makeRecord(TAG_1, APP_NAME_SF, MSG_CONTACTS);
         LogRecord recordNotMatch = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_SYSTEM_SERVER);
 
-        RowSearchStrategy searcher = new ValueSearcher(
-                SearchStrategyFactory.createHighlightStrategy("contacts"), Column.MESSAGE);
+        RowSearchStrategy searcher =
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.MESSAGE);
         assertTrue(searcher.isRowMatched(record));
         assertFalse(searcher.isRowMatched(recordNotMatch));
     }
@@ -73,8 +70,8 @@ public class RowSearchersTest {
     @Test
     public void testMsgSearcher_highlight() throws Exception {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_CONTACTS);
-        RowSearchStrategy searcher = new ValueSearcher(
-                SearchStrategyFactory.createHighlightStrategy("contacts"), Column.MESSAGE);
+        RowSearchStrategy searcher =
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.MESSAGE);
 
         TextHighlighter mockHighlighterTag = Mockito.mock(TextHighlighter.class);
         searcher.highlightColumn(record, Column.TAG.getIndex(), mockHighlighterTag);
@@ -93,8 +90,8 @@ public class RowSearchersTest {
         LogRecord record = makeRecord(TAG_1, APP_CONTACTS, MSG_SYSTEM_SERVER);
         LogRecord recordNotMatch = makeRecord(TAG_CONTACTS, APP_NAME_SF, MSG_CONTACTS);
 
-        RowSearchStrategy searcher = new ValueSearcher(
-                SearchStrategyFactory.createHighlightStrategy("contacts"), Column.APP_NAME);
+        RowSearchStrategy searcher =
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.APP_NAME);
         assertTrue(searcher.isRowMatched(record));
         assertFalse(searcher.isRowMatched(recordNotMatch));
     }
@@ -102,8 +99,8 @@ public class RowSearchersTest {
     @Test
     public void testAppNameSearcher_highlight() throws Exception {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_CONTACTS);
-        RowSearchStrategy searcher = new ValueSearcher(
-                SearchStrategyFactory.createHighlightStrategy("contacts"), Column.APP_NAME);
+        RowSearchStrategy searcher =
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.APP_NAME);
 
         TextHighlighter mockHighlighterTag = Mockito.mock(TextHighlighter.class);
         searcher.highlightColumn(record, Column.TAG.getIndex(), mockHighlighterTag);
@@ -112,7 +109,6 @@ public class RowSearchersTest {
         TextHighlighter mockHighlighterMsg = Mockito.mock(TextHighlighter.class);
         searcher.highlightColumn(record, Column.MESSAGE.getIndex(), mockHighlighterMsg);
         verifyZeroInteractions(mockHighlighterMsg);
-
 
         TextHighlighter mockHighlighterAppName = Mockito.mock(TextHighlighter.class);
         searcher.highlightColumn(record, Column.APP_NAME.getIndex(), mockHighlighterAppName);

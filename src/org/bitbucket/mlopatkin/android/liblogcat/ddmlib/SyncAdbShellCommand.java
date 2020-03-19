@@ -5,9 +5,7 @@ import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.MultiLineReceiver;
 
 class SyncAdbShellCommand extends AdbShellCommand<IShellOutputReceiver> {
-
     private static class StringReceiver extends MultiLineReceiver {
-
         final StringBuilder linesBuf = new StringBuilder();
 
         @Override
@@ -21,7 +19,6 @@ class SyncAdbShellCommand extends AdbShellCommand<IShellOutputReceiver> {
                 linesBuf.append(line);
             }
         }
-
     }
 
     private SyncAdbShellCommand(IDevice device, String commandLine, StringReceiver receiver) {

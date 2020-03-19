@@ -43,7 +43,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 public class ConfigurationDialog extends JDialog {
-
     private final JPanel contentPanel = new JPanel();
 
     private ConfigurationDialog(Frame owner) {
@@ -64,7 +63,6 @@ public class ConfigurationDialog extends JDialog {
         JButton btBrowseAdb = new JButton("...");
 
         btBrowseAdb.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
@@ -80,18 +78,17 @@ public class ConfigurationDialog extends JDialog {
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
         gl_contentPanel.setHorizontalGroup(
                 gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                        .addGroup(gl_contentPanel.createSequentialGroup()
-                                .addComponent(lblAdbExecutableLocation)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(textAdbExecutable, GroupLayout.DEFAULT_SIZE, 215,
-                                        Short.MAX_VALUE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(btBrowseAdb, GroupLayout.PREFERRED_SIZE, 33,
-                                        GroupLayout.PREFERRED_SIZE))
+                        .addGroup(
+                                gl_contentPanel.createSequentialGroup()
+                                        .addComponent(lblAdbExecutableLocation)
+                                        .addPreferredGap(ComponentPlacement.RELATED)
+                                        .addComponent(textAdbExecutable, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                                        .addPreferredGap(ComponentPlacement.RELATED)
+                                        .addComponent(btBrowseAdb, GroupLayout.PREFERRED_SIZE, 33,
+                                                GroupLayout.PREFERRED_SIZE))
                         .addGroup(gl_contentPanel.createSequentialGroup()
                                 .addComponent(cbAutoReconnect)
-                                .addContainerGap())
-        );
+                                .addContainerGap()));
         gl_contentPanel.setVerticalGroup(
                 gl_contentPanel.createParallelGroup(Alignment.LEADING)
                         .addGroup(gl_contentPanel.createSequentialGroup()
@@ -106,8 +103,7 @@ public class ConfigurationDialog extends JDialog {
                                                 .addComponent(btBrowseAdb)))
                                 .addGap(18)
                                 .addComponent(cbAutoReconnect)
-                                .addContainerGap(57, Short.MAX_VALUE))
-        );
+                                .addContainerGap(57, Short.MAX_VALUE)));
         contentPanel.setLayout(gl_contentPanel);
         {
             JPanel buttonPane = new JPanel();
@@ -163,8 +159,7 @@ public class ConfigurationDialog extends JDialog {
             return false; // silently ignore
         }
         File f = new File(filename);
-        if (Configuration.adb.DEFAULT_EXECUTABLE.equals(filename) || (f.exists() && f
-                .canExecute())) {
+        if (Configuration.adb.DEFAULT_EXECUTABLE.equals(filename) || (f.exists() && f.canExecute())) {
             return true;
         }
         ErrorDialogsHelper.showError(this, "%s is not a valid adb file", filename);
@@ -174,9 +169,9 @@ public class ConfigurationDialog extends JDialog {
     private void notifyAboutChanges() {
         if (!Objects.equal(Configuration.adb.executable(), textAdbExecutable.getText())) {
             JOptionPane.showMessageDialog(this,
-                                          "You've changed the path to the ADB executable. Please restart the "
-                                                  + "application to apply changes.",
-                                          "Please restart", JOptionPane.INFORMATION_MESSAGE);
+                    "You've changed the path to the ADB executable. Please restart the "
+                            + "application to apply changes.",
+                    "Please restart", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

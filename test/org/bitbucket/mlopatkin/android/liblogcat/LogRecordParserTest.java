@@ -27,7 +27,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class LogRecordParserTest {
-
     static final String BRIEF_RECORD = "D/MediaScanner(417): postscan return";
     static final String BRIEF_RECORD_PAD = "D/MediaScanner   (  417): postscan return";
     static final String PROCESS_RECORD = "D(  417) postscan return  (MediaScanner)";
@@ -202,8 +201,7 @@ public class LogRecordParserTest {
 
     @Test
     public void testThreadTimeLogWithMicrosecondsTimestamp() {
-        LogRecord record =
-                LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD_WITH_MCS, Collections.emptyMap());
+        LogRecord record = LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD_WITH_MCS, Collections.emptyMap());
 
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());

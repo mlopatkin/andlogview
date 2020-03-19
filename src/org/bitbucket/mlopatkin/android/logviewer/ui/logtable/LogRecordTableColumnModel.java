@@ -83,8 +83,8 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
         });
     }
 
-    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, ColumnOrder columnOrder,
-            ColumnTogglesModel columnTogglesModel) {
+    public LogRecordTableColumnModel(
+            PidToProcessMapper pidToProcessMapper, ColumnOrder columnOrder, ColumnTogglesModel columnTogglesModel) {
         this.pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         this.columnOrder = columnOrder;
         this.columnTogglesModel = columnTogglesModel;
@@ -107,8 +107,8 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
 
     @VisibleForTesting
     static LogRecordTableColumnModel createForTest(Collection<Column> availableColumns) {
-        return new LogRecordTableColumnModel(null, availableColumns, ColumnOrder.canonical(),
-                                             EnumSet.allOf(Column.class));
+        return new LogRecordTableColumnModel(
+                null, availableColumns, ColumnOrder.canonical(), EnumSet.allOf(Column.class));
     }
 
     private TableColumnBuilder makeBuilder(Column column) {
@@ -178,7 +178,7 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
     @Override
     public void setColumnVisibility(Column column, boolean visible) {
         Preconditions.checkState(isColumnVisible(column) != visible,
-                                 visible ? "Trying to show column that is here" : "Trying to hide hidden column");
+                visible ? "Trying to show column that is here" : "Trying to hide hidden column");
         if (visible) {
             showColumnFor(column);
         } else {

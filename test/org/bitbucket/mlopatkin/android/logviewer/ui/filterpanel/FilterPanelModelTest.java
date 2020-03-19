@@ -31,7 +31,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class FilterPanelModelTest {
-
     @Mock
     private FilterPanelModel.FilterPanelModelListener listener;
 
@@ -110,12 +109,10 @@ public class FilterPanelModelTest {
         final FilterPanelModel model = new FilterPanelModel();
         PanelFilter filter = new PanelFilter() {
             @Override
-            public void setEnabled(boolean enabled) {
-            }
+            public void setEnabled(boolean enabled) {}
 
             @Override
-            public void openFilterEditor() {
-            }
+            public void openFilterEditor() {}
 
             @Override
             public void delete() {

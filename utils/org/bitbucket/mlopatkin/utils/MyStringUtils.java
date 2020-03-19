@@ -16,9 +16,7 @@
 package org.bitbucket.mlopatkin.utils;
 
 public class MyStringUtils {
-
-    private MyStringUtils() {
-    }
+    private MyStringUtils() {}
 
     public static final int NOT_FOUND = -1;
 

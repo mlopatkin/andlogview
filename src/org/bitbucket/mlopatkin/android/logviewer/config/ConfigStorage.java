@@ -42,7 +42,6 @@ public interface ConfigStorage {
     <T> T loadConfig(ConfigStorageClient<T> client);
 
     interface ConfigStorageClient<T> {
-
         String getName();
 
         T fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException;
@@ -53,7 +52,6 @@ public interface ConfigStorage {
     }
 
     class InvalidJsonContentException extends Exception {
-
         public InvalidJsonContentException(String message) {
             super(message);
         }
@@ -83,9 +81,7 @@ public interface ConfigStorage {
                 Files.touch(file);
             }
             final ConfigStorageImpl result = new ConfigStorageImpl(
-                    Files.asCharSource(file, Charsets.UTF_8),
-                    Files.asCharSink(file, Charsets.UTF_8),
-                    ioThreadPool);
+                    Files.asCharSource(file, Charsets.UTF_8), Files.asCharSink(file, Charsets.UTF_8), ioThreadPool);
             atExitManager.registerExitAction(() -> {
                 try {
                     result.shutdown(true);

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 class EnumParser<T extends Enum<T>> implements Parser<T> {
-
     private final Map<String, T> lookupMap;
 
     EnumParser(Class<T> type) {
@@ -45,5 +44,4 @@ class EnumParser<T extends Enum<T>> implements Parser<T> {
     public String write(T value) {
         return value.name();
     }
-
 }

@@ -30,6 +30,7 @@ public class EditFilterDialog extends FilterDialog {
     public interface DialogResultReceiver {
         void onDialogResult(FilterFromDialog oldFilter, Optional<FilterFromDialog> newFilter);
     }
+
     private final FilterFromDialog originalFilter;
     private final DialogResultReceiver receiver;
 
@@ -54,8 +55,8 @@ public class EditFilterDialog extends FilterDialog {
         try {
             receiver.onDialogResult(originalFilter, Optional.of(createFilter()));
         } catch (RequestCompilationException e) {
-            ErrorDialogsHelper.showError(this, "%s is not a valid search expression: %s",
-                    e.getRequestValue(), e.getMessage());
+            ErrorDialogsHelper.showError(
+                    this, "%s is not a valid search expression: %s", e.getRequestValue(), e.getMessage());
             return;
         }
         setVisible(false);
@@ -67,9 +68,8 @@ public class EditFilterDialog extends FilterDialog {
         setVisible(false);
     }
 
-    public static void startEditFilterDialog(Frame owner,
-                                             FilterFromDialog filter,
-                                             DialogResultReceiver resultReceiver) {
+    public static void startEditFilterDialog(
+            Frame owner, FilterFromDialog filter, DialogResultReceiver resultReceiver) {
         assert SwingUtilities.isEventDispatchThread();
 
         EditFilterDialog editFilterDialog = new EditFilterDialog(owner, filter, resultReceiver);

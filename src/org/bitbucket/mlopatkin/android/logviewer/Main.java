@@ -130,9 +130,8 @@ public class Main {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                JOptionPane.showMessageDialog(null,
-                                              "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
-                                              "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
+                        "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -142,16 +141,14 @@ public class Main {
         public void uncaughtException(Thread t, Throwable e) {
             try {
                 logger.error("Uncaught exception in " + t.getName(), e);
-                ErrorDialogsHelper.showError(
-                        null,
+                ErrorDialogsHelper.showError(null,
                         "<html>Unhandled exception occured. Please collect log file at<br>"
                                 + new File(SystemUtils.getJavaIoTmpDir(), "logview.log").getAbsolutePath()
                                 + "<br>and send it to the authors, then restart the program");
-            } catch (Throwable ex) {  // OK to catch Throwable here
+            } catch (Throwable ex) { // OK to catch Throwable here
                 // bad idea to log something if we already failed with logging
                 // logger.error("Exception in exception handler", ex);
             }
-
         }
     };
 }

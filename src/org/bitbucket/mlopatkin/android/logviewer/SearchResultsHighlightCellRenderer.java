@@ -30,7 +30,6 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class SearchResultsHighlightCellRenderer implements DecoratingCellRenderer {
-
     private TableCellRenderer inner;
     private RowSearchStrategy strategy;
 
@@ -40,15 +39,14 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
-        JComponent c = (JComponent) inner.getTableCellRendererComponent(table, value, isSelected,
-                hasFocus, row, column);
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        JComponent c =
+                (JComponent) inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         int modelColumn = table.convertColumnIndexToModel(column);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
         LogRecord rowData = model.getRowData(table.convertRowIndexToModel(row));
-        if (modelColumn == Column.MESSAGE.getIndex()
-                || modelColumn == Column.TAG.getIndex()
+        if (modelColumn == Column.MESSAGE.getIndex() || modelColumn == Column.TAG.getIndex()
                 || modelColumn == Column.APP_NAME.getIndex()) {
             if (value != null) {
                 String text = value.toString();

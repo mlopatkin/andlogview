@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class AdbDataSource implements DataSource, BufferReceiver {
-
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
     private RecordListener<LogRecord> listener;
@@ -123,7 +122,6 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         final String commandLine = createLogcatCommandLine(bufferName);
         final AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
         buffers.add(adbBuffer);
-
     }
 
     @Override
@@ -158,13 +156,11 @@ public class AdbDataSource implements DataSource, BufferReceiver {
                 close();
                 AdbDeviceManager.removeDeviceChangeListener(this);
             }
-
         }
 
         @Override
         public void deviceChanged(IDevice device, int changeMask) {
-            if (device == AdbDataSource.this.device && (changeMask & IDevice.CHANGE_STATE) != 0
-                    && device.isOffline()) {
+            if (device == AdbDataSource.this.device && (changeMask & IDevice.CHANGE_STATE) != 0 && device.isOffline()) {
                 close();
                 AdbDeviceManager.removeDeviceChangeListener(this);
             }

@@ -27,7 +27,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
  */
 @Module
 public abstract class FilterModule {
-
     @Binds
     @MainFrameScoped
     public abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);

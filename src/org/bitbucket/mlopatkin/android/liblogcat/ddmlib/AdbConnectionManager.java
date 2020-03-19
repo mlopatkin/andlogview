@@ -25,11 +25,9 @@ import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import java.lang.reflect.Field;
 
 public class AdbConnectionManager {
-
     private static final Logger logger = Logger.getLogger(AdbConnectionManager.class);
 
-    private AdbConnectionManager() {
-    }
+    private AdbConnectionManager() {}
 
     private static boolean inited = false;
     private static boolean ready = false;
@@ -46,14 +44,11 @@ public class AdbConnectionManager {
             return started.getBoolean(adb);
         } catch (IllegalAccessException e) {
             logger.fatal("The DDMLIB is unsupported", e);
-            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: "
-                    + System.getenv("DDMLIB"));
+            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: " + System.getenv("DDMLIB"));
         } catch (NoSuchFieldException e) {
             logger.fatal("The DDMLIB is unsupported", e);
-            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: "
-                    + System.getenv("DDMLIB"));
+            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: " + System.getenv("DDMLIB"));
         }
-
     }
 
     public static void init() throws AdbException, DdmlibUnsupportedException {
@@ -69,12 +64,10 @@ public class AdbConnectionManager {
                 public void run() {
                     closeAdb();
                 }
-
             });
             inited = true;
             try {
-                AndroidDebugBridge adb = AndroidDebugBridge.createBridge(
-                        Configuration.adb.executable(), false);
+                AndroidDebugBridge adb = AndroidDebugBridge.createBridge(Configuration.adb.executable(), false);
                 if (isReady(adb)) {
                     ready = true;
                 }
@@ -83,7 +76,6 @@ public class AdbConnectionManager {
                 throw new AdbException("Cannot initialize ADB server. See logs for details");
             }
         }
-
     }
 
     public static boolean isFailed() {
@@ -96,8 +88,8 @@ public class AdbConnectionManager {
 
     private static void checkState() throws IllegalStateException {
         if (!inited || AndroidDebugBridge.getBridge() == null) {
-            throw new IllegalStateException("Invalid DDMLIB state: inited=" + inited + " bridge="
-                    + AndroidDebugBridge.getBridge());
+            throw new IllegalStateException(
+                    "Invalid DDMLIB state: inited=" + inited + " bridge=" + AndroidDebugBridge.getBridge());
         }
     }
 
@@ -109,5 +101,4 @@ public class AdbConnectionManager {
     static void closeAdb() {
         AndroidDebugBridge.terminate();
     }
-
 }

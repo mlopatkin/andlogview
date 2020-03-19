@@ -26,8 +26,8 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
-class ColorsComboBoxModel extends AbstractListModel<ColorsComboBoxModel.Item>
-        implements ComboBoxModel<ColorsComboBoxModel.Item> {
+class ColorsComboBoxModel
+        extends AbstractListModel<ColorsComboBoxModel.Item> implements ComboBoxModel<ColorsComboBoxModel.Item> {
     // TODO having string here is kind of lame
     private Item selected;
     private List<Item> items;
@@ -72,7 +72,7 @@ class ColorsComboBoxModel extends AbstractListModel<ColorsComboBoxModel.Item>
         @Override
         public String toString() {
             return String.format("<html><span style='background-color: #%06x '>Color %d</span></html>",
-                                 color.getRGB() & 0x00FFFFFF, index);
+                    color.getRGB() & 0x00FFFFFF, index);
         }
     }
 }

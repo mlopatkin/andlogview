@@ -74,8 +74,7 @@ public class SearchRequestParser<T> {
     private boolean isRegexRequest(String request) {
         final int length = request.length();
         if (length > 1) {
-            if (request.charAt(0) == REGEX_BOUND_CHAR
-                    && request.charAt(length - 1) == REGEX_BOUND_CHAR) {
+            if (request.charAt(0) == REGEX_BOUND_CHAR && request.charAt(length - 1) == REGEX_BOUND_CHAR) {
                 return true;
             }
         }
@@ -118,6 +117,5 @@ public class SearchRequestParser<T> {
             }
         }
         return delegate.createPlainSearcher(request);
-
     }
 }

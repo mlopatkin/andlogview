@@ -1,4 +1,3 @@
-
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import com.google.common.base.CharMatcher;
@@ -25,9 +24,7 @@ import java.util.List;
  * </pre>
  */
 public final class RowSearchStrategyFactory {
-
-    private RowSearchStrategyFactory() {
-    }
+    private RowSearchStrategyFactory() {}
 
     private static final String PREFIX_APP = "app:";
     private static final String PREFIX_TAG = "tag:";
@@ -49,8 +46,7 @@ public final class RowSearchStrategyFactory {
         return prepareWithoutPrefix(pattern);
     }
 
-    private static RowSearchStrategy prepareWithPrefix(String prefix, String rest)
-            throws RequestCompilationException {
+    private static RowSearchStrategy prepareWithPrefix(String prefix, String rest) throws RequestCompilationException {
         rest = rest.trim();
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(rest);
         if (strategy == null) {
@@ -67,8 +63,7 @@ public final class RowSearchStrategyFactory {
         }
     }
 
-    private static RowSearchStrategy prepareWithoutPrefix(String pattern)
-            throws RequestCompilationException {
+    private static RowSearchStrategy prepareWithoutPrefix(String pattern) throws RequestCompilationException {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(pattern);
         if (strategy != null) {
             Column[] searchableColumns = {Column.APP_NAME, Column.MESSAGE, Column.TAG};

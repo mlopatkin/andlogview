@@ -15,7 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-
 public interface HighlightStrategy extends SearchStrategy {
     void highlightOccurences(String text, TextHighlighter highlighter);
 }

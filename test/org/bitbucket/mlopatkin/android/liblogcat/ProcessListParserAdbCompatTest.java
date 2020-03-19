@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Parameterized.class)
 public class ProcessListParserAdbCompatTest {
-
     private final String header;
     private final String psLine;
 

@@ -28,8 +28,7 @@ import javax.swing.table.TableCellEditor;
  * etc.
  */
 public class TableCellHelper {
-    private TableCellHelper() {
-    }
+    private TableCellHelper() {}
 
     /**
      * Creates read-only {@link JTextField}. Cell editing is toggled with double
@@ -40,10 +39,9 @@ public class TableCellHelper {
     public static TableCellEditor createReadOnlyCellTextEditor() {
         return new DefaultCellEditor(new JTextField()) {
             @Override
-            public Component getTableCellEditorComponent(JTable table, Object value,
-                                                         boolean isSelected, int row, int column) {
-                JTextField tf = (JTextField) super.getTableCellEditorComponent(table, value,
-                                                                               isSelected, row, column);
+            public Component getTableCellEditorComponent(
+                    JTable table, Object value, boolean isSelected, int row, int column) {
+                JTextField tf = (JTextField) super.getTableCellEditorComponent(table, value, isSelected, row, column);
                 tf.setEditable(false);
                 return tf;
             }

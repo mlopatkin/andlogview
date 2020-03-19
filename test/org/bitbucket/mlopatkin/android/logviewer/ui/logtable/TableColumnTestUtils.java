@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 import javax.swing.table.TableColumn;
 
 public final class TableColumnTestUtils {
-    private TableColumnTestUtils() {
-    }
+    private TableColumnTestUtils() {}
 
     public static Matcher<Iterable<? extends TableColumn>> areTableColumnsFor(Column... columns) {
         return areTableColumnsFor(Arrays.asList(columns));
@@ -54,7 +53,7 @@ public final class TableColumnTestUtils {
             @Override
             protected void describeMismatchSafely(TableColumn item, Description mismatchDescription) {
                 mismatchDescription.appendText("was column for ")
-                                   .appendValue(Column.getByColumnIndex(item.getModelIndex()));
+                        .appendValue(Column.getByColumnIndex(item.getModelIndex()));
             }
         };
     }

@@ -44,49 +44,29 @@ public class SearcherBuilderTest {
 
     private static final String PLAIN_PATTERN = "Hello";
 
-    private static final ImmutableList<Case> PLAIN_CASES = ImmutableList.of(
-            new Case("Hello", false, true, true),
-            new Case("HelLo", true, true, true),
-            new Case("hello", true, true, true),
-            new Case("Say Hello", false, false, true),
-            new Case("Hello say", false, false, true),
+    private static final ImmutableList<Case> PLAIN_CASES = ImmutableList.of(new Case("Hello", false, true, true),
+            new Case("HelLo", true, true, true), new Case("hello", true, true, true),
+            new Case("Say Hello", false, false, true), new Case("Hello say", false, false, true),
             new Case("He said \"Hello\" and left", false, false, true),
-            new Case("He said hello and left", true, false, true),
-            new Case("   Hello", false, false, true),
-            new Case("HelloHello", false, false, true),
-            new Case("Hello   ", false, false, true),
-            new Case("Hell o", false, true, false),
-            new Case("not a pattern", false, true, false)
-    );
+            new Case("He said hello and left", true, false, true), new Case("   Hello", false, false, true),
+            new Case("HelloHello", false, false, true), new Case("Hello   ", false, false, true),
+            new Case("Hell o", false, true, false), new Case("not a pattern", false, true, false));
 
     private static final String REGEXP_PATTERN = "Hel(l?)o";
 
-    private static final ImmutableList<Case> REGEXP_CASES = ImmutableList.of(
-            new Case("Hello", false, true, true),
-            new Case("Helo", false, true, true),
-            new Case("HelLo", true, true, true),
-            new Case("HeLo", true, true, true),
-            new Case("hello", true, true, true),
-            new Case("helo", true, true, true),
-            new Case("Say Hello", false, false, true),
-            new Case("Say Helo", false, false, true),
-            new Case("Hello say", false, false, true),
-            new Case("Helo say", false, false, true),
+    private static final ImmutableList<Case> REGEXP_CASES = ImmutableList.of(new Case("Hello", false, true, true),
+            new Case("Helo", false, true, true), new Case("HelLo", true, true, true),
+            new Case("HeLo", true, true, true), new Case("hello", true, true, true), new Case("helo", true, true, true),
+            new Case("Say Hello", false, false, true), new Case("Say Helo", false, false, true),
+            new Case("Hello say", false, false, true), new Case("Helo say", false, false, true),
             new Case("He said \"Hello\" and left", false, false, true),
             new Case("He said \"Helo\" and left", false, false, true),
-            new Case("He said hello and left", true, false, true),
-            new Case("He said helo and left", true, false, true),
-            new Case("   Hello", false, false, true),
-            new Case("   Helo", false, false, true),
-            new Case("HelloHello", false, false, true),
-            new Case("HeloHello", false, false, true),
-            new Case("HeloHelo", false, false, true),
-            new Case("Hello   ", false, false, true),
-            new Case("Helo   ", false, false, true),
-            new Case("Hell o", false, true, false),
-            new Case("Hel o", false, true, false),
-            new Case("not a pattern", false, true, false)
-    );
+            new Case("He said hello and left", true, false, true), new Case("He said helo and left", true, false, true),
+            new Case("   Hello", false, false, true), new Case("   Helo", false, false, true),
+            new Case("HelloHello", false, false, true), new Case("HeloHello", false, false, true),
+            new Case("HeloHelo", false, false, true), new Case("Hello   ", false, false, true),
+            new Case("Helo   ", false, false, true), new Case("Hell o", false, true, false),
+            new Case("Hel o", false, true, false), new Case("not a pattern", false, true, false));
 
     @Test
     public void testBuildPlain_defaultIsMatchWholeCaseSensitive() throws Exception {
@@ -135,8 +115,7 @@ public class SearcherBuilderTest {
 
     @Test
     public void testBuildPlain_threatsRegexSyntaxVerbatim() throws Exception {
-        Predicate<String> p =
-                new SearcherBuilder().buildPlain("[abc]");
+        Predicate<String> p = new SearcherBuilder().buildPlain("[abc]");
 
         Assert.assertFalse("Pattern shouldn't be threated as regexp", p.apply("a"));
         Assert.assertTrue(p.apply("[abc]"));
@@ -206,8 +185,8 @@ public class SearcherBuilderTest {
         new SearcherBuilder().buildRegexp("foo[");
     }
 
-    private static Matcher<Boolean> matchesCase(final boolean performsCaseConversion, boolean matchWholeStringOnly,
-                                                final Case theCase) {
+    private static Matcher<Boolean> matchesCase(
+            final boolean performsCaseConversion, boolean matchWholeStringOnly, final Case theCase) {
         final boolean performsSubstringMatch = !matchWholeStringOnly;
         return new BaseMatcher<Boolean>() {
             @Override

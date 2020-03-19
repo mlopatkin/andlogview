@@ -42,9 +42,8 @@ public class IndexFrameModule {
     private final PopupBuilder popupBuilder;
     private final LogModelFilter logModelFilter;
 
-    public IndexFrameModule(IndexController indexController,
-                            @Nullable PopupBuilder popupBuilder,
-                            LogModelFilter logModelFilter) {
+    public IndexFrameModule(
+            IndexController indexController, @Nullable PopupBuilder popupBuilder, LogModelFilter logModelFilter) {
         this.indexController = indexController;
         this.popupBuilder = popupBuilder;
         this.logModelFilter = logModelFilter;
@@ -63,8 +62,8 @@ public class IndexFrameModule {
 
     @Provides
     LogRecordTableColumnModel getColumnModel() {
-        return new LogRecordTableColumnModel(null, INDEX_FRAME_COLUMNS, ColumnOrder.canonical(),
-                                             new HashSet<>(INDEX_FRAME_COLUMNS));
+        return new LogRecordTableColumnModel(
+                null, INDEX_FRAME_COLUMNS, ColumnOrder.canonical(), new HashSet<>(INDEX_FRAME_COLUMNS));
     }
 
     @Provides

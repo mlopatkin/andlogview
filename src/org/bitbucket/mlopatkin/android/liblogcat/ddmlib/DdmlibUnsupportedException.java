@@ -16,9 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 public class DdmlibUnsupportedException extends Exception {
-
-    public DdmlibUnsupportedException() {
-    }
+    public DdmlibUnsupportedException() {}
 
     public DdmlibUnsupportedException(String message) {
         super(message);
@@ -31,5 +29,4 @@ public class DdmlibUnsupportedException extends Exception {
     public DdmlibUnsupportedException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.Assert.assertThat;
 
 public class FileDataSourceFactoryTest {
-
     @Test(expected = UnrecognizedFormatException.class)
     public void openEmptyFile() throws Exception {
         FileDataSourceFactory.createDataSource("empty.log", CharSource.empty());
@@ -47,7 +46,7 @@ public class FileDataSourceFactoryTest {
 
         DataSource dumpstate = FileDataSourceFactory.createDataSource("dumpstate.log", dumpstateFile);
         assertThat(dumpstate.getAvailableBuffers(),
-                   Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.SYSTEM));
+                Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.SYSTEM));
     }
 
     @Test
@@ -56,7 +55,7 @@ public class FileDataSourceFactoryTest {
 
         DataSource brief = FileDataSourceFactory.createDataSource("brief.log", briefLog);
         assertThat(brief.getAvailableFields(),
-                   Matchers.containsInAnyOrder(Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
+                Matchers.containsInAnyOrder(Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
     }
 
     @Test
@@ -65,7 +64,7 @@ public class FileDataSourceFactoryTest {
 
         DataSource source = FileDataSourceFactory.createDataSource("time.log", log);
         assertThat(source.getAvailableFields(),
-                   Matchers.containsInAnyOrder(Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
+                Matchers.containsInAnyOrder(Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
     }
 
     @Test
@@ -75,10 +74,9 @@ public class FileDataSourceFactoryTest {
         DataSource source = FileDataSourceFactory.createDataSource("threadtime.log", log);
         // TODO(mlopatkin) Having BUFFER here is quite incosistent.
         assertThat(source.getAvailableFields(),
-                   Matchers.containsInAnyOrder(Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG,
-                                               Field.MESSAGE, Field.BUFFER));
+                Matchers.containsInAnyOrder(
+                        Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE, Field.BUFFER));
     }
-
 
     @Test
     public void openLogFileWithExtraStuffInTheBeginning() throws Exception {
@@ -89,7 +87,6 @@ public class FileDataSourceFactoryTest {
     }
 
     private CharSource openTestData(String testDataName) {
-        return Resources
-                .asCharSource(Resources.getResource(getClass(), testDataName), StandardCharsets.UTF_8);
+        return Resources.asCharSource(Resources.getResource(getClass(), testDataName), StandardCharsets.UTF_8);
     }
 }

@@ -20,7 +20,6 @@ import java.util.EnumMap;
 
 @SuppressWarnings("rawtypes")
 public class EnumMapPropertyBuilder<T extends Enum<T>, V> implements IPropertyBuilder<EnumMap> {
-
     private final Class<T> keyType;
     private final Class<V> valueType;
     private Parser<V> parser;
@@ -44,5 +43,4 @@ public class EnumMapPropertyBuilder<T extends Enum<T>, V> implements IPropertyBu
             Class<T1> keyType, Class<V1> valueType) {
         return new EnumMapPropertyBuilder<T1, V1>(keyType, valueType);
     }
-
 }

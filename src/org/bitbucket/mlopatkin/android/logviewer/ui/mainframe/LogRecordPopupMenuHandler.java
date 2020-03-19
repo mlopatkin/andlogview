@@ -32,7 +32,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JTable;
 
 public class LogRecordPopupMenuHandler implements ItemsUpdater {
-
     private final Action acAddToBookmarks = new AbstractAction("Add to bookmarks") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -125,7 +124,6 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
     @MainFrameScoped
     public static class Factory {
-
         private final LogRecordTableModel tableModel;
         private final BookmarkModel bookmarkModel;
 

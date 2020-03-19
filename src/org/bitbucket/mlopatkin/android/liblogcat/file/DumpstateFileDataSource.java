@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DumpstateFileDataSource implements DataSource {
-
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
     private static final int READ_AHEAD_LIMIT = 65536;
 
@@ -53,8 +52,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     private String fileName;
 
-    public DumpstateFileDataSource(String fileName, BufferedReader in)
-            throws IOException, ParseException {
+    public DumpstateFileDataSource(String fileName, BufferedReader in) throws IOException, ParseException {
         this.fileName = fileName;
         initSectionHandlers();
         parseFile(in);
@@ -71,8 +69,7 @@ public class DumpstateFileDataSource implements DataSource {
         }
     }
 
-    private void parseSection(BufferedReader in, String sectionName) throws IOException,
-            ParseException {
+    private void parseSection(BufferedReader in, String sectionName) throws IOException, ParseException {
         SectionHandler handler = getSectionHandler(sectionName);
         if (handler == null) {
             return;
@@ -114,9 +111,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 
     @Override
     public EnumSet<Buffer> getAvailableBuffers() {
@@ -150,12 +145,11 @@ public class DumpstateFileDataSource implements DataSource {
      * Handles one section of the dumpstate file
      */
     private interface SectionHandler {
-
         /**
          * Checks if the implementation supports some section.
          *
          * @param sectionName section name as appears in the file without wrapping
-         *                    dashes
+         *         dashes
          * @return {@code true} if the implementation can handle this section
          */
         boolean isSupportedSection(String sectionName);
@@ -203,7 +197,6 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private class LogcatSectionHandler implements SectionHandler {
-
         private Buffer buffer;
         private Strategy parsingStrategy;
 
@@ -218,8 +211,7 @@ public class DumpstateFileDataSource implements DataSource {
             if (isEnd(line)) {
                 return false;
             }
-            if (CharMatcher.whitespace().matchesAllOf(line)
-                    || LogRecordParser.isLogBeginningLine(line)) {
+            if (CharMatcher.whitespace().matchesAllOf(line) || LogRecordParser.isLogBeginningLine(line)) {
                 return true;
             }
             if (parsingStrategy == null) {
@@ -280,10 +272,8 @@ public class DumpstateFileDataSource implements DataSource {
     private Map<Integer, String> converter = new HashMap<Integer, String>();
 
     private class ProcessesSectionHandler implements SectionHandler {
-
         @Override
-        public void endSection() {
-        }
+        public void endSection() {}
 
         @Override
         public boolean handleLine(String line) throws ParseException {
@@ -291,8 +281,7 @@ public class DumpstateFileDataSource implements DataSource {
                 return false;
             }
 
-            if (CharMatcher.whitespace().matchesAllOf(line)
-                    || ProcessListParser.isProcessListHeader(line)) {
+            if (CharMatcher.whitespace().matchesAllOf(line) || ProcessListParser.isProcessListHeader(line)) {
                 return true;
             }
             Matcher m = ProcessListParser.parseProcessListLine(line);
@@ -306,18 +295,15 @@ public class DumpstateFileDataSource implements DataSource {
         }
 
         @Override
-        public void startSection(String sectionName) {
-        }
+        public void startSection(String sectionName) {}
 
         private boolean isEnd(String line) {
             return SECTION_END_PATTERN.matcher(line).matches();
         }
-
     }
 
     @Override
     public String toString() {
         return fileName;
     }
-
 }

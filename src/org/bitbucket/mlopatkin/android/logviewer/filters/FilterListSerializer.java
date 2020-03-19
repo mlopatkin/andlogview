@@ -29,11 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class FilterListSerializer
-        implements ConfigStorage.ConfigStorageClient<List<SavedFilterData>> {
-
-    public FilterListSerializer() {
-    }
+class FilterListSerializer implements ConfigStorage.ConfigStorageClient<List<SavedFilterData>> {
+    public FilterListSerializer() {}
 
     @Override
     public String getName() {
@@ -50,8 +47,8 @@ class FilterListSerializer
                 Class<?> filterClass = Class.forName(filterClassName);
                 result.add(gson.fromJson(filterData, filterClass.asSubclass(SavedFilterData.class)));
             } catch (ClassNotFoundException e) {
-                throw new InvalidJsonContentException("Can't find class '" + filterClassName + "' referenced in filter",
-                                                      e);
+                throw new InvalidJsonContentException(
+                        "Can't find class '" + filterClassName + "' referenced in filter", e);
             } catch (ClassCastException e) {
                 throw new InvalidJsonContentException(
                         "Class '" + filterClassName + "' isn't a subclass of BaseToggleFilter");

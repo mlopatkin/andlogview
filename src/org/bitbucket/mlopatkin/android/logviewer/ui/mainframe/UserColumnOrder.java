@@ -34,7 +34,6 @@ import javax.annotation.Nullable;
  * This order is stored in the configuration file.
  */
 public class UserColumnOrder implements ColumnOrder {
-
     private final List<Column> customizableOrder;
     private final Runnable changeCommitter;
 

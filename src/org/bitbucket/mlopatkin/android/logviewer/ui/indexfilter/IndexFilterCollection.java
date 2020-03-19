@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 public class IndexFilterCollection implements FilterCollection<Predicate<LogRecord>> {
-
     public interface Observer {
         void onFilterDisabled(Predicate<LogRecord> filter);
     }

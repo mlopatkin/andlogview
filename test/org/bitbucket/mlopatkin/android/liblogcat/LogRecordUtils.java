@@ -26,9 +26,7 @@ import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
  * Some factory methods to construct log records for tests.
  */
 public final class LogRecordUtils {
-
-    private LogRecordUtils() {
-    }
+    private LogRecordUtils() {}
 
     public static LogRecord forPid(int pid) {
         return new LogRecord(new Date(), pid, NO_ID, "", Priority.INFO, "", "");

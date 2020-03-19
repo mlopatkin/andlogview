@@ -40,10 +40,9 @@ import java.util.concurrent.TimeUnit;
  * This class is immutable.
  *
  * @param <T> Subclass of {@link IShellOutputReceiver} to be passed into
- * template methods to avoid unnecessary casts.
+ *         template methods to avoid unnecessary casts.
  */
 class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
-
     private static final Logger logger = Logger.getLogger(AdbShellCommand.class);
 
     private final String command;
@@ -83,8 +82,7 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
         logger.debug("The command '" + command + "' sucessfully terminated");
     }
 
-    private static final Executor backgroundShellCommandExecutor = Executors
-            .newSingleThreadExecutor();
+    private static final Executor backgroundShellCommandExecutor = Executors.newSingleThreadExecutor();
 
     /**
      * Executes the command in the background using internal thread pool.
@@ -97,21 +95,19 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
      * Called when one of exceptions occured during shell command's execution.
      *
      * @param e exception (one of {@link TimeoutException},
-     * {@link AdbCommandRejectedException},
-     * {@link ShellCommandUnresponsiveException}, {@link IOException}
-     * )
+     *         {@link AdbCommandRejectedException},
+     *         {@link ShellCommandUnresponsiveException}, {@link IOException}
+     *         )
      * @param outputReceiver {@link IShellOutputReceiver} previously passed to constructor
      */
-    protected void onException(Exception e, T outputReceiver) {
-    }
+    protected void onException(Exception e, T outputReceiver) {}
 
     /**
      * Called when execution of the command finishes.
      *
      * @param outputReceiver {@link IShellOutputReceiver} previously passed to constructor
      */
-    protected void onCommandFinished(T outputReceiver) {
-    }
+    protected void onCommandFinished(T outputReceiver) {}
 }
 
 /**
@@ -119,7 +115,6 @@ class AdbShellCommand<T extends IShellOutputReceiver> implements Runnable {
  * {@link IOException} in a {@link ShellInputStream}'s client.
  */
 class AutoClosingAdbShellCommand extends AdbShellCommand<ShellInputStream> {
-
     AutoClosingAdbShellCommand(IDevice device, String commandLine, ShellInputStream outputReceiver) {
         super(device, commandLine, outputReceiver);
     }

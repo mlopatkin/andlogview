@@ -50,7 +50,6 @@ import javax.swing.JTable;
  * </ul>
  */
 public class TablePopupMenu extends JPopupMenu {
-
     /**
      * Implementation of this interface is responsible for making context menu
      * content to match with the table state.

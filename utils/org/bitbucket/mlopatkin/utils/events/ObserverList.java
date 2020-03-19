@@ -21,8 +21,8 @@ import javax.annotation.concurrent.NotThreadSafe;
  * <p/>
  * The implementation (and the interface) is heavily influenced by the C++ ObserverList.
  * Notable differences:
- *   - The iterator implements NOTIFY_EXISTING_ONLY.
- *   - The FOR_EACH_OBSERVER closure is left to the clients to implement in terms of iterator().
+ * - The iterator implements NOTIFY_EXISTING_ONLY.
+ * - The FOR_EACH_OBSERVER closure is left to the clients to implement in terms of iterator().
  * <p/>
  * This class is not threadsafe. Observers MUST be added, removed and will be notified on the same
  * thread this is created.
@@ -168,7 +168,9 @@ public class ObserverList<E> implements Iterable<E> {
     private void decrementIterationDepthAndCompactIfNeeded() {
         mIterationDepth--;
         assert mIterationDepth >= 0;
-        if (mIterationDepth == 0) compact();
+        if (mIterationDepth == 0) {
+            compact();
+        }
     }
 
     /**
@@ -205,11 +207,12 @@ public class ObserverList<E> implements Iterable<E> {
         @Override
         public boolean hasNext() {
             int lookupIndex = mIndex;
-            while (lookupIndex < mListEndMarker
-                    && ObserverList.this.getObserverAt(lookupIndex) == null) {
+            while (lookupIndex < mListEndMarker && ObserverList.this.getObserverAt(lookupIndex) == null) {
                 lookupIndex++;
             }
-            if (lookupIndex < mListEndMarker) return true;
+            if (lookupIndex < mListEndMarker) {
+                return true;
+            }
 
             // We have reached the end of the list, allow for compaction.
             compactListIfNeeded();
@@ -222,7 +225,9 @@ public class ObserverList<E> implements Iterable<E> {
             while (mIndex < mListEndMarker && ObserverList.this.getObserverAt(mIndex) == null) {
                 mIndex++;
             }
-            if (mIndex < mListEndMarker) return ObserverList.this.getObserverAt(mIndex++);
+            if (mIndex < mListEndMarker) {
+                return ObserverList.this.getObserverAt(mIndex++);
+            }
 
             // We have reached the end of the list, allow for compaction.
             compactListIfNeeded();

@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
  * Utility class that parses ps output in dumpstate files.
  */
 public class ProcessListParser {
-
     private static final String HEADER_REGEX =
             "^USER\\s+PID\\s+PPID\\s+(VSIZE|VSZ)\\s+RSS\\s+(PCY\\s+)?WCHAN\\s+(PC|ADDR)\\s+(S\\s+)?NAME\\s*$";
 
@@ -68,8 +67,7 @@ public class ProcessListParser {
 
     private static final Pattern PS_LINE_PATTERN = Pattern.compile(PS_LINE_REGEX);
 
-    private ProcessListParser() {
-    }
+    private ProcessListParser() {}
 
     public static Matcher parseProcessListLine(String line) {
         return PS_LINE_PATTERN.matcher(line);

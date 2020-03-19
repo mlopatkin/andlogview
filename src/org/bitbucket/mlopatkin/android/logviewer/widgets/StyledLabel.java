@@ -37,7 +37,6 @@ import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
 public class StyledLabel extends JTextPane {
-
     public StyledLabel() {
         setEditorKit(new WrapEditorKit());
     }
@@ -49,7 +48,6 @@ public class StyledLabel extends JTextPane {
         public ViewFactory getViewFactory() {
             return defaultFactory;
         }
-
     }
 
     private static class WrapColumnFactory implements ViewFactory {
@@ -95,25 +93,21 @@ public class StyledLabel extends JTextPane {
 
         @Override
         protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets, int[] spans) {
-
             super.layoutMajorAxis(targetSpan, axis, offsets, spans);
             int textBlockHeight = 0;
             int offset = 0;
 
             for (int i = 0; i < spans.length; i++) {
-
                 textBlockHeight = spans[i];
             }
             offset = (targetSpan - textBlockHeight) / 2;
             for (int i = 0; i < offsets.length; i++) {
                 offsets[i] += offset;
             }
-
         }
     }
 
     private static class CroppingLabelView extends LabelView {
-
         public CroppingLabelView(Element elem) {
             super(elem);
         }
@@ -181,22 +175,17 @@ public class StyledLabel extends JTextPane {
             if (isEllipsisShown) {
                 Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
                 int last = (int) (getPreferredSpan(View.X_AXIS) - getEllipsisWidth());
-                Rectangle clip = new Rectangle(alloc.x + last, alloc.y, (int) getEllipsisWidth(),
-                        alloc.height);
+                Rectangle clip = new Rectangle(alloc.x + last, alloc.y, (int) getEllipsisWidth(), alloc.height);
                 Shape oldClip = g.getClip();
                 g.setClip(clip);
                 g.setFont(getFont());
                 int charHeight = 0;
                 if (getContainer() != null) {
                     charHeight = getContainer().getFontMetrics(getFont()).getHeight();
-                    g.drawString(
-                            ELLIPSIS,
-                            alloc.x + last,
-                            alloc.y + fm.getMaxAscent()
-                                    + Math.round((alloc.height - charHeight) / 2));
-                } else {
                     g.drawString(ELLIPSIS, alloc.x + last,
-                            alloc.y + alloc.height - fm.getMaxDescent());
+                            alloc.y + fm.getMaxAscent() + Math.round((alloc.height - charHeight) / 2));
+                } else {
+                    g.drawString(ELLIPSIS, alloc.x + last, alloc.y + alloc.height - fm.getMaxDescent());
                 }
                 g.setClip(oldClip);
             }

@@ -60,11 +60,8 @@ public class MainFilterController implements FilterCreator {
     private static final FilterListSerializer SERIALIZER = new FilterListSerializer();
 
     @Inject
-    public MainFilterController(final FilterPanelModel filterPanelModel,
-                                IndexFilterCollection indexFilterCollection,
-                                FilterDialogFactory dialogFactory,
-                                ConfigStorage storage,
-                                LogModelFilterImpl logModelFilter) {
+    public MainFilterController(final FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
+            FilterDialogFactory dialogFactory, ConfigStorage storage, LogModelFilterImpl logModelFilter) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.indexFilterCollection = indexFilterCollection;
@@ -201,28 +198,22 @@ public class MainFilterController implements FilterCreator {
         public abstract SavedFilterData getSerializedVersion();
     }
 
-
     private class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
-
-        protected DialogPanelFilter(FilterCollection<? super FilterFromDialog> collection,
-                                    FilterFromDialog filter) {
+        protected DialogPanelFilter(FilterCollection<? super FilterFromDialog> collection, FilterFromDialog filter) {
             super(collection, filter.getMode(), filter);
         }
 
         @Override
         public void openFilterEditor() {
-            dialogFactory.startEditFilterDialog(
-                    filter,
-                    new EditFilterDialog.DialogResultReceiver() {
-                        @Override
-                        public void onDialogResult(FilterFromDialog oldFilter,
-                                                   Optional<FilterFromDialog> newFilter) {
-                            if (newFilter.isPresent()) {
-                                DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
-                                replaceMeWith(newPanelFilter);
-                            }
-                        }
-                    });
+            dialogFactory.startEditFilterDialog(filter, new EditFilterDialog.DialogResultReceiver() {
+                @Override
+                public void onDialogResult(FilterFromDialog oldFilter, Optional<FilterFromDialog> newFilter) {
+                    if (newFilter.isPresent()) {
+                        DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
+                        replaceMeWith(newPanelFilter);
+                    }
+                }
+            });
         }
 
         @Override
@@ -247,7 +238,6 @@ public class MainFilterController implements FilterCreator {
     }
 
     private static class SavedDialogFilterData extends SavedFilterData {
-
         private final FilterFromDialog filterData;
 
         SavedDialogFilterData(FilterFromDialog filterData, boolean enabled) {

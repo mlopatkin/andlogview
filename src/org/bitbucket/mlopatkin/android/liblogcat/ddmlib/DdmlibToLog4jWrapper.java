@@ -54,5 +54,4 @@ class DdmlibToLog4jWrapper implements ILogOutput {
     public void printAndPromptLog(LogLevel logLevel, String tag, String message) {
         printLog(logLevel, tag, message);
     }
-
 }

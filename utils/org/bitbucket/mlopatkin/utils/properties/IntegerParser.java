@@ -19,7 +19,6 @@ package org.bitbucket.mlopatkin.utils.properties;
 import com.google.common.base.Strings;
 
 public class IntegerParser implements Parser<Integer> {
-
     @Override
     public Integer read(String value) {
         return Integer.valueOf(Strings.emptyToNull(value.trim()));
@@ -29,5 +28,4 @@ public class IntegerParser implements Parser<Integer> {
     public String write(Integer value) {
         return value.toString();
     }
-
 }

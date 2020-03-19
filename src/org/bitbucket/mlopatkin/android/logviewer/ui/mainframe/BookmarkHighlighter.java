@@ -30,7 +30,6 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class BookmarkHighlighter implements DecoratingCellRenderer {
-
     private final LogRecordTableModel model;
     private final BookmarkModel bookmarkModel;
     private TableCellRenderer renderer;
@@ -47,12 +46,8 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table,
-                                                   Object value,
-                                                   boolean isSelected,
-                                                   boolean hasFocus,
-                                                   int row,
-                                                   int column) {
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component innerRenderer =
                 renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         LogRecord record = model.getRowData(table.convertRowIndexToModel(row));
@@ -61,7 +56,6 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
         }
         return innerRenderer;
     }
-
 
     private void highlight(Component cmp, boolean isSelected) {
         Color backgroundColor = Configuration.ui.bookmarkBackground();

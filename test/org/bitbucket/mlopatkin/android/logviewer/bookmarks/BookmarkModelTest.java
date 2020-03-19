@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 public class BookmarkModelTest {
-
     private BookmarkModel model;
 
     @Mock

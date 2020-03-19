@@ -32,7 +32,6 @@ import javax.swing.JViewport;
  * FilterPanel implementation. Generated class from WindowBuilder editor.
  */
 class FilterPanelUi extends JPanel {
-
     private static final int SEPARATOR_HEIGHT = 42;
     private static final int SEPARATOR_WIDTH = 5;
     private static final int SCROLL_BUTTON_WIDTH = 26;
@@ -56,8 +55,8 @@ class FilterPanelUi extends JPanel {
         content = new JPanel();
         content.setBorder(UiHelper.NO_BORDER);
         ((FlowLayout) content.getLayout()).setAlignment(FlowLayout.LEFT);
-        JScrollPane scrollPane = new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane =
+                new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(UiHelper.NO_BORDER);
         add(scrollPane);
         add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));

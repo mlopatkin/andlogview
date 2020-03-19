@@ -33,27 +33,22 @@ import java.awt.EventQueue;
 import javax.inject.Inject;
 
 public class IndexFilterController extends AbstractIndexController {
-
     private final IndexFrame frame;
     private final IndexFilterCollection owner;
     private final Predicate<LogRecord> filter;
 
     private boolean enabled = true;
 
-    IndexFilterController(IndexFilterCollection owner, MainFrameDependencies dependencies,
-                          LogTable mainTable,
-                          LogModelFilter mainFilter,
-                          Predicate<LogRecord> filter) {
+    IndexFilterController(IndexFilterCollection owner, MainFrameDependencies dependencies, LogTable mainTable,
+            LogModelFilter mainFilter, Predicate<LogRecord> filter) {
         super(mainTable);
         this.owner = owner;
         this.filter = filter;
         IndexFrameComponent component =
                 DaggerIndexFrameComponent.builder()
-                                         .mainFrameDependencies(dependencies)
-                                         .indexFrameModule(
-                                                 new IndexFrameModule(this, null,
-                                                                      new IndexFilter(mainFilter, filter)))
-                                         .build();
+                        .mainFrameDependencies(dependencies)
+                        .indexFrameModule(new IndexFrameModule(this, null, new IndexFilter(mainFilter, filter)))
+                        .build();
 
         frame = component.createFrame();
     }
@@ -80,7 +75,6 @@ public class IndexFilterController extends AbstractIndexController {
     }
 
     public static class Factory {
-
         private final MainFrameDependencies dependencies;
 
         @Inject
@@ -93,9 +87,8 @@ public class IndexFilterController extends AbstractIndexController {
             // MainFilterController -> IndexFilterCollection -> Factory -> MainFrameDependencies -> MainFilterController
             // We probably can break this by factoring Filter out of MainFilterController and making both Factory and
             // MainFilterController to depend on this new Filter
-            IndexFilterController controller =
-                    new IndexFilterController(owner, dependencies, dependencies.getLogTable(), dependencies.getFilter(),
-                                              filter);
+            IndexFilterController controller = new IndexFilterController(
+                    owner, dependencies, dependencies.getLogTable(), dependencies.getFilter(), filter);
             controller.setEnabled(true);
             return controller;
         }

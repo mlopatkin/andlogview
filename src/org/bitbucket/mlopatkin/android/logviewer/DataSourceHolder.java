@@ -35,8 +35,7 @@ public class DataSourceHolder {
     private DataSource source;
 
     @Inject
-    public DataSourceHolder() {
-    }
+    public DataSourceHolder() {}
 
     public DataSource getDataSource() {
         return source;

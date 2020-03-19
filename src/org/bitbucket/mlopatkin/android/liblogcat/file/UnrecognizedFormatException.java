@@ -19,9 +19,7 @@ package org.bitbucket.mlopatkin.android.liblogcat.file;
  * Thrown if parsed file doesn't contains logs in supported format.
  */
 public class UnrecognizedFormatException extends Exception {
-
-    public UnrecognizedFormatException() {
-    }
+    public UnrecognizedFormatException() {}
 
     public UnrecognizedFormatException(String message) {
         super(message);
@@ -34,5 +32,4 @@ public class UnrecognizedFormatException extends Exception {
     public UnrecognizedFormatException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

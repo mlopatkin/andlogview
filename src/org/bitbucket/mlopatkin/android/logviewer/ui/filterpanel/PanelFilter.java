@@ -22,9 +22,9 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
  * The {@link FilterPanelModel} talks to embedder via this interface.
  */
 public interface PanelFilter extends PanelFilterView {
-
     /**
      * Enables or disables a filter represented by the button (typically by clicking it).
+     *
      * @param enabled new state of the button
      */
     void setEnabled(boolean enabled);

@@ -34,7 +34,6 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
 public class BookmarkFramePopupMenu implements TablePopupMenu.ItemsUpdater {
-
     private final LogRecordTableModel tableModel;
     private final BookmarkModel bookmarkModel;
     private final JTable table;
@@ -43,6 +42,7 @@ public class BookmarkFramePopupMenu implements TablePopupMenu.ItemsUpdater {
         {
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("DELETE"));
         }
+
         @Override
         public void actionPerformed(ActionEvent e) {
             Set<LogRecord> recordsToRemove = new HashSet<>();
@@ -53,9 +53,7 @@ public class BookmarkFramePopupMenu implements TablePopupMenu.ItemsUpdater {
         }
     };
 
-    private BookmarkFramePopupMenu(LogRecordTableModel tableModel,
-                                   BookmarkModel bookmarkModel,
-                                   JTable table) {
+    private BookmarkFramePopupMenu(LogRecordTableModel tableModel, BookmarkModel bookmarkModel, JTable table) {
         this.tableModel = tableModel;
         this.bookmarkModel = bookmarkModel;
         this.table = table;

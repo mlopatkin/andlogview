@@ -26,5 +26,4 @@ public class MainFramePrefsModule {
     public ColumnPrefs getColumnPrefs(ColumnPrefs.Factory factory) {
         return factory.loadFromConfig();
     }
-
 }

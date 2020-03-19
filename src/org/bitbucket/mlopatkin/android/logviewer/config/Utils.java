@@ -31,11 +31,9 @@ import java.io.IOException;
 class Utils {
     private static final Logger logger = Logger.getLogger(Configuration.class);
 
-    private Utils() {
-    }
+    private Utils() {}
 
     static final Parser<Color> colorParser = new Parser<Color>() {
-
         @Override
         public Color read(String value) {
             return Color.decode(value);
@@ -43,10 +41,8 @@ class Utils {
 
         @Override
         public String write(Color value) {
-            return String
-                    .format("#%02x%02x%02x", value.getRed(), value.getGreen(), value.getBlue());
+            return String.format("#%02x%02x%02x", value.getRed(), value.getGreen(), value.getBlue());
         }
-
     };
 
     private static final String CONFIG_FILE_NAME = "logview.properties";
@@ -69,8 +65,7 @@ class Utils {
         }
     }
 
-    public static void loadConfiguration(
-            org.bitbucket.mlopatkin.utils.properties.Configuration config)
+    public static void loadConfiguration(org.bitbucket.mlopatkin.utils.properties.Configuration config)
             throws IllegalConfigurationException {
         File cfgDir = Main.getConfigurationDir();
         if (!cfgDir.exists()) {

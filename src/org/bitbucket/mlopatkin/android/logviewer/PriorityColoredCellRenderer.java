@@ -28,9 +28,8 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
+    private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<Priority, Color>(Priority.class);
 
-    private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<Priority, Color>(
-            Priority.class);
     static {
         for (Priority p : Priority.values()) {
             COLOR_MAP.put(p, Configuration.ui.priorityColor(p));
@@ -38,10 +37,9 @@ public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
-        Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-                row, column);
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         row = table.convertRowIndexToModel(row);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
         Priority priority = model.getRowData(row).getPriority();

@@ -25,9 +25,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertyUtils {
-
-    private PropertyUtils() {
-    }
+    private PropertyUtils() {}
 
     public static Properties getPropertiesFromStream(InputStream stream) throws IOException {
         Properties props = new Properties();
@@ -37,8 +35,7 @@ public class PropertyUtils {
 
     public static Properties getPropertiesFromResources(String resourceName) {
         // TODO(mlopatkin) remove reference to Main.class here
-        InputStream resourceStream = Main.class.getResourceAsStream(
-                resourceName);
+        InputStream resourceStream = Main.class.getResourceAsStream(resourceName);
         if (resourceStream == null) {
             throw new IllegalArgumentException("Couldn't load resource " + resourceName);
         }
@@ -53,8 +50,7 @@ public class PropertyUtils {
         }
     }
 
-    public static void loadValuesFromStream(ConfigurationMap cfg, InputStream stream)
-            throws IOException {
+    public static void loadValuesFromStream(ConfigurationMap cfg, InputStream stream) throws IOException {
         cfg.assign(getPropertiesFromStream(stream));
     }
 

@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 @MainFrameScoped
 class LogModelFilterImpl implements LogModelFilter {
-
     final FilterChain filterChain = new FilterChain();
     final LogRecordHighlighter highlighter = new LogRecordHighlighter();
     final LogBufferFilter bufferFilter = new LogBufferFilter();
@@ -38,8 +37,7 @@ class LogModelFilterImpl implements LogModelFilter {
     private final Subject<Observer> observers = new Subject<>();
 
     @Inject
-    LogModelFilterImpl() {
-    }
+    LogModelFilterImpl() {}
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {

@@ -27,7 +27,6 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 public interface Observable<T> {
-
     /**
      * Adds the observer if it wasn't added already. It is safe to add observers inside observer's callback but newly
      * added observers will not be notified until the next callback cycle.

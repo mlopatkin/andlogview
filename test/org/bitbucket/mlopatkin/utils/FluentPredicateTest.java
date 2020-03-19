@@ -26,7 +26,6 @@ import org.junit.Test;
 import javax.annotation.Nullable;
 
 public class FluentPredicateTest {
-
     @Test
     public void testFrom() throws Exception {
         assertAlwaysFalse(FluentPredicate.from(Predicates.<Integer>alwaysFalse()));
@@ -59,8 +58,7 @@ public class FluentPredicateTest {
 
     @Test
     public void testNot() throws Exception {
-        FluentPredicate<Integer> fluentAlwaysTrue = FluentPredicate
-                .from(Predicates.<Integer>alwaysTrue());
+        FluentPredicate<Integer> fluentAlwaysTrue = FluentPredicate.from(Predicates.<Integer>alwaysTrue());
 
         assertAlwaysFalse(fluentAlwaysTrue.not());
     }

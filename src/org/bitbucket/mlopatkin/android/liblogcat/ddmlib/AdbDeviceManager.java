@@ -28,11 +28,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class AdbDeviceManager {
-
     private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
 
-    private AdbDeviceManager() {
-    }
+    private AdbDeviceManager() {}
 
     public static void addDeviceChangeListener(IDeviceChangeListener listener) {
         AdbConnectionManager.getAdb();
@@ -54,8 +52,7 @@ public class AdbDeviceManager {
 
     public static IDevice getDefaultDevice() {
         AndroidDebugBridge adb = AdbConnectionManager.getAdb();
-        if (adb.hasInitialDeviceList() && adb.getDevices().length > 0
-                && adb.getDevices()[0].isOnline()) {
+        if (adb.hasInitialDeviceList() && adb.getDevices().length > 0 && adb.getDevices()[0].isOnline()) {
             return adb.getDevices()[0];
         } else {
             return null;
@@ -63,19 +60,14 @@ public class AdbDeviceManager {
     }
 
     public abstract static class AbstractDeviceListener implements IDeviceChangeListener {
+        @Override
+        public void deviceConnected(IDevice device) {}
 
         @Override
-        public void deviceConnected(IDevice device) {
-        }
+        public void deviceDisconnected(IDevice device) {}
 
         @Override
-        public void deviceDisconnected(IDevice device) {
-        }
-
-        @Override
-        public void deviceChanged(IDevice device, int changeMask) {
-        }
-
+        public void deviceChanged(IDevice device, int changeMask) {}
     }
 
     private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
@@ -87,7 +79,6 @@ public class AdbDeviceManager {
             productName = device.getAvdName();
         } else {
             productName = device.getProperty(PRODUCT_NAME_PROPERTY);
-
         }
         if (productName != null) {
             return productName + " (" + serial + ")";
@@ -97,7 +88,6 @@ public class AdbDeviceManager {
     }
 
     private static class DeviceStateLogger implements IDeviceChangeListener {
-
         @Override
         public void deviceConnected(IDevice device) {
             logger.debug("Device connected: " + device.getSerialNumber());

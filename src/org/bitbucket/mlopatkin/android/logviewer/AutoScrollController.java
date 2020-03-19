@@ -32,7 +32,6 @@ import javax.swing.JComponent;
  * {@link #scrollIfNeeded()} after your action.
  */
 abstract class AutoScrollController {
-
     private boolean shouldScroll;
     private JComponent scrollable;
 

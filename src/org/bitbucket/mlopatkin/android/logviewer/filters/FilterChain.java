@@ -32,11 +32,8 @@ import java.util.Set;
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
 public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
-
     private final SetMultimap<FilteringMode, Predicate<LogRecord>> filters =
-            MultimapBuilder.enumKeys(FilteringMode.class)
-                           .hashSetValues()
-                           .build();
+            MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build();
 
     private boolean include(FilteringMode mode, LogRecord record) {
         Set<Predicate<LogRecord>> filtersForMode = filters.get(mode);
@@ -65,5 +62,4 @@ public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
     public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
         filters.remove(mode, filter);
     }
-
 }

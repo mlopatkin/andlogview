@@ -30,15 +30,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 public class SearcherBuilder {
-
     private boolean matchWholeText = true;
     private boolean ignoreCase;
 
     /**
      * Constructs a builder object that by default will not ignore case and will attempt to match whole string.
      */
-    public SearcherBuilder() {
-    }
+    public SearcherBuilder() {}
 
     /**
      * Sets whether resulting predicate should ignore case differences.
@@ -55,7 +53,8 @@ public class SearcherBuilder {
      * Sets whether resulting predicate should attempt to match pattern for the whole string. If set to false then
      * predicate will be satisfied if some substring of the argument matches pattern.
      *
-     * @param matchWholeText if true - do not try to find matching substring and alway require whole text to match
+     * @param matchWholeText if true - do not try to find matching substring and alway require whole text to
+     *         match
      * @return this builder for chaining
      */
     public SearcherBuilder setMatchWholeText(boolean matchWholeText) {
@@ -68,7 +67,6 @@ public class SearcherBuilder {
      *
      * @param pattern the plain-text pattern to use in predicate
      * @return the predicate
-     *
      * @throws RequestCompilationException if something is wrong with the pattern
      */
     public Predicate<String> buildPlain(String pattern) throws RequestCompilationException {
@@ -80,7 +78,6 @@ public class SearcherBuilder {
      *
      * @param pattern the regexp pattern to use in predicate
      * @return the predicate
-     *
      * @throws RequestCompilationException if something is wrong with the pattern
      */
     public Predicate<String> buildRegexp(String pattern) throws RequestCompilationException {

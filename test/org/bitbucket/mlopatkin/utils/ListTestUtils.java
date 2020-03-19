@@ -22,8 +22,7 @@ import java.util.Arrays;
  * Generic routines to help testing {@link MyListUtils}.
  */
 class ListTestUtils {
-    private ListTestUtils() {
-    }
+    private ListTestUtils() {}
 
     @SafeVarargs
     static <T> ArrayList<T> list(T... args) {
@@ -33,5 +32,4 @@ class ListTestUtils {
     static <T> ArrayList<T> list() {
         return new ArrayList<>();
     }
-
 }

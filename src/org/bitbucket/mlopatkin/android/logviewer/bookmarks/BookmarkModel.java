@@ -32,7 +32,6 @@ import javax.inject.Inject;
  */
 @MainFrameScoped
 public class BookmarkModel {
-
     public interface Observer {
         void onBookmarkAdded();
 
@@ -43,9 +42,7 @@ public class BookmarkModel {
     private final Subject<Observer> observers = new Subject<>();
 
     @Inject
-    public BookmarkModel() {
-    }
-
+    public BookmarkModel() {}
 
     public Observable<Observer> asObservable() {
         return observers.asObservable();

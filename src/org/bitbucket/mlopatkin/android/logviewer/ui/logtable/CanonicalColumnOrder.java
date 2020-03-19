@@ -23,11 +23,9 @@ import java.util.Iterator;
  * Non-customizable "natural" column order.
  */
 final class CanonicalColumnOrder implements ColumnOrder {
-
     static CanonicalColumnOrder INSTANCE = new CanonicalColumnOrder();
 
-    private CanonicalColumnOrder() {
-    }
+    private CanonicalColumnOrder() {}
 
     @Override
     public Iterator<Column> iterator() {

@@ -50,8 +50,7 @@ public class FileTransferHandler extends TransferHandler {
 
         try {
             @SuppressWarnings("unchecked")
-            java.util.List<File> l = (java.util.List<File>) t
-                    .getTransferData(DataFlavor.javaFileListFlavor);
+            java.util.List<File> l = (java.util.List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
 
             File file = l.get(0);
             logger.debug("Start importing " + file);
@@ -74,5 +73,4 @@ public class FileTransferHandler extends TransferHandler {
         }
         return true;
     }
-
 }

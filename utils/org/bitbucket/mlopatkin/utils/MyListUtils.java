@@ -22,8 +22,7 @@ import java.util.List;
  * Utility methods for {@link List}s.
  */
 public class MyListUtils {
-    private MyListUtils() {
-    }
+    private MyListUtils() {}
 
     private static <T extends Comparable<? super T>> boolean lessOrEq(T a, T b) {
         return a.compareTo(b) <= 0;
@@ -102,7 +101,7 @@ public class MyListUtils {
      * @param items non-{@code null} sorted list
      * @param value to be inserted into list
      * @return position in which {@code value} should be inserted into
-     * {@code items} using {@link List#add(int, Object)}
+     *         {@code items} using {@link List#add(int, Object)}
      */
     public static <T extends Comparable<? super T>> int getUpperBoundPos(List<T> items, T value) {
         if (items.isEmpty()) {

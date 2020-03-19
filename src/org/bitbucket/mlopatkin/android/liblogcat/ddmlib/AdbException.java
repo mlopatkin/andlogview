@@ -16,7 +16,6 @@
 package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 
 public class AdbException extends Exception {
-
     public AdbException() {
         super();
     }
@@ -32,5 +31,4 @@ public class AdbException extends Exception {
     public AdbException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -37,8 +37,9 @@ public class ConfigModule {
     @Singleton
     @Named(CONFIG_THREAD_POOL)
     ExecutorService getConfigIoThreadPool() {
-        return Executors.newSingleThreadExecutor(
-                new ThreadFactoryBuilder().setThreadFactory(Threads.withName("StorageFileWorker"))
-                                          .setDaemon(true).build());
+        return Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+                .setThreadFactory(Threads.withName("StorageFileWorker"))
+                .setDaemon(true)
+                .build());
     }
 }

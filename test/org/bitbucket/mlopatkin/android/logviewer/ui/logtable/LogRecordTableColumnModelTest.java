@@ -39,7 +39,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class LogRecordTableColumnModelTest {
-
     @Test
     public void testModelCanDisplayAllColumns() throws Exception {
         List<Column> columns = Arrays.asList(Column.values());

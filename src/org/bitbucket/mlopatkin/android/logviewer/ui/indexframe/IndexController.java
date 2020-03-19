@@ -21,6 +21,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 public interface IndexController {
     /**
      * Called when a row in the table must be activated (scrolled to and selected).
+     *
      * @param row the model index of the row
      */
     void activateRow(int row);

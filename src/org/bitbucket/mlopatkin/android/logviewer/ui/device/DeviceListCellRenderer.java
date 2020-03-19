@@ -30,11 +30,8 @@ class DeviceListCellRenderer implements ListCellRenderer<IDevice> {
     private final DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer();
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends IDevice> jList,
-                                                  IDevice device,
-                                                  int index,
-                                                  boolean selected,
-                                                  boolean focused) {
+    public Component getListCellRendererComponent(
+            JList<? extends IDevice> jList, IDevice device, int index, boolean selected, boolean focused) {
         return cellRenderer.getListCellRendererComponent(jList, getDeviceDisplayName(device), index, selected, focused);
     }
 

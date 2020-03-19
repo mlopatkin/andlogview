@@ -35,8 +35,7 @@ public class AtExitManager {
     private final Thread atExitWorker = new Thread(this::onExit, "AtExitWorker");
 
     @Inject
-    public AtExitManager() {
-    }
+    public AtExitManager() {}
 
     public void registerExitAction(Runnable action) {
         if (actions.isEmpty()) {
@@ -53,11 +52,10 @@ public class AtExitManager {
         for (Runnable action : actions) {
             try {
                 action.run();
-            } catch (Throwable ex) {  // OK to catch Throwable here
+            } catch (Throwable ex) { // OK to catch Throwable here
                 logger.error("Exception during shutdown hook", ex);
                 // And then continue other hooks though
             }
         }
     }
-
 }

@@ -19,7 +19,6 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 public class SortingDisableSorter<T extends TableModel> extends TableRowSorter<T> {
-
     @Override
     public boolean isSortable(int column) {
         return false;
@@ -28,5 +27,4 @@ public class SortingDisableSorter<T extends TableModel> extends TableRowSorter<T
     public SortingDisableSorter(T model) {
         super(model);
     }
-
 }

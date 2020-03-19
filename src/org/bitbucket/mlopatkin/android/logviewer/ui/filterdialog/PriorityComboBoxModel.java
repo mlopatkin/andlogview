@@ -22,7 +22,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
 class PriorityComboBoxModel extends AbstractListModel<LogRecord.Priority> implements ComboBoxModel<LogRecord.Priority> {
-
     private Object selected;
 
     @Override

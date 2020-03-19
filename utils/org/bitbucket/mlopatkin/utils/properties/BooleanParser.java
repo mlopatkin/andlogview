@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.utils.properties;
 
 class BooleanParser implements Parser<Boolean> {
-
     @Override
     public Boolean read(String value) {
         return Boolean.parseBoolean(value);
@@ -27,5 +26,4 @@ class BooleanParser implements Parser<Boolean> {
     public String write(Boolean value) {
         return value ? "true" : "false";
     }
-
 }

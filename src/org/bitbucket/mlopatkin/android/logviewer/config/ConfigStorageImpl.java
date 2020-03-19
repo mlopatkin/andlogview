@@ -118,8 +118,7 @@ class ConfigStorageImpl implements ConfigStorage {
         }
     }
 
-    private void saveToJsonWriter(JsonWriter writer, Map<String, JsonElement> filters)
-            throws IOException {
+    private void saveToJsonWriter(JsonWriter writer, Map<String, JsonElement> filters) throws IOException {
         try {
             writer.beginObject();
             for (Map.Entry<String, JsonElement> entry : filters.entrySet()) {

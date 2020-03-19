@@ -1,4 +1,3 @@
-
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -129,8 +128,7 @@ public class RowSearchStrategyFactoryTest {
     @Test
     @Ignore("Not supported yet")
     public void testCompile_Several() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory
-                .compile("msg:/c.ntacts/   app:contacts");
+        RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:/c.ntacts/   app:contacts");
 
         assertTrue(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
@@ -141,8 +139,7 @@ public class RowSearchStrategyFactoryTest {
     @Test
     @Ignore("No escaping, just treat this as a usual string")
     public void testCompile_Escape() throws Exception {
-        LogRecord withEscaped = makeRecord(TAG_CONTACTS, APP_CONTACTS,
-                "This contains a escaped app:contacts");
+        LogRecord withEscaped = makeRecord(TAG_CONTACTS, APP_CONTACTS, "This contains a escaped app:contacts");
 
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("app\\:contacts");
         assertFalse(simple.isRowMatched(msgContacts));

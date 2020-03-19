@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
 import static org.junit.Assert.assertThat;
 
 public class ProcessListParserTest {
-
     private static final String PS_LINE_1 = "root      1     0     244    228   fg  ffffffff 00000000 S /init";
     private static final String PS_LINE_TWO_WORDS_PNAME =
             "root      279   2     0      0     fg  ffffffff 00000000 S Two words";
@@ -58,14 +57,14 @@ public class ProcessListParserTest {
 
     @Test
     public void testParseProcessListSymbolicWchan() throws Exception {
-        assertThat(ProcessListParser.parseProcessListLine(PS_WCHAN_SYMBOL_LINE),
-                   hasPidAndAppName(29392, "migration/3"));
+        assertThat(
+                ProcessListParser.parseProcessListLine(PS_WCHAN_SYMBOL_LINE), hasPidAndAppName(29392, "migration/3"));
     }
 
     @Test
     public void testParseProcessListMissingWchan() throws Exception {
         assertThat(ProcessListParser.parseProcessListLine(PS_NO_WCHAN_LINE),
-                   hasPidAndAppName(4851, "com.mapswithme.maps.pro"));
+                hasPidAndAppName(4851, "com.mapswithme.maps.pro"));
     }
 
     public static org.hamcrest.Matcher<Matcher> hasPidAndAppName(int expectedPid, String expectedAppname) {
@@ -95,8 +94,10 @@ public class ProcessListParserTest {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("with pid=").appendValue(expectedPid).appendText(" and app name=")
-                           .appendValue(expectedAppname);
+                description.appendText("with pid=")
+                        .appendValue(expectedPid)
+                        .appendText(" and app name=")
+                        .appendValue(expectedAppname);
             }
         };
     }

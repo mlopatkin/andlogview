@@ -19,8 +19,7 @@ package org.bitbucket.mlopatkin.android.liblogcat;
  * Utility methods for printing log files in native formats.
  */
 public class LogRecordFormatter {
-    private LogRecordFormatter() {
-    }
+    private LogRecordFormatter() {}
 
     public static String formatAppropriate(LogRecord record) {
         int recordMask = getRecordMask(record);
@@ -38,9 +37,8 @@ public class LogRecordFormatter {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
         String formatString = "%s %5d %5d %s %-8s: %s";
-        return String.format(formatString, TimeFormatUtils.convertTimeToString(record.getTime()),
-                record.getPid(), record.getTid(), record.getPriority().getLetter(),
-                record.getTag(), record.getMessage());
+        return String.format(formatString, TimeFormatUtils.convertTimeToString(record.getTime()), record.getPid(),
+                record.getTid(), record.getPriority().getLetter(), record.getTag(), record.getMessage());
     }
 
     public static String formatTime(LogRecord record) {
@@ -49,8 +47,7 @@ public class LogRecordFormatter {
         }
         String formatString = "%s %s/%-8s(%5d): %s";
         return String.format(formatString, TimeFormatUtils.convertTimeToString(record.getTime()),
-                record.getPriority().getLetter(), record.getTag(), record.getPid(),
-                record.getMessage());
+                record.getPriority().getLetter(), record.getTag(), record.getPid(), record.getMessage());
     }
 
     public static String formatBrief(LogRecord record) {
@@ -58,8 +55,8 @@ public class LogRecordFormatter {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
         String formatString = "%s/%-8s(%5d): %s";
-        return String.format(formatString, record.getPriority().getLetter(), record.getTag(),
-                record.getPid(), record.getMessage());
+        return String.format(
+                formatString, record.getPriority().getLetter(), record.getTag(), record.getPid(), record.getMessage());
     }
 
     private static final int MASK_TIME = 1;
@@ -69,10 +66,9 @@ public class LogRecordFormatter {
     private static final int MASK_PRIORITY = 16;
     private static final int MASK_MSG = 32;
 
-    private static final int MASK_THREADTIME_FORMAT = MASK_TIME | MASK_PID | MASK_TID | MASK_TAG
-            | MASK_PRIORITY | MASK_MSG;
-    private static final int MASK_TIME_FORMAT = MASK_TIME | MASK_PID | MASK_TAG | MASK_PRIORITY
-            | MASK_MSG;
+    private static final int MASK_THREADTIME_FORMAT =
+            MASK_TIME | MASK_PID | MASK_TID | MASK_TAG | MASK_PRIORITY | MASK_MSG;
+    private static final int MASK_TIME_FORMAT = MASK_TIME | MASK_PID | MASK_TAG | MASK_PRIORITY | MASK_MSG;
     private static final int MASK_BRIEF_FORMAT = MASK_PID | MASK_TAG | MASK_PRIORITY | MASK_MSG;
 
     private static int getRecordMask(LogRecord record) {
@@ -101,5 +97,4 @@ public class LogRecordFormatter {
     private static boolean checkMask(int recordMask, int targetMask) {
         return (targetMask & recordMask) == targetMask;
     }
-
 }

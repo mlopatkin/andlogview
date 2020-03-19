@@ -25,7 +25,6 @@ import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
 import static org.junit.Assert.assertEquals;
 
 public class MyListUtilsTest {
-
     @Test
     public void testMergeOrdered_emptyBoth() {
         genericTest(ListTestUtils.<Integer>list(), ListTestUtils.<Integer>list(), 0);
@@ -91,8 +90,7 @@ public class MyListUtilsTest {
         genericTest(list(1, 2, 3, 4, 5, 6), list(2, 2, 2, 6, 6, 6, 6), 2);
     }
 
-    public <T extends Comparable<? super T>> void genericTest(List<T> base, List<T> elems,
-                                                              int expectedResultPos) {
+    public <T extends Comparable<? super T>> void genericTest(List<T> base, List<T> elems, int expectedResultPos) {
         List<T> result = new ArrayList<T>(base);
         result.addAll(elems);
         Collections.sort(result);

@@ -23,7 +23,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class SubjectTest {
-
     public interface TestObserver {
         void onEvent();
     }
@@ -79,7 +78,6 @@ public class SubjectTest {
 
         verify(o, never()).onEvent();
     }
-
 
     @Test
     public void testRemoveNull() throws Exception {

@@ -20,7 +20,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 
 class ValueSearcher implements RowSearchStrategy {
-
     private final HighlightStrategy highlightStrategy;
     private final Column column;
 
@@ -44,5 +43,4 @@ class ValueSearcher implements RowSearchStrategy {
             highlightStrategy.highlightOccurences(getValue(record), columnHighlighter);
         }
     }
-
 }

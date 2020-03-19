@@ -28,7 +28,6 @@ import java.util.Properties;
  */
 @SuppressWarnings("TypeParameterUnusedInFormals")
 public class ConfigurationMap implements Configuration {
-
     private Map<String, Property<?>> properties = new LinkedHashMap<String, Property<?>>();
 
     public <T> ConfigurationMap property(String key, IPropertyBuilder<T> builder) {
@@ -109,7 +108,6 @@ public class ConfigurationMap implements Configuration {
 
     @Override
     public void save(OutputStream output, String comments) throws IOException {
-
         Properties outputProperties = new Properties();
 
         for (Map.Entry<String, Property<?>> propertyEntry : properties.entrySet()) {
@@ -130,7 +128,7 @@ public class ConfigurationMap implements Configuration {
             if (!property.isReadOnly()) {
                 try {
                     property.assign(key, props);
-                } catch (Exception e) {  // OK to catch Exception here
+                } catch (Exception e) { // OK to catch Exception here
                     throw new IllegalConfigurationException("Cannot read property: " + key, e);
                 }
             }

@@ -23,11 +23,9 @@ class LogRecordPriorityCellRenderer extends DefaultTableCellRenderer {
     @Override
     protected void setValue(Object value) {
         if (!(value instanceof Priority)) {
-            throw new IllegalArgumentException(
-                    "Incorrect value class passed into LogcatPriorityCellRenderer");
+            throw new IllegalArgumentException("Incorrect value class passed into LogcatPriorityCellRenderer");
         }
 
         super.setValue(value.toString().substring(0, 1));
-
     }
 }

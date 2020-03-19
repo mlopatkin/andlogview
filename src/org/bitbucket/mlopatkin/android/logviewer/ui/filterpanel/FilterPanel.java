@@ -39,7 +39,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 public class FilterPanel extends FilterPanelUi implements FilterPanelModel.FilterPanelModelListener {
-
     private static final ImageIcon FILTER_ICON = new ImageIcon(Icons.FILTER.getUrl());
     private static final ImageIcon ADD_ICON = new ImageIcon(Icons.ADD.getUrl());
     private static final ImageIcon NEXT_ICON = new ImageIcon(Icons.NEXT.getUrl());
@@ -148,7 +147,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         button.setSelected(enabled);
     }
 
-
     private void computeButtonIndices() {
         Rectangle viewportRect = contentViewport.getBounds();
         Rectangle contentsRect = content.getBounds();
@@ -188,7 +186,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         btScrollLeft.setVisible(canScroll);
     }
 
-
     private class FilterButton extends JToggleButton implements ActionListener {
         private PanelFilterView filter;
 
@@ -221,7 +218,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     }
 
     private class PopupMenuHandler {
-
         private JPopupMenu menu = new JPopupMenu();
         private JMenuItem editItem = new JMenuItem("Edit filter");
         private JMenuItem removeItem = new JMenuItem("Remove filter");
@@ -268,5 +264,4 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
             });
         }
     }
-
 }

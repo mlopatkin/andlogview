@@ -36,7 +36,7 @@ public interface DataSource {
      * name.
      *
      * @return {@link Map} or {@code null} if this feature is
-     * not available
+     *         not available
      */
     Map<Integer, String> getPidToProcessConverter();
 
@@ -62,8 +62,8 @@ public interface DataSource {
      * the attached listener.
      *
      * @return {@code true} if the new are basically the same (e.g. reloading a
-     * file), {@code false} if the records are completely new (so
-     * bookmarks become invalid)
+     *         file), {@code false} if the records are completely new (so
+     *         bookmarks become invalid)
      */
     boolean reset();
 }

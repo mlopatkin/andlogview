@@ -33,9 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @ParametersAreNonnullByDefault
 public final class LogRecordPredicates {
-
-    private LogRecordPredicates() {
-    }
+    private LogRecordPredicates() {}
 
     public static FluentPredicate<LogRecord> matchTag(final Predicate<String> tagMatcher) {
         return new FluentPredicate<LogRecord>() {

@@ -21,7 +21,6 @@ import java.util.Properties;
 
 @SuppressWarnings("rawtypes")
 class EnumMapProperty<K extends Enum<K>, V> extends Property<EnumMap> {
-
     private final Parser<V> valueParser;
     private final Class<K> keyType;
     private final Class<V> valueType;
@@ -61,14 +60,12 @@ class EnumMapProperty<K extends Enum<K>, V> extends Property<EnumMap> {
 
     @Override
     EnumMap getValue() {
-        throw new UnsupportedOperationException(
-                "Internal map cannot be retrieved. Use getValue(T key) instead.");
+        throw new UnsupportedOperationException("Internal map cannot be retrieved. Use getValue(T key) instead.");
     }
 
     @Override
     void setValue(EnumMap map) {
-        throw new UnsupportedOperationException(
-                "Internal map cannot be retrieved. Use setValue(T key) instead.");
+        throw new UnsupportedOperationException("Internal map cannot be retrieved. Use setValue(T key) instead.");
     }
 
     @Override

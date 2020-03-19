@@ -37,7 +37,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FilterFromDialog implements ColoringFilter {
-
     private static final Joiner commaJoiner = Joiner.on(", ");
 
     private static final SearchRequestParser<Predicate<String>> tagParser =
@@ -57,10 +56,9 @@ public class FilterFromDialog implements ColoringFilter {
                 }
             });
 
-    private static final SearchRequestParser<Predicate<String>> messageParser = new SearchRequestParser<>(
-            new SearchRequestParser.Delegate<Predicate<String>>() {
-                private final SearcherBuilder matchSubstring =
-                        new SearcherBuilder().setMatchWholeText(false);
+    private static final SearchRequestParser<Predicate<String>> messageParser =
+            new SearchRequestParser<>(new SearchRequestParser.Delegate<Predicate<String>>() {
+                private final SearcherBuilder matchSubstring = new SearcherBuilder().setMatchWholeText(false);
 
                 @Override
                 public Predicate<String> createRegexpSearcher(String pattern) throws RequestCompilationException {
@@ -86,8 +84,7 @@ public class FilterFromDialog implements ColoringFilter {
     private transient Predicate<LogRecord> compiledPredicate;
     private transient String tooltipRepresentation;
 
-    public FilterFromDialog() {
-    }
+    public FilterFromDialog() {}
 
     public void initialize() throws RequestCompilationException {
         assert compiledPredicate == null;
@@ -117,7 +114,7 @@ public class FilterFromDialog implements ColoringFilter {
         }
         if (apps != null && !apps.isEmpty()) {
             List<Predicate<String>> appsPredicates = Lists.newArrayListWithCapacity(apps.size());
-            for (String appPattern : apps)  {
+            for (String appPattern : apps) {
                 appsPredicates.add(tagParser.parse(appPattern));
             }
             FluentPredicate<LogRecord> appsPredicate = LogRecordPredicates.matchAppName(Predicates.or(appsPredicates));
@@ -127,8 +124,7 @@ public class FilterFromDialog implements ColoringFilter {
             predicates.add(appsAndPidsPredicate);
         }
         if (messagePattern != null && !messagePattern.isEmpty()) {
-            predicates.add(LogRecordPredicates
-                    .matchMessage(messageParser.parse(messagePattern)));
+            predicates.add(LogRecordPredicates.matchMessage(messageParser.parse(messagePattern)));
         }
         if (priority != null && priority != LogRecord.Priority.LOWEST) {
             predicates.add(LogRecordPredicates.moreSevereThan(priority));

@@ -34,7 +34,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 public class TableColumnModelFactoryTest {
-
     private ConfigStorage mockStorage = new FakeDefaultConfigStorage();
     @Mock
     private PidToProcessMapper mockMapper;

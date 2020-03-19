@@ -28,7 +28,6 @@ import java.awt.Color;
 import javax.annotation.Nullable;
 
 class IndexFilter implements LogModelFilter {
-
     private final LogModelFilter parent;
     private final Predicate<LogRecord> filter;
 

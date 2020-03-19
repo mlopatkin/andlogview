@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 import javax.swing.JTable;
 
 public abstract class AbstractIndexController implements IndexController {
-
     private JTable mainTable;
 
     public AbstractIndexController(JTable mainTable) {
@@ -29,8 +28,7 @@ public abstract class AbstractIndexController implements IndexController {
     public void activateRow(int row) {
         int rowTable = mainTable.convertRowIndexToView(row);
         mainTable.getSelectionModel().setSelectionInterval(rowTable, rowTable);
-        mainTable.scrollRectToVisible(mainTable.getCellRect(rowTable,
-                mainTable.getSelectedColumn(), false));
+        mainTable.scrollRectToVisible(mainTable.getCellRect(rowTable, mainTable.getSelectedColumn(), false));
     }
 
     @Override
