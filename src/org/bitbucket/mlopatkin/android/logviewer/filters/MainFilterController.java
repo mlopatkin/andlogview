@@ -16,8 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Optional;
-
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
@@ -35,6 +33,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -94,9 +93,7 @@ public class MainFilterController implements FilterCreator {
         dialogFactory.startCreateFilterDialog(new CreateFilterDialog.DialogResultReceiver() {
             @Override
             public void onDialogResult(Optional<FilterFromDialog> filter) {
-                if (filter.isPresent()) {
-                    addNewDialogFilter(filter.get());
-                }
+                filter.ifPresent(filterFromDialog -> addNewDialogFilter(filterFromDialog));
             }
         });
     }

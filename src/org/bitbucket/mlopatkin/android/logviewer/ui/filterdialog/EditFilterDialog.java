@@ -16,13 +16,13 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 
 import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 
 import java.awt.Frame;
+import java.util.Optional;
 
 import javax.swing.SwingUtilities;
 
@@ -64,7 +64,7 @@ public class EditFilterDialog extends FilterDialog {
 
     @Override
     protected void onNegativeResult() {
-        receiver.onDialogResult(originalFilter, Optional.<FilterFromDialog>absent());
+        receiver.onDialogResult(originalFilter, Optional.empty());
         setVisible(false);
     }
 

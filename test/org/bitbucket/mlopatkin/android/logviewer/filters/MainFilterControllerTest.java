@@ -16,8 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Optional;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.FakeDefaultConfigStorage;
@@ -43,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;

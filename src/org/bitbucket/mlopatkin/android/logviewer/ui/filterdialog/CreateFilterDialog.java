@@ -1,11 +1,10 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import com.google.common.base.Optional;
-
 import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 
 import java.awt.Frame;
+import java.util.Optional;
 
 public class CreateFilterDialog extends FilterDialog {
     private DialogResultReceiver receiver;
@@ -37,7 +36,7 @@ public class CreateFilterDialog extends FilterDialog {
     @Override
     protected void onNegativeResult() {
         assert receiver != null;
-        receiver.onDialogResult(Optional.<FilterFromDialog>absent());
+        receiver.onDialogResult(Optional.empty());
         receiver = null;
         setVisible(false);
     }
