@@ -143,7 +143,7 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         return pidTextField;
     }
 
-    protected JComboBox getLogLevelList() {
+    protected JComboBox<Priority> getLogLevelList() {
         return logLevelList;
     }
 
