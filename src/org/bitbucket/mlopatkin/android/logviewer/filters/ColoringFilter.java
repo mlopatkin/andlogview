@@ -16,11 +16,10 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.awt.Color;
+import java.util.function.Predicate;
 
 public interface ColoringFilter extends Predicate<LogRecord> {
     Color getHighlightColor();

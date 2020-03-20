@@ -30,7 +30,7 @@ class ValueSearcher implements RowSearchStrategy {
 
     @Override
     public boolean isRowMatched(LogRecord record) {
-        return highlightStrategy.apply(getValue(record));
+        return highlightStrategy.test(getValue(record));
     }
 
     private String getValue(LogRecord record) {

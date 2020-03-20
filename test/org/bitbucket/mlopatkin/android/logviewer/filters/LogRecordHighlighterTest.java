@@ -16,14 +16,13 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.Color;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -157,8 +156,8 @@ public class LogRecordHighlighterTest {
             }
 
             @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return base.apply(input);
+            public boolean test(@Nullable LogRecord input) {
+                return base.test(input);
             }
         };
     }

@@ -16,8 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterCollection;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
@@ -26,6 +24,7 @@ import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 

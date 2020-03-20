@@ -18,7 +18,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.BaseMatcher;
@@ -26,6 +25,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.function.Predicate;
 
 public class SearcherBuilderTest {
     private static class Case {
@@ -72,7 +73,7 @@ public class SearcherBuilderTest {
     public void testBuildPlain_defaultIsMatchWholeCaseSensitive() throws Exception {
         Predicate<String> p = new SearcherBuilder().buildPlain(PLAIN_PATTERN);
         for (Case theCase : PLAIN_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(false, true, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(false, true, theCase));
         }
     }
 
@@ -82,7 +83,7 @@ public class SearcherBuilderTest {
         Predicate<String> p =
                 new SearcherBuilder().setIgnoreCase(false).setMatchWholeText(true).buildPlain(PLAIN_PATTERN);
         for (Case theCase : PLAIN_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(false, true, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(false, true, theCase));
         }
     }
 
@@ -91,7 +92,7 @@ public class SearcherBuilderTest {
         Predicate<String> p =
                 new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(true).buildPlain(PLAIN_PATTERN);
         for (Case theCase : PLAIN_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(true, true, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(true, true, theCase));
         }
     }
 
@@ -100,7 +101,7 @@ public class SearcherBuilderTest {
         Predicate<String> p =
                 new SearcherBuilder().setIgnoreCase(false).setMatchWholeText(false).buildPlain(PLAIN_PATTERN);
         for (Case theCase : PLAIN_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(false, false, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(false, false, theCase));
         }
     }
 
@@ -109,7 +110,7 @@ public class SearcherBuilderTest {
         Predicate<String> p =
                 new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(false).buildPlain(PLAIN_PATTERN);
         for (Case theCase : PLAIN_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(true, false, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(true, false, theCase));
         }
     }
 
@@ -117,8 +118,8 @@ public class SearcherBuilderTest {
     public void testBuildPlain_threatsRegexSyntaxVerbatim() throws Exception {
         Predicate<String> p = new SearcherBuilder().buildPlain("[abc]");
 
-        Assert.assertFalse("Pattern shouldn't be threated as regexp", p.apply("a"));
-        Assert.assertTrue(p.apply("[abc]"));
+        Assert.assertFalse("Pattern shouldn't be threated as regexp", p.test("a"));
+        Assert.assertTrue(p.test("[abc]"));
     }
 
     @Test(expected = RequestCompilationException.class)
@@ -130,7 +131,7 @@ public class SearcherBuilderTest {
     public void testBuildRegexp_defaultIsMatchWholeCaseSensitive() throws Exception {
         Predicate<String> p = new SearcherBuilder().buildRegexp(REGEXP_PATTERN);
         for (Case theCase : REGEXP_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(false, true, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(false, true, theCase));
         }
     }
 
@@ -141,7 +142,7 @@ public class SearcherBuilderTest {
                 new SearcherBuilder().setIgnoreCase(false).setMatchWholeText(true).buildRegexp(REGEXP_PATTERN);
 
         for (Case theCase : REGEXP_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(false, true, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(false, true, theCase));
         }
     }
 
@@ -151,7 +152,7 @@ public class SearcherBuilderTest {
                 new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(true).buildRegexp(REGEXP_PATTERN);
 
         for (Case theCase : REGEXP_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(true, true, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(true, true, theCase));
         }
     }
 
@@ -161,7 +162,7 @@ public class SearcherBuilderTest {
                 new SearcherBuilder().setIgnoreCase(false).setMatchWholeText(false).buildRegexp(REGEXP_PATTERN);
 
         for (Case theCase : REGEXP_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(false, false, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(false, false, theCase));
         }
     }
 
@@ -171,7 +172,7 @@ public class SearcherBuilderTest {
                 new SearcherBuilder().setIgnoreCase(true).setMatchWholeText(false).buildRegexp(REGEXP_PATTERN);
 
         for (Case theCase : REGEXP_CASES) {
-            Assert.assertThat(p.apply(theCase.text), matchesCase(true, false, theCase));
+            Assert.assertThat(p.test(theCase.text), matchesCase(true, false, theCase));
         }
     }
 

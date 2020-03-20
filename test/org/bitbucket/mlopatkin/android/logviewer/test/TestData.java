@@ -16,14 +16,12 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.test;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 
 import java.util.Collections;
+import java.util.function.Predicate;
 
 public final class TestData {
     private TestData() {}
@@ -40,10 +38,10 @@ public final class TestData {
             RECORD1.getAppName(), RECORD1.getPriority(), RECORD1.getTag(), RECORD1.getMessage(), LogRecord.Buffer.MAIN);
 
     public static final Predicate<LogRecord> MATCH_FIRST =
-            LogRecordPredicates.matchTag(Predicates.equalTo("AudioFlinger"));
+            LogRecordPredicates.matchTag(Predicate.isEqual("AudioFlinger"));
     public static final Predicate<LogRecord> MATCH_SECOND =
-            LogRecordPredicates.matchTag(Predicates.equalTo("NotAudioFlinger"));
+            LogRecordPredicates.matchTag(Predicate.isEqual("NotAudioFlinger"));
 
-    public static final Predicate<LogRecord> MATCH_ALL = Predicates.alwaysTrue();
-    public static final Predicate<LogRecord> MATCH_NONE = Predicates.alwaysFalse();
+    public static final Predicate<LogRecord> MATCH_ALL = logRecord -> true;
+    public static final Predicate<LogRecord> MATCH_NONE = logRecord -> false;
 }

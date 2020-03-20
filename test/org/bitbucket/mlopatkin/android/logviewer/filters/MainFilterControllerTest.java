@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
@@ -44,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -193,8 +193,8 @@ public class MainFilterControllerTest {
     private FilterFromDialog createMockFilter(FilteringMode mode, final Predicate<LogRecord> predicate) {
         FilterFromDialog result = new FilterFromDialog() {
             @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return predicate.apply(input);
+            public boolean test(@Nullable LogRecord input) {
+                return predicate.test(input);
             }
         };
         result.setMode(mode);

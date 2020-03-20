@@ -17,8 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -28,13 +26,13 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
-import org.bitbucket.mlopatkin.utils.FluentPredicate;
+import org.bitbucket.mlopatkin.utils.MorePredicates;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class FilterFromDialog implements ColoringFilter {
     private static final Joiner commaJoiner = Joiner.on(", ");
@@ -95,8 +93,8 @@ public class FilterFromDialog implements ColoringFilter {
     }
 
     @Override
-    public boolean apply(@Nullable LogRecord input) {
-        return compiledPredicate.apply(input);
+    public boolean test(LogRecord input) {
+        return compiledPredicate.test(input);
     }
 
     private Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
@@ -106,9 +104,9 @@ public class FilterFromDialog implements ColoringFilter {
             for (String tagPattern : tags) {
                 tagPredicates.add(tagParser.parse(tagPattern));
             }
-            predicates.add(LogRecordPredicates.matchTag(Predicates.or(tagPredicates)));
+            predicates.add(LogRecordPredicates.matchTag(MorePredicates.or(tagPredicates)));
         }
-        FluentPredicate<LogRecord> appsAndPidsPredicate = null;
+        Predicate<LogRecord> appsAndPidsPredicate = null;
         if (pids != null && !pids.isEmpty()) {
             appsAndPidsPredicate = LogRecordPredicates.withAnyOfPids(pids);
         }
@@ -117,8 +115,9 @@ public class FilterFromDialog implements ColoringFilter {
             for (String appPattern : apps) {
                 appsPredicates.add(tagParser.parse(appPattern));
             }
-            FluentPredicate<LogRecord> appsPredicate = LogRecordPredicates.matchAppName(Predicates.or(appsPredicates));
-            appsAndPidsPredicate = appsPredicate.or(appsAndPidsPredicate);
+            Predicate<LogRecord> appsPredicate = LogRecordPredicates.matchAppName(MorePredicates.or(appsPredicates));
+            appsAndPidsPredicate =
+                    appsAndPidsPredicate != null ? appsPredicate.or(appsAndPidsPredicate) : appsPredicate;
         }
         if (appsAndPidsPredicate != null) {
             predicates.add(appsAndPidsPredicate);
@@ -129,7 +128,7 @@ public class FilterFromDialog implements ColoringFilter {
         if (priority != null && priority != LogRecord.Priority.LOWEST) {
             predicates.add(LogRecordPredicates.moreSevereThan(priority));
         }
-        return Predicates.and(predicates);
+        return MorePredicates.and(predicates);
     }
 
     private String compileTooltip() {

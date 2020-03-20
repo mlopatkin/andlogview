@@ -50,8 +50,8 @@ public class FilterFromDialogTest {
         filter.setTags(Collections.singletonList("TAG1"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertFalse(filter.apply(tag2));
+        assertTrue(filter.test(tag1));
+        assertFalse(filter.test(tag2));
     }
 
     @Test
@@ -63,9 +63,9 @@ public class FilterFromDialogTest {
         filter.setTags(Arrays.asList("TAG1", "TAG2"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertTrue(filter.apply(tag2));
-        assertFalse(filter.apply(tag3));
+        assertTrue(filter.test(tag1));
+        assertTrue(filter.test(tag2));
+        assertFalse(filter.test(tag3));
     }
 
     @Test
@@ -77,9 +77,9 @@ public class FilterFromDialogTest {
         filter.setTags(Collections.singletonList("tag1"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertTrue(filter.apply(tag2));
-        assertFalse(filter.apply(tag3));
+        assertTrue(filter.test(tag1));
+        assertTrue(filter.test(tag2));
+        assertFalse(filter.test(tag3));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class FilterFromDialogTest {
         filter.initialize();
 
         for (LogRecord r : tags) {
-            assertFalse(filter.apply(r));
+            assertFalse(filter.test(r));
         }
     }
 
@@ -105,9 +105,9 @@ public class FilterFromDialogTest {
         filter.setTags(Collections.singletonList("/TAG[12]/"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertTrue(filter.apply(tag2));
-        assertFalse(filter.apply(tag3));
+        assertTrue(filter.test(tag1));
+        assertTrue(filter.test(tag2));
+        assertFalse(filter.test(tag3));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class FilterFromDialogTest {
         filter.initialize();
 
         for (LogRecord r : tags) {
-            assertTrue(r.toString(), filter.apply(r));
+            assertTrue(r.toString(), filter.test(r));
         }
     }
 
@@ -132,8 +132,8 @@ public class FilterFromDialogTest {
         filter.setApps(Collections.singletonList("TAG1"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertFalse(filter.apply(tag2));
+        assertTrue(filter.test(tag1));
+        assertFalse(filter.test(tag2));
     }
 
     @Test
@@ -145,9 +145,9 @@ public class FilterFromDialogTest {
         filter.setApps(Arrays.asList("TAG1", "TAG2"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertTrue(filter.apply(tag2));
-        assertFalse(filter.apply(tag3));
+        assertTrue(filter.test(tag1));
+        assertTrue(filter.test(tag2));
+        assertFalse(filter.test(tag3));
     }
 
     @Test
@@ -159,9 +159,9 @@ public class FilterFromDialogTest {
         filter.setApps(Collections.singletonList("tag1"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertTrue(filter.apply(tag2));
-        assertFalse(filter.apply(tag3));
+        assertTrue(filter.test(tag1));
+        assertTrue(filter.test(tag2));
+        assertFalse(filter.test(tag3));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class FilterFromDialogTest {
         filter.initialize();
 
         for (LogRecord r : tags) {
-            assertFalse(filter.apply(r));
+            assertFalse(filter.test(r));
         }
     }
 
@@ -187,9 +187,9 @@ public class FilterFromDialogTest {
         filter.setApps(Collections.singletonList("/TAG[12]/"));
         filter.initialize();
 
-        assertTrue(filter.apply(tag1));
-        assertTrue(filter.apply(tag2));
-        assertFalse(filter.apply(tag3));
+        assertTrue(filter.test(tag1));
+        assertTrue(filter.test(tag2));
+        assertFalse(filter.test(tag3));
     }
 
     @Test
@@ -202,7 +202,7 @@ public class FilterFromDialogTest {
         filter.initialize();
 
         for (LogRecord r : tags) {
-            assertTrue(r.toString(), filter.apply(r));
+            assertTrue(r.toString(), filter.test(r));
         }
     }
 
@@ -216,9 +216,9 @@ public class FilterFromDialogTest {
         filter.setApps(Collections.singletonList("app2"));
 
         filter.initialize();
-        assertTrue(filter.apply(record1));
-        assertTrue(filter.apply(record2));
-        assertFalse(filter.apply(record3));
+        assertTrue(filter.test(record1));
+        assertTrue(filter.test(record2));
+        assertFalse(filter.test(record3));
     }
 
     @Test
@@ -231,10 +231,10 @@ public class FilterFromDialogTest {
         filter.setMessagePattern("test");
         filter.initialize();
 
-        assertTrue(filter.apply(record1));
-        assertTrue(filter.apply(record2));
-        assertTrue(filter.apply(record3));
-        assertFalse(filter.apply(recordNo));
+        assertTrue(filter.test(record1));
+        assertTrue(filter.test(record2));
+        assertTrue(filter.test(record3));
+        assertFalse(filter.test(recordNo));
     }
 
     @Test
@@ -247,10 +247,10 @@ public class FilterFromDialogTest {
         filter.setMessagePattern("/t[e]st/");
         filter.initialize();
 
-        assertTrue(filter.apply(record1));
-        assertTrue(filter.apply(record2));
-        assertFalse(filter.apply(record3));
-        assertFalse(filter.apply(recordNo));
+        assertTrue(filter.test(record1));
+        assertTrue(filter.test(record2));
+        assertFalse(filter.test(record3));
+        assertFalse(filter.test(recordNo));
     }
 
     @Test

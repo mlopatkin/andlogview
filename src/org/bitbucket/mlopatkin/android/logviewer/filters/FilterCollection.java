@@ -16,9 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+
+import java.util.function.Predicate;
 
 public interface FilterCollection<T extends Predicate<LogRecord>> {
     void addFilter(FilteringMode mode, T filter);

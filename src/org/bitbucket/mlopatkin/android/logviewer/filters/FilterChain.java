@@ -16,13 +16,13 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Manages a list of filters and composes them based on their type. At first we hide anything that matches any of the
@@ -41,7 +41,7 @@ public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
             return mode.getDefaultResult();
         }
         for (Predicate<LogRecord> filter : filtersForMode) {
-            if (filter.apply(record)) {
+            if (filter.test(record)) {
                 return true;
             }
         }

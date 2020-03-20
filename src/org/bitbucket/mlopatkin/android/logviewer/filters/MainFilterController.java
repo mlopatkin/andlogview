@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -36,6 +35,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 

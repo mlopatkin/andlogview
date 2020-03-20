@@ -65,7 +65,7 @@ class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
 
     public Color getColor(LogRecord record) {
         for (FilterInfo info : reversedView) {
-            if (info.isEnabled && info.filter.apply(record)) {
+            if (info.isEnabled && info.filter.test(record)) {
                 return info.filter.getHighlightColor();
             }
         }

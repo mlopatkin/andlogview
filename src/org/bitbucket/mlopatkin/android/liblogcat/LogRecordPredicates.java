@@ -16,14 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 
-import org.bitbucket.mlopatkin.utils.FluentPredicate;
-
 import java.util.List;
+import java.util.function.Predicate;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,68 +32,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class LogRecordPredicates {
     private LogRecordPredicates() {}
 
-    public static FluentPredicate<LogRecord> matchTag(final Predicate<String> tagMatcher) {
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return tagMatcher.apply(checkNotNull(input).getTag());
-            }
-        };
+    public static Predicate<LogRecord> matchTag(final Predicate<String> tagMatcher) {
+        return input -> tagMatcher.test(checkNotNull(input).getTag());
     }
 
-    public static FluentPredicate<LogRecord> withPid(final int pid) {
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return checkNotNull(input).getPid() == pid;
-            }
-        };
+    public static Predicate<LogRecord> withPid(final int pid) {
+        return input -> checkNotNull(input).getPid() == pid;
     }
 
-    public static FluentPredicate<LogRecord> moreSevereThan(final LogRecord.Priority priority) {
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return checkNotNull(input).getPriority().compareTo(priority) >= 0;
-            }
-        };
+    public static Predicate<LogRecord> moreSevereThan(final LogRecord.Priority priority) {
+        return input -> checkNotNull(input).getPriority().compareTo(priority) >= 0;
     }
 
-    public static FluentPredicate<LogRecord> withAnyOfPids(List<Integer> pids) {
+    public static Predicate<LogRecord> withAnyOfPids(List<Integer> pids) {
         final ImmutableSet<Integer> pidSet = ImmutableSet.copyOf(pids);
 
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return pidSet.contains(checkNotNull(input).getPid());
-            }
-        };
+        return input -> pidSet.contains(checkNotNull(input).getPid());
     }
 
-    public static FluentPredicate<LogRecord> matchMessage(final Predicate<String> messageMatcher) {
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return messageMatcher.apply(checkNotNull(input).getMessage());
-            }
-        };
+    public static Predicate<LogRecord> matchMessage(final Predicate<String> messageMatcher) {
+        return input -> messageMatcher.test(checkNotNull(input).getMessage());
     }
 
-    public static FluentPredicate<LogRecord> matchAppName(final Predicate<String> appNameMatcher) {
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return appNameMatcher.apply(checkNotNull(input).getAppName());
-            }
-        };
+    public static Predicate<LogRecord> matchAppName(final Predicate<String> appNameMatcher) {
+        return input -> appNameMatcher.test(checkNotNull(input).getAppName());
     }
 
-    public static FluentPredicate<LogRecord> withBuffer(final LogRecord.Buffer buffer) {
-        return new FluentPredicate<LogRecord>() {
-            @Override
-            public boolean apply(@Nullable LogRecord input) {
-                return checkNotNull(input).getBuffer() == buffer;
-            }
-        };
+    public static Predicate<LogRecord> withBuffer(final LogRecord.Buffer buffer) {
+        return input -> checkNotNull(input).getBuffer() == buffer;
     }
 }

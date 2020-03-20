@@ -16,8 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameComponent;
@@ -29,6 +27,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 
 import java.awt.EventQueue;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 

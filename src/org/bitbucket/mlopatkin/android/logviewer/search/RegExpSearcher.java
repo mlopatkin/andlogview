@@ -27,7 +27,7 @@ class RegExpSearcher implements HighlightStrategy, SearchStrategy {
     }
 
     @Override
-    public boolean apply(String s) {
+    public boolean test(String s) {
         return pattern.matcher(s).find();
     }
 

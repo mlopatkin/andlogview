@@ -15,6 +15,6 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import com.google.common.base.Predicate;
+import java.util.function.Predicate;
 
 public interface SearchStrategy extends Predicate<String> {}

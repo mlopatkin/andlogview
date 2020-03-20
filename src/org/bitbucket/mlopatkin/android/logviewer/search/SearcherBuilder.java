@@ -18,8 +18,7 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
-import com.google.common.base.Predicate;
-
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 

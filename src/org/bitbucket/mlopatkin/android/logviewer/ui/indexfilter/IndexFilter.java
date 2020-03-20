@@ -16,14 +16,13 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 
 import java.awt.Color;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -48,7 +47,7 @@ class IndexFilter implements LogModelFilter {
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return parent.shouldShowRecord(record) && filter.apply(record);
+        return parent.shouldShowRecord(record) && filter.test(record);
     }
 
     @Nullable

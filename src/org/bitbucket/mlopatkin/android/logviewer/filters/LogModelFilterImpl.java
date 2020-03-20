@@ -41,7 +41,7 @@ class LogModelFilterImpl implements LogModelFilter {
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return bufferFilter.apply(record) && filterChain.shouldShow(record);
+        return bufferFilter.test(record) && filterChain.shouldShow(record);
     }
 
     @Nullable

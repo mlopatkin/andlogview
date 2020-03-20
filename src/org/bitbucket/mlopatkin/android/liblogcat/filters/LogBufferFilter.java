@@ -16,12 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat.filters;
 
-import com.google.common.base.Predicate;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 
 import java.util.EnumSet;
+import java.util.function.Predicate;
 
 /**
  * Performs filtering based on the buffer of the record.
@@ -30,7 +29,7 @@ public class LogBufferFilter implements Predicate<LogRecord> {
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
 
     @Override
-    public boolean apply(LogRecord record) {
+    public boolean test(LogRecord record) {
         Buffer buffer = record.getBuffer();
         // Always allow records with unknown buffer to show.
         return buffer == null || buffers.contains(buffer);
