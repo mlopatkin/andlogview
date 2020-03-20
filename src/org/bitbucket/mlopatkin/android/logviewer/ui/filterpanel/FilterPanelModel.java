@@ -95,7 +95,7 @@ public class FilterPanelModel {
     }
 
     ImmutableList<PanelFilterView> getFilters() {
-        return ImmutableList.<PanelFilterView>copyOf(filters);
+        return ImmutableList.copyOf(filters);
     }
 
     private PanelFilter getPanelFilterForView(PanelFilterView filterView) {

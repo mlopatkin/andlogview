@@ -27,17 +27,17 @@ import static org.junit.Assert.assertEquals;
 public class MyListUtilsTest {
     @Test
     public void testMergeOrdered_emptyBoth() {
-        genericTest(ListTestUtils.<Integer>list(), ListTestUtils.<Integer>list(), 0);
+        genericTest(ListTestUtils.<Integer>list(), ListTestUtils.list(), 0);
     }
 
     @Test
     public void testMergeOrdered_emptyBase() {
-        genericTest(ListTestUtils.<Integer>list(), list(3, 4, 5), 0);
+        genericTest(ListTestUtils.list(), list(3, 4, 5), 0);
     }
 
     @Test
     public void testMergeOrdered_emptyElems() {
-        genericTest(list(3, 4, 5), ListTestUtils.<Integer>list(), 3);
+        genericTest(list(3, 4, 5), ListTestUtils.list(), 3);
     }
 
     @Test

@@ -56,7 +56,7 @@ public class LogfileDataSource implements DataSource {
         String line = in.readLine();
         while (line != null) {
             if (!LogRecordParser.isLogBeginningLine(line) && !CharMatcher.whitespace().matchesAllOf(line)) {
-                LogRecord record = strategy.parse(null, line, Collections.<Integer, String>emptyMap());
+                LogRecord record = strategy.parse(null, line, Collections.emptyMap());
                 // sometimes we cannot handle the line well: if we didn't guess
                 // the log type correctly or if there is some weird formatting
                 // (probably binary output)
@@ -102,7 +102,7 @@ public class LogfileDataSource implements DataSource {
     static LogfileDataSource createLogfileDataSourceWithStrategy(String fileName, String checkLine)
             throws UnrecognizedFormatException {
         for (ParsingStrategies.Strategy current : ParsingStrategies.supportedStrategies) {
-            if (current.parse(null, checkLine, Collections.<Integer, String>emptyMap()) != null) {
+            if (current.parse(null, checkLine, Collections.emptyMap()) != null) {
                 return new LogfileDataSource(fileName, current);
             }
         }

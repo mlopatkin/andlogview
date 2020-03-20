@@ -229,7 +229,7 @@ public class DumpstateFileDataSource implements DataSource {
 
         private Strategy chooseParsingStrategy(String line) throws ParseException {
             for (Strategy strategy : ParsingStrategies.supportedStrategies) {
-                if (strategy.parse(null, line, Collections.<Integer, String>emptyMap()) != null) {
+                if (strategy.parse(null, line, Collections.emptyMap()) != null) {
                     return strategy;
                 }
             }

@@ -145,8 +145,7 @@ public class MainFilterControllerTest {
 
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
-        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any()))
-                .thenReturn(Collections.<SavedFilterData>emptyList());
+        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(Collections.emptyList());
 
         MainFilterController controller = new MainFilterController(
                 filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
@@ -167,7 +166,7 @@ public class MainFilterControllerTest {
         controller = new MainFilterController(
                 filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
 
-        verify(filterPanelModel).addFilter(Mockito.<PanelFilter>any());
+        verify(filterPanelModel).addFilter(Mockito.any());
         assertEquals(Color.BLACK, filterImpl.getHighlightColor(RECORD2));
     }
 
