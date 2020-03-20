@@ -101,7 +101,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         return b.toString();
     }
 
-    private Set<AdbBuffer> buffers = new HashSet<AdbBuffer>();
+    private Set<AdbBuffer> buffers = new HashSet<>();
 
     private boolean isBufferHere(String bufferName) {
         String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null 2> /dev/null || echo 0";

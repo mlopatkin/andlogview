@@ -78,7 +78,7 @@ public class BufferedListener<T> implements RecordListener<T> {
     // the number of records sent into eventqueue between watchdog invocations
     private volatile AtomicInteger immediateCount = new AtomicInteger(0);
 
-    private List<T> internalBuffer = new ArrayList<T>();
+    private List<T> internalBuffer = new ArrayList<>();
     private final Object lock = new Object();
 
     @Override
@@ -150,7 +150,7 @@ public class BufferedListener<T> implements RecordListener<T> {
         assert EventQueue.isDispatchThread();
         List<T> records = internalBuffer;
         synchronized (lock) {
-            internalBuffer = new ArrayList<T>();
+            internalBuffer = new ArrayList<>();
         }
         if (records.size() < MIN_RECORDS_SPEED_THRESHOLD) {
             setPolicy(Policy.IMMEDIATE);
@@ -162,7 +162,7 @@ public class BufferedListener<T> implements RecordListener<T> {
 
     @Override
     public void setRecords(List<T> records) {
-        final List<T> copy = new ArrayList<T>(records);
+        final List<T> copy = new ArrayList<>(records);
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {

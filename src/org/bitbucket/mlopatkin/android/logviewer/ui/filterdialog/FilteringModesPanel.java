@@ -29,8 +29,7 @@ import javax.swing.event.ChangeListener;
 
 class FilteringModesPanel extends JPanel implements ChangeListener {
     private ButtonGroup buttonGroup = new ButtonGroup();
-    private EnumMap<FilteringMode, JRadioButton> buttons =
-            new EnumMap<FilteringMode, JRadioButton>(FilteringMode.class);
+    private EnumMap<FilteringMode, JRadioButton> buttons = new EnumMap<>(FilteringMode.class);
 
     interface ModeChangedListener {
         void modeSelected(FilteringMode mode);

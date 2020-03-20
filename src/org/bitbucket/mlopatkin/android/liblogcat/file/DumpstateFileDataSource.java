@@ -45,8 +45,8 @@ public class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
     private static final int READ_AHEAD_LIMIT = 65536;
 
-    private List<SectionHandler> handlers = new ArrayList<SectionHandler>();
-    private List<LogRecord> records = new ArrayList<LogRecord>();
+    private List<SectionHandler> handlers = new ArrayList<>();
+    private List<LogRecord> records = new ArrayList<>();
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
     private RecordListener<LogRecord> logcatListener;
 
@@ -270,7 +270,7 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private static final String PROCESSES_SECTION = "PROCESSES (ps -P)";
-    private Map<Integer, String> converter = new HashMap<Integer, String>();
+    private Map<Integer, String> converter = new HashMap<>();
 
     private class ProcessesSectionHandler implements SectionHandler {
         @Override

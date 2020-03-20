@@ -28,7 +28,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
-    private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<Priority, Color>(Priority.class);
+    private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<>(Priority.class);
 
     static {
         for (Priority p : Priority.values()) {

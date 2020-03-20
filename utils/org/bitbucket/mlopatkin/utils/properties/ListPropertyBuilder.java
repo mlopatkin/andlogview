@@ -53,7 +53,7 @@ public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
 
     @Override
     public Property<List> build() {
-        ListProperty<T> p = new ListProperty<T>(elemType, parser);
+        ListProperty<T> p = new ListProperty<>(elemType, parser);
         p.setValue(defaultVal);
         return p;
     }

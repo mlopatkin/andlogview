@@ -24,7 +24,7 @@ class EnumParser<T extends Enum<T>> implements Parser<T> {
     private final Map<String, T> lookupMap;
 
     EnumParser(Class<T> type) {
-        Map<String, T> lookup = new HashMap<String, T>();
+        Map<String, T> lookup = new HashMap<>();
         for (T value : type.getEnumConstants()) {
             lookup.put(value.name(), value);
         }

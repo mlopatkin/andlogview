@@ -231,7 +231,7 @@ public class ProcessListFrame extends JFrame {
     }
 
     private static class ProcessesRowFilter extends RowFilter<ProcessListModel, Integer> {
-        private static final Set<String> HIDDEN_PROCESSES = new HashSet<String>();
+        private static final Set<String> HIDDEN_PROCESSES = new HashSet<>();
 
         static {
             HIDDEN_PROCESSES.add("ps");

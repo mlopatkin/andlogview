@@ -28,8 +28,7 @@ import javax.annotation.Nullable;
  */
 public abstract class FluentPredicate<T> implements Predicate<T> {
     // don't try to use #from there
-    private static final FluentPredicate<Object> ALWAYS_TRUE =
-            new FluentPredicateWrapper<Object>(Predicates.alwaysTrue());
+    private static final FluentPredicate<Object> ALWAYS_TRUE = new FluentPredicateWrapper<>(Predicates.alwaysTrue());
 
     public static <T> FluentPredicate<T> alwaysTrue() {
         return ALWAYS_TRUE.narrow();
@@ -42,7 +41,7 @@ public abstract class FluentPredicate<T> implements Predicate<T> {
         if (inner == null) {
             return ALWAYS_TRUE.narrow();
         }
-        return new FluentPredicateWrapper<T>(inner);
+        return new FluentPredicateWrapper<>(inner);
     }
 
     public FluentPredicate<T> and(@Nullable Predicate<? super T> other) {

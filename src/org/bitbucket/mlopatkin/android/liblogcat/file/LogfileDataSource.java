@@ -43,7 +43,7 @@ public class LogfileDataSource implements DataSource {
 
     private RecordListener<LogRecord> listener;
     private ParsingStrategies.Strategy strategy;
-    private List<LogRecord> records = new ArrayList<LogRecord>();
+    private List<LogRecord> records = new ArrayList<>();
     private String fileName;
 
     private LogfileDataSource(String fileName, ParsingStrategies.Strategy strategy) {

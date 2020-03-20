@@ -101,7 +101,7 @@ public class AdbDeviceManager {
         @Override
         public void deviceChanged(IDevice device, int changeMask) {
             logger.debug("Device state changed: " + device.getSerialNumber());
-            List<String> changes = new ArrayList<String>(3);
+            List<String> changes = new ArrayList<>(3);
             if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
                 changes.add("CHANGE_BUILD_INFO");
             }

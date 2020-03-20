@@ -28,7 +28,7 @@ import javax.swing.table.TableCellRenderer;
 public class DecoratingRendererTable extends JTable {
     private static final long serialVersionUID = 2582491704714327034L;
 
-    private List<DecoratingCellRenderer> decorators = new ArrayList<DecoratingCellRenderer>();
+    private List<DecoratingCellRenderer> decorators = new ArrayList<>();
 
     public void addDecorator(DecoratingCellRenderer renderer) {
         decorators.add(renderer);

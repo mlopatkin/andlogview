@@ -27,6 +27,6 @@ public class Parsers {
     public static final Parser<Point> pointParser = new PointParser();
 
     public static <T extends Enum<T>> Parser<T> enumParser(Class<T> clazz) {
-        return new EnumParser<T>(clazz);
+        return new EnumParser<>(clazz);
     }
 }

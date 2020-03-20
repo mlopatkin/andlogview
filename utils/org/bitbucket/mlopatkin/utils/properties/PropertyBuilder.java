@@ -37,12 +37,12 @@ public class PropertyBuilder<T> implements IPropertyBuilder<T> {
 
     @Override
     public Property<T> build() {
-        Property<T> result = new Property<T>(type, parser);
+        Property<T> result = new Property<>(type, parser);
         result.setValue(defaultValue);
         return result;
     }
 
     static <T1> PropertyBuilder<T1> newPropertyBuilder(Class<T1> type) {
-        return new PropertyBuilder<T1>(type);
+        return new PropertyBuilder<>(type);
     }
 }

@@ -34,7 +34,7 @@ class ListParser<T> implements Parser<List<T>> {
 
     @Override
     public List<T> read(String value) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (String s : Splitter.on(',').trimResults().split(value)) {
             result.add(internal.read(s));
         }

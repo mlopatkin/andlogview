@@ -25,7 +25,7 @@ class PointParser implements Parser<Point> {
     private static final String UNDEFINED = "undefined";
 
     // simple comma-separated pair x,y
-    ListParser<Integer> internalListParser = new ListParser<Integer>(Parsers.integerParser);
+    ListParser<Integer> internalListParser = new ListParser<>(Parsers.integerParser);
 
     @Override
     public Point read(String value) {

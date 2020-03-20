@@ -31,7 +31,7 @@ public class EnumMapPropertyBuilder<T extends Enum<T>, V> implements IPropertyBu
 
     @Override
     public Property<EnumMap> build() {
-        return new EnumMapProperty<T, V>(keyType, valueType, parser);
+        return new EnumMapProperty<>(keyType, valueType, parser);
     }
 
     public EnumMapPropertyBuilder<T, V> parser(Parser<V> parser) {
@@ -41,6 +41,6 @@ public class EnumMapPropertyBuilder<T extends Enum<T>, V> implements IPropertyBu
 
     static <T1 extends Enum<T1>, V1> EnumMapPropertyBuilder<T1, V1> newEnumMapPropertyBuilder(
             Class<T1> keyType, Class<V1> valueType) {
-        return new EnumMapPropertyBuilder<T1, V1>(keyType, valueType);
+        return new EnumMapPropertyBuilder<>(keyType, valueType);
     }
 }

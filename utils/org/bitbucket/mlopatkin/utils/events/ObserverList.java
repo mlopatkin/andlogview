@@ -44,7 +44,7 @@ public class ObserverList<E> implements Iterable<E> {
         void rewind();
     }
 
-    public final List<E> mObservers = new ArrayList<E>();
+    public final List<E> mObservers = new ArrayList<>();
     private int mIterationDepth = 0;
     private int mCount = 0;
 

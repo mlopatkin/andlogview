@@ -91,7 +91,7 @@ public class MyListUtilsTest {
     }
 
     public <T extends Comparable<? super T>> void genericTest(List<T> base, List<T> elems, int expectedResultPos) {
-        List<T> result = new ArrayList<T>(base);
+        List<T> result = new ArrayList<>(base);
         result.addAll(elems);
         Collections.sort(result);
 
