@@ -260,7 +260,8 @@ public class DumpstateFileDataSource implements DataSource {
                     return buffer;
                 }
             }
-            return Buffer.UNKNOWN;
+            throw new IllegalArgumentException(
+                    "Unknown buffer, startSection called before isSupportedSection? header=" + sectionName);
         }
 
         private boolean isEnd(String line) {

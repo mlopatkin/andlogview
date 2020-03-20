@@ -55,4 +55,51 @@ public final class LogRecordUtils {
     public static LogRecord forPidAndAppName(int pid, String appName) {
         return new LogRecord(new Date(), pid, NO_ID, appName, Priority.INFO, "", "");
     }
+
+    /**
+     * Copies existing record but changes its time to newTime.
+     *
+     * @param r the record to copy
+     * @param newTime the new time to use
+     * @return new record with all fields identical to r except time
+     */
+    public static LogRecord withTime(LogRecord r, Date newTime) {
+        return new LogRecord(newTime, r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
+                r.getMessage(), r.getBuffer());
+    }
+
+    public static LogRecord withPid(LogRecord r, int pid) {
+        return new LogRecord(r.getTime(), pid, r.getTid(), r.getAppName(), r.getPriority(), r.getTag(), r.getMessage(),
+                r.getBuffer());
+    }
+
+    public static LogRecord withTid(LogRecord r, int tid) {
+        return new LogRecord(r.getTime(), r.getPid(), tid, r.getAppName(), r.getPriority(), r.getTag(), r.getMessage(),
+                r.getBuffer());
+    }
+
+    public static LogRecord withAppName(LogRecord r, String appName) {
+        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), appName, r.getPriority(), r.getTag(), r.getMessage(),
+                r.getBuffer());
+    }
+
+    public static LogRecord withPriority(LogRecord r, Priority priority) {
+        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), priority, r.getTag(), r.getMessage(),
+                r.getBuffer());
+    }
+
+    public static LogRecord withTag(LogRecord r, String tag) {
+        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), tag, r.getMessage(),
+                r.getBuffer());
+    }
+
+    public static LogRecord withMessage(LogRecord r, String message) {
+        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(), message,
+                r.getBuffer());
+    }
+
+    public static LogRecord withBuffer(LogRecord r, Buffer buffer) {
+        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
+                r.getMessage(), buffer);
+    }
 }

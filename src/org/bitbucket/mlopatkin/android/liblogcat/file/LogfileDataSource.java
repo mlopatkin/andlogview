@@ -41,8 +41,6 @@ import java.util.Set;
 public class LogfileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
 
-    private static final Buffer DEFAULT_BUFFER = Buffer.UNKNOWN;
-
     private RecordListener<LogRecord> listener;
     private ParsingStrategies.Strategy strategy;
     private List<LogRecord> records = new ArrayList<LogRecord>();
@@ -58,7 +56,7 @@ public class LogfileDataSource implements DataSource {
         String line = in.readLine();
         while (line != null) {
             if (!LogRecordParser.isLogBeginningLine(line) && !CharMatcher.whitespace().matchesAllOf(line)) {
-                LogRecord record = strategy.parse(DEFAULT_BUFFER, line, Collections.<Integer, String>emptyMap());
+                LogRecord record = strategy.parse(null, line, Collections.<Integer, String>emptyMap());
                 // sometimes we cannot handle the line well: if we didn't guess
                 // the log type correctly or if there is some weird formatting
                 // (probably binary output)

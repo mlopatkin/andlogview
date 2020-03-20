@@ -20,7 +20,6 @@ import com.google.common.io.Files;
 
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.liblogcat.LogFormatSniffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -90,7 +89,7 @@ public class FileDataSourceFactory {
         @Override
         protected boolean pushNonEmpty(String nextLine) {
             for (ParsingStrategies.Strategy strategy : ParsingStrategies.supportedStrategies) {
-                if (strategy.parse(LogRecord.Buffer.UNKNOWN, nextLine, Collections.emptyMap()) != null) {
+                if (strategy.parse(null, nextLine, Collections.emptyMap()) != null) {
                     return true;
                 }
             }

@@ -27,11 +27,13 @@ import java.util.EnumSet;
  * Performs filtering based on the buffer of the record.
  */
 public class LogBufferFilter implements Predicate<LogRecord> {
-    private EnumSet<Buffer> buffers = EnumSet.of(Buffer.UNKNOWN);
+    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
 
     @Override
     public boolean apply(LogRecord record) {
-        return buffers.contains(record.getBuffer());
+        Buffer buffer = record.getBuffer();
+        // Always allow records with unknown buffer to show.
+        return buffer == null || buffers.contains(buffer);
     }
 
     public void setBufferEnabled(Buffer buffer, boolean enabled) {

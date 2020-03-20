@@ -15,9 +15,12 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import com.android.annotations.Nullable;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+import com.google.common.collect.ComparisonChain;
 
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -25,6 +28,10 @@ import java.util.Date;
  * message, etc.
  */
 public class LogRecord implements Comparable<LogRecord> {
+
+    public static final Comparator<Buffer> NULL_SAFE_BUFFER_COMPARATOR =
+            Comparator.nullsFirst(Comparator.naturalOrder());
+
     public enum Priority {
         VERBOSE,
         DEBUG,
@@ -41,7 +48,6 @@ public class LogRecord implements Comparable<LogRecord> {
     }
 
     public enum Buffer {
-        UNKNOWN,
         MAIN("Main"),
         SYSTEM("System"),
         RADIO("Radio"),
@@ -52,10 +58,6 @@ public class LogRecord implements Comparable<LogRecord> {
 
         public String getCaption() {
             return name;
-        }
-
-        Buffer() {
-            name = null;
         }
 
         Buffer(String name) {
@@ -75,11 +77,11 @@ public class LogRecord implements Comparable<LogRecord> {
     private final String appName;
 
     public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message) {
-        this(time, pid, tid, appName, priority, tag, message, Buffer.UNKNOWN);
+        this(time, pid, tid, appName, priority, tag, message, null);
     }
 
-    public LogRecord(
-            Date time, int pid, int tid, String appName, Priority priority, String tag, String message, Buffer buffer) {
+    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message,
+            Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -114,6 +116,7 @@ public class LogRecord implements Comparable<LogRecord> {
         return message;
     }
 
+    @Nullable
     public Buffer getBuffer() {
         return buffer;
     }
@@ -151,11 +154,9 @@ public class LogRecord implements Comparable<LogRecord> {
      */
     @Override
     public int compareTo(LogRecord o) {
-        int timeCompare = getTime().compareTo(o.getTime());
-        if (timeCompare == 0) {
-            return getBuffer().compareTo(o.getBuffer());
-        } else {
-            return timeCompare;
-        }
+        return ComparisonChain.start()
+                .compare(getTime(), o.getTime())
+                .compare(getBuffer(), o.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)
+                .result();
     }
 }

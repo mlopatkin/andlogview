@@ -54,11 +54,9 @@ public class BufferFilterMenu {
         this.parent = parent;
         this.controller = controller;
         for (Buffer buffer : Buffer.values()) {
-            if (buffer != Buffer.UNKNOWN) {
-                JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui.bufferEnabled(buffer));
-                items.put(buffer, item);
-                parent.add(item);
-            }
+            JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui.bufferEnabled(buffer));
+            items.put(buffer, item);
+            parent.add(item);
         }
         resetBuffers();
     }
