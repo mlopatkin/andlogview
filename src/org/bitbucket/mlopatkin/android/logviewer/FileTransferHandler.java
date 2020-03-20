@@ -66,9 +66,7 @@ public class FileTransferHandler extends TransferHandler {
                 return false;
             }
             frame.setRecentDir(file.getAbsoluteFile().getParentFile());
-        } catch (UnsupportedFlavorException e) {
-            return false;
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             return false;
         }
         return true;

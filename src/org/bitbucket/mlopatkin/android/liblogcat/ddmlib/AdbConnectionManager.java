@@ -42,10 +42,7 @@ public class AdbConnectionManager {
             Field started = AndroidDebugBridge.class.getDeclaredField("mStarted");
             started.setAccessible(true);
             return started.getBoolean(adb);
-        } catch (IllegalAccessException e) {
-            logger.fatal("The DDMLIB is unsupported", e);
-            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: " + System.getenv("DDMLIB"));
-        } catch (NoSuchFieldException e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             logger.fatal("The DDMLIB is unsupported", e);
             throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: " + System.getenv("DDMLIB"));
         }
