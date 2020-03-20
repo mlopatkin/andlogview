@@ -200,17 +200,14 @@ public class Configuration {
 
     public static void load(boolean debug) throws IllegalConfigurationException {
         // save on exit
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Configuration.save();
-                } catch (Throwable e) { // OK to catch Throwable here
-                    // exception in shutdown hook is bad
-                    logger.error("Exception while saving configuration", e);
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Configuration.save();
+            } catch (Throwable e) { // OK to catch Throwable here
+                // exception in shutdown hook is bad
+                logger.error("Exception while saving configuration", e);
             }
-        });
+        }));
 
         if (debug) {
             Logging.loadDebug();

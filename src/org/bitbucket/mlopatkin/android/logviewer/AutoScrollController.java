@@ -60,12 +60,7 @@ abstract class AutoScrollController {
         shouldScroll = isAtBottom();
     }
 
-    private final Runnable scrollToTheEnd = new Runnable() {
-        @Override
-        public void run() {
-            performScrollToTheEnd();
-        }
-    };
+    private final Runnable scrollToTheEnd = this::performScrollToTheEnd;
 
     /**
      * Call this method after any action other then inserting something into the

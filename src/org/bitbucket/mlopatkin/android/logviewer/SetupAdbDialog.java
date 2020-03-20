@@ -74,12 +74,7 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
             optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 
             if (yesBtnString.equals(value)) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        ConfigurationDialog.showConfigurationDialog((Frame) getOwner());
-                    }
-                });
+                SwingUtilities.invokeLater(() -> ConfigurationDialog.showConfigurationDialog((Frame) getOwner()));
             }
             Configuration.adb.showSetupDialog(checkBox.isSelected());
             setVisible(false);

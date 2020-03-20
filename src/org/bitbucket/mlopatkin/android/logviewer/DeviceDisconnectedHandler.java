@@ -74,19 +74,9 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
         logger.debug("close notification dialog");
     }
 
-    private Runnable disconnectedInvoker = new Runnable() {
-        @Override
-        public void run() {
-            showNotificationDialog("Device is disconnected");
-        }
-    };
+    private Runnable disconnectedInvoker = () -> showNotificationDialog("Device is disconnected");
 
-    private Runnable offlineInvoker = new Runnable() {
-        @Override
-        public void run() {
-            showNotificationDialog("Device goes offline");
-        }
-    };
+    private Runnable offlineInvoker = () -> showNotificationDialog("Device goes offline");
 
     public static void startWatching(MainFrame mainFrame, IDevice device) {
         AdbDeviceManager.addDeviceChangeListener(new DeviceDisconnectedHandler(mainFrame, device));

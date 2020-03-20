@@ -13,8 +13,6 @@ import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationExcept
 
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -38,18 +36,8 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
     protected FilterDialog(Frame owner) {
         super(owner);
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onPositiveResult();
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onNegativeResult();
-            }
-        });
+        okButton.addActionListener(e -> onPositiveResult());
+        cancelButton.addActionListener(e -> onNegativeResult());
 
         ModeChangedListener modeListener = new ModeChangedListener() {
             @Override

@@ -153,12 +153,7 @@ public class MainFrame extends JFrame {
         if (EventQueue.isDispatchThread()) {
             setSource(newSource);
         } else {
-            EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    setSource(newSource);
-                }
-            });
+            EventQueue.invokeLater(() -> setSource(newSource));
         }
     }
 
@@ -509,12 +504,7 @@ public class MainFrame extends JFrame {
             }
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showSourceMessage("Waiting for device...");
-            }
-        });
+        EventQueue.invokeLater(() -> showSourceMessage("Waiting for device..."));
         IDevice device = AdbDeviceManager.getDefaultDevice();
         if (device != null) {
             connectDevicePending(device);
@@ -604,12 +594,7 @@ public class MainFrame extends JFrame {
     }
 
     void disableAdbCommandsAsync() {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                acConnectToDevice.setEnabled(false);
-            }
-        });
+        EventQueue.invokeLater(() -> acConnectToDevice.setEnabled(false));
     }
 
     void setRecentDir(File dir) {

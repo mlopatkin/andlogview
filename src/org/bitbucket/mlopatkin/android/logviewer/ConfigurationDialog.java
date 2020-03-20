@@ -24,7 +24,6 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.AbstractAction;
@@ -62,14 +61,11 @@ public class ConfigurationDialog extends JDialog {
 
         JButton btBrowseAdb = new JButton("...");
 
-        btBrowseAdb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int result = fileChooser.showOpenDialog(ConfigurationDialog.this);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    textAdbExecutable.setText(fileChooser.getSelectedFile().getAbsolutePath());
-                }
+        btBrowseAdb.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(ConfigurationDialog.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                textAdbExecutable.setText(fileChooser.getSelectedFile().getAbsolutePath());
             }
         });
 

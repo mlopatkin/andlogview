@@ -224,19 +224,9 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         private FilterButton activeButton;
 
         PopupMenuHandler() {
-            editItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    model.editFilter(activeButton.getFilter());
-                }
-            });
+            editItem.addActionListener(e -> model.editFilter(activeButton.getFilter()));
 
-            removeItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    model.removeFilter(activeButton.getFilter());
-                }
-            });
+            removeItem.addActionListener(e -> model.removeFilter(activeButton.getFilter()));
             menu.add(editItem);
             menu.add(removeItem);
         }

@@ -20,8 +20,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
 
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -107,29 +105,16 @@ public class BufferedListener<T> implements RecordListener<T> {
         if (count >= MAX_RECORDS_SPEED_THRESHOLD) {
             setPolicy(Policy.BUFFER);
         }
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                addOneRecord(record);
-            }
-        });
+        EventQueue.invokeLater(() -> addOneRecord(record));
     }
 
-    private Timer mergeTimer = new Timer(MERGE_INTERVAL_MS, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (policy == Policy.BUFFER) {
-                mergeIntoModel();
-            }
+    private Timer mergeTimer = new Timer(MERGE_INTERVAL_MS, e -> {
+        if (policy == Policy.BUFFER) {
+            mergeIntoModel();
         }
     });
 
-    private Timer watchdogTimer = new Timer(WATCHDOG_INTERVAL_MS, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            immediateCount.set(0);
-        }
-    });
+    private Timer watchdogTimer = new Timer(WATCHDOG_INTERVAL_MS, e -> immediateCount.set(0));
 
     private void addOneRecord(T record) {
         assert EventQueue.isDispatchThread();
@@ -163,12 +148,7 @@ public class BufferedListener<T> implements RecordListener<T> {
     @Override
     public void setRecords(List<T> records) {
         final List<T> copy = new ArrayList<>(records);
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                receiver.setRecords(copy);
-            }
-        });
+        EventQueue.invokeLater(() -> receiver.setRecords(copy));
     }
 
     private void setPolicy(Policy policy) {

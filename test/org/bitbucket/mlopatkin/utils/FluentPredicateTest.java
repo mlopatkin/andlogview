@@ -23,8 +23,6 @@ import com.google.common.base.Predicates;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.Nullable;
-
 public class FluentPredicateTest {
     @Test
     public void testFrom() throws Exception {
@@ -82,11 +80,6 @@ public class FluentPredicateTest {
     }
 
     private Predicate<Integer> isOdd() {
-        return new Predicate<Integer>() {
-            @Override
-            public boolean apply(@Nullable Integer integer) {
-                return MoreObjects.firstNonNull(integer, 1) % 2 != 0;
-            }
-        };
+        return integer -> MoreObjects.firstNonNull(integer, 1) % 2 != 0;
     }
 }

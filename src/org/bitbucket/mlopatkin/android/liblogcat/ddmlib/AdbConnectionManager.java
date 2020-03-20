@@ -56,12 +56,7 @@ public class AdbConnectionManager {
             }
             logger.debug("ADB library initialization");
             AndroidDebugBridge.init(false);
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    closeAdb();
-                }
-            });
+            Runtime.getRuntime().addShutdownHook(new Thread(AdbConnectionManager::closeAdb));
             inited = true;
             try {
                 AndroidDebugBridge adb = AndroidDebugBridge.createBridge(Configuration.adb.executable(), false);

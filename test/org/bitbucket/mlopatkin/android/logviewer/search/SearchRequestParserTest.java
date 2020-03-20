@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -39,19 +38,11 @@ public class SearchRequestParserTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(mockDelegate.createPlainSearcher(anyString())).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                return "Plain: " + invocation.getArguments()[0];
-            }
-        });
+        when(mockDelegate.createPlainSearcher(anyString())).thenAnswer(
+                (Answer<String>) invocation -> "Plain: " + invocation.getArguments()[0]);
 
-        when(mockDelegate.createRegexpSearcher(anyString())).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                return "Regexp: " + invocation.getArguments()[0];
-            }
-        });
+        when(mockDelegate.createRegexpSearcher(anyString())).thenAnswer(
+                (Answer<String>) invocation -> "Regexp: " + invocation.getArguments()[0]);
 
         parser = new SearchRequestParser<>(mockDelegate);
     }
