@@ -95,12 +95,11 @@ public class StyledLabel extends JTextPane {
         protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets, int[] spans) {
             super.layoutMajorAxis(targetSpan, axis, offsets, spans);
             int textBlockHeight = 0;
-            int offset = 0;
 
-            for (int i = 0; i < spans.length; i++) {
-                textBlockHeight = spans[i];
+            for (int span : spans) {
+                textBlockHeight = span;
             }
-            offset = (targetSpan - textBlockHeight) / 2;
+            int offset = (targetSpan - textBlockHeight) / 2;
             for (int i = 0; i < offsets.length; i++) {
                 offsets[i] += offset;
             }
