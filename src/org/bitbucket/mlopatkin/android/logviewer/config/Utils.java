@@ -53,13 +53,8 @@ class Utils {
             cfgDir.mkdirs();
         }
         File cfgFile = new File(cfgDir, CONFIG_FILE_NAME);
-        try {
-            BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile));
-            try {
-                cfg.save(output, "Do not modify while Logviewer is running");
-            } finally {
-                output.close();
-            }
+        try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile))) {
+            cfg.save(output, "Do not modify while Logviewer is running");
         } catch (IOException e) {
             logger.error("Failed to save configuration file", e);
         }
@@ -76,13 +71,8 @@ class Utils {
             return;
         }
 
-        try {
-            BufferedInputStream input = new BufferedInputStream(new FileInputStream(cfgFile));
-            try {
-                config.load(input);
-            } finally {
-                input.close();
-            }
+        try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(cfgFile))) {
+            config.load(input);
         } catch (IOException e) {
             logger.error("Failed to load configuration file", e);
         }
