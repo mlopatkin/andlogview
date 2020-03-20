@@ -23,6 +23,7 @@ plugins {
     id 'net.ltgt.errorprone'
 
     id 'name.mlopatkin.bitbucket'
+    id 'com.diffplug.eclipse.apt'
 }
 
 repositories {
@@ -148,6 +149,8 @@ disableTasks(
 
 // TARs aren't shipped, so disable it
 disableTasks('shadowDistTar')
+// Modern gradle support in eclipse (Buildship) doesn't require this task but it is brought in by eclipse.apt plugin
+disableTasks('eclipse')
 
 // Tweak windows start script so it won't create console window.
 // Based on https://stackoverflow.com/a/27472895/200754
@@ -196,3 +199,6 @@ bitbucketUpload {
     dependsOn shadowDistZip
     fileToUpload = shadowDistZip.archivePath
 }
+
+// Order of tasks is important or generated metadata sources will not be imported
+eclipse.synchronizationTasks 'generateBuildMetadata', 'eclipseJdtApt', 'eclipseFactorypath', 'eclipseJdt'

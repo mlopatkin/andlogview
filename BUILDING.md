@@ -73,10 +73,9 @@ be imported for this project only. You can also import copyright profiles from `
 directory into `.idea` (but not when IDEA is running).
 
 ### Eclipse
-**This section is out-of-date**
-
-Run `./gradlew eclipse`. Then import project into your Eclipse workspace. Annotation processing should work
-"out-of-the-box". Eclipse is still a prefered way to work with GUI because of the WindowBuilder plugin.
+Import project into your Eclipse workspace with "File > Import... > Gradle > Existing Gradle Project". Annotation
+processing should work "out-of-the-box". Eclipse is still a preferred way to work with GUI because of the WindowBuilder
+plugin.
 
 [downloads]: https://bitbucket.org/mlopatkin/android-log-viewer/downloads/
 [idea]: https://www.jetbrains.com/idea/
