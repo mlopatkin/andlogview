@@ -16,7 +16,6 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.config;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -25,6 +24,7 @@ import org.bitbucket.mlopatkin.android.logviewer.AtExitManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -81,7 +81,8 @@ public interface ConfigStorage {
                 Files.touch(file);
             }
             final ConfigStorageImpl result = new ConfigStorageImpl(
-                    Files.asCharSource(file, Charsets.UTF_8), Files.asCharSink(file, Charsets.UTF_8), ioThreadPool);
+                    Files.asCharSource(file, StandardCharsets.UTF_8), Files.asCharSink(file, StandardCharsets.UTF_8),
+                    ioThreadPool);
             atExitManager.registerExitAction(() -> {
                 try {
                     result.shutdown(true);
