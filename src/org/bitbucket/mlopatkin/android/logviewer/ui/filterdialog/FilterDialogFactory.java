@@ -16,23 +16,25 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
+import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class FilterDialogFactory {
-    private final DialogFactory dialogFactory;
+    private final Provider<FilterDialog> filterDialogFactory;
 
     @Inject
-    public FilterDialogFactory(DialogFactory dialogFactory) {
-        this.dialogFactory = dialogFactory;
+    public FilterDialogFactory(Provider<FilterDialog> filterDialogFactory) {
+        this.filterDialogFactory = filterDialogFactory;
     }
 
-    public void startCreateFilterDialog(CreateFilterDialog.DialogResultReceiver resultReceiver) {
-        CreateFilterDialog.startCreateFilterDialog(dialogFactory.getOwner(), resultReceiver);
+    public CompletionStage<Optional<FilterFromDialog>> startCreateFilterDialog() {
+        return FilterDialogPresenter.create(filterDialogFactory.get()).show();
     }
 
-    public void startEditFilterDialog(FilterFromDialog filter, EditFilterDialog.DialogResultReceiver resultReceiver) {
-        EditFilterDialog.startEditFilterDialog(dialogFactory.getOwner(), filter, resultReceiver);
+    public CompletionStage<Optional<FilterFromDialog>> startEditFilterDialog(FilterFromDialog filter) {
+        return FilterDialogPresenter.create(filterDialogFactory.get(), filter).show();
     }
 }

@@ -1,40 +1,50 @@
+/*
+ * Copyright 2014 Mikhail Lopatkin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import javax.annotation.Nullable;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
+import javax.inject.Inject;
 
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilteringModesPanel.ModeChangedListener;
 
 /**
  * Common GUI logic related to filtering.
  */
-@VisibleForTesting
-public abstract class FilterDialog extends BaseFilterDialogUi {
+class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.FilterDialogView {
+    private Runnable commitAction;
+    private Runnable discardAction;
+
     /**
      * Create the dialog.
      */
-    protected FilterDialog(Frame owner) {
-        super(owner);
+    @Inject
+    public FilterDialog(DialogFactory dialogFactory) {
+        super(dialogFactory.getOwner());
 
         okButton.addActionListener(e -> onPositiveResult());
         cancelButton.addActionListener(e -> onNegativeResult());
@@ -57,97 +67,66 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         });
     }
 
-    protected abstract void onPositiveResult();
-
-    protected abstract void onNegativeResult();
-
-    private static final Splitter commaSplitter = Splitter.on(',').trimResults(CharMatcher.whitespace());
-
-    private List<String> getTags() {
-        String tagsString = Strings.nullToEmpty(tagTextField.getText());
-        if (!CharMatcher.whitespace().matchesAllOf(tagsString)) {
-            return commaSplitter.splitToList(tagsString);
-        }
-        return Collections.emptyList();
+    protected void onPositiveResult() {
+        commitAction.run();
     }
 
-    @Nullable
-    private String getMessageText() {
-        String message = messageTextField.getText();
-        if (!CharMatcher.whitespace().matchesAllOf(message)) {
-            return message;
-        }
-        return null;
+    protected void onNegativeResult() {
+        discardAction.run();
     }
 
-    private List<Integer> getPids() {
-        String pidString = Strings.nullToEmpty(pidTextField.getText());
-        if (!CharMatcher.whitespace().matchesAllOf(pidString)) {
-            List<Integer> pids = new ArrayList<>();
-            for (String pid : commaSplitter.split(pidString)) {
-                try {
-                    pids.add(Integer.parseInt(pid));
-                } catch (NumberFormatException e) {
-                    // ignore, let it go to the appName
-                }
-            }
-            return pids;
-        }
-        return Collections.emptyList();
+    @Override
+    public void setTagsText(String text) {
+        tagTextField.setText(text);
     }
 
-    private List<String> getAppNames() {
-        String pidString = pidTextField.getText();
-        if (!CharMatcher.whitespace().matchesAllOf(pidString)) {
-            List<String> appNames = new ArrayList<>();
-            for (String item : commaSplitter.split(pidString)) {
-                if (!CharMatcher.inRange('0', '9').matchesAllOf(item)) {
-                    appNames.add(item);
-                }
-            }
-            return appNames;
-        } else {
-            return Collections.emptyList();
-        }
+    @Override
+    public String getTagsText() {
+        return tagTextField.getText();
     }
 
-    private LogRecord.Priority getPriority() {
-        return (Priority) logLevelList.getSelectedItem();
+    @Override
+    public void setMessageText(String text) {
+        messageTextField.setText(text);
     }
 
-    private FilteringMode getFilteringMode() {
+    @Override
+    public String getMessageText() {
+        return messageTextField.getText();
+    }
+
+    @Override
+    public void setPidsAppsText(String text) {
+        pidTextField.setText(text);
+    }
+
+    @Override
+    public String getPidsAppsText() {
+        return pidTextField.getText();
+    }
+
+    @Override
+    public void setPriority(LogRecord.Priority priority) {
+        logLevelList.setSelectedItem(priority);
+    }
+
+    @Override
+    public Optional<LogRecord.Priority> getPriority() {
+        return Optional.ofNullable((LogRecord.Priority) logLevelList.getSelectedItem());
+    }
+
+    @Override
+    public void setMode(FilteringMode mode) {
+        modesPanel.setSelectedMode(mode);
+    }
+
+    @Override
+    public FilteringMode getMode() {
         return modesPanel.getSelectedMode();
     }
 
-    protected JTextField getTagTextField() {
-        return tagTextField;
-    }
-
-    protected JTextField getMessageTextField() {
-        return messageTextField;
-    }
-
-    protected JTextField getPidTextField() {
-        return pidTextField;
-    }
-
-    protected JComboBox<Priority> getLogLevelList() {
-        return logLevelList;
-    }
-
-    protected FilteringModesPanel getModePanel() {
-        return modesPanel;
-    }
-
-    private Color getSelectedColor() {
-        if (getFilteringMode() == FilteringMode.HIGHLIGHT) {
-            return Configuration.ui.highlightColors().get(colorsList.getSelectedIndex());
-        } else {
-            return null;
-        }
-    }
-
-    protected void setSelectedColor(Color color) {
+    @Override
+    public void setHighlightColor(Color color) {
         int index = 0;
         for (Color current : Configuration.ui.highlightColors()) {
             if (current.equals(color)) {
@@ -159,16 +138,27 @@ public abstract class FilterDialog extends BaseFilterDialogUi {
         }
     }
 
-    protected FilterFromDialog createFilter() throws RequestCompilationException {
-        FilterFromDialog filter = new FilterFromDialog();
-        filter.setTags(getTags());
-        filter.setPids(getPids());
-        filter.setApps(getAppNames());
-        filter.setMode(getFilteringMode());
-        filter.setPriority(getPriority());
-        filter.setHighlightColor(getSelectedColor());
-        filter.setMessagePattern(getMessageText());
-        filter.initialize();
-        return filter;
+    @Override
+    public Optional<Color> getHighlightColor() {
+        if (getMode() == FilteringMode.HIGHLIGHT) {
+            return Optional.of(Configuration.ui.highlightColors().get(colorsList.getSelectedIndex()));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void setCommitAction(Runnable commitAction) {
+        this.commitAction = Objects.requireNonNull(commitAction);
+    }
+
+    @Override
+    public void setDiscardAction(Runnable discardAction) {
+        this.discardAction = Objects.requireNonNull(discardAction);
+    }
+
+    @Override
+    public void showError(String text) {
+        ErrorDialogsHelper.showError(this, text);
     }
 }

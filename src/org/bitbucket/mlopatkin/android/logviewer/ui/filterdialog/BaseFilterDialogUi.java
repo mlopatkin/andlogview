@@ -35,7 +35,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * Base Filter Dialog UI class. Edit with WindowBuilder.
  */
-abstract class BaseFilterDialogUi extends JDialog {
+class BaseFilterDialogUi extends JDialog {
     protected final JPanel contentPanel = new JPanel();
 
     protected final JTextField tagTextField;

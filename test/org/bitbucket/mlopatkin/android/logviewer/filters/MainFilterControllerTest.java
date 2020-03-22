@@ -20,8 +20,6 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.config.FakeDefaultConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
@@ -42,6 +40,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -72,16 +71,7 @@ public class MainFilterControllerTest {
     FilterDialogFactory dialogFactory;
 
     @Captor
-    ArgumentCaptor<CreateFilterDialog.DialogResultReceiver> createResultReceiver;
-
-    @Captor
-    ArgumentCaptor<EditFilterDialog.DialogResultReceiver> editResultReceiver;
-
-    @Captor
     ArgumentCaptor<PanelFilter> panelFilterCaptor;
-
-    @Captor
-    ArgumentCaptor<FilterFromDialog> oldFilterCaptor;
 
     @Captor
     ArgumentCaptor<List<SavedFilterData>> savedFilterDataCaptor;
@@ -171,18 +161,18 @@ public class MainFilterControllerTest {
     }
 
     private PanelFilter createFilterWithDialog(MainFilterController controller, FilterFromDialog dialogResult) {
+        when(dialogFactory.startCreateFilterDialog()).thenReturn(
+                CompletableFuture.completedFuture(Optional.of(dialogResult)));
         controller.createFilterWithDialog();
-        order.verify(dialogFactory).startCreateFilterDialog(createResultReceiver.capture());
-        createResultReceiver.getValue().onDialogResult(Optional.of(dialogResult));
 
         order.verify(filterPanelModel).addFilter(panelFilterCaptor.capture());
         return panelFilterCaptor.getValue();
     }
 
     private PanelFilter editFilterWithDialog(FilterFromDialog newFilter, PanelFilter oldFilter) {
+        when(dialogFactory.startEditFilterDialog(any())).thenReturn(
+                CompletableFuture.completedFuture(Optional.of(newFilter)));
         oldFilter.openFilterEditor();
-        order.verify(dialogFactory).startEditFilterDialog(oldFilterCaptor.capture(), editResultReceiver.capture());
-        editResultReceiver.getValue().onDialogResult(oldFilterCaptor.getValue(), Optional.of(newFilter));
 
         order.verify(filterPanelModel).replaceFilter(eq(oldFilter), panelFilterCaptor.capture());
         return panelFilterCaptor.getValue();

@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -30,6 +31,7 @@ import org.bitbucket.mlopatkin.utils.MorePredicates;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
@@ -195,16 +197,18 @@ public class FilterFromDialog implements ColoringFilter {
         return priority;
     }
 
-    public void setPriority(LogRecord.Priority priority) {
+    public FilterFromDialog setPriority(LogRecord.Priority priority) {
         this.priority = priority;
+        return this;
     }
 
     public FilteringMode getMode() {
         return mode;
     }
 
-    public void setMode(FilteringMode mode) {
+    public FilterFromDialog setMode(FilteringMode mode) {
         this.mode = mode;
+        return this;
     }
 
     @Override
@@ -212,11 +216,48 @@ public class FilterFromDialog implements ColoringFilter {
         return highlightColor;
     }
 
-    public void setHighlightColor(Color highlightColor) {
+    public FilterFromDialog setHighlightColor(Color highlightColor) {
         this.highlightColor = highlightColor;
+        return this;
     }
 
     public String getTooltip() {
         return tooltipRepresentation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FilterFromDialog that = (FilterFromDialog) o;
+        return Objects.equals(tags, that.tags)
+                && Objects.equals(pids, that.pids)
+                && Objects.equals(apps, that.apps)
+                && Objects.equals(messagePattern, that.messagePattern)
+                && priority == that.priority
+                && mode == that.mode
+                && Objects.equals(highlightColor, that.highlightColor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mode", mode)
+                .add("tags", tags)
+                .add("messagePattern", messagePattern)
+                .add("pids", pids)
+                .add("apps", apps)
+                .add("priority", priority)
+                .add("highlightColor", highlightColor)
+                .toString();
     }
 }

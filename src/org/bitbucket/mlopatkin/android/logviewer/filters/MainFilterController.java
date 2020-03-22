@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.CreateFilterDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.EditFilterDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
@@ -33,7 +31,6 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -90,12 +87,7 @@ public class MainFilterController implements FilterCreator {
 
     @Override
     public void createFilterWithDialog() {
-        dialogFactory.startCreateFilterDialog(new CreateFilterDialog.DialogResultReceiver() {
-            @Override
-            public void onDialogResult(Optional<FilterFromDialog> filter) {
-                filter.ifPresent(filterFromDialog -> addNewDialogFilter(filterFromDialog));
-            }
-        });
+        dialogFactory.startCreateFilterDialog().thenAccept(newFilter -> newFilter.ifPresent(this::addNewDialogFilter));
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
@@ -202,13 +194,10 @@ public class MainFilterController implements FilterCreator {
 
         @Override
         public void openFilterEditor() {
-            dialogFactory.startEditFilterDialog(filter, new EditFilterDialog.DialogResultReceiver() {
-                @Override
-                public void onDialogResult(FilterFromDialog oldFilter, Optional<FilterFromDialog> newFilter) {
-                    if (newFilter.isPresent()) {
-                        DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
-                        replaceMeWith(newPanelFilter);
-                    }
+            dialogFactory.startEditFilterDialog(this.filter).thenAccept(newFilter -> {
+                if (newFilter.isPresent()) {
+                    DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
+                    replaceMeWith(newPanelFilter);
                 }
             });
         }
