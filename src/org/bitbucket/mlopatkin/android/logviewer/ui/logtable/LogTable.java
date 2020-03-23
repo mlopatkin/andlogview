@@ -25,6 +25,7 @@ import javax.swing.RowFilter;
 /**
  * The ultimate log displaying table.
  */
+@LogTableScoped
 public class LogTable extends DecoratingRendererTable implements LogModelFilter.Observer {
     private final LogModelFilter filterModel;
     private final SortingDisableSorter<LogRecordTableModel> sorter;
@@ -59,7 +60,7 @@ public class LogTable extends DecoratingRendererTable implements LogModelFilter.
         }
     }
 
-    public static LogTable create(LogRecordTableModel dataModel, LogModelFilter filterModel) {
+    static LogTable create(LogRecordTableModel dataModel, LogModelFilter filterModel) {
         LogTable logTable = new LogTable(dataModel, filterModel);
         filterModel.asObservable().addObserver(logTable);
         return logTable;

@@ -59,7 +59,7 @@ public class MainFrameModule {
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     LogTable getMainLogTable(
             LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter) {
-        LogTable logTable = LogTable.create(model, filter);
+        LogTable logTable = DaggerMainLogTableComponent.factory().create(model, filter).getLogTable();
         logTable.addDecorator(bookmarkHighlighter);
         return logTable;
     }

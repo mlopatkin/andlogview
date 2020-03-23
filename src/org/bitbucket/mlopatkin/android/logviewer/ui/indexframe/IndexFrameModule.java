@@ -57,7 +57,7 @@ public class IndexFrameModule {
     @IndexFrameScoped
     @Named(IndexFrameComponent.FOR_INDEX_FRAME)
     LogTable getIndexWindowTable(LogRecordTableModel model) {
-        return LogTable.create(model, logModelFilter);
+        return DaggerIndexLogTableComponent.factory().create(model, logModelFilter).getLogTable();
     }
 
     @Provides
