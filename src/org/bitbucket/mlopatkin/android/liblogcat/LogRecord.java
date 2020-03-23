@@ -15,10 +15,11 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
-import com.android.annotations.Nullable;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -29,7 +30,9 @@ import java.util.Date;
  */
 public class LogRecord implements Comparable<LogRecord> {
 
-    public static final Comparator<Buffer> NULL_SAFE_BUFFER_COMPARATOR =
+    private static final Comparator<@Nullable Buffer> NULL_SAFE_BUFFER_COMPARATOR =
+            Comparator.nullsFirst(Comparator.naturalOrder());
+    private static final Comparator<@Nullable Date> NULL_SAFE_DATE_COMPARATOR =
             Comparator.nullsFirst(Comparator.naturalOrder());
 
     public enum Priority {
@@ -67,21 +70,22 @@ public class LogRecord implements Comparable<LogRecord> {
 
     public static final int NO_ID = -1;
 
-    private final Date time;
+    private final @Nullable Date time;
     private final int pid;
     private final int tid;
     private final Priority priority;
     private final String tag;
     private final String message;
-    private final Buffer buffer;
+    private final @Nullable Buffer buffer;
     private final String appName;
 
-    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message) {
+    public LogRecord(@Nullable Date time, int pid, int tid, @Nullable String appName, Priority priority, String tag,
+            String message) {
         this(time, pid, tid, appName, priority, tag, message, null);
     }
 
-    public LogRecord(Date time, int pid, int tid, String appName, Priority priority, String tag, String message,
-            Buffer buffer) {
+    public LogRecord(@Nullable Date time, int pid, int tid, @Nullable String appName, Priority priority, String tag,
+            String message, @Nullable Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -92,7 +96,7 @@ public class LogRecord implements Comparable<LogRecord> {
         this.buffer = buffer;
     }
 
-    public Date getTime() {
+    public @Nullable Date getTime() {
         return time;
     }
 
@@ -116,8 +120,7 @@ public class LogRecord implements Comparable<LogRecord> {
         return message;
     }
 
-    @Nullable
-    public Buffer getBuffer() {
+    public @Nullable Buffer getBuffer() {
         return buffer;
     }
 
@@ -155,7 +158,7 @@ public class LogRecord implements Comparable<LogRecord> {
     @Override
     public int compareTo(LogRecord o) {
         return ComparisonChain.start()
-                .compare(getTime(), o.getTime())
+                .compare(getTime(), o.getTime(), NULL_SAFE_DATE_COMPARATOR)
                 .compare(getBuffer(), o.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)
                 .result();
     }

@@ -26,6 +26,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
 import org.bitbucket.mlopatkin.utils.events.Observable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,8 +43,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
 
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_ALL;
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_FIRST;

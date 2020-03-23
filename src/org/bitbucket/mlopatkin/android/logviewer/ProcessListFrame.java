@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer;
 import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
@@ -87,7 +88,7 @@ public class ProcessListFrame extends JFrame {
     private static final List<SortKey> DEFAULT_SORTING =
             Arrays.asList(new SortKey(ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
 
-    public void setSource(DataSource source) {
+    public void setSource(@Nullable DataSource source) {
         assert SwingUtilities.isEventDispatchThread();
         @SuppressWarnings("unchecked")
         List<SortKey> oldKeys = (List<SortKey>) table.getRowSorter().getSortKeys();

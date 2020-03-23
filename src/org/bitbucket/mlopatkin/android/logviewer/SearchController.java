@@ -21,6 +21,7 @@ import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
 import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategyFactory;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class SearchController {
     private DecoratingRendererTable table;
@@ -28,7 +29,7 @@ public class SearchController {
     private int curRow;
     private SearchResultsHighlightCellRenderer renderer = new SearchResultsHighlightCellRenderer();
 
-    private RowSearchStrategy strategy;
+    private @Nullable RowSearchStrategy strategy;
 
     public SearchController(DecoratingRendererTable table, LogRecordTableModel model) {
         this.table = table;
@@ -39,7 +40,8 @@ public class SearchController {
     private static final int MODE_FORWARD = 1;
     private static final int MODE_BACKWARD = -1;
 
-    public boolean startSearch(String text) throws RequestCompilationException {
+    // TODO(mlopatkin) kill this strange Nullable
+    public boolean startSearch(@Nullable String text) throws RequestCompilationException {
         strategy = RowSearchStrategyFactory.compile(text);
         if (strategy == null) {
             renderer.setHighlightStrategy(null);
@@ -76,6 +78,8 @@ public class SearchController {
         if (searchMode < 0) {
             endPos = -1;
         }
+        RowSearchStrategy strategy = this.strategy;
+        assert strategy != null;
         for (int i = startPos; i != endPos; i += searchMode) {
             LogRecord record = model.getRowData(table.convertRowIndexToModel(i));
             if (strategy.isRowMatched(record)) {

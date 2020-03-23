@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.liblogcat;
 
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,10 +41,10 @@ public class LogRecordStream {
         this.in = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
     }
 
-    public LogRecord next(LogRecord.Buffer kind) {
+    public @Nullable LogRecord next(LogRecord.Buffer kind) {
         try {
             String line = in.readLine();
-            while (!isLogEnd(line)) {
+            while (line != null) {
                 LogRecord record = LogRecordParser.parseThreadTime(kind, line, pidToProcess);
                 if (record != null) {
                     return record;
@@ -58,7 +59,4 @@ public class LogRecordStream {
         return null;
     }
 
-    protected boolean isLogEnd(String line) {
-        return line == null;
-    }
 }

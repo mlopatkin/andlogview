@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import java.util.Date;
+
 /**
  * Utility methods for printing log files in native formats.
  */
@@ -37,7 +39,9 @@ public class LogRecordFormatter {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
         String formatString = "%s %5d %5d %s %-8s: %s";
-        return String.format(formatString, TimeFormatUtils.convertTimeToString(record.getTime()), record.getPid(),
+        Date time = record.getTime();
+        assert time != null;
+        return String.format(formatString, TimeFormatUtils.convertTimeToString(time), record.getPid(),
                 record.getTid(), record.getPriority().getLetter(), record.getTag(), record.getMessage());
     }
 
@@ -46,7 +50,9 @@ public class LogRecordFormatter {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
         String formatString = "%s %s/%-8s(%5d): %s";
-        return String.format(formatString, TimeFormatUtils.convertTimeToString(record.getTime()),
+        Date time = record.getTime();
+        assert time != null;
+        return String.format(formatString, TimeFormatUtils.convertTimeToString(time),
                 record.getPriority().getLetter(), record.getTag(), record.getPid(), record.getMessage());
     }
 

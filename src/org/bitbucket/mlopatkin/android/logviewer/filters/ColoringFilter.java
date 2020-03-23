@@ -17,10 +17,11 @@
 package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.function.Predicate;
 
 public interface ColoringFilter extends Predicate<LogRecord> {
-    Color getHighlightColor();
+    @Nullable Color getHighlightColor();
 }

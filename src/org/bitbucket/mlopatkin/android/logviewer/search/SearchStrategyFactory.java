@@ -18,8 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * Creates {@link SearchStrategy}s and {@link HighlightStrategy}s according to
  * the specified request string.
@@ -37,7 +35,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @see Pattern
  */
-@ParametersAreNonnullByDefault
 public class SearchStrategyFactory {
     private static class DelegateImpl implements SearchRequestParser.Delegate<HighlightStrategy> {
         @Override

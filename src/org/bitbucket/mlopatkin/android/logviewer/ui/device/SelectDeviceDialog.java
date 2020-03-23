@@ -18,6 +18,8 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.device;
 
 import com.android.ddmlib.IDevice;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -119,7 +121,7 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         dispose();
     }
 
-    private void deliverResult(IDevice selectedDevice) {
+    private void deliverResult(@Nullable IDevice selectedDevice) {
         assert !resultDelivered;
         resultDelivered = true;
         receiver.onDialogResult(this, selectedDevice);

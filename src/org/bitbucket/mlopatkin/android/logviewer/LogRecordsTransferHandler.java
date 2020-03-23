@@ -20,6 +20,8 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordClipboardFormatter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -31,11 +33,11 @@ import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
 public class LogRecordsTransferHandler extends TransferHandler {
-    private TransferHandler globalHandler;
+    private @Nullable TransferHandler globalHandler;
 
     public LogRecordsTransferHandler() {}
 
-    public LogRecordsTransferHandler(TransferHandler globalHandler) {
+    public LogRecordsTransferHandler(@NonNull TransferHandler globalHandler) {
         this.globalHandler = globalHandler;
     }
 
@@ -58,7 +60,7 @@ public class LogRecordsTransferHandler extends TransferHandler {
     }
 
     @Override
-    protected Transferable createTransferable(JComponent c) {
+    protected @Nullable Transferable createTransferable(JComponent c) {
         if (!(c instanceof JTable)) {
             return null;
         }

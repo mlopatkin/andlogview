@@ -27,10 +27,10 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
 
-import javax.annotation.Nullable;
 import javax.inject.Named;
 
 @Module
@@ -39,7 +39,7 @@ public class IndexFrameModule {
             ImmutableList.of(Column.INDEX, Column.TIME, Column.PID, Column.PRIORITY, Column.TAG, Column.MESSAGE);
 
     private final IndexController indexController;
-    private final PopupBuilder popupBuilder;
+    private final @Nullable PopupBuilder popupBuilder;
     private final LogModelFilter logModelFilter;
 
     public IndexFrameModule(

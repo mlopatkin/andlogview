@@ -47,6 +47,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DaggerMainFrameDep
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -62,6 +63,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -159,13 +162,16 @@ public class MainFrame extends JFrame {
 
     private PidToProcessMapper mapper = new PidToProcessMapper() {
         @Override
-        public String getProcessName(int pid) {
+        public @Nullable String getProcessName(int pid) {
             DataSource source = sourceHolder.getDataSource();
-            if (source != null && source.getPidToProcessConverter() != null) {
-                return source.getPidToProcessConverter().get(pid);
-            } else {
+            if (source == null) {
                 return null;
             }
+            Map<Integer, String> pidToProcessConverter = source.getPidToProcessConverter();
+            if (pidToProcessConverter == null) {
+                return null;
+            }
+            return pidToProcessConverter.get(pid);
         }
     };
 
@@ -388,7 +394,7 @@ public class MainFrame extends JFrame {
     public void reset() {
         recordsModel.clear();
         DataSource source = sourceHolder.getDataSource();
-        if (!source.reset()) {
+        if (source != null && !source.reset()) {
             bookmarkModel.clear();
         }
     }
@@ -420,7 +426,7 @@ public class MainFrame extends JFrame {
         setJMenuBar(mainMenu);
     }
 
-    private File recentDir = null;
+    private @Nullable File recentDir = null;
 
     private Action acOpenFile = new AbstractAction("Open...") {
         {
@@ -479,7 +485,7 @@ public class MainFrame extends JFrame {
             ConfigurationDialog.showConfigurationDialog(MainFrame.this);
         }
     };
-    private IDeviceChangeListener pendingAttacher;
+    private @Nullable IDeviceChangeListener pendingAttacher;
 
     /**
      * Wait for device to connect.
@@ -616,7 +622,7 @@ public class MainFrame extends JFrame {
         } catch (DdmlibUnsupportedException e) {
             logger.error("Cannot work with DDMLIB supplied", e);
             disableAdbCommandsAsync();
-            ErrorDialogsHelper.showError(this, e.getMessage());
+            ErrorDialogsHelper.showError(this, Optional.ofNullable(e.getMessage()).orElse("DDMLIB Error"));
         }
         return false;
     }

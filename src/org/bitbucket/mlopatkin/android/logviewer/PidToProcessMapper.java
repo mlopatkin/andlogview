@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.logviewer;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public interface PidToProcessMapper {
-    String getProcessName(int pid);
+    @Nullable String getProcessName(int pid);
 }

@@ -24,6 +24,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +42,7 @@ import java.util.Set;
 public class LogfileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
 
-    private RecordListener<LogRecord> listener;
+    private @Nullable RecordListener<LogRecord> listener;
     private ParsingStrategies.Strategy strategy;
     private List<LogRecord> records = new ArrayList<>();
     private String fileName;
@@ -89,7 +90,7 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public Map<Integer, String> getPidToProcessConverter() {
+    public @Nullable Map<Integer, String> getPidToProcessConverter() {
         return null;
     }
 
@@ -111,6 +112,7 @@ public class LogfileDataSource implements DataSource {
 
     @Override
     public boolean reset() {
+        assert listener != null;
         setLogRecordListener(listener);
         return true;
     }

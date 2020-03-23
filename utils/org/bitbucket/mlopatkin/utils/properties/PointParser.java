@@ -17,18 +17,20 @@ package org.bitbucket.mlopatkin.utils.properties;
 
 import com.google.common.base.Strings;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 
-class PointParser implements Parser<Point> {
+class PointParser implements Parser<@Nullable Point> {
     private static final String UNDEFINED = "undefined";
 
     // simple comma-separated pair x,y
     ListParser<Integer> internalListParser = new ListParser<>(Parsers.integerParser);
 
     @Override
-    public Point read(String value) {
+    public @Nullable Point read(@Nullable String value) {
         value = Strings.emptyToNull(Strings.nullToEmpty(value).trim());
         if (value == null || UNDEFINED.equalsIgnoreCase(value)) {
             return null;
@@ -41,7 +43,7 @@ class PointParser implements Parser<Point> {
     }
 
     @Override
-    public String write(Point value) {
+    public String write(@Nullable Point value) {
         if (value == null) {
             return UNDEFINED;
         }

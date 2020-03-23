@@ -235,6 +235,7 @@ public class MainFilterController implements FilterCreator {
         void appendMe(MainFilterController filterController) {
             try {
                 filterData.initialize();
+                // TODO(mlopatkin) This is somewhat dangerous because filterController is still in its constructor
                 filterController.addNewDialogFilter(filterData).setEnabled(enabled);
             } catch (RequestCompilationException e) {
                 logger.error("Invalid filter data", e);

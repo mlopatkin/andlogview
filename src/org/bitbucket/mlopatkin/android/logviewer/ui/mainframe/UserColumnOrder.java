@@ -21,12 +21,12 @@ import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Order of the columns in the table. It is somewhat independent of what columns are available in the data source.

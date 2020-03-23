@@ -18,6 +18,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -26,7 +27,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 class RowHighlightRenderer implements DecoratingCellRenderer {
-    private TableCellRenderer inner;
+    private @MonotonicNonNull TableCellRenderer inner;
     private Color backgroundColor = Configuration.ui.backgroundColor();
     private LogModelFilter colorer;
 
@@ -42,6 +43,7 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
     @Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        assert inner != null;
         Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (!isSelected) {
             LogRecordTableModel tableModel = (LogRecordTableModel) table.getModel();

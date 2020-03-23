@@ -21,8 +21,7 @@ package org.bitbucket.mlopatkin.android.logviewer.search;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * This class parses a single query and determines whether it is a plain text search or regex. Then it extracts query
@@ -36,8 +35,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @param <T> the type of the searcher to build
  */
-@ParametersAreNonnullByDefault
-public class SearchRequestParser<T> {
+public class SearchRequestParser<@NonNull T> {
     /**
      * Delegate that actually creates a searcher.
      *
@@ -95,7 +93,6 @@ public class SearchRequestParser<T> {
      * @return the new searcher
      * @throws RequestCompilationException if the request cannot be parsed
      */
-    @Nonnull
     public T parse(String request) throws RequestCompilationException {
         Preconditions.checkNotNull(request);
 

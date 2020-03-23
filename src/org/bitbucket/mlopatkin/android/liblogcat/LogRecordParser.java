@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -53,7 +54,8 @@ public class LogRecordParser {
             return threadTimeRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(Buffer buffer, Matcher m, Map<Integer, String> pidToProcess) {
+        static @Nullable LogRecord createFromGroups(@Nullable Buffer buffer, Matcher m,
+                Map<Integer, String> pidToProcess) {
             if (!m.matches()) {
                 return null;
             }
@@ -81,7 +83,8 @@ public class LogRecordParser {
             return briefRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(Buffer buffer, Matcher m, Map<Integer, String> pidToProcess) {
+        static @Nullable LogRecord createFromGroups(@Nullable Buffer buffer, Matcher m,
+                Map<Integer, String> pidToProcess) {
             if (!m.matches()) {
                 return null;
             }
@@ -105,7 +108,8 @@ public class LogRecordParser {
             return processRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(Buffer buffer, Matcher m, Map<Integer, String> pidToProcess) {
+        static @Nullable LogRecord createFromGroups(@Nullable Buffer buffer, Matcher m,
+                Map<Integer, String> pidToProcess) {
             if (!m.matches()) {
                 return null;
             }
@@ -126,7 +130,7 @@ public class LogRecordParser {
             return tagRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(Buffer buffer, Matcher m) {
+        static @Nullable LogRecord createFromGroups(@Nullable Buffer buffer, Matcher m) {
             if (!m.matches()) {
                 return null;
             }
@@ -148,7 +152,8 @@ public class LogRecordParser {
             return timeRecordPattern.matcher(line);
         }
 
-        static LogRecord createFromGroups(Buffer buffer, Matcher m, Map<Integer, String> pidToProcess) {
+        static @Nullable LogRecord createFromGroups(@Nullable Buffer buffer, Matcher m,
+                Map<Integer, String> pidToProcess) {
             if (!m.matches()) {
                 return null;
             }
@@ -176,29 +181,33 @@ public class LogRecordParser {
         throw new IllegalArgumentException("Symbol '" + next + "' doesn't correspond to valid priority value");
     }
 
-    public static LogRecord parseThreadTime(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+    public static @Nullable LogRecord parseThreadTime(@Nullable Buffer buffer, String line,
+            Map<Integer, String> pidToProcess) {
         return ThreadTime.createFromGroups(buffer, ThreadTime.matchLine(line), pidToProcess);
     }
 
-    public static LogRecord parseBrief(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+    public static @Nullable LogRecord parseBrief(@Nullable Buffer buffer, String line,
+            Map<Integer, String> pidToProcess) {
         return Brief.createFromGroups(buffer, Brief.matchLine(line), pidToProcess);
     }
 
-    public static LogRecord parseProcess(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+    public static @Nullable LogRecord parseProcess(@Nullable Buffer buffer, String line,
+            Map<Integer, String> pidToProcess) {
         return Process.createFromGroups(buffer, Process.matchLine(line), pidToProcess);
     }
 
-    public static LogRecord parseTag(Buffer buffer, String line) {
+    public static @Nullable LogRecord parseTag(@Nullable Buffer buffer, String line) {
         return Tag.createFromGroups(buffer, Tag.matchLine(line));
     }
 
     private static final String LOG_BEGIN = "--------- beginning of ";
 
-    public static boolean isLogBeginningLine(String line) {
+    public static boolean isLogBeginningLine(@Nullable String line) {
         return (line != null) && line.startsWith(LOG_BEGIN);
     }
 
-    public static LogRecord parseTime(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+    public static @Nullable LogRecord parseTime(@Nullable Buffer buffer, String line,
+            Map<Integer, String> pidToProcess) {
         return Time.createFromGroups(buffer, Time.matchLine(line), pidToProcess);
     }
 }

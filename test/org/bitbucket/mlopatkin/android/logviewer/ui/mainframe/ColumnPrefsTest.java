@@ -31,6 +31,7 @@ import org.bitbucket.mlopatkin.android.logviewer.test.AdaptingMatcher;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModelTestUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assume;
@@ -38,8 +39,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;

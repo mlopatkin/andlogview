@@ -22,6 +22,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.event.ActionEvent;
 
@@ -50,7 +51,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
         }
     };
 
-    private Action acCopy;
+    private @MonotonicNonNull Action acCopy;
 
     private JTable table;
     private LogRecordTableModel model;
@@ -86,6 +87,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
 
     @Override
     public void updateItemsState(JTable source) {
+        assert acCopy != null;
         switch (source.getSelectedRowCount()) {
             case 0:
                 acAddToBookmarks.setEnabled(false);

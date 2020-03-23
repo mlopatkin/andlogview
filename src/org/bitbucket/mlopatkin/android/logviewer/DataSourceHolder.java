@@ -19,6 +19,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.inject.Inject;
@@ -32,12 +33,12 @@ import javax.inject.Inject;
 @NotThreadSafe
 public class DataSourceHolder {
     private final Subject<Observer> observers = new Subject<>();
-    private DataSource source;
+    private @Nullable DataSource source;
 
     @Inject
     public DataSourceHolder() {}
 
-    public DataSource getDataSource() {
+    public @Nullable DataSource getDataSource() {
         return source;
     }
 
@@ -70,6 +71,6 @@ public class DataSourceHolder {
          * @param oldSource the old source or {@code null} if no source has been set.
          * @param newSource the new source
          */
-        void onDataSourceChanged(DataSource oldSource, DataSource newSource);
+        void onDataSourceChanged(@Nullable DataSource oldSource, DataSource newSource);
     }
 }

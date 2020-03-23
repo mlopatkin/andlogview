@@ -23,13 +23,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -145,8 +144,7 @@ public class ConfigStorageImplTest {
             return writer;
         }
 
-        @Nullable
-        public String getLastWrittenString() {
+        public @Nullable String getLastWrittenString() {
             return writer != null ? writer.toString() : null;
         }
     }

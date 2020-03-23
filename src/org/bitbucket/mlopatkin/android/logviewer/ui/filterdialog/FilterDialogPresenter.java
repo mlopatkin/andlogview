@@ -24,6 +24,8 @@ import com.google.common.base.Strings;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -55,7 +57,7 @@ class FilterDialogPresenter {
 
         String getPidsAppsText();
 
-        void setPriority(LogRecord.Priority priority);
+        void setPriority(LogRecord.@Nullable Priority priority);
 
         Optional<LogRecord.Priority> getPriority();
 
@@ -63,7 +65,7 @@ class FilterDialogPresenter {
 
         FilteringMode getMode();
 
-        void setHighlightColor(Color color);
+        void setHighlightColor(@Nullable Color color);
 
         Optional<Color> getHighlightColor();
 
@@ -83,7 +85,7 @@ class FilterDialogPresenter {
             Splitter.on(',').trimResults(CharMatcher.whitespace()).omitEmptyStrings();
 
     private final FilterDialogView dialogView;
-    private CompletableFuture<Optional<FilterFromDialog>> editingPromise;
+    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
 
     private FilterDialogPresenter(FilterDialogView dialogView) {
         this.dialogView = dialogView;
@@ -170,11 +172,11 @@ class FilterDialogPresenter {
         return filter;
     }
 
-    private static <T> List<T> nullToEmpty(List<T> nullableList) {
+    private static <T> List<T> nullToEmpty(@Nullable List<T> nullableList) {
         return nullableList != null ? nullableList : Collections.emptyList();
     }
 
-    private static <T> List<T> emptyToNull(List<T> list) {
+    private static <T> @Nullable List<T> emptyToNull(List<T> list) {
         return !list.isEmpty() ? list : null;
     }
 

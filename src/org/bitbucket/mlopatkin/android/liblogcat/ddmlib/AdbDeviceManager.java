@@ -21,6 +21,7 @@ import com.android.ddmlib.IDevice;
 import com.google.common.base.Joiner;
 
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class AdbDeviceManager {
         }
     }
 
-    public static IDevice getDefaultDevice() {
+    public static @Nullable IDevice getDefaultDevice() {
         AndroidDebugBridge adb = AdbConnectionManager.getAdb();
         if (adb.hasInitialDeviceList() && adb.getDevices().length > 0 && adb.getDevices()[0].isOnline()) {
             return adb.getDevices()[0];

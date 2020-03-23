@@ -16,12 +16,11 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
-import com.google.common.base.Strings;
-
 public class IntegerParser implements Parser<Integer> {
     @Override
     public Integer read(String value) {
-        return Integer.valueOf(Strings.emptyToNull(value.trim()));
+        // TODO(mlopatkin) this parser is broken
+        return Integer.valueOf(value.trim());
     }
 
     @Override

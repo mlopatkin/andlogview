@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.awt.Point;
 
 /**
@@ -72,7 +74,7 @@ public class PropertyTraits {
         return type(Boolean.class, Parsers.booleanParser);
     }
 
-    public static PropertyBuilder<Point> point() {
+    public static PropertyBuilder<@Nullable Point> point() {
         return type(Point.class, Parsers.pointParser);
     }
 

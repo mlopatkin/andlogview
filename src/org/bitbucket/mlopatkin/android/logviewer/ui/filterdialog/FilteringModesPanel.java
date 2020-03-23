@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map.Entry;
@@ -35,7 +36,7 @@ class FilteringModesPanel extends JPanel implements ChangeListener {
         void modeSelected(FilteringMode mode);
     }
 
-    private ModeChangedListener listener;
+    private @Nullable ModeChangedListener listener;
 
     public FilteringModesPanel() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));

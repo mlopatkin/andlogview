@@ -22,6 +22,8 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
 
@@ -30,8 +32,8 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class SearchResultsHighlightCellRenderer implements DecoratingCellRenderer {
-    private TableCellRenderer inner;
-    private RowSearchStrategy strategy;
+    private @MonotonicNonNull TableCellRenderer inner;
+    private @Nullable RowSearchStrategy strategy;
 
     @Override
     public void setInnerRenderer(TableCellRenderer renderer) {
@@ -68,7 +70,7 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
         return c;
     }
 
-    public void setHighlightStrategy(RowSearchStrategy strategy) {
+    public void setHighlightStrategy(@Nullable RowSearchStrategy strategy) {
         this.strategy = strategy;
     }
 }

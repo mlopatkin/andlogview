@@ -21,6 +21,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.TimeFormatUtils;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,8 +29,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * Supported columns of the LogRecordTable.
@@ -43,13 +42,15 @@ public enum Column {
     },
     TIME(Field.TIME, "time", "Time") {
         @Override
-        public Date getValue(int rowIndex, LogRecord record) {
+        public @Nullable Date getValue(int rowIndex, LogRecord record) {
             return record.getTime();
         }
 
         @Override
         public String getStrValue(int rowIndex, LogRecord record) {
-            return TimeFormatUtils.convertTimeToString(record.getTime());
+            Date time = record.getTime();
+            assert time != null;
+            return TimeFormatUtils.convertTimeToString(time);
         }
     },
     PID(Field.PID, "pid", "pid") {
@@ -95,11 +96,9 @@ public enum Column {
         }
     };
 
-    @Nullable
-    private final Field recordField;
+    private final @Nullable Field recordField;
     private final String columnName;
-    @Nullable
-    private final String title;
+    private final @Nullable String title;
     private final boolean toggleable;
 
     /**
@@ -148,7 +147,7 @@ public enum Column {
      * @param record the record
      * @return the value (can be of any type)
      */
-    public abstract Object getValue(int rowIndex, LogRecord record);
+    public abstract @Nullable Object getValue(int rowIndex, LogRecord record);
 
     /**
      * Extracts a human-readable string representation from the record at the rowIndex.
@@ -216,8 +215,7 @@ public enum Column {
         return columnName;
     }
 
-    @Nullable
-    public String getTitle() {
+    public @Nullable String getTitle() {
         return title;
     }
 }

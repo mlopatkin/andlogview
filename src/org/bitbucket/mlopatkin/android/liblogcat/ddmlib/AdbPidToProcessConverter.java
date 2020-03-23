@@ -21,6 +21,8 @@ import com.google.common.io.CharStreams;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,9 +47,9 @@ class AdbPidToProcessConverter {
     private final IDevice device;
     private final String psCmdline;
 
-    private Map<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
+    private final ConcurrentHashMap<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
         @Override
-        public String get(Object key) {
+        public @Nullable String get(Object key) {
             String r = putIfAbsent((Integer) key, NO_INFO);
             if (r == null) {
                 scheduleUpdate();
@@ -69,7 +71,7 @@ class AdbPidToProcessConverter {
         return processMap;
     }
 
-    private volatile Future<?> result;
+    private volatile @MonotonicNonNull Future<?> result;
 
     private synchronized void scheduleUpdate() {
         if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
@@ -94,7 +96,7 @@ class AdbPidToProcessConverter {
             try {
                 String line = in.readLine();
 
-                if (!ProcessListParser.isProcessListHeader(line)) {
+                if (line == null || !ProcessListParser.isProcessListHeader(line)) {
                     logger.warn("Can't parse header");
                     CharStreams.exhaust(in);
                     return;

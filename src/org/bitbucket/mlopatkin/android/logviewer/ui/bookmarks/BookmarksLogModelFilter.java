@@ -21,10 +21,10 @@ import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 public class BookmarksLogModelFilter implements LogModelFilter {
@@ -65,9 +65,8 @@ public class BookmarksLogModelFilter implements LogModelFilter {
         return bookmarkModel.containsRecord(record) && modelFilter.shouldShowRecord(record);
     }
 
-    @Nullable
     @Override
-    public Color getHighlightColor(LogRecord record) {
+    public @Nullable Color getHighlightColor(LogRecord record) {
         // We don't want coloring in bookmarks list
         return null;
     }

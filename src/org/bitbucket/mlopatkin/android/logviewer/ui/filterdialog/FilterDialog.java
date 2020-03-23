@@ -21,6 +21,8 @@ import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
@@ -36,8 +38,8 @@ import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.Filterin
  * Common GUI logic related to filtering.
  */
 class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.FilterDialogView {
-    private Runnable commitAction;
-    private Runnable discardAction;
+    private @MonotonicNonNull Runnable commitAction;
+    private @MonotonicNonNull Runnable discardAction;
 
     /**
      * Create the dialog.
@@ -68,10 +70,12 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
     }
 
     protected void onPositiveResult() {
+        assert commitAction != null;
         commitAction.run();
     }
 
     protected void onNegativeResult() {
+        assert discardAction != null;
         discardAction.run();
     }
 
@@ -106,7 +110,7 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
     }
 
     @Override
-    public void setPriority(LogRecord.Priority priority) {
+    public void setPriority(LogRecord.@Nullable Priority priority) {
         logLevelList.setSelectedItem(priority);
     }
 
@@ -126,7 +130,7 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
     }
 
     @Override
-    public void setHighlightColor(Color color) {
+    public void setHighlightColor(@Nullable Color color) {
         int index = 0;
         for (Color current : Configuration.ui.highlightColors()) {
             if (current.equals(color)) {

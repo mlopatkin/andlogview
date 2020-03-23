@@ -19,6 +19,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.Field;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -26,14 +27,14 @@ import java.util.Set;
 
 class ParsingStrategies {
     interface Strategy {
-        LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess);
+        @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess);
 
         Set<Field> getAvailableFields();
     }
 
     static final ParsingStrategies.Strategy threadTime = new ParsingStrategies.Strategy() {
         @Override
-        public LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+        public @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess) {
             return LogRecordParser.parseThreadTime(buffer, line, pidToProcess);
         }
 
@@ -49,7 +50,7 @@ class ParsingStrategies {
     };
     static final ParsingStrategies.Strategy brief = new ParsingStrategies.Strategy() {
         @Override
-        public LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+        public @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess) {
             return LogRecordParser.parseBrief(buffer, line, pidToProcess);
         }
 
@@ -66,7 +67,7 @@ class ParsingStrategies {
 
     static final ParsingStrategies.Strategy time = new ParsingStrategies.Strategy() {
         @Override
-        public LogRecord parse(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+        public @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess) {
             return LogRecordParser.parseTime(buffer, line, pidToProcess);
         }
 

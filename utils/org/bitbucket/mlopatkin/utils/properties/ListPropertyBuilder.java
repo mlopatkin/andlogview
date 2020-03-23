@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +26,7 @@ import java.util.List;
 @SuppressWarnings("rawtypes")
 public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
     private Class<T> elemType;
-    private Parser<T> parser;
+    private @MonotonicNonNull Parser<T> parser;
     private List<T> defaultVal = Collections.emptyList();
 
     private ListPropertyBuilder(Class<T> type) {
@@ -53,6 +55,7 @@ public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
 
     @Override
     public Property<List> build() {
+        assert parser != null;
         ListProperty<T> p = new ListProperty<>(elemType, parser);
         p.setValue(defaultVal);
         return p;

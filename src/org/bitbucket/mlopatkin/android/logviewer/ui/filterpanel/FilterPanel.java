@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
 
 import org.bitbucket.mlopatkin.android.logviewer.ui.Icons;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -143,6 +144,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
     @Override
     public void onFilterEnabled(PanelFilterView filter, boolean enabled) {
+        // TODO(mlopatkin) This is hard to ensure to be non-null
         FilterButton button = buttonByFilter.get(filter);
         button.setSelected(enabled);
     }
@@ -192,8 +194,8 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         public FilterButton(PanelFilterView filter) {
             super(FILTER_ICON, true);
 
-            addActionListener(this);
             setFilter(filter);
+            addActionListener(this);
         }
 
         public PanelFilterView getFilter() {
@@ -221,11 +223,10 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         private JPopupMenu menu = new JPopupMenu();
         private JMenuItem editItem = new JMenuItem("Edit filter");
         private JMenuItem removeItem = new JMenuItem("Remove filter");
-        private FilterButton activeButton;
+        private @Nullable FilterButton activeButton;
 
         PopupMenuHandler() {
             editItem.addActionListener(e -> model.editFilter(activeButton.getFilter()));
-
             removeItem.addActionListener(e -> model.removeFilter(activeButton.getFilter()));
             menu.add(editItem);
             menu.add(removeItem);

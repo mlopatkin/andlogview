@@ -20,11 +20,10 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
 
 class IndexFilter implements LogModelFilter {
     private final LogModelFilter parent;
@@ -50,9 +49,8 @@ class IndexFilter implements LogModelFilter {
         return parent.shouldShowRecord(record) && filter.test(record);
     }
 
-    @Nullable
     @Override
-    public Color getHighlightColor(LogRecord record) {
+    public @Nullable Color getHighlightColor(LogRecord record) {
         return null;
     }
 

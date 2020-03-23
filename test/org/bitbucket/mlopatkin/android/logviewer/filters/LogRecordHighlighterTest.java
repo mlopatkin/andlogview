@@ -18,13 +18,12 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.Color;
 import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
 
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;

@@ -16,13 +16,15 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+
 import java.util.EnumMap;
 
 @SuppressWarnings("rawtypes")
 public class EnumMapPropertyBuilder<T extends Enum<T>, V> implements IPropertyBuilder<EnumMap> {
     private final Class<T> keyType;
     private final Class<V> valueType;
-    private Parser<V> parser;
+    private @MonotonicNonNull Parser<V> parser;
 
     private EnumMapPropertyBuilder(Class<T> keyType, Class<V> valueType) {
         this.keyType = keyType;
@@ -31,6 +33,7 @@ public class EnumMapPropertyBuilder<T extends Enum<T>, V> implements IPropertyBu
 
     @Override
     public Property<EnumMap> build() {
+        assert parser != null;
         return new EnumMapProperty<>(keyType, valueType, parser);
     }
 

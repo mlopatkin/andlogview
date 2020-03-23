@@ -19,6 +19,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -36,9 +37,12 @@ public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
         }
     }
 
+    private @MonotonicNonNull TableCellRenderer inner;
+
     @Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        assert inner != null;
         Component result = inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         row = table.convertRowIndexToModel(row);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
@@ -46,8 +50,6 @@ public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
         result.setForeground(COLOR_MAP.get(priority));
         return result;
     }
-
-    private TableCellRenderer inner;
 
     @Override
     public void setInnerRenderer(TableCellRenderer renderer) {

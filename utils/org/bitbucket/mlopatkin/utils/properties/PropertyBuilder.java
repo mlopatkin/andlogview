@@ -16,10 +16,13 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public class PropertyBuilder<T> implements IPropertyBuilder<T> {
-    private T defaultValue;
+    private @Nullable T defaultValue;
     private final Class<T> type;
-    private Parser<T> parser;
+    private @MonotonicNonNull Parser<T> parser;
 
     protected PropertyBuilder(Class<T> type) {
         this.type = type;
@@ -37,6 +40,7 @@ public class PropertyBuilder<T> implements IPropertyBuilder<T> {
 
     @Override
     public Property<T> build() {
+        assert parser != null;
         Property<T> result = new Property<>(type, parser);
         result.setValue(defaultValue);
         return result;

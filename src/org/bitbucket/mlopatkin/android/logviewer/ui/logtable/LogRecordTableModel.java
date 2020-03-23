@@ -51,7 +51,9 @@ public class LogRecordTableModel extends AbstractTableModel implements BatchReco
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         LogRecord record = records.get(rowIndex);
-        return Column.getByColumnIndex(columnIndex).getValue(rowIndex, record);
+        Object value = Column.getByColumnIndex(columnIndex).getValue(rowIndex, record);
+        assert value != null;
+        return value;
     }
 
     @Override

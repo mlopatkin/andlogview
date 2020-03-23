@@ -17,15 +17,17 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
-class PriorityComboBoxModel extends AbstractListModel<LogRecord.Priority> implements ComboBoxModel<LogRecord.Priority> {
-    private Object selected;
+class PriorityComboBoxModel extends AbstractListModel<LogRecord.@Nullable Priority>
+        implements ComboBoxModel<LogRecord.@Nullable Priority> {
+    private @Nullable Object selected;
 
     @Override
-    public Object getSelectedItem() {
+    public @Nullable Object getSelectedItem() {
         return selected;
     }
 
@@ -35,7 +37,7 @@ class PriorityComboBoxModel extends AbstractListModel<LogRecord.Priority> implem
     }
 
     @Override
-    public LogRecord.Priority getElementAt(int index) {
+    public LogRecord.@Nullable Priority getElementAt(int index) {
         if (index == 0) {
             return null;
         }

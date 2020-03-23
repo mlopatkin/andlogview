@@ -15,6 +15,8 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +40,7 @@ public interface DataSource {
      * @return {@link Map} or {@code null} if this feature is
      *         not available
      */
-    Map<Integer, String> getPidToProcessConverter();
+    @Nullable Map<Integer, String> getPidToProcessConverter();
 
     /**
      * Disposes all resources of this {@link DataSource}. It becomes not usable.

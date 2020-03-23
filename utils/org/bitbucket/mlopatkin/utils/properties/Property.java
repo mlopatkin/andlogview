@@ -43,7 +43,7 @@ class Property<T> {
     @Override
     public String toString() {
         if (getParser() == null) {
-            return "property{" + value.toString() + "}:" + type.getName();
+            return "property{" + value + "}:" + type.getName();
         } else {
             return "property{" + getParser().write(value) + "}:" + type.getName();
         }
@@ -81,3 +81,4 @@ class Property<T> {
         return false;
     }
 }
+

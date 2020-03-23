@@ -30,6 +30,7 @@ import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.utils.SystemUtils;
 import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
 import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -44,7 +45,7 @@ public class Main {
 
     private static final String SHORT_APP_NAME = "logview";
 
-    private DataSource initialSource;
+    private @MonotonicNonNull DataSource initialSource;
     private MainFrame window;
 
     public static File getConfigurationDir() {
@@ -83,7 +84,9 @@ public class Main {
         createAndShowWindow();
         try {
             initialSource = FileDataSourceFactory.createDataSource(file);
-            window.setRecentDir(file.getAbsoluteFile().getParentFile());
+            // TODO(mlopatkin) Handle null parent file here
+            File baseDir = file.getAbsoluteFile().getParentFile();
+            window.setRecentDir(baseDir);
         } catch (UnrecognizedFormatException e) {
             ErrorDialogsHelper.showError(window, "Unrecognized file format for " + file);
             logger.error("Exception while reading the file", e);

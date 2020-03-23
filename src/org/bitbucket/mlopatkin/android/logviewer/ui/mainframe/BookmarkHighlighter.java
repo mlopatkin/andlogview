@@ -21,6 +21,7 @@ import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -32,7 +33,7 @@ import javax.swing.table.TableCellRenderer;
 public class BookmarkHighlighter implements DecoratingCellRenderer {
     private final LogRecordTableModel model;
     private final BookmarkModel bookmarkModel;
-    private TableCellRenderer renderer;
+    private @MonotonicNonNull TableCellRenderer renderer;
 
     @Inject
     public BookmarkHighlighter(LogRecordTableModel model, BookmarkModel bookmarkModel) {
@@ -48,6 +49,7 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     @Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        assert renderer != null;
         Component innerRenderer =
                 renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         LogRecord record = model.getRowData(table.convertRowIndexToModel(row));

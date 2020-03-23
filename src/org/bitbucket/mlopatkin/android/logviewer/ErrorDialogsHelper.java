@@ -16,6 +16,7 @@
 package org.bitbucket.mlopatkin.android.logviewer;
 
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -29,12 +30,12 @@ import javax.swing.JOptionPane;
 public class ErrorDialogsHelper {
     private ErrorDialogsHelper() {}
 
-    public static void showError(Component owner, String format, Object... vals) {
+    public static void showError(@Nullable Component owner, String format, @Nullable Object... vals) {
         String message = String.format(format, vals);
         showError(owner, message);
     }
 
-    static void showError(Component owner, String message) {
+    static void showError(@Nullable Component owner, String message) {
         JOptionPane.showMessageDialog(owner, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 

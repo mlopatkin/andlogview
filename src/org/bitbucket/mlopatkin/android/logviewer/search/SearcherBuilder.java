@@ -22,12 +22,9 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * Utility class that helps to construct {@link Predicate} that checks string match.
  */
-@ParametersAreNonnullByDefault
 public class SearcherBuilder {
     private boolean matchWholeText = true;
     private boolean ignoreCase;

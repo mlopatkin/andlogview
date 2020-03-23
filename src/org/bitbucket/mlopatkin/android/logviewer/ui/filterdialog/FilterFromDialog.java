@@ -28,6 +28,8 @@ import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationExcept
 import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
 import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
 import org.bitbucket.mlopatkin.utils.MorePredicates;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.List;
@@ -71,18 +73,19 @@ public class FilterFromDialog implements ColoringFilter {
                 }
             });
 
-    private List<String> tags;
-    private List<Integer> pids;
-    private List<String> apps;
-    private String messagePattern;
+    private @Nullable List<String> tags;
+    private @Nullable List<Integer> pids;
+    private @Nullable List<String> apps;
+    private @Nullable String messagePattern;
 
-    private LogRecord.Priority priority;
-    private FilteringMode mode;
+    private LogRecord.@Nullable Priority priority;
+    // TODO(mlopatkin) Really it shouldn't be
+    private @Nullable FilteringMode mode;
 
-    private Color highlightColor;
+    private @Nullable Color highlightColor;
 
-    private transient Predicate<LogRecord> compiledPredicate;
-    private transient String tooltipRepresentation;
+    private transient @MonotonicNonNull Predicate<LogRecord> compiledPredicate;
+    private transient @MonotonicNonNull String tooltipRepresentation;
 
     public FilterFromDialog() {}
 
@@ -96,6 +99,7 @@ public class FilterFromDialog implements ColoringFilter {
 
     @Override
     public boolean test(LogRecord input) {
+        assert compiledPredicate != null;
         return compiledPredicate.test(input);
     }
 
@@ -135,6 +139,7 @@ public class FilterFromDialog implements ColoringFilter {
 
     private String compileTooltip() {
         StringBuilder builder = new StringBuilder("<html>");
+        assert mode != null;
         builder.append(mode.getDescription());
         if (tags != null && !tags.isEmpty()) {
             builder.append("<br>Tags: ");
@@ -157,52 +162,53 @@ public class FilterFromDialog implements ColoringFilter {
         return builder.append("</html>").toString();
     }
 
-    public List<String> getTags() {
+    public @Nullable List<String> getTags() {
         return tags;
     }
 
-    public FilterFromDialog setTags(List<String> tags) {
+    public FilterFromDialog setTags(@Nullable List<String> tags) {
         this.tags = tags;
         return this;
     }
 
-    public List<Integer> getPids() {
+    public @Nullable List<Integer> getPids() {
         return pids;
     }
 
-    public FilterFromDialog setPids(List<Integer> pids) {
+    public FilterFromDialog setPids(@Nullable List<Integer> pids) {
         this.pids = pids;
         return this;
     }
 
-    public List<String> getApps() {
+    public @Nullable List<String> getApps() {
         return apps;
     }
 
-    public FilterFromDialog setApps(List<String> apps) {
+    public FilterFromDialog setApps(@Nullable List<String> apps) {
         this.apps = apps;
         return this;
     }
 
-    public String getMessagePattern() {
+    public @Nullable String getMessagePattern() {
         return messagePattern;
     }
 
-    public FilterFromDialog setMessagePattern(String messagePattern) {
+    public FilterFromDialog setMessagePattern(@Nullable String messagePattern) {
         this.messagePattern = messagePattern;
         return this;
     }
 
-    public LogRecord.Priority getPriority() {
+    public LogRecord.@Nullable Priority getPriority() {
         return priority;
     }
 
-    public FilterFromDialog setPriority(LogRecord.Priority priority) {
+    public FilterFromDialog setPriority(LogRecord.@Nullable Priority priority) {
         this.priority = priority;
         return this;
     }
 
     public FilteringMode getMode() {
+        assert mode != null;
         return mode;
     }
 
@@ -212,21 +218,22 @@ public class FilterFromDialog implements ColoringFilter {
     }
 
     @Override
-    public Color getHighlightColor() {
+    public @Nullable Color getHighlightColor() {
         return highlightColor;
     }
 
-    public FilterFromDialog setHighlightColor(Color highlightColor) {
+    public FilterFromDialog setHighlightColor(@Nullable Color highlightColor) {
         this.highlightColor = highlightColor;
         return this;
     }
 
     public String getTooltip() {
+        assert tooltipRepresentation != null;
         return tooltipRepresentation;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }

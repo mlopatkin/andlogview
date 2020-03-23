@@ -19,6 +19,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.List;
@@ -28,9 +29,8 @@ import javax.swing.ComboBoxModel;
 
 class ColorsComboBoxModel
         extends AbstractListModel<ColorsComboBoxModel.Item> implements ComboBoxModel<ColorsComboBoxModel.Item> {
-    // TODO having string here is kind of lame
-    private Item selected;
-    private List<Item> items;
+    private @Nullable Item selected;
+    private final List<Item> items;
 
     public ColorsComboBoxModel() {
         items = Lists.newArrayListWithCapacity(Configuration.ui.highlightColors().size());
@@ -41,12 +41,12 @@ class ColorsComboBoxModel
     }
 
     @Override
-    public Item getSelectedItem() {
+    public @Nullable Item getSelectedItem() {
         return selected;
     }
 
     @Override
-    public void setSelectedItem(Object anItem) {
+    public void setSelectedItem(@Nullable Object anItem) {
         selected = ((Item) anItem);
     }
 

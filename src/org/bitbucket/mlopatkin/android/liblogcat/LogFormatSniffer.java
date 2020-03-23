@@ -18,7 +18,7 @@ package org.bitbucket.mlopatkin.android.liblogcat;
 
 import com.google.common.base.CharMatcher;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Push-reader that tries to determine format of the log.

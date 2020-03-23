@@ -17,6 +17,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui;
 
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * Built-in icons for UI.
@@ -34,6 +35,6 @@ public enum Icons {
     }
 
     public URL getUrl() {
-        return Icons.class.getResource(path);
+        return Objects.requireNonNull(Icons.class.getResource(path));
     }
 }

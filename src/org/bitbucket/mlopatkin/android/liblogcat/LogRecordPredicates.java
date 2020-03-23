@@ -21,14 +21,11 @@ import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Common predicates for LogRecords. All predicates throw NPE on null input.
  */
-@ParametersAreNonnullByDefault
 public final class LogRecordPredicates {
     private LogRecordPredicates() {}
 

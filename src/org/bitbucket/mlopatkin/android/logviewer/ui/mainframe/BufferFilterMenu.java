@@ -29,17 +29,17 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-public class BufferFilterMenu {
+public final class BufferFilterMenu {
     private final JMenu parent;
     private final MainFilterController controller;
 
-    private class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
+    private final class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
         private Buffer buffer;
 
         public BufferCheckBoxMenuItem(Buffer buffer, boolean selected) {
             super(buffer.getCaption(), selected);
-            addActionListener(this);
             this.buffer = buffer;
+            addActionListener(this);
         }
 
         @Override
@@ -75,6 +75,7 @@ public class BufferFilterMenu {
         for (Buffer buffer : availableBuffers) {
             anyBufferAvailable = true;
             JMenuItem item = items.get(buffer);
+            assert item != null;
             item.setVisible(true);
             controller.setBufferEnabled(buffer, item.isSelected());
         }

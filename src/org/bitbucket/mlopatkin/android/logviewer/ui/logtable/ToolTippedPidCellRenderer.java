@@ -17,6 +17,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
 
@@ -24,9 +25,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
-    private PidToProcessMapper mapper;
+    private @Nullable PidToProcessMapper mapper;
 
-    public ToolTippedPidCellRenderer(PidToProcessMapper mapper) {
+    public ToolTippedPidCellRenderer(@Nullable PidToProcessMapper mapper) {
         this.mapper = mapper;
     }
 

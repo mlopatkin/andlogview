@@ -18,6 +18,8 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.device;
 
 import com.android.ddmlib.IDevice;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Callback interface for receiving selected device from a SelectDeviceDialog.
  */
@@ -28,5 +30,5 @@ public interface ResultReceiver {
      * @param dialog the dialog that triggered a callback
      * @param selectedDevice the selected device or null if the user cancelled the dialog
      */
-    void onDialogResult(SelectDeviceDialog dialog, IDevice selectedDevice);
+    void onDialogResult(SelectDeviceDialog dialog, @Nullable IDevice selectedDevice);
 }

@@ -4,6 +4,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,10 +33,11 @@ public final class RowSearchStrategyFactory {
 
     private static final List<String> PREFIXES = Arrays.asList(PREFIX_APP, PREFIX_MSG, PREFIX_TAG);
 
-    public static RowSearchStrategy compile(String pattern) throws RequestCompilationException {
+    public static @Nullable RowSearchStrategy compile(@Nullable String pattern) throws RequestCompilationException {
         if (CharMatcher.whitespace().matchesAllOf(Strings.nullToEmpty(pattern))) {
             return null;
         }
+        assert pattern != null;
         pattern = pattern.trim();
         // check for prefix
         for (String prefix : PREFIXES) {
@@ -49,9 +51,7 @@ public final class RowSearchStrategyFactory {
     private static RowSearchStrategy prepareWithPrefix(String prefix, String rest) throws RequestCompilationException {
         rest = rest.trim();
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(rest);
-        if (strategy == null) {
-            return null;
-        }
+
         if (PREFIX_APP.equals(prefix)) {
             return new ValueSearcher(strategy, Column.APP_NAME);
         } else if (PREFIX_MSG.equals(prefix)) {
@@ -65,15 +65,11 @@ public final class RowSearchStrategyFactory {
 
     private static RowSearchStrategy prepareWithoutPrefix(String pattern) throws RequestCompilationException {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(pattern);
-        if (strategy != null) {
-            Column[] searchableColumns = {Column.APP_NAME, Column.MESSAGE, Column.TAG};
-            List<ValueSearcher> searches = new ArrayList<>(searchableColumns.length);
-            for (Column c : searchableColumns) {
-                searches.add(new ValueSearcher(strategy, c));
-            }
-            return new OrSearcher(searches);
-        } else {
-            return null;
+        Column[] searchableColumns = {Column.APP_NAME, Column.MESSAGE, Column.TAG};
+        List<ValueSearcher> searches = new ArrayList<>(searchableColumns.length);
+        for (Column c : searchableColumns) {
+            searches.add(new ValueSearcher(strategy, c));
         }
+        return new OrSearcher(searches);
     }
 }

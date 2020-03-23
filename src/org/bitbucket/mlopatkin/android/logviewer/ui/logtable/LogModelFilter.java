@@ -18,10 +18,9 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.utils.events.Observable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
-
-import javax.annotation.Nullable;
 
 /**
  * Implementation of this interface controls the appearance of the table model.
@@ -33,8 +32,7 @@ public interface LogModelFilter {
 
     boolean shouldShowRecord(LogRecord record);
 
-    @Nullable
-    Color getHighlightColor(LogRecord record);
+    @Nullable Color getHighlightColor(LogRecord record);
 
     Observable<Observer> asObservable();
 }

@@ -23,6 +23,7 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -30,7 +31,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -39,7 +39,7 @@ import javax.swing.table.TableColumn;
 /**
  * The column model for the main log table. It allows to temporarily hide columns.
  */
-public class LogRecordTableColumnModel extends DefaultTableColumnModel implements ColumnTogglesModel {
+public final class LogRecordTableColumnModel extends DefaultTableColumnModel implements ColumnTogglesModel {
     public interface ColumnOrderChangedListener {
         void onColumnOrderChanged(Column movedColumn, @Nullable Column nextColumn);
     }
@@ -57,8 +57,8 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
     private final ColumnTogglesModel columnTogglesModel;
     private final Subject<ColumnOrderChangedListener> orderChangedListeners = new Subject<>();
 
-    public LogRecordTableColumnModel(PidToProcessMapper pidToProcessMapper, Collection<Column> availableColumns,
-            ColumnOrder columnOrder, Set<Column> visibleColumns) {
+    public LogRecordTableColumnModel(@Nullable PidToProcessMapper pidToProcessMapper,
+            Collection<Column> availableColumns, ColumnOrder columnOrder, Set<Column> visibleColumns) {
         this(pidToProcessMapper, columnOrder, new ColumnTogglesModel() {
             private final HashSet<Column> visible = new HashSet<>(visibleColumns);
 
@@ -83,8 +83,8 @@ public class LogRecordTableColumnModel extends DefaultTableColumnModel implement
         });
     }
 
-    public LogRecordTableColumnModel(
-            PidToProcessMapper pidToProcessMapper, ColumnOrder columnOrder, ColumnTogglesModel columnTogglesModel) {
+    public LogRecordTableColumnModel(@Nullable PidToProcessMapper pidToProcessMapper, ColumnOrder columnOrder,
+            ColumnTogglesModel columnTogglesModel) {
         this.pidCellRender = new ToolTippedPidCellRenderer(pidToProcessMapper);
         this.columnOrder = columnOrder;
         this.columnTogglesModel = columnTogglesModel;

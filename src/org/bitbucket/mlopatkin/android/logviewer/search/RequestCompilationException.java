@@ -1,5 +1,7 @@
 package org.bitbucket.mlopatkin.android.logviewer.search;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public class RequestCompilationException extends Exception {
     private String request;
 
@@ -7,7 +9,7 @@ public class RequestCompilationException extends Exception {
         this(message, request, null);
     }
 
-    public RequestCompilationException(String message, String request, Throwable cause) {
+    public RequestCompilationException(String message, String request, @Nullable Throwable cause) {
         super(message, cause);
         this.request = request;
     }

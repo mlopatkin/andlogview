@@ -22,10 +22,10 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.bitbucket.mlopatkin.utils.events.Subject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @MainFrameScoped
@@ -44,9 +44,8 @@ class LogModelFilterImpl implements LogModelFilter {
         return bufferFilter.test(record) && filterChain.shouldShow(record);
     }
 
-    @Nullable
     @Override
-    public Color getHighlightColor(LogRecord record) {
+    public @Nullable Color getHighlightColor(LogRecord record) {
         return highlighter.getColor(record);
     }
 

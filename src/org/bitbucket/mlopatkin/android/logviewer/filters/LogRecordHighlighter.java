@@ -18,12 +18,11 @@ package org.bitbucket.mlopatkin.android.logviewer.filters;
 import com.google.common.collect.Lists;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
     private static class FilterInfo {
@@ -63,7 +62,7 @@ class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
         info.filter = newFilter;
     }
 
-    public Color getColor(LogRecord record) {
+    public @Nullable Color getColor(LogRecord record) {
         for (FilterInfo info : reversedView) {
             if (info.isEnabled && info.filter.test(record)) {
                 return info.filter.getHighlightColor();
@@ -72,8 +71,7 @@ class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
         return null;
     }
 
-    @Nullable
-    private FilterInfo findInfoForFilter(ColoringFilter filter) {
+    private @Nullable FilterInfo findInfoForFilter(ColoringFilter filter) {
         for (FilterInfo item : filters) {
             if (item.filter.equals(filter)) {
                 return item;

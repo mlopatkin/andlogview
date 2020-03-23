@@ -27,6 +27,7 @@ import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,14 +42,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DumpstateFileDataSource implements DataSource {
+public final class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
     private static final int READ_AHEAD_LIMIT = 65536;
 
     private List<SectionHandler> handlers = new ArrayList<>();
     private List<LogRecord> records = new ArrayList<>();
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
-    private RecordListener<LogRecord> logcatListener;
+    private @Nullable RecordListener<LogRecord> logcatListener;
 
     private String fileName;
 
@@ -94,7 +95,7 @@ public class DumpstateFileDataSource implements DataSource {
         handler.endSection();
     }
 
-    private SectionHandler getSectionHandler(String sectionName) {
+    private @Nullable SectionHandler getSectionHandler(String sectionName) {
         for (SectionHandler handler : handlers) {
             if (handler.isSupportedSection(sectionName)) {
                 logger.debug("Supported section: " + sectionName);
@@ -130,7 +131,9 @@ public class DumpstateFileDataSource implements DataSource {
 
     @Override
     public boolean reset() {
-        setLogRecordListener(logcatListener);
+        if (logcatListener != null) {
+            setLogRecordListener(logcatListener);
+        }
         return true;
     }
 
@@ -177,7 +180,7 @@ public class DumpstateFileDataSource implements DataSource {
 
     private static final Pattern SECTION_NAME_PATTERN = Pattern.compile("^------ (.*) ------\\s*$");
 
-    private static String getSectionName(String line) {
+    private static @Nullable String getSectionName(String line) {
         Matcher m = SECTION_NAME_PATTERN.matcher(line);
         if (m.matches()) {
             return m.group(1);
@@ -197,8 +200,8 @@ public class DumpstateFileDataSource implements DataSource {
     }
 
     private class LogcatSectionHandler implements SectionHandler {
-        private Buffer buffer;
-        private Strategy parsingStrategy;
+        private @Nullable Buffer buffer;
+        private @Nullable Strategy parsingStrategy;
 
         @Override
         public void endSection() {

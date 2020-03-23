@@ -26,33 +26,30 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
 import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AdbDataSource implements DataSource, BufferReceiver {
+public final class AdbDataSource implements DataSource, BufferReceiver {
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
-    private RecordListener<LogRecord> listener;
+    private @Nullable RecordListener<LogRecord> listener;
 
-    private IDevice device;
-    private AdbPidToProcessConverter converter;
-    private EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
-
-    private void initStreams() {
-        converter = new AdbPidToProcessConverter(device);
-        for (LogRecord.Buffer buffer : Buffer.values()) {
-            setUpStream(buffer);
-        }
-    }
+    private final IDevice device;
+    private final AdbPidToProcessConverter converter;
+    private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
 
     public AdbDataSource(final IDevice device) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
-        initStreams();
+        converter = new AdbPidToProcessConverter(this.device);
+        for (Buffer buffer : Buffer.values()) {
+            setUpStream(buffer);
+        }
         AdbDeviceManager.addDeviceChangeListener(deviceListener);
     }
 

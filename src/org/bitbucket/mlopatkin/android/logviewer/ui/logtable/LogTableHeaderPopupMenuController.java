@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import java.awt.event.ActionEvent;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
@@ -26,7 +25,6 @@ import javax.swing.JPopupMenu;
 /**
  * Controller for Popup menu of the log table header. This popup menu can be used to change displayed columns.
  */
-@ParametersAreNonnullByDefault
 public class LogTableHeaderPopupMenuController {
     private final ColumnTogglesModel togglesModel;
 
