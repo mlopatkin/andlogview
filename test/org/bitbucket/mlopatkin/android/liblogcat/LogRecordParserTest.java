@@ -15,6 +15,7 @@
  */
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -23,6 +24,7 @@ import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -64,7 +66,10 @@ public class LogRecordParserTest {
         return calendar.getTime();
     }
 
-    private static boolean isSameDate(Date expected, Date actual) {
+    private static boolean isSameDate(Date expected, @Nullable Date actual) {
+        if (actual == null) {
+            return false;
+        }
         if (expected.equals(actual)) {
             return true;
         }
@@ -82,6 +87,7 @@ public class LogRecordParserTest {
         LogRecord record =
                 LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD, Collections.emptyMap());
 
+        assertNotNull(record);
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PID, record.getPid());
@@ -95,6 +101,7 @@ public class LogRecordParserTest {
     public void testLogRecordParserBrief() {
         LogRecord record = LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD, Collections.emptyMap());
 
+        assertNotNull(record);
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getTid());
 
@@ -110,6 +117,7 @@ public class LogRecordParserTest {
         LogRecord record =
                 LogRecordParser.parseBrief(BUFFER, BRIEF_RECORD_PAD, Collections.emptyMap());
 
+        assertNotNull(record);
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getTid());
 
@@ -125,6 +133,7 @@ public class LogRecordParserTest {
         LogRecord record =
                 LogRecordParser.parseProcess(BUFFER, PROCESS_RECORD, Collections.emptyMap());
 
+        assertNotNull(record);
         assertEquals(LogRecord.NO_ID, record.getTid());
         assertNull(record.getTime());
 
@@ -139,6 +148,7 @@ public class LogRecordParserTest {
     public void testLogRecordParserTag() {
         LogRecord record = LogRecordParser.parseTag(BUFFER, TAG_RECORD);
 
+        assertNotNull(record);
         assertEquals(LogRecord.NO_ID, record.getTid());
         assertNull(record.getTime());
         assertEquals(LogRecord.NO_ID, record.getPid());
@@ -153,6 +163,7 @@ public class LogRecordParserTest {
     public void testLogRecordParserTime() {
         LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD, Collections.emptyMap());
 
+        assertNotNull(record);
         assertEquals(LogRecord.NO_ID, record.getTid());
 
         assertEquals(TAG, record.getTag());
@@ -167,6 +178,7 @@ public class LogRecordParserTest {
     public void testLogRecordParserTimePad() {
         LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD_PAD, Collections.emptyMap());
 
+        assertNotNull(record);
         assertEquals(LogRecord.NO_ID, record.getTid());
 
         assertEquals(TAG, record.getTag());
@@ -191,6 +203,7 @@ public class LogRecordParserTest {
     public void testTimeLogWithMicrosecondsTimestamp() {
         LogRecord record = LogRecordParser.parseTime(BUFFER, TIME_RECORD_WITH_MCS, Collections.emptyMap());
 
+        assertNotNull(record);
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PID, record.getPid());
@@ -203,6 +216,7 @@ public class LogRecordParserTest {
     public void testThreadTimeLogWithMicrosecondsTimestamp() {
         LogRecord record = LogRecordParser.parseThreadTime(BUFFER, THREADTIME_RECORD_WITH_MCS, Collections.emptyMap());
 
+        assertNotNull(record);
         assertEquals(TAG, record.getTag());
         assertEquals(MESSAGE, record.getMessage());
         assertEquals(PID, record.getPid());

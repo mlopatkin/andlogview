@@ -101,6 +101,7 @@ public class FutureMatchers {
             return exception.get() != null;
         }
 
+        @SuppressWarnings("NullAway")
         T getResult() {
             assert isCompleted() && !hasException();
             return result.get();

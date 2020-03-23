@@ -26,6 +26,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
 import org.bitbucket.mlopatkin.utils.events.Observable;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -77,7 +78,7 @@ public class MainFilterControllerTest {
 
     LogModelFilterImpl filterImpl = new LogModelFilterImpl();
 
-    InOrder order;
+    @MonotonicNonNull InOrder order;
 
     @Mock
     ConfigStorage mockStorage;

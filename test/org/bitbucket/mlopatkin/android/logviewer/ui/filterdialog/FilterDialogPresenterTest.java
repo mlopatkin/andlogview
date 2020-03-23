@@ -16,11 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import com.android.annotations.Nullable;
-
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Test;
 
 import java.awt.Color;
@@ -48,15 +48,12 @@ public class FilterDialogPresenterTest {
         String tagsText = "";
         String messageText = "";
         String pidsAppsText = "";
-        @Nullable
-        LogRecord.Priority priority;
+        LogRecord.@Nullable Priority priority;
         FilteringMode mode = FilteringMode.getDefaultMode();
-        @Nullable
-        Color highlightColor;
-        Runnable commitAction;
-        Runnable discardAction;
-        @Nullable
-        String errorText;
+        @Nullable Color highlightColor;
+        @MonotonicNonNull Runnable commitAction;
+        @MonotonicNonNull Runnable discardAction;
+        @Nullable String errorText;
 
         @Override
         public void setTagsText(String text) {
@@ -89,7 +86,7 @@ public class FilterDialogPresenterTest {
         }
 
         @Override
-        public void setPriority(LogRecord.Priority priority) {
+        public void setPriority(LogRecord.@Nullable Priority priority) {
             this.priority = priority;
         }
 
@@ -109,7 +106,7 @@ public class FilterDialogPresenterTest {
         }
 
         @Override
-        public void setHighlightColor(Color color) {
+        public void setHighlightColor(@Nullable Color color) {
             this.highlightColor = color;
         }
 

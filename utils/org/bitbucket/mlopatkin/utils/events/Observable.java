@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.utils.events;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
@@ -42,5 +44,5 @@ public interface Observable<T> {
      *
      * @param observer the observer to remove
      */
-    void removeObserver(T observer);
+    void removeObserver(@Nullable T observer);
 }

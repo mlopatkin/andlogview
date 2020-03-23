@@ -136,7 +136,7 @@ public class ConfigStorageImplTest {
     }
 
     private static class StringCharSink extends CharSink {
-        private StringWriter writer;
+        private @Nullable StringWriter writer;
 
         @Override
         public Writer openStream() throws IOException {

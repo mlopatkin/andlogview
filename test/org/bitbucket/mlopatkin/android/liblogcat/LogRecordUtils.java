@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.android.liblogcat;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Date;
 
 import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
@@ -48,7 +50,7 @@ public final class LogRecordUtils {
         return new LogRecord(new Date(), NO_ID, NO_ID, "", priority, "", "");
     }
 
-    public static LogRecord forBuffer(Buffer buffer) {
+    public static LogRecord forBuffer(@Nullable Buffer buffer) {
         return new LogRecord(new Date(), NO_ID, NO_ID, "", Priority.INFO, "", "", buffer);
     }
 
@@ -98,7 +100,7 @@ public final class LogRecordUtils {
                 r.getBuffer());
     }
 
-    public static LogRecord withBuffer(LogRecord r, Buffer buffer) {
+    public static LogRecord withBuffer(LogRecord r, @Nullable Buffer buffer) {
         return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
                 r.getMessage(), buffer);
     }

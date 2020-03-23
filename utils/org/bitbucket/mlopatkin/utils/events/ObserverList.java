@@ -5,6 +5,8 @@
 // Changes from the original implementation - moved to org.bitbucket.mlopatkin.utils.events package
 package org.bitbucket.mlopatkin.utils.events;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -78,7 +80,7 @@ public class ObserverList<E> implements Iterable<E> {
      *
      * @return true if an element was removed as a result of this call.
      */
-    public boolean removeObserver(E obs) {
+    public boolean removeObserver(@Nullable E obs) {
         if (obs == null) {
             return false;
         }

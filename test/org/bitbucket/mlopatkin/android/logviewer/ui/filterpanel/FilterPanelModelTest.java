@@ -121,7 +121,7 @@ public class FilterPanelModelTest {
 
             @Override
             public String getTooltip() {
-                return null;
+                return "";
             }
 
             @Override

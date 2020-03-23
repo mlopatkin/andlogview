@@ -48,6 +48,7 @@ dependencies {
 
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     annotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
+    testAnnotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
 
     errorprone 'com.google.errorprone:error_prone_core:2.3.1'
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
@@ -109,7 +110,8 @@ tasks.withType(JavaCompile).configureEach {
         option('NullAway:AnnotatedPackages', 'org.bitbucket.mlopatkin')
         option('NullAway:AssertsEnabled', 'true')
         option('NullAway:ExcludedClassAnnotations', 'javax.annotation.Generated')
-        option('NullAway:ExcludedFieldAnnotations', 'org.checkerframework.checker.nullness.qual.MonotonicNonNull')
+        option('NullAway:ExcludedFieldAnnotations', 'org.checkerframework.checker.nullness.qual.MonotonicNonNull,'
+                + 'org.mockito.Mock,org.mockito.Captor')
         errorproneArgs.addAll('-Xep:JavaLangClash:OFF', '-Xep:NullAway:ERROR')
     }
 }

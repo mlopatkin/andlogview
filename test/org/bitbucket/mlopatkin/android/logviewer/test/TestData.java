@@ -21,17 +21,18 @@ import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public final class TestData {
     private TestData() {}
 
-    public static final LogRecord RECORD1 = LogRecordParser.parseThreadTime(null,
-            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172", Collections.emptyMap());
+    public static final LogRecord RECORD1 = Objects.requireNonNull(LogRecordParser.parseThreadTime(null,
+            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172", Collections.emptyMap()));
 
-    public static final LogRecord RECORD2 = LogRecordParser.parseThreadTime(null,
+    public static final LogRecord RECORD2 = Objects.requireNonNull(LogRecordParser.parseThreadTime(null,
             "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172",
-            Collections.emptyMap());
+            Collections.emptyMap()));
 
     public static final LogRecord RECORD1_IN_MAIN = new LogRecord(RECORD1.getTime(), RECORD1.getPid(), RECORD1.getTid(),
             RECORD1.getAppName(), RECORD1.getPriority(), RECORD1.getTag(), RECORD1.getMessage(), LogRecord.Buffer.MAIN);

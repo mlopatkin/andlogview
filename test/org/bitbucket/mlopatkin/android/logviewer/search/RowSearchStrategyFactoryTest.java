@@ -6,6 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -39,6 +40,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_Simple() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("contacts");
 
+        assertNotNull(simple);
         assertTrue(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertTrue(simple.isRowMatched(tagContacts));
@@ -49,6 +51,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_Regex() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("/contacts/");
 
+        assertNotNull(simple);
         assertTrue(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertTrue(simple.isRowMatched(tagContacts));
@@ -59,6 +62,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_ComplexRegex() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("/con.*ts/");
 
+        assertNotNull(simple);
         assertTrue(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertTrue(simple.isRowMatched(tagContacts));
@@ -69,6 +73,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_AppNameSimple() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("app:contacts");
 
+        assertNotNull(simple);
         assertFalse(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));
@@ -79,6 +84,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_TagSimple() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("tag:contacts");
 
+        assertNotNull(simple);
         assertFalse(simple.isRowMatched(msgContacts));
         assertFalse(simple.isRowMatched(appnameContacts));
         assertTrue(simple.isRowMatched(tagContacts));
@@ -89,6 +95,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_MsgSimple() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:contacts");
 
+        assertNotNull(simple);
         assertTrue(simple.isRowMatched(msgContacts));
         assertFalse(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));
@@ -99,6 +106,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_AppNameRegex() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("app:/c.ntacts/");
 
+        assertNotNull(simple);
         assertFalse(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));
@@ -109,6 +117,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_TagRegex() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("tag:/c.ntacts/");
 
+        assertNotNull(simple);
         assertFalse(simple.isRowMatched(msgContacts));
         assertFalse(simple.isRowMatched(appnameContacts));
         assertTrue(simple.isRowMatched(tagContacts));
@@ -119,6 +128,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_MsgRegex() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:/c.ntacts/");
 
+        assertNotNull(simple);
         assertTrue(simple.isRowMatched(msgContacts));
         assertFalse(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));
@@ -130,6 +140,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_Several() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:/c.ntacts/   app:contacts");
 
+        assertNotNull(simple);
         assertTrue(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));
@@ -142,6 +153,8 @@ public class RowSearchStrategyFactoryTest {
         LogRecord withEscaped = makeRecord(TAG_CONTACTS, APP_CONTACTS, "This contains a escaped app:contacts");
 
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("app\\:contacts");
+
+        assertNotNull(simple);
         assertFalse(simple.isRowMatched(msgContacts));
         assertFalse(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));
@@ -159,6 +172,7 @@ public class RowSearchStrategyFactoryTest {
     public void testCompile_Spaces() throws Exception {
         RowSearchStrategy simple = RowSearchStrategyFactory.compile("  \t    app:/c.ntacts/      ");
 
+        assertNotNull(simple);
         assertFalse(simple.isRowMatched(msgContacts));
         assertTrue(simple.isRowMatched(appnameContacts));
         assertFalse(simple.isRowMatched(tagContacts));

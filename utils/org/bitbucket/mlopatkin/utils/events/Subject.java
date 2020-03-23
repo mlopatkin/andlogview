@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.utils.events;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Iterator;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -36,7 +38,7 @@ public class Subject<T> implements Iterable<T> {
         }
 
         @Override
-        public void removeObserver(T observer) {
+        public void removeObserver(@Nullable T observer) {
             observers.removeObserver(observer);
         }
     };
