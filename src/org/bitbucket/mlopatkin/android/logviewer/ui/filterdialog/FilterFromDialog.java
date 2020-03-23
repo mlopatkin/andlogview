@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-
 public class FilterFromDialog implements ColoringFilter {
     private static final Joiner commaJoiner = Joiner.on(", ");
 
@@ -46,13 +44,13 @@ public class FilterFromDialog implements ColoringFilter {
                 private SearcherBuilder matchIgnoreCase = new SearcherBuilder().setIgnoreCase(true);
 
                 @Override
-                public Predicate<String> createRegexpSearcher(@Nonnull String pattern)
+                public Predicate<String> createRegexpSearcher(String pattern)
                         throws RequestCompilationException {
                     return matchIgnoreCase.setMatchWholeText(false).buildRegexp(pattern);
                 }
 
                 @Override
-                public Predicate<String> createPlainSearcher(@Nonnull String pattern)
+                public Predicate<String> createPlainSearcher(String pattern)
                         throws RequestCompilationException {
                     return matchIgnoreCase.setMatchWholeText(true).buildPlain(pattern);
                 }

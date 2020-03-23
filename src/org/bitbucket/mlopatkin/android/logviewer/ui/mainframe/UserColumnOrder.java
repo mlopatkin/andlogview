@@ -26,8 +26,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 /**
  * Order of the columns in the table. It is somewhat independent of what columns are available in the data source.
  * <p/>
@@ -42,7 +40,7 @@ public class UserColumnOrder implements ColumnOrder {
         this.changeCommitter = changeCommitter;
     }
 
-    public void setColumnBefore(@Nonnull Column movingColumn, @Nullable Column baseColumn) {
+    public void setColumnBefore(Column movingColumn, @Nullable Column baseColumn) {
         Preconditions.checkArgument(movingColumn != Column.INDEX, "Index column isn't movable");
         Preconditions.checkArgument(baseColumn != Column.INDEX, "Can't insert column before index column");
         Preconditions.checkArgument(baseColumn != movingColumn, "Can't insert column before itself");
@@ -62,7 +60,6 @@ public class UserColumnOrder implements ColumnOrder {
     }
 
     @Override
-    @Nonnull
     public Iterator<Column> iterator() {
         return customizableOrder.iterator();
     }

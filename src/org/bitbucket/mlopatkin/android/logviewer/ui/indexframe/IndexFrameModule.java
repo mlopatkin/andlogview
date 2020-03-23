@@ -71,9 +71,11 @@ public class IndexFrameModule {
         return indexController;
     }
 
+    // Dagger doesn't understand type annotations so parameter annotation has to be added
+    // too.
     @Provides
-    @Nullable
-    PopupBuilder getPopupBuilder() {
+    @com.android.annotations.Nullable
+    @Nullable PopupBuilder getPopupBuilder() {
         return popupBuilder;
     }
 }

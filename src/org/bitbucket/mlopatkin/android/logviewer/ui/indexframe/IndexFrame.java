@@ -57,7 +57,9 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
     @Inject
     public IndexFrame(DialogFactory dialogFactory, LogRecordTableColumnModel columnsModel,
             @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable, IndexController controller,
-            @Nullable PopupBuilder popupBuilder) {
+            @com.android.annotations.Nullable @Nullable PopupBuilder popupBuilder) {
+        // Note for PopupBuilder: dagger doesn't understand type annotations so parameter annotation has to be added
+        // too.
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;
