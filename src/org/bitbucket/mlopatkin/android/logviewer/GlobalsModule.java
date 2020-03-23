@@ -47,7 +47,7 @@ class GlobalsModule {
             logger.fatal("Cannot start at all", e);
             System.exit(-1);
             // Dummy return that won't happen because of System.exit
-            return null;
+            throw new AssertionError("System.exit not working");
         }
     }
 }

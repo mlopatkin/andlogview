@@ -144,8 +144,8 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
     @Override
     public void onFilterEnabled(PanelFilterView filter, boolean enabled) {
-        // TODO(mlopatkin) This is hard to ensure to be non-null
         FilterButton button = buttonByFilter.get(filter);
+        assert button != null;
         button.setSelected(enabled);
     }
 
@@ -188,7 +188,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         btScrollLeft.setVisible(canScroll);
     }
 
-    private class FilterButton extends JToggleButton implements ActionListener {
+    private final class FilterButton extends JToggleButton implements ActionListener {
         private PanelFilterView filter;
 
         public FilterButton(PanelFilterView filter) {
@@ -225,7 +225,9 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         private JMenuItem removeItem = new JMenuItem("Remove filter");
         private @Nullable FilterButton activeButton;
 
+        @SuppressWarnings("NullAway")
         PopupMenuHandler() {
+            // TODO(mlopatkin) This can probably be rewritten to ensure that activeButton is nonnull.
             editItem.addActionListener(e -> model.editFilter(activeButton.getFilter()));
             removeItem.addActionListener(e -> model.removeFilter(activeButton.getFilter()));
             menu.add(editItem);

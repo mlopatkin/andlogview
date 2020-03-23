@@ -5,11 +5,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class RequestCompilationException extends Exception {
     private String request;
 
-    public RequestCompilationException(String message, String request) {
+    public RequestCompilationException(@Nullable String message, String request) {
         this(message, request, null);
     }
 
-    public RequestCompilationException(String message, String request, @Nullable Throwable cause) {
+    public RequestCompilationException(@Nullable String message, String request, @Nullable Throwable cause) {
         super(message, cause);
         this.request = request;
     }

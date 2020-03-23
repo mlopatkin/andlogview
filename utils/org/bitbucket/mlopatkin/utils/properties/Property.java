@@ -16,10 +16,12 @@
 
 package org.bitbucket.mlopatkin.utils.properties;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Properties;
 
 class Property<T> {
-    private T value;
+    private @Nullable T value;
     private final Class<T> type;
     private final Parser<T> parser;
 
@@ -28,11 +30,11 @@ class Property<T> {
         this.parser = parser;
     }
 
-    T getValue() {
+    @Nullable T getValue() {
         return value;
     }
 
-    void setValue(T value) {
+    void setValue(@Nullable T value) {
         if (value != null && !type.isInstance(value)) {
             throw new ClassCastException("Incompatible property type");
         }
@@ -42,7 +44,7 @@ class Property<T> {
 
     @Override
     public String toString() {
-        if (getParser() == null) {
+        if (getParser() == null || value == null) {
             return "property{" + value + "}:" + type.getName();
         } else {
             return "property{" + getParser().write(value) + "}:" + type.getName();
@@ -68,7 +70,10 @@ class Property<T> {
     }
 
     public void write(String key, Properties outputProperties) {
-        outputProperties.setProperty(key, getParser().write(getValue()));
+        T value = getValue();
+        if (value != null) {
+            outputProperties.setProperty(key, getParser().write(value));
+        }
     }
 
     /**

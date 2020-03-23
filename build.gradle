@@ -47,6 +47,7 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    annotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
 
     errorprone 'com.google.errorprone:error_prone_core:2.3.1'
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
@@ -104,7 +105,13 @@ idea.module.generatedSourceDirs += file(metadataBuildDir)
 // Treat warnings as errors
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation' << '-Werror'
-    options.errorprone.errorproneArgs.addAll('-Xep:JavaLangClash:OFF')
+    options.errorprone {
+        option('NullAway:AnnotatedPackages', 'org.bitbucket.mlopatkin')
+        option('NullAway:AssertsEnabled', 'true')
+        option('NullAway:ExcludedClassAnnotations', 'javax.annotation.Generated')
+        option('NullAway:ExcludedFieldAnnotations', 'org.checkerframework.checker.nullness.qual.MonotonicNonNull')
+        errorproneArgs.addAll('-Xep:JavaLangClash:OFF', '-Xep:NullAway:ERROR')
+    }
 }
 
 // Configure distribution (archive creation).

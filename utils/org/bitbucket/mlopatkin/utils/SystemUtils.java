@@ -38,6 +38,7 @@ import java.io.File;
  * @version $Id: SystemUtils.java 1436770 2013-01-22 07:09:45Z ggregory $
  * @since 1.0
  */
+@SuppressWarnings("NullAway")
 public class SystemUtils {
     /**
      * The prefix String for all Windows OS.

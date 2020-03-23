@@ -5,8 +5,6 @@
 // Changes from the original implementation - moved to org.bitbucket.mlopatkin.utils.events package
 package org.bitbucket.mlopatkin.utils.events;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +44,7 @@ public class ObserverList<E> implements Iterable<E> {
         void rewind();
     }
 
-    public final List<@Nullable E> mObservers = new ArrayList<>();
+    public final List<E> mObservers = new ArrayList<>();
     private int mIterationDepth = 0;
     private int mCount = 0;
 

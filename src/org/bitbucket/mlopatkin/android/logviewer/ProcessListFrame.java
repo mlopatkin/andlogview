@@ -53,6 +53,7 @@ import javax.swing.table.TableRowSorter;
 /**
  * Displays list of available processes and their pids.
  */
+@SuppressWarnings("NullAway")
 public class ProcessListFrame extends JFrame {
     private JTable table;
     private JFrame owner;

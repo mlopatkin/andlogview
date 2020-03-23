@@ -66,8 +66,9 @@ class FilteringModesPanel extends JPanel implements ChangeListener {
     }
 
     public void setSelectedMode(FilteringMode mode) {
-        assert mode != null;
-        buttons.get(mode).setSelected(true);
+        JRadioButton button = buttons.get(mode);
+        assert button != null;
+        button.setSelected(true);
         notifyListener(mode);
     }
 

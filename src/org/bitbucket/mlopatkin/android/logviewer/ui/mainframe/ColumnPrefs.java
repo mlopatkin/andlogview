@@ -59,6 +59,9 @@ class ColumnPrefs implements ColumnTogglesModel {
             @Nullable SerializableBase data) throws InvalidJsonContentException {
         this(storage, storageClient);
         checkJsonPrecondition(data != null, "Missing columns property");
+        // NullAway is too stupid to infer that data == null causes checkJsonPrecondition to throw.
+        // noinspection ConstantConditions
+        assert data != null;
         visibleColumns = new HashSet<>(checkVisibleColumns(data.visible));
         columnOrder = new UserColumnOrder(checkOrder(data.order), this::commit);
     }

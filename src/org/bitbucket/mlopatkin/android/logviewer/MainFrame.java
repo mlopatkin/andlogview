@@ -111,6 +111,7 @@ public class MainFrame extends JFrame {
     private JLabel sourceStatusLabel;
     private final MainFrameDependencies dependencies;
 
+    @SuppressWarnings("NullAway")
     public MainFrame(AppGlobals appGlobals) {
         dependencies = DaggerMainFrameDependencies.builder()
                 .mainFrameModule(new MainFrameModule(this))

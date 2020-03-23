@@ -18,10 +18,10 @@ package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
 import com.android.ddmlib.IDevice;
 import com.android.sdklib.AndroidVersion;
 import com.google.common.io.CharStreams;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
@@ -46,6 +46,8 @@ class AdbPidToProcessConverter {
     private final ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
     private final IDevice device;
     private final String psCmdline;
+    @GuardedBy("this")
+    private @Nullable Future<?> result;
 
     private final ConcurrentHashMap<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
         @Override
@@ -70,8 +72,6 @@ class AdbPidToProcessConverter {
     public Map<Integer, String> getMap() {
         return processMap;
     }
-
-    private volatile @MonotonicNonNull Future<?> result;
 
     private synchronized void scheduleUpdate() {
         if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {

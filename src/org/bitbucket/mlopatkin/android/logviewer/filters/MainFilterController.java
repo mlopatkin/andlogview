@@ -121,8 +121,7 @@ public class MainFilterController implements FilterCreator {
             case WINDOW:
                 return indexFilterCollection;
         }
-        assert false;
-        return null;
+        throw new IllegalArgumentException("Filter has invalid mode " + filter.getMode());
     }
 
     /**

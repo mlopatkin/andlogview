@@ -28,7 +28,7 @@ public class PropertyBuilder<T> implements IPropertyBuilder<T> {
         this.type = type;
     }
 
-    public PropertyBuilder<T> defaultVal(T value) {
+    public PropertyBuilder<T> defaultVal(@Nullable T value) {
         defaultValue = value;
         return this;
     }

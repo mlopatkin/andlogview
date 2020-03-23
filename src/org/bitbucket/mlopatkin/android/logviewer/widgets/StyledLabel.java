@@ -36,6 +36,8 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
+// This is an old-style code, I'll fix issues eventually.
+@SuppressWarnings("NullAway")
 public class StyledLabel extends JTextPane {
     public StyledLabel() {
         setEditorKit(new WrapEditorKit());

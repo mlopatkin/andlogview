@@ -47,6 +47,7 @@ public class ConfigurationMap implements Configuration {
      * @return
      */
     @Override
+    @SuppressWarnings("NullAway")  // Properties are too hard. Some are nullable and some aren't.
     public <T> T get(String key) {
         Property<T> p = getPropertyOrThrow(key);
         return p.getValue();

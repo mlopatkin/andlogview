@@ -88,6 +88,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     @Override
     public synchronized void pushRecord(final LogRecord record) {
         waitForListener();
+        assert listener != null;
         listener.addRecord(record);
     }
 

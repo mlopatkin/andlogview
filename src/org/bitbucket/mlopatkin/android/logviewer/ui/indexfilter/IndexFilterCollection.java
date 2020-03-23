@@ -49,7 +49,9 @@ public class IndexFilterCollection implements FilterCollection<Predicate<LogReco
 
     @Override
     public void setFilterEnabled(FilteringMode mode, Predicate<LogRecord> filter, boolean enabled) {
-        controllerMap.get(filter).setEnabled(enabled);
+        IndexFilterController filterController = controllerMap.get(filter);
+        assert filterController != null;
+        filterController.setEnabled(enabled);
     }
 
     @Override

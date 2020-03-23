@@ -19,7 +19,7 @@ package org.bitbucket.mlopatkin.utils.properties;
 import java.util.EnumMap;
 import java.util.Properties;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "NullAway"})
 class EnumMapProperty<K extends Enum<K>, V> extends Property<EnumMap> {
     private final Parser<V> valueParser;
     private final Class<K> keyType;
