@@ -25,9 +25,17 @@ import javax.swing.JComponent;
 
 class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
     private final ObservableAction bookmarkAction = new ObservableAction();
+    private static final int MAX_HEADER_LENGTH = 30;
+    private static final int TAIL_LENGTH = 5;
+    private static final char ELLIPSIS = '\u2026';  // …
 
     public TablePopupMenuViewImpl(JComponent owner, int x, int y) {
         super(owner, x, y);
+    }
+
+    @Override
+    public void setHeader(String columnName, String headerText) {
+        popupMenu.add(columnName + ": " + cutMiddle(headerText)).setEnabled(false);
     }
 
     @Override
@@ -39,5 +47,18 @@ class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenu
         }
         popupMenu.add(bookmarkAction);
         return bookmarkAction.asObservable();
+    }
+
+    private static String cutMiddle(String header) {
+        if (header.length() <= MAX_HEADER_LENGTH) {
+            return header;
+        }
+        int prefixLength = MAX_HEADER_LENGTH - TAIL_LENGTH - 1; // one symbol for ellipsis
+        int suffixStart = header.length() - TAIL_LENGTH;
+        StringBuilder result = new StringBuilder(MAX_HEADER_LENGTH);
+        result.append(header, 0, prefixLength);
+        result.append(ELLIPSIS);
+        result.append(header, suffixStart, header.length());
+        return result.toString();
     }
 }

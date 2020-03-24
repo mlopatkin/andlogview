@@ -44,11 +44,18 @@ public class PopupMenuViewImpl implements PopupMenuPresenter.PopupMenuView {
     @Override
     public void setCopyActionEnabled(boolean enabled) {
         copyAction.setEnabled(enabled);
+        if (!isEmpty()) {
+            popupMenu.addSeparator();
+        }
         popupMenu.add(copyAction);
     }
 
     @Override
     public void show() {
         popupMenu.show(owner, x, y);
+    }
+
+    protected boolean isEmpty() {
+        return popupMenu.getComponentCount() == 0;
     }
 }

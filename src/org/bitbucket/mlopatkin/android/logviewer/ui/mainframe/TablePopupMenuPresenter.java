@@ -16,6 +16,8 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
@@ -33,6 +35,7 @@ import javax.inject.Inject;
  */
 class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter.TablePopupMenuView> {
     public interface TablePopupMenuView extends PopupMenuPresenter.PopupMenuView {
+        void setHeader(String columnName, String headerText);
         Observable<Runnable> setBookmarkAction(boolean enabled, String title);
     }
 
@@ -46,8 +49,16 @@ class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter
 
     @Override
     protected void configureMenu(TablePopupMenuView view, Column c, @Nullable TableRow row, List<TableRow> selection) {
+        setUpHeader(view, c, row);
         super.configureMenu(view, c, row, selection);
         setUpBookmarkAction(view, selection);
+    }
+
+    private void setUpHeader(TablePopupMenuView view, Column c, @Nullable TableRow row) {
+        if (row == null || c == Column.TIME || c == Column.INDEX) {
+            return;
+        }
+        view.setHeader(ColumnData.getColumnTitleForHeader(c), ColumnData.getColumnValueForHeader(c, row));
     }
 
     private void setUpBookmarkAction(TablePopupMenuView menuView, List<TableRow> selectedRows) {
@@ -76,4 +87,25 @@ class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter
     private void removeFromBookmarks(TableRow row) {
         bookmarkModel.removeRecord(row.getRecord());
     }
+
+    /**
+     * Helper class that defines column names and how to format data for them in popup menu header.
+     */
+    @VisibleForTesting
+    static class ColumnData {
+        public static String getColumnValueForHeader(Column column, TableRow row) {
+            if (column == Column.PRIORITY) {
+                return String.valueOf(Column.PRIORITY.getValue(row.getRowIndex(), row.getRecord()));
+            }
+            return column.getStrValue(row.getRowIndex(), row.getRecord());
+        }
+
+        public static String getColumnTitleForHeader(Column column) {
+            if (column == Column.MESSAGE) {
+                return "msg";
+            }
+            return column.getColumnName();
+        }
+    }
+
 }

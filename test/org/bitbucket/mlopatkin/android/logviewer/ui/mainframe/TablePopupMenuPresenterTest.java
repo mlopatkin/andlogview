@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
@@ -25,9 +24,12 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
 import org.bitbucket.mlopatkin.utils.events.Subject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +51,20 @@ public class TablePopupMenuPresenterTest {
         MockitoAnnotations.initMocks(this);
 
         when(popupMenuView.setBookmarkAction(anyBoolean(), any())).then(invocation -> bookmarkAction.asObservable());
+    }
+
+
+    @Test
+    public void menuOrderTest() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        InOrder inOrder = Mockito.inOrder(popupMenuView);
+        inOrder.verify(popupMenuView).setHeader(any(), any());
+        inOrder.verify(popupMenuView).setCopyActionEnabled(anyBoolean());
+        inOrder.verify(popupMenuView).setBookmarkAction(anyBoolean(), any());
+        inOrder.verify(popupMenuView).show();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -137,23 +153,31 @@ public class TablePopupMenuPresenterTest {
 
         triggerBookmarkAction();
 
-        assertTrue(bookmarkModel.containsRecord(TestData.RECORD1));
+        assertTrue(bookmarkModel.containsRecord(RECORD1));
     }
 
     @Test
     public void bookmarkActionRemovesRowFromBookmarksIfAlreadyBookmarked() {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
-        bookmarkModel.addRecord(TestData.RECORD1);
+        bookmarkModel.addRecord(RECORD1);
 
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
         triggerBookmarkAction();
 
-        assertFalse(bookmarkModel.containsRecord(TestData.RECORD1));
+        assertFalse(bookmarkModel.containsRecord(RECORD1));
+    }
+
+    @Test
+    public void headerIsNotShownIfClickedOnNoRow() {
+        TablePopupMenuPresenter presenter = createPresenter();
+        presenter.showContextMenu(popupMenuView, Column.PID, null);
+
+        verify(popupMenuView, never()).setHeader(any(), any());
     }
 
     private static TableRow makeRow(int index) {
-        return new TableRow(index, TestData.RECORD1);
+        return new TableRow(index, RECORD1);
     }
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
