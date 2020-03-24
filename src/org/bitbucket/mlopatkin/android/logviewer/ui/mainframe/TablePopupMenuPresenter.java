@@ -16,10 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
-import com.google.common.collect.ImmutableList;
-
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.utils.events.Observable;
@@ -32,31 +31,23 @@ import javax.inject.Inject;
 /**
  * Presenter for PopupMenu of the main Log Table.
  */
-class TablePopupMenuPresenter {
-    public interface TablePopupMenuView {
-        void setCopyActionEnabled(boolean enabled);
-
+class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter.TablePopupMenuView> {
+    public interface TablePopupMenuView extends PopupMenuPresenter.PopupMenuView {
         Observable<Runnable> setBookmarkAction(boolean enabled, String title);
-
-        void show();
     }
 
-    private final SelectedRows selectedRows;
     private final BookmarkModel bookmarkModel;
 
     @Inject
     public TablePopupMenuPresenter(SelectedRows selectedRows, BookmarkModel bookmarkModel) {
-        this.selectedRows = selectedRows;
+        super(selectedRows);
         this.bookmarkModel = bookmarkModel;
     }
 
-    public void showContextMenu(TablePopupMenuView menuView, Column c, @Nullable TableRow row) {
-        ImmutableList<TableRow> selectedRows = this.selectedRows.getSelectedRows();
-        assert (row == null && selectedRows.isEmpty()) || (row != null && this.selectedRows.isRowSelected(
-                row)) : "Selection wasn't adjusted";
-        menuView.setCopyActionEnabled(!selectedRows.isEmpty());
-        setUpBookmarkAction(menuView, selectedRows);
-        menuView.show();
+    @Override
+    protected void configureMenu(TablePopupMenuView view, Column c, @Nullable TableRow row, List<TableRow> selection) {
+        super.configureMenu(view, c, row, selection);
+        setUpBookmarkAction(view, selection);
     }
 
     private void setUpBookmarkAction(TablePopupMenuView menuView, List<TableRow> selectedRows) {

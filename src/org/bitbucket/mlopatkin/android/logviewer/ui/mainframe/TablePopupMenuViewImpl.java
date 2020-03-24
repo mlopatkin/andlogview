@@ -16,35 +16,18 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuViewImpl;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
 
-class TablePopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
-    private final JPopupMenu popupMenu = new JPopupMenu();
-    private final JComponent owner;
-    private final int x;
-    private final int y;
-
-    private final Action copyAction;
+class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
     private final ObservableAction bookmarkAction = new ObservableAction();
 
     public TablePopupMenuViewImpl(JComponent owner, int x, int y) {
-        this.owner = owner;
-        this.x = x;
-        this.y = y;
-
-        copyAction = UiHelper.createActionWrapper(owner, "copy", "Copy", "control C");
-    }
-
-    @Override
-    public void setCopyActionEnabled(boolean enabled) {
-        copyAction.setEnabled(enabled);
-        popupMenu.add(copyAction);
+        super(owner, x, y);
     }
 
     @Override
@@ -56,10 +39,5 @@ class TablePopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuVi
         }
         popupMenu.add(bookmarkAction);
         return bookmarkAction.asObservable();
-    }
-
-    @Override
-    public void show() {
-        popupMenu.show(owner, x, y);
     }
 }
