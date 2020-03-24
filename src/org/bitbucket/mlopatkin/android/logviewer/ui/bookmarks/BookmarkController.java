@@ -17,11 +17,8 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
 
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 
@@ -52,18 +49,19 @@ public class BookmarkController extends AbstractIndexController implements Index
 
     @Inject
     public BookmarkController(MainFrameDependencies mainFrameDependencies, BookmarkModel bookmarksModel,
-            BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) JTable mainLogTable,
-            BookmarkFramePopupMenu.Factory popupMenuFactory) {
+            BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) JTable mainLogTable) {
         super(mainLogTable);
         this.mainLogTable = mainLogTable;
 
         bookmarksModel.asObservable().addObserver(bookmarkChangeObserver);
 
-        IndexFrameComponent indexFrameComponent =
-                DaggerIndexFrameComponent.builder()
-                        .mainFrameDependencies(mainFrameDependencies)
-                        .indexFrameModule(new IndexFrameModule(this, popupMenuFactory, logModelFilter))
-                        .build();
+        BookmarksDi.BookmarksFrameComponent.Builder builder = DaggerBookmarksDi_BookmarksFrameComponent.builder();
+        builder.mainFrameDependencies(mainFrameDependencies);
+        builder.setIndexController(this);
+        builder.setIndexFilter(logModelFilter);
+
+        BookmarksDi.BookmarksFrameComponent indexFrameComponent = builder.build();
+
         indexFrame = indexFrameComponent.createFrame();
         indexFrame.setTitle("Bookmarks");
     }

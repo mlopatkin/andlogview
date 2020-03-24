@@ -18,10 +18,9 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameComponent;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
+import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameDi;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 
@@ -43,12 +42,11 @@ public class IndexFilterController extends AbstractIndexController {
         super(mainTable);
         this.owner = owner;
         this.filter = filter;
-        IndexFrameComponent component =
-                DaggerIndexFrameComponent.builder()
-                        .mainFrameDependencies(dependencies)
-                        .indexFrameModule(new IndexFrameModule(this, null, new IndexFilter(mainFilter, filter)))
-                        .build();
-
+        IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
+                .mainFrameDependencies(dependencies)
+                .setIndexController(this)
+                .setIndexFilter(new IndexFilter(mainFilter, filter))
+                .build();
         frame = component.createFrame();
     }
 

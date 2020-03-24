@@ -19,11 +19,8 @@ import org.bitbucket.mlopatkin.android.logviewer.LogRecordsTransferHandler;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -37,28 +34,24 @@ import java.awt.event.WindowListener;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
+import static org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameDi.FOR_INDEX_FRAME;
+
 @IndexFrameScoped
-public class IndexFrame extends JFrame implements ItemsUpdater {
+public class IndexFrame extends JFrame {
     private final DecoratingRendererTable indexedRecordsTable;
     private final IndexController controller;
-    private TablePopupMenu popupMenu = new TablePopupMenu();
-    private Action acCopy;
     private Component owner;
     private boolean isFirstShow = true;
 
     @Inject
     public IndexFrame(DialogFactory dialogFactory, LogRecordTableColumnModel columnsModel,
-            @Named(IndexFrameComponent.FOR_INDEX_FRAME) JTable logTable, IndexController controller,
-            @com.android.annotations.Nullable @Nullable PopupBuilder popupBuilder) {
-        // Note for PopupBuilder: dagger doesn't understand type annotations so parameter annotation has to be added
-        // too.
+            @Named(FOR_INDEX_FRAME) JTable logTable, IndexController controller) {
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;
@@ -67,12 +60,7 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         initialize();
         indexedRecordsTable.setColumnModel(columnsModel);
         indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
-        acCopy = UiHelper.createActionWrapper(indexedRecordsTable, "copy", "Copy", "control C");
-        popupMenu.add(acCopy);
-        popupMenu.addItemsUpdater(this);
-        if (popupBuilder != null) {
-            popupMenu = popupBuilder.appendPopupMenuItems(indexedRecordsTable, popupMenu);
-        }
+
         addWindowListener(closingListener);
     }
 
@@ -89,7 +77,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
         indexedRecordsTable.setFillsViewportHeight(true);
         indexedRecordsTable.setShowGrid(false);
         UiHelper.addDoubleClickListener(indexedRecordsTable, new LineDoubleClickListener());
-        UiHelper.addPopupMenu(indexedRecordsTable, popupMenu);
         scrollPane.setViewportView(indexedRecordsTable);
 
         setupKeys();
@@ -131,11 +118,6 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
                 }
             }
         });
-    }
-
-    @Override
-    public void updateItemsState(JTable source) {
-        acCopy.setEnabled(source.getSelectedRowCount() > 0);
     }
 
     @Override

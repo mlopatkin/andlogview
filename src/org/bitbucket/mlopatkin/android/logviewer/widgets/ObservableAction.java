@@ -23,6 +23,7 @@ import org.bitbucket.mlopatkin.utils.events.Subject;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 
 /**
  * {@link Observable} Swing Action. Something can subscribe to Action events through Observable without the dependency
@@ -30,6 +31,16 @@ import javax.swing.AbstractAction;
  */
 public class ObservableAction extends AbstractAction {
     private final Subject<Runnable> observers = new Subject<>();
+
+    public ObservableAction() {}
+
+    public ObservableAction(String name) {
+        super(name);
+    }
+
+    public ObservableAction(String name, Icon icon) {
+        super(name, icon);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
