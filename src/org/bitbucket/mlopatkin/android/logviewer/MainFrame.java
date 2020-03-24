@@ -200,8 +200,6 @@ public class MainFrame extends JFrame {
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
 
-        dependencies.getPopupMenuHandlerFactory().attachMenuHandle(logElements);
-
         JScrollPane scrollPane = new JScrollPane(logElements);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 

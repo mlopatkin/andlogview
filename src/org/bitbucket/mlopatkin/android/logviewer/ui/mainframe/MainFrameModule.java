@@ -20,6 +20,7 @@ import dagger.Module;
 import dagger.Provides;
 
 import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
+import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
@@ -58,9 +59,9 @@ public class MainFrameModule {
     @Provides
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
-    JTable getMainLogTable(
-            LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter) {
-        JTable logTable = DaggerMainLogTableComponent.factory().create(model, filter).getLogTable();
+    JTable getMainLogTable(LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter,
+            BookmarkModel bookmarkModel) {
+        JTable logTable = DaggerMainLogTableComponent.factory().create(model, filter, bookmarkModel).getLogTable();
         // TODO(mlopatkin) Replace this cast with injection
         ((DecoratingRendererTable) logTable).addDecorator(bookmarkHighlighter);
         return logTable;

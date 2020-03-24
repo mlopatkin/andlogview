@@ -76,6 +76,10 @@ public class LogRecordTableModel extends AbstractTableModel implements BatchReco
         fireTableRowsInserted(pos, pos);
     }
 
+    public TableRow getRow(int row) {
+        return new TableRow(row, getRowData(row));
+    }
+
     public LogRecord getRowData(int row) {
         return records.get(row);
     }

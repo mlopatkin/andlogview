@@ -49,8 +49,6 @@ public interface MainFrameDependencies {
 
     DialogFactory getDialogFactory();
 
-    LogRecordPopupMenuHandler.Factory getPopupMenuHandlerFactory();
-
     BookmarkModel getBookmarkModel();
 
     BookmarkController getBookmarkController();

@@ -16,16 +16,34 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
+import dagger.Binds;
+import dagger.BindsOptionalOf;
 import dagger.Module;
 import dagger.Provides;
 
 import javax.swing.JTable;
 
-@Module
+@Module(includes = LogTableModule.Bindings.class)
 public class LogTableModule {
     @LogTableScoped
     @Provides
-    JTable buildLogTable(LogRecordTableModel tableModel, LogModelFilter modelFilter) {
-        return LogTable.create(tableModel, modelFilter);
+    JTable initializeLogTable(LogTableInitializer tableFactory) {
+        return tableFactory.completeInitialization();
+    }
+
+    @LogTableScoped
+    @Provides
+    LogTable createBaseLogTable(LogRecordTableModel model, LogModelFilter modelFilter) {
+        return LogTable.create(model, modelFilter);
+    }
+
+    @Module
+    abstract static class Bindings {
+        @Binds
+        @LogTableScoped
+        abstract SelectedRows bindSelectedRows(SelectedRowsImpl impl);
+
+        @BindsOptionalOf
+        abstract PopupMenu.Delegate bindPopupMenuDelegate();
     }
 }
