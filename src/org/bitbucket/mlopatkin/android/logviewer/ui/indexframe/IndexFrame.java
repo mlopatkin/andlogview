@@ -82,10 +82,6 @@ public class IndexFrame extends JFrame {
         setupKeys();
     }
 
-    JTable getTable() {
-        return indexedRecordsTable;
-    }
-
     private class LineDoubleClickListener implements DoubleClickListener {
         @Override
         public void mouseClicked(MouseEvent e) {

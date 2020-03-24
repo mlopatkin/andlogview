@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.swing.JTable;
@@ -50,12 +49,12 @@ public class PopupMenu {
         void showMenu(JTable table, int x, int y, Column column, @Nullable TableRow row);
     }
 
-    private final @Nullable Delegate delegate;
+    private final Delegate delegate;
     private final SelectionAdjuster selectionAdjuster;
 
     @Inject
-    public PopupMenu(Optional<Delegate> delegate, SelectionAdjuster selectionAdjuster) {
-        this.delegate = delegate.orElse(null);
+    public PopupMenu(Delegate delegate, SelectionAdjuster selectionAdjuster) {
+        this.delegate = delegate;
         this.selectionAdjuster = selectionAdjuster;
     }
 
@@ -84,9 +83,7 @@ public class PopupMenu {
         Column column = getColumnAt(table, e.getPoint());
         TableRow tableRow = getRowAt(table, e.getPoint());
         selectionAdjuster.onPopupMenuShown(tableRow);
-        if (delegate != null) {
-            delegate.showMenu(table, e.getX(), e.getY(), column, tableRow);
-        }
+        delegate.showMenu(table, e.getX(), e.getY(), column, tableRow);
     }
 
     private Column getColumnAt(LogTable table, Point p) {

@@ -17,7 +17,6 @@
 package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 
 import dagger.Binds;
-import dagger.BindsOptionalOf;
 import dagger.Module;
 import dagger.Provides;
 
@@ -42,8 +41,5 @@ public class LogTableModule {
         @Binds
         @LogTableScoped
         abstract SelectedRows bindSelectedRows(SelectedRowsImpl impl);
-
-        @BindsOptionalOf
-        abstract PopupMenu.Delegate bindPopupMenuDelegate();
     }
 }
