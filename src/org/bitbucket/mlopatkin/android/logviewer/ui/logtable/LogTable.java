@@ -26,7 +26,7 @@ import javax.swing.RowFilter;
  * The ultimate log displaying table.
  */
 @LogTableScoped
-public class LogTable extends DecoratingRendererTable implements LogModelFilter.Observer {
+class LogTable extends DecoratingRendererTable implements LogModelFilter.Observer {
     private final LogModelFilter filterModel;
     private final SortingDisableSorter<LogRecordTableModel> sorter;
 

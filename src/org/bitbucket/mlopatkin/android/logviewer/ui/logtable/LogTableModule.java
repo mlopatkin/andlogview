@@ -19,11 +19,13 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.swing.JTable;
+
 @Module
 public class LogTableModule {
     @LogTableScoped
     @Provides
-    LogTable buildLogTable(LogRecordTableModel tableModel, LogModelFilter modelFilter) {
+    JTable buildLogTable(LogRecordTableModel tableModel, LogModelFilter modelFilter) {
         return LogTable.create(tableModel, modelFilter);
     }
 }

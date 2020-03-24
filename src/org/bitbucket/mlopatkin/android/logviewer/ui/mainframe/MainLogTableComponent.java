@@ -21,14 +21,15 @@ import dagger.Component;
 
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableModule;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped;
+
+import javax.swing.JTable;
 
 @LogTableScoped
 @Component(modules = LogTableModule.class)
 public interface MainLogTableComponent {
-    LogTable getLogTable();
+    JTable getLogTable();
 
     @Component.Factory
     interface Factory {

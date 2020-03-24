@@ -22,16 +22,16 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.JTable;
 
 @MainFrameScoped
 public class BookmarkController extends AbstractIndexController implements IndexController {
-    private final LogTable mainLogTable;
+    private final JTable mainLogTable;
 
     private final IndexFrame indexFrame;
 
@@ -52,7 +52,7 @@ public class BookmarkController extends AbstractIndexController implements Index
 
     @Inject
     public BookmarkController(MainFrameDependencies mainFrameDependencies, BookmarkModel bookmarksModel,
-            BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) LogTable mainLogTable,
+            BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) JTable mainLogTable,
             BookmarkFramePopupMenu.Factory popupMenuFactory) {
         super(mainLogTable);
         this.mainLogTable = mainLogTable;

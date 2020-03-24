@@ -40,12 +40,12 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.device.SelectDeviceDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableHeaderPopupMenuController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.BufferFilterMenu;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DaggerMainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -79,6 +79,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -102,7 +103,7 @@ public class MainFrame extends JFrame {
     private ProcessListFrame processListFrame;
 
     private BufferFilterMenu bufferMenu;
-    private LogTable logElements;
+    private JTable logElements;
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
@@ -206,7 +207,8 @@ public class MainFrame extends JFrame {
 
         scrollController = new TableScrollController(logElements);
 
-        searchController = new SearchController(logElements, recordsModel);
+        // TODO(mlopatkin) Replace this cast with injection
+        searchController = new SearchController((DecoratingRendererTable) logElements, recordsModel);
         listener = new BufferedListener<>(recordsModel, scrollController);
 
         controlsPanel = new JPanel();

@@ -18,7 +18,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu.ItemsUpdater;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
@@ -60,7 +59,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
     private JMenuItem itemAddToBookmarks = new JMenuItem(acAddToBookmarks);
     private JMenuItem itemRemoveBookmarks = new JMenuItem(acRemoveFromBookmarks);
 
-    private LogRecordPopupMenuHandler(LogTable table, LogRecordTableModel model, BookmarkModel bookmarkModel) {
+    private LogRecordPopupMenuHandler(JTable table, LogRecordTableModel model, BookmarkModel bookmarkModel) {
         this.table = table;
         this.model = model;
         this.bookmarkModel = bookmarkModel;
@@ -135,7 +134,7 @@ public class LogRecordPopupMenuHandler implements ItemsUpdater {
             this.bookmarkModel = bookmarkModel;
         }
 
-        public void attachMenuHandle(LogTable table) {
+        public void attachMenuHandle(JTable table) {
             LogRecordPopupMenuHandler handler = new LogRecordPopupMenuHandler(table, tableModel, bookmarkModel);
             handler.setUpMenu();
         }

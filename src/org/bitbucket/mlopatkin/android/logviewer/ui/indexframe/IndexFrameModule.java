@@ -26,12 +26,12 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
 
 import javax.inject.Named;
+import javax.swing.JTable;
 
 @Module
 public class IndexFrameModule {
@@ -56,7 +56,7 @@ public class IndexFrameModule {
     @Provides
     @IndexFrameScoped
     @Named(IndexFrameComponent.FOR_INDEX_FRAME)
-    LogTable getIndexWindowTable(LogRecordTableModel model) {
+    JTable getIndexWindowTable(LogRecordTableModel model) {
         return DaggerIndexLogTableComponent.factory().create(model, logModelFilter).getLogTable();
     }
 

@@ -23,13 +23,13 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameComponent;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameModule;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 
 import java.awt.EventQueue;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
+import javax.swing.JTable;
 
 public class IndexFilterController extends AbstractIndexController {
     private final IndexFrame frame;
@@ -38,7 +38,7 @@ public class IndexFilterController extends AbstractIndexController {
 
     private boolean enabled = true;
 
-    IndexFilterController(IndexFilterCollection owner, MainFrameDependencies dependencies, LogTable mainTable,
+    IndexFilterController(IndexFilterCollection owner, MainFrameDependencies dependencies, JTable mainTable,
             LogModelFilter mainFilter, Predicate<LogRecord> filter) {
         super(mainTable);
         this.owner = owner;

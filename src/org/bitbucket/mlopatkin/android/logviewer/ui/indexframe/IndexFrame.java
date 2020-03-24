@@ -17,7 +17,6 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
 
 import org.bitbucket.mlopatkin.android.logviewer.LogRecordsTransferHandler;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.TablePopupMenu;
@@ -56,14 +55,15 @@ public class IndexFrame extends JFrame implements ItemsUpdater {
 
     @Inject
     public IndexFrame(DialogFactory dialogFactory, LogRecordTableColumnModel columnsModel,
-            @Named(IndexFrameComponent.FOR_INDEX_FRAME) LogTable logTable, IndexController controller,
+            @Named(IndexFrameComponent.FOR_INDEX_FRAME) JTable logTable, IndexController controller,
             @com.android.annotations.Nullable @Nullable PopupBuilder popupBuilder) {
         // Note for PopupBuilder: dagger doesn't understand type annotations so parameter annotation has to be added
         // too.
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;
-        this.indexedRecordsTable = logTable;
+        // TODO(mlopatkin) Replace this cast with injection
+        this.indexedRecordsTable = (DecoratingRendererTable) logTable;
         initialize();
         indexedRecordsTable.setColumnModel(columnsModel);
         indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());

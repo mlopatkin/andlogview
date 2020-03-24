@@ -25,10 +25,11 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
+import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 
 import javax.inject.Named;
 import javax.swing.JFrame;
+import javax.swing.JTable;
 
 @Module(includes = {FilterModule.class, MainFramePrefsModule.class})
 public class MainFrameModule {
@@ -57,10 +58,11 @@ public class MainFrameModule {
     @Provides
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
-    LogTable getMainLogTable(
+    JTable getMainLogTable(
             LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter) {
-        LogTable logTable = DaggerMainLogTableComponent.factory().create(model, filter).getLogTable();
-        logTable.addDecorator(bookmarkHighlighter);
+        JTable logTable = DaggerMainLogTableComponent.factory().create(model, filter).getLogTable();
+        // TODO(mlopatkin) Replace this cast with injection
+        ((DecoratingRendererTable) logTable).addDecorator(bookmarkHighlighter);
         return logTable;
     }
 }

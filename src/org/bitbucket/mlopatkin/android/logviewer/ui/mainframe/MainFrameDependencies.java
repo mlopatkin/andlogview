@@ -26,9 +26,9 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTable;
 
 import javax.inject.Named;
+import javax.swing.JTable;
 
 /**
  * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
@@ -39,7 +39,7 @@ public interface MainFrameDependencies {
     String FOR_MAIN_FRAME = "Main frame";
 
     @Named(FOR_MAIN_FRAME)
-    LogTable getLogTable();
+    JTable getLogTable();
 
     FilterPanel getFilterPanel();
 
