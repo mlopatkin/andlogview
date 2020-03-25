@@ -38,7 +38,7 @@ public class PopupMenuViewImpl implements PopupMenuPresenter.PopupMenuView {
         this.x = x;
         this.y = y;
 
-        copyAction = UiHelper.createActionWrapper(owner, "copy", "Copy", "control C");
+        copyAction = UiHelper.createActionWrapper(owner, "copy", "Copy row", "control C");
     }
 
     @Override
