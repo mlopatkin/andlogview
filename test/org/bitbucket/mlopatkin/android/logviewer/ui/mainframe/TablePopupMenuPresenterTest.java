@@ -152,6 +152,22 @@ public class TablePopupMenuPresenterTest {
         assertFalse(popupMenuView.isHeaderShowing());
     }
 
+    @Test
+    public void headerIsShownIfClickedOnSingleRow() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        assertTrue(popupMenuView.isHeaderShowing());
+    }
+
+    @Test
+    public void headerIsShownIfClickedOnMultipleRows() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(2));
+
+        assertTrue(popupMenuView.isHeaderShowing());
+    }
+
     private static TableRow makeRow(int index) {
         return new TableRow(index, RECORD1);
     }
