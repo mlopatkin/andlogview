@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.FakeTablePopupMenuView.MenuElements;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
 import org.junit.Before;
 import org.junit.Test;
 

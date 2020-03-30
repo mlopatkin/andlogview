@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;

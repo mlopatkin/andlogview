@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
 import com.google.common.collect.ImmutableList;
 

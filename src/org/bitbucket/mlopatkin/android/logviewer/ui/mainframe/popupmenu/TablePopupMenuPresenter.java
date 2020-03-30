@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
@@ -32,7 +32,7 @@ import javax.inject.Inject;
 /**
  * Presenter for PopupMenu of the main Log Table.
  */
-class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter.TablePopupMenuView> {
+public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter.TablePopupMenuView> {
     public interface TablePopupMenuView extends PopupMenuPresenter.PopupMenuView {
         void setHeader(String columnName, String headerText);
 

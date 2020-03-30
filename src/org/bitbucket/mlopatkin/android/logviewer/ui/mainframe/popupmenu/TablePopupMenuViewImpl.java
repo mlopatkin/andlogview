@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuViewImpl;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
@@ -27,7 +27,7 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JComponent;
 
-class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
+public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
     private static final int MAX_HEADER_LENGTH = 30;
     private static final int PREFIX_LENGTH = 5;
     private static final char ELLIPSIS = '\u2026';  // …
