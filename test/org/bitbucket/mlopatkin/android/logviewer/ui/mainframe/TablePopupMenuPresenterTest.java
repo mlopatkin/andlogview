@@ -21,50 +21,32 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
-import org.bitbucket.mlopatkin.utils.events.Subject;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.FakeTablePopupMenuView.MenuElements;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class TablePopupMenuPresenterTest {
-    @Mock
-    TablePopupMenuPresenter.TablePopupMenuView popupMenuView;
+    FakeTablePopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
-
-    Subject<Runnable> bookmarkAction = new Subject<>();
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
-        when(popupMenuView.setBookmarkAction(anyBoolean(), any())).then(invocation -> bookmarkAction.asObservable());
+        popupMenuView = new FakeTablePopupMenuView();
     }
-
 
     @Test
     public void menuOrderTest() {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
-        InOrder inOrder = Mockito.inOrder(popupMenuView);
-        inOrder.verify(popupMenuView).setHeader(any(), any());
-        inOrder.verify(popupMenuView).setCopyActionEnabled(anyBoolean());
-        inOrder.verify(popupMenuView).setBookmarkAction(anyBoolean(), any());
-        inOrder.verify(popupMenuView).show();
-        inOrder.verifyNoMoreInteractions();
+        assertThat(popupMenuView.getMenuElements(),
+                contains(MenuElements.HEADER, MenuElements.COPY_ACTION, MenuElements.BOOKMARK_ACTION));
     }
 
     @Test
@@ -72,7 +54,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter();
 
         presenter.showContextMenu(popupMenuView, Column.PID, null);
-        verify(popupMenuView).show();
+        assertTrue(popupMenuView.isShowing());
     }
 
     @Test
@@ -80,7 +62,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
-        verify(popupMenuView).show();
+        assertTrue(popupMenuView.isShowing());
     }
 
     @Test
@@ -88,7 +70,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(2));
 
-        verify(popupMenuView).show();
+        assertTrue(popupMenuView.isShowing());
     }
 
     @Test
@@ -96,8 +78,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter();
         presenter.showContextMenu(popupMenuView, Column.PID, null);
 
-        verify(popupMenuView).setCopyActionEnabled(false);
-        verify(popupMenuView, never()).setCopyActionEnabled(true);
+        assertFalse(popupMenuView.isCopyActionEnabled());
     }
 
     @Test
@@ -105,8 +86,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
-        verify(popupMenuView).setCopyActionEnabled(true);
-        verify(popupMenuView, never()).setCopyActionEnabled(false);
+        assertTrue(popupMenuView.isCopyActionEnabled());
     }
 
     @Test
@@ -114,8 +94,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(2));
 
-        verify(popupMenuView).setCopyActionEnabled(true);
-        verify(popupMenuView, never()).setCopyActionEnabled(false);
+        assertTrue(popupMenuView.isCopyActionEnabled());
     }
 
 
@@ -124,8 +103,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter();
         presenter.showContextMenu(popupMenuView, Column.PID, null);
 
-        verify(popupMenuView).setBookmarkAction(eq(false), any());
-        verify(popupMenuView, never()).setBookmarkAction(eq(true), any());
+        assertFalse(popupMenuView.isBookmarkActionEnabled());
     }
 
     @Test
@@ -133,8 +111,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
-        verify(popupMenuView).setBookmarkAction(eq(true), any());
-        verify(popupMenuView, never()).setBookmarkAction(eq(false), any());
+        assertTrue(popupMenuView.isBookmarkActionEnabled());
     }
 
     @Test
@@ -142,8 +119,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(2));
 
-        verify(popupMenuView).setBookmarkAction(eq(false), any());
-        verify(popupMenuView, never()).setBookmarkAction(eq(true), any());
+        assertFalse(popupMenuView.isBookmarkActionEnabled());
     }
 
     @Test
@@ -151,7 +127,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
-        triggerBookmarkAction();
+        popupMenuView.triggerBookmarkAction();
 
         assertTrue(bookmarkModel.containsRecord(RECORD1));
     }
@@ -163,7 +139,7 @@ public class TablePopupMenuPresenterTest {
 
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
-        triggerBookmarkAction();
+        popupMenuView.triggerBookmarkAction();
 
         assertFalse(bookmarkModel.containsRecord(RECORD1));
     }
@@ -173,7 +149,7 @@ public class TablePopupMenuPresenterTest {
         TablePopupMenuPresenter presenter = createPresenter();
         presenter.showContextMenu(popupMenuView, Column.PID, null);
 
-        verify(popupMenuView, never()).setHeader(any(), any());
+        assertFalse(popupMenuView.isHeaderShowing());
     }
 
     private static TableRow makeRow(int index) {
@@ -185,9 +161,4 @@ public class TablePopupMenuPresenterTest {
         return new TablePopupMenuPresenter(selectedRows, bookmarkModel);
     }
 
-    private void triggerBookmarkAction() {
-        for (Runnable runnable : bookmarkAction) {
-            runnable.run();
-        }
-    }
 }
