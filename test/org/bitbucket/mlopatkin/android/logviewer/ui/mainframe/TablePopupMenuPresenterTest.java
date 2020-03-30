@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +47,13 @@ public class TablePopupMenuPresenterTest {
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
         assertThat(popupMenuView.getMenuElements(),
-                contains(MenuElements.HEADER, MenuElements.COPY_ACTION, MenuElements.BOOKMARK_ACTION));
+                contains(
+                        MenuElements.HEADER,
+                        MenuElements.COPY_ACTION,
+                        MenuElements.BOOKMARK_ACTION,
+                        MenuElements.QUICK_FILTER_ACTION,
+                        MenuElements.QUICK_FILTER_ACTION,
+                        MenuElements.QUICK_FILTER_ACTION));
     }
 
     @Test
@@ -166,6 +173,31 @@ public class TablePopupMenuPresenterTest {
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(2));
 
         assertTrue(popupMenuView.isHeaderShowing());
+    }
+
+    @Test
+    public void quickFiltersAreAddedForSelectedRow() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+
+        assertEquals(3, popupMenuView.getQuickFilterElementsCount());
+    }
+
+    @Test
+    public void quickFiltersAreNotAddedIfRowIsNotSelected() {
+        TablePopupMenuPresenter presenter = createPresenter();
+        presenter.showContextMenu(popupMenuView, Column.PID, null);
+
+        assertEquals(0, popupMenuView.getQuickFilterElementsCount());
+    }
+
+    @Test
+    public void quickFiltersAreAddedIfMultipleRowsSelected() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        assertEquals(3, popupMenuView.getQuickFilterElementsCount());
     }
 
     private static TableRow makeRow(int index) {

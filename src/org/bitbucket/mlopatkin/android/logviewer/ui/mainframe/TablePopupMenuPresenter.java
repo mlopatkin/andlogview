@@ -16,9 +16,8 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
+import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
@@ -36,7 +35,10 @@ import javax.inject.Inject;
 class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter.TablePopupMenuView> {
     public interface TablePopupMenuView extends PopupMenuPresenter.PopupMenuView {
         void setHeader(String columnName, String headerText);
+
         Observable<Runnable> setBookmarkAction(boolean enabled, String title);
+
+        Observable<Runnable> addQuickFilterAction(boolean enabled, String title);
     }
 
     private final BookmarkModel bookmarkModel;
@@ -52,6 +54,7 @@ class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter
         setUpHeader(view, c, row);
         super.configureMenu(view, c, row, selection);
         setUpBookmarkAction(view, selection);
+        setUpFilterActions(view, c, row);
     }
 
     private void setUpHeader(TablePopupMenuView view, Column c, @Nullable TableRow row) {
@@ -80,6 +83,18 @@ class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter
         }
     }
 
+    private void setUpFilterActions(TablePopupMenuView menuView, Column column, @Nullable TableRow row) {
+        if (row == null || column == Column.TIME || column == Column.INDEX) {
+            return;
+        }
+        for (FilteringMode filteringMode : FilteringMode.values()) {
+            if (filteringMode != FilteringMode.HIGHLIGHT) {
+                menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column));
+            }
+        }
+
+    }
+
     private void addToBookmarks(TableRow row) {
         bookmarkModel.addRecord(row.getRecord());
     }
@@ -91,8 +106,7 @@ class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter
     /**
      * Helper class that defines column names and how to format data for them in popup menu header.
      */
-    @VisibleForTesting
-    static class ColumnData {
+    private static class ColumnData {
         public static String getColumnValueForHeader(Column column, TableRow row) {
             if (column == Column.PRIORITY) {
                 return String.valueOf(Column.PRIORITY.getValue(row.getRowIndex(), row.getRecord()));
@@ -108,4 +122,22 @@ class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPresenter
         }
     }
 
+    /** Helper class that defines titles for quick filter menu items */
+    private static class FilterData {
+        public static String getFilterMenuItemTitle(FilteringMode mode, Column column) {
+            String columnName = ColumnData.getColumnTitleForHeader(column);
+            // This enum is intended to be exhaustive
+            switch (mode) {
+                case SHOW:
+                    return "Show only lines with this " + columnName;
+                case HIDE:
+                    return "Hide lines with this " + columnName;
+                case HIGHLIGHT:
+                    throw new IllegalArgumentException("HIGHLIGHT filter cannot have menu item");
+                case WINDOW:
+                    return "Show index window for lines with this " + columnName;
+            }
+            throw new IllegalArgumentException("Unexpected filtering mode " + mode);
+        }
+    }
 }

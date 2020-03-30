@@ -21,6 +21,9 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.Action;
 import javax.swing.JComponent;
 
@@ -30,6 +33,7 @@ class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenu
     private static final char ELLIPSIS = '\u2026';  // …
 
     private final ObservableAction bookmarkAction = new ObservableAction();
+    private final List<ObservableAction> filterActions = new ArrayList<>();
 
     public TablePopupMenuViewImpl(JComponent owner, int x, int y) {
         super(owner, x, y);
@@ -50,6 +54,18 @@ class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenu
         }
         popupMenu.add(bookmarkAction);
         return bookmarkAction.asObservable();
+    }
+
+    @Override
+    public Observable<Runnable> addQuickFilterAction(boolean enabled, String title) {
+        if (!isEmpty() && filterActions.isEmpty()) {
+            popupMenu.addSeparator();
+        }
+        ObservableAction quickFilterAction = new ObservableAction(title);
+        quickFilterAction.setEnabled(enabled);
+        filterActions.add(quickFilterAction);
+        popupMenu.add(quickFilterAction);
+        return quickFilterAction.asObservable();
     }
 
 }

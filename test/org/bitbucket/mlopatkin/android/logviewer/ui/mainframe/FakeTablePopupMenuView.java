@@ -31,9 +31,11 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
         HEADER,
         COPY_ACTION,
         BOOKMARK_ACTION,
+        QUICK_FILTER_ACTION;
     }
 
     private @Nullable String headerColumn;
+
     private @Nullable String headerText;
 
     private boolean bookmarkActionEnabled;
@@ -43,7 +45,9 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
 
     private boolean isShowing;
 
-    private List<MenuElements> menuElements = new ArrayList<>();
+    private final List<Subject<Runnable>> quickFilterActions = new ArrayList<>();
+
+    private final List<MenuElements> menuElements = new ArrayList<>();
 
     @Override
     public void setHeader(String columnName, String headerText) {
@@ -57,6 +61,15 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
         addMenuElement(MenuElements.BOOKMARK_ACTION);
         bookmarkActionEnabled = enabled;
         return bookmarkAction.asObservable();
+    }
+
+    @Override
+    public Observable<Runnable> addQuickFilterAction(boolean enabled, String title) {
+        // Note that addMenuElement isn't used deliberately because adding multiple actions isn't a error.
+        menuElements.add(MenuElements.QUICK_FILTER_ACTION);
+        Subject<Runnable> action = new Subject<>();
+        quickFilterActions.add(action);
+        return action.asObservable();
     }
 
     @Override
@@ -104,5 +117,23 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
 
     public ImmutableList<MenuElements> getMenuElements() {
         return ImmutableList.copyOf(menuElements);
+    }
+
+    public void triggerQuickFilterAction(int index) {
+        for (Runnable runnable : quickFilterActions.get(index)) {
+            runnable.run();
+        }
+    }
+
+    public int getQuickFilterElementsCount() {
+        return quickFilterActions.size();
+    }
+
+    public @Nullable String getHeaderColumn() {
+        return headerColumn;
+    }
+
+    public @Nullable String getHeaderText() {
+        return headerText;
     }
 }
