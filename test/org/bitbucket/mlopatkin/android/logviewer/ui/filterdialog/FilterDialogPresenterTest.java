@@ -30,8 +30,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
+import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
+import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasApps;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasColor;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMessage;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMode;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPids;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPriority;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasTags;
 import static org.bitbucket.mlopatkin.utils.FutureMatchers.completedWithResult;
 import static org.bitbucket.mlopatkin.utils.FutureMatchers.notCompleted;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -262,7 +273,7 @@ public class FilterDialogPresenterTest {
 
         fakeView.discard();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.empty())));
+        assertThat(promise, completedWithResult(emptyOptional()));
     }
 
     @Test
@@ -273,9 +284,10 @@ public class FilterDialogPresenterTest {
         fakeView.setTagsText("Hello");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)
-                .setTags(Collections.singletonList("Hello"))))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.SHOW)),
+                hasTags(contains("Hello"))
+        ))));
     }
 
     @Test
@@ -286,9 +298,10 @@ public class FilterDialogPresenterTest {
         fakeView.setTagsText("Hello,foo,  bar , BAZ,,");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.HIDE)
-                .setTags(Arrays.asList("Hello", "foo", "bar", "BAZ"))))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.HIDE)),
+                hasTags(contains("Hello", "foo", "bar", "BAZ"))
+        ))));
     }
 
     @Test
@@ -299,9 +312,10 @@ public class FilterDialogPresenterTest {
         fakeView.setMessageText("Hello");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.WINDOW)
-                .setMessagePattern("Hello")))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.WINDOW)),
+                hasMessage(equalTo("Hello"))
+        ))));
     }
 
     @Test
@@ -312,9 +326,10 @@ public class FilterDialogPresenterTest {
         fakeView.setMessageText("  with   whitespace\t\t ");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.WINDOW)
-                .setMessagePattern("with   whitespace")))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.WINDOW)),
+                hasMessage(equalTo("with   whitespace"))
+        ))));
     }
 
     @Test
@@ -325,9 +340,10 @@ public class FilterDialogPresenterTest {
         fakeView.setPidsAppsText(" 12");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)
-                .setPids(Collections.singletonList(12))))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.SHOW)),
+                hasPids(contains(12))
+        ))));
     }
 
     @Test
@@ -338,9 +354,10 @@ public class FilterDialogPresenterTest {
         fakeView.setPidsAppsText(" a12,  ");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)
-                .setApps(Collections.singletonList("a12"))))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.SHOW)),
+                hasApps(contains("a12"))
+        ))));
     }
 
     @Test
@@ -351,10 +368,11 @@ public class FilterDialogPresenterTest {
         fakeView.setPidsAppsText("com.example, 12 , /[Ff]oo/  , 10");
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)
-                .setPids(Arrays.asList(12, 10))
-                .setApps(Arrays.asList("com.example", "/[Ff]oo/"))))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.SHOW)),
+                hasPids(contains(12, 10)),
+                hasApps(contains("com.example", "/[Ff]oo/"))
+        ))));
     }
 
     @Test
@@ -365,9 +383,10 @@ public class FilterDialogPresenterTest {
         fakeView.setPriority(LogRecord.Priority.ERROR);
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)
-                .setPriority(LogRecord.Priority.ERROR)))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.SHOW)),
+                hasPriority(equalTo(LogRecord.Priority.ERROR))
+        ))));
     }
 
     @Test
@@ -381,10 +400,11 @@ public class FilterDialogPresenterTest {
         fakeView.setPriority(LogRecord.Priority.ERROR);
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.HIGHLIGHT)
-                .setHighlightColor(highlightColor)
-                .setPriority(LogRecord.Priority.ERROR)))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.HIGHLIGHT)),
+                hasColor(equalTo(highlightColor)),
+                hasPriority(equalTo(LogRecord.Priority.ERROR))
+        ))));
     }
 
     @Test
@@ -394,8 +414,7 @@ public class FilterDialogPresenterTest {
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)))));
+        assertThat(promise, completedWithResult(optionalWithValue(hasMode(equalTo(FilteringMode.SHOW)))));
     }
 
     @Test
@@ -451,9 +470,10 @@ public class FilterDialogPresenterTest {
 
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)
-                .setMessagePattern("/[closed bracket]/")))));
+        assertThat(promise, completedWithResult(optionalWithValue(allOf(
+                hasMode(equalTo(FilteringMode.SHOW)),
+                hasMessage(equalTo("/[closed bracket]/"))
+        ))));
     }
 
     @Test
@@ -464,8 +484,7 @@ public class FilterDialogPresenterTest {
         fakeView.commit();
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)))));
+        assertThat(promise, completedWithResult(optionalWithValue(hasMode(equalTo(FilteringMode.SHOW)))));
     }
 
     @Test
@@ -476,7 +495,7 @@ public class FilterDialogPresenterTest {
         fakeView.discard();
         fakeView.discard();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.empty())));
+        assertThat(promise, completedWithResult(emptyOptional()));
     }
 
     @Test
@@ -487,8 +506,7 @@ public class FilterDialogPresenterTest {
         fakeView.commit();
         fakeView.discard();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.of(new FilterFromDialog()
-                .setMode(FilteringMode.SHOW)))));
+        assertThat(promise, completedWithResult(optionalWithValue(hasMode(equalTo(FilteringMode.SHOW)))));
     }
 
     @Test
@@ -499,6 +517,6 @@ public class FilterDialogPresenterTest {
         fakeView.discard();
         fakeView.commit();
 
-        assertThat(promise, completedWithResult(equalTo(Optional.empty())));
+        assertThat(promise, completedWithResult(emptyOptional()));
     }
 }
