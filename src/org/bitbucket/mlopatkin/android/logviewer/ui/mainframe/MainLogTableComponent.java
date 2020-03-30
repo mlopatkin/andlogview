@@ -24,6 +24,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableModule;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
 
 import javax.swing.JTable;
 
@@ -36,6 +37,6 @@ public interface MainLogTableComponent {
     interface Factory {
         MainLogTableComponent create(
                 @BindsInstance LogRecordTableModel tableModel, @BindsInstance LogModelFilter modelFilter,
-                @BindsInstance BookmarkModel bookmarkModel);
+                @BindsInstance BookmarkModel bookmarkModel, @BindsInstance MenuFilterCreator filterCreator);
     }
 }

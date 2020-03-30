@@ -60,8 +60,10 @@ public class MainFrameModule {
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     JTable getMainLogTable(LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter,
-            BookmarkModel bookmarkModel) {
-        JTable logTable = DaggerMainLogTableComponent.factory().create(model, filter, bookmarkModel).getLogTable();
+            BookmarkModel bookmarkModel, MainFilterController filterController) {
+        JTable logTable = DaggerMainLogTableComponent.factory()
+                .create(model, filter, bookmarkModel, filterController)
+                .getLogTable();
         // TODO(mlopatkin) Replace this cast with injection
         ((DecoratingRendererTable) logTable).addDecorator(bookmarkHighlighter);
         return logTable;

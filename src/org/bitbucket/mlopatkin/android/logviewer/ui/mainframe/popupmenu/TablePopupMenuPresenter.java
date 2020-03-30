@@ -42,11 +42,14 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     }
 
     private final BookmarkModel bookmarkModel;
+    private final MenuFilterCreator filterCreator;
 
     @Inject
-    public TablePopupMenuPresenter(SelectedRows selectedRows, BookmarkModel bookmarkModel) {
+    public TablePopupMenuPresenter(SelectedRows selectedRows, BookmarkModel bookmarkModel,
+            MenuFilterCreator filterCreator) {
         super(selectedRows);
         this.bookmarkModel = bookmarkModel;
+        this.filterCreator = filterCreator;
     }
 
     @Override

@@ -24,6 +24,8 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
 import static org.hamcrest.Matchers.contains;
@@ -35,9 +37,12 @@ import static org.junit.Assert.assertTrue;
 public class TablePopupMenuPresenterTest {
     FakeTablePopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
+    @Mock
+    MenuFilterCreator filterCreator;
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
     }
 
@@ -206,7 +211,7 @@ public class TablePopupMenuPresenterTest {
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
-        return new TablePopupMenuPresenter(selectedRows, bookmarkModel);
+        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator);
     }
 
 }

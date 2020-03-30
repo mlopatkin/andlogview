@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +47,8 @@ public class TablePopupMenuPresenterParameterizedTest {
             Collections.singletonMap(98, "media_server")));
     FakeTablePopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
+    @Mock
+    MenuFilterCreator filterCreator;
 
     @Parameterized.Parameter
     public @MonotonicNonNull Column column;
@@ -78,6 +82,7 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
     }
 
@@ -103,6 +108,6 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
-        return new TablePopupMenuPresenter(selectedRows, bookmarkModel);
+        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator);
     }
 }

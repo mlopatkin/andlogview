@@ -27,6 +27,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ import javax.inject.Inject;
  * toggled and applied.
  */
 @MainFrameScoped
-public class MainFilterController implements FilterCreator {
+public class MainFilterController implements FilterCreator, MenuFilterCreator {
     // TODO separate "A filter for main table" and "bridge between all filters and panel"
 
     private static final Logger logger = Logger.getLogger(MainFilterController.class);
@@ -122,6 +123,16 @@ public class MainFilterController implements FilterCreator {
                 return indexFilterCollection;
         }
         throw new IllegalArgumentException("Filter has invalid mode " + filter.getMode());
+    }
+
+    @Override
+    public void addFilter(FilterFromDialog filter) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void createFilterWithDialog(FilterFromDialog baseData) {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     /**
