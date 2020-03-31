@@ -127,7 +127,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Override
     public void addFilter(FilterFromDialog filter) {
-        throw new UnsupportedOperationException("not implemented");
+        addNewDialogFilter(filter);
     }
 
     @Override

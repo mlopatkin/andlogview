@@ -16,8 +16,11 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
+import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
@@ -25,6 +28,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -87,15 +91,29 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     }
 
     private void setUpFilterActions(TablePopupMenuView menuView, Column column, @Nullable TableRow row) {
-        if (row == null || column == Column.TIME || column == Column.INDEX) {
+        if (row == null || column == Column.TIME || column == Column.INDEX || column == Column.TID) {
             return;
         }
         for (FilteringMode filteringMode : FilteringMode.values()) {
             if (filteringMode != FilteringMode.HIGHLIGHT) {
-                menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column));
+                menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column))
+                        .addObserver(() -> addFilter(filteringMode, column, row));
             }
         }
 
+    }
+
+    private void addFilter(FilteringMode mode, Column column, TableRow row) {
+        FilterFromDialog filter = new FilterFromDialog().setMode(mode);
+        ColumnData.applyColumnValueToFilter(filter, column, row);
+        try {
+            filter.initialize();
+            filterCreator.addFilter(filter);
+        } catch (RequestCompilationException e) {
+            // It is possible that certain messages/app names will result in text being treated as a regex pattern.
+            // Currently there is no support for escaping anything in the dialog.
+            // TODO(mlopatkin) think about how handle this?
+        }
     }
 
     private void addToBookmarks(TableRow row) {
@@ -122,6 +140,31 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                 return "msg";
             }
             return column.getColumnName();
+        }
+
+        public static void applyColumnValueToFilter(FilterFromDialog dialog, Column c, TableRow row) {
+            LogRecord record = row.getRecord();
+            switch (c) {
+                case INDEX:
+                case TIME:
+                case TID:
+                    throw new IllegalArgumentException("Cannot filter on " + c + " column");
+                case PID:
+                    dialog.setPids(Collections.singletonList(record.getPid()));
+                    break;
+                case APP_NAME:
+                    dialog.setApps(Collections.singletonList(record.getAppName()));
+                    break;
+                case PRIORITY:
+                    dialog.setPriority(record.getPriority());
+                    break;
+                case TAG:
+                    dialog.setTags(Collections.singletonList(record.getTag()));
+                    break;
+                case MESSAGE:
+                    dialog.setMessagePattern(record.getMessage());
+                    break;
+            }
         }
     }
 

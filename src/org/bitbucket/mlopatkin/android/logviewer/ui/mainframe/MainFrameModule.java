@@ -16,6 +16,7 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
 
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
@@ -23,9 +24,11 @@ import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
 import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 
 import javax.inject.Named;
@@ -60,9 +63,20 @@ public class MainFrameModule {
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     JTable getMainLogTable(LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter,
-            BookmarkModel bookmarkModel, MainFilterController filterController) {
+            BookmarkModel bookmarkModel, Lazy<MainFilterController> filterController) {
         JTable logTable = DaggerMainLogTableComponent.factory()
-                .create(model, filter, bookmarkModel, filterController)
+                .create(model, filter, bookmarkModel, new MenuFilterCreator() {
+                    // TODO(mlopatkin) break dependency cycle and replace with direct dependency (?)
+                    @Override
+                    public void addFilter(FilterFromDialog filter) {
+                        filterController.get().addFilter(filter);
+                    }
+
+                    @Override
+                    public void createFilterWithDialog(FilterFromDialog baseData) {
+                        filterController.get().createFilterWithDialog(baseData);
+                    }
+                })
                 .getLogTable();
         // TODO(mlopatkin) Replace this cast with injection
         ((DecoratingRendererTable) logTable).addDecorator(bookmarkHighlighter);
