@@ -30,6 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -96,7 +97,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         }
         for (FilteringMode filteringMode : FilteringMode.values()) {
             if (filteringMode != FilteringMode.HIGHLIGHT) {
-                menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column))
+                menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column, row))
                         .addObserver(() -> addFilter(filteringMode, column, row));
             }
         }
@@ -170,8 +171,12 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
     /** Helper class that defines titles for quick filter menu items */
     private static class FilterData {
-        public static String getFilterMenuItemTitle(FilteringMode mode, Column column) {
+        public static String getFilterMenuItemTitle(FilteringMode mode, Column column, TableRow row) {
             String columnName = ColumnData.getColumnTitleForHeader(column);
+            if (column == Column.PRIORITY) {
+                return getFilterMenuItemTitleForPriority(
+                        mode, Objects.requireNonNull(Column.PRIORITY.getValue(row.getRowIndex(), row.getRecord())));
+            }
             // This enum is intended to be exhaustive
             switch (mode) {
                 case SHOW:
@@ -182,6 +187,21 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                     throw new IllegalArgumentException("HIGHLIGHT filter cannot have menu item");
                 case WINDOW:
                     return "Show this " + columnName + " in index window";
+            }
+            throw new IllegalArgumentException("Unexpected filtering mode " + mode);
+        }
+
+        private static String getFilterMenuItemTitleForPriority(FilteringMode mode, Object value) {
+            // This enum is intended to be exhaustive
+            switch (mode) {
+                case SHOW:
+                    return "Show only priority >=" + value;
+                case HIDE:
+                    return "Hide priority >=" + value;
+                case HIGHLIGHT:
+                    throw new IllegalArgumentException("HIGHLIGHT filter cannot have menu item");
+                case WINDOW:
+                    return "Show priority >=" + value + " in index window";
             }
             throw new IllegalArgumentException("Unexpected filtering mode " + mode);
         }
