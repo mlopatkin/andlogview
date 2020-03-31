@@ -25,12 +25,13 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasApps;
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMessage;
@@ -55,10 +57,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-@RunWith(Parameterized.class)
 public class TablePopupMenuPresenterParameterizedTest {
-    // TODO(mlopatkin) Split this up after migrating to JUnit 5
-
     public static final LogRecord RECORD = Objects.requireNonNull(LogRecordParser.parseThreadTime(null,
             "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117)",
             Collections.singletonMap(98, "media_server")));
@@ -67,25 +66,7 @@ public class TablePopupMenuPresenterParameterizedTest {
     @Mock
     MenuFilterCreator filterCreator;
 
-    @Parameterized.Parameter
-    public @MonotonicNonNull Column column;
-
-    @Parameterized.Parameter(1)
-    public boolean hasHeader;
-
-    @Parameterized.Parameter(2)
-    public @MonotonicNonNull String title;
-
-    @Parameterized.Parameter(3)
-    public @MonotonicNonNull String value;
-
-    @Parameterized.Parameter(4)
-    public int quickFiltersCount;
-
-    @Parameterized.Parameter(5)
-    public @Nullable Matcher<FilterFromDialog> filterMatcher;
-
-    @Parameterized.Parameters(name = "{index}: {0}")
+    @Parameterized.Parameters(name = "{0}")
     public static List<Object[]> getParameters() {
         return Arrays.asList(new Object[][] {
                 // Column, has header, header column, header value, quick filters count, quick filter matcher
@@ -100,66 +81,84 @@ public class TablePopupMenuPresenterParameterizedTest {
                 });
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
     }
 
-    @Test
-    public void headerIsShownIfNeeded() {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "TIME, time, 08-03 16:21:35.538",
+            "PID, pid, 98",
+            "TID, tid, 231",
+            "APP_NAME, app, media_server",
+            "PRIORITY, priority, VERBOSE",
+            "TAG, tag, AudioFlinger",
+            "MESSAGE, msg, start(4117)",
+    })
+    public void headerIsShownForColumn(Column column, String headerColumn, String headerValue) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
-        if (hasHeader) {
-            assertTrue(popupMenuView.isHeaderShowing());
-            assertEquals(title, popupMenuView.getHeaderColumn());
-            assertEquals(value, popupMenuView.getHeaderText());
-        } else {
-            assertFalse(popupMenuView.isHeaderShowing());
-        }
+        assertTrue(popupMenuView.isHeaderShowing());
+        assertEquals(headerColumn, popupMenuView.getHeaderColumn());
+        assertEquals(headerValue, popupMenuView.getHeaderText());
     }
 
-    @Test
-    public void testShowFilterAction() {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = "INDEX")
+    void headerIsNotShownForColumn(Column column) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
-        assertEquals(quickFiltersCount, popupMenuView.getQuickFilterElementsCount());
-
-        if (filterMatcher != null) {
-            popupMenuView.triggerQuickFilterAction(0);
-
-            verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(FilteringMode.SHOW))).and(filterMatcher)));
-        }
+        assertFalse(popupMenuView.isHeaderShowing());
     }
 
-    @Test
-    public void testHideFilterAction() {
-        TablePopupMenuPresenter presenter = createPresenter(makeRow());
-        presenter.showContextMenu(popupMenuView, column, makeRow());
-
-        assertEquals(quickFiltersCount, popupMenuView.getQuickFilterElementsCount());
-
-        if (filterMatcher != null) {
-            popupMenuView.triggerQuickFilterAction(1);
-
-            verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(FilteringMode.HIDE))).and(filterMatcher)));
-        }
+    private static Object[][] getColumnsWithFilters() {
+        return new Object[][] {
+                {Column.PID, hasPids(contains(98))},
+                {Column.APP_NAME, hasApps(contains("media_server"))},
+                {Column.PRIORITY, hasPriority(equalTo(LogRecord.Priority.VERBOSE))},
+                {Column.TAG, hasTags(contains("AudioFlinger"))},
+                {Column.MESSAGE, hasMessage(equalTo("start(4117)"))}
+        };
     }
 
-    @Test
-    public void testIndexFilterAction() {
+    private static Object[][] getModesWithActionIndex() {
+        return new Object[][] {
+                {0, FilteringMode.SHOW},
+                {1, FilteringMode.HIDE},
+                {2, FilteringMode.WINDOW},
+                };
+    }
+
+    private static Stream<Arguments> filterActionParams() {
+        return Stream.of(getModesWithActionIndex()).flatMap(
+                modesParams -> Stream.of(getColumnsWithFilters()).map(
+                        columnParams -> Arguments.of(columnParams[0], columnParams[1], modesParams[0], modesParams[1])
+                ));
+    }
+
+    @ParameterizedTest(name = "{0}/{3}")
+    @MethodSource("filterActionParams")
+    public void testFilterAction(Column column, Matcher<FilterFromDialog> filterMatcher, int actionIndex,
+            FilteringMode mode) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
-        assertEquals(quickFiltersCount, popupMenuView.getQuickFilterElementsCount());
+        popupMenuView.triggerQuickFilterAction(actionIndex);
 
-        if (filterMatcher != null) {
-            popupMenuView.triggerQuickFilterAction(2);
+        verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(mode))).and(filterMatcher)));
+    }
 
-            verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(FilteringMode.WINDOW))).and(filterMatcher)));
-        }
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"INDEX", "TIME", "TID"})
+    public void testFilterActionIsNotAvailable(Column column) {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow());
+        presenter.showContextMenu(popupMenuView, column, makeRow());
+
+        assertEquals(0, popupMenuView.getQuickFilterElementsCount());
     }
 
     private static TableRow makeRow() {
