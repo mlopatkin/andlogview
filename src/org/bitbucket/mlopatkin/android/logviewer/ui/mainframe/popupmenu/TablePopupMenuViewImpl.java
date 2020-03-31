@@ -21,11 +21,9 @@ import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 
 public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
     private static final int MAX_HEADER_LENGTH = 30;
@@ -33,7 +31,7 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     private static final char ELLIPSIS = '\u2026';  // …
 
     private final ObservableAction bookmarkAction = new ObservableAction();
-    private final List<ObservableAction> filterActions = new ArrayList<>();
+    private final JMenu quickFilterHeader = new JMenu();
 
     public TablePopupMenuViewImpl(JComponent owner, int x, int y) {
         super(owner, x, y);
@@ -41,8 +39,10 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
 
     @Override
     public void setHeader(String columnName, String headerText) {
-        popupMenu.add(columnName + ": " + MyStringUtils.abbreviateMiddle(headerText, ELLIPSIS, MAX_HEADER_LENGTH,
-                PREFIX_LENGTH)).setEnabled(false);
+        String header = columnName + ": " + MyStringUtils.abbreviateMiddle(headerText, ELLIPSIS, MAX_HEADER_LENGTH,
+                PREFIX_LENGTH);
+        quickFilterHeader.setText(header);
+        popupMenu.add(quickFilterHeader).setEnabled(false);
     }
 
     @Override
@@ -58,13 +58,10 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
 
     @Override
     public Observable<Runnable> addQuickFilterAction(boolean enabled, String title) {
-        if (!isEmpty() && filterActions.isEmpty()) {
-            popupMenu.addSeparator();
-        }
         ObservableAction quickFilterAction = new ObservableAction(title);
         quickFilterAction.setEnabled(enabled);
-        filterActions.add(quickFilterAction);
-        popupMenu.add(quickFilterAction);
+        quickFilterHeader.setEnabled(true);
+        quickFilterHeader.add(quickFilterAction);
         return quickFilterAction.asObservable();
     }
 

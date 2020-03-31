@@ -175,13 +175,13 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
             // This enum is intended to be exhaustive
             switch (mode) {
                 case SHOW:
-                    return "Show only lines with this " + columnName;
+                    return "Show only this " + columnName;
                 case HIDE:
-                    return "Hide lines with this " + columnName;
+                    return "Hide this " + columnName;
                 case HIGHLIGHT:
                     throw new IllegalArgumentException("HIGHLIGHT filter cannot have menu item");
                 case WINDOW:
-                    return "Show index window for lines with this " + columnName;
+                    return "Show this " + columnName + " in index window";
             }
             throw new IllegalArgumentException("Unexpected filtering mode " + mode);
         }
