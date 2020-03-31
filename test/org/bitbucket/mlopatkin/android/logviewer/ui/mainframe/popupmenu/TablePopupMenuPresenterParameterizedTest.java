@@ -90,7 +90,7 @@ public class TablePopupMenuPresenterParameterizedTest {
         return Arrays.asList(new Object[][] {
                 // Column, has header, header column, header value, quick filters count, quick filter matcher
                 {Column.INDEX, false, "", "", 0, null},
-                {Column.TIME, false, "", "", 0, null},
+                {Column.TIME, true, "time", "08-03 16:21:35.538", 0, null},
                 {Column.PID, true, "pid", "98", 3, hasPids(contains(98))},
                 {Column.TID, true, "tid", "231", 0, null},
                 {Column.APP_NAME, true, "app", "media_server", 3, hasApps(contains("media_server"))},

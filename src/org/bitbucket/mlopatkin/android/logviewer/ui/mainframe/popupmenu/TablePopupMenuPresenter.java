@@ -65,7 +65,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     }
 
     private void setUpHeader(TablePopupMenuView view, Column c, @Nullable TableRow row) {
-        if (row == null || c == Column.TIME || c == Column.INDEX) {
+        if (row == null || c == Column.INDEX) {
             return;
         }
         view.setHeader(ColumnData.getColumnTitleForHeader(c), ColumnData.getColumnValueForHeader(c, row));
