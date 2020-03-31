@@ -18,5 +18,5 @@ repositories {
 }
 
 dependencies {
-    compile 'com.squareup:javapoet:1.10.0'
+    implementation 'com.squareup:javapoet:1.10.0'
 }
