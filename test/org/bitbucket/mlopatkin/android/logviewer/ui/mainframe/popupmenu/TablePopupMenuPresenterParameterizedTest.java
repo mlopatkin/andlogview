@@ -143,7 +143,7 @@ public class TablePopupMenuPresenterParameterizedTest {
         verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(mode))).and(filterMatcher)));
     }
 
-    @ParameterizedTest(name = "{0}/{3}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getColumnsWithFilters")
     public void testHighlightAction(Column column, Matcher<FilterFromDialog> filterMatcher) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
@@ -157,6 +157,17 @@ public class TablePopupMenuPresenterParameterizedTest {
     }
 
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getColumnsWithFilters")
+    public void quickFilterDialogActionOpensDialog(Column column, Matcher<FilterFromDialog> filterMatcher) {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow());
+        presenter.showContextMenu(popupMenuView, column, makeRow());
+
+        popupMenuView.triggerQuickDialogAction();
+
+        verify(filterCreator).createFilterWithDialog(argThat(filterMatcher));
+    }
+
+    @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"INDEX", "TIME", "TID"})
     public void testFilterActionIsNotAvailable(Column column) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
@@ -164,6 +175,7 @@ public class TablePopupMenuPresenterParameterizedTest {
 
         assertEquals(0, popupMenuView.getQuickFilterElementsCount());
         assertFalse(popupMenuView.isHighlightActionAvailable());
+        assertFalse(popupMenuView.isQuickDialogActionAvailable());
     }
 
     private static TableRow makeRow() {

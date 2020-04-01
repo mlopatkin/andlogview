@@ -65,6 +65,7 @@ public class TablePopupMenuPresenterTest {
                         MenuElements.HEADER,
                         MenuElements.COPY_ACTION,
                         MenuElements.BOOKMARK_ACTION,
+                        MenuElements.QUICK_DIALOG_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
@@ -237,6 +238,30 @@ public class TablePopupMenuPresenterTest {
         presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
 
         assertTrue(popupMenuView.isHighlightActionAvailable());
+    }
+
+    @Test
+    public void quickDialogActionIsNotAvailableIfNoRowsSelected() {
+        TablePopupMenuPresenter presenter = createPresenter();
+        presenter.showContextMenu(popupMenuView, Column.PID, null);
+
+        assertFalse(popupMenuView.isQuickDialogActionAvailable());
+    }
+
+    @Test
+    public void quickDialogActionIsAvailableIfSingleRowSelected() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        assertTrue(popupMenuView.isQuickDialogActionAvailable());
+    }
+
+    @Test
+    public void quickDialogActionIsAvailableIfMultipleRowsSelected() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        assertTrue(popupMenuView.isQuickDialogActionAvailable());
     }
 
     private static TableRow makeRow(int index) {

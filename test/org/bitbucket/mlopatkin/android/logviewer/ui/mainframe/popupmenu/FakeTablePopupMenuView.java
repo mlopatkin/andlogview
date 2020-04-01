@@ -36,6 +36,7 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
         BOOKMARK_ACTION,
         QUICK_FILTER_ACTION,
         HIGHLIGHT_FILTER_ACTION,
+        QUICK_DIALOG_ACTION,
     }
 
     private @Nullable String headerColumn;
@@ -49,6 +50,8 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
 
     private boolean isShowing;
 
+
+    private final Subject<Runnable> quickDialogAction = new Subject<>();
     private final List<Subject<Runnable>> quickFilterActions = new ArrayList<>();
 
     private final Subject<Consumer<Color>> highlightFilterAction = new Subject<>();
@@ -68,6 +71,12 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
         addMenuElement(MenuElements.BOOKMARK_ACTION);
         bookmarkActionEnabled = enabled;
         return bookmarkAction.asObservable();
+    }
+
+    @Override
+    public Observable<Runnable> addQuickFilterDialogAction(String title) {
+        addMenuElement(MenuElements.QUICK_DIALOG_ACTION);
+        return quickDialogAction.asObservable();
     }
 
     @Override
@@ -160,6 +169,16 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
         Color color = Objects.requireNonNull(highlightColors).get(colorIndex);
         for (Consumer<Color> colorConsumer : highlightFilterAction) {
             colorConsumer.accept(color);
+        }
+    }
+
+    public boolean isQuickDialogActionAvailable() {
+        return menuElements.contains(MenuElements.QUICK_DIALOG_ACTION);
+    }
+
+    public void triggerQuickDialogAction() {
+        for (Runnable runnable : quickDialogAction) {
+            runnable.run();
         }
     }
 }

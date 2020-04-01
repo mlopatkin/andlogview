@@ -46,11 +46,15 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
         Observable<Runnable> setBookmarkAction(boolean enabled, String title);
 
+        Observable<Runnable> addQuickFilterDialogAction(String title);
+
         Observable<Runnable> addQuickFilterAction(boolean enabled, String title);
 
         Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
                 List<Color> highlightColors);
     }
+
+    private static final char ELLIPSIS = '\u2026';  // …
 
     private final BookmarkModel bookmarkModel;
     private final MenuFilterCreator filterCreator;
@@ -103,6 +107,10 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         if (row == null || column == Column.TIME || column == Column.INDEX || column == Column.TID) {
             return;
         }
+
+        menuView.addQuickFilterDialogAction(FilterData.getDialogMenuItemTitle(column)).addObserver(
+                () -> filterCreator.createFilterWithDialog(buildFilter(FilteringMode.getDefaultMode(), column, row)));
+
         for (FilteringMode filteringMode : FilteringMode.values()) {
             if (filteringMode != FilteringMode.HIGHLIGHT) {
                 menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column, row))
@@ -186,6 +194,10 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
     /** Helper class that defines titles for quick filter menu items */
     private static class FilterData {
+        public static String getDialogMenuItemTitle(Column column) {
+            return "Create filter for " + column.getColumnName() + ELLIPSIS;
+        }
+
         public static String getFilterMenuItemTitle(FilteringMode mode, Column column, TableRow row) {
             String columnName = ColumnData.getColumnTitleForHeader(column);
             if (column == Column.PRIORITY) {

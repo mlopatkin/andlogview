@@ -132,7 +132,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Override
     public void createFilterWithDialog(FilterFromDialog baseData) {
-        throw new UnsupportedOperationException("not implemented");
+        dialogFactory.startEditFilterDialog(baseData).thenAccept(result -> result.ifPresent(this::addFilter));
     }
 
     /**

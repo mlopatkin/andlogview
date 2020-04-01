@@ -39,6 +39,7 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
 
     private final ObservableAction bookmarkAction = new ObservableAction();
     private final JMenu quickFiltersGroup = new JMenu();
+    private final ObservableAction quickFilterDialogAction = new ObservableAction();
     private final JMenu highlightFiltersGroup = new JMenu();
 
     public TablePopupMenuViewImpl(JComponent owner, int x, int y) {
@@ -62,6 +63,13 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
         }
         popupMenu.add(bookmarkAction);
         return bookmarkAction.asObservable();
+    }
+
+    @Override
+    public Observable<Runnable> addQuickFilterDialogAction(String title) {
+        quickFilterDialogAction.putValue(Action.NAME, title);
+        quickFiltersGroup.add(quickFilterDialogAction);
+        return quickFilterDialogAction.asObservable();
     }
 
     @Override
