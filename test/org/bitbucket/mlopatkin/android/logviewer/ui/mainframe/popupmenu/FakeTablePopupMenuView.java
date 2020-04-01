@@ -23,15 +23,19 @@ import org.bitbucket.mlopatkin.utils.events.Subject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopupMenuView {
     public enum MenuElements {
         HEADER,
         COPY_ACTION,
         BOOKMARK_ACTION,
-        QUICK_FILTER_ACTION;
+        QUICK_FILTER_ACTION,
+        HIGHLIGHT_FILTER_ACTION,
     }
 
     private @Nullable String headerColumn;
@@ -46,6 +50,9 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
     private boolean isShowing;
 
     private final List<Subject<Runnable>> quickFilterActions = new ArrayList<>();
+
+    private final Subject<Consumer<Color>> highlightFilterAction = new Subject<>();
+    private @Nullable ImmutableList<Color> highlightColors;
 
     private final List<MenuElements> menuElements = new ArrayList<>();
 
@@ -70,6 +77,14 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
         Subject<Runnable> action = new Subject<>();
         quickFilterActions.add(action);
         return action.asObservable();
+    }
+
+    @Override
+    public Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
+            List<Color> highlightColors) {
+        addMenuElement(MenuElements.HIGHLIGHT_FILTER_ACTION);
+        this.highlightColors = ImmutableList.copyOf(highlightColors);
+        return highlightFilterAction.asObservable();
     }
 
     @Override
@@ -135,5 +150,16 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
 
     public @Nullable String getHeaderText() {
         return headerText;
+    }
+
+    public boolean isHighlightActionAvailable() {
+        return highlightColors != null;
+    }
+
+    public void triggerHighlightAction(int colorIndex) {
+        Color color = Objects.requireNonNull(highlightColors).get(colorIndex);
+        for (Consumer<Color> colorConsumer : highlightFilterAction) {
+            colorConsumer.accept(color);
+        }
     }
 }

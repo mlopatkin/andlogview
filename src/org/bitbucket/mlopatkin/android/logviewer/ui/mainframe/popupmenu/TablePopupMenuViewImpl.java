@@ -20,7 +20,14 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuViewImpl;
 import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
 import org.bitbucket.mlopatkin.utils.MyStringUtils;
 import org.bitbucket.mlopatkin.utils.events.Observable;
+import org.bitbucket.mlopatkin.utils.events.Subject;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.function.Consumer;
+
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -31,7 +38,8 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     private static final char ELLIPSIS = '\u2026';  // …
 
     private final ObservableAction bookmarkAction = new ObservableAction();
-    private final JMenu quickFilterHeader = new JMenu();
+    private final JMenu quickFiltersGroup = new JMenu();
+    private final JMenu highlightFiltersGroup = new JMenu();
 
     public TablePopupMenuViewImpl(JComponent owner, int x, int y) {
         super(owner, x, y);
@@ -41,8 +49,8 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     public void setHeader(String columnName, String headerText) {
         String header = columnName + ": " + MyStringUtils.abbreviateMiddle(headerText, ELLIPSIS, MAX_HEADER_LENGTH,
                 PREFIX_LENGTH);
-        quickFilterHeader.setText(header);
-        popupMenu.add(quickFilterHeader).setEnabled(false);
+        quickFiltersGroup.setText(header);
+        popupMenu.add(quickFiltersGroup).setEnabled(false);
     }
 
     @Override
@@ -60,9 +68,33 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     public Observable<Runnable> addQuickFilterAction(boolean enabled, String title) {
         ObservableAction quickFilterAction = new ObservableAction(title);
         quickFilterAction.setEnabled(enabled);
-        quickFilterHeader.setEnabled(true);
-        quickFilterHeader.add(quickFilterAction);
+        quickFiltersGroup.setEnabled(true);
+        quickFiltersGroup.add(quickFilterAction);
         return quickFilterAction.asObservable();
     }
 
+    @Override
+    public Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
+            List<Color> highlightColors) {
+        quickFiltersGroup.setEnabled(true);
+        quickFiltersGroup.add(highlightFiltersGroup);
+        highlightFiltersGroup.setText(title);
+
+        Subject<Consumer<Color>> highlightSubject = new Subject<>();
+
+        int colorIndex = 0;
+        for (Color color : highlightColors) {
+            Action highlightAction = new AbstractAction("Color " + (colorIndex++), new HighlightIcon(color)) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (Consumer<Color> colorConsumer : highlightSubject) {
+                        colorConsumer.accept(color);
+                    }
+                }
+            };
+            highlightFiltersGroup.add(highlightAction);
+        }
+
+        return highlightSubject.asObservable();
+    }
 }

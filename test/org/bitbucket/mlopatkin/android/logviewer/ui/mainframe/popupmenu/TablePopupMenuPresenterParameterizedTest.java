@@ -16,10 +16,13 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
+import com.google.common.collect.ImmutableList;
+
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
@@ -32,17 +35,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
+import java.awt.Color;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasApps;
+import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasColor;
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMessage;
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMode;
 import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPids;
@@ -55,6 +57,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 public class TablePopupMenuPresenterParameterizedTest {
@@ -65,26 +68,14 @@ public class TablePopupMenuPresenterParameterizedTest {
     BookmarkModel bookmarkModel = new BookmarkModel();
     @Mock
     MenuFilterCreator filterCreator;
-
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> getParameters() {
-        return Arrays.asList(new Object[][] {
-                // Column, has header, header column, header value, quick filters count, quick filter matcher
-                {Column.INDEX, false, "", "", 0, null},
-                {Column.TIME, true, "time", "08-03 16:21:35.538", 0, null},
-                {Column.PID, true, "pid", "98", 3, hasPids(contains(98))},
-                {Column.TID, true, "tid", "231", 0, null},
-                {Column.APP_NAME, true, "app", "media_server", 3, hasApps(contains("media_server"))},
-                {Column.PRIORITY, true, "priority", "VERBOSE", 3, hasPriority(equalTo(LogRecord.Priority.VERBOSE))},
-                {Column.TAG, true, "tag", "AudioFlinger", 3, hasTags(contains("AudioFlinger"))},
-                {Column.MESSAGE, true, "msg", "start(4117)", 3, hasMessage(equalTo("start(4117)"))},
-                });
-    }
+    @Mock
+    HighlightColors highlightColors;
 
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
+        when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -152,6 +143,19 @@ public class TablePopupMenuPresenterParameterizedTest {
         verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(mode))).and(filterMatcher)));
     }
 
+    @ParameterizedTest(name = "{0}/{3}")
+    @MethodSource("getColumnsWithFilters")
+    public void testHighlightAction(Column column, Matcher<FilterFromDialog> filterMatcher) {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow());
+        presenter.showContextMenu(popupMenuView, column, makeRow());
+
+        popupMenuView.triggerHighlightAction(1);
+
+        verify(filterCreator).addFilter(
+                argThat(both(hasMode(equalTo(FilteringMode.HIGHLIGHT))).and(hasColor(equalTo(Color.BLUE)))
+                        .and(filterMatcher)));
+    }
+
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"INDEX", "TIME", "TID"})
     public void testFilterActionIsNotAvailable(Column column) {
@@ -159,6 +163,7 @@ public class TablePopupMenuPresenterParameterizedTest {
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
         assertEquals(0, popupMenuView.getQuickFilterElementsCount());
+        assertFalse(popupMenuView.isHighlightActionAvailable());
     }
 
     private static TableRow makeRow() {
@@ -167,6 +172,6 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
-        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator);
+        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator, highlightColors);
     }
 }

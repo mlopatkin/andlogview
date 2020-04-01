@@ -16,7 +16,10 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
+import com.google.common.collect.ImmutableList;
+
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
+import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
@@ -27,23 +30,29 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.awt.Color;
+
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 public class TablePopupMenuPresenterTest {
     FakeTablePopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
     @Mock
     MenuFilterCreator filterCreator;
+    @Mock
+    HighlightColors highlightColors;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
+        when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
     }
 
     @Test
@@ -58,7 +67,8 @@ public class TablePopupMenuPresenterTest {
                         MenuElements.BOOKMARK_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
-                        MenuElements.QUICK_FILTER_ACTION));
+                        MenuElements.QUICK_FILTER_ACTION,
+                        MenuElements.HIGHLIGHT_FILTER_ACTION));
     }
 
     @Test
@@ -211,7 +221,7 @@ public class TablePopupMenuPresenterTest {
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
-        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator);
+        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator, highlightColors);
     }
 
 }

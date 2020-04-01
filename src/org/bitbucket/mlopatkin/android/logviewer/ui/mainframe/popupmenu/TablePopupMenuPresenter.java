@@ -19,6 +19,7 @@ package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
@@ -28,9 +29,11 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -44,17 +47,22 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         Observable<Runnable> setBookmarkAction(boolean enabled, String title);
 
         Observable<Runnable> addQuickFilterAction(boolean enabled, String title);
+
+        Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
+                List<Color> highlightColors);
     }
 
     private final BookmarkModel bookmarkModel;
     private final MenuFilterCreator filterCreator;
+    private final HighlightColors highlightColors;
 
     @Inject
     public TablePopupMenuPresenter(SelectedRows selectedRows, BookmarkModel bookmarkModel,
-            MenuFilterCreator filterCreator) {
+            MenuFilterCreator filterCreator, HighlightColors highlightColors) {
         super(selectedRows);
         this.bookmarkModel = bookmarkModel;
         this.filterCreator = filterCreator;
+        this.highlightColors = highlightColors;
     }
 
     @Override
@@ -98,15 +106,22 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         for (FilteringMode filteringMode : FilteringMode.values()) {
             if (filteringMode != FilteringMode.HIGHLIGHT) {
                 menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column, row))
-                        .addObserver(() -> addFilter(filteringMode, column, row));
+                        .addObserver(() -> addFilter(buildFilter(filteringMode, column, row)));
             }
         }
-
+        menuView.addHighlightFilterAction(true, FilterData.getFilterMenuItemTitle(FilteringMode.HIGHLIGHT, column, row),
+                highlightColors.getColors())
+                .addObserver(
+                        color -> addFilter(buildFilter(FilteringMode.HIGHLIGHT, column, row).setHighlightColor(color)));
     }
 
-    private void addFilter(FilteringMode mode, Column column, TableRow row) {
+    private FilterFromDialog buildFilter(FilteringMode mode, Column column, TableRow row) {
         FilterFromDialog filter = new FilterFromDialog().setMode(mode);
         ColumnData.applyColumnValueToFilter(filter, column, row);
+        return filter;
+    }
+
+    private void addFilter(FilterFromDialog filter) {
         try {
             filter.initialize();
             filterCreator.addFilter(filter);
@@ -184,7 +199,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                 case HIDE:
                     return "Hide this " + columnName;
                 case HIGHLIGHT:
-                    throw new IllegalArgumentException("HIGHLIGHT filter cannot have menu item");
+                    return "Highlight this " + columnName;
                 case WINDOW:
                     return "Show this " + columnName + " in index window";
             }
@@ -199,7 +214,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                 case HIDE:
                     return "Hide priority >=" + value;
                 case HIGHLIGHT:
-                    throw new IllegalArgumentException("HIGHLIGHT filter cannot have menu item");
+                    return "Highlight priority >=" + value;
                 case WINDOW:
                     return "Show priority >=" + value + " in index window";
             }
