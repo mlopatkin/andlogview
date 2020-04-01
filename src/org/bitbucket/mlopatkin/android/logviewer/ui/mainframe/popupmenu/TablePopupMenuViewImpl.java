@@ -38,7 +38,6 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     private static final char ELLIPSIS = '\u2026';  // …
 
     private final ObservableAction bookmarkAction = new ObservableAction();
-    private final JMenu quickFiltersGroup = new JMenu();
     private final ObservableAction quickFilterDialogAction = new ObservableAction();
     private final JMenu highlightFiltersGroup = new JMenu();
 
@@ -50,8 +49,7 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     public void setHeader(String columnName, String headerText) {
         String header = columnName + ": " + MyStringUtils.abbreviateMiddle(headerText, ELLIPSIS, MAX_HEADER_LENGTH,
                 PREFIX_LENGTH);
-        quickFiltersGroup.setText(header);
-        popupMenu.add(quickFiltersGroup).setEnabled(false);
+        popupMenu.add(header).setEnabled(false);
     }
 
     @Override
@@ -68,22 +66,24 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     @Override
     public Observable<Runnable> addQuickFilterDialogAction(String title) {
         quickFilterDialogAction.putValue(Action.NAME, title);
-        quickFiltersGroup.add(quickFilterDialogAction);
+        if (!isEmpty()) {
+            popupMenu.addSeparator();
+        }
+        popupMenu.add(quickFilterDialogAction);
+        popupMenu.addSeparator();
         return quickFilterDialogAction.asObservable();
     }
 
     @Override
     public Observable<Runnable> addQuickFilterAction(String title) {
         ObservableAction quickFilterAction = new ObservableAction(title);
-        quickFiltersGroup.setEnabled(true);
-        quickFiltersGroup.add(quickFilterAction);
+        popupMenu.add(quickFilterAction);
         return quickFilterAction.asObservable();
     }
 
     @Override
     public Observable<Consumer<Color>> addHighlightFilterAction(String title, List<Color> highlightColors) {
-        quickFiltersGroup.setEnabled(true);
-        quickFiltersGroup.add(highlightFiltersGroup);
+        popupMenu.add(highlightFiltersGroup);
         highlightFiltersGroup.setText(title);
 
         Subject<Consumer<Color>> highlightSubject = new Subject<>();

@@ -63,13 +63,13 @@ public class TablePopupMenuPresenterTest {
         assertThat(popupMenuView.getMenuElements(),
                 contains(
                         MenuElements.HEADER,
-                        MenuElements.COPY_ACTION,
-                        MenuElements.BOOKMARK_ACTION,
                         MenuElements.QUICK_DIALOG_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
                         MenuElements.HIGHLIGHT_FILTER_ACTION,
-                        MenuElements.QUICK_FILTER_ACTION
+                        MenuElements.QUICK_FILTER_ACTION,
+                        MenuElements.COPY_ACTION,
+                        MenuElements.BOOKMARK_ACTION
                 ));
     }
 

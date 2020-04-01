@@ -71,9 +71,9 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     @Override
     protected void configureMenu(TablePopupMenuView view, Column c, @Nullable TableRow row, List<TableRow> selection) {
         setUpHeader(view, c, row);
+        setUpFilterActions(view, c, row);
         super.configureMenu(view, c, row, selection);
         setUpBookmarkAction(view, selection);
-        setUpFilterActions(view, c, row);
     }
 
     private void setUpHeader(TablePopupMenuView view, Column c, @Nullable TableRow row) {
