@@ -215,6 +215,30 @@ public class TablePopupMenuPresenterTest {
         assertEquals(3, popupMenuView.getQuickFilterElementsCount());
     }
 
+    @Test
+    public void highlightFilterIsNotAddedIfNoRowsSelected() {
+        TablePopupMenuPresenter presenter = createPresenter();
+        presenter.showContextMenu(popupMenuView, Column.PID, null);
+
+        assertFalse(popupMenuView.isHighlightActionAvailable());
+    }
+
+    @Test
+    public void highlightFilterIsAddedIfSingleRowSelected() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        assertTrue(popupMenuView.isHighlightActionAvailable());
+    }
+
+    @Test
+    public void highlightFilterIsAddedIfMultipleRowsSelected() {
+        TablePopupMenuPresenter presenter = createPresenter(makeRow(1), makeRow(2));
+        presenter.showContextMenu(popupMenuView, Column.PID, makeRow(1));
+
+        assertTrue(popupMenuView.isHighlightActionAvailable());
+    }
+
     private static TableRow makeRow(int index) {
         return new TableRow(index, RECORD1);
     }
