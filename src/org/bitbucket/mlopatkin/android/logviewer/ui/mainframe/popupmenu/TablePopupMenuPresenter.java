@@ -196,11 +196,11 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     /** Helper class that defines titles for quick filter menu items */
     private static class FilterData {
         public static String getDialogMenuItemTitle(Column column) {
-            return "Create filter for " + column.getColumnName() + ELLIPSIS;
+            return "Create filter for this " + column.getColumnName() + ELLIPSIS;
         }
 
         public static String getFilterMenuItemTitle(FilteringMode mode, Column column, TableRow row) {
-            String columnName = ColumnData.getColumnTitleForHeader(column);
+            String columnName = column.getColumnName();
             if (column == Column.PRIORITY) {
                 return getFilterMenuItemTitleForPriority(
                         mode, Objects.requireNonNull(Column.PRIORITY.getValue(row.getRowIndex(), row.getRecord())));
