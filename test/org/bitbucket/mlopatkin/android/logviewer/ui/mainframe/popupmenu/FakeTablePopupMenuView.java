@@ -80,7 +80,7 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
     }
 
     @Override
-    public Observable<Runnable> addQuickFilterAction(boolean enabled, String title) {
+    public Observable<Runnable> addQuickFilterAction(String title) {
         // Note that addMenuElement isn't used deliberately because adding multiple actions isn't a error.
         menuElements.add(MenuElements.QUICK_FILTER_ACTION);
         Subject<Runnable> action = new Subject<>();
@@ -89,8 +89,7 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
     }
 
     @Override
-    public Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
-            List<Color> highlightColors) {
+    public Observable<Consumer<Color>> addHighlightFilterAction(String title, List<Color> highlightColors) {
         addMenuElement(MenuElements.HIGHLIGHT_FILTER_ACTION);
         this.highlightColors = ImmutableList.copyOf(highlightColors);
         return highlightFilterAction.asObservable();

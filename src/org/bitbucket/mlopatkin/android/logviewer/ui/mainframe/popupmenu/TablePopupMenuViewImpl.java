@@ -73,17 +73,15 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
     }
 
     @Override
-    public Observable<Runnable> addQuickFilterAction(boolean enabled, String title) {
+    public Observable<Runnable> addQuickFilterAction(String title) {
         ObservableAction quickFilterAction = new ObservableAction(title);
-        quickFilterAction.setEnabled(enabled);
         quickFiltersGroup.setEnabled(true);
         quickFiltersGroup.add(quickFilterAction);
         return quickFilterAction.asObservable();
     }
 
     @Override
-    public Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
-            List<Color> highlightColors) {
+    public Observable<Consumer<Color>> addHighlightFilterAction(String title, List<Color> highlightColors) {
         quickFiltersGroup.setEnabled(true);
         quickFiltersGroup.add(highlightFiltersGroup);
         highlightFiltersGroup.setText(title);

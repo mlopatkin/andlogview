@@ -48,10 +48,9 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
         Observable<Runnable> addQuickFilterDialogAction(String title);
 
-        Observable<Runnable> addQuickFilterAction(boolean enabled, String title);
+        Observable<Runnable> addQuickFilterAction(String title);
 
-        Observable<Consumer<Color>> addHighlightFilterAction(boolean enabled, String title,
-                List<Color> highlightColors);
+        Observable<Consumer<Color>> addHighlightFilterAction(String title, List<Color> highlightColors);
     }
 
     private static final char ELLIPSIS = '\u2026';  // …
@@ -113,11 +112,11 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
         for (FilteringMode filteringMode : FilteringMode.values()) {
             if (filteringMode != FilteringMode.HIGHLIGHT) {
-                menuView.addQuickFilterAction(true, FilterData.getFilterMenuItemTitle(filteringMode, column, row))
+                menuView.addQuickFilterAction(FilterData.getFilterMenuItemTitle(filteringMode, column, row))
                         .addObserver(() -> addFilter(buildFilter(filteringMode, column, row)));
             }
         }
-        menuView.addHighlightFilterAction(true, FilterData.getFilterMenuItemTitle(FilteringMode.HIGHLIGHT, column, row),
+        menuView.addHighlightFilterAction(FilterData.getFilterMenuItemTitle(FilteringMode.HIGHLIGHT, column, row),
                 highlightColors.getColors())
                 .addObserver(
                         color -> addFilter(buildFilter(FilteringMode.HIGHLIGHT, column, row).setHighlightColor(color)));
