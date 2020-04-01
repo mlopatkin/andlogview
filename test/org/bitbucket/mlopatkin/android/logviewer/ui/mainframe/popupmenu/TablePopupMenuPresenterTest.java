@@ -68,8 +68,9 @@ public class TablePopupMenuPresenterTest {
                         MenuElements.QUICK_DIALOG_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
                         MenuElements.QUICK_FILTER_ACTION,
-                        MenuElements.QUICK_FILTER_ACTION,
-                        MenuElements.HIGHLIGHT_FILTER_ACTION));
+                        MenuElements.HIGHLIGHT_FILTER_ACTION,
+                        MenuElements.QUICK_FILTER_ACTION
+                ));
     }
 
     @Test

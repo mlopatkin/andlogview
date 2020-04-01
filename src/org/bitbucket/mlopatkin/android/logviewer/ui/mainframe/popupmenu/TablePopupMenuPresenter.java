@@ -111,15 +111,17 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                 () -> filterCreator.createFilterWithDialog(buildFilter(FilteringMode.getDefaultMode(), column, row)));
 
         for (FilteringMode filteringMode : FilteringMode.values()) {
+            String itemTitle = FilterData.getFilterMenuItemTitle(filteringMode, column, row);
             if (filteringMode != FilteringMode.HIGHLIGHT) {
-                menuView.addQuickFilterAction(FilterData.getFilterMenuItemTitle(filteringMode, column, row))
+                menuView.addQuickFilterAction(itemTitle)
                         .addObserver(() -> addFilter(buildFilter(filteringMode, column, row)));
+            } else {
+                menuView.addHighlightFilterAction(itemTitle, highlightColors.getColors())
+                        .addObserver(color -> addFilter(
+                                buildFilter(FilteringMode.HIGHLIGHT, column, row).setHighlightColor(color)));
             }
         }
-        menuView.addHighlightFilterAction(FilterData.getFilterMenuItemTitle(FilteringMode.HIGHLIGHT, column, row),
-                highlightColors.getColors())
-                .addObserver(
-                        color -> addFilter(buildFilter(FilteringMode.HIGHLIGHT, column, row).setHighlightColor(color)));
+
     }
 
     private FilterFromDialog buildFilter(FilteringMode mode, Column column, TableRow row) {
