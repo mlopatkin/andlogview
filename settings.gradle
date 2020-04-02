@@ -32,5 +32,6 @@ pluginManagement {
         id 'com.github.johnrengelman.shadow' version '5.2.0'
         id 'net.ltgt.errorprone' version '1.1.1'
         id 'com.diffplug.eclipse.apt' version '3.22.0'
+        id 'me.champeau.gradle.jmh' version '0.5.0'
     }
 }

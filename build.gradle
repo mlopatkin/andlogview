@@ -24,6 +24,7 @@ plugins {
 
     id 'name.mlopatkin.bitbucket'
     id 'com.diffplug.eclipse.apt'
+    id 'me.champeau.gradle.jmh'
 }
 
 repositories {
@@ -55,6 +56,7 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     annotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
     testAnnotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
+    jmhAnnotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
 
     errorprone 'com.google.errorprone:error_prone_core:2.3.1'
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
@@ -80,19 +82,34 @@ def metadataBuildDir = "$buildDir/generated/sources/metadata/java/main"
 sourceSets {
     main {
         java {
+            srcDirs = []
             srcDir 'src'
             srcDir 'utils'
             srcDir metadataBuildDir
         }
         resources {
+            srcDirs = []
             srcDir 'resources'
         }
     }
     test {
         java {
+            srcDirs = []
             srcDir 'test'
         }
         resources {
+            srcDirs = []
+            srcDir 'test_resources'
+        }
+    }
+    jmh {
+        java {
+            srcDirs = []
+            srcDir 'jmh/java'
+        }
+        resources {
+            srcDirs = []
+            srcDir 'jmh/resources'
             srcDir 'test_resources'
         }
     }
@@ -218,5 +235,8 @@ bitbucketUpload {
     fileToUpload = shadowDistZip.archivePath
 }
 
+jmh {
+    humanOutputFile = project.file("${project.buildDir}/reports/jmh/human.txt")
+}
 // Order of tasks is important or generated metadata sources will not be imported
 eclipse.synchronizationTasks 'generateBuildMetadata', 'eclipseJdtApt', 'eclipseFactorypath', 'eclipseJdt'
