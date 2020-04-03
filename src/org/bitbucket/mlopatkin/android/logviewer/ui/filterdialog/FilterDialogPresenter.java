@@ -125,7 +125,7 @@ class FilterDialogPresenter {
             editingPromise.complete(Optional.of(filter));
         } catch (RequestCompilationException e) {
             dialogView.showError(
-                    String.format("%s is not a valid search expression: %s", e.getRequestValue(), e.getMessage()));
+                    formatErrorMessage(e.getMessage(), e.getRequestValue(), e.getStartPos(), e.getEndPos()));
         } catch (PatternsList.FormatException e) {
             dialogView.showError(formatErrorMessage(e.getMessage(), e.getPattern(), e.getStartPos(), e.getEndPos()));
         }

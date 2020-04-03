@@ -96,7 +96,7 @@ public class SearcherBuilder {
         try {
             return buildRegexpSearcher(Pattern.compile(pattern, flags), matchWholeText);
         } catch (PatternSyntaxException e) {
-            throw new RequestCompilationException(e.getMessage(), pattern, e);
+            throw new RequestCompilationException(e.getDescription(), pattern, e);
         }
     }
 
