@@ -16,9 +16,7 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -80,10 +77,6 @@ class FilterDialogPresenter {
         void showError(String text);
     }
 
-    private static final String ITEM_DELIMITER = ", ";
-    private static final Splitter commaSplitter =
-            Splitter.on(',').trimResults(CharMatcher.whitespace()).omitEmptyStrings();
-
     private final FilterDialogView dialogView;
     private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
 
@@ -100,12 +93,13 @@ class FilterDialogPresenter {
     private FilterDialogPresenter(FilterDialogView dialogView, FilterFromDialog existingFilter) {
         this.dialogView = dialogView;
 
-        dialogView.setTagsText(String.join(ITEM_DELIMITER, nullToEmpty(existingFilter.getTags())));
+        dialogView.setTagsText(PatternsList.join(nullToEmpty(existingFilter.getTags())));
         dialogView.setMessageText(Strings.nullToEmpty(existingFilter.getMessagePattern()));
-        dialogView.setPidsAppsText(
+        dialogView.setPidsAppsText(PatternsList.join(
                 Stream.concat(
                         nullToEmpty(existingFilter.getPids()).stream().map(String::valueOf),
-                        nullToEmpty(existingFilter.getApps()).stream()).collect(Collectors.joining(ITEM_DELIMITER)));
+                        nullToEmpty(existingFilter.getApps()).stream())
+        ));
         dialogView.setPriority(existingFilter.getPriority());
         dialogView.setMode(existingFilter.getMode());
         if (existingFilter.getMode() == FilteringMode.HIGHLIGHT) {
@@ -132,6 +126,8 @@ class FilterDialogPresenter {
         } catch (RequestCompilationException e) {
             dialogView.showError(
                     String.format("%s is not a valid search expression: %s", e.getRequestValue(), e.getMessage()));
+        } catch (PatternsList.FormatException e) {
+            dialogView.showError(String.format("Invalid text: %s", e.getMessage()));
         }
     }
 
@@ -160,7 +156,7 @@ class FilterDialogPresenter {
         return new FilterDialogPresenter(dialogView, existingFilter).init();
     }
 
-    private FilterFromDialog createFilter() throws RequestCompilationException {
+    private FilterFromDialog createFilter() throws RequestCompilationException, PatternsList.FormatException {
         FilterFromDialog filter = new FilterFromDialog();
         parseTags(filter);
         filter.setMessagePattern(Strings.emptyToNull(dialogView.getMessageText().trim()));
@@ -180,14 +176,14 @@ class FilterDialogPresenter {
         return !list.isEmpty() ? list : null;
     }
 
-    private void parseTags(FilterFromDialog filter) {
-        filter.setTags(emptyToNull(commaSplitter.splitToList(Strings.nullToEmpty(dialogView.getTagsText()))));
+    private void parseTags(FilterFromDialog filter) throws PatternsList.FormatException {
+        filter.setTags(emptyToNull(PatternsList.split(Strings.nullToEmpty(dialogView.getTagsText()))));
     }
 
-    private void parseAppsAndPids(FilterFromDialog filter) {
+    private void parseAppsAndPids(FilterFromDialog filter) throws PatternsList.FormatException {
         List<String> appNames = new ArrayList<>();
         List<Integer> pids = new ArrayList<>();
-        for (String item : commaSplitter.split(Strings.nullToEmpty(dialogView.getPidsAppsText()))) {
+        for (String item : PatternsList.split(Strings.nullToEmpty(dialogView.getPidsAppsText()))) {
             try {
                 int pid = Integer.parseInt(item);
                 pids.add(pid);

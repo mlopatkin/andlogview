@@ -295,12 +295,12 @@ public class FilterDialogPresenterTest {
         CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.HIDE);
-        fakeView.setTagsText("Hello,foo,  bar , BAZ,,");
+        fakeView.setTagsText("Hello,foo,  /foo,,bar/ , ` BAZ,`");
         fakeView.commit();
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.HIDE)),
-                hasTags(contains("Hello", "foo", "bar", "BAZ"))
+                hasTags(contains("Hello", "foo", "/foo,bar/", " BAZ,"))
         ))));
     }
 
@@ -365,13 +365,13 @@ public class FilterDialogPresenterTest {
         CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
-        fakeView.setPidsAppsText("com.example, 12 , /[Ff]oo/  , 10");
+        fakeView.setPidsAppsText("com.example, 12 , /[Ff],,oo/  , `10`");
         fakeView.commit();
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
                 hasPids(contains(12, 10)),
-                hasApps(contains("com.example", "/[Ff]oo/"))
+                hasApps(contains("com.example", "/[Ff],oo/"))
         ))));
     }
 
