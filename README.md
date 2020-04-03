@@ -53,7 +53,11 @@ Filtered lines can be:
 You may enter several tags, application names or PIDs separated with commas, any
 of them will be filtered. Message, tag and application name filters support
 regular expressions. If several criteria are specified, only records that
-match all of them will be filtered.
+match all of them will be filtered. If the tag or application name contain `,`
+then `,` symbol should be doubled or the whole pattern should be enclosed in
+backticks. For example, if you want to search for tags `Foo,bar` and `Bar,baz`
+you should enter `Foo,,bar, Bar,,baz` or `` `Foo,bar`, `Bar,baz` ``. Wrapping
+in backticks doesn't work for regular expressions.
 
 ## Overview: searching
 

@@ -1,5 +1,10 @@
 version 0.20
     [+] Quick filters based on the content of the clicked cell
+    [+] Allow to use comma in pattern in filter dialog for tags/pids/apps (either by doubling a comma or by enclosing
+        the whole pattern in backticks)
+
+    [!] It isn't possible to use backticks to wrap slash-enclosed patterns. In the next versions it will be allowed to
+        force plain text search even if the pattern looks like regex (e. g. /Foo/).
 
 version 0.19
     [+] Save filters between app runs
