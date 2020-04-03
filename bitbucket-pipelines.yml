@@ -6,6 +6,7 @@ pipelines:
       - step:
           caches:
             - gradle
+            - gradlewrapper
           script:
             - bash ./gradlew build bitbucketUpload --continue
   pull-requests:
@@ -13,8 +14,12 @@ pipelines:
       - step:
           caches:
             - gradle
+            - gradlewrapper
           script:
             - bash tools/hooks/lint-all.sh
             - bash ./gradlew check --continue
           artifacts:
             - build/reports/**
+definitions:
+  caches:
+    gradlewrapper: ~/.gradle/wrapper
