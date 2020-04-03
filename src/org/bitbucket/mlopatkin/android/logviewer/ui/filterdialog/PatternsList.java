@@ -198,7 +198,8 @@ public final class PatternsList {
                 return;
             }
             if (curCh() != SEPARATOR_CHAR) {
-                throw new FormatException("Expected separator here", toSplit, currentPos, currentPos + 1);
+                throw new FormatException("Expected separator here. Did you forget to escape quote character?", toSplit,
+                        currentPos, currentPos + 1);
             }
             ++currentPos;
         }
@@ -220,13 +221,14 @@ public final class PatternsList {
                 endQuotePos = toSplit.indexOf(quote, endQuotePos + 2);
             }
             if (endQuotePos == -1) {
-                throw new FormatException("Unclosed quote", toSplit, startQuotePos, toSplit.length());
+                throw new FormatException("Quote must be closed somewhere", toSplit, startQuotePos, toSplit.length());
             }
             currentPos = endQuotePos + 1;
             String result = toSplit.substring(startQuotePos + 1, endQuotePos)
                     .replace(String.valueOf(quote) + quote, String.valueOf(quote));
             if (isRegex(result)) {
-                throw new FormatException("Regex in quotes", toSplit, startQuotePos, endQuotePos);
+                throw new FormatException("Regex in quotes is not allowed yet", toSplit, startQuotePos,
+                        endQuotePos + 1);
             }
             return result;
         }

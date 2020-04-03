@@ -127,8 +127,32 @@ class FilterDialogPresenter {
             dialogView.showError(
                     String.format("%s is not a valid search expression: %s", e.getRequestValue(), e.getMessage()));
         } catch (PatternsList.FormatException e) {
-            dialogView.showError(String.format("Invalid text: %s", e.getMessage()));
+            dialogView.showError(formatErrorMessage(e.getMessage(), e.getPattern(), e.getStartPos(), e.getEndPos()));
         }
+    }
+
+    private String formatErrorMessage(@Nullable String errorMessage, String pattern, int beginError, int endError) {
+        String brokenPatternSpan = pattern;
+        if (beginError != -1) {
+            brokenPatternSpan = pattern.substring(0, beginError);
+            brokenPatternSpan += "<span style='background-color: red'>";
+            if (endError != -1) {
+                brokenPatternSpan += pattern.substring(beginError, endError);
+                brokenPatternSpan += "</span>";
+                brokenPatternSpan += pattern.substring(endError);
+            } else {
+                brokenPatternSpan += pattern.substring(beginError);
+                brokenPatternSpan += "</span>";
+            }
+        }
+        String result = "<html>Invalid filter expression: ";
+        result += brokenPatternSpan;
+        if (errorMessage != null) {
+            result += "<br/>";
+            result += errorMessage;
+        }
+        result += "</html>";
+        return result;
     }
 
     private void onDialogDiscard() {
