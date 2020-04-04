@@ -109,6 +109,13 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
             return;
         }
 
+        Object columnValue = column.getValue(row.getRowIndex(), row.getRecord());
+        if (columnValue == null || (columnValue instanceof String && PatternsList.WHITESPACE.matchesAllOf(
+                (String) columnValue))) {
+            // Do not add filter actions for null/blank String columns. Until we can filter on 'em.
+            return;
+        }
+
         menuView.addQuickFilterDialogAction(FilterData.getDialogMenuItemTitle(column)).addObserver(
                 () -> filterCreator.createFilterWithDialog(buildFilter(FilteringMode.getDefaultMode(), column, row)));
 

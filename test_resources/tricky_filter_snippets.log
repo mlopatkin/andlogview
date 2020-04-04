@@ -3,4 +3,6 @@
 02-06 11:22:50.508  1301  1507 W RegexishButInvalid(: poll before: g_monitor_fd =248
 02-06 11:22:50.508  1301  1507 W /RegexishButInvalid(/: poll before: g_monitor_fd =248
 02-06 11:22:50.508  1301  1301 I `WifiProJNI: ######### CMD_QUERY_PKTS ########
+02-06 11:22:50.508  1301  1301 I : blank tag
+02-06 11:22:50.508  1301  1301 I BlankMessage:   
 02-06 11:22:50.509  1301  1507 I `QosMonitor`: postEventFromNative: msg=100,arg1=0,arg2=9

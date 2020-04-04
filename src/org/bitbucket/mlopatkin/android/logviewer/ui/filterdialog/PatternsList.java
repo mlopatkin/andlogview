@@ -123,7 +123,7 @@ public final class PatternsList {
     private static final char QUOTE = '`';
     private static final char REGEX_BOUND = '/';
     private static final char SEPARATOR_CHAR = ',';
-    private static final CharMatcher WHITESPACE = CharMatcher.whitespace();
+    public static final CharMatcher WHITESPACE = CharMatcher.whitespace();
     private static final CharMatcher NON_WHITESPACE = WHITESPACE.negate();
 
     private static class PatternSplitter {

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -219,6 +220,34 @@ public class TablePopupMenuPresenterParameterizedTest {
         return new TableRow(1, record);
     }
 
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(value = Column.class, names = {"APP_NAME", "TAG", "MESSAGE"})
+    public void filterOptionsNotAvailableIfCellIsEmpty(Column column) {
+        TableRow row = makeValueRow("");
+        TablePopupMenuPresenter presenter = createPresenter(row);
+        presenter.showContextMenu(popupMenuView, column, row);
+
+        assertFalse(popupMenuView.isQuickDialogActionAvailable());
+        assertFalse(popupMenuView.isHighlightActionAvailable());
+        assertEquals(0, popupMenuView.getQuickFilterElementsCount());
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(value = Column.class, names = {"APP_NAME", "TAG", "MESSAGE"})
+    public void filterOptionsNotAvailableIfCellIsBlank(Column column) {
+        TableRow row = makeValueRow("  ");
+        TablePopupMenuPresenter presenter = createPresenter(row);
+        presenter.showContextMenu(popupMenuView, column, row);
+
+        assertFalse(popupMenuView.isQuickDialogActionAvailable());
+        assertFalse(popupMenuView.isHighlightActionAvailable());
+        assertEquals(0, popupMenuView.getQuickFilterElementsCount());
+    }
+
+    private static TableRow makeValueRow(String value) {
+        LogRecord record = new LogRecord(null, 123, 456, value, LogRecord.Priority.INFO, value, value);
+        return new TableRow(1, record);
+    }
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
