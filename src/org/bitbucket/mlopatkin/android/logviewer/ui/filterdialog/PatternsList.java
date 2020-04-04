@@ -294,8 +294,25 @@ public final class PatternsList {
         return WHITESPACE.matches(c);
     }
 
-    private static boolean isRegex(String s) {
+    /**
+     * Checks if the string looks like a regular expression pattern. Only wrappers are checked, not the content.
+     *
+     * @param s the string to check
+     * @return {@code true} if the string is interpreted as a regex pattern, {@code false} otherwise
+     */
+    public static boolean isRegex(String s) {
         return s.length() >= 2 && s.charAt(0) == REGEX_BOUND
                 && s.charAt(s.length() - 1) == REGEX_BOUND;
+    }
+
+    /**
+     * Wraps the string in regular expression slashes, i. e. converts {@code "foo"} into {@code "/foo/"}. No escaping of
+     * the given string is performed.
+     *
+     * @param regexPattern the regular expression string to wrap
+     * @return the regular expression pattern
+     */
+    public static String wrapRegex(String regexPattern) {
+        return REGEX_BOUND + regexPattern + REGEX_BOUND;
     }
 }

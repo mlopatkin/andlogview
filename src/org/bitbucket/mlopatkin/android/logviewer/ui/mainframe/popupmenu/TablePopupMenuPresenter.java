@@ -22,6 +22,7 @@ import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
 import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
 import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
+import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.PatternsList;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -135,9 +137,8 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
             filter.initialize();
             filterCreator.addFilter(filter);
         } catch (RequestCompilationException e) {
-            // It is possible that certain messages/app names will result in text being treated as a regex pattern.
-            // Currently there is no support for escaping anything in the dialog.
-            // TODO(mlopatkin) think about how handle this?
+            // Filter values are escaped so this shouldn't happen. Show error and ask for forgiveness.
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -178,16 +179,16 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                     dialog.setPids(Collections.singletonList(record.getPid()));
                     break;
                 case APP_NAME:
-                    dialog.setApps(Collections.singletonList(record.getAppName()));
+                    dialog.setApps(Collections.singletonList(escapeString(record.getAppName())));
                     break;
                 case PRIORITY:
                     dialog.setPriority(record.getPriority());
                     break;
                 case TAG:
-                    dialog.setTags(Collections.singletonList(record.getTag()));
+                    dialog.setTags(Collections.singletonList(escapeString(record.getTag())));
                     break;
                 case MESSAGE:
-                    dialog.setMessagePattern(record.getMessage());
+                    dialog.setMessagePattern(escapeString(record.getMessage()));
                     break;
             }
         }
@@ -233,5 +234,14 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
             }
             throw new IllegalArgumentException("Unexpected filtering mode " + mode);
         }
+    }
+
+    private static String escapeString(String text) {
+        // This isn't the best possible way to deal with this but there is no way to force plain-textness of the pattern
+        // yet.
+        if (PatternsList.isRegex(text)) {
+            return PatternsList.wrapRegex('^' + Pattern.quote(text) + '$');
+        }
+        return text;
     }
 }

@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -181,6 +182,43 @@ public class TablePopupMenuPresenterParameterizedTest {
     private static TableRow makeRow() {
         return new TableRow(1, RECORD);
     }
+
+    static Stream<Arguments> getRegexishRowArgs() {
+        return Stream.of(
+                arguments(Column.APP_NAME, hasApps(contains("/^\\Q/usr/bin/[/\\E$/"))),
+                arguments(Column.TAG, hasTags(contains("/^\\Q/Broken(/\\E$/"))),
+                arguments(Column.MESSAGE, hasMessage(equalTo("/^\\Q/Broken \\E\\\\E\\Q[Message/\\E$/")))
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getRegexishRowArgs")
+    public void filterIsSuccessfullyCreatedIfRegexishRowSelected(Column column,
+            Matcher<FilterFromDialog> matchesFilter) {
+        TablePopupMenuPresenter presenter = createPresenter(makeRegexishRow());
+        presenter.showContextMenu(popupMenuView, column, makeRegexishRow());
+        popupMenuView.triggerQuickFilterAction(0);
+
+        verify(filterCreator).addFilter(argThat(matchesFilter));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getRegexishRowArgs")
+    public void filterDialogIsSuccessfullyOpenedIfRegexishRowSelected(Column column,
+            Matcher<FilterFromDialog> matchesFilter) {
+        TablePopupMenuPresenter presenter = createPresenter(makeRegexishRow());
+        presenter.showContextMenu(popupMenuView, column, makeRegexishRow());
+        popupMenuView.triggerQuickDialogAction();
+
+        verify(filterCreator).createFilterWithDialog(argThat(matchesFilter));
+    }
+
+    private static TableRow makeRegexishRow() {
+        LogRecord record = new LogRecord(null, 123, 456, "/usr/bin/[/", LogRecord.Priority.INFO, "/Broken(/",
+                "/Broken \\E[Message/");
+        return new TableRow(1, record);
+    }
+
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
