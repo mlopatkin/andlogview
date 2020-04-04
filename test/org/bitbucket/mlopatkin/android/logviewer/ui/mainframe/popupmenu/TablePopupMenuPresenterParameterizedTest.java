@@ -28,6 +28,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -72,6 +73,8 @@ public class TablePopupMenuPresenterParameterizedTest {
     MenuFilterCreator filterCreator;
     @Mock
     HighlightColors highlightColors;
+    @Mock
+    DialogFactory dialogFactory;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -251,6 +254,6 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
-        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator, highlightColors);
+        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator, highlightColors, dialogFactory);
     }
 }

@@ -63,7 +63,7 @@ public class MainFrameModule {
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     JTable getMainLogTable(LogRecordTableModel model, LogModelFilter filter, BookmarkHighlighter bookmarkHighlighter,
-            BookmarkModel bookmarkModel, Lazy<MainFilterController> filterController) {
+            BookmarkModel bookmarkModel, Lazy<MainFilterController> filterController, DialogFactory dialogFactory) {
         JTable logTable = DaggerMainLogTableComponent.factory()
                 .create(model, filter, bookmarkModel, new MenuFilterCreator() {
                     // TODO(mlopatkin) break dependency cycle and replace with direct dependency (?)
@@ -76,8 +76,7 @@ public class MainFrameModule {
                     public void createFilterWithDialog(FilterFromDialog baseData) {
                         filterController.get().createFilterWithDialog(baseData);
                     }
-                })
-                .getLogTable();
+                }, dialogFactory).getLogTable();
         // TODO(mlopatkin) Replace this cast with injection
         ((DecoratingRendererTable) logTable).addDecorator(bookmarkHighlighter);
         return logTable;

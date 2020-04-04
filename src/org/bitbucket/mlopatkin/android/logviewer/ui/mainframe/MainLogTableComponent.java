@@ -37,6 +37,7 @@ public interface MainLogTableComponent {
     interface Factory {
         MainLogTableComponent create(
                 @BindsInstance LogRecordTableModel tableModel, @BindsInstance LogModelFilter modelFilter,
-                @BindsInstance BookmarkModel bookmarkModel, @BindsInstance MenuFilterCreator filterCreator);
+                @BindsInstance BookmarkModel bookmarkModel, @BindsInstance MenuFilterCreator filterCreator,
+                @BindsInstance DialogFactory dialogFactory);
     }
 }

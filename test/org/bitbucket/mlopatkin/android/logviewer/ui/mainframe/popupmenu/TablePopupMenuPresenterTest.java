@@ -24,6 +24,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,8 @@ public class TablePopupMenuPresenterTest {
     MenuFilterCreator filterCreator;
     @Mock
     HighlightColors highlightColors;
+    @Mock
+    DialogFactory dialogFactory;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -271,7 +274,7 @@ public class TablePopupMenuPresenterTest {
 
     private TablePopupMenuPresenter createPresenter(TableRow... rows) {
         SelectedRows selectedRows = new TestSelectedRows(rows);
-        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator, highlightColors);
+        return new TablePopupMenuPresenter(selectedRows, bookmarkModel, filterCreator, highlightColors, dialogFactory);
     }
 
 }

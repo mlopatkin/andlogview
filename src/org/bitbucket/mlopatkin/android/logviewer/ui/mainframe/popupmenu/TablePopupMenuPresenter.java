@@ -16,7 +16,9 @@
 
 package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
 
+import org.apache.log4j.Logger;
 import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
 import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
 import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
 import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
@@ -27,6 +29,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
+import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.bitbucket.mlopatkin.utils.events.Observable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -55,19 +58,23 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         Observable<Consumer<Color>> addHighlightFilterAction(String title, List<Color> highlightColors);
     }
 
+    private static final Logger logger = Logger.getLogger(TablePopupMenuPresenter.class);
+
     private static final char ELLIPSIS = '\u2026';  // …
 
     private final BookmarkModel bookmarkModel;
     private final MenuFilterCreator filterCreator;
     private final HighlightColors highlightColors;
+    private final DialogFactory dialogFactory;
 
     @Inject
     public TablePopupMenuPresenter(SelectedRows selectedRows, BookmarkModel bookmarkModel,
-            MenuFilterCreator filterCreator, HighlightColors highlightColors) {
+            MenuFilterCreator filterCreator, HighlightColors highlightColors, DialogFactory dialogFactory) {
         super(selectedRows);
         this.bookmarkModel = bookmarkModel;
         this.filterCreator = filterCreator;
         this.highlightColors = highlightColors;
+        this.dialogFactory = dialogFactory;
     }
 
     @Override
@@ -144,8 +151,8 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
             filter.initialize();
             filterCreator.addFilter(filter);
         } catch (RequestCompilationException e) {
-            // Filter values are escaped so this shouldn't happen. Show error and ask for forgiveness.
-            throw new IllegalArgumentException(e);
+            logger.error("Failed to add quick filter", e);
+            ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Failed to create filter. %s", e.getMessage());
         }
     }
 
