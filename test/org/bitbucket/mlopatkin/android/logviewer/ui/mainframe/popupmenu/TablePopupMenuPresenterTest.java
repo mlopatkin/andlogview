@@ -25,19 +25,19 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
 import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.awt.Color;
 
 import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class TablePopupMenuPresenterTest {
@@ -48,7 +48,7 @@ public class TablePopupMenuPresenterTest {
     @Mock
     HighlightColors highlightColors;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
