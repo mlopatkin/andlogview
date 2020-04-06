@@ -70,7 +70,7 @@ checkstyle {
 }
 
 applicationName = 'logview'
-version = '0.20' + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
+version = '0.21' + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
 
 mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
 

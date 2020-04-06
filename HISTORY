@@ -1,3 +1,5 @@
+version 0.21
+
 version 0.20
     [+] Quick filters based on the content of the clicked cell
     [+] Allow to use comma in pattern in filter dialog for tags/pids/apps (either by doubling a comma or by enclosing
