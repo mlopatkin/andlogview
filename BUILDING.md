@@ -1,4 +1,4 @@
-# BUILDING LOGVIEWER
+# BUILDING ANDLOGVIEW
 
 ## Prerequisites
 

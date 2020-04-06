@@ -181,7 +181,7 @@ public class MainFrame extends JFrame {
      * Initialize the contents of the frame.
      */
     private void initialize() {
-        setTitle("Android Log Viewer " + Main.getVersionString());
+        setTitle("AndLogView " + Main.getVersionString());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         bookmarkModel = dependencies.getBookmarkModel();

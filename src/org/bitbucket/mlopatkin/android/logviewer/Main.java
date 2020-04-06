@@ -65,7 +65,7 @@ public class Main {
             ErrorDialogsHelper.showError(null, "Error in configuration file: " + e.getMessage());
         }
 
-        logger.info("Android Log Viewer " + getVersionString());
+        logger.info("AndLogView " + getVersionString());
         logger.info("Revision " + BuildInfo.REVISION);
         @SuppressWarnings("unchecked")
         List<String> files = (List<String>) result.nonOptionArguments();

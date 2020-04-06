@@ -1,4 +1,4 @@
-# Android Log Viewer
+# AndLogView: Log viewer for Android development
 
 https://bitbucket.org/mlopatkin/android-log-viewer
 
@@ -27,10 +27,10 @@ Requirements:
 
 Unpack a zip archive to any folder.
 
-Use the OS-specific script to launch the logviewer:
+Use the OS-specific script to launch AndLogView:
 
- - `bin/logview.bat` (Windows)
- - `bin/logview` (Linux)
+ - `bin/andlogview.bat` (Windows)
+ - `bin/andlogview` (Linux)
 
 Both scripts expect the javaw/java to be on your PATH.
 
