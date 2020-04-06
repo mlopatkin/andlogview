@@ -9,6 +9,16 @@ pipelines:
             - gradlewrapper
           script:
             - bash ./gradlew build bitbucketUpload --continue
+  tags:
+    '*':
+      - step:  # Release (non-SNAPSHOT) build
+          caches:
+            - gradle
+            - gradlewrapper
+          script:
+            - export LOGVIEW_SNAPSHOT_BUILD=false
+            - bash ./gradlew bitbucketUpload
+
   pull-requests:
     '**':
       - step:
