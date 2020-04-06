@@ -160,6 +160,25 @@ public class MainFilterControllerTest {
         assertEquals(Color.BLACK, filterImpl.getHighlightColor(RECORD2));
     }
 
+    @Test
+    public void editFilterTwiceDoesntCrash() {
+        MainFilterController controller = new MainFilterController(
+                filterPanelModel, indexFilterCollection, dialogFactory, new FakeDefaultConfigStorage(), filterImpl);
+
+        order = inOrder(dialogFactory, filterPanelModel);
+        FilterFromDialog initialFilter = createColoringFilter(Color.BLACK, MATCH_ALL);
+
+        PanelFilter initialPanel = createFilterWithDialog(controller, initialFilter);
+
+        CompletableFuture<Optional<FilterFromDialog>> firstDialog = openFilterDialog(initialPanel);
+        CompletableFuture<Optional<FilterFromDialog>> secondDialog = openFilterDialog(initialPanel);
+
+        firstDialog.complete(Optional.of(createColoringFilter(Color.BLUE, MATCH_ALL)));
+        secondDialog.complete(Optional.of(createColoringFilter(Color.RED, MATCH_ALL)));
+
+        assertEquals(Color.BLUE, filterImpl.getHighlightColor(RECORD1));
+    }
+
     private PanelFilter createFilterWithDialog(MainFilterController controller, FilterFromDialog dialogResult) {
         when(dialogFactory.startCreateFilterDialog()).thenReturn(
                 CompletableFuture.completedFuture(Optional.of(dialogResult)));
@@ -176,6 +195,14 @@ public class MainFilterControllerTest {
 
         order.verify(filterPanelModel).replaceFilter(eq(oldFilter), panelFilterCaptor.capture());
         return panelFilterCaptor.getValue();
+    }
+
+    private CompletableFuture<Optional<FilterFromDialog>> openFilterDialog(PanelFilter filter) {
+        CompletableFuture<Optional<FilterFromDialog>> future = new CompletableFuture<>();
+        when(dialogFactory.startEditFilterDialog(any())).thenReturn(future);
+        filter.openFilterEditor();
+
+        return future;
     }
 
     private FilterFromDialog createMockFilter(FilteringMode mode, final Predicate<LogRecord> predicate) {

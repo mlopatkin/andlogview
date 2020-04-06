@@ -28,6 +28,7 @@ import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
 import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
+import org.bitbucket.mlopatkin.utils.Threads;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,9 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Override
     public void createFilterWithDialog() {
-        dialogFactory.startCreateFilterDialog().thenAccept(newFilter -> newFilter.ifPresent(this::addNewDialogFilter));
+        dialogFactory.startCreateFilterDialog()
+                .thenAccept(newFilter -> newFilter.ifPresent(this::addNewDialogFilter))
+                .exceptionally(Threads::uncaughtException);
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
@@ -132,7 +135,9 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Override
     public void createFilterWithDialog(FilterFromDialog baseData) {
-        dialogFactory.startEditFilterDialog(baseData).thenAccept(result -> result.ifPresent(this::addFilter));
+        dialogFactory.startEditFilterDialog(baseData)
+                .thenAccept(result -> result.ifPresent(this::addFilter))
+                .exceptionally(Threads::uncaughtException);
     }
 
     /**
@@ -175,7 +180,15 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         protected void replaceMeWith(BaseToggleFilter<T> replacement) {
             replacement.isEnabled = isEnabled;
             int myPos = filters.indexOf(this);
-            assert myPos >= 0;
+            if (myPos == -1) {
+                // Ignore edit result if |this| filter isn't alive anymore. This can happen if the editor was opened
+                // twice for the same filter. If both edits complete successfully then second one won't find 'this'
+                // here, because it was replaced with the result of the first edit. Not so much can be done in this
+                // case. Prior to 0.19 the result of the second edit was added as a new filter, 0.19 just crashes.
+                // TODO(mlopatkin) proper solution is to disallow opening a second editor but this is much more involved
+                //  fix which I don't like to push within 0.20 timeframe.
+                return;
+            }
             filters.set(myPos, replacement);
             filterPanelModel.replaceFilter(this, replacement);
             if (collection.equals(replacement.collection) && mode == replacement.mode) {
@@ -209,7 +222,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
                     DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
                     replaceMeWith(newPanelFilter);
                 }
-            });
+            }).exceptionally(Threads::uncaughtException);
         }
 
         @Override

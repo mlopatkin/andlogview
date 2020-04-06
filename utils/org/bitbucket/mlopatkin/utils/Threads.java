@@ -16,7 +16,11 @@
 
 package org.bitbucket.mlopatkin.utils;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
 
 public final class Threads {
     private Threads() {}
@@ -29,5 +33,17 @@ public final class Threads {
      */
     public static ThreadFactory withName(final String name) {
         return r -> new Thread(r, name);
+    }
+
+    /**
+     * Helper for {@link CompletableFuture#exceptionally(Function)} that forwards exception to thread's default
+     * exception handler.
+     * @param th the throwable to forward
+     * @return {@code null}
+     */
+    public static @Nullable Void uncaughtException(Throwable th) {
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, th);
+        return null;
     }
 }
