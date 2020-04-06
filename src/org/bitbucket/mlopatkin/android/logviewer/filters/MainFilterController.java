@@ -135,7 +135,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Override
     public void createFilterWithDialog(FilterFromDialog baseData) {
-        dialogFactory.startEditFilterDialog(baseData)
+        dialogFactory.startCreateFilterDialogWithInitialData(baseData)
                 .thenAccept(result -> result.ifPresent(this::addFilter))
                 .exceptionally(Threads::uncaughtException);
     }

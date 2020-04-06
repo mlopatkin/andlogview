@@ -23,18 +23,31 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class FilterDialogFactory {
-    private final Provider<FilterDialog> filterDialogFactory;
+    private static final String NEW_FILTER_DIALOG_TITLE = "Create new filter";
+    private static final String EDIT_FILTER_DIALOG_TITLE = "Edit filter";
+
+    private final Provider<FilterDialog> filterDialogViewFactory;
 
     @Inject
-    public FilterDialogFactory(Provider<FilterDialog> filterDialogFactory) {
-        this.filterDialogFactory = filterDialogFactory;
+    public FilterDialogFactory(Provider<FilterDialog> filterDialogViewFactory) {
+        this.filterDialogViewFactory = filterDialogViewFactory;
     }
 
     public CompletionStage<Optional<FilterFromDialog>> startCreateFilterDialog() {
-        return FilterDialogPresenter.create(filterDialogFactory.get()).show();
+        FilterDialog dialogView = filterDialogViewFactory.get();
+        dialogView.setTitle(NEW_FILTER_DIALOG_TITLE);
+        return FilterDialogPresenter.create(dialogView).show();
+    }
+
+    public CompletionStage<Optional<FilterFromDialog>> startCreateFilterDialogWithInitialData(FilterFromDialog filter) {
+        FilterDialog dialogView = filterDialogViewFactory.get();
+        dialogView.setTitle(NEW_FILTER_DIALOG_TITLE);
+        return FilterDialogPresenter.create(dialogView, filter).show();
     }
 
     public CompletionStage<Optional<FilterFromDialog>> startEditFilterDialog(FilterFromDialog filter) {
-        return FilterDialogPresenter.create(filterDialogFactory.get(), filter).show();
+        FilterDialog dialogView = filterDialogViewFactory.get();
+        dialogView.setTitle(EDIT_FILTER_DIALOG_TITLE);
+        return FilterDialogPresenter.create(dialogView, filter).show();
     }
 }
