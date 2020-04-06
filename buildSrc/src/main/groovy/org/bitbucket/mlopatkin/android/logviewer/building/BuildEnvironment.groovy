@@ -21,21 +21,23 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * Helper methods to access environemnt parameters: is build run by CI server? what revision is checked out?
+ * Helper methods to access environment parameters: is build run by CI server? what revision is checked out?
  */
 @CompileStatic
 class BuildEnvironment {
     private static final Logger logger = LoggerFactory.getLogger('BuildEnvironment')
     private final File projectDir
-    private final String mercurialExecutable
 
     BuildEnvironment(File projectDir) {
         this.projectDir = projectDir
-        this.mercurialExecutable = mercurialExecutable
     }
 
-    boolean isCiBuild() {
+    private static boolean isCiBuild() {
         return System.getenv('CI') == 'true'
+    }
+
+    static boolean isSnapshotBuild() {
+        return !'false'.equalsIgnoreCase(System.getenv('LOGVIEW_SNAPSHOT_BUILD'))
     }
 
     String getSourceRevision() {

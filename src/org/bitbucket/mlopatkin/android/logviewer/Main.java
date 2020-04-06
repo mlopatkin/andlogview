@@ -66,6 +66,7 @@ public class Main {
         }
 
         logger.info("Android Log Viewer " + getVersionString());
+        logger.info("Revision " + BuildInfo.REVISION);
         @SuppressWarnings("unchecked")
         List<String> files = (List<String>) result.nonOptionArguments();
         if (files.size() == 0) {

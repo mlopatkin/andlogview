@@ -62,6 +62,7 @@ dependencies {
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
+import org.bitbucket.mlopatkin.android.logviewer.building.BuildEnvironment
 import org.bitbucket.mlopatkin.android.logviewer.building.GenerateBuildMetadata
 
 checkstyle {
@@ -69,7 +70,8 @@ checkstyle {
 }
 
 applicationName = 'logview'
-version = '0.20-SNAPSHOT'
+version = '0.20' + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
+
 mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
 
 def javaVersion = JavaVersion.VERSION_1_8
