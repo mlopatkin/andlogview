@@ -247,7 +247,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         abstract void appendMe(MainFilterController filterController);
     }
 
-    private static class SavedDialogFilterData extends SavedFilterData {
+    static class SavedDialogFilterData extends SavedFilterData {
         private final FilterFromDialog filterData;
 
         SavedDialogFilterData(FilterFromDialog filterData, boolean enabled) {

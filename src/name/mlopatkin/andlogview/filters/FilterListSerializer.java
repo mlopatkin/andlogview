@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
+import name.mlopatkin.andlogview.filters.MainFilterController.SavedDialogFilterData;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
 
 import com.google.gson.Gson;
@@ -25,11 +26,48 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 class FilterListSerializer implements ConfigStorage.ConfigStorageClient<List<SavedFilterData>> {
+    private enum ClassNameToken {
+        LEGACY_DIALOG_FILTER_DATA(
+                SavedDialogFilterData.class,
+                "org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController$SavedDialogFilterData");
+
+        public final Class<SavedFilterData> dataClass;
+        public final String token;
+
+        // Safe suppress because class is covariant here
+        @SuppressWarnings("unchecked")
+        ClassNameToken(Class<? extends SavedFilterData> dataClass, String token) {
+            this.dataClass = (Class<SavedFilterData>) dataClass;
+            this.token = token;
+        }
+
+        static @Nullable ClassNameToken getByToken(String classNameToken) {
+            for (ClassNameToken value : values()) {
+                if (value.token.equalsIgnoreCase(classNameToken)) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+        static @Nullable ClassNameToken getByClass(Class<? extends SavedFilterData> clazz) {
+            for (ClassNameToken value : values()) {
+                if (value.dataClass.equals(clazz)) {
+                    return value;
+                }
+            }
+            return null;
+        }
+    }
+
     public FilterListSerializer() {}
 
     @Override
@@ -43,12 +81,13 @@ class FilterListSerializer implements ConfigStorage.ConfigStorageClient<List<Sav
         ArrayList<SavedFilterData> result = new ArrayList<>(array.size());
         for (JsonElement filterData : array) {
             String filterClassName = filterData.getAsJsonObject().get("classname").getAsString();
+            ClassNameToken classNameToken = ClassNameToken.getByToken(filterClassName);
+            if (classNameToken == null) {
+                throw new InvalidJsonContentException("Can't find class " + filterClassName + " to deserialize filter");
+            }
             try {
-                Class<?> filterClass = Class.forName(filterClassName);
-                result.add(gson.fromJson(filterData, filterClass.asSubclass(SavedFilterData.class)));
-            } catch (ClassNotFoundException e) {
-                throw new InvalidJsonContentException(
-                        "Can't find class '" + filterClassName + "' referenced in filter", e);
+                Class<SavedFilterData> filterClass = classNameToken.dataClass;
+                result.add(gson.fromJson(filterData, filterClass));
             } catch (ClassCastException e) {
                 throw new InvalidJsonContentException(
                         "Class '" + filterClassName + "' isn't a subclass of BaseToggleFilter");
@@ -67,7 +106,9 @@ class FilterListSerializer implements ConfigStorage.ConfigStorageClient<List<Sav
         JsonArray array = new JsonArray();
         for (SavedFilterData filter : filters) {
             JsonElement filterElement = gson.toJsonTree(filter);
-            filterElement.getAsJsonObject().add("classname", new JsonPrimitive(filter.getClass().getName()));
+            ClassNameToken classNameToken = ClassNameToken.getByClass(filter.getClass());
+            Objects.requireNonNull(classNameToken, "Can't find token for class " + filter.getClass());
+            filterElement.getAsJsonObject().add("classname", new JsonPrimitive(classNameToken.token));
             array.add(filterElement);
         }
         return array;
