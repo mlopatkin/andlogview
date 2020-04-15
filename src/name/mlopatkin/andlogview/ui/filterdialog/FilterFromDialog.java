@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
+
+import name.mlopatkin.andlogview.filters.ColoringFilter;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecordPredicates;
+import name.mlopatkin.andlogview.search.RequestCompilationException;
+import name.mlopatkin.andlogview.search.SearchRequestParser;
+import name.mlopatkin.andlogview.search.SearcherBuilder;
+import name.mlopatkin.andlogview.utils.MorePredicates;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordPredicates;
-import org.bitbucket.mlopatkin.android.logviewer.filters.ColoringFilter;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearchRequestParser;
-import org.bitbucket.mlopatkin.android.logviewer.search.SearcherBuilder;
-import org.bitbucket.mlopatkin.utils.MorePredicates;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

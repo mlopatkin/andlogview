@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.jmh;
+package name.mlopatkin.andlogview.jmh;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;

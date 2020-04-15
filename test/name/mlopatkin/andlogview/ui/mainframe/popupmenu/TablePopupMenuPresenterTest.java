@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
+package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
 
-import com.google.common.collect.ImmutableList;
+import static name.mlopatkin.andlogview.test.TestData.RECORD1;
 
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.awt.Color;
-
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.filters.HighlightColors;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.logtable.TestSelectedRows;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
+
+import com.google.common.collect.ImmutableList;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.awt.Color;
 
 public class TablePopupMenuPresenterTest {
     FakeTablePopupMenuView popupMenuView;

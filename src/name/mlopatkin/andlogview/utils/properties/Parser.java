@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils.properties;
+package name.mlopatkin.andlogview.utils.properties;
 
 /**
  * Interface to convert property values to and from strings to store them in

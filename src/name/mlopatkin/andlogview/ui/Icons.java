@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui;
+package name.mlopatkin.andlogview.ui;
 
 import java.net.URL;
 import java.util.Objects;

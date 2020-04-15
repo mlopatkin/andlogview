@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
 import java.util.function.Predicate;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Common predicates for LogRecords. All predicates throw NPE on null input.

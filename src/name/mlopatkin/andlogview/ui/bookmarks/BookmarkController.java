@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
+package name.mlopatkin.andlogview.ui.bookmarks;
 
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
+import name.mlopatkin.andlogview.ui.indexframe.IndexController;
+import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
 import javax.inject.Inject;
 import javax.inject.Named;

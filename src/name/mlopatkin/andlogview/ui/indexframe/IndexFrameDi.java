@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
+package name.mlopatkin.andlogview.ui.indexframe;
+
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
+import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.logtable.LogTableModule;
+import name.mlopatkin.andlogview.ui.logtable.LogTableScoped;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenu;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenuViewImpl;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 
 import com.google.common.collect.ImmutableList;
 
@@ -23,18 +36,6 @@ import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableModule;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuViewImpl;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;

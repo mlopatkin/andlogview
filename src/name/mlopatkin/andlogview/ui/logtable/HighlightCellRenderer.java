@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.logviewer.TooltipGenerator;
-import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.StyledLabel;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import name.mlopatkin.andlogview.TooltipGenerator;
+import name.mlopatkin.andlogview.search.TextHighlighter;
+import name.mlopatkin.andlogview.widgets.StyledLabel;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.Color;
 import java.awt.Component;

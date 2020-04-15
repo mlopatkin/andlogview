@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.util.Set;
 import java.util.function.Predicate;

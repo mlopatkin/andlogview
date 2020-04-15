@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
+
+import static name.mlopatkin.andlogview.ui.logtable.TableColumnTestUtils.areTableColumnsFor;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel.ColumnOrderChangedListener;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel.ColumnOrderChangedListener;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,15 +39,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-
-import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableColumnTestUtils.areTableColumnsFor;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 public class LogRecordTableColumnModelTest {
     @Test

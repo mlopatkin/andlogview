@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat.filters;
+package name.mlopatkin.andlogview.liblogcat.filters;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordUtils;
-import org.junit.Test;
+import static name.mlopatkin.andlogview.utils.PredicateMatchers.accepts;
+import static name.mlopatkin.andlogview.utils.PredicateMatchers.rejects;
 
-import static org.bitbucket.mlopatkin.utils.PredicateMatchers.accepts;
-import static org.bitbucket.mlopatkin.utils.PredicateMatchers.rejects;
 import static org.junit.Assert.assertThat;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.liblogcat.LogRecordUtils;
+
+import org.junit.Test;
 
 public class LogBufferFilterTest {
 

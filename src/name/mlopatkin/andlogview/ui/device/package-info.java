@@ -18,4 +18,4 @@
 /**
  * Device selection dialog and its helpers.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.device;
+package name.mlopatkin.andlogview.ui.device;

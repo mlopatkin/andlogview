@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.junit.Test;
-
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletionStage;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasApps;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasColor;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMessage;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMode;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPids;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPriority;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasTags;
+import static name.mlopatkin.andlogview.utils.FutureMatchers.completedWithResult;
+import static name.mlopatkin.andlogview.utils.FutureMatchers.notCompleted;
 
 import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasApps;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasColor;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMessage;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMode;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPids;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPriority;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasTags;
-import static org.bitbucket.mlopatkin.utils.FutureMatchers.completedWithResult;
-import static org.bitbucket.mlopatkin.utils.FutureMatchers.notCompleted;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -51,6 +39,21 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
+
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.junit.Test;
+
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 public class FilterDialogPresenterTest {
 

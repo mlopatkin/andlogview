@@ -1,14 +1,15 @@
-package org.bitbucket.mlopatkin.android.logviewer.search;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.junit.Test;
-import org.mockito.Mockito;
+package name.mlopatkin.andlogview.search;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class RowSearchersTest {
     static final String TAG_1 = "Tag1";

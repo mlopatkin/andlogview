@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.logviewer.PriorityColoredCellRenderer;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.SortingDisableSorter;
+import name.mlopatkin.andlogview.PriorityColoredCellRenderer;
+import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
+import name.mlopatkin.andlogview.widgets.SortingDisableSorter;
 
 import javax.swing.RowFilter;
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
+package name.mlopatkin.andlogview.ui.bookmarks;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuViewImpl;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
-import org.bitbucket.mlopatkin.utils.events.Observable;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenuViewImpl;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.widgets.ObservableAction;
 
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
+
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.Color;

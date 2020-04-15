@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
+package name.mlopatkin.andlogview.ui.indexframe;
 
 /**
  * The instance of the IndexController translates actions with {@link IndexFrame} to the main window.

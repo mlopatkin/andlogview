@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
+package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
+
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bitbucket.mlopatkin.utils.events.Observable;
-import org.bitbucket.mlopatkin.utils.events.Subject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 

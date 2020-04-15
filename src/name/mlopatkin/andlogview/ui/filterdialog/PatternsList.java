@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
 import com.google.common.base.CharMatcher;
 

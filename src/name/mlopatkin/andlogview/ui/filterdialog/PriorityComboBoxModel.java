@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.swing.AbstractListModel;

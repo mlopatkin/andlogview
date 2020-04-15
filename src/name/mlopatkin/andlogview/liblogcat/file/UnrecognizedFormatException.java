@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat.file;
+package name.mlopatkin.andlogview.liblogcat.file;
 
 /**
  * Thrown if parsed file doesn't contains logs in supported format.

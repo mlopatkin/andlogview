@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
+
+import static org.junit.Assert.assertThat;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Test;
 
 import java.util.regex.Matcher;
-
-import static org.junit.Assert.assertThat;
 
 public class ProcessListParserTest {
     private static final String PS_LINE_1 = "root      1     0     244    228   fg  ffffffff 00000000 S /init";

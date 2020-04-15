@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
+
+import name.mlopatkin.andlogview.PidToProcessMapper;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
+import name.mlopatkin.andlogview.widgets.TableCellHelper;
+import name.mlopatkin.andlogview.widgets.TableColumnBuilder;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TableColumnBuilder;
-import org.bitbucket.mlopatkin.utils.events.Observable;
-import org.bitbucket.mlopatkin.utils.events.Subject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumMap;

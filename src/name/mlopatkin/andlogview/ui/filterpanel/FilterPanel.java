@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filterpanel;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.Icons;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import name.mlopatkin.andlogview.ui.Icons;
+import name.mlopatkin.andlogview.widgets.UiHelper;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;

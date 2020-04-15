@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-import org.bitbucket.mlopatkin.android.logviewer.BatchRecordsReceiver;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
-import org.bitbucket.mlopatkin.utils.MyListUtils;
+import name.mlopatkin.andlogview.BatchRecordsReceiver;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.MyListUtils;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;

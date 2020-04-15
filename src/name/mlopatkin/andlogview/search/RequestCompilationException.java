@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.search;
+package name.mlopatkin.andlogview.search;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

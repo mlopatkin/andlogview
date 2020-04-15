@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
+
+import name.mlopatkin.andlogview.Main;
+import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
+import name.mlopatkin.andlogview.utils.properties.Parser;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.logviewer.Main;
-import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
-import org.bitbucket.mlopatkin.utils.properties.Parser;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
@@ -47,7 +48,7 @@ class Utils {
 
     private static final String CONFIG_FILE_NAME = "logview.properties";
 
-    static final void saveConfiguration(org.bitbucket.mlopatkin.utils.properties.Configuration cfg) {
+    static final void saveConfiguration(name.mlopatkin.andlogview.utils.properties.Configuration cfg) {
         File cfgDir = Main.getConfigurationDir();
         if (!cfgDir.exists()) {
             cfgDir.mkdirs();
@@ -60,7 +61,7 @@ class Utils {
         }
     }
 
-    public static void loadConfiguration(org.bitbucket.mlopatkin.utils.properties.Configuration config)
+    public static void loadConfiguration(name.mlopatkin.andlogview.utils.properties.Configuration config)
             throws IllegalConfigurationException {
         File cfgDir = Main.getConfigurationDir();
         if (!cfgDir.exists()) {

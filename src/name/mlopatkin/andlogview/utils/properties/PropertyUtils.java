@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils.properties;
+package name.mlopatkin.andlogview.utils.properties;
 
-import org.bitbucket.mlopatkin.android.logviewer.Main;
-import org.bitbucket.mlopatkin.utils.SystemUtils;
+import name.mlopatkin.andlogview.Main;
+import name.mlopatkin.andlogview.utils.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;

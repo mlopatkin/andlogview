@@ -13,7 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
+
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
+import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
+import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
+import name.mlopatkin.andlogview.utils.SystemUtils;
+import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
+import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import com.android.ddmlib.IDevice;
 
@@ -21,15 +31,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
-import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.utils.SystemUtils;
-import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
-import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.EventQueue;

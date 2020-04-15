@@ -17,4 +17,4 @@
 /**
  * Dialog for creating/editing filters.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;

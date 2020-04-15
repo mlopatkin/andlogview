@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Changes from the original implementation - moved to org.bitbucket.mlopatkin.utils.events package
-package org.bitbucket.mlopatkin.utils.events;
+package name.mlopatkin.andlogview.utils.events;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
+
+import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.search.RequestCompilationException;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
+import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
+import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
+import name.mlopatkin.andlogview.utils.Threads;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
-import org.bitbucket.mlopatkin.utils.Threads;
 
 import java.util.ArrayList;
 import java.util.List;

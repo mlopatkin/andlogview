@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

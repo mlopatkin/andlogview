@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.filters.LogBufferFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
-import org.bitbucket.mlopatkin.utils.events.Observable;
-import org.bitbucket.mlopatkin.utils.events.Subject;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.filters.LogBufferFilter;
+import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
-
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.junit.Test;
-
-import java.util.Arrays;
+package name.mlopatkin.andlogview.ui.mainframe;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
+import name.mlopatkin.andlogview.ui.logtable.Column;
+
+import org.junit.Test;
+
+import java.util.Arrays;
 
 public class UserColumnOrderTest {
     @Test

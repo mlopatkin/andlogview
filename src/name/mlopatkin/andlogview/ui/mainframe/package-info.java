@@ -17,4 +17,4 @@
 /**
  * This is where all Main-window related stuff will end up.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;

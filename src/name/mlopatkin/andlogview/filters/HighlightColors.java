@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
+
+import name.mlopatkin.andlogview.config.Configuration;
 
 import com.google.common.collect.ImmutableList;
-
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 import java.awt.Color;
 

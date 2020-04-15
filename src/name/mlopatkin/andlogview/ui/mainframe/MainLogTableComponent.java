@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
+
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.logtable.LogTableModule;
+import name.mlopatkin.andlogview.ui.logtable.LogTableScoped;
+import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 
 import dagger.BindsInstance;
 import dagger.Component;
-
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableModule;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
 
 import javax.swing.JTable;
 

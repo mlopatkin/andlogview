@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.bookmarks;
-
-import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+package name.mlopatkin.andlogview.bookmarks;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+
+import name.mlopatkin.andlogview.test.TestData;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class BookmarkModelTest {
     private BookmarkModel model;

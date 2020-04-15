@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
+package name.mlopatkin.andlogview.ui.indexframe;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

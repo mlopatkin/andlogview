@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class LogRecordPredicatesTest {
     private static final String OK_STRING = "OK_STRING";

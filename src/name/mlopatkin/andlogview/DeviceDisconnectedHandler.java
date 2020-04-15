@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
+
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 
 import com.android.ddmlib.IDevice;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 import java.awt.EventQueue;
 

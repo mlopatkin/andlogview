@@ -14,18 +14,35 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.config.FakeDefaultConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController.SavedFilterData;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterDialogFactory;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterPanelModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.PanelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter.IndexFilterCollection;
-import org.bitbucket.mlopatkin.utils.events.Observable;
+import static name.mlopatkin.andlogview.test.TestData.MATCH_ALL;
+import static name.mlopatkin.andlogview.test.TestData.MATCH_FIRST;
+import static name.mlopatkin.andlogview.test.TestData.RECORD1;
+import static name.mlopatkin.andlogview.test.TestData.RECORD1_IN_MAIN;
+import static name.mlopatkin.andlogview.test.TestData.RECORD2;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.FakeDefaultConfigStorage;
+import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
+import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
+import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
+import name.mlopatkin.andlogview.utils.events.Observable;
+
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
@@ -44,21 +61,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_ALL;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_FIRST;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1_IN_MAIN;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class MainFilterControllerTest {
     @Mock

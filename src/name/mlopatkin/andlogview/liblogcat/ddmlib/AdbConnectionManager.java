@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
+package name.mlopatkin.andlogview.liblogcat.ddmlib;
+
+import name.mlopatkin.andlogview.config.Configuration;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 
 import java.lang.reflect.Field;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filterpanel;
 
 /**
  * A facility to create filters with dialog. User can open dialog by clicking "plus" button or double-clicking filter

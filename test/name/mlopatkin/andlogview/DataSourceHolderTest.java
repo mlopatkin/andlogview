@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer;
-
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.junit.Test;
-
-import java.util.concurrent.atomic.AtomicReference;
+package name.mlopatkin.andlogview;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+
+import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DataSourceHolderTest {
     @Test

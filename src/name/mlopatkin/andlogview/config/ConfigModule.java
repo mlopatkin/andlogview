@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
+
+import name.mlopatkin.andlogview.utils.Threads;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import dagger.Module;
 import dagger.Provides;
-
-import org.bitbucket.mlopatkin.utils.Threads;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

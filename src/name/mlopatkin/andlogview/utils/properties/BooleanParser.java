@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils.properties;
+package name.mlopatkin.andlogview.utils.properties;
 
 class BooleanParser implements Parser<Boolean> {
     @Override

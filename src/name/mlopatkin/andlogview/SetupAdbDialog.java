@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
 
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
+import name.mlopatkin.andlogview.config.Configuration;
 
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;

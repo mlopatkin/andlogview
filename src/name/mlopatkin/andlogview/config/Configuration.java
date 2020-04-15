@@ -13,31 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
+
+import static name.mlopatkin.andlogview.config.Utils.colorParser;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.bool;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.enumMap;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.integer;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.list;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.point;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.string;
+import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.type;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.utils.SystemUtils;
+import name.mlopatkin.andlogview.utils.properties.ConfigurationMap;
+import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
+import name.mlopatkin.andlogview.utils.properties.Parsers;
+import name.mlopatkin.andlogview.utils.properties.PropertyBuilder;
+import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
+import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
-import org.bitbucket.mlopatkin.utils.SystemUtils;
-import org.bitbucket.mlopatkin.utils.properties.ConfigurationMap;
-import org.bitbucket.mlopatkin.utils.properties.IllegalConfigurationException;
-import org.bitbucket.mlopatkin.utils.properties.Parsers;
-import org.bitbucket.mlopatkin.utils.properties.PropertyBuilder;
-import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
-import org.bitbucket.mlopatkin.utils.properties.SynchronizedConfiguration;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
-
-import static org.bitbucket.mlopatkin.android.logviewer.config.Utils.colorParser;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.bool;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.enumMap;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.integer;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.list;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.point;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.string;
-import static org.bitbucket.mlopatkin.utils.properties.PropertyTraits.type;
 
 public class Configuration {
     public static class ui { // NO CHECKSTYLE
@@ -222,7 +223,7 @@ public class Configuration {
         Utils.saveConfiguration(config);
     }
 
-    private static final org.bitbucket.mlopatkin.utils.properties.Configuration config;
+    private static final name.mlopatkin.andlogview.utils.properties.Configuration config;
 
     static {
         PropertyBuilder<Color> color = type(Color.class, colorParser);

@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat.file;
+package name.mlopatkin.andlogview.liblogcat.file;
+
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.liblogcat.Field;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
+import name.mlopatkin.andlogview.liblogcat.RecordListener;
+import name.mlopatkin.andlogview.liblogcat.file.ParsingStrategies.Strategy;
 
 import com.google.common.base.CharMatcher;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.Field;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
-import org.bitbucket.mlopatkin.android.liblogcat.file.ParsingStrategies.Strategy;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;

@@ -66,13 +66,13 @@ import org.bitbucket.mlopatkin.android.logviewer.building.BuildEnvironment
 import org.bitbucket.mlopatkin.android.logviewer.building.GenerateBuildMetadata
 
 checkstyle {
-    toolVersion = '8.11'
+    toolVersion = '8.12'
 }
 
 applicationName = 'andlogview'
 version = '0.21' + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
 
-mainClassName = 'org.bitbucket.mlopatkin.android.logviewer.Main'
+mainClassName = 'name.mlopatkin.andlogview.Main'
 
 def javaVersion = JavaVersion.VERSION_1_8
 sourceCompatibility = javaVersion
@@ -121,7 +121,7 @@ test {
 }
 
 task generateBuildMetadata(type: GenerateBuildMetadata) {
-    packageName = 'org.bitbucket.mlopatkin.android.logviewer'
+    packageName = 'name.mlopatkin.andlogview'
     className = 'BuildInfo'
     into = file(metadataBuildDir)
     version = project.version

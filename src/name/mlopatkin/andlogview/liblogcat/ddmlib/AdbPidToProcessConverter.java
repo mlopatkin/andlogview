@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
+package name.mlopatkin.andlogview.liblogcat.ddmlib;
+
+import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
 
 import com.android.ddmlib.IDevice;
 import com.android.sdklib.AndroidVersion;
@@ -21,7 +23,6 @@ import com.google.common.io.CharStreams;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ProcessListParser;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;

@@ -11,6 +11,28 @@
     </option>
     <option name="IMPORT_LAYOUT_TABLE">
       <value>
+        <package name="name.mlopatkin" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="android" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="com" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="dagger" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="joptsimple" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="org" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="java" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="javax" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="true" />
+        <emptyLine />
+        <package name="name.mlopatkin" withSubpackages="true" static="false" />
+        <emptyLine />
         <package name="android" withSubpackages="true" static="false" />
         <emptyLine />
         <package name="com" withSubpackages="true" static="false" />
@@ -19,8 +41,6 @@
         <emptyLine />
         <package name="joptsimple" withSubpackages="true" static="false" />
         <emptyLine />
-        <package name="net" withSubpackages="true" static="false" />
-        <emptyLine />
         <package name="org" withSubpackages="true" static="false" />
         <emptyLine />
         <package name="" withSubpackages="true" static="false" />
@@ -28,8 +48,6 @@
         <package name="java" withSubpackages="true" static="false" />
         <emptyLine />
         <package name="javax" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="" withSubpackages="true" static="true" />
       </value>
     </option>
     <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
@@ -74,5 +92,8 @@
     <option name="FOR_BRACE_FORCE" value="3" />
     <option name="WRAP_LONG_LINES" value="true" />
     <option name="ENUM_CONSTANTS_WRAP" value="5" />
+  </codeStyleSettings>
+  <codeStyleSettings language="Markdown">
+    <option name="SOFT_MARGINS" value="80" />
   </codeStyleSettings>
 </code_scheme>

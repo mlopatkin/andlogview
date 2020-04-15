@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.logviewer.test.AdaptingMatcher;
+import name.mlopatkin.andlogview.test.AdaptingMatcher;
+
 import org.hamcrest.Matcher;
 
 import java.util.Arrays;

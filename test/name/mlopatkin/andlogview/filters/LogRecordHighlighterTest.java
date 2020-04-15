@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
+import static name.mlopatkin.andlogview.test.TestData.RECORD1;
+import static name.mlopatkin.andlogview.test.TestData.RECORD2;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.test.TestData;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.Color;
 import java.util.function.Predicate;
-
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class LogRecordHighlighterTest {
     private LogRecordHighlighter highlighter;

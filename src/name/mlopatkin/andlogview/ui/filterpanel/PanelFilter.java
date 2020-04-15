@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filterpanel;
 
 /**
  * This interface must be implemented by the filter instance that needs to be displayed in filter panel.

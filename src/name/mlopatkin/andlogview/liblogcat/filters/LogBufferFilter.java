@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat.filters;
+package name.mlopatkin.andlogview.liblogcat.filters;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;

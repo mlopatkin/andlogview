@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filterpanel;
 
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;

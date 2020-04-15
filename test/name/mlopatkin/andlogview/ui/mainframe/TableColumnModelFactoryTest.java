@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
+
+import static name.mlopatkin.andlogview.ui.logtable.TogglesModelTestUtils.availableColumns;
+import static name.mlopatkin.andlogview.ui.logtable.TogglesModelTestUtils.visibleColumns;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
+
+import name.mlopatkin.andlogview.PidToProcessMapper;
+import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.FakeDefaultConfigStorage;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.config.FakeDefaultConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModelTestUtils.availableColumns;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModelTestUtils.visibleColumns;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 public class TableColumnModelFactoryTest {
     private ConfigStorage mockStorage = new FakeDefaultConfigStorage();

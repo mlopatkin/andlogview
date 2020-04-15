@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
 
 import javax.swing.table.DefaultTableCellRenderer;
 

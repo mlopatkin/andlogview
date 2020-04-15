@@ -1,9 +1,10 @@
-package org.bitbucket.mlopatkin.android.logviewer.search;
+package name.mlopatkin.andlogview.search;
+
+import name.mlopatkin.andlogview.ui.logtable.Column;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;

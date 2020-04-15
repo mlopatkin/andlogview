@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter.PopupMenuView;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import name.mlopatkin.andlogview.test.TestData;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter.PopupMenuView;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 public class PopupMenuPresenterTest {
     @Mock

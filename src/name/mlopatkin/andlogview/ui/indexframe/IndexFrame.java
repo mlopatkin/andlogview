@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.indexframe;
+package name.mlopatkin.andlogview.ui.indexframe;
 
-import org.bitbucket.mlopatkin.android.logviewer.LogRecordsTransferHandler;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper.DoubleClickListener;
+import static name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi.FOR_INDEX_FRAME;
+
+import name.mlopatkin.andlogview.LogRecordsTransferHandler;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
+import name.mlopatkin.andlogview.widgets.UiHelper;
+import name.mlopatkin.andlogview.widgets.UiHelper.DoubleClickListener;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -39,8 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
-
-import static org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameDi.FOR_INDEX_FRAME;
 
 @IndexFrameScoped
 public class IndexFrame extends JFrame {

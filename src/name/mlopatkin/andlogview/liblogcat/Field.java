@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
 
 /**
  * Fields in the log record.

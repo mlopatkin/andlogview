@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
 
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.TableCellHelper;
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.widgets.TableCellHelper;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;

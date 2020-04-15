@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
+
+import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
-import org.bitbucket.mlopatkin.utils.properties.PropertyUtils;
 
 /**
  * Logging configuration routines

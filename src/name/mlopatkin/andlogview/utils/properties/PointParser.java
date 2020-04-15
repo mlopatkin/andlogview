@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.utils.properties;
+package name.mlopatkin.andlogview.utils.properties;
 
 import com.google.common.base.Strings;
 

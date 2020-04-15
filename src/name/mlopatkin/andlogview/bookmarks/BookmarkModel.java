@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.bookmarks;
+package name.mlopatkin.andlogview.bookmarks;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
-import org.bitbucket.mlopatkin.utils.events.Observable;
-import org.bitbucket.mlopatkin.utils.events.Subject;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import java.util.HashSet;
 import java.util.Set;

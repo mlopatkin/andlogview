@@ -19,7 +19,7 @@
 // - Changed package name
 // - Removed unused methods and constants
 
-package org.bitbucket.mlopatkin.utils;
+package name.mlopatkin.andlogview.utils;
 
 import java.io.File;
 

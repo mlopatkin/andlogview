@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.search;
+package name.mlopatkin.andlogview.search;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
 
 import com.google.common.collect.ImmutableList;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 
 import java.util.Arrays;
 import java.util.List;

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
+
+import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.ConfigStorage.ConfigStorageClient;
+import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
+import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -22,12 +29,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.ConfigStorageClient;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumSet;

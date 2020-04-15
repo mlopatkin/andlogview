@@ -1,14 +1,15 @@
-package org.bitbucket.mlopatkin.android.logviewer.search;
-
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+package name.mlopatkin.andlogview.search;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class RowSearchStrategyFactoryTest {
     static final String TAG_CONTACTS = "contacts";

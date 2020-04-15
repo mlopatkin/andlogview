@@ -17,4 +17,4 @@
 /**
  * Parent package of large GUI components packages, like filter editor, log record table.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui;
+package name.mlopatkin.andlogview.ui;

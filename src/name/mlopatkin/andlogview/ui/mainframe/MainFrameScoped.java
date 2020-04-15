@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
 
-import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
+import name.mlopatkin.andlogview.MainFrame;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

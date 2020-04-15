@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
 
-import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
-import org.bitbucket.mlopatkin.android.logviewer.PidToProcessMapper;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
+import name.mlopatkin.andlogview.MainFrame;
+import name.mlopatkin.andlogview.PidToProcessMapper;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 
 import java.util.Collection;
 

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
+import static name.mlopatkin.andlogview.liblogcat.LogRecordUtils.withBuffer;
+import static name.mlopatkin.andlogview.liblogcat.LogRecordUtils.withTime;
+
+import static org.junit.Assert.assertEquals;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+
 import org.junit.Test;
 
 import java.util.Date;
 import java.util.stream.Stream;
-
-import static org.bitbucket.mlopatkin.android.liblogcat.LogRecordUtils.withBuffer;
-import static org.bitbucket.mlopatkin.android.liblogcat.LogRecordUtils.withTime;
-import static org.junit.Assert.assertEquals;
 
 public class LogRecordTest {
     public static final long BASE_DATE = 1584719894000L;

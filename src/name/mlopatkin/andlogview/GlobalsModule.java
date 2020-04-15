@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
+
+import name.mlopatkin.andlogview.config.ConfigStorage;
 
 import dagger.Module;
 import dagger.Provides;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
 
 import java.io.File;
 import java.io.IOException;

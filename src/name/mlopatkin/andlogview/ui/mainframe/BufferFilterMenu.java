@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

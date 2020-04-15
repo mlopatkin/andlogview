@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
@@ -29,9 +32,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class ConfigStorageImplTest {
     public static class TestClientData {

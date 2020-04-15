@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.widgets;
+package name.mlopatkin.andlogview.widgets;
 
 
-import org.bitbucket.mlopatkin.utils.events.Observable;
-import org.bitbucket.mlopatkin.utils.events.Subject;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import java.awt.event.ActionEvent;
 

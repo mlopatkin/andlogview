@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
+package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

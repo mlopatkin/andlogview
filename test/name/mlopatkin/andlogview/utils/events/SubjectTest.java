@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils.events;
-
-import org.junit.Test;
+package name.mlopatkin.andlogview.utils.events;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
+import org.junit.Test;
 
 public class SubjectTest {
     public interface TestObserver {

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
+
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
 
 import com.google.common.collect.Lists;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;

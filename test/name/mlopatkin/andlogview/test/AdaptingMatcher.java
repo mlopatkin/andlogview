@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.test;
+package name.mlopatkin.andlogview.test;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

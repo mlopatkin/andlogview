@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import javax.swing.Action;
 import javax.swing.JComponent;

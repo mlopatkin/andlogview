@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
+package name.mlopatkin.andlogview.ui.bookmarks;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkPopupMenuPresenter.BookmarkPopupMenuView;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
-import org.bitbucket.mlopatkin.utils.events.Subject;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static name.mlopatkin.andlogview.test.TestData.RECORD1;
+import static name.mlopatkin.andlogview.test.TestData.RECORD2;
 
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.bookmarks.BookmarkPopupMenuPresenter.BookmarkPopupMenuView;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.logtable.TestSelectedRows;
+import name.mlopatkin.andlogview.utils.events.Subject;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class BookmarkPopupMenuPresenterTest {
     @Mock

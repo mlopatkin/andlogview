@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.search.RowSearchStrategy;
-import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingCellRenderer;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.search.RowSearchStrategy;
+import name.mlopatkin.andlogview.search.TextHighlighter;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
+import name.mlopatkin.andlogview.widgets.UiHelper;
+
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

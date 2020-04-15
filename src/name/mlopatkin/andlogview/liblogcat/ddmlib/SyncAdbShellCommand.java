@@ -1,4 +1,4 @@
-package org.bitbucket.mlopatkin.android.liblogcat.ddmlib;
+package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IShellOutputReceiver;

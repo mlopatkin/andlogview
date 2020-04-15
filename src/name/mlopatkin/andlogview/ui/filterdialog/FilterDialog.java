@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ErrorDialogsHelper;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilteringModesPanel.ModeChangedListener;
+
+import name.mlopatkin.andlogview.ErrorDialogsHelper;
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -31,8 +34,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
-
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilteringModesPanel.ModeChangedListener;
 
 /**
  * Common GUI logic related to filtering.

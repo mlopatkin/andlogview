@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
+
+import name.mlopatkin.andlogview.MainFrame;
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.filters.FilterModule;
+import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
+import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
+import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
-
-import org.bitbucket.mlopatkin.android.logviewer.MainFrame;
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilterModule;
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel.FilterCreator;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.MenuFilterCreator;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
 
 import javax.inject.Named;
 import javax.swing.JFrame;

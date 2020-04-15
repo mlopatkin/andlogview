@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
+
+import static name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import static name.mlopatkin.andlogview.liblogcat.LogRecord.NO_ID;
+import static name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Date;
-
-import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.NO_ID;
-import static org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Priority;
 
 /**
  * Some factory methods to construct log records for tests.

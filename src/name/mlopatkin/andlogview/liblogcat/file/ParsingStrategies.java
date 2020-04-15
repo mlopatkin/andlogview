@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat.file;
+package name.mlopatkin.andlogview.liblogcat.file;
 
-import org.bitbucket.mlopatkin.android.liblogcat.Field;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.liblogcat.Field;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumSet;

@@ -21,4 +21,4 @@
  * from this thing. The provider of this Observable will have another view (Subject) of the thing that allows to
  * walk through all registered clients and notify them.
  */
-package org.bitbucket.mlopatkin.utils.events;
+package name.mlopatkin.andlogview.utils.events;

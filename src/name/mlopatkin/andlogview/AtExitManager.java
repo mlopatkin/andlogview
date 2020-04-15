@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
 
 import org.apache.log4j.Logger;
 

@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
+
+import static name.mlopatkin.andlogview.test.TestData.MATCH_ALL;
+import static name.mlopatkin.andlogview.test.TestData.MATCH_FIRST;
+import static name.mlopatkin.andlogview.test.TestData.RECORD1;
+import static name.mlopatkin.andlogview.test.TestData.RECORD2;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_ALL;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.MATCH_FIRST;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD1;
-import static org.bitbucket.mlopatkin.android.logviewer.test.TestData.RECORD2;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class FilterChainTest {
     private FilterChain chain;

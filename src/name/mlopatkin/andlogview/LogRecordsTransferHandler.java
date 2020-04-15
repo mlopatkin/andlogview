@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnTogglesModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordClipboardFormatter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
+import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordClipboardFormatter;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

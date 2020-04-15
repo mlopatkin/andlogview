@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.EnumSet;
 
 import javax.swing.JMenu;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class BufferFilterMenuTest {
     private final JMenu parentMenu = new JMenu();

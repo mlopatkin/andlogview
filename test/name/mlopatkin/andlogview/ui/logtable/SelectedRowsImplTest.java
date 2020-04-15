@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;
 
-import org.bitbucket.mlopatkin.android.logviewer.test.TestData;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import name.mlopatkin.andlogview.test.TestData;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,11 +30,6 @@ import java.awt.EventQueue;
 import java.util.Arrays;
 
 import javax.swing.JTable;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class SelectedRowsImplTest {
 

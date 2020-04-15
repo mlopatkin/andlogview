@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.utils;
+package name.mlopatkin.andlogview.utils;
+
+import static name.mlopatkin.andlogview.utils.ListTestUtils.list;
+
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.bitbucket.mlopatkin.utils.ListTestUtils.list;
-import static org.junit.Assert.assertEquals;
 
 public class MyListUtilsTest {
     @Test

@@ -27,4 +27,4 @@
  * call translate to call to PanelFilter's method. PanelFilter is provided by the embedder and it will change internal
  * state of the filter model. Then embedder will then change state of the FilterPanelModel via its public method.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filterpanel;

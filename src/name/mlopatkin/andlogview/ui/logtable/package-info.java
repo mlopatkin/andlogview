@@ -22,4 +22,4 @@
  * Clients are expected to have a @{@link org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped} Dagger 2
  * {@link dagger.Component} to assemble the table.
  */
-package org.bitbucket.mlopatkin.android.logviewer.ui.logtable;
+package name.mlopatkin.andlogview.ui.logtable;

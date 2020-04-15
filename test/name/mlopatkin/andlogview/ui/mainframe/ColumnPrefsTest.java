@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
+import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.test.AdaptingMatcher;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
+import name.mlopatkin.andlogview.ui.logtable.TogglesModelTestUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -24,13 +39,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.config.ConfigStorage.InvalidJsonContentException;
-import org.bitbucket.mlopatkin.android.logviewer.config.FakeInMemoryConfigStorage;
-import org.bitbucket.mlopatkin.android.logviewer.test.AdaptingMatcher;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.ColumnOrder;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TogglesModelTestUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -39,13 +47,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class ColumnPrefsTest {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();

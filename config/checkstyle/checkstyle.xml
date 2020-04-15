@@ -130,11 +130,13 @@
      <module name="ImportOrder">
       <property name="severity" value="error"/>
       <message key="import.ordering" value="Wrong order for {0} import. Use Ctrl+Alt+O (IDEA) or Ctrl+Shift+O (Eclipse) to sort imports"/>
-      <property name="groups" value="android, com, dagger, joptsimple, net, org, java, javax"/>
+      <property name="groups" value="name.mlopatkin, android, com, dagger, joptsimple, org, java, javax"/>
+      <property name="staticGroups" value="name.mlopatkin, android, com, dagger, joptsimple, org, java, javax"/>
       <property name="ordered" value="true"/>
       <property name="caseSensitive" value="true"/>
-      <property name="option" value="bottom"/>
+      <property name="option" value="top"/>
       <property name="separated" value="true"/>
+      <property name="separatedStaticGroups" value="true"/>
       <property name="sortStaticImportsAlphabetically" value="true"/>
     </module>
     <module name="Indentation">

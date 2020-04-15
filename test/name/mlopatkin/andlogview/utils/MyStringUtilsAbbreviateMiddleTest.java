@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils;
+package name.mlopatkin.andlogview.utils;
+
+import static org.junit.Assert.assertEquals;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.junit.Test;
@@ -23,8 +25,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class MyStringUtilsAbbreviateMiddleTest {

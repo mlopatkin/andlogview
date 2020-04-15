@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.indexfilter;
+package name.mlopatkin.andlogview.ui.indexfilter;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.AbstractIndexController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrame;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameDi;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
+import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
+import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
+import name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi;
+import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 
 import java.awt.EventQueue;
 import java.util.function.Predicate;

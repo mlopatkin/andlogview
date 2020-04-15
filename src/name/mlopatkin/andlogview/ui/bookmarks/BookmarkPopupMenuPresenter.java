@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
+package name.mlopatkin.andlogview.ui.bookmarks;
 
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuPresenter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.utils.events.Observable;
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter;
+import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.utils.events.Observable;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;

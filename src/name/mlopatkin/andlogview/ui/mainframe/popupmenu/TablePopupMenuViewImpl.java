@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
+package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenuViewImpl;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.ObservableAction;
-import org.bitbucket.mlopatkin.utils.MyStringUtils;
-import org.bitbucket.mlopatkin.utils.events.Observable;
-import org.bitbucket.mlopatkin.utils.events.Subject;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenuViewImpl;
+import name.mlopatkin.andlogview.utils.MyStringUtils;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
+import name.mlopatkin.andlogview.widgets.ObservableAction;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

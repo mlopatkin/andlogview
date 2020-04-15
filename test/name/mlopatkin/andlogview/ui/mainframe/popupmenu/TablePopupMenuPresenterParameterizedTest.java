@@ -14,21 +14,41 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu;
+package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
+
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasApps;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasColor;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMessage;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMode;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPids;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPriority;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasTags;
+
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.HighlightColors;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.logtable.TestSelectedRows;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordParser;
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.filters.HighlightColors;
-import org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterFromDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.SelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TestSelectedRows;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DialogFactory;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,24 +64,6 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasApps;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasColor;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMessage;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasMode;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPids;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasPriority;
-import static org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog.FilterMatchers.hasTags;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 public class TablePopupMenuPresenterParameterizedTest {
     public static final LogRecord RECORD = Objects.requireNonNull(LogRecordParser.parseThreadTime(null,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.device;
+package name.mlopatkin.andlogview.ui.device;
 
 import com.android.ddmlib.IDevice;
 

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.mainframe;
+package name.mlopatkin.andlogview.ui.mainframe;
+
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenu;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.mainframe.popupmenu.TablePopupMenuPresenter;
+import name.mlopatkin.andlogview.ui.mainframe.popupmenu.TablePopupMenuViewImpl;
 
 import dagger.Module;
 import dagger.Provides;
 
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.TablePopupMenuPresenter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.popupmenu.TablePopupMenuViewImpl;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.swing.JTable;

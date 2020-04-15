@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.filters.FilteringMode;
-import org.bitbucket.mlopatkin.android.logviewer.test.AdaptingMatcher;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.test.AdaptingMatcher;
+
 import org.hamcrest.Matcher;
 
 import java.awt.Color;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.filters;
+package name.mlopatkin.andlogview.filters;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
 
 import java.util.function.Predicate;
 

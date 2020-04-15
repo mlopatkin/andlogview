@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils;
+package name.mlopatkin.andlogview.utils;
 
 import com.google.common.util.concurrent.MoreExecutors;
 

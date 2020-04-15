@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
+
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
+import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
-import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

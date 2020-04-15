@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;

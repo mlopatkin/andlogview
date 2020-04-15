@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat.file;
+package name.mlopatkin.andlogview.liblogcat.file;
+
+import static org.junit.Assert.assertThat;
+
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.liblogcat.Field;
+import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.Field;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord.Buffer;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
-
-import static org.junit.Assert.assertThat;
 
 public class FileDataSourceFactoryTest {
     @Test(expected = UnrecognizedFormatException.class)

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterdialog;
+package name.mlopatkin.andlogview.ui.filterdialog;
+
+import name.mlopatkin.andlogview.config.Configuration;
 
 import com.google.common.collect.Lists;
 
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;

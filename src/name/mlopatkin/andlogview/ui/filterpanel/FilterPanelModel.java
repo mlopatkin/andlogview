@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filterpanel;
+
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
 import com.google.common.collect.ImmutableList;
-
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameScoped;
 
 import java.util.ArrayList;
 import java.util.HashSet;

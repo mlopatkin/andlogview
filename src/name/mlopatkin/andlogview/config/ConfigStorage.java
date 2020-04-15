@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.config;
+package name.mlopatkin.andlogview.config;
+
+import name.mlopatkin.andlogview.AtExitManager;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-
-import org.bitbucket.mlopatkin.android.logviewer.AtExitManager;
 
 import java.io.File;
 import java.io.IOException;

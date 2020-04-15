@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.utils.events;
+package name.mlopatkin.andlogview.utils.events;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks;
+package name.mlopatkin.andlogview.ui.bookmarks;
+
+import static name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi.FOR_INDEX_FRAME;
+
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi;
+import name.mlopatkin.andlogview.ui.indexframe.IndexFrameScoped;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.logtable.LogTableModule;
+import name.mlopatkin.andlogview.ui.logtable.LogTableScoped;
+import name.mlopatkin.andlogview.ui.logtable.PopupMenu;
+import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameDi;
-import org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameScoped;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogModelFilter;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableModule;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.PopupMenu;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.TableRow;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.inject.Named;
 import javax.swing.JTable;
-
-import static org.bitbucket.mlopatkin.android.logviewer.ui.indexframe.IndexFrameDi.FOR_INDEX_FRAME;
 
 
 final class BookmarksDi {

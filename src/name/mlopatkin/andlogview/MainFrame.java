@@ -13,40 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
+
+import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
+import name.mlopatkin.andlogview.liblogcat.RecordListener;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbConnectionManager;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.DdmlibUnsupportedException;
+import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
+import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
+import name.mlopatkin.andlogview.search.RequestCompilationException;
+import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
+import name.mlopatkin.andlogview.ui.device.SelectDeviceDialog;
+import name.mlopatkin.andlogview.ui.logtable.Column;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.logtable.LogTableHeaderPopupMenuController;
+import name.mlopatkin.andlogview.ui.mainframe.BufferFilterMenu;
+import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.google.common.io.Files;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecordFormatter;
-import org.bitbucket.mlopatkin.android.liblogcat.RecordListener;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbConnectionManager;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbException;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.DdmlibUnsupportedException;
-import org.bitbucket.mlopatkin.android.liblogcat.file.FileDataSourceFactory;
-import org.bitbucket.mlopatkin.android.liblogcat.file.UnrecognizedFormatException;
-import org.bitbucket.mlopatkin.android.logviewer.bookmarks.BookmarkModel;
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController;
-import org.bitbucket.mlopatkin.android.logviewer.search.RequestCompilationException;
-import org.bitbucket.mlopatkin.android.logviewer.ui.bookmarks.BookmarkController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.device.SelectDeviceDialog;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableColumnModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogRecordTableModel;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableHeaderPopupMenuController;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.BufferFilterMenu;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.DaggerMainFrameDependencies;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameDependencies;
-import org.bitbucket.mlopatkin.android.logviewer.ui.mainframe.MainFrameModule;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.DecoratingRendererTable;
-import org.bitbucket.mlopatkin.android.logviewer.widgets.UiHelper;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.liblogcat.file;
+package name.mlopatkin.andlogview.liblogcat.file;
+
+import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.liblogcat.LogFormatSniffer;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
-
-import org.bitbucket.mlopatkin.android.liblogcat.DataSource;
-import org.bitbucket.mlopatkin.android.liblogcat.LogFormatSniffer;
 
 import java.io.BufferedReader;
 import java.io.File;

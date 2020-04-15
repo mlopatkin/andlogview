@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.search;
+package name.mlopatkin.andlogview.search;
 
-import org.bitbucket.mlopatkin.android.liblogcat.LogRecord;
-import org.bitbucket.mlopatkin.android.logviewer.ui.logtable.Column;
+import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.ui.logtable.Column;
 
 class ValueSearcher implements RowSearchStrategy {
     private final HighlightStrategy highlightStrategy;

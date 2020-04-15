@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitbucket.mlopatkin.android.logviewer;
+package name.mlopatkin.andlogview;
+
+import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.search.TextHighlighter;
 
 import com.google.common.collect.Range;
 import com.google.common.html.HtmlEscapers;
-
-import org.bitbucket.mlopatkin.android.logviewer.config.Configuration;
-import org.bitbucket.mlopatkin.android.logviewer.search.TextHighlighter;
 
 import java.util.ArrayList;
 import java.util.List;

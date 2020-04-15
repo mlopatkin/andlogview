@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.ui.device;
+package name.mlopatkin.andlogview.ui.device;
+
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 
 import org.apache.log4j.Logger;
-import org.bitbucket.mlopatkin.android.liblogcat.ddmlib.AdbDeviceManager;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;

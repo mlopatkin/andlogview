@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.liblogcat;
+package name.mlopatkin.andlogview.liblogcat;
+
+import static name.mlopatkin.andlogview.liblogcat.ProcessListParserTest.hasPidAndAppName;
+
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import com.android.sdklib.AndroidVersion;
 
@@ -24,10 +29,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-
-import static org.bitbucket.mlopatkin.android.liblogcat.ProcessListParserTest.hasPidAndAppName;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Compatibility tests for parsing output of the plain "ps" command.

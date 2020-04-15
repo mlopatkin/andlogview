@@ -16,7 +16,7 @@
  *
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.search;
+package name.mlopatkin.andlogview.search;
 
 import com.google.common.collect.ImmutableList;
 
