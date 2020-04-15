@@ -86,7 +86,6 @@ sourceSets {
         java {
             srcDirs = []
             srcDir 'src'
-            srcDir 'utils'
             srcDir metadataBuildDir
         }
         resources {
