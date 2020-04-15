@@ -62,8 +62,8 @@ dependencies {
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
-import org.bitbucket.mlopatkin.android.logviewer.building.BuildEnvironment
-import org.bitbucket.mlopatkin.android.logviewer.building.GenerateBuildMetadata
+import name.mlopatkin.andlogview.building.BuildEnvironment
+import name.mlopatkin.andlogview.building.GenerateBuildMetadata
 
 checkstyle {
     toolVersion = '8.12'

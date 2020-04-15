@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bitbucket.mlopatkin.android.logviewer.building
+package name.mlopatkin.andlogview.building
 
 import groovy.transform.CompileStatic
 import org.slf4j.Logger
