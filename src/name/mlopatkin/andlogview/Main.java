@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
@@ -35,14 +34,15 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.swing.JOptionPane;
 
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
     private static final String SHORT_APP_NAME = "logview";
+    private final Provider<MainFrame> mainFrameProvider;
     private final CommandLine commandLine;
-    private final ConfigStorage configStorage;
 
     public static File getConfigurationDir() {
         return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
@@ -76,9 +76,9 @@ public class Main {
     }
 
     @Inject
-    Main(CommandLine commandLine, ConfigStorage configStorage) {
+    Main(Provider<MainFrame> mainFrameProvider, CommandLine commandLine) {
+        this.mainFrameProvider = mainFrameProvider;
         this.commandLine = commandLine;
-        this.configStorage = configStorage;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -90,7 +90,7 @@ public class Main {
     }
 
     private MainFrame createAndShowWindow() {
-        MainFrame window = new MainFrame(configStorage);
+        MainFrame window = mainFrameProvider.get();
         window.setVisible(true);
         return window;
     }

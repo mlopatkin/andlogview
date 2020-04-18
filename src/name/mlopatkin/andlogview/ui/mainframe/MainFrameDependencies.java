@@ -16,16 +16,15 @@
 
 package name.mlopatkin.andlogview.ui.mainframe;
 
+import name.mlopatkin.andlogview.AppGlobals;
 import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 
-import dagger.BindsInstance;
 import dagger.Component;
 
 import javax.inject.Named;
@@ -35,7 +34,7 @@ import javax.swing.JTable;
  * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
  */
 @MainFrameScoped
-@Component(modules = MainFrameModule.class)
+@Component(modules = MainFrameModule.class, dependencies = AppGlobals.class)
 public interface MainFrameDependencies {
     String FOR_MAIN_FRAME = "Main frame";
 
@@ -62,6 +61,6 @@ public interface MainFrameDependencies {
 
     @Component.Factory
     interface Factory {
-        MainFrameDependencies create(MainFrameModule mainFrameModule, @BindsInstance ConfigStorage configStorage);
+        MainFrameDependencies create(MainFrameModule mainFrameModule, AppGlobals globals);
     }
 }
