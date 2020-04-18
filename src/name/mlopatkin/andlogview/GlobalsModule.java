@@ -40,7 +40,6 @@ class GlobalsModule {
 
     @Provides
     @Singleton
-    @SuppressWarnings("DaggerProvidesNull")
     ConfigStorage getConfigStorage(ConfigStorage.Factory factory) {
         try {
             return factory.createForFile(new File(appConfigDir, "logview.json"));
