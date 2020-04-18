@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
@@ -114,11 +115,8 @@ public class MainFrame extends JFrame {
     private final MainFrameDependencies dependencies;
 
     @SuppressWarnings("NullAway")
-    public MainFrame(AppGlobals appGlobals) {
-        dependencies = DaggerMainFrameDependencies.builder()
-                .mainFrameModule(new MainFrameModule(this))
-                .appGlobals(appGlobals)
-                .build();
+    public MainFrame(ConfigStorage configStorage) {
+        dependencies = DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), configStorage);
         sourceHolder = dependencies.getDataSourceHolder();
 
         initialize();

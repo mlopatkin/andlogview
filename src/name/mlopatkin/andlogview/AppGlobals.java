@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigModule;
-import name.mlopatkin.andlogview.config.ConfigStorage;
 
+import dagger.BindsInstance;
 import dagger.Component;
 
 import javax.inject.Singleton;
@@ -29,5 +29,10 @@ import javax.inject.Singleton;
 @Singleton
 @Component(modules = {GlobalsModule.class, ConfigModule.class})
 public interface AppGlobals {
-    ConfigStorage getConfigStorage();
+    Main getMain();
+
+    @Component.Factory
+    interface Factory {
+        AppGlobals create(GlobalsModule module, @BindsInstance CommandLine cmdline);
+    }
 }

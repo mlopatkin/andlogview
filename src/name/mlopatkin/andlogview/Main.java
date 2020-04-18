@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
@@ -27,27 +27,22 @@ import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import com.android.ddmlib.IDevice;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-
 import org.apache.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.List;
 
+import javax.inject.Inject;
 import javax.swing.JOptionPane;
 
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
     private static final String SHORT_APP_NAME = "logview";
-
-    private @MonotonicNonNull DataSource initialSource;
-    private MainFrame window;
+    private final CommandLine commandLine;
+    private final ConfigStorage configStorage;
 
     public static File getConfigurationDir() {
         return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
@@ -56,59 +51,34 @@ public class Main {
     public static void main(String[] args) {
         Configuration.init();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
-        OptionParser parser = new OptionParser("d");
-        OptionSet result = parser.parse(args);
-        boolean debug = result.has("d");
+
+        CommandLine commandLine;
         try {
-            Configuration.load(debug);
+            commandLine = new CommandLine(args);
         } catch (IllegalConfigurationException e) {
-            logger.warn("Unxpected exception while parsing config file", e);
+            // Parse error: fall back to the default command line.
+            commandLine = new CommandLine();
+        }
+
+        try {
+            Configuration.load(commandLine.isDebug());
+        } catch (IllegalConfigurationException e) {
+            logger.warn("Unexpected exception while parsing config file", e);
             ErrorDialogsHelper.showError(null, "Error in configuration file: " + e.getMessage());
         }
 
+        AppGlobals globals = DaggerAppGlobals.factory().create(new GlobalsModule(getConfigurationDir()), commandLine);
+
         logger.info("AndLogView " + getVersionString());
         logger.info("Revision " + BuildInfo.REVISION);
-        @SuppressWarnings("unchecked")
-        List<String> files = (List<String>) result.nonOptionArguments();
-        if (files.size() == 0) {
-            // ADB mode
-            EventQueue.invokeLater(() -> new Main().start());
-        } else if (files.size() == 1) {
-            // File mode
-            EventQueue.invokeLater(() -> new Main(new File(files.get(0))).start());
-        } else {
-            // Error
-            showUsage();
-        }
+
+        EventQueue.invokeLater(globals.getMain()::start);
     }
 
-    Main(File file) {
-        createAndShowWindow();
-        try {
-            initialSource = FileDataSourceFactory.createDataSource(file);
-            // TODO(mlopatkin) Handle null parent file here
-            File baseDir = file.getAbsoluteFile().getParentFile();
-            window.setRecentDir(baseDir);
-        } catch (UnrecognizedFormatException e) {
-            ErrorDialogsHelper.showError(window, "Unrecognized file format for " + file);
-            logger.error("Exception while reading the file", e);
-        } catch (IOException e) {
-            ErrorDialogsHelper.showError(window, "Cannot read " + file);
-            logger.error("Exception while reading the file", e);
-        }
-    }
-
-    Main() {
-        createAndShowWindow();
-        if (window.tryInitAdbBridge()) {
-            IDevice device = AdbDeviceManager.getDefaultDevice();
-            if (device != null) {
-                DeviceDisconnectedHandler.startWatching(window, device);
-                initialSource = new AdbDataSource(device);
-            } else {
-                window.waitForDevice();
-            }
-        }
+    @Inject
+    Main(CommandLine commandLine, ConfigStorage configStorage) {
+        this.commandLine = commandLine;
+        this.configStorage = configStorage;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -119,22 +89,45 @@ public class Main {
         return BuildInfo.VERSION + " (build " + BuildInfo.BUILD + " " + BuildInfo.REVISION + ")";
     }
 
-    private void createAndShowWindow() {
-        AppGlobals globals = DaggerAppGlobals.builder().globalsModule(new GlobalsModule(getConfigurationDir())).build();
-        window = new MainFrame(globals);
+    private MainFrame createAndShowWindow() {
+        MainFrame window = new MainFrame(configStorage);
         window.setVisible(true);
+        return window;
     }
 
-    void start() {
-        if (initialSource != null) {
-            window.setSourceAsync(initialSource);
+    /** Opens the main frame. Must be called from EDT. */
+    private void start() {
+        MainFrame window = createAndShowWindow();
+
+        if (commandLine.isShouldShowUsage()) {
+            JOptionPane.showMessageDialog(window, "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
+                    "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private static void showUsage() {
-        EventQueue.invokeLater(
-                () -> JOptionPane.showMessageDialog(null, "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
-                        "Incorrect parameters", JOptionPane.ERROR_MESSAGE));
+        File fileToOpen = commandLine.getFileArgument();
+        if (fileToOpen != null) {
+            // TODO(mlopatkin) Handle null parent file here
+            File baseDir = fileToOpen.getAbsoluteFile().getParentFile();
+            window.setRecentDir(baseDir);
+            try {
+                window.setSourceAsync(FileDataSourceFactory.createDataSource(fileToOpen));
+            } catch (UnrecognizedFormatException e) {
+                ErrorDialogsHelper.showError(window, "Unrecognized file format for " + fileToOpen);
+                logger.error("Exception while reading the file", e);
+            } catch (IOException e) {
+                ErrorDialogsHelper.showError(window, "Cannot read " + fileToOpen);
+                logger.error("Exception while reading the file", e);
+            }
+        } else {
+            if (window.tryInitAdbBridge()) {
+                IDevice device = AdbDeviceManager.getDefaultDevice();
+                if (device != null) {
+                    DeviceDisconnectedHandler.startWatching(window, device);
+                    window.setSourceAsync(new AdbDataSource(device));
+                } else {
+                    window.waitForDevice();
+                }
+            }
+        }
     }
 
     private static UncaughtExceptionHandler exceptionHandler = (thread, throwable) -> {
