@@ -1,0 +1,13 @@
+[
+  {
+    "filterData": {
+      "tags": [
+        "ActivityManager"
+      ],
+      "mode": "SHOW"
+    },
+    "enabled": true,
+    "classname": "org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController$SavedDialogFilterData"
+  }
+]
+
