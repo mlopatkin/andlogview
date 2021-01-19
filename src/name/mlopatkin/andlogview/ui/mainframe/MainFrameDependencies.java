@@ -20,6 +20,8 @@ import name.mlopatkin.andlogview.AppGlobals;
 import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.ui.FileDialog;
+import name.mlopatkin.andlogview.ui.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
@@ -58,6 +60,10 @@ public interface MainFrameDependencies {
     DataSourceHolder getDataSourceHolder();
 
     TableColumnModelFactory getColumnModelFactory();
+
+    FileDialog getFileDialog();
+
+    LastUsedDirPref getLastUsedDir();
 
     @Component.Factory
     interface Factory {

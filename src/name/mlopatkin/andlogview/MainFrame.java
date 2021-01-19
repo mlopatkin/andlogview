@@ -73,12 +73,10 @@ import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -427,8 +425,6 @@ public class MainFrame extends JFrame {
         setJMenuBar(mainMenu);
     }
 
-    private @Nullable File recentDir = null;
-
     private Action acOpenFile = new AbstractAction("Open...") {
         {
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
@@ -436,11 +432,7 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            JFileChooser fileChooser = new JFileChooser(recentDir);
-            int result = fileChooser.showOpenDialog(MainFrame.this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                setRecentDir(file.getAbsoluteFile().getParentFile());
+            dependencies.getFileDialog().selectFileToOpen().ifPresent(file -> {
                 try {
                     DataSource source = FileDataSourceFactory.createDataSource(file);
                     setSource(source);
@@ -451,7 +443,7 @@ public class MainFrame extends JFrame {
                     logger.error("IO Exception while reading " + file, e);
                     ErrorDialogsHelper.showError(MainFrame.this, "Cannot read " + file);
                 }
-            }
+            });
         }
     };
 
@@ -544,20 +536,7 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
-            JFileChooser fileChooser = new JFileChooser(recentDir);
-            int result = fileChooser.showSaveDialog(MainFrame.this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                setRecentDir(file.getAbsoluteFile().getParentFile());
-                if (file.exists()) {
-                    result = JOptionPane.showConfirmDialog(
-                            MainFrame.this, "File " + file + " already exists, overwrite?");
-                    if (result != JOptionPane.YES_OPTION) {
-                        return;
-                    }
-                }
-                saveTableToFile(file);
-            }
+            dependencies.getFileDialog().selectFileToSave().ifPresent(MainFrame.this::saveTableToFile);
         }
     };
 
@@ -605,7 +584,7 @@ public class MainFrame extends JFrame {
     }
 
     void setRecentDir(File dir) {
-        recentDir = dir;
+        dependencies.getLastUsedDir().set(dir);
     }
 
     public boolean tryInitAdbBridge() {
