@@ -82,5 +82,28 @@ class ParsingStrategies {
             return "TimeStrategy";
         }
     };
-    static final ParsingStrategies.Strategy[] supportedStrategies = {threadTime, brief, time};
+    static final ParsingStrategies.Strategy androidStudio = new ParsingStrategies.Strategy() {
+        @Override
+        public @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+            return LogRecordParser.parseAndroidStudio(line);
+        }
+
+        @Override
+        public Set<Field> getAvailableFields() {
+            return EnumSet.of(
+                    Field.TIME,
+                    Field.PID,
+                    Field.TID,
+                    Field.APP_NAME,
+                    Field.PRIORITY,
+                    Field.TAG,
+                    Field.MESSAGE);
+        }
+
+        @Override
+        public String toString() {
+            return "AndroidStudioStrategy";
+        }
+    };
+    static final ParsingStrategies.Strategy[] supportedStrategies = {threadTime, brief, time, androidStudio};
 }

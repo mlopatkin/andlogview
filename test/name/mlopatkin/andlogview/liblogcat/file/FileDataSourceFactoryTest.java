@@ -87,6 +87,16 @@ public class FileDataSourceFactoryTest {
         source.close();
     }
 
+    @Test
+    public void openAndroidStudioLog() throws Exception {
+        CharSource log = openTestData("emulator_cupcake_android_studio.log");
+
+        DataSource source = FileDataSourceFactory.createDataSource("androidstudio.log", log);
+        assertThat(source.getAvailableFields(),
+                Matchers.containsInAnyOrder(
+                        Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE, Field.APP_NAME));
+    }
+
     private CharSource openTestData(String testDataName) {
         return Resources.asCharSource(Resources.getResource(getClass(), testDataName), StandardCharsets.UTF_8);
     }

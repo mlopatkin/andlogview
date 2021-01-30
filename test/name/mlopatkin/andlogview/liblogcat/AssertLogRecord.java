@@ -50,7 +50,7 @@ public class AssertLogRecord {
      * @throws AssertionError if the {@code record} is {@code null}
      */
     public static AssertLogRecord assertThatRecord(@Nullable LogRecord record) {
-        Assert.assertNotNull(record);
+        Assert.assertNotNull("Record is null", record);
         return new AssertLogRecord(Objects.requireNonNull(record));
     }
 
@@ -198,6 +198,20 @@ public class AssertLogRecord {
     public AssertLogRecord hasBuffer(LogRecord.Buffer buffer) {
         checkedFields.add(Field.BUFFER);
         Assert.assertEquals("Buffer mismatch", buffer, item.getBuffer());
+        return this;
+    }
+
+
+    /**
+     * Checks that the record's app name is equal to the given one.
+     *
+     * @param appName the expected app name of the record
+     * @return the assertion chain builder
+     * @throws AssertionError if the check fails
+     */
+    public AssertLogRecord hasAppName(String appName) {
+        checkedFields.add(Field.APP_NAME);
+        Assert.assertEquals("App name mismatch", appName, item.getAppName());
         return this;
     }
 }

@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
 public class LogRecordParser {
     private LogRecordParser() {}
 
-    private static final String TIMESTAMP_REGEX = "(\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)(?:\\d\\d\\d)?";
+    private static final String TIMESTAMP_REGEX = "(?:\\d\\d\\d\\d-)?(\\d\\d-\\d\\d "
+            + "\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)(?:\\d\\d\\d)?";
     private static final String ID_REGEX = "(\\d+)";
     private static final String PID_REGEX = ID_REGEX;
     private static final String PID_BRACKETS = "\\(\\s*" + PID_REGEX + "\\)";
@@ -43,6 +44,10 @@ public class LogRecordParser {
     private static final String MESSAGE_REGEX = "(.*)";
     private static final String SEP = "\\s+";
     private static final String SEP_OPT = "\\s*";
+
+    private static String group(String s) {
+        return "(" + s + ")";
+    }
 
     private static class ThreadTime {
         private static final String TAG = TAG_REGEX + "\\s*: ";
@@ -172,6 +177,38 @@ public class LogRecordParser {
         }
     }
 
+    private static class AndroidStudio {
+        private static final String PROC_NAME_REGEX = "(\\S+)";
+
+        private static final String[] LOG_RECORD_FIELDS = {
+                TIMESTAMP_REGEX, SEP, PID_REGEX, "-", TID_REGEX, "/", PROC_NAME_REGEX, SEP,
+                PRIORITY_REGEX, "/", TAG_REGEX, ": ", MESSAGE_REGEX};
+        private static final Pattern pattern = Pattern.compile("^" + String.join("", LOG_RECORD_FIELDS) + "$");
+
+        static Matcher matchLine(String line) {
+            return pattern.matcher(line);
+        }
+
+        static @Nullable LogRecord createFromGroups(Matcher m) {
+            if (!m.matches()) {
+                return null;
+            }
+            try {
+                Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+                int pid = Integer.parseInt(m.group(2));
+                int tid = Integer.parseInt(m.group(3));
+                String rawAppName = m.group(4);
+                @Nullable String appName = "?".equals(rawAppName) ? null : rawAppName;
+                Priority priority = getPriorityFromChar(m.group(5));
+                String tag = m.group(6);
+                String message = m.group(7);
+                return new LogRecord(dateTime, pid, tid, appName, priority, tag, message);
+            } catch (ParseException e) {
+                return new LogRecord(new Date(), -1, -1, "", Priority.ERROR, "Parse Error", m.group());
+            }
+        }
+    }
+
     private static Priority getPriorityFromChar(String next) {
         next = next.trim();
         for (Priority val : Priority.values()) {
@@ -199,6 +236,10 @@ public class LogRecordParser {
 
     public static @Nullable LogRecord parseTag(@Nullable Buffer buffer, String line) {
         return Tag.createFromGroups(buffer, Tag.matchLine(line));
+    }
+
+    public static @Nullable LogRecord parseAndroidStudio(String line) {
+        return AndroidStudio.createFromGroups(AndroidStudio.matchLine(line));
     }
 
     private static final String LOG_BEGIN = "--------- beginning of ";

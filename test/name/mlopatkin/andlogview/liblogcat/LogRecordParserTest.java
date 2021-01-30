@@ -182,4 +182,55 @@ public class LogRecordParserTest {
                 .andAllOtherFieldAreDefaults();
 
     }
+
+    @Test
+    public void testAndroidStudioLogWithAppNameAndYear() {
+        String logString = "2020-04-09 14:39:33.663 3630-21427/com.google.android.googlequicksearchbox:search "
+                + "E/ActivityThread: Failed to find provider info for "
+                + "com.google.android.apps.gsa.testing.ui.audio.recorded";
+        LogRecord record = LogRecordParser.parseAndroidStudio(logString);
+
+        assertThatRecord(record)
+                .hasDate(4, 9).hasTime(14, 39, 33, 663)
+                .hasPid(3630)
+                .hasTid(21427)
+                .hasAppName("com.google.android.googlequicksearchbox:search")
+                .hasPriority(LogRecord.Priority.ERROR)
+                .hasTag("ActivityThread")
+                .hasMessage("Failed to find provider info for com.google.android.apps.gsa.testing.ui.audio.recorded")
+                .andAllOtherFieldAreDefaults();
+    }
+
+    @Test
+    public void testAndroidStudioLogWithoutYear() {
+        String logString = "01-30 21:08:09.391 573-574/system_process W/ActivityManager: "
+                + "Unable to start service Intent { action=com.android.ussd.INetworkService }: not found";
+        LogRecord record = LogRecordParser.parseAndroidStudio(logString);
+
+        assertThatRecord(record)
+                .hasDate(1, 30).hasTime(21, 8, 9, 391)
+                .hasPid(573)
+                .hasTid(574)
+                .hasAppName("system_process")
+                .hasPriority(LogRecord.Priority.WARN)
+                .hasTag("ActivityManager")
+                .hasMessage("Unable to start service Intent { action=com.android.ussd.INetworkService }: not found")
+                .andAllOtherFieldAreDefaults();
+    }
+
+    @Test
+    public void testAndroidStudioLogWithoutAppName() {
+        String logString = "2020-04-09 14:39:34.948 21494-21501/? "
+                + "E/zygote: Failed sending reply to debugger: Broken pipe";
+        LogRecord record = LogRecordParser.parseAndroidStudio(logString);
+
+        assertThatRecord(record)
+                .hasDate(4, 9).hasTime(14, 39, 34, 948)
+                .hasPid(21494)
+                .hasTid(21501)
+                .hasPriority(LogRecord.Priority.ERROR)
+                .hasTag("zygote")
+                .hasMessage("Failed sending reply to debugger: Broken pipe")
+                .andAllOtherFieldAreDefaults();
+    }
 }
