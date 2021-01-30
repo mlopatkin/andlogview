@@ -1,4 +1,7 @@
 version 0.21
+    [+] Support parsing Android Studio's logcat format
+    [+] Automatically gather device logs dumps into an archive for compatibility investigations (available if the too is
+        started in debug mode - with `-d` command-line key)
 
 version 0.20
     [+] Quick filters based on the content of the clicked cell
