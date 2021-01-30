@@ -111,12 +111,15 @@ public class MainFrame extends JFrame {
     private JLabel searchStatusLabel;
     private JLabel sourceStatusLabel;
     private final MainFrameDependencies dependencies;
+    private final CommandLine commandLine;
 
     @SuppressWarnings("NullAway")
     @Inject
-    public MainFrame(AppGlobals globals) {
+    public MainFrame(AppGlobals globals, CommandLine commandLine) {
         dependencies = DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), globals);
         sourceHolder = dependencies.getDataSourceHolder();
+
+        this.commandLine = commandLine;
 
         initialize();
         processListFrame = new ProcessListFrame(this);
@@ -416,6 +419,10 @@ public class MainFrame extends JFrame {
         mnAdb.addSeparator();
         mnAdb.add(acResetLogs);
         mnAdb.add(acChangeConfiguration);
+        if (commandLine.isDebug()) {
+            mnAdb.addSeparator();
+            mnAdb.add(acDumpDevice);
+        }
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
@@ -478,6 +485,14 @@ public class MainFrame extends JFrame {
             ConfigurationDialog.showConfigurationDialog(MainFrame.this);
         }
     };
+
+    private final Action acDumpDevice = new AbstractAction("Prepare device dump...") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            dependencies.getDumpDevicePresenter().selectDeviceAndDump();
+        }
+    };
+
     private @Nullable IDeviceChangeListener pendingAttacher;
 
     /**

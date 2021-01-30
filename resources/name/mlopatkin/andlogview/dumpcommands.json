@@ -1,0 +1,240 @@
+[
+  {
+    "baseOutputName": "logcat",
+    "commandLine": [
+      "logcat",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "threadtime",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_long",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "long",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_main",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "main",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_radio",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "radio",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_events",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "events",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_system",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "system",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_crash",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "crash",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_kernel",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "kernel",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_main_-s_-d",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "main",
+      "-s",
+      "-d",
+      "|| echo 0"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-b_foobar_-s_-d",
+    "commandLine": [
+      "logcat",
+      "-b",
+      "foobar",
+      "-s",
+      "-d",
+      "|| echo 0"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-g",
+    "commandLine": [
+      "logcat",
+      "-g"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-B",
+    "commandLine": [
+      "logcat",
+      "-B",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-S",
+    "commandLine": [
+      "logcat",
+      "-S"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-p",
+    "commandLine": [
+      "logcat",
+      "-p"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-D",
+    "commandLine": [
+      "logcat",
+      "-D",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime,epoch",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "threadtime,epoch",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime,uid",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "threadtime,uid",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime,usec",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "threadtime,usec",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime,year",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "threadtime,year",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime,year,usec,UTC",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "threadtime,year,usec,UTC",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "logcat_-v_threadtime_allmodifiers",
+    "commandLine": [
+      "logcat",
+      "-v",
+      "uid,usec,year,zone",
+      "-d"
+    ]
+  },
+  {
+    "baseOutputName": "ps",
+    "commandLine": [
+      "ps"
+    ]
+  },
+  {
+    "baseOutputName": "ps_-A",
+    "commandLine": [
+      "ps",
+      "-A"
+    ]
+  },
+  {
+    "baseOutputName": "ps_-P",
+    "commandLine": [
+      "ps",
+      "-P"
+    ]
+  },
+  {
+    "baseOutputName": "dumpstate",
+    "commandLine": [
+      "dumpstate"
+    ]
+  },
+  {
+    "baseOutputName": "dumpsys",
+    "commandLine": [
+      "dumpsys"
+    ]
+  },
+  {
+    "baseOutputName": "bugreport",
+    "commandLine": [
+      "bugreport"
+    ]
+  },
+  {
+    "baseOutputName": "bugreportz_-v",
+    "commandLine": [
+      "bugreportz",
+      "-v"
+    ]
+  }
+]
+

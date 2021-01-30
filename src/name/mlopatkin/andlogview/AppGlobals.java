@@ -16,23 +16,35 @@
 
 package name.mlopatkin.andlogview;
 
+import static name.mlopatkin.andlogview.AppExecutors.FILE_EXECUTOR;
+import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
+
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 
 import dagger.BindsInstance;
 import dagger.Component;
 
+import java.util.concurrent.Executor;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
  * Global application services available for all.
  */
 @Singleton
-@Component(modules = {GlobalsModule.class, ConfigModule.class})
+@Component(modules = {GlobalsModule.class, ConfigModule.class, AppExecutors.ExecutorsModule.class})
 public interface AppGlobals {
     Main getMain();
 
     ConfigStorage getConfigStorage();
+
+    @Named(UI_EXECUTOR)
+    Executor getUiExecutor();
+
+    @Named(FILE_EXECUTOR)
+    Executor getFileExecutor();
 
     @Component.Factory
     interface Factory {

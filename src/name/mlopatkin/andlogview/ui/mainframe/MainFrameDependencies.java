@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
+import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -58,6 +59,8 @@ public interface MainFrameDependencies {
     MainFilterController getMainFilterController();
 
     DataSourceHolder getDataSourceHolder();
+
+    DumpDevicePresenter getDumpDevicePresenter();
 
     TableColumnModelFactory getColumnModelFactory();
 
