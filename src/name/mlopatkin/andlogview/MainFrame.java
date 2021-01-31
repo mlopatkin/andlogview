@@ -40,6 +40,8 @@ import name.mlopatkin.andlogview.ui.mainframe.BufferFilterMenu;
 import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
+import name.mlopatkin.andlogview.ui.status.SourceStatusViewImpl;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -110,6 +112,7 @@ public class MainFrame extends JFrame {
     private JPanel statusPanel;
     private JLabel searchStatusLabel;
     private JLabel sourceStatusLabel;
+    private SourceStatusPresenter sourceStatusPresenter;
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
 
@@ -138,7 +141,6 @@ public class MainFrame extends JFrame {
         bookmarkModel.clear();
         newSource.setLogRecordListener(listener);
         bufferMenu.setAvailableBuffers(newSource.getAvailableBuffers());
-        showSourceMessage(newSource.toString());
         updatingTimer.start();
         if (newSource != null && newSource.getPidToProcessConverter() != null) {
             acShowProcesses.setEnabled(true);
@@ -237,7 +239,12 @@ public class MainFrame extends JFrame {
         sourceStatusLabel = new JLabel();
         statusPanel.add(sourceStatusLabel);
 
-        Component rigidArea = Box.createRigidArea(new Dimension(0, 16));
+        // TODO(mlopatkin) Figure out how to replace this with a proper injection
+        sourceStatusPresenter = new SourceStatusPresenter(dependencies.getDataSourceHolder(),
+                new SourceStatusViewImpl(statusPanel, sourceStatusLabel));
+        sourceStatusPresenter.init();
+
+        Component rigidArea = Box.createRigidArea(new Dimension(5, 16));
         statusPanel.add(rigidArea);
 
         setupSearchButtons();
@@ -373,10 +380,7 @@ public class MainFrame extends JFrame {
     Timer updatingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            DataSource source = sourceHolder.getDataSource();
-            if (source != null) {
-                showSourceMessage(source.toString());
-            }
+            sourceStatusPresenter.updateSourceStatus();
         }
     });
 
@@ -385,12 +389,6 @@ public class MainFrame extends JFrame {
         searchStatusLabel.setVisible(true);
         hidingTimer.setRepeats(false);
         hidingTimer.start();
-    }
-
-    private void showSourceMessage(String text) {
-        sourceStatusLabel.setText(text);
-        statusPanel.revalidate();
-        statusPanel.repaint();
     }
 
     public void reset() {
@@ -518,7 +516,6 @@ public class MainFrame extends JFrame {
             }
         };
         AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
-        EventQueue.invokeLater(() -> showSourceMessage("Waiting for device..."));
         IDevice device = AdbDeviceManager.getDefaultDevice();
         if (device != null) {
             connectDevicePending(device);
