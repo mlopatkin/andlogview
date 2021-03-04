@@ -32,7 +32,7 @@ repositories {
     google()
 }
 
-def daggerVersion = '2.27'
+def daggerVersion = '2.33'
 
 dependencies {
     implementation "com.google.dagger:dagger:${daggerVersion}"
