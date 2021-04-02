@@ -118,7 +118,7 @@ public class Configuration {
         }
 
         public static void mainWindowHeight(int height) {
-            config.set(MAIN_WINDOW_WIDTH_KEY, height);
+            config.set(MAIN_WINDOW_HEIGHT_KEY, height);
         }
 
         public static Point processWindowPosition() {
