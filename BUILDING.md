@@ -20,9 +20,9 @@ git config --global core.autocrlf false
 ```
 It is possible to configure it only for this repository later after checkout.
 
-To get sources run `git clone` as usual:
+To get sources run `git clone` with `--recursive` to retrieve submodules:
 ```
-git clone https://mlopatkin@bitbucket.org/mlopatkin/android-log-viewer.git
+git clone --recursive https://mlopatkin@bitbucket.org/mlopatkin/android-log-viewer.git
 ```
 
 If you decided to disable line ending translation only for this repo then run following command inside repo:
