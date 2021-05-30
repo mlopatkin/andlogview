@@ -5,3 +5,7 @@ jmh/resources/*
 # Binary files
 *.png
 *.jar
+
+# Submodules
+.gitmodules
+bitbucket-plugin

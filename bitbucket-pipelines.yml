@@ -8,6 +8,7 @@ pipelines:
             - gradle
             - gradlewrapper
           script:
+            - git submodule update --init
             - bash ./gradlew build bitbucketUpload --continue
   tags:
     '*':
@@ -17,6 +18,7 @@ pipelines:
             - gradlewrapper
           script:
             - export LOGVIEW_SNAPSHOT_BUILD=false
+            - git submodule update --init
             - bash ./gradlew bitbucketUpload
 
   pull-requests:
@@ -26,6 +28,7 @@ pipelines:
             - gradle
             - gradlewrapper
           script:
+            - git submodule update --init
             - bash tools/hooks/lint-all.sh
             - bash ./gradlew check --continue
           artifacts:
