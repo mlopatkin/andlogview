@@ -18,12 +18,16 @@ package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import javax.inject.Inject;
 
 /**
  * A presenter for the status bar entry that shows the status of the current data source.
  */
+@MainFrameScoped
 public class SourceStatusPresenter {
     private final DataSourceHolder dataSourceHolder;
     private final View view;
@@ -33,6 +37,7 @@ public class SourceStatusPresenter {
         void showSourceStatus(String status);
     }
 
+    @Inject
     public SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view) {
         this.dataSourceHolder = dataSourceHolder;
         this.view = view;

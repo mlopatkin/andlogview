@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -45,6 +46,8 @@ public interface AppGlobals {
 
     @Named(FILE_EXECUTOR)
     Executor getFileExecutor();
+
+    UiThreadScheduler getUiTimer();
 
     @Component.Factory
     interface Factory {

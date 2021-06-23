@@ -16,6 +16,9 @@
 
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.utils.SwingUiThreadScheduler;
+import name.mlopatkin.andlogview.utils.UiThreadScheduler;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import dagger.Module;
@@ -66,6 +69,11 @@ public class AppExecutors {
         @Named(FILE_EXECUTOR)
         public static ExecutorService getFileExecutorService() {
             return Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("file-thread-%d").build());
+        }
+
+        @Provides
+        public static UiThreadScheduler getUiTimer() {
+            return new SwingUiThreadScheduler();
         }
     }
 }

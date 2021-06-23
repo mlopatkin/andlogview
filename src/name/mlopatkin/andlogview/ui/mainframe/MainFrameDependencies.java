@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.AppGlobals;
 import name.mlopatkin.andlogview.DataSourceHolder;
+import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.FileDialog;
@@ -67,6 +68,8 @@ public interface MainFrameDependencies {
     FileDialog getFileDialog();
 
     LastUsedDirPref getLastUsedDir();
+
+    void injectMainFrame(MainFrame frame);
 
     @Component.Factory
     interface Factory {

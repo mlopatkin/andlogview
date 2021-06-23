@@ -16,26 +16,26 @@
 
 package name.mlopatkin.andlogview.ui.status;
 
-import javax.swing.JLabel;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
-public class SourceStatusViewImpl implements SourceStatusPresenter.View {
-    private final JLabel sourceStatusLabel;
+import dagger.Module;
+import dagger.Provides;
 
-    public SourceStatusViewImpl(JLabel sourceStatusLabel) {
-        this.sourceStatusLabel = sourceStatusLabel;
+/**
+ * Bindings for the Status Panel UI.
+ */
+@Module
+public class StatusPanelModule {
+
+    @Provides
+    @MainFrameScoped
+    static SourceStatusPresenter.View sourceStatusView(StatusPanel statusPanel) {
+        return statusPanel.getSourceStatusView();
     }
 
-    @Override
-    public void showWaitingStatus() {
-        setLabelText("Waiting for a device\u2026");
-    }
-
-    @Override
-    public void showSourceStatus(String status) {
-        setLabelText(status);
-    }
-
-    private void setLabelText(String text) {
-        sourceStatusLabel.setText(text);
+    @Provides
+    @MainFrameScoped
+    static SearchStatusPresenter.View searchStatusView(StatusPanel statusPanel) {
+        return statusPanel.getSearchStatusView();
     }
 }

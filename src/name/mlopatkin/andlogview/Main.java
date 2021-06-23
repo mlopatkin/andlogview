@@ -76,8 +76,8 @@ public class Main {
     }
 
     @Inject
-    Main(Provider<MainFrame> mainFrameProvider, CommandLine commandLine) {
-        this.mainFrameProvider = mainFrameProvider;
+    Main(MainFrame.Factory mainFrameFactory, CommandLine commandLine) {
+        this.mainFrameProvider = mainFrameFactory;
         this.commandLine = commandLine;
     }
 

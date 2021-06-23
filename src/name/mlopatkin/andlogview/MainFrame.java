@@ -40,8 +40,9 @@ import name.mlopatkin.andlogview.ui.mainframe.BufferFilterMenu;
 import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
-import name.mlopatkin.andlogview.ui.status.SourceStatusViewImpl;
+import name.mlopatkin.andlogview.ui.status.StatusPanel;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -53,7 +54,6 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -70,13 +70,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -84,10 +83,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
-import javax.swing.border.EtchedBorder;
 
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
@@ -109,21 +106,39 @@ public class MainFrame extends JFrame {
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
-    private JPanel statusPanel;
-    private JLabel searchStatusLabel;
-    private JLabel sourceStatusLabel;
-    private SourceStatusPresenter sourceStatusPresenter;
+    @Inject
+    SourceStatusPresenter sourceStatusPresenter;
+    @Inject
+    SearchStatusPresenter searchStatusPresenter;
+    @Inject
+    StatusPanel statusPanel;
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
 
+    public static class Factory implements Provider<MainFrame> {
+        private final AppGlobals globals;
+        private final CommandLine commandLine;
+
+        @Inject
+        public Factory(AppGlobals globals, CommandLine commandLine) {
+            this.globals = globals;
+            this.commandLine = commandLine;
+        }
+
+        @Override
+        public MainFrame get() {
+            return new MainFrame(globals, commandLine);
+        }
+    }
+
     @SuppressWarnings("NullAway")
-    @Inject
     public MainFrame(AppGlobals globals, CommandLine commandLine) {
         dependencies = DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), globals);
         sourceHolder = dependencies.getDataSourceHolder();
 
         this.commandLine = commandLine;
 
+        dependencies.injectMainFrame(this);
         initialize();
         processListFrame = new ProcessListFrame(this);
     }
@@ -223,29 +238,8 @@ public class MainFrame extends JFrame {
 
         JComponent filterPanel = dependencies.getFilterPanel();
         controlsPanel.add(filterPanel);
-
-        statusPanel = new JPanel();
-        statusPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-        controlsPanel.add(statusPanel);
-        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
-
-        searchStatusLabel = new JLabel();
-        searchStatusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        statusPanel.add(searchStatusLabel);
-
-        Component horizontalGlue = Box.createHorizontalGlue();
-        statusPanel.add(horizontalGlue);
-
-        sourceStatusLabel = new JLabel();
-        statusPanel.add(sourceStatusLabel);
-
-        // TODO(mlopatkin) Figure out how to replace this with a proper injection
-        sourceStatusPresenter = new SourceStatusPresenter(dependencies.getDataSourceHolder(),
-                new SourceStatusViewImpl(statusPanel, sourceStatusLabel));
+        controlsPanel.add(statusPanel.getPanel());
         sourceStatusPresenter.init();
-
-        Component rigidArea = Box.createRigidArea(new Dimension(5, 16));
-        statusPanel.add(rigidArea);
 
         setupSearchButtons();
         setupMainMenu(dependencies.getMainFilterController());
@@ -278,8 +272,10 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (searchController.isActive()) {
-                    if (!searchController.searchNext()) {
-                        showSearchMessage(MESSAGE_NOT_FOUND);
+                    if (searchController.searchNext()) {
+                        searchStatusPresenter.reset();
+                    } else {
+                        searchStatusPresenter.showNotFoundMessage();
                     }
                 } else {
                     showSearchField();
@@ -291,8 +287,10 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (searchController.isActive()) {
-                    if (!searchController.searchPrev()) {
-                        showSearchMessage(MESSAGE_NOT_FOUND);
+                    if (searchController.searchPrev()) {
+                        searchStatusPresenter.reset();
+                    } else {
+                        searchStatusPresenter.showNotFoundMessage();
                     }
                 } else {
                     showSearchField();
@@ -322,7 +320,7 @@ public class MainFrame extends JFrame {
                         try {
                             if (!searchController.startSearch(request)) {
                                 logElements.requestFocusInWindow();
-                                showSearchMessage(MESSAGE_NOT_FOUND);
+                                searchStatusPresenter.showNotFoundMessage();
                             }
                         } catch (RequestCompilationException e1) {
                             ErrorDialogsHelper.showError(
@@ -354,7 +352,7 @@ public class MainFrame extends JFrame {
         instantSearchTextField.setVisible(true);
         instantSearchTextField.selectAll();
         instantSearchTextField.requestFocusInWindow();
-        searchStatusLabel.setVisible(false);
+        searchStatusPresenter.reset();
         controlsPanel.revalidate();
         controlsPanel.repaint();
         scrollController.scrollIfNeeded();
@@ -368,28 +366,12 @@ public class MainFrame extends JFrame {
         scrollController.scrollIfNeeded();
     }
 
-    private static final int MESSAGE_DELAY = 2000;
-    private static final String MESSAGE_NOT_FOUND = "Text not found";
-    Timer hidingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            searchStatusLabel.setVisible(false);
-        }
-    });
-
-    Timer updatingTimer = new Timer(MESSAGE_DELAY, new ActionListener() {
+    Timer updatingTimer = new Timer(2000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             sourceStatusPresenter.updateSourceStatus();
         }
     });
-
-    private void showSearchMessage(String text) {
-        searchStatusLabel.setText(text);
-        searchStatusLabel.setVisible(true);
-        hidingTimer.setRepeats(false);
-        hidingTimer.start();
-    }
 
     public void reset() {
         recordsModel.clear();
