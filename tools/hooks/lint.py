@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 
 """
 Checks some basic sanity constraints about the code: proper eolns, no tabs, etc.
