@@ -16,18 +16,32 @@
 
 package name.mlopatkin.andlogview.ui.status;
 
-import javax.swing.JLabel;
+import name.mlopatkin.andlogview.utils.CommonChars;
+import name.mlopatkin.andlogview.utils.MyStringUtils;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
+import name.mlopatkin.andlogview.widgets.ObservableAction;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
-public class SourceStatusViewImpl implements SourceStatusPresenter.View {
+import java.util.function.Consumer;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+
+class SourceStatusViewImpl implements SourceStatusPresenter.View {
     private final JLabel sourceStatusLabel;
+    private final Subject<Consumer<SourceStatusPopupMenuView>> popupMenuAction = new Subject<>();
 
     public SourceStatusViewImpl(JLabel sourceStatusLabel) {
         this.sourceStatusLabel = sourceStatusLabel;
+
+        UiHelper.addPopupMenu(sourceStatusLabel, this::showMenu);
     }
 
     @Override
     public void showWaitingStatus() {
-        setLabelText("Waiting for a device\u2026");
+        setLabelText("Waiting for a device" + CommonChars.ELLIPSIS);
     }
 
     @Override
@@ -37,5 +51,47 @@ public class SourceStatusViewImpl implements SourceStatusPresenter.View {
 
     private void setLabelText(String text) {
         sourceStatusLabel.setText(text);
+    }
+
+    @Override
+    public Observable<Consumer<SourceStatusPopupMenuView>> popupMenuAction() {
+        return popupMenuAction.asObservable();
+    }
+
+    private void showMenu(JLabel invoker, int x, int y) {
+        PopupMenu popupMenu = new PopupMenu(invoker, x, y);
+        for (Consumer<SourceStatusPopupMenuView> consumer : popupMenuAction) {
+            consumer.accept(popupMenu);
+        }
+    }
+
+    private static class PopupMenu implements SourceStatusPopupMenuView {
+        private final JPopupMenu popupMenu = new JPopupMenu();
+        private final JComponent invoker;
+        private final int x;
+        private final int y;
+
+        PopupMenu(JComponent invoker, int x, int y) {
+            this.invoker = invoker;
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public Observable<Runnable> addCopyAction(String itemName, String value) {
+            ObservableAction action = new ObservableAction(formatCopyActionTitle(itemName, value));
+            popupMenu.add(action);
+            return action.asObservable();
+        }
+
+        @Override
+        public void show() {
+            popupMenu.show(invoker, x, y);
+        }
+
+        private String formatCopyActionTitle(String itemName, String value) {
+            String abbreviatedValue = MyStringUtils.abbreviateMiddle(value, CommonChars.ELLIPSIS, 80, 20);
+            return String.format("Copy %s (%s)", itemName, abbreviatedValue);
+        }
     }
 }

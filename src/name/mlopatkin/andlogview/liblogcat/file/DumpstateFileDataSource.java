@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
+import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
 import name.mlopatkin.andlogview.liblogcat.file.ParsingStrategies.Strategy;
 
 import com.google.common.base.CharMatcher;
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -52,10 +54,12 @@ public final class DumpstateFileDataSource implements DataSource {
     private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
     private @Nullable RecordListener<LogRecord> logcatListener;
 
-    private String fileName;
+    private final String fileName;
+    private final SourceMetadata sourceMetadata;
 
     public DumpstateFileDataSource(String fileName, BufferedReader in) throws IOException, ParseException {
         this.fileName = fileName;
+        sourceMetadata = new FileSourceMetadata(new File(fileName));
         initSectionHandlers();
         parseFile(in);
     }
@@ -310,5 +314,10 @@ public final class DumpstateFileDataSource implements DataSource {
     @Override
     public String toString() {
         return fileName;
+    }
+
+    @Override
+    public SourceMetadata getMetadata() {
+        return sourceMetadata;
     }
 }

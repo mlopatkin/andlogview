@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.liblogcat.Field;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
+import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
 
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
@@ -42,8 +43,9 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private final IDevice device;
     private final AdbPidToProcessConverter converter;
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
+    private final SourceMetadata sourceMetadata;
 
-    public AdbDataSource(final IDevice device) {
+    public AdbDataSource(IDevice device) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
@@ -52,6 +54,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
             setUpStream(buffer);
         }
         AdbDeviceManager.addDeviceChangeListener(deviceListener);
+        sourceMetadata = new AdbSourceMetadata(device);
     }
 
     private boolean closed = false;
@@ -146,6 +149,11 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         } else {
             return "Disconnected device: " + AdbDeviceManager.getDeviceDisplayName(device);
         }
+    }
+
+    @Override
+    public SourceMetadata getMetadata() {
+        return sourceMetadata;
     }
 
     private IDeviceChangeListener deviceListener = new AdbDeviceManager.AbstractDeviceListener() {

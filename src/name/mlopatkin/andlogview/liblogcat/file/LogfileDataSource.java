@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
+import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
 
 import com.google.common.base.CharMatcher;
 
@@ -28,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,13 +46,16 @@ public class LogfileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
 
     private @Nullable RecordListener<LogRecord> listener;
-    private ParsingStrategies.Strategy strategy;
-    private List<LogRecord> records = new ArrayList<>();
-    private String fileName;
+    private final ParsingStrategies.Strategy strategy;
+    private final List<LogRecord> records = new ArrayList<>();
+    private final String fileName;
+    private final SourceMetadata sourceMetadata;
+
 
     private LogfileDataSource(String fileName, ParsingStrategies.Strategy strategy) {
         this.strategy = strategy;
         this.fileName = fileName;
+        this.sourceMetadata = new FileSourceMetadata(new File(fileName));
         logger.debug("Strategy implemented: " + strategy);
     }
 
@@ -121,5 +126,10 @@ public class LogfileDataSource implements DataSource {
     @Override
     public String toString() {
         return fileName;
+    }
+
+    @Override
+    public SourceMetadata getMetadata() {
+        return sourceMetadata;
     }
 }

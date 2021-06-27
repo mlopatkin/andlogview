@@ -19,8 +19,11 @@ package name.mlopatkin.andlogview.ui.status;
 import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.events.Observable;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -35,12 +38,15 @@ public class SourceStatusPresenter {
     interface View {
         void showWaitingStatus();
         void showSourceStatus(String status);
+        Observable<Consumer<SourceStatusPopupMenuView>> popupMenuAction();
     }
 
     @Inject
-    public SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view) {
+    public SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view,
+            SourcePopupMenuPresenter popupMenuPresenter) {
         this.dataSourceHolder = dataSourceHolder;
         this.view = view;
+        view.popupMenuAction().addObserver(popupMenuPresenter::showPopupMenuIfNeeded);
     }
 
     public void init() {

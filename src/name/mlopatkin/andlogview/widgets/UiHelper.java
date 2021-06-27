@@ -36,6 +36,15 @@ public class UiHelper {
     private UiHelper() {}
 
     public static void addPopupMenu(final JComponent component, final JPopupMenu menu) {
+        addPopupMenu(component, menu::show);
+    }
+
+    @FunctionalInterface
+    public interface PopupMenuDelegate<T extends JComponent> {
+        void createAndShowMenu(T component, int x, int y);
+    }
+
+    public static <T extends JComponent> void addPopupMenu(T component, PopupMenuDelegate<T> delegate) {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -52,7 +61,7 @@ public class UiHelper {
             }
 
             private void showMenu(MouseEvent e) {
-                menu.show(e.getComponent(), e.getX(), e.getY());
+                delegate.createAndShowMenu(component, e.getX(), e.getY());
             }
         });
     }

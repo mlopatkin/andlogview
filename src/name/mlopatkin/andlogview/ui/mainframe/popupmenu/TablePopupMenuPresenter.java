@@ -29,6 +29,7 @@ import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import org.apache.log4j.Logger;
@@ -60,8 +61,6 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     }
 
     private static final Logger logger = Logger.getLogger(TablePopupMenuPresenter.class);
-
-    private static final char ELLIPSIS = '\u2026';  // …
 
     private final BookmarkModel bookmarkModel;
     private final MenuFilterCreator filterCreator;
@@ -212,7 +211,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     /** Helper class that defines titles for quick filter menu items */
     private static class FilterData {
         public static String getDialogMenuItemTitle(Column column) {
-            return "Create filter for this " + column.getColumnName() + ELLIPSIS;
+            return "Create filter for this " + column.getColumnName() + CommonChars.ELLIPSIS;
         }
 
         public static String getFilterMenuItemTitle(FilteringMode mode, Column column, TableRow row) {

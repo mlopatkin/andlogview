@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
 
 import name.mlopatkin.andlogview.ui.logtable.PopupMenuViewImpl;
+import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.MyStringUtils;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
@@ -35,7 +36,6 @@ import javax.swing.JMenu;
 public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePopupMenuPresenter.TablePopupMenuView {
     private static final int MAX_HEADER_LENGTH = 30;
     private static final int PREFIX_LENGTH = 5;
-    private static final char ELLIPSIS = '\u2026';  // …
 
     private final ObservableAction bookmarkAction = new ObservableAction();
     private final ObservableAction quickFilterDialogAction = new ObservableAction();
@@ -47,8 +47,9 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
 
     @Override
     public void setHeader(String columnName, String headerText) {
-        String header = columnName + ": " + MyStringUtils.abbreviateMiddle(headerText, ELLIPSIS, MAX_HEADER_LENGTH,
-                PREFIX_LENGTH);
+        String header =
+                columnName + ": " + MyStringUtils.abbreviateMiddle(headerText, CommonChars.ELLIPSIS, MAX_HEADER_LENGTH,
+                        PREFIX_LENGTH);
         popupMenu.add(header).setEnabled(false);
     }
 

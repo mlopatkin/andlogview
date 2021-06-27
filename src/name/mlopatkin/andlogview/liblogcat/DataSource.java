@@ -68,4 +68,6 @@ public interface DataSource {
      *         bookmarks become invalid)
      */
     boolean reset();
+
+    SourceMetadata getMetadata();
 }
