@@ -25,6 +25,7 @@ plugins {
     id 'name.mlopatkin.bitbucket'
     id 'com.diffplug.eclipse.apt'
     id 'me.champeau.gradle.jmh'
+    id 'org.beryx.runtime'
 }
 
 repositories {
@@ -75,6 +76,7 @@ version = '0.21' + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
 mainClassName = 'name.mlopatkin.andlogview.Main'
 
 def javaVersion = JavaVersion.VERSION_1_8
+def javaVersionForJPackage = JavaVersion.VERSION_16
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion // defaults to sourceCompatibility
 
@@ -138,8 +140,8 @@ tasks.withType(JavaCompile).configureEach {
         option('NullAway:AnnotatedPackages', 'org.bitbucket.mlopatkin')
         option('NullAway:AssertsEnabled', 'true')
         option('NullAway:ExcludedClassAnnotations', 'javax.annotation.Generated')
-        option('NullAway:ExcludedFieldAnnotations', 'org.checkerframework.checker.nullness.qual.MonotonicNonNull,'
-                + 'org.mockito.Mock,org.mockito.Captor')
+        option('NullAway:ExcludedFieldAnnotations', 'org.checkerframework.checker.nullness.qual.MonotonicNonNull,' +
+                'org.mockito.Mock,org.mockito.Captor')
         errorproneArgs.addAll(
                 '-Xep:JavaLangClash:OFF',
                 '-Xep:NullAway:ERROR',
@@ -247,3 +249,26 @@ jmh {
 }
 // Order of tasks is important or generated metadata sources will not be imported
 eclipse.synchronizationTasks 'generateBuildMetadata', 'eclipseJdtApt', 'eclipseFactorypath', 'eclipseJdt'
+
+if (System.getProperty('os.name').toLowerCase(Locale.US).contains("linux")) {
+    def jpackageJdkPath = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(JavaVersion.VERSION_16.majorVersion)
+    }.get().metadata.installationPath.toString()
+
+    runtime {
+        options = [
+                '--strip-debug',
+                '--no-header-files',
+                '--no-man-pages',
+                '--strip-native-commands',
+                '--ignore-signing-information'
+        ]
+        javaHome = jpackageJdkPath
+        jpackage {
+            jpackageHome = jpackageJdkPath
+            installerType = 'deb'
+            installerOptions = ['--linux-shortcut']
+            resourceDir = file('install/debian')
+        }
+    }
+}

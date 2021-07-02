@@ -28,6 +28,7 @@ pluginManagement {
         id 'net.ltgt.errorprone' version '2.0.2'
         id 'com.diffplug.eclipse.apt' version '3.22.0'
         id 'me.champeau.gradle.jmh' version '0.5.0'
+        id 'org.beryx.runtime' version '1.12.5'
     }
 }
 
