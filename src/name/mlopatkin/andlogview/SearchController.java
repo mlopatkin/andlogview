@@ -70,7 +70,7 @@ public class SearchController {
         if (curRow != table.getSelectedRow()) {
             curRow = table.getSelectedRow();
         }
-        int startPos = (scanCurrentRow) ? curRow : (curRow + searchMode);
+        int startPos = scanCurrentRow ? curRow : (curRow + searchMode);
         if (startPos < 0) {
             // no more rows to search
             return false;

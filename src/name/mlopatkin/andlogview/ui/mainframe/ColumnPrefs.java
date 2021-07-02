@@ -26,6 +26,8 @@ import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -159,7 +161,8 @@ class ColumnPrefs implements ColumnTogglesModel {
         return order;
     }
 
-    private static void checkJsonPrecondition(boolean precondition, String message, Object... args)
+    @FormatMethod
+    private static void checkJsonPrecondition(boolean precondition, @FormatString String message, Object... args)
             throws InvalidJsonContentException {
         if (!precondition) {
             throw new InvalidJsonContentException(message, args);

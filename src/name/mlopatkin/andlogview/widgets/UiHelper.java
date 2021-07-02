@@ -102,6 +102,7 @@ public class UiHelper {
 
     public static void addDoubleClickAction(JComponent component, final Action action) {
         component.addMouseListener(new MouseAdapter() {
+            @SuppressWarnings("deprecation")
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {

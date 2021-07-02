@@ -91,7 +91,7 @@ public class TablePopupMenuViewImpl extends PopupMenuViewImpl implements TablePo
 
         int colorIndex = 0;
         for (Color color : highlightColors) {
-            Action highlightAction = new AbstractAction("Color " + (colorIndex++), new HighlightIcon(color)) {
+            Action highlightAction = new AbstractAction("Color " + colorIndex++, new HighlightIcon(color)) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     for (Consumer<Color> colorConsumer : highlightSubject) {

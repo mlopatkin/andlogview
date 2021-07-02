@@ -131,6 +131,7 @@ public class TablePopupMenuPresenterParameterizedTest {
                 };
     }
 
+    @SuppressWarnings("unused")
     private static Stream<Arguments> filterActionParams() {
         return Stream.of(getModesWithActionIndex()).flatMap(
                 modesParams -> Stream.of(getColumnsWithFilters()).map(

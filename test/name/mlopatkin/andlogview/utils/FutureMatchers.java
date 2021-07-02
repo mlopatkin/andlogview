@@ -79,6 +79,7 @@ public class FutureMatchers {
         };
     }
 
+    @SuppressWarnings("UseCorrectAssertInTests")
     private static class ExecutionResult<T> implements BiFunction<T, Throwable, Void> {
         private final AtomicBoolean isCompleted = new AtomicBoolean(false);
         private final AtomicReference<T> result = new AtomicReference<>();

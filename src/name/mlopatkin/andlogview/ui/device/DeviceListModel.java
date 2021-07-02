@@ -75,7 +75,7 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
         EventQueue.invokeLater(() -> removeDevice(device));
     }
 
-    private void updateState(IDevice device, int changeMask) {
+    private void updateState(int changeMask) {
         if ((changeMask & (IDevice.CHANGE_STATE | IDevice.CHANGE_BUILD_INFO)) != 0) {
             fireContentsChanged(DeviceListModel.this, 0, devices.size() - 1);
         }
@@ -84,7 +84,7 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
     @Override
     public void deviceChanged(final IDevice device, final int changeMask) {
         logger.debug("Device changed: " + device + " changeMask=" + Integer.toHexString(changeMask));
-        EventQueue.invokeLater(() -> updateState(device, changeMask));
+        EventQueue.invokeLater(() -> updateState(changeMask));
     }
 
     public int getFirstOnlineDeviceIndex() {

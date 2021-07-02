@@ -185,7 +185,7 @@ public class StyledLabel extends JTextPane {
                 if (getContainer() != null) {
                     charHeight = getContainer().getFontMetrics(getFont()).getHeight();
                     g.drawString(ELLIPSIS, alloc.x + last,
-                            alloc.y + fm.getMaxAscent() + Math.round((alloc.height - charHeight) / 2));
+                            alloc.y + fm.getMaxAscent() + (alloc.height - charHeight) / 2);
                 } else {
                     g.drawString(ELLIPSIS, alloc.x + last, alloc.y + alloc.height - fm.getMaxDescent());
                 }

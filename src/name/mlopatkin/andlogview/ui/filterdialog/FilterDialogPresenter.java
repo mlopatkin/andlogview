@@ -186,9 +186,9 @@ class FilterDialogPresenter {
         parseTags(filter);
         filter.setMessagePattern(Strings.emptyToNull(dialogView.getMessageText().trim()));
         parseAppsAndPids(filter);
-        dialogView.getPriority().map(filter::setPriority);
+        dialogView.getPriority().ifPresent(filter::setPriority);
         filter.setMode(dialogView.getMode());
-        dialogView.getHighlightColor().map(filter::setHighlightColor);
+        dialogView.getHighlightColor().ifPresent(filter::setHighlightColor);
         filter.initialize();
         return filter;
     }

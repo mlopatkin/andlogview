@@ -17,6 +17,9 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
@@ -31,12 +34,13 @@ import javax.swing.JOptionPane;
 public class ErrorDialogsHelper {
     private ErrorDialogsHelper() {}
 
-    public static void showError(@Nullable Component owner, String format, @Nullable Object... vals) {
+    @FormatMethod
+    public static void showError(@Nullable Component owner, @FormatString String format, @Nullable Object... vals) {
         String message = String.format(format, vals);
         showError(owner, message);
     }
 
-    static void showError(@Nullable Component owner, String message) {
+    public static void showError(@Nullable Component owner, String message) {
         JOptionPane.showMessageDialog(owner, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 

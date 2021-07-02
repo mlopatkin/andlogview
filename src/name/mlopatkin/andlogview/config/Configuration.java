@@ -142,7 +142,7 @@ public class Configuration {
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
 
-        public static final String DEFAULT_EXECUTABLE = ((SystemUtils.IS_OS_WINDOWS) ? "adb.exe" : "adb").intern();
+        public static final String DEFAULT_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb").intern();
 
         public static String commandline() {
             return config.get(LOGCAT_COMMANDLINE_KEY);

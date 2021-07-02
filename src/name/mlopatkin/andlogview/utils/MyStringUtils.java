@@ -39,13 +39,13 @@ public class MyStringUtils {
      * the result.
      *
      * Examples:
-     * <pre>
+     * <pre>{@code
      * abbreviateMiddle("hello", '*', 3, 1) -> "h*o";
      * abbreviateMiddle("hello", '*', 4, 1) -> "h*lo", suffix is big enough to match maxLength;
      * abbreviateMiddle("hello", '*', 4, 2) -> "he*o";
      * abbreviateMiddle("hello", '*', 3, 2) -> IllegalArgumentException, he* is already maxLength;
      * abbreviateMiddle("hello", '*', 5, 1) -> "hello", unchanged because fits into maxLength=5.
-     * </pre>
+     * }</pre>
      *
      * @param str the string to perform replacement in
      * @param replacement the replacement character

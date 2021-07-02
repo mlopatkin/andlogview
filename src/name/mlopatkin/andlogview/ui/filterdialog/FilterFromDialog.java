@@ -236,7 +236,7 @@ public class FilterFromDialog implements ColoringFilter {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof FilterFromDialog)) {
             return false;
         }
         FilterFromDialog that = (FilterFromDialog) o;

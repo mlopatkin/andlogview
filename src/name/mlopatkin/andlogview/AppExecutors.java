@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 
@@ -48,7 +49,7 @@ public class AppExecutors {
     public static final String FILE_EXECUTOR = "file_executor";
 
     @Module
-    static class ExecutorsModule {
+    abstract static class ExecutorsModule {
 
         @Provides
         @Singleton
@@ -57,12 +58,10 @@ public class AppExecutors {
             return EventQueue::invokeLater;
         }
 
-        @Provides
+        @Binds
         @Singleton
         @Named(FILE_EXECUTOR)
-        public static Executor getFileExecutor(@Named(FILE_EXECUTOR) ExecutorService executorService) {
-            return executorService;
-        }
+        public abstract Executor getFileExecutor(@Named(FILE_EXECUTOR) ExecutorService executorService);
 
         @Provides
         @Singleton

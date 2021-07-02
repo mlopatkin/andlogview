@@ -45,10 +45,6 @@ public class LogRecordParser {
     private static final String SEP = "\\s+";
     private static final String SEP_OPT = "\\s*";
 
-    private static String group(String s) {
-        return "(" + s + ")";
-    }
-
     private static class ThreadTime {
         private static final String TAG = TAG_REGEX + "\\s*: ";
         private static final String[] LOG_RECORD_FIELDS = {

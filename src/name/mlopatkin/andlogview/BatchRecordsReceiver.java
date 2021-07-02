@@ -39,7 +39,7 @@ public interface BatchRecordsReceiver<T> {
      * Add several records at once. It is guaranteed that these records are
      * correctly sorted.
      *
-     * @param records
+     * @param records the sorted list of records
      */
     void addRecords(List<T> records);
 
