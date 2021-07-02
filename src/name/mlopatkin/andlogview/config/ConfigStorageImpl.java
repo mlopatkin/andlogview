@@ -51,7 +51,7 @@ class ConfigStorageImpl implements ConfigStorage {
     private final CharSource inStorage;
     private final CharSink outStorage;
     private final ExecutorService fileWorker;
-    private final Gson gson = new Gson();
+    private final Gson gson = Utils.createConfigurationGson();
 
     @GuardedBy("serializedConfig")
     private final Map<String, JsonElement> serializedConfig = Maps.newHashMap();

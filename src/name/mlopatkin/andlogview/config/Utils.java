@@ -19,6 +19,9 @@ import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
 import name.mlopatkin.andlogview.utils.properties.Parser;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.apache.log4j.Logger;
 
 import java.awt.Color;
@@ -29,7 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-class Utils {
+public class Utils {
     private static final Logger logger = Logger.getLogger(Configuration.class);
 
     private Utils() {}
@@ -77,5 +80,9 @@ class Utils {
         } catch (IOException e) {
             logger.error("Failed to load configuration file", e);
         }
+    }
+
+    public static Gson createConfigurationGson() {
+        return new GsonBuilder().registerTypeAdapter(Color.class, new ColorTypeAdapter()).create();
     }
 }

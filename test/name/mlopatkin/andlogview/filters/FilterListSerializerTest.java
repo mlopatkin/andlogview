@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import name.mlopatkin.andlogview.config.Utils;
+
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -31,7 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 class FilterListSerializerTest {
-    private final Gson gson = new Gson();
+    private final Gson gson = Utils.createConfigurationGson();
     private FilterListSerializer serializer;
 
     @BeforeEach
