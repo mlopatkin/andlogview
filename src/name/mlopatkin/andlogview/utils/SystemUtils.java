@@ -45,6 +45,11 @@ public class SystemUtils {
      */
     private static final String OS_NAME_WINDOWS_PREFIX = "Windows";
 
+    /**
+     * The prefix String for macOS.
+     */
+    private static final String OS_NAME_MACOS_PREFIX = "Mac OS X";
+
     // System property constants
     // -----------------------------------------------------------------------
     // These MUST be declared first. Other constants depend on this.
@@ -114,6 +119,16 @@ public class SystemUtils {
      * @since 2.0
      */
     public static final boolean IS_OS_WINDOWS = getOSMatchesName(OS_NAME_WINDOWS_PREFIX);
+
+    /**
+     * <p>
+     * Is {@code true} if this is macOS.
+     * </p>
+     * <p>
+     * The field will return {@code false} if {@code OS_NAME} is {@code null}.
+     * </p>
+     */
+    public static final boolean IS_OS_MACOS = getOSMatchesName(OS_NAME_MACOS_PREFIX);
 
     // -----------------------------------------------------------------------
 

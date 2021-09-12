@@ -19,6 +19,7 @@ import com.google.common.html.HtmlEscapers;
 
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,6 +37,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 public class UiHelper {
+    @SuppressWarnings("deprecation")
+    private static final int SHORTCUT_KEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
     private UiHelper() {}
 
     public static void addPopupMenu(final JComponent component, final JPopupMenu menu) {
@@ -88,7 +92,18 @@ public class UiHelper {
      * @param action the action to perform when key combination is pressed
      */
     public static void bindKeyFocused(JComponent component, String key, String actionKey, ActionListener action) {
-        component.getInputMap().put(KeyStroke.getKeyStroke(key), actionKey);
+        bindKeyFocused(component, KeyStroke.getKeyStroke(key), actionKey, action);
+    }
+
+    /**
+     * Binds a key combination to the action listener. The combination is handled when {@code component} is focused.
+     * @param component the component which must be focused wto enable the combination
+     * @param key the fully qualified {@link KeyStroke}
+     * @param actionKey the arbitrary action name
+     * @param action the action to perform when key combination is pressed
+     */
+    public static void bindKeyFocused(JComponent component, KeyStroke key, String actionKey, ActionListener action) {
+        component.getInputMap().put(key, actionKey);
         component.getActionMap().put(actionKey, wrapActionListener(action));
     }
 
@@ -116,11 +131,43 @@ public class UiHelper {
         bindKeyGlobal(window, KeyStroke.getKeyStroke(keyCode, 0), actionKey, action);
     }
 
-    private static void bindKeyGlobal(RootPaneContainer window, KeyStroke key, String actionKey,
+    /**
+     * Binds a key combination to the action listener. The combination is handled only when the window is focused. This
+     * method allows you to use your own {@link KeyStroke} with needed key code and modifiers.
+     *
+     * @param window the window which focus enables the action
+     * @param key the fully qualified {@link KeyStroke}
+     * @param actionKey the arbitrary action name
+     * @param action the action to perform when key combination is pressed
+     */
+    public static void bindKeyGlobal(RootPaneContainer window, KeyStroke key, String actionKey,
             ActionListener action) {
         JComponent component = window.getRootPane();
         component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(key, actionKey);
         component.getActionMap().put(actionKey, wrapActionListener(action));
+    }
+
+    /**
+     * Creates a {@link KeyStroke} from key code with platform-dependent modifier.
+     * Platform modifier can be Command or Control.
+     *
+     * @param keyCode the keycode to create {@link KeyStroke} with
+     * @return newly created keystroke
+     */
+    public static KeyStroke createPlatformKeystroke(int keyCode) {
+        return createPlatformKeystroke(keyCode, 0);
+    }
+
+    /**
+     * Creates a {@link KeyStroke} from key code and modifiers combined with platform-dependent modifier.
+     * Platform modifier can be Command or Control.
+     *
+     * @param keyCode the keycode to create {@link KeyStroke} with
+     * @param extraModifiers the modifiers to add to platform modifier
+     * @return newly created keystroke
+     */
+    public static KeyStroke createPlatformKeystroke(int keyCode, int extraModifiers) {
+        return KeyStroke.getKeyStroke(keyCode, SHORTCUT_KEY_MASK | extraModifiers);
     }
 
     private static Action wrapActionListener(ActionListener actionListener) {
