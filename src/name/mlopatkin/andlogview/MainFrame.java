@@ -43,6 +43,7 @@ import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
+import name.mlopatkin.andlogview.utils.SystemUtils;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -58,6 +59,8 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -318,11 +321,17 @@ public class MainFrame extends JFrame {
     private static final String ACTION_FIND_NEXT = "find_next";
     private static final String ACTION_FIND_PREV = "find_prev";
 
-    private static final String KEY_HIDE_AND_START_SEARCH = "ENTER";
-    private static final String KEY_HIDE = "ESCAPE";
-    private static final String KEY_SHOW_SEARCH_FIELD = "control F";
-    private static final String KEY_FIND_NEXT = "F3";
-    private static final String KEY_FIND_PREV = "shift F3";
+    private static final KeyStroke KEY_HIDE_AND_START_SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+    private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    private static final KeyStroke KEY_SHOW_SEARCH_FIELD = UiHelper.createPlatformKeystroke(KeyEvent.VK_F);
+    private static final KeyStroke KEY_FIND_NEXT =
+            SystemUtils.IS_OS_MACOS
+                    ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G)
+                    : KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
+    private static final KeyStroke KEY_FIND_PREV =
+            SystemUtils.IS_OS_MACOS
+                    ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
+                    : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
 
     private void showSearchField() {
         scrollController.notifyBeforeInsert();
@@ -389,9 +398,9 @@ public class MainFrame extends JFrame {
         setJMenuBar(mainMenu);
     }
 
-    private Action acOpenFile = new AbstractAction("Open...") {
+    private final Action acOpenFile = new AbstractAction("Open...") {
         {
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
+            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_O));
         }
 
         @Override
@@ -411,7 +420,7 @@ public class MainFrame extends JFrame {
         }
     };
 
-    private Action acConnectToDevice = new AbstractAction("Connect to device...") {
+    private final Action acConnectToDevice = new AbstractAction("Connect to device...") {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (tryInitAdbBridge()) {
@@ -425,9 +434,9 @@ public class MainFrame extends JFrame {
         }
     };
 
-    private Action acResetLogs = new AbstractAction("Reset logs") {
+    private final Action acResetLogs = new AbstractAction("Reset logs") {
         {
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control R"));
+            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_R));
         }
 
         @Override
@@ -436,7 +445,7 @@ public class MainFrame extends JFrame {
         }
     };
 
-    private Action acChangeConfiguration = new AbstractAction("Configuration...") {
+    private final Action acChangeConfiguration = new AbstractAction("Configuration...") {
         @Override
         public void actionPerformed(ActionEvent e) {
             ConfigurationDialog.showConfigurationDialog(MainFrame.this);
@@ -502,7 +511,7 @@ public class MainFrame extends JFrame {
 
     private Action acSaveToFile = new AbstractAction("Save...") {
         {
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control S"));
+            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_S));
         }
 
         @Override
@@ -513,7 +522,7 @@ public class MainFrame extends JFrame {
 
     private AbstractAction acShowBookmarks = new AbstractAction("Show bookmarks") {
         {
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control P"));
+            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_P));
         }
 
         @Override
