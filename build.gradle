@@ -247,6 +247,12 @@ bitbucketUpload {
 jmh {
     humanOutputFile = project.file("${project.buildDir}/reports/jmh/human.txt")
 }
+
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps false
+    reproducibleFileOrder true
+}
+
 // Order of tasks is important or generated metadata sources will not be imported
 eclipse.synchronizationTasks 'generateBuildMetadata', 'eclipseJdtApt', 'eclipseFactorypath', 'eclipseJdt'
 
