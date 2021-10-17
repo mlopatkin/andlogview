@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 """
 Checks some basic sanity constraints about the code: proper eolns, no tabs, etc.
@@ -34,19 +34,19 @@ def matches_any(filename, globs):
 
 
 def split_eol(line_with_eol):
-    if line_with_eol.endswith('\r\n'):
+    if line_with_eol.endswith(b'\r\n'):
         return line_with_eol[:-2], line_with_eol[-2:]
-    if line_with_eol.endswith('\n'):
-        return line_with_eol[:-1], line_with_eol[-1]
-    return line_with_eol, ''
+    if line_with_eol.endswith(b'\n'):
+        return line_with_eol[:-1], line_with_eol[-1:]
+    return line_with_eol, b''
 
 
 class FileChecker(object):
     def __init__(self, filename):
         self.filename = filename
-        self.eol = '\n'
+        self.eol = b'\n'
         if matches_any(self.filename, CRLF_ONLY_GLOBS):
-            self.eol = '\r\n'
+            self.eol = b'\r\n'
         self.errors = collections.deque()
         self._has_tabs = False
         self._has_wrong_eol = False
@@ -65,7 +65,7 @@ class FileChecker(object):
             # Skip if more than one tab in file
             return
 
-        tab_index = self.line.find('\t')
+        tab_index = self.line.find(b'\t')
         if tab_index >= 0:
             self._has_tabs = True
             self.error(
