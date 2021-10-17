@@ -1,4 +1,5 @@
-image: java:8
+# Debian OpenJDK 8u302-b08
+image: openjdk:8u302-jdk@sha256:e94c5b7f0f428b581053fbb8c0f994f1a27df570e0f7753fad6dffb06c3baf22
 
 pipelines:
   branches:
