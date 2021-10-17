@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 Checks some basic sanity constraints about the code: proper eolns, no tabs, etc.
