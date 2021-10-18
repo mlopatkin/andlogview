@@ -20,6 +20,7 @@ import com.google.common.html.HtmlEscapers;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -29,6 +30,7 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.RootPaneContainer;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -77,9 +79,41 @@ public class UiHelper {
         return result;
     }
 
-    public static void bindKeyFocused(JComponent component, String key, String actionKey, Action action) {
+    /**
+     * Binds a key combination to the action listener. The combination is handled when {@code component} is focused.
+     * @param component the component which must be focused wto enable the combination
+     * @param key the key combination as expected by {@link KeyStroke#getKeyStroke(String)}
+     * @param actionKey the arbitrary action name
+     * @param action the action to perform when key combination is pressed
+     */
+    public static void bindKeyFocused(JComponent component, String key, String actionKey, ActionListener action) {
         component.getInputMap().put(KeyStroke.getKeyStroke(key), actionKey);
-        component.getActionMap().put(actionKey, action);
+        component.getActionMap().put(actionKey, wrapActionListener(action));
+    }
+
+    /**
+     * Binds a key combination to the action listener. The combination is handled only when the window is focused.
+     * @param window the window which focus enables the action
+     * @param key the key combination as expected by {@link KeyStroke#getKeyStroke(String)}
+     * @param actionKey the arbitrary action name
+     * @param action the action to perform when key combination is pressed
+     */
+    public static void bindKeyGlobal(RootPaneContainer window, String key, String actionKey, ActionListener action) {
+        JComponent component = window.getRootPane();
+        component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key), actionKey);
+        component.getActionMap().put(actionKey, wrapActionListener(action));
+    }
+
+    private static Action wrapActionListener(ActionListener actionListener) {
+        if (actionListener instanceof Action) {
+            return (Action) actionListener;
+        }
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actionListener.actionPerformed(e);
+            }
+        };
     }
 
     public interface DoubleClickListener {

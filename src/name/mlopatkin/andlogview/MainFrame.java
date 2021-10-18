@@ -261,78 +261,55 @@ public class MainFrame extends JFrame {
     }
 
     private void setupSearchButtons() {
-        bindKeyGlobal(KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        UiHelper.bindKeyGlobal(this, KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD, e -> showSearchField());
+        UiHelper.bindKeyGlobal(this, KEY_FIND_NEXT, ACTION_FIND_NEXT, e -> {
+            if (searchController.isActive()) {
+                if (searchController.searchNext()) {
+                    searchStatusPresenter.reset();
+                } else {
+                    searchStatusPresenter.showNotFoundMessage();
+                }
+            } else {
                 showSearchField();
             }
         });
 
-        bindKeyGlobal(KEY_FIND_NEXT, ACTION_FIND_NEXT, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (searchController.isActive()) {
-                    if (searchController.searchNext()) {
-                        searchStatusPresenter.reset();
-                    } else {
-                        searchStatusPresenter.showNotFoundMessage();
-                    }
+        UiHelper.bindKeyGlobal(this, KEY_FIND_PREV, ACTION_FIND_PREV, e -> {
+            if (searchController.isActive()) {
+                if (searchController.searchPrev()) {
+                    searchStatusPresenter.reset();
                 } else {
-                    showSearchField();
+                    searchStatusPresenter.showNotFoundMessage();
                 }
+            } else {
+                showSearchField();
             }
         });
 
-        bindKeyGlobal(KEY_FIND_PREV, ACTION_FIND_PREV, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (searchController.isActive()) {
-                    if (searchController.searchPrev()) {
-                        searchStatusPresenter.reset();
-                    } else {
-                        searchStatusPresenter.showNotFoundMessage();
-                    }
-                } else {
-                    showSearchField();
-                }
-            }
-        });
-
-        bindKeyGlobal(KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hideSearchField();
-                instantSearchTextField.setText(null);
-                try {
-                    searchController.startSearch(null);
-                } catch (RequestCompilationException e1) {
-                    logger.error("Unexpected exception", e1);
-                }
+        UiHelper.bindKeyGlobal(this, KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, e -> {
+            hideSearchField();
+            instantSearchTextField.setText(null);
+            try {
+                searchController.startSearch(null);
+            } catch (RequestCompilationException e1) {
+                logger.error("Unexpected exception", e1);
             }
         });
 
         UiHelper.bindKeyFocused(
-                instantSearchTextField, KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH, new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        hideSearchField();
-                        String request = instantSearchTextField.getText();
-                        try {
-                            if (!searchController.startSearch(request)) {
-                                logElements.requestFocusInWindow();
-                                searchStatusPresenter.showNotFoundMessage();
-                            }
-                        } catch (RequestCompilationException e1) {
-                            ErrorDialogsHelper.showError(
-                                    MainFrame.this, "%s isn't a valid search expression: %s", request, e1.getMessage());
+                instantSearchTextField, KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH, e -> {
+                    hideSearchField();
+                    String request = instantSearchTextField.getText();
+                    try {
+                        if (!searchController.startSearch(request)) {
+                            logElements.requestFocusInWindow();
+                            searchStatusPresenter.showNotFoundMessage();
                         }
+                    } catch (RequestCompilationException e1) {
+                        ErrorDialogsHelper.showError(
+                                MainFrame.this, "%s isn't a valid search expression: %s", request, e1.getMessage());
                     }
                 });
-    }
-
-    private void bindKeyGlobal(String key, String actionKey, Action action) {
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key), actionKey);
-        getRootPane().getActionMap().put(actionKey, action);
     }
 
     private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
