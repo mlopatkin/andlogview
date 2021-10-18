@@ -16,10 +16,14 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import name.mlopatkin.andlogview.widgets.UiHelper;
+
 import com.android.ddmlib.IDevice;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -77,7 +81,10 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         }
 
         okButton.addActionListener(e -> onPositiveResult());
-        cancelButton.addActionListener(e -> onNegativeResult());
+
+        ActionListener cancelAction = e -> onNegativeResult();
+        cancelButton.addActionListener(cancelAction);
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
 
         addWindowListener(new WindowAdapter() {
             @Override
