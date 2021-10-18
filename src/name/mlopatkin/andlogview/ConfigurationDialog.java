@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.base.Objects;
 
@@ -24,6 +25,7 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
@@ -117,6 +119,7 @@ public class ConfigurationDialog extends JDialog {
         }
         pack();
         setLocationRelativeTo(owner);
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", acCancel);
     }
 
     private Action acOk = new AbstractAction("OK") {
