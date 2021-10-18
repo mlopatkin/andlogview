@@ -116,7 +116,8 @@ public class UiHelper {
         bindKeyGlobal(window, KeyStroke.getKeyStroke(keyCode, 0), actionKey, action);
     }
 
-    private static void bindKeyGlobal(RootPaneContainer window, KeyStroke key, String actionKey, ActionListener action) {
+    private static void bindKeyGlobal(RootPaneContainer window, KeyStroke key, String actionKey,
+            ActionListener action) {
         JComponent component = window.getRootPane();
         component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(key, actionKey);
         component.getActionMap().put(actionKey, wrapActionListener(action));
