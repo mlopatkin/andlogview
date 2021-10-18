@@ -21,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -99,8 +100,25 @@ public class UiHelper {
      * @param action the action to perform when key combination is pressed
      */
     public static void bindKeyGlobal(RootPaneContainer window, String key, String actionKey, ActionListener action) {
+        bindKeyGlobal(window, KeyStroke.getKeyStroke(key), actionKey, action);
+    }
+
+    /**
+     * Binds a key combination to the action listener. The combination is handled only when the window is focused. This
+     * method doesn't handle key modifiers (shift, alt, etc).
+     *
+     * @param window the window which focus enables the action
+     * @param keyCode the key code from {@link KeyEvent}
+     * @param actionKey the arbitrary action name
+     * @param action the action to perform when key combination is pressed
+     */
+    public static void bindKeyGlobal(RootPaneContainer window, int keyCode, String actionKey, ActionListener action) {
+        bindKeyGlobal(window, KeyStroke.getKeyStroke(keyCode, 0), actionKey, action);
+    }
+
+    private static void bindKeyGlobal(RootPaneContainer window, KeyStroke key, String actionKey, ActionListener action) {
         JComponent component = window.getRootPane();
-        component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key), actionKey);
+        component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(key, actionKey);
         component.getActionMap().put(actionKey, wrapActionListener(action));
     }
 

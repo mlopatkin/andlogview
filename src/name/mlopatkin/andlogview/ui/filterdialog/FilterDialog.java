@@ -23,11 +23,14 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;
@@ -50,7 +53,10 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
         super(dialogFactory.getOwner());
 
         okButton.addActionListener(e -> onPositiveResult());
-        cancelButton.addActionListener(e -> onNegativeResult());
+
+        ActionListener cancelAction = e -> onNegativeResult();
+        cancelButton.addActionListener(cancelAction);
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
 
         ModeChangedListener modeListener = new ModeChangedListener() {
             @Override
@@ -166,4 +172,5 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
     public void showError(String text) {
         ErrorDialogsHelper.showError(this, text);
     }
+
 }
