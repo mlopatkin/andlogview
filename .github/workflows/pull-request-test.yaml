@@ -1,0 +1,29 @@
+name: PR Tests for Github
+on:
+  pull_request:
+    branches:
+      - master
+      - release/*
+jobs:
+  run-precommit-tests:
+    runs-on: ubuntu-latest
+    container: openjdk:8u302-jdk@sha256:e94c5b7f0f428b581053fbb8c0f994f1a27df570e0f7753fad6dffb06c3baf22
+    env:
+      PYTHON_BINARY: python3
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/cache@v2
+        name: Cached Gradle modules
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Run lint checks
+        run: bash tools/hooks/lint-all.sh
+      - name: Run unit tests
+        run: ./gradlew check --continue
