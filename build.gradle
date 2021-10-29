@@ -70,8 +70,9 @@ checkstyle {
     toolVersion = '8.12'
 }
 
+def baseVersion = '0.21'
 applicationName = 'andlogview'
-version = '0.21' + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
+version = baseVersion + (BuildEnvironment.isSnapshotBuild() ? '-SNAPSHOT' : '')
 
 mainClassName = 'name.mlopatkin.andlogview.Main'
 
@@ -275,6 +276,29 @@ if (System.getProperty('os.name').toLowerCase(Locale.US).contains("linux")) {
             installerType = 'deb'
             installerOptions = ['--linux-shortcut']
             resourceDir = file('install/debian')
+        }
+    }
+}
+
+if (System.getProperty('os.name').toLowerCase(Locale.US).contains("win")) {
+    def jpackageJdkPath = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(JavaVersion.VERSION_16.majorVersion)
+    }.get().metadata.installationPath.toString()
+
+    runtime {
+        options = [
+                '--strip-debug',
+                '--no-header-files',
+                '--no-man-pages',
+                '--strip-native-commands',
+                '--ignore-signing-information'
+        ]
+        javaHome = jpackageJdkPath
+        jpackage {
+            jpackageHome = jpackageJdkPath
+            installerType = 'msi'
+            // Valid Windows version is MAJOR[.MINOR[.BUILD]] only
+            appVersion = baseVersion
         }
     }
 }

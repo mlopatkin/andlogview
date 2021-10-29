@@ -5,7 +5,7 @@ on:
       - master
       - release/*
 jobs:
-  run-precommit-tests:
+  run-precommit-tests-linux:
     runs-on: ubuntu-latest
     container: openjdk:8u302-jdk@sha256:e94c5b7f0f428b581053fbb8c0f994f1a27df570e0f7753fad6dffb06c3baf22
     env:
@@ -26,4 +26,30 @@ jobs:
       - name: Run lint checks
         run: bash tools/hooks/lint-all.sh
       - name: Run unit tests
-        run: ./gradlew check --continue
+        run: ./gradlew check --no-daemon --continue
+  run-snapshot-build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/cache@v2
+        name: Cached Gradle modules
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/jdks
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build snapshot distribution
+        run: gradlew.bat jpackage --no-daemon
+        shell: cmd
+      - name: Upload the package to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: MSI package
+          path: build/jpackage/*.msi
+          retention-days: 3
+          if-no-files-found: error
