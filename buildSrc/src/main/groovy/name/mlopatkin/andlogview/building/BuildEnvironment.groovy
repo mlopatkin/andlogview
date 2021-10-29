@@ -42,7 +42,7 @@ class BuildEnvironment {
 
     String getSourceRevision() {
         if (isCiBuild()) {
-            return System.getenv('BITBUCKET_COMMIT')
+            return firstNonNull(System.getenv('BITBUCKET_COMMIT'), System.getenv('GITHUB_SHA'))
         }
 
         return readRevWithGitDescribe()
@@ -50,7 +50,7 @@ class BuildEnvironment {
 
     String getBuildNumber() {
         if (isCiBuild()) {
-            return System.getenv('BITBUCKET_BUILD_NUMBER')
+            return firstNonNull(System.getenv('BITBUCKET_BUILD_NUMBER'), System.getenv('GITHUB_RUN_NUMBER'))
         }
         return '-'
     }
@@ -85,5 +85,14 @@ class BuildEnvironment {
         if (result != 0) {
             throw new IOException("Process exited with exit code=$result")
         }
+    }
+
+    private static <T> T firstNonNull(T... args) {
+        for (T arg : args) {
+            if (arg != null) {
+                return arg
+            }
+        }
+        throw new NullPointerException("No nonnull argument given")
     }
 }
