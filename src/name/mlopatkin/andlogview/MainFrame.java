@@ -29,6 +29,7 @@ import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DdmlibUnsupportedException;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.SelectDeviceDialog;
@@ -121,6 +122,8 @@ public class MainFrame extends JFrame {
     ConfigurationDialog.Controller configurationDialog;
     @Inject
     ErrorDialogs errorDialogs;
+    @Inject
+    AdbConfigurationPref adbConfigurationPref;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -580,7 +583,7 @@ public class MainFrame extends JFrame {
         }
 
         try {
-            AdbConnectionManager.init();
+            AdbConnectionManager.init(adbConfigurationPref.getAdbLocation());
             return true;
         } catch (AdbException e) {
             logger.warn("Cannot start in ADB mode", e);

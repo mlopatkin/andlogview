@@ -21,6 +21,8 @@ import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.preferences.PreferencesModule;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
@@ -37,7 +39,8 @@ import javax.inject.Singleton;
  * Global application services available for all.
  */
 @Singleton
-@Component(modules = {GlobalsModule.class, ConfigModule.class, AppExecutors.ExecutorsModule.class, SwingUiModule.class})
+@Component(modules = {GlobalsModule.class, ConfigModule.class, AppExecutors.ExecutorsModule.class, SwingUiModule.class,
+                      PreferencesModule.class})
 public interface AppGlobals {
     Main getMain();
 
@@ -52,6 +55,8 @@ public interface AppGlobals {
     UiThreadScheduler getUiTimer();
 
     GlobalClipboard getClipboard();
+
+    AdbConfigurationPref getAdbConfiguration();
 
     @Component.Factory
     interface Factory {
