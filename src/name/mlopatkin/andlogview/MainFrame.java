@@ -38,8 +38,10 @@ import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.logtable.LogTableHeaderPopupMenuController;
 import name.mlopatkin.andlogview.ui.mainframe.BufferFilterMenu;
 import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
+import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialog;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
@@ -115,6 +117,11 @@ public class MainFrame extends JFrame {
     SearchStatusPresenter searchStatusPresenter;
     @Inject
     StatusPanel statusPanel;
+    @Inject
+    ConfigurationDialog.Controller configurationDialog;
+    @Inject
+    ErrorDialogs errorDialogs;
+
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
 
@@ -448,7 +455,7 @@ public class MainFrame extends JFrame {
     private final Action acChangeConfiguration = new AbstractAction("Configuration...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            ConfigurationDialog.showConfigurationDialog(MainFrame.this);
+            configurationDialog.showConfigurationDialog(MainFrame.this);
         }
     };
 
@@ -578,7 +585,7 @@ public class MainFrame extends JFrame {
         } catch (AdbException e) {
             logger.warn("Cannot start in ADB mode", e);
             disableAdbCommandsAsync();
-            ErrorDialogsHelper.showAdbNotFoundError(this);
+            errorDialogs.showAdbNotFoundError();
         } catch (DdmlibUnsupportedException e) {
             logger.error("Cannot work with DDMLIB supplied", e);
             disableAdbCommandsAsync();

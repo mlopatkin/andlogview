@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview;
+package name.mlopatkin.andlogview.ui.preferences;
 
+import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -28,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.inject.Inject;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.GroupLayout;
@@ -36,6 +38,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -146,7 +149,7 @@ public class ConfigurationDialog extends JDialog {
     private JTextField textAdbExecutable;
     private JCheckBox cbAutoReconnect;
 
-    public static void showConfigurationDialog(Frame owner) {
+    private static void showConfigurationDialog(Frame owner) {
         assert EventQueue.isDispatchThread();
         ConfigurationDialog dialog = new ConfigurationDialog(owner);
         dialog.setVisible(true);
@@ -177,5 +180,18 @@ public class ConfigurationDialog extends JDialog {
     private void save() {
         Configuration.adb.executable(textAdbExecutable.getText());
         Configuration.adb.setAutoReconnectEnabled(cbAutoReconnect.getModel().isSelected());
+    }
+
+    /**
+     * Transition class to migrate Configuration dialog to the Dependency Injection
+     */
+    public static class Controller {
+
+        @Inject
+        public Controller() {}
+
+        public void showConfigurationDialog(JFrame owner) {
+            ConfigurationDialog.showConfigurationDialog(owner);
+        }
     }
 }
