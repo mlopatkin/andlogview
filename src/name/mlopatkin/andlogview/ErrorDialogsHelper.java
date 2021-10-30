@@ -15,15 +15,12 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.config.Configuration;
-
 import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
-import java.awt.Frame;
 
 import javax.swing.JOptionPane;
 
@@ -42,14 +39,5 @@ public class ErrorDialogsHelper {
 
     public static void showError(@Nullable Component owner, String message) {
         JOptionPane.showMessageDialog(owner, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    static void showAdbNotFoundError(Frame owner) {
-        if (Configuration.adb.showSetupDialog()) {
-            SetupAdbDialog.showDialog(owner);
-        } else {
-            JOptionPane.showMessageDialog(
-                    owner, "The ADB executable was not found", "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }
