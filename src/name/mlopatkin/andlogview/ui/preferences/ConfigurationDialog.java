@@ -17,6 +17,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.base.Objects;
@@ -48,9 +49,11 @@ import javax.swing.border.EmptyBorder;
 
 public class ConfigurationDialog extends JDialog {
     private final JPanel contentPanel = new JPanel();
+    private final AdbConfigurationPref adbConfigurationPref;
 
-    private ConfigurationDialog(Frame owner) {
+    private ConfigurationDialog(Frame owner, AdbConfigurationPref adbConfigurationPref) {
         super(owner);
+        this.adbConfigurationPref = adbConfigurationPref;
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setModalityType(ModalityType.APPLICATION_MODAL);
         setTitle("Configuration");
@@ -60,7 +63,7 @@ public class ConfigurationDialog extends JDialog {
 
         JLabel lblAdbExecutableLocation = new JLabel("ADB executable location");
 
-        textAdbExecutable = new JTextField(Configuration.adb.executable());
+        textAdbExecutable = new JTextField(adbConfigurationPref.getAdbLocation());
         lblAdbExecutableLocation.setLabelFor(textAdbExecutable);
         textAdbExecutable.setColumns(10);
 
@@ -149,11 +152,6 @@ public class ConfigurationDialog extends JDialog {
     private JTextField textAdbExecutable;
     private JCheckBox cbAutoReconnect;
 
-    private static void showConfigurationDialog(Frame owner) {
-        assert EventQueue.isDispatchThread();
-        ConfigurationDialog dialog = new ConfigurationDialog(owner);
-        dialog.setVisible(true);
-    }
 
     private boolean validateData() {
         String filename = textAdbExecutable.getText();
@@ -169,7 +167,7 @@ public class ConfigurationDialog extends JDialog {
     }
 
     private void notifyAboutChanges() {
-        if (!Objects.equal(Configuration.adb.executable(), textAdbExecutable.getText())) {
+        if (!Objects.equal(adbConfigurationPref.getAdbLocation(), textAdbExecutable.getText())) {
             JOptionPane.showMessageDialog(this,
                     "You've changed the path to the ADB executable. Please restart the "
                             + "application to apply changes.",
@@ -178,7 +176,7 @@ public class ConfigurationDialog extends JDialog {
     }
 
     private void save() {
-        Configuration.adb.executable(textAdbExecutable.getText());
+        adbConfigurationPref.setAdbLocation(textAdbExecutable.getText());
         Configuration.adb.setAutoReconnectEnabled(cbAutoReconnect.getModel().isSelected());
     }
 
@@ -187,11 +185,17 @@ public class ConfigurationDialog extends JDialog {
      */
     public static class Controller {
 
+        private final AdbConfigurationPref adbConfigurationPref;
+
         @Inject
-        public Controller() {}
+        public Controller(AdbConfigurationPref adbConfigurationPref) {
+            this.adbConfigurationPref = adbConfigurationPref;
+        }
 
         public void showConfigurationDialog(JFrame owner) {
-            ConfigurationDialog.showConfigurationDialog(owner);
+            assert EventQueue.isDispatchThread();
+            ConfigurationDialog dialog = new ConfigurationDialog(owner, adbConfigurationPref);
+            dialog.setVisible(true);
         }
     }
 }

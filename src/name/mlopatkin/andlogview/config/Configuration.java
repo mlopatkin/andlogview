@@ -156,10 +156,12 @@ public class Configuration {
             return config.get(BUFFER_NAME_KEY, buffer);
         }
 
+        @Deprecated
         public static String executable() {
             return config.get(EXECUTABLE_KEY);
         }
 
+        @Deprecated
         public static void executable(String newExecutable) {
             config.set(EXECUTABLE_KEY, newExecutable);
         }
@@ -247,7 +249,7 @@ public class Configuration {
 
         cfg.property(adb.BUFFER_NAME_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.BUFFERSWITCH_KEY, string());
-        cfg.property(adb.EXECUTABLE_KEY, string().defaultVal(adb.DEFAULT_EXECUTABLE));
+        cfg.property(adb.EXECUTABLE_KEY, string());
         cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
         cfg.property(adb.LOGCAT_COMMANDLINE_KEY, string());
         cfg.property(adb.SHOW_SETUP_DIALOG_KEY, bool().defaultVal(true));

@@ -15,8 +15,6 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.config.Configuration;
-
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
@@ -49,7 +47,7 @@ public class AdbConnectionManager {
         }
     }
 
-    public static void init() throws AdbException, DdmlibUnsupportedException {
+    public static void init(String adbExecutablePath) throws AdbException, DdmlibUnsupportedException {
         if (!inited) {
             Log.addLogger(new DdmlibToLog4jWrapper());
             if (System.getProperty("logview.debug.ddmlib") != null) {
@@ -60,7 +58,7 @@ public class AdbConnectionManager {
             Runtime.getRuntime().addShutdownHook(new Thread(AdbConnectionManager::closeAdb));
             inited = true;
             try {
-                AndroidDebugBridge adb = AndroidDebugBridge.createBridge(Configuration.adb.executable(), false);
+                AndroidDebugBridge adb = AndroidDebugBridge.createBridge(adbExecutablePath, false);
                 if (isReady(adb)) {
                     ready = true;
                 }
