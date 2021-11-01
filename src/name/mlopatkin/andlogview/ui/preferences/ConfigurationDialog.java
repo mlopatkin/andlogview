@@ -22,139 +22,56 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.base.Objects;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.inject.Inject;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.EmptyBorder;
 
-public class ConfigurationDialog extends JDialog {
-    private final JPanel contentPanel = new JPanel();
+public class ConfigurationDialog extends ConfigurationDialogUi {
     private final AdbConfigurationPref adbConfigurationPref;
 
     private ConfigurationDialog(Frame owner, AdbConfigurationPref adbConfigurationPref) {
         super(owner);
         this.adbConfigurationPref = adbConfigurationPref;
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setModalityType(ModalityType.APPLICATION_MODAL);
-        setTitle("Configuration");
-        getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-        JLabel lblAdbExecutableLocation = new JLabel("ADB executable location");
-
-        textAdbExecutable = new JTextField(adbConfigurationPref.getAdbLocation());
-        lblAdbExecutableLocation.setLabelFor(textAdbExecutable);
-        textAdbExecutable.setColumns(10);
-
-        JButton btBrowseAdb = new JButton("...");
-
-        btBrowseAdb.addActionListener(e -> {
+        adbExecutableText.setText(adbConfigurationPref.getAdbLocation());
+        browseAdbBtn.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             int result = fileChooser.showOpenDialog(ConfigurationDialog.this);
             if (result == JFileChooser.APPROVE_OPTION) {
-                textAdbExecutable.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                adbExecutableText.setText(fileChooser.getSelectedFile().getAbsolutePath());
             }
         });
+        autoReconnectCheckbox.getModel().setSelected(Configuration.adb.isAutoReconnectEnabled());
 
-        cbAutoReconnect = new JCheckBox("Reconnect to device automatically");
-        cbAutoReconnect.getModel().setSelected(Configuration.adb.isAutoReconnectEnabled());
-        GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-        gl_contentPanel.setHorizontalGroup(
-                gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                        .addGroup(
-                                gl_contentPanel.createSequentialGroup()
-                                        .addComponent(lblAdbExecutableLocation)
-                                        .addPreferredGap(ComponentPlacement.RELATED)
-                                        .addComponent(textAdbExecutable, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                                        .addPreferredGap(ComponentPlacement.RELATED)
-                                        .addComponent(btBrowseAdb, GroupLayout.PREFERRED_SIZE, 33,
-                                                GroupLayout.PREFERRED_SIZE))
-                        .addGroup(gl_contentPanel.createSequentialGroup()
-                                .addComponent(cbAutoReconnect)
-                                .addContainerGap()));
-        gl_contentPanel.setVerticalGroup(
-                gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                        .addGroup(gl_contentPanel.createSequentialGroup()
-                                .addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(lblAdbExecutableLocation)
-                                        .addGroup(gl_contentPanel
-                                                .createParallelGroup(Alignment.BASELINE)
-                                                .addComponent(textAdbExecutable,
-                                                        GroupLayout.PREFERRED_SIZE,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(btBrowseAdb)))
-                                .addGap(18)
-                                .addComponent(cbAutoReconnect)
-                                .addContainerGap(57, Short.MAX_VALUE)));
-        contentPanel.setLayout(gl_contentPanel);
-        {
-            JPanel buttonPane = new JPanel();
-            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            getContentPane().add(buttonPane, BorderLayout.SOUTH);
-            {
-                JButton okButton = new JButton(acOk);
-                buttonPane.add(okButton);
-                getRootPane().setDefaultButton(okButton);
-            }
-            {
-                JButton cancelButton = new JButton(acCancel);
-                buttonPane.add(cancelButton);
-            }
-        }
-        pack();
-        setLocationRelativeTo(owner);
-        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", acCancel);
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
     }
 
-    private Action acOk = new AbstractAction("OK") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (validateData()) {
-                notifyAboutChanges();
-                save();
-                ConfigurationDialog.this.setVisible(false);
-                ConfigurationDialog.this.dispose();
-            } else {
-                textAdbExecutable.requestFocusInWindow();
-            }
-        }
-    };
-
-    private Action acCancel = new AbstractAction("Cancel") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
+    @Override
+    protected void onPositiveResult() {
+        if (validateData()) {
+            notifyAboutChanges();
+            save();
             ConfigurationDialog.this.setVisible(false);
             ConfigurationDialog.this.dispose();
+        } else {
+            adbExecutableText.requestFocusInWindow();
         }
-    };
-    private JTextField textAdbExecutable;
-    private JCheckBox cbAutoReconnect;
+    }
 
+    @Override
+    protected void onNegativeResult() {
+        ConfigurationDialog.this.setVisible(false);
+        ConfigurationDialog.this.dispose();
+    }
 
     private boolean validateData() {
-        String filename = textAdbExecutable.getText();
+        String filename = adbExecutableText.getText();
         if (filename == null) {
             return false; // silently ignore
         }
@@ -167,7 +84,7 @@ public class ConfigurationDialog extends JDialog {
     }
 
     private void notifyAboutChanges() {
-        if (!Objects.equal(adbConfigurationPref.getAdbLocation(), textAdbExecutable.getText())) {
+        if (!Objects.equal(adbConfigurationPref.getAdbLocation(), adbExecutableText.getText())) {
             JOptionPane.showMessageDialog(this,
                     "You've changed the path to the ADB executable. Please restart the "
                             + "application to apply changes.",
@@ -176,8 +93,8 @@ public class ConfigurationDialog extends JDialog {
     }
 
     private void save() {
-        adbConfigurationPref.setAdbLocation(textAdbExecutable.getText());
-        Configuration.adb.setAutoReconnectEnabled(cbAutoReconnect.getModel().isSelected());
+        adbConfigurationPref.setAdbLocation(adbExecutableText.getText());
+        Configuration.adb.setAutoReconnectEnabled(autoReconnectCheckbox.getModel().isSelected());
     }
 
     /**
