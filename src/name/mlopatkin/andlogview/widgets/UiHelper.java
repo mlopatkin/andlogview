@@ -273,4 +273,21 @@ public class UiHelper {
         component.setMaximumSize(dim);
         component.setMinimumSize(dim);
     }
+
+    /**
+     * Wraps a {@link Runnable} to an {@link Action} with the given title. This method allows using simpler lambdas for
+     * callbacks that doesn't care about the {@link ActionEvent}.
+     *
+     * @param actionTitle the title of the resulting Action
+     * @param action the action to be executed when Action is triggered
+     * @return the Action object
+     */
+    public static Action makeAction(String actionTitle, Runnable action) {
+        return new AbstractAction(actionTitle) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+            }
+        };
+    }
 }
