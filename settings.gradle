@@ -20,10 +20,8 @@ pluginManagement {
         mavenCentral()
     }
 
-    includeBuild('bitbucket-plugin')
-
     plugins {
-        id 'name.mlopatkin.bitbucket'
+        id 'name.mlopatkin.bitbucket' version '0.5-rc4'
         id 'com.github.johnrengelman.shadow' version '5.2.0'
         id 'net.ltgt.errorprone' version '2.0.2'
         id 'com.diffplug.eclipse.apt' version '3.22.0'
