@@ -17,7 +17,7 @@ jobs:
       - name: Build and publish snapshot
         # Do not use Gradle Daemon because we only have a single invocation and the running daemon interferes with the
         # caches.
-        run: ./gradlew --no-daemon bitbucketUpload
+        run: ./gradlew --no-daemon --stacktrace bitbucketUpload
         env:
-          BITBUCKET_PASSWORD: ${{ secrets.SuperSecret }}
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin

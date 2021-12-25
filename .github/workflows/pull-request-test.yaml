@@ -19,4 +19,4 @@ jobs:
       - name: Run unit tests
         # Do not use Gradle Daemon because we only have a single invocation and the running daemon interferes with the
         # caches.
-        run: ./gradlew --no-daemon --continue check
+        run: ./gradlew --no-daemon --continue --stacktrace check
