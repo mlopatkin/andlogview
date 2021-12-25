@@ -1,6 +1,6 @@
 # AndLogView: Log viewer for Android development
 
-https://bitbucket.org/mlopatkin/android-log-viewer
+https://github.com/mlopatkin/andlogview
 
 Android log viewer is the tool to simplify analysis of the Android logs.
 
@@ -92,4 +92,4 @@ See the complete manual at https://bitbucket.org/mlopatkin/android-log-viewer/wi
 There is a mailing list [android-log-viewer at google groups](https://groups.google.com/forum/#!forum/android-log-viewer)
 for release announcements and discussions.
 
-Please report bugs to https://bitbucket.org/mlopatkin/android-log-viewer/issues
+Please report bugs to https://github.com/mlopatkin/andlogview/issues

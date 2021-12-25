@@ -3,18 +3,18 @@
 ## Prerequisites
 
  * Windows or Linux
- * OpenJDK 8 (e. g. from [AdoptOpenJDK](https://adoptopenjdk.net/))
- * Internet connection to download dependencies from jcenter, Maven Central, etc.
+ * OpenJDK 8 or newer (e. g. from [Eclipse Adoptium](https://adoptium.net/))
+ * Internet connection to download dependencies from Maven Central, Gradle Plugin Portal, etc.
  * Git (to check out and commit)
 
 ## Checking out the sources
-The repository can be cloned with Git or you can download a latest snapshot in archive from [Downloads][downloads] page
-on Bitbucket. The rest of this chapter assumes that you use Git.
+The repository can be cloned with Git or you can download a latest snapshot in archive from Github. The rest of this
+chapter assumes that you use Git.
 
 This project uses Unix-style line endings (LF) for all files on all platforms except for Windows Batch (bat/cmd) files
 that must use CRLF. I personally prefer to disable line ending translations in Git and configure editors to use
 Unix-style line endings. It can be disabled globally, for all Git repos on the machine (beware, it may cause strange
-side-effects for existing checkouts):
+side effects for existing checkouts):
 ```
 git config --global core.autocrlf false
 ```
@@ -22,7 +22,7 @@ It is possible to configure it only for this repository later after checkout.
 
 To get sources run `git clone` with `--recursive` to retrieve submodules:
 ```
-git clone --recursive https://mlopatkin@bitbucket.org/mlopatkin/android-log-viewer.git
+git clone --recursive https://github.com/mlopatkin/andlogview.git
 ```
 
 If you decided to disable line ending translation only for this repo then run following command inside repo:
@@ -54,8 +54,7 @@ must be downloaded from repositories.
 Run `./gradlew check` to run tests.
 
 Run `./gradlew shadowDistZip` to prepare distributive package. The output is placed into `build/distributions`.
-You can specify JDK to use with JAVA_HOME environment variable or by setting `org.gradle.java.home=path/to/jdk/8` in
-`gradle.settings` file in the root directory of the project.
+You can specify JDK to use with JAVA_HOME environment variable.
 
 ## Importing into IDE
 #### IDEA
@@ -77,5 +76,4 @@ Import project into your Eclipse workspace with "File > Import... > Gradle > Exi
 processing should work "out-of-the-box". Eclipse is still a preferred way to work with GUI because of the WindowBuilder
 plugin.
 
-[downloads]: https://bitbucket.org/mlopatkin/android-log-viewer/downloads/
 [idea]: https://www.jetbrains.com/idea/
