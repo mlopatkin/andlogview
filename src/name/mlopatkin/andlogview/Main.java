@@ -103,7 +103,7 @@ public class Main {
         if (!BuildInfo.VERSION.endsWith("SNAPSHOT")) {
             return BuildInfo.VERSION;
         }
-        return BuildInfo.VERSION + " (build " + BuildInfo.BUILD + " " + BuildInfo.REVISION + ")";
+        return BuildInfo.VERSION + " (rev " + BuildInfo.REVISION + ")";
     }
 
     private MainFrame createAndShowWindow() {

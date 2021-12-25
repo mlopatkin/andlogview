@@ -50,7 +50,6 @@ class GenerateBuildMetadata extends DefaultTask {
         def fullClassName = ClassName.get(packageName, className)
         def metadataClass = TypeSpec.classBuilder(fullClassName).addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .addField(stringConstant('VERSION', version, 'Version of the application.'))
-                .addField(stringConstant('BUILD', buildEnv.buildNumber, 'Build number if the app is built on CI.'))
                 .addField(stringConstant('REVISION', buildEnv.sourceRevision, 'Source revision of which app is built.'))
                 .build()
         JavaFile.builder(fullClassName.packageName(), metadataClass)

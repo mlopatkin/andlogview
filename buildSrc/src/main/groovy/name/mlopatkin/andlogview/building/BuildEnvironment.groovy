@@ -48,13 +48,6 @@ class BuildEnvironment {
         return readRevWithGitDescribe()
     }
 
-    String getBuildNumber() {
-        if (isCiBuild()) {
-            return firstNonNull(System.getenv('BITBUCKET_BUILD_NUMBER'), System.getenv('GITHUB_RUN_NUMBER'))
-        }
-        return '-'
-    }
-
     private String readRevWithGitDescribe() {
         List<String> command = [
                 'git',  // Only try to find Git in PATH
