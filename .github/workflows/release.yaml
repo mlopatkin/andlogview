@@ -21,3 +21,5 @@ jobs:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
           LOGVIEW_SNAPSHOT_BUILD: false
+      - name: Publish artifacts
+        uses: ./.github/actions/publish-gradle-outputs

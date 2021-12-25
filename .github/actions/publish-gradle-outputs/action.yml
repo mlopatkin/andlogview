@@ -1,0 +1,13 @@
+name: Publish Gradle outputs
+description: Publish Gradle reports as workflow artifacts
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Build results
+        path: |
+          build/reports/**
+          build/distributions/*
+          build/libs/*

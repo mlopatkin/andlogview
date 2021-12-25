@@ -21,3 +21,5 @@ jobs:
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
+      - name: Publish artifacts
+        uses: ./.github/actions/publish-gradle-outputs
