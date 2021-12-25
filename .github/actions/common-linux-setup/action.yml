@@ -9,8 +9,13 @@ runs:
       name: Cached Gradle modules
       with:
         path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.*') }}
+          /root/.gradle/caches/**
+          /root/.gradle/wrapper/**
+          !**.lock
+          !**/gc.properties
+        key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.*', 'buildSrc/**', '.github/actions/common-linux-setup/**') }}
         restore-keys: |
-          ${{ runner.os }}-gradle-
+          ${{ runner.os }}-gradle6-cache-
+    - run: test -e /root/.gradle/caches && find /root/.gradle/caches -type f -name '*.lock' -delete -o -name 'gc.properties' -delete || echo Skipped cleanup
+      shell: bash
+      name: Cleanup excessively cached stuff
