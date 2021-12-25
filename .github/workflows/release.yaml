@@ -16,7 +16,12 @@ jobs:
       - name: Build and publish release
         # Do not use Gradle Daemon because we only have a single invocation and the running daemon interferes with the
         # caches.
-        run: ./gradlew --no-daemon --stacktrace check bitbucketUpload
+        run: >
+          ./gradlew
+          -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
+          --no-daemon
+          --stacktrace
+          check bitbucketUpload
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin

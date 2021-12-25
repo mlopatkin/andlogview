@@ -19,6 +19,12 @@ jobs:
       - name: Run unit tests
         # Do not use Gradle Daemon because we only have a single invocation and the running daemon interferes with the
         # caches.
-        run: ./gradlew --no-daemon --continue --stacktrace check
+        run: >
+          ./gradlew
+          -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
+          --no-daemon
+          --stacktrace
+          --continue
+          check
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
