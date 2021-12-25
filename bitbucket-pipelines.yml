@@ -2,26 +2,6 @@
 image: openjdk:8u302-jdk@sha256:e94c5b7f0f428b581053fbb8c0f994f1a27df570e0f7753fad6dffb06c3baf22
 
 pipelines:
-  branches:
-    '{master,release/*}':  # SNAPSHOT builds for each checked-in pull request
-      - step:
-          caches:
-            - gradle
-            - gradlewrapper
-          script:
-            - export PYTHON_BINARY=python3
-            - bash ./gradlew build bitbucketUpload --continue
-  tags:
-    '*':
-      - step:  # Release (non-SNAPSHOT) build
-          caches:
-            - gradle
-            - gradlewrapper
-          script:
-            - export PYTHON_BINARY=python3
-            - export LOGVIEW_SNAPSHOT_BUILD=false
-            - bash ./gradlew bitbucketUpload
-
   pull-requests:
     '**':
       - step:
