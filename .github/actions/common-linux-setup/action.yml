@@ -1,0 +1,16 @@
+name: Prepare build environment
+description: Common setup steps to run an Andlogview build job in the Linux container
+
+runs:
+  using: composite
+  steps:
+    - uses: gradle/wrapper-validation-action@v1
+    - uses: actions/cache@v2
+      name: Cached Gradle modules
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.*') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-

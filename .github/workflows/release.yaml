@@ -1,11 +1,12 @@
-name: PR Tests for Github
+name: Snapshot release build
 on:
-  pull_request:
-    branches:
-      - master
-      - release/*
+  push:
+    tags:
+      - *
+    tags-ignore:
+      - "*-snapshot"
 jobs:
-  run-precommit-tests:
+  build-snapshot:
     runs-on: ubuntu-latest
     container: openjdk:8u302-jdk@sha256:e94c5b7f0f428b581053fbb8c0f994f1a27df570e0f7753fad6dffb06c3baf22
     env:
@@ -14,9 +15,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set up environment
         uses: ./.github/actions/common-linux-setup
-      - name: Run lint checks
-        run: bash tools/hooks/lint-all.sh
-      - name: Run unit tests
+      - name: Build and publish release
         # Do not use Gradle Daemon because we only have a single invocation and the running daemon interferes with the
         # caches.
-        run: ./gradlew --no-daemon --continue check
+        run: ./gradlew --no-daemon bitbucketUpload
+        env:
+          BITBUCKET_PASSWORD: ${{ secrets.SuperSecret }}
+          BITBUCKET_USER: mlopatkin
+          LOGVIEW_SNAPSHOT_BUILD: false
