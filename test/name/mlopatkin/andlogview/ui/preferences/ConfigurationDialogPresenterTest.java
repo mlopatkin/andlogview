@@ -50,7 +50,7 @@ class ConfigurationDialogPresenterTest {
     private final FakeView fakeView = new FakeView();
 
     private final AdbConfigurationPref adbConfiguration = new AdbConfigurationPref(new FakeInMemoryConfigStorage(),
-            new FakePathResolver(DEFAULT_ADB_LOCATION, VALID_ADB_LOCATION));
+            new FakePathResolver(VALID_ADB_LOCATION));
 
     @BeforeEach
     void setUp() {

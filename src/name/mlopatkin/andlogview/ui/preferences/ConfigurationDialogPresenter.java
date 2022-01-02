@@ -67,13 +67,16 @@ public class ConfigurationDialogPresenter {
 
     private void tryCommit() {
         String prevLocation = adbConfigurationPref.getAdbLocation();
-        if (!adbConfigurationPref.trySetAdbLocation(view.getAdbLocation())) {
+        boolean hasLocationChanged = !Objects.equals(prevLocation, view.getAdbLocation());
+
+        if (hasLocationChanged && !adbConfigurationPref.trySetAdbLocation(view.getAdbLocation())) {
             view.showInvalidAdbLocationError();
             return;
         }
+
         adbConfigurationPref.setAutoReconnectEnabled(view.isAutoReconnectEnabled());
         view.hide();
-        if (!Objects.equals(prevLocation, adbConfigurationPref.getAdbLocation())) {
+        if (hasLocationChanged) {
             view.showRestartAppWarning();
         }
     }
