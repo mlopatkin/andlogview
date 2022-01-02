@@ -25,6 +25,7 @@ import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
+import name.mlopatkin.andlogview.ui.preferences.PreferencesUiModule;
 import name.mlopatkin.andlogview.ui.status.StatusPanelModule;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 
@@ -36,7 +37,7 @@ import javax.inject.Named;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 
-@Module(includes = {FilterModule.class, MainFramePrefsModule.class, StatusPanelModule.class})
+@Module(includes = {FilterModule.class, MainFramePrefsModule.class, StatusPanelModule.class, PreferencesUiModule.class})
 public class MainFrameModule {
     private final MainFrame mainFrame;
 

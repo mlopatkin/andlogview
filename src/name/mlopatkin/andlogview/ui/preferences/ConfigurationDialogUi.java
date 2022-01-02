@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
 
 import javax.swing.Action;
 import javax.swing.GroupLayout;
@@ -99,6 +100,8 @@ abstract class ConfigurationDialogUi extends JDialog {
 
         pack();
         setLocationRelativeTo(owner);
+
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
     }
 
     protected abstract void onPositiveResult();

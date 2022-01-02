@@ -36,7 +36,8 @@ import java.util.stream.Stream;
  * on the list of directories set in the {@code PATH} environment variable.
  */
 public abstract class SystemPathResolver {
-    private SystemPathResolver() {}
+    @VisibleForTesting
+    public SystemPathResolver() {}
 
     /**
      * Resolves a raw file path or executable name to the file location according to the rules of the current OS. The
@@ -48,13 +49,9 @@ public abstract class SystemPathResolver {
      * @param rawPath the filename or path that can be resolved to the executable file according to the OS' rules
      * @return the Optional with the resolved path to the executable or empty Optional if the executable wasn't found.
      */
-    public static Optional<File> resolveExecutablePath(String rawPath) {
-        return getPathResolver().resolveExecutablePathImpl(rawPath);
-    }
+    public abstract Optional<File> resolveExecutablePath(String rawPath);
 
-    abstract Optional<File> resolveExecutablePathImpl(String rawPath);
-
-    private static SystemPathResolver getPathResolver() {
+    public static SystemPathResolver getPathResolver() {
         if (SystemUtils.IS_OS_WINDOWS) {
             return new WindowsPathResolver();
         }
@@ -76,7 +73,7 @@ public abstract class SystemPathResolver {
         }
 
         @Override
-        Optional<File> resolveExecutablePathImpl(String rawPath) {
+        public Optional<File> resolveExecutablePath(String rawPath) {
             // TODO(mlopatkin): Make this proper path resolver.
             return Optional.of(new File(rawPath));
         }
@@ -114,7 +111,7 @@ public abstract class SystemPathResolver {
         }
 
         @Override
-        Optional<File> resolveExecutablePathImpl(String rawExecutable) {
+        public Optional<File> resolveExecutablePath(String rawExecutable) {
             Path rawExecutablePath = Paths.get(rawExecutable).normalize();
             boolean hasExtension = !getFileExtension(rawExecutablePath.getFileName().toString()).isEmpty();
             if (!hasJustFilename(rawExecutablePath)) {

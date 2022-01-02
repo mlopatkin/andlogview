@@ -16,7 +16,9 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialog;
+import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
+
+import dagger.Lazy;
 
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
@@ -25,7 +27,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -33,7 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 class SetupAdbDialog extends JDialog implements PropertyChangeListener {
-    private final Provider<ConfigurationDialog.Controller> configurationDialogController;
+    private final Lazy<ConfigurationDialogPresenter> configurationDialogController;
     private final JOptionPane optionPane;
 
     private final String yesBtnString = "Yes";
@@ -41,9 +42,9 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 
     private final JCheckBox checkBox = new JCheckBox("Never show this dialog again", false);
 
-    private SetupAdbDialog(Frame parent, Provider<ConfigurationDialog.Controller> configurationDialogController) {
+    private SetupAdbDialog(Frame parent, Lazy<ConfigurationDialogPresenter> configurationDialogPresenter) {
         super(parent, true);
-        this.configurationDialogController = configurationDialogController;
+        this.configurationDialogController = configurationDialogPresenter;
 
         Object[] array = {"The ADB executable cannot be found. Would you like to specify it now?", checkBox};
 
@@ -80,8 +81,7 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
             optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 
             if (yesBtnString.equals(value)) {
-                SwingUtilities.invokeLater(() -> configurationDialogController.get().showConfigurationDialog(
-                        (JFrame) getOwner()));
+                SwingUtilities.invokeLater(() -> configurationDialogController.get().openDialog());
             }
             Configuration.adb.showSetupDialog(checkBox.isSelected());
             setVisible(false);
@@ -89,15 +89,15 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
     }
 
     public static class Controller {
-        private final Provider<ConfigurationDialog.Controller> configurationDialogController;
+        private final Lazy<ConfigurationDialogPresenter> configurationDialogPresenter;
 
         @Inject
-        public Controller(Provider<ConfigurationDialog.Controller> configurationDialogController) {
-            this.configurationDialogController = configurationDialogController;
+        public Controller(Lazy<ConfigurationDialogPresenter> configurationDialogPresenter) {
+            this.configurationDialogPresenter = configurationDialogPresenter;
         }
 
         public void showSetupAdbDialog(JFrame owner) {
-            JDialog dialog = new SetupAdbDialog(owner, configurationDialogController);
+            JDialog dialog = new SetupAdbDialog(owner, configurationDialogPresenter);
             dialog.setLocationRelativeTo(owner);
             dialog.setVisible(true);
             dialog.dispose();

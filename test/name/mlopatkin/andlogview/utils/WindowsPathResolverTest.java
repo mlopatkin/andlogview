@@ -64,7 +64,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements()
         );
-        assertFalse(resolver.resolveExecutablePathImpl("adb.exe").isPresent());
+        assertFalse(resolver.resolveExecutablePath("adb.exe").isPresent());
     }
 
     @Test
@@ -72,7 +72,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertFalse(resolver.resolveExecutablePathImpl("adb.exe").isPresent());
+        assertFalse(resolver.resolveExecutablePath("adb.exe").isPresent());
     }
 
     @Test
@@ -81,7 +81,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertEquals(Optional.of(adbFile), resolver.resolveExecutablePathImpl("adb.exe"));
+        assertEquals(Optional.of(adbFile), resolver.resolveExecutablePath("adb.exe"));
     }
 
     @Test
@@ -91,7 +91,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir),
                 withPathExt(".exe")
         );
-        assertEquals(Optional.of(adbFile), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbFile), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -101,7 +101,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir),
                 withPathExt(".exe", ".bat")
         );
-        assertEquals(Optional.empty(), resolver.resolveExecutablePathImpl("adb.exe"));
+        assertEquals(Optional.empty(), resolver.resolveExecutablePath("adb.exe"));
     }
 
     @Test
@@ -111,7 +111,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir),
                 withPathExt(".exe", ".bat")
         );
-        assertEquals(Optional.of(adbFile), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbFile), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -121,7 +121,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir),
                 withPathExt(".exe", ".bat")
         );
-        assertEquals(Optional.empty(), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.empty(), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -134,7 +134,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir),
                 withPathExt("", ".exe", ".bat")
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -144,7 +144,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb.exe"));
     }
 
     @Test
@@ -154,7 +154,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -165,7 +165,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir),
                 withPathExt(".bat", ".exe")
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -175,7 +175,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir, curDir)
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb.exe"));
     }
 
     @Test
@@ -184,8 +184,8 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(firstPathElement, tempDir)
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb.exe"));
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -196,8 +196,8 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir, secondPathElement),
                 withPathExt(".bat", ".exe")
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb.exe"));
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl("adb"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb"));
     }
 
     @Test
@@ -208,9 +208,9 @@ class WindowsPathResolverTest {
         );
         // This is a quirky behavior of CMD. It normalizes the given path before deciding if the PATH lookup is
         // necessary, i.e. whether the naked filename is given.
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl(".\\adb.exe"));
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl(".\\.\\adb.exe"));
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl(".\\1234\\..\\adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath(".\\adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath(".\\.\\adb.exe"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath(".\\1234\\..\\adb.exe"));
     }
 
     @Test
@@ -220,7 +220,7 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir)
         );
         String curDirName = curDir.getName();
-        assertEquals(Optional.empty(), resolver.resolveExecutablePathImpl("..\\" + curDirName + "\\adb.exe"));
+        assertEquals(Optional.empty(), resolver.resolveExecutablePath("..\\" + curDirName + "\\adb.exe"));
     }
 
     @Test
@@ -230,7 +230,7 @@ class WindowsPathResolverTest {
                 withPathElements(curDir)
         );
         assertEquals(Optional.empty(),
-                resolver.resolveExecutablePathImpl(new File(tempDir, "adb.exe").getAbsolutePath()));
+                resolver.resolveExecutablePath(new File(tempDir, "adb.exe").getAbsolutePath()));
     }
 
     @Test
@@ -242,7 +242,7 @@ class WindowsPathResolverTest {
                 withPathExt(".bat")
         );
         assertEquals(Optional.of(adbPath),
-                resolver.resolveExecutablePathImpl(new File(tempDir, "adb.exe").getAbsolutePath()));
+                resolver.resolveExecutablePath(new File(tempDir, "adb.exe").getAbsolutePath()));
     }
 
     @Test
@@ -250,7 +250,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertEquals(Optional.empty(), resolver.resolveExecutablePathImpl("."));
+        assertEquals(Optional.empty(), resolver.resolveExecutablePath("."));
     }
 
     @Test
@@ -258,7 +258,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertEquals(Optional.empty(), resolver.resolveExecutablePathImpl(curDir.getAbsolutePath()));
+        assertEquals(Optional.empty(), resolver.resolveExecutablePath(curDir.getAbsolutePath()));
     }
 
     @Test
@@ -269,7 +269,7 @@ class WindowsPathResolverTest {
                 withPathElements(curDir)
         );
         assertEquals(Optional.of(adbPath),
-                resolver.resolveExecutablePathImpl(new File(tempDir, "adb").getAbsolutePath()));
+                resolver.resolveExecutablePath(new File(tempDir, "adb").getAbsolutePath()));
     }
 
     @Test
@@ -280,7 +280,7 @@ class WindowsPathResolverTest {
                 withPathExt(".bat")
         );
         assertEquals(Optional.empty(),
-                resolver.resolveExecutablePathImpl(new File(tempDir, "adb").getAbsolutePath()));
+                resolver.resolveExecutablePath(new File(tempDir, "adb").getAbsolutePath()));
     }
 
     @Test
@@ -289,7 +289,7 @@ class WindowsPathResolverTest {
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );
-        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePathImpl(".\\adb"));
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath(".\\adb"));
     }
 
     private SystemPathResolver resolver(String path) {

@@ -42,9 +42,11 @@ public class AdbConfigurationPref implements AdbLocation {
     // Helper class to store inner configuration.
     private static class AdbConfiguration {
         final String location;
+        final boolean isAutoReconnectEnabled;
 
-        public AdbConfiguration(String location) {
+        public AdbConfiguration(String location, boolean isAutoReconnectEnabled) {
             this.location = location;
+            this.isAutoReconnectEnabled = isAutoReconnectEnabled;
         }
     }
 
@@ -66,7 +68,8 @@ public class AdbConfigurationPref implements AdbLocation {
                     return new AdbConfiguration(
                             MoreObjects.firstNonNull(
                                     Configuration.adb.executable(),
-                                    Configuration.adb.DEFAULT_EXECUTABLE));
+                                    Configuration.adb.DEFAULT_EXECUTABLE),
+                            Configuration.adb.isAutoReconnectEnabled());
                 }
 
                 @Override
@@ -76,15 +79,29 @@ public class AdbConfigurationPref implements AdbLocation {
             };
 
     private final ConfigStorage configStorage;
+    private final SystemPathResolver systemPathResolver;
 
     private String rawAdbLocation;
     @Nullable
     private File resolvedExecutable;
 
+    private boolean isAutoReconnectEnabled;
+
     @Inject
-    AdbConfigurationPref(ConfigStorage configStorage) {
+    public AdbConfigurationPref(ConfigStorage configStorage, SystemPathResolver systemPathResolver) {
         this.configStorage = configStorage;
-        setRawAdbLocation(configStorage.loadConfig(STORAGE_CLIENT).location);
+        this.systemPathResolver = systemPathResolver;
+        load();
+    }
+
+    private void load() {
+        AdbConfiguration stored = configStorage.loadConfig(STORAGE_CLIENT);
+        setRawAdbLocation(stored.location);
+        isAutoReconnectEnabled = stored.isAutoReconnectEnabled;
+    }
+
+    private void save() {
+        configStorage.saveConfig(STORAGE_CLIENT, new AdbConfiguration(rawAdbLocation, isAutoReconnectEnabled));
     }
 
     /** @return the location of the ADB executable as set up by the user */
@@ -99,7 +116,7 @@ public class AdbConfigurationPref implements AdbLocation {
      */
     public void setAdbLocation(String rawAdbLocation) {
         setRawAdbLocation(rawAdbLocation);
-        configStorage.saveConfig(STORAGE_CLIENT, new AdbConfiguration(rawAdbLocation));
+        save();
     }
 
     /**
@@ -110,17 +127,18 @@ public class AdbConfigurationPref implements AdbLocation {
      * @return {@code true} if the update was successful or {@code false} if the new location is invalid.
      */
     public boolean trySetAdbLocation(String rawAdbLocation) {
-        Optional<File> maybeResolved = SystemPathResolver.resolveExecutablePath(rawAdbLocation);
+        Optional<File> maybeResolved = systemPathResolver.resolveExecutablePath(rawAdbLocation);
         maybeResolved.ifPresent(resolvedExecutable -> {
             this.rawAdbLocation = rawAdbLocation;
             this.resolvedExecutable = resolvedExecutable;
+            save();
         });
         return maybeResolved.isPresent();
     }
 
     private void setRawAdbLocation(String rawAdbLocation) {
         this.rawAdbLocation = rawAdbLocation;
-        this.resolvedExecutable = SystemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
+        this.resolvedExecutable = systemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
     }
 
     @Override
@@ -133,5 +151,14 @@ public class AdbConfigurationPref implements AdbLocation {
         File resolvedExecutable = this.resolvedExecutable;
         Preconditions.checkState(resolvedExecutable != null, "Cannot resolve ADB executable from {}", rawAdbLocation);
         return resolvedExecutable;
+    }
+
+    public boolean isAutoReconnectEnabled() {
+        return isAutoReconnectEnabled;
+    }
+
+    public void setAutoReconnectEnabled(boolean enabled) {
+        isAutoReconnectEnabled = enabled;
+        save();
     }
 }

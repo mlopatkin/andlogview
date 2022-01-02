@@ -42,7 +42,7 @@ import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
-import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialog;
+import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
@@ -119,11 +119,11 @@ public class MainFrame extends JFrame {
     @Inject
     StatusPanel statusPanel;
     @Inject
-    ConfigurationDialog.Controller configurationDialog;
-    @Inject
     ErrorDialogs errorDialogs;
     @Inject
     AdbConfigurationPref adbConfigurationPref;
+    @Inject
+    ConfigurationDialogPresenter configurationDialogPresenter;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -458,7 +458,7 @@ public class MainFrame extends JFrame {
     private final Action acChangeConfiguration = new AbstractAction("Configuration...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            configurationDialog.showConfigurationDialog(MainFrame.this);
+            configurationDialogPresenter.openDialog();
         }
     };
 

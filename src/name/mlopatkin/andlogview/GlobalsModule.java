@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import dagger.Module;
 import dagger.Provides;
@@ -49,5 +50,10 @@ class GlobalsModule {
             // Dummy return that won't happen because of System.exit
             throw new AssertionError("System.exit not working");
         }
+    }
+
+    @Provides
+    SystemPathResolver getSystemPathResolver() {
+        return SystemPathResolver.getPathResolver();
     }
 }
