@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 class ConfigurationDialogPresenterTest {
 
@@ -124,9 +126,31 @@ class ConfigurationDialogPresenterTest {
         assertEquals(CHANGED_AUTO_RECONNECT, adbConfiguration.isAutoReconnectEnabled());
     }
 
+    @Test
+    void settingInvalidAdbLocationHighlightError() {
+        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+
+        presenter.openDialog();
+        fakeView.selectAdbLocation(INVALID_ADB_LOCATION);
+        assertTrue(fakeView.isInvalidAdbLocationHighlighted());
+    }
+
+    @Test
+    void settingValidAdbLocationClearsError() {
+        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+
+        presenter.openDialog();
+        fakeView.selectAdbLocation(INVALID_ADB_LOCATION);
+        assumeTrue(fakeView.isInvalidAdbLocationHighlighted());
+
+        fakeView.selectAdbLocation(VALID_ADB_LOCATION);
+        assertFalse(fakeView.isInvalidAdbLocationHighlighted());
+    }
+
     static class FakeView implements ConfigurationDialogPresenter.View {
         private final TestActionHandler<Runnable> onCommit = TestActionHandler.runnableAction();
         private final TestActionHandler<Runnable> onDiscard = TestActionHandler.runnableAction();
+        private final TestActionHandler<Predicate<String>> checkAdbLocation = TestActionHandler.predicateAction(true);
 
         final TestActionHandler<Runnable> onAdbLocationWarningShown = TestActionHandler.runnableAction();
         final TestActionHandler<Runnable> onRestartWarningShown = TestActionHandler.runnableAction();
@@ -134,9 +158,14 @@ class ConfigurationDialogPresenterTest {
         private String adbLocation;
         private boolean isShown;
         private boolean enableAutoReconnect;
+        private boolean isInvalidAdbLocationHighlighted;
 
         public boolean isShown() {
             return isShown;
+        }
+
+        public boolean isInvalidAdbLocationHighlighted() {
+            return isInvalidAdbLocationHighlighted;
         }
 
         public void commit() {
@@ -149,6 +178,7 @@ class ConfigurationDialogPresenterTest {
 
         public void selectAdbLocation(String location) {
             adbLocation = location;
+            isInvalidAdbLocationHighlighted = !checkAdbLocation.action().test(location);
         }
 
         @Override
@@ -179,6 +209,11 @@ class ConfigurationDialogPresenterTest {
         @Override
         public void setDiscardAction(Runnable runnable) {
             onDiscard.setAction(Objects.requireNonNull(runnable));
+        }
+
+        @Override
+        public void setAdbLocationChecker(Predicate<String> locationChecker) {
+            checkAdbLocation.setAction(locationChecker);
         }
 
         @Override

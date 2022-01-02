@@ -20,6 +20,8 @@ import com.google.common.base.MoreObjects;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.function.Predicate;
+
 public class TestActionHandler<T> {
     private final T nullAction;
     @Nullable
@@ -41,5 +43,9 @@ public class TestActionHandler<T> {
     public static TestActionHandler<Runnable> runnableAction() {
         return new TestActionHandler<>(() -> {
         });
+    }
+
+    public static TestActionHandler<Predicate<String>> predicateAction(boolean defaultResult) {
+        return new TestActionHandler<>(t -> defaultResult);
     }
 }

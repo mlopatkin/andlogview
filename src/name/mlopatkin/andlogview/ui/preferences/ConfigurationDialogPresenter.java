@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -37,6 +38,8 @@ public class ConfigurationDialogPresenter {
         void setCommitAction(Runnable runnable);
 
         void setDiscardAction(Runnable runnable);
+
+        void setAdbLocationChecker(Predicate<String> locationChecker);
 
         void showInvalidAdbLocationError();
 
@@ -59,6 +62,7 @@ public class ConfigurationDialogPresenter {
     public void openDialog() {
         view.setCommitAction(this::tryCommit);
         view.setDiscardAction(this::discard);
+        view.setAdbLocationChecker(adbConfigurationPref::checkAdbLocation);
 
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());

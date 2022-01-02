@@ -18,9 +18,12 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.widgets.TextFieldVerifier;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.swing.JFileChooser;
@@ -35,6 +38,8 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     private Runnable onCommit;
     @MonotonicNonNull
     private Runnable onDiscard;
+    @MonotonicNonNull
+    private Predicate<String> adbLocationChecker;
 
     @Inject
     public ConfigurationDialogView(DialogFactory dialogFactory) {
@@ -69,6 +74,11 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     @Override
     public void setDiscardAction(Runnable runnable) {
         onDiscard = runnable;
+    }
+
+    @Override
+    public void setAdbLocationChecker(Predicate<String> locationChecker) {
+        adbLocationChecker = locationChecker;
     }
 
     @Override
@@ -115,6 +125,13 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
                             adbExecutableText.setText(fileChooser.getSelectedFile().getAbsolutePath());
                         }
                     });
+
+                    TextFieldVerifier.verifyWith(adbExecutableText, newAdbLocation -> {
+                        if (adbLocationChecker != null) {
+                            return adbLocationChecker.test(newAdbLocation);
+                        }
+                        return true;
+                    });
                 }
 
                 @Override
@@ -134,4 +151,5 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
         }
         return dialog;
     }
+
 }

@@ -120,6 +120,16 @@ public class AdbConfigurationPref implements AdbLocation {
     }
 
     /**
+     * Checks the ADB location for validity.
+     *
+     * @param rawAdbLocation the path to ADB or naked executable name
+     * @return {@code true} if the ADB location is valid
+     */
+    public boolean checkAdbLocation(String rawAdbLocation) {
+        return systemPathResolver.resolveExecutablePath(rawAdbLocation).isPresent();
+    }
+
+    /**
      * Tries to update the ADB location. Aborts the update if the executable cannot be resolved in the new location and
      * returns {@code false}.
      *
