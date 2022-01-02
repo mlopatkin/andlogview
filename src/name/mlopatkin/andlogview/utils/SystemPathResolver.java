@@ -58,24 +58,47 @@ public abstract class SystemPathResolver {
         return new PosixPathResolver();
     }
 
+    /**
+     * POSIX-specific executable path resolution as specified in
+     * <a href="https://pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap08.html#tag_08_03">IEEE Std 1003.1</a>
+     */
     @VisibleForTesting
     static class PosixPathResolver extends SystemPathResolver {
         private static final char PATH_SEPARATOR = ':';
-        private final List<String> pathVarElements;
+        private final List<Path> pathVarElements;
+        private final Path curDir;
 
         public PosixPathResolver() {
-            this(System.getenv("PATH"));
+            this(Paths.get(System.getProperty("user.dir")), System.getenv("PATH"));
         }
 
         @VisibleForTesting
-        PosixPathResolver(String pathVar) {
-            this.pathVarElements = pathSplitter(PATH_SEPARATOR).splitToList(pathVar);
+        PosixPathResolver(Path curDir, String pathVar) {
+            this.curDir = curDir;
+            this.pathVarElements = Splitter.on(PATH_SEPARATOR).splitToStream(pathVar).map(pathElem -> {
+                // Empty strings have meaning in POSIX - they represent a current directory.
+                if (pathElem.isEmpty()) {
+                    return curDir;
+                }
+                return Paths.get(pathElem);
+            }).collect(toList());
         }
 
         @Override
-        public Optional<File> resolveExecutablePath(String rawPath) {
-            // TODO(mlopatkin): Make this proper path resolver.
-            return Optional.of(new File(rawPath));
+        public Optional<File> resolveExecutablePath(String rawExecutable) {
+            Path rawExecutablePath = Paths.get(rawExecutable);
+            if (!hasJustFilename(rawExecutablePath)) {
+                // Relative paths in Java are always resolved within the current directory at the time JVM was started.
+                // This quirk breaks test isolation, so an explicit resolve withing `curDir` is added there.
+                return getExecutablePathIfExists(curDir.resolve(rawExecutablePath));
+            }
+            for (Path pathVarElement : pathVarElements) {
+                Optional<File> result = getExecutablePathIfExists(pathVarElement.resolve(rawExecutablePath));
+                if (result.isPresent()) {
+                    return result;
+                }
+            }
+            return Optional.empty();
         }
     }
 
@@ -83,13 +106,14 @@ public abstract class SystemPathResolver {
      * Windows-specific executable path resolution code as specified in
      * <a href="https://docs.microsoft.com/en-us/previous-versions//cc723564(v=technet.10)#command-search-sequence">MSDN</a>.
      */
+    @VisibleForTesting
     static class WindowsPathResolver extends SystemPathResolver {
         private static final char PATH_SEPARATOR = ';';
         private final List<Path> pathVarElements;
         private final List<String> pathExts;
 
         private WindowsPathResolver(Path curDir, String pathVar, String pathExtVar) {
-            Splitter splitter = pathSplitter(PATH_SEPARATOR);
+            Splitter splitter = Splitter.on(PATH_SEPARATOR).omitEmptyStrings();
             // Windows always start searching the executable in the current directory, so we prepend it to the PATH
             // contents.
             pathVarElements = Stream.concat(
@@ -149,10 +173,6 @@ public abstract class SystemPathResolver {
             }
             return Optional.empty();
         }
-
-        private static boolean hasJustFilename(Path rawExecutableFile) {
-            return rawExecutableFile.getNameCount() == 1;
-        }
     }
 
     private static Optional<File> getExecutablePathIfExists(Path potentialExecutablePath) {
@@ -164,11 +184,11 @@ public abstract class SystemPathResolver {
         return Optional.empty();
     }
 
-    private static Splitter pathSplitter(char pathSeparator) {
-        return Splitter.on(pathSeparator).omitEmptyStrings();
-    }
-
     private static boolean isExecutableValid(Path potentialExecutable) {
         return Files.isExecutable(potentialExecutable);
+    }
+
+    private static boolean hasJustFilename(Path rawExecutableFile) {
+        return rawExecutableFile.getNameCount() == 1;
     }
 }
