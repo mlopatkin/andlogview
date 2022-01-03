@@ -126,6 +126,9 @@ public class MainFrame extends JFrame {
     AdbConfigurationPref adbConfigurationPref;
     @Inject
     ConfigurationDialogPresenter configurationDialogPresenter;
+    @Inject
+    AdbConnectionManager adbConnectionManager;
+
     // TODO(mlopatkin) remove this obsolete class eventually
     @Inject
     Lazy<AdbDeviceManager> adbDeviceManager;
@@ -583,12 +586,12 @@ public class MainFrame extends JFrame {
     }
 
     public boolean tryInitAdbBridge() {
-        if (AdbConnectionManager.isReady()) {
+        if (adbConnectionManager.isReady()) {
             return true;
         }
 
         try {
-            AdbConnectionManager.init(adbConfigurationPref.getAdbLocation());
+            adbConnectionManager.init(adbConfigurationPref.getAdbLocation());
             return true;
         } catch (AdbException e) {
             logger.warn("Cannot start in ADB mode", e);

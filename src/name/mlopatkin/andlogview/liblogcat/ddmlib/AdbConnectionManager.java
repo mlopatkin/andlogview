@@ -23,10 +23,15 @@ import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class AdbConnectionManager {
     private static final Logger logger = Logger.getLogger(AdbConnectionManager.class);
 
-    private AdbConnectionManager() {}
+    @Inject
+    public AdbConnectionManager() {}
 
     private static boolean inited = false;
     private static boolean ready = false;
@@ -47,7 +52,7 @@ public class AdbConnectionManager {
         }
     }
 
-    public static void init(String adbExecutablePath) throws AdbException, DdmlibUnsupportedException {
+    public void init(String adbExecutablePath) throws AdbException, DdmlibUnsupportedException {
         if (!inited) {
             Log.addLogger(new DdmlibToLog4jWrapper());
             if (System.getProperty("logview.debug.ddmlib") != null) {
@@ -69,11 +74,7 @@ public class AdbConnectionManager {
         }
     }
 
-    public static boolean isFailed() {
-        return inited && !ready;
-    }
-
-    public static boolean isReady() {
+    public boolean isReady() {
         return inited && ready;
     }
 
@@ -84,7 +85,7 @@ public class AdbConnectionManager {
         }
     }
 
-    static AndroidDebugBridge getAdb() {
+    AndroidDebugBridge getAdb() {
         checkState();
         return AndroidDebugBridge.getBridge();
     }

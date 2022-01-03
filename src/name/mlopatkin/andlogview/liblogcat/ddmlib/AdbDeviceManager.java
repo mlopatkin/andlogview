@@ -35,13 +35,16 @@ import javax.inject.Singleton;
 public class AdbDeviceManager {
     private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
 
+    private final AdbConnectionManager adbConnectionManager;
+
     @Inject
-    public AdbDeviceManager() {
+    public AdbDeviceManager(AdbConnectionManager adbConnectionManager) {
+        this.adbConnectionManager = adbConnectionManager;
         addDeviceChangeListener(new DeviceStateLogger());
     }
 
     public void addDeviceChangeListener(IDeviceChangeListener listener) {
-        AdbConnectionManager.getAdb();
+        adbConnectionManager.getAdb();
         AndroidDebugBridge.addDeviceChangeListener(listener);
     }
 
@@ -50,7 +53,7 @@ public class AdbDeviceManager {
     }
 
     public List<IDevice> getAvailableDevices() {
-        AndroidDebugBridge adb = AdbConnectionManager.getAdb();
+        AndroidDebugBridge adb = adbConnectionManager.getAdb();
         if (adb.hasInitialDeviceList()) {
             return Arrays.asList(adb.getDevices());
         } else {
@@ -59,7 +62,7 @@ public class AdbDeviceManager {
     }
 
     public @Nullable IDevice getDefaultDevice() {
-        AndroidDebugBridge adb = AdbConnectionManager.getAdb();
+        AndroidDebugBridge adb = adbConnectionManager.getAdb();
         if (adb.hasInitialDeviceList() && adb.getDevices().length > 0 && adb.getDevices()[0].isOnline()) {
             return adb.getDevices()[0];
         } else {
