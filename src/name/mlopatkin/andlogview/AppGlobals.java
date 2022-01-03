@@ -21,10 +21,10 @@ import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbConnectionManager;
+import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.device.DeviceModule;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
-import name.mlopatkin.andlogview.preferences.PreferencesModule;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
@@ -41,8 +41,13 @@ import javax.inject.Singleton;
  * Global application services available for all.
  */
 @Singleton
-@Component(modules = {GlobalsModule.class, ConfigModule.class, AppExecutors.ExecutorsModule.class, SwingUiModule.class,
-                      PreferencesModule.class})
+@Component(modules = {
+        AppExecutors.ExecutorsModule.class,
+        ConfigModule.class,
+        DeviceModule.class,
+        GlobalsModule.class,
+        SwingUiModule.class,
+})
 public interface AppGlobals {
     Main getMain();
 
@@ -61,11 +66,10 @@ public interface AppGlobals {
     AdbConfigurationPref getAdbConfiguration();
 
     // TODO(mlopatkin) replace this obsolete class with something modern
-    AdbConnectionManager getAdbConnectionManager();
-
-    // TODO(mlopatkin) replace this obsolete class with something modern
     AdbDeviceManager getAdbDeviceManager();
 
+
+    AdbManager getAdbManager();
 
     @Component.Factory
     interface Factory {

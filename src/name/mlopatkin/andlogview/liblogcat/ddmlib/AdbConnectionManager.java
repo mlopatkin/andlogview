@@ -15,82 +15,32 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
+import name.mlopatkin.andlogview.device.AdbConnection;
+import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.device.AdbServer;
+
 import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.DdmPreferences;
-import com.android.ddmlib.Log;
-
-import org.apache.log4j.Logger;
-
-import java.lang.reflect.Field;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class AdbConnectionManager {
-    private static final Logger logger = Logger.getLogger(AdbConnectionManager.class);
+class AdbConnectionManager {
+    // TODO(mlopatkin) get rid of this class
+    private final AdbManager adbManager;
 
     @Inject
-    public AdbConnectionManager() {}
-
-    private static boolean inited = false;
-    private static boolean ready = false;
-
-    private static boolean isReady(AndroidDebugBridge adb) throws DdmlibUnsupportedException {
-        if (adb == null) {
-            return false;
-        }
-        // hack below - there is no explicit way to check if the bridge was
-        // created succesfully
-        try {
-            Field started = AndroidDebugBridge.class.getDeclaredField("mStarted");
-            started.setAccessible(true);
-            return started.getBoolean(adb);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            logger.fatal("The DDMLIB is unsupported", e);
-            throw new DdmlibUnsupportedException("The DDMLIB supplied is unsupported: " + System.getenv("DDMLIB"));
-        }
+    public AdbConnectionManager(AdbManager adbManager) {
+        this.adbManager = adbManager;
     }
 
-    public void init(String adbExecutablePath) throws AdbException, DdmlibUnsupportedException {
-        if (!inited) {
-            Log.addLogger(new DdmlibToLog4jWrapper());
-            if (System.getProperty("logview.debug.ddmlib") != null) {
-                DdmPreferences.setLogLevel("debug");
-            }
-            logger.debug("ADB library initialization");
-            AndroidDebugBridge.init(false);
-            Runtime.getRuntime().addShutdownHook(new Thread(AdbConnectionManager::closeAdb));
-            inited = true;
-            try {
-                AndroidDebugBridge adb = AndroidDebugBridge.createBridge(adbExecutablePath, false);
-                if (isReady(adb)) {
-                    ready = true;
-                }
-            } catch (IllegalArgumentException e) {
-                logger.error(e);
-                throw new AdbException("Cannot initialize ADB server. See logs for details");
-            }
-        }
-    }
-
-    public boolean isReady() {
-        return inited && ready;
-    }
-
-    private static void checkState() throws IllegalStateException {
-        if (!inited || AndroidDebugBridge.getBridge() == null) {
-            throw new IllegalStateException(
-                    "Invalid DDMLIB state: inited=" + inited + " bridge=" + AndroidDebugBridge.getBridge());
-        }
-    }
-
+    @SuppressWarnings("deprecation")
     AndroidDebugBridge getAdb() {
-        checkState();
-        return AndroidDebugBridge.getBridge();
-    }
-
-    static void closeAdb() {
-        AndroidDebugBridge.terminate();
+        AdbConnection connection = adbManager.getRunningServer().map(AdbServer::getConnection).orElse(null);
+        if (connection != null) {
+            return connection.getBridge();
+        } else {
+            throw new IllegalStateException("Bridge is not ready");
+        }
     }
 }

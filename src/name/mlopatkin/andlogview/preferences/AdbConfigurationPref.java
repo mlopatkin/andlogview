@@ -22,14 +22,12 @@ import name.mlopatkin.andlogview.device.AdbLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -92,12 +90,8 @@ public class AdbConfigurationPref implements AdbLocation {
     public AdbConfigurationPref(ConfigStorage configStorage, SystemPathResolver systemPathResolver) {
         this.configStorage = configStorage;
         this.systemPathResolver = systemPathResolver;
-        load();
-    }
-
-    private void load() {
-        AdbConfiguration stored = configStorage.loadConfig(STORAGE_CLIENT);
-        setRawAdbLocation(stored.location);
+        AdbConfiguration stored = this.configStorage.loadConfig(STORAGE_CLIENT);
+        setRawAdbLocation(stored.location, null);
         isAutoReconnectEnabled = stored.isAutoReconnectEnabled;
     }
 
@@ -116,8 +110,7 @@ public class AdbConfigurationPref implements AdbLocation {
      * @param rawAdbLocation the path to ADB or naked executable name
      */
     public void setAdbLocation(String rawAdbLocation) {
-        setRawAdbLocation(rawAdbLocation);
-        save();
+        setRawAdbLocation(rawAdbLocation, null);
     }
 
     /**
@@ -139,30 +132,23 @@ public class AdbConfigurationPref implements AdbLocation {
      */
     public boolean trySetAdbLocation(String rawAdbLocation) {
         Optional<File> maybeResolved = systemPathResolver.resolveExecutablePath(rawAdbLocation);
-        maybeResolved.ifPresent(resolvedExecutable -> {
-            this.rawAdbLocation = rawAdbLocation;
-            this.resolvedExecutable = resolvedExecutable;
-            save();
-        });
+        maybeResolved.ifPresent(resolvedExecutable -> setRawAdbLocation(rawAdbLocation, resolvedExecutable));
         return maybeResolved.isPresent();
     }
 
-    private void setRawAdbLocation(String rawAdbLocation) {
+    private void setRawAdbLocation(String rawAdbLocation, @Nullable File resolvedExecutable) {
         this.rawAdbLocation = rawAdbLocation;
-        this.resolvedExecutable = systemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
+        save();
+        if (resolvedExecutable != null) {
+            this.resolvedExecutable = resolvedExecutable;
+        } else {
+            this.resolvedExecutable = systemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
+        }
     }
 
     @Override
-    public boolean isValidExecutable() {
-        return resolvedExecutable != null;
-    }
-
-    @Override
-    public File getExecutable() {
-        File resolvedExecutable = this.resolvedExecutable;
-        Preconditions.checkState(resolvedExecutable != null, "Cannot resolve ADB executable from {}", rawAdbLocation);
-        // requireNonNull to please NullAway
-        return Objects.requireNonNull(resolvedExecutable);
+    public Optional<File> getExecutable() {
+        return Optional.ofNullable(resolvedExecutable);
     }
 
     public boolean isAutoReconnectEnabled() {

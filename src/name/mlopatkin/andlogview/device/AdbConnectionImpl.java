@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Mikhail Lopatkin
+ * Copyright 2022 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.preferences;
+package name.mlopatkin.andlogview.device;
 
-import name.mlopatkin.andlogview.device.AdbLocation;
+import com.android.ddmlib.AndroidDebugBridge;
 
-import dagger.Binds;
-import dagger.Module;
+import java.io.Closeable;
 
-@Module
-public abstract class PreferencesModule {
-    @Binds
-    abstract AdbLocation getAdbLocation(AdbConfigurationPref adbLocationPref);
+class AdbConnectionImpl implements AdbConnection, Closeable {
+    private final AndroidDebugBridge bridge;
+
+    public AdbConnectionImpl(AndroidDebugBridge bridge) {
+        this.bridge = bridge;
+    }
+
+    @Override
+    @Deprecated
+    public AndroidDebugBridge getBridge() {
+        return bridge;
+    }
+
+    @Override
+    public void close() {
+    }
 }

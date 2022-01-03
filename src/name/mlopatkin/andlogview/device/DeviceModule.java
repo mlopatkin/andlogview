@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Mikhail Lopatkin
+ * Copyright 2022 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package name.mlopatkin.andlogview.device;
 
-import java.io.File;
-import java.util.Optional;
+import dagger.Binds;
+import dagger.Module;
 
-public interface AdbLocation {
-    /**
-     * Returns the absolute path to the ADB executable if it is valid. Otherwise, returns an empty Optional.
-     *
-     * @return the absolute path to the executable or empty Optional if valid path isn't set
-     */
-    Optional<File> getExecutable();
+@Module
+public abstract class DeviceModule {
+    @Binds
+    abstract AdbManager getAdbManager(AdbManagerImpl impl);
 }

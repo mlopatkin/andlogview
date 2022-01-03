@@ -17,16 +17,15 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbConnectionManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.DdmlibUnsupportedException;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
@@ -75,7 +74,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -126,12 +124,13 @@ public class MainFrame extends JFrame {
     AdbConfigurationPref adbConfigurationPref;
     @Inject
     ConfigurationDialogPresenter configurationDialogPresenter;
-    @Inject
-    AdbConnectionManager adbConnectionManager;
 
     // TODO(mlopatkin) remove this obsolete class eventually
     @Inject
     Lazy<AdbDeviceManager> adbDeviceManager;
+
+    @Inject
+    AdbManager adbManager;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -586,21 +585,14 @@ public class MainFrame extends JFrame {
     }
 
     public boolean tryInitAdbBridge() {
-        if (adbConnectionManager.isReady()) {
-            return true;
-        }
-
         try {
-            adbConnectionManager.init(adbConfigurationPref.getAdbLocation());
+            adbManager.setAdbLocation(adbConfigurationPref);
+            adbManager.startServer();
             return true;
         } catch (AdbException e) {
             logger.warn("Cannot start in ADB mode", e);
             disableAdbCommandsAsync();
             errorDialogs.showAdbNotFoundError();
-        } catch (DdmlibUnsupportedException e) {
-            logger.error("Cannot work with DDMLIB supplied", e);
-            disableAdbCommandsAsync();
-            ErrorDialogsHelper.showError(this, Optional.ofNullable(e.getMessage()).orElse("DDMLIB Error"));
         }
         return false;
     }

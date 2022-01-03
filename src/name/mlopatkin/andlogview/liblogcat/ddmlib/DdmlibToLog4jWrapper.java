@@ -20,7 +20,7 @@ import com.android.ddmlib.Log.LogLevel;
 
 import org.apache.log4j.Logger;
 
-class DdmlibToLog4jWrapper implements ILogOutput {
+public class DdmlibToLog4jWrapper implements ILogOutput {
     private static final Logger logger = Logger.getLogger("DDMLIB");
 
     @Override
