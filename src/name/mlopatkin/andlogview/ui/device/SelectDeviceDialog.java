@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.android.ddmlib.IDevice;
@@ -47,10 +48,10 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
 
     private boolean resultDelivered = false;
 
-    private SelectDeviceDialog(JFrame owner, ResultReceiver receiver) {
+    private SelectDeviceDialog(JFrame owner, AdbDeviceManager adbDeviceManager, ResultReceiver receiver) {
         super(owner);
         this.receiver = receiver;
-        deviceListModel = DeviceListModel.create();
+        deviceListModel = DeviceListModel.create(adbDeviceManager);
 
         deviceList.setModel(deviceListModel);
         deviceList.setCellRenderer(new DeviceListCellRenderer());
@@ -113,8 +114,8 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
      * @param owner the parent frame to show dialog in
      * @param resultReceiver the callback to get a selected device
      */
-    public static void showDialog(JFrame owner, ResultReceiver resultReceiver) {
-        SelectDeviceDialog dialog = new SelectDeviceDialog(owner, resultReceiver);
+    public static void showDialog(JFrame owner, AdbDeviceManager adbDeviceManager, ResultReceiver resultReceiver) {
+        SelectDeviceDialog dialog = new SelectDeviceDialog(owner, adbDeviceManager, resultReceiver);
         dialog.setVisible(true);
     }
 

@@ -54,6 +54,8 @@ import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.google.common.io.Files;
 
+import dagger.Lazy;
+
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -124,6 +126,9 @@ public class MainFrame extends JFrame {
     AdbConfigurationPref adbConfigurationPref;
     @Inject
     ConfigurationDialogPresenter configurationDialogPresenter;
+    // TODO(mlopatkin) remove this obsolete class eventually
+    @Inject
+    Lazy<AdbDeviceManager> adbDeviceManager;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -434,10 +439,10 @@ public class MainFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (tryInitAdbBridge()) {
-                SelectDeviceDialog.showDialog(MainFrame.this, (dialog, selectedDevice) -> {
+                SelectDeviceDialog.showDialog(MainFrame.this, adbDeviceManager.get(), (dialog, selectedDevice) -> {
                     if (selectedDevice != null) {
-                        DeviceDisconnectedHandler.startWatching(MainFrame.this, selectedDevice);
-                        setSource(new AdbDataSource(selectedDevice));
+                        DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager.get(), selectedDevice);
+                        setSource(new AdbDataSource(adbDeviceManager.get(), selectedDevice));
                     }
                 });
             }
@@ -493,8 +498,8 @@ public class MainFrame extends JFrame {
                 }
             }
         };
-        AdbDeviceManager.addDeviceChangeListener(pendingAttacher);
-        IDevice device = AdbDeviceManager.getDefaultDevice();
+        adbDeviceManager.get().addDeviceChangeListener(pendingAttacher);
+        IDevice device = adbDeviceManager.get().getDefaultDevice();
         if (device != null) {
             connectDevicePending(device);
         }
@@ -508,13 +513,13 @@ public class MainFrame extends JFrame {
         }
         isWaitingForDevice = false;
         stopWaitingForDevice();
-        DeviceDisconnectedHandler.startWatching(this, device);
-        setSourceAsync(new AdbDataSource(device));
+        DeviceDisconnectedHandler.startWatching(this, adbDeviceManager.get(), device);
+        setSourceAsync(new AdbDataSource(adbDeviceManager.get(), device));
     }
 
     private void stopWaitingForDevice() {
         if (pendingAttacher != null) {
-            AdbDeviceManager.removeDeviceChangeListener(pendingAttacher);
+            adbDeviceManager.get().removeDeviceChangeListener(pendingAttacher);
             pendingAttacher = null;
         }
     }

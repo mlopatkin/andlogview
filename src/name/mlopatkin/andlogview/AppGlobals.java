@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.PreferencesModule;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
@@ -57,6 +58,9 @@ public interface AppGlobals {
     GlobalClipboard getClipboard();
 
     AdbConfigurationPref getAdbConfiguration();
+
+    // TODO(mlopatkin) replace this obsolete class with something modern
+    AdbDeviceManager getAdbDeviceManager();
 
     @Component.Factory
     interface Factory {

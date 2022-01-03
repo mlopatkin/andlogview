@@ -28,21 +28,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class AdbDeviceManager {
     private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
 
-    private AdbDeviceManager() {}
+    @Inject
+    public AdbDeviceManager() {
+        addDeviceChangeListener(new DeviceStateLogger());
+    }
 
-    public static void addDeviceChangeListener(IDeviceChangeListener listener) {
+    public void addDeviceChangeListener(IDeviceChangeListener listener) {
         AdbConnectionManager.getAdb();
         AndroidDebugBridge.addDeviceChangeListener(listener);
     }
 
-    public static void removeDeviceChangeListener(IDeviceChangeListener listener) {
+    public void removeDeviceChangeListener(IDeviceChangeListener listener) {
         AndroidDebugBridge.removeDeviceChangeListener(listener);
     }
 
-    public static List<IDevice> getAvailableDevices() {
+    public List<IDevice> getAvailableDevices() {
         AndroidDebugBridge adb = AdbConnectionManager.getAdb();
         if (adb.hasInitialDeviceList()) {
             return Arrays.asList(adb.getDevices());
@@ -51,7 +58,7 @@ public class AdbDeviceManager {
         }
     }
 
-    public static @Nullable IDevice getDefaultDevice() {
+    public @Nullable IDevice getDefaultDevice() {
         AndroidDebugBridge adb = AdbConnectionManager.getAdb();
         if (adb.hasInitialDeviceList() && adb.getDevices().length > 0 && adb.getDevices()[0].isOnline()) {
             return adb.getDevices()[0];
@@ -59,19 +66,6 @@ public class AdbDeviceManager {
             return null;
         }
     }
-
-    public abstract static class AbstractDeviceListener implements IDeviceChangeListener {
-        @Override
-        public void deviceConnected(IDevice device) {}
-
-        @Override
-        public void deviceDisconnected(IDevice device) {}
-
-        @Override
-        public void deviceChanged(IDevice device, int changeMask) {}
-    }
-
-    private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
 
     public static String getDeviceDisplayName(IDevice device) {
         String serial = device.getSerialNumber();
@@ -87,6 +81,19 @@ public class AdbDeviceManager {
             return serial;
         }
     }
+
+    public abstract static class AbstractDeviceListener implements IDeviceChangeListener {
+        @Override
+        public void deviceConnected(IDevice device) {}
+
+        @Override
+        public void deviceDisconnected(IDevice device) {}
+
+        @Override
+        public void deviceChanged(IDevice device, int changeMask) {}
+    }
+
+    private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
 
     private static class DeviceStateLogger implements IDeviceChangeListener {
         @Override
@@ -114,9 +121,5 @@ public class AdbDeviceManager {
             }
             logger.debug(Joiner.on(" | ").join(changes));
         }
-    }
-
-    static {
-        addDeviceChangeListener(new DeviceStateLogger());
     }
 }

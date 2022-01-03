@@ -32,11 +32,13 @@ import javax.swing.JOptionPane;
  */
 public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceListener {
     private static final Logger logger = Logger.getLogger(DeviceDisconnectedHandler.class);
-    private final IDevice device;
     private final MainFrame mainFrame;
+    private final AdbDeviceManager deviceManager;
+    private final IDevice device;
 
-    private DeviceDisconnectedHandler(MainFrame mainFrame, IDevice device) {
+    private DeviceDisconnectedHandler(MainFrame mainFrame, AdbDeviceManager deviceManager, IDevice device) {
         this.mainFrame = mainFrame;
+        this.deviceManager = deviceManager;
         this.device = device;
     }
 
@@ -45,7 +47,7 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
         if (device == this.device) {
             onDeviceDisconnected(disconnectedInvoker);
             // one-shot
-            AdbDeviceManager.removeDeviceChangeListener(this);
+            deviceManager.removeDeviceChangeListener(this);
         }
     }
 
@@ -54,7 +56,7 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
         if (device == this.device && (changeMask & IDevice.CHANGE_STATE) != 0) {
             if (!device.isOnline()) {
                 onDeviceDisconnected(offlineInvoker);
-                AdbDeviceManager.removeDeviceChangeListener(this);
+                deviceManager.removeDeviceChangeListener(this);
             }
         }
     }
@@ -79,7 +81,7 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
 
     private Runnable offlineInvoker = () -> showNotificationDialog("Device goes offline");
 
-    public static void startWatching(MainFrame mainFrame, IDevice device) {
-        AdbDeviceManager.addDeviceChangeListener(new DeviceDisconnectedHandler(mainFrame, device));
+    public static void startWatching(MainFrame mainFrame, AdbDeviceManager deviceManager, IDevice device) {
+        deviceManager.addDeviceChangeListener(new DeviceDisconnectedHandler(mainFrame, deviceManager, device));
     }
 }

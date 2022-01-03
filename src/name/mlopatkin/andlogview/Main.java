@@ -26,6 +26,8 @@ import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import com.android.ddmlib.IDevice;
 
+import dagger.Lazy;
+
 import org.apache.log4j.Logger;
 
 import java.awt.EventQueue;
@@ -45,6 +47,7 @@ public class Main {
     private static final String SHORT_APP_NAME = "logview";
     private final Provider<MainFrame> mainFrameProvider;
     private final CommandLine commandLine;
+    private final Lazy<AdbDeviceManager> adbDeviceManager;
 
     public static File getConfigurationDir() {
         return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
@@ -93,9 +96,10 @@ public class Main {
     }
 
     @Inject
-    Main(MainFrame.Factory mainFrameFactory, CommandLine commandLine) {
+    Main(MainFrame.Factory mainFrameFactory, CommandLine commandLine, Lazy<AdbDeviceManager> adbDeviceManager) {
         this.mainFrameProvider = mainFrameFactory;
         this.commandLine = commandLine;
+        this.adbDeviceManager = adbDeviceManager;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -136,10 +140,10 @@ public class Main {
             }
         } else {
             if (window.tryInitAdbBridge()) {
-                IDevice device = AdbDeviceManager.getDefaultDevice();
+                IDevice device = adbDeviceManager.get().getDefaultDevice();
                 if (device != null) {
-                    DeviceDisconnectedHandler.startWatching(window, device);
-                    window.setSourceAsync(new AdbDataSource(device));
+                    DeviceDisconnectedHandler.startWatching(window, adbDeviceManager.get(), device);
+                    window.setSourceAsync(new AdbDataSource(adbDeviceManager.get(), device));
                 } else {
                     window.waitForDevice();
                 }

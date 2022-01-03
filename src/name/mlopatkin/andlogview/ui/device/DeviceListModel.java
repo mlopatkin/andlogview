@@ -32,10 +32,12 @@ import javax.swing.AbstractListModel;
 class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebugBridge.IDeviceChangeListener {
     private static final Logger logger = Logger.getLogger(DeviceListModel.class);
 
+    private final AdbDeviceManager adbDeviceManager;
     private final List<IDevice> devices;
 
-    private DeviceListModel() {
-        devices = new ArrayList<>(AdbDeviceManager.getAvailableDevices());
+    private DeviceListModel(AdbDeviceManager adbDeviceManager) {
+        this.adbDeviceManager = adbDeviceManager;
+        devices = new ArrayList<>(adbDeviceManager.getAvailableDevices());
     }
 
     @Override
@@ -98,12 +100,12 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
     }
 
     public void unsubscribe() {
-        AdbDeviceManager.removeDeviceChangeListener(this);
+        adbDeviceManager.removeDeviceChangeListener(this);
     }
 
-    public static DeviceListModel create() {
-        DeviceListModel model = new DeviceListModel();
-        AdbDeviceManager.addDeviceChangeListener(model);
+    public static DeviceListModel create(AdbDeviceManager adbDeviceManager) {
+        DeviceListModel model = new DeviceListModel(adbDeviceManager);
+        adbDeviceManager.addDeviceChangeListener(model);
         return model;
     }
 }

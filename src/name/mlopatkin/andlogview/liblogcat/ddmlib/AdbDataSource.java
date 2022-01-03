@@ -40,12 +40,14 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
 
     private @Nullable RecordListener<LogRecord> listener;
 
+    private final AdbDeviceManager deviceManager;
     private final IDevice device;
     private final AdbPidToProcessConverter converter;
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
     private final SourceMetadata sourceMetadata;
 
-    public AdbDataSource(IDevice device) {
+    public AdbDataSource(AdbDeviceManager deviceManager, IDevice device) {
+        this.deviceManager = deviceManager;
         assert device != null;
         assert device.isOnline();
         this.device = device;
@@ -53,7 +55,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         for (Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }
-        AdbDeviceManager.addDeviceChangeListener(deviceListener);
+        deviceManager.addDeviceChangeListener(deviceListener);
         sourceMetadata = new AdbSourceMetadata(device);
     }
 
@@ -161,7 +163,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         public void deviceDisconnected(IDevice device) {
             if (device == AdbDataSource.this.device) {
                 close();
-                AdbDeviceManager.removeDeviceChangeListener(this);
+                deviceManager.removeDeviceChangeListener(this);
             }
         }
 
@@ -169,7 +171,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         public void deviceChanged(IDevice device, int changeMask) {
             if (device == AdbDataSource.this.device && (changeMask & IDevice.CHANGE_STATE) != 0 && device.isOffline()) {
                 close();
-                AdbDeviceManager.removeDeviceChangeListener(this);
+                deviceManager.removeDeviceChangeListener(this);
             }
         }
     };
