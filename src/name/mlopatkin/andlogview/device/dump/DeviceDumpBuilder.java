@@ -32,6 +32,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -114,9 +115,14 @@ class DeviceDumpBuilder implements Closeable {
     }
 
     private void saveMetadata() throws IOException {
+        // TODO(mlopatkin) requireNonNull here is a bit error-prone, it should be fixed
         DeviceDumpMetadata metadata =
-                new DeviceDumpMetadata(device.getName(), device.getProduct(), device.getBuildFingerprint(),
-                        device.getApiString(), commandOutputs);
+                new DeviceDumpMetadata(
+                        device.getName(),
+                        Objects.requireNonNull(device.getProduct()),
+                        Objects.requireNonNull(device.getBuildFingerprint()),
+                        device.getApiString(),
+                        commandOutputs);
         try (OutputStream entry = zipEntry("metadata.json");
                 OutputStreamWriter writer = new OutputStreamWriter(entry, StandardCharsets.UTF_8)) {
             gson.toJson(metadata, writer);

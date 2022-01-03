@@ -29,6 +29,7 @@ import com.google.gson.JsonElement;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -160,7 +161,8 @@ public class AdbConfigurationPref implements AdbLocation {
     public File getExecutable() {
         File resolvedExecutable = this.resolvedExecutable;
         Preconditions.checkState(resolvedExecutable != null, "Cannot resolve ADB executable from {}", rawAdbLocation);
-        return resolvedExecutable;
+        // requireNonNull to please NullAway
+        return Objects.requireNonNull(resolvedExecutable);
     }
 
     public boolean isAutoReconnectEnabled() {

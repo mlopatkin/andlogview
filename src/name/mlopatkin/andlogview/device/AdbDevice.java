@@ -47,7 +47,6 @@ public interface AdbDevice {
      * @return the api version of the device ({@code android.os.Build.VERSION.SDK_INT} or {@code
      *         android.os.Build.VERSION.CODENAME} if this is a pre-release)
      */
-    @Nullable
     String getApiString();
 
     /**

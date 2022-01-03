@@ -59,11 +59,11 @@ dependencies {
     }
 
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
-    annotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
-    testAnnotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
-    jmhAnnotationProcessor 'com.uber.nullaway:nullaway:0.7.9'
+    annotationProcessor 'com.uber.nullaway:nullaway:0.9.3'
+    testAnnotationProcessor 'com.uber.nullaway:nullaway:0.9.3'
+    jmhAnnotationProcessor 'com.uber.nullaway:nullaway:0.9.3'
 
-    errorprone 'com.google.errorprone:error_prone_core:2.7.1'
+    errorprone 'com.google.errorprone:error_prone_core:2.10.0'
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
@@ -138,11 +138,14 @@ idea.module.generatedSourceDirs += file(metadataBuildDir)
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation' << '-Werror'
     options.errorprone {
-        option('NullAway:AnnotatedPackages', 'org.bitbucket.mlopatkin')
+        option('NullAway:AnnotatedPackages', 'name.mlopatkin')
         option('NullAway:AssertsEnabled', 'true')
         option('NullAway:ExcludedClassAnnotations', 'javax.annotation.Generated')
-        option('NullAway:ExcludedFieldAnnotations', 'org.checkerframework.checker.nullness.qual.MonotonicNonNull,' +
-                'org.mockito.Mock,org.mockito.Captor')
+        option('NullAway:ExcludedFieldAnnotations',
+                String.join(',',
+                        'org.checkerframework.checker.nullness.qual.MonotonicNonNull',
+                        'org.mockito.Mock,org.mockito.Captor',
+                        'org.junit.jupiter.api.io.TempDir'))
         errorproneArgs.addAll(
                 '-Xep:JavaLangClash:OFF',
                 '-Xep:NullAway:ERROR',

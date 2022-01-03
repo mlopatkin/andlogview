@@ -155,7 +155,7 @@ class ConfigurationDialogPresenterTest {
         final TestActionHandler<Runnable> onAdbLocationWarningShown = TestActionHandler.runnableAction();
         final TestActionHandler<Runnable> onRestartWarningShown = TestActionHandler.runnableAction();
 
-        private String adbLocation;
+        private String adbLocation = "";
         private boolean isShown;
         private boolean enableAutoReconnect;
         private boolean isInvalidAdbLocationHighlighted;

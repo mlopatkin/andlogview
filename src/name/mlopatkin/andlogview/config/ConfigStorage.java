@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.AtExitManager;
 
 import com.google.common.io.Files;
 import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -58,7 +59,7 @@ public interface ConfigStorage {
         }
 
         @FormatMethod
-        public InvalidJsonContentException(String message, Object... args) {
+        public InvalidJsonContentException(@FormatString String message, Object... args) {
             super(String.format(message, args));
         }
 

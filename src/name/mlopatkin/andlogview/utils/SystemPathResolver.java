@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -142,7 +143,8 @@ public abstract class SystemPathResolver {
                 if (hasExtension) {
                     return getExecutablePathIfExists(rawExecutablePath);
                 }
-                return resolveWithPathExt(rawExecutablePath.getParent(), rawExecutablePath.getFileName().toString());
+                return resolveWithPathExt(Objects.requireNonNull(rawExecutablePath.getParent()),
+                        rawExecutablePath.getFileName().toString());
             }
             // If the given filename has an extension then it doesn't participate in the PATHEXT lookup.
             if (hasExtension) {

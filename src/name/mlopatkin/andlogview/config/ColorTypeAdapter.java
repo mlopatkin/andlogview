@@ -5,6 +5,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.awt.Color;
 import java.io.IOException;
 
@@ -21,6 +23,7 @@ class ColorTypeAdapter extends TypeAdapter<Color> {
     }
 
     @Override
+    @Nullable
     public Color read(JsonReader in) throws IOException {
         JsonToken nextToken = in.peek();
         switch (nextToken) {
