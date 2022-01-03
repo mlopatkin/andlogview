@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
+import name.mlopatkin.andlogview.device.AdbDevice;
 
 import com.android.ddmlib.IDevice;
 
@@ -36,7 +36,7 @@ class DeviceListCellRenderer implements ListCellRenderer<IDevice> {
     }
 
     private String getDeviceDisplayName(IDevice device) {
-        String deviceName = AdbDeviceManager.getDeviceDisplayName(device);
+        String deviceName = AdbDevice.fromIDevice(device).getDisplayName();
         if (device.isOnline()) {
             return deviceName;
         } else {

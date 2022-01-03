@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.IDevice;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.List;
 
 class AdbDeviceImpl implements AdbDevice {
@@ -33,11 +35,24 @@ class AdbDeviceImpl implements AdbDevice {
     }
 
     @Override
+    public String getDisplayName() {
+        String serial = device.getSerialNumber();
+        String productName = device.isEmulator() ? device.getAvdName() : getProduct();
+        if (productName != null) {
+            return productName + " (" + serial + ")";
+        } else {
+            return serial;
+        }
+    }
+
+    @Override
+    @Nullable
     public String getProduct() {
         return device.getProperty("ro.build.product");
     }
 
     @Override
+    @Nullable
     public String getBuildFingerprint() {
         return device.getProperty("ro.build.fingerprint");
     }

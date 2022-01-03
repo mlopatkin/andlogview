@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.IDevice;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,16 +30,24 @@ public interface AdbDevice {
     /** @return the user-friendly name of the device */
     String getName();
 
+    /**
+     * @return the user-friendly name of the device with unique id
+     */
+    String getDisplayName();
+
     /** @return the product string of the device ({@code android.os.Build.PRODUCT}) */
+    @Nullable
     String getProduct();
 
     /** @return the build fingerprint string of the device ({@code android.os.Build.FINGERPRINT}) */
+    @Nullable
     String getBuildFingerprint();
 
     /**
      * @return the api version of the device ({@code android.os.Build.VERSION.SDK_INT} or {@code
      *         android.os.Build.VERSION.CODENAME} if this is a pre-release)
      */
+    @Nullable
     String getApiString();
 
     /**

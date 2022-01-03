@@ -35,6 +35,11 @@ public class FakeDevice implements AdbDevice {
     }
 
     @Override
+    public String getDisplayName() {
+        return getName() + " (DEADBEEF)";
+    }
+
+    @Override
     public String getProduct() {
         return product;
     }

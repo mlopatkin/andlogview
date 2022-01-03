@@ -70,21 +70,6 @@ public class AdbDeviceManager {
         }
     }
 
-    public static String getDeviceDisplayName(IDevice device) {
-        String serial = device.getSerialNumber();
-        String productName = null;
-        if (device.isEmulator()) {
-            productName = device.getAvdName();
-        } else {
-            productName = device.getProperty(PRODUCT_NAME_PROPERTY);
-        }
-        if (productName != null) {
-            return productName + " (" + serial + ")";
-        } else {
-            return serial;
-        }
-    }
-
     public abstract static class AbstractDeviceListener implements IDeviceChangeListener {
         @Override
         public void deviceConnected(IDevice device) {}
@@ -95,8 +80,6 @@ public class AdbDeviceManager {
         @Override
         public void deviceChanged(IDevice device, int changeMask) {}
     }
-
-    private static final String PRODUCT_NAME_PROPERTY = "ro.build.product";
 
     private static class DeviceStateLogger implements IDeviceChangeListener {
         @Override

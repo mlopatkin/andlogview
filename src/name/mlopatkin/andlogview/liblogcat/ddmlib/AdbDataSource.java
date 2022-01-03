@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.Field;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
@@ -146,10 +147,11 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
 
     @Override
     public String toString() {
+        String deviceDisplayName = AdbDevice.fromIDevice(device).getDisplayName();
         if (!closed) {
-            return "Device: " + AdbDeviceManager.getDeviceDisplayName(device);
+            return "Device: " + deviceDisplayName;
         } else {
-            return "Disconnected device: " + AdbDeviceManager.getDeviceDisplayName(device);
+            return "Disconnected device: " + deviceDisplayName;
         }
     }
 
