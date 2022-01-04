@@ -18,25 +18,23 @@ package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.device.AdbDevice;
 
-import com.android.ddmlib.IDevice;
-
 import java.awt.Component;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-class DeviceListCellRenderer implements ListCellRenderer<IDevice> {
+class DeviceListCellRenderer implements ListCellRenderer<AdbDevice> {
     private final DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer();
 
     @Override
     public Component getListCellRendererComponent(
-            JList<? extends IDevice> jList, IDevice device, int index, boolean selected, boolean focused) {
+            JList<? extends AdbDevice> jList, AdbDevice device, int index, boolean selected, boolean focused) {
         return cellRenderer.getListCellRendererComponent(jList, getDeviceDisplayName(device), index, selected, focused);
     }
 
-    private String getDeviceDisplayName(IDevice device) {
-        String deviceName = AdbDevice.fromIDevice(device).getDisplayName();
+    private String getDeviceDisplayName(AdbDevice device) {
+        String deviceName = device.getDisplayName();
         if (device.isOnline()) {
             return deviceName;
         } else {

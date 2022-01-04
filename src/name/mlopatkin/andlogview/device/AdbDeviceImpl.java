@@ -67,6 +67,16 @@ class AdbDeviceImpl implements AdbDevice {
     }
 
     @Override
+    public IDevice getIDevice() {
+        return device;
+    }
+
+    @Override
+    public boolean isOnline() {
+        return device.isOnline();
+    }
+
+    @Override
     public Command command(List<String> commandLine) {
         return new CommandImpl(device, commandLine);
     }

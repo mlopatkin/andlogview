@@ -16,28 +16,26 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
+import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 
-import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.IDevice;
+import com.google.common.collect.Lists;
 
 import org.apache.log4j.Logger;
 
-import java.awt.EventQueue;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebugBridge.IDeviceChangeListener {
+class DeviceListModel extends AbstractListModel<AdbDevice> implements AdbDeviceList.DeviceChangeObserver {
     private static final Logger logger = Logger.getLogger(DeviceListModel.class);
 
-    private final AdbDeviceManager adbDeviceManager;
-    private final List<IDevice> devices;
+    private final AdbDeviceList adbDeviceList;
+    private final List<AdbDevice> devices;
 
-    private DeviceListModel(AdbDeviceManager adbDeviceManager) {
-        this.adbDeviceManager = adbDeviceManager;
-        devices = new ArrayList<>(adbDeviceManager.getAvailableDevices());
+    private DeviceListModel(AdbDeviceList adbDeviceList) {
+        this.adbDeviceList = adbDeviceList;
+        devices = Lists.newArrayList(adbDeviceList);
     }
 
     @Override
@@ -46,17 +44,19 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
     }
 
     @Override
-    public IDevice getElementAt(int index) {
+    public AdbDevice getElementAt(int index) {
         return devices.get(index);
     }
 
-    private void addDevice(IDevice device) {
+    @Override
+    public void onDeviceConnected(AdbDevice device) {
         logger.debug("device added " + device);
         devices.add(device);
         fireIntervalAdded(this, devices.size() - 1, devices.size() - 1);
     }
 
-    private void removeDevice(IDevice device) {
+    @Override
+    public void onDeviceDisconnected(AdbDevice device) {
         logger.debug("device removed " + device);
         int index = devices.indexOf(device);
         if (index >= 0) {
@@ -66,32 +66,14 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
     }
 
     @Override
-    public void deviceConnected(final IDevice device) {
-        logger.debug("Device connected: " + device);
-        EventQueue.invokeLater(() -> addDevice(device));
-    }
-
-    @Override
-    public void deviceDisconnected(final IDevice device) {
-        logger.debug("Device disconnected: " + device);
-        EventQueue.invokeLater(() -> removeDevice(device));
-    }
-
-    private void updateState(int changeMask) {
-        if ((changeMask & (IDevice.CHANGE_STATE | IDevice.CHANGE_BUILD_INFO)) != 0) {
-            fireContentsChanged(DeviceListModel.this, 0, devices.size() - 1);
-        }
-    }
-
-    @Override
-    public void deviceChanged(final IDevice device, final int changeMask) {
-        logger.debug("Device changed: " + device + " changeMask=" + Integer.toHexString(changeMask));
-        EventQueue.invokeLater(() -> updateState(changeMask));
+    public void onDeviceChanged(AdbDevice device) {
+        logger.debug("Device changed: " + device);
+        fireContentsChanged(DeviceListModel.this, 0, devices.size() - 1);
     }
 
     public int getFirstOnlineDeviceIndex() {
         for (int i = 0; i < devices.size(); ++i) {
-            IDevice device = devices.get(i);
+            AdbDevice device = devices.get(i);
             if (device.isOnline()) {
                 return i;
             }
@@ -100,12 +82,12 @@ class DeviceListModel extends AbstractListModel<IDevice> implements AndroidDebug
     }
 
     public void unsubscribe() {
-        adbDeviceManager.removeDeviceChangeListener(this);
+        adbDeviceList.asObservable().removeObserver(this);
     }
 
-    public static DeviceListModel create(AdbDeviceManager adbDeviceManager) {
-        DeviceListModel model = new DeviceListModel(adbDeviceManager);
-        adbDeviceManager.addDeviceChangeListener(model);
+    public static DeviceListModel create(AdbDeviceList adbDeviceList) {
+        DeviceListModel model = new DeviceListModel(adbDeviceList);
+        adbDeviceList.asObservable().addObserver(model);
         return model;
     }
 }

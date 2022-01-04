@@ -16,9 +16,25 @@
 
 package name.mlopatkin.andlogview.device;
 
+import java.util.concurrent.Executor;
+
 /**
  * The ADB server that this program is connected to. Use {@link AdbManager} to obtain an instance of this.
  */
 public interface AdbServer {
+    /**
+     * Returns a live view of the connected devices. The returned list is not thread-safe, listeners must be added or
+     * removed only on the provided executor. All listeners are notified on the provided executor too.
+     *
+     * @param listenerExecutor the executor to run listeners on
+     * @return the AdbDeviceList.
+     */
+    AdbDeviceList getDeviceList(Executor listenerExecutor);
+
+    /**
+     * Do not use in new code.
+     *
+     * @return the live AdbConnection
+     */
     AdbConnection getConnection();
 }

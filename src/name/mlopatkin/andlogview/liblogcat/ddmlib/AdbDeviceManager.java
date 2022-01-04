@@ -24,8 +24,6 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,15 +48,6 @@ public class AdbDeviceManager {
 
     public void removeDeviceChangeListener(IDeviceChangeListener listener) {
         AndroidDebugBridge.removeDeviceChangeListener(listener);
-    }
-
-    public List<IDevice> getAvailableDevices() {
-        AndroidDebugBridge adb = adbConnectionManager.getAdb();
-        if (adb.hasInitialDeviceList()) {
-            return Arrays.asList(adb.getDevices());
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     public @Nullable IDevice getDefaultDevice() {

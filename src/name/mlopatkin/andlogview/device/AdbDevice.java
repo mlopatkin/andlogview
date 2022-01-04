@@ -58,6 +58,19 @@ public interface AdbDevice {
     Command command(List<String> commandLine);
 
     /**
+     * Do not use in new code. This method is intended to be used during transitional period.
+     *
+     * @return the DDMLIB's IDevice instance
+     */
+    IDevice getIDevice();
+
+
+    /**
+     * @return {@code true} if the device is online and can run commands
+     */
+    boolean isOnline();
+
+    /**
      * Creates a {@link Command} to run a command on this device.
      *
      * @param commandLine the command line as a series of arguments

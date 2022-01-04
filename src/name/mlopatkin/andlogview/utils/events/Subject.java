@@ -57,4 +57,8 @@ public class Subject<T> implements Iterable<T> {
     public Iterator<T> iterator() {
         return observers.iterator();
     }
+
+    public boolean isEmpty() {
+        return observers.isEmpty();
+    }
 }

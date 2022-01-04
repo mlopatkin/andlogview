@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
+import com.android.ddmlib.IDevice;
+
 import java.util.List;
 
 public class FakeDevice implements AdbDevice {
@@ -52,6 +54,16 @@ public class FakeDevice implements AdbDevice {
     @Override
     public String getApiString() {
         return apiString;
+    }
+
+    @Override
+    public IDevice getIDevice() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isOnline() {
+        return true;
     }
 
     @Override

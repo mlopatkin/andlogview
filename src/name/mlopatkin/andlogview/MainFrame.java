@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
@@ -74,8 +75,10 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -124,6 +127,9 @@ public class MainFrame extends JFrame {
     AdbConfigurationPref adbConfigurationPref;
     @Inject
     ConfigurationDialogPresenter configurationDialogPresenter;
+    @Inject
+    @Named(AppExecutors.UI_EXECUTOR)
+    Executor uiExecutor;
 
     // TODO(mlopatkin) remove this obsolete class eventually
     @Inject
@@ -441,12 +447,18 @@ public class MainFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (tryInitAdbBridge()) {
-                SelectDeviceDialog.showDialog(MainFrame.this, adbDeviceManager.get(), (dialog, selectedDevice) -> {
-                    if (selectedDevice != null) {
-                        DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager.get(), selectedDevice);
-                        setSource(new AdbDataSource(adbDeviceManager.get(), selectedDevice));
-                    }
-                });
+                AdbServer adbServer = adbManager.getRunningServer()
+                        .orElseThrow(() -> new IllegalStateException("DDMLIB not started"));
+                SelectDeviceDialog.showDialog(
+                        MainFrame.this,
+                        adbServer.getDeviceList(uiExecutor),
+                        (dialog, selectedDevice) -> {
+                            if (selectedDevice != null) {
+                                DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager.get(),
+                                        selectedDevice);
+                                setSource(new AdbDataSource(adbDeviceManager.get(), selectedDevice));
+                            }
+                        });
             }
         }
     };
@@ -472,7 +484,12 @@ public class MainFrame extends JFrame {
     private final Action acDumpDevice = new AbstractAction("Prepare device dump...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            dependencies.getDumpDevicePresenter().selectDeviceAndDump();
+            try {
+                dependencies.getDumpDevicePresenter().selectDeviceAndDump();
+            } catch (AdbException ex) {
+                // TODO(mlopatkin) - show error here?
+                disableAdbCommandsAsync();
+            }
         }
     };
 

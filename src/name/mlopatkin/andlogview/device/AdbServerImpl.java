@@ -16,7 +16,10 @@
 
 package name.mlopatkin.andlogview.device;
 
+import static name.mlopatkin.andlogview.utils.LazyInstance.lazy;
+
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
+import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -26,6 +29,7 @@ import org.apache.log4j.Logger;
 import java.io.Closeable;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.concurrent.Executor;
 
 class AdbServerImpl implements AdbServer, Closeable {
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
@@ -34,11 +38,18 @@ class AdbServerImpl implements AdbServer, Closeable {
 
     @GuardedBy("lock")
     private AdbConnectionImpl adbConnection;
+    private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList =
+            lazy(() -> DispatchingDeviceList.create(this));
 
     public AdbServerImpl(AdbLocation adbLocation) throws AdbException {
         synchronized (lock) {
             adbConnection = createConnectionLocked(adbLocation);
         }
+    }
+
+    @Override
+    public AdbDeviceList getDeviceList(Executor listenerExecutor) {
+        return new AdbDeviceListImpl(dispatchingDeviceList.get(), listenerExecutor);
     }
 
     @Override
@@ -83,6 +94,13 @@ class AdbServerImpl implements AdbServer, Closeable {
     public void close() {
         synchronized (lock) {
             adbConnection.close();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public AndroidDebugBridge getBridge() {
+        synchronized (lock) {
+            return adbConnection.getBridge();
         }
     }
 }
