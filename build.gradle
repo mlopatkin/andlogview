@@ -104,8 +104,9 @@ sourceSets {
             srcDirs = []
             srcDir 'src'
             srcDir metadataBuildDir
-            srcDir 'third-party/systemUtils/src'
             srcDir 'third-party/observerList/src'
+            srcDir 'third-party/styledLabel/src'
+            srcDir 'third-party/systemUtils/src'
         }
         resources {
             srcDirs = []
@@ -179,7 +180,8 @@ def generateNotices = tasks.register('generateNotices', GenerateNotices) {
     sourceFilesNotices.from(
             'third-party/observerList/NOTICE',
             'third-party/systemUtils/NOTICE',
-            'third-party/tangoIcons/NOTICE')
+            'third-party/tangoIcons/NOTICE',
+            'third-party/styledLabel/NOTICE')
 }
 
 // Configure distribution (archive creation).

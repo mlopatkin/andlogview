@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.widgets;
+
+// Original code:
+// Copyright © 2003-2012 Stanislav Lapitsky. All Rights Reserved.
+// Obtained from http://java-sl.com/wrap.html
+// Used under permission (http://java-sl.com/articles.html):
+// All the code you can find here or libraries (.jar files) which you can download are free. You can use it or
+// extend/modify it as you wish. The only request is to add reference to me in the used code snippets.
+
+package name.mlopatkin.andlogview.thirdparty.styledlabel;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics;

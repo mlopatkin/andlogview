@@ -17,7 +17,7 @@ package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.TooltipGenerator;
 import name.mlopatkin.andlogview.search.TextHighlighter;
-import name.mlopatkin.andlogview.widgets.StyledLabel;
+import name.mlopatkin.andlogview.thirdparty.styledlabel.StyledLabel;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.Color;
