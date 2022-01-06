@@ -15,7 +15,8 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.device.AdbServer;
+import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.ui.device.AdbServicesSubcomponent;
 
 import com.android.ddmlib.AndroidDebugBridge;
@@ -34,11 +35,11 @@ import javax.inject.Inject;
 @AdbServicesSubcomponent.AdbServicesScoped
 public class AdbDeviceManager {
     private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
-    private final AdbServer adbServer;
+    private final AdbDeviceList adbDeviceList;
 
     @Inject
-    public AdbDeviceManager(AdbServer adbServer) {
-        this.adbServer = adbServer;
+    public AdbDeviceManager(AdbDeviceList adbDeviceList) {
+        this.adbDeviceList = adbDeviceList;
         addDeviceChangeListener(new DeviceStateLogger());
     }
 
@@ -50,14 +51,12 @@ public class AdbDeviceManager {
         AndroidDebugBridge.removeDeviceChangeListener(listener);
     }
 
-    public @Nullable IDevice getDefaultDevice() {
-        @SuppressWarnings("deprecation")
-        AndroidDebugBridge adb = adbServer.getConnection().getBridge();
-        if (adb.hasInitialDeviceList() && adb.getDevices().length > 0 && adb.getDevices()[0].isOnline()) {
-            return adb.getDevices()[0];
-        } else {
-            return null;
+    public @Nullable AdbDevice getDefaultDevice() {
+        List<AdbDevice> devices = adbDeviceList.getDevices();
+        if (!devices.isEmpty() && devices.get(0).isOnline()) {
+            return devices.get(0);
         }
+        return null;
     }
 
     public abstract static class AbstractDeviceListener implements IDeviceChangeListener {

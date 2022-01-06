@@ -32,13 +32,18 @@ public class FakeDevice implements AdbDevice {
     }
 
     @Override
+    public String getSerialNumber() {
+        return String.format("%08x", System.identityHashCode(this));
+    }
+
+    @Override
     public String getName() {
         return product;
     }
 
     @Override
     public String getDisplayName() {
-        return getName() + " (DEADBEEF)";
+        return getName() + " " + getSerialNumber();
     }
 
     @Override

@@ -34,6 +34,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class AdbDataSource implements DataSource, BufferReceiver {
@@ -42,22 +43,22 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private @Nullable RecordListener<LogRecord> listener;
 
     private final AdbDeviceManager deviceManager;
-    private final IDevice device;
+    private final AdbDevice device;
     private final AdbPidToProcessConverter converter;
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
     private final SourceMetadata sourceMetadata;
 
-    public AdbDataSource(AdbDeviceManager deviceManager, IDevice device) {
+    public AdbDataSource(AdbDeviceManager deviceManager, AdbDevice device) {
         this.deviceManager = deviceManager;
         assert device != null;
         assert device.isOnline();
         this.device = device;
-        converter = new AdbPidToProcessConverter(this.device);
+        converter = new AdbPidToProcessConverter(this.device.getIDevice());
         for (Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }
         deviceManager.addDeviceChangeListener(deviceListener);
-        sourceMetadata = new AdbSourceMetadata(device);
+        sourceMetadata = new AdbSourceMetadata(device.getIDevice());
     }
 
     private boolean closed = false;
@@ -110,7 +111,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
 
     private boolean isBufferHere(String bufferName) {
         String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null 2> /dev/null || echo 0";
-        return SyncAdbShellCommand.execute(device, cmd).isEmpty();
+        return SyncAdbShellCommand.execute(device.getIDevice(), cmd).isEmpty();
     }
 
     private void setUpStream(LogRecord.Buffer buffer) {
@@ -125,7 +126,8 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         }
         availableBuffers.add(buffer);
         final String commandLine = createLogcatCommandLine(bufferName);
-        final AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
+        final AdbBuffer adbBuffer =
+                new AdbBuffer(this, device.getIDevice(), buffer, commandLine, getPidToProcessConverter());
         buffers.add(adbBuffer);
     }
 
@@ -147,7 +149,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
 
     @Override
     public String toString() {
-        String deviceDisplayName = AdbDevice.fromIDevice(device).getDisplayName();
+        String deviceDisplayName = device.getDisplayName();
         if (!closed) {
             return "Device: " + deviceDisplayName;
         } else {
@@ -163,7 +165,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private IDeviceChangeListener deviceListener = new AdbDeviceManager.AbstractDeviceListener() {
         @Override
         public void deviceDisconnected(IDevice device) {
-            if (device == AdbDataSource.this.device) {
+            if (isTrackedDevice(device)) {
                 close();
                 deviceManager.removeDeviceChangeListener(this);
             }
@@ -171,10 +173,14 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
 
         @Override
         public void deviceChanged(IDevice device, int changeMask) {
-            if (device == AdbDataSource.this.device && (changeMask & IDevice.CHANGE_STATE) != 0 && device.isOffline()) {
+            if (isTrackedDevice(device) && (changeMask & IDevice.CHANGE_STATE) != 0 && device.isOffline()) {
                 close();
                 deviceManager.removeDeviceChangeListener(this);
             }
+        }
+
+        private boolean isTrackedDevice(IDevice device) {
+            return Objects.equals(device.getSerialNumber(), AdbDataSource.this.device.getSerialNumber());
         }
     };
 }

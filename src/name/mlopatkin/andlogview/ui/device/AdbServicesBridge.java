@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
@@ -84,6 +85,16 @@ public class AdbServicesBridge {
      */
     public Optional<SelectDeviceDialog.Factory> getSelectDeviceDialogFactory() {
         return getAdbServices().map(AdbServices::getSelectDeviceDialogFactory);
+    }
+
+    /**
+     * Tries to create AdbDeviceList, potentially initializing ADB connection if is it is not ready yet.
+     * This may fail and show an error dialog.
+     *
+     * @return an {@link AdbDeviceList} or empty Optional if ADB is not ready
+     */
+    public Optional<AdbDeviceList> getAdbDeviceList() {
+        return getAdbServices().map(AdbServices::getDeviceList);
     }
 
     public Optional<AdbDeviceManager> getAdbDeviceManager() {

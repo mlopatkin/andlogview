@@ -27,6 +27,13 @@ import java.util.List;
  * Device or emulator that is connected via ADB.
  */
 public interface AdbDevice {
+    // TODO(mlopatkin) serial numbers aren't unique in reality, especially in case of the low-end phones with
+    //  low-quality firmware. It is better to use something like usb address but DDMLIB doesn't expose it.
+    /**
+     * @return the serial number of the connected device
+     */
+    String getSerialNumber();
+
     /** @return the user-friendly name of the device */
     String getName();
 
@@ -78,16 +85,5 @@ public interface AdbDevice {
      */
     default Command command(String... commandLine) {
         return command(Arrays.asList(commandLine));
-    }
-
-    /**
-     * Creates an {@link AdbDevice} from the DDMLIB's {@link IDevice}. This method is intended to be used during
-     * transitional period.
-     *
-     * @param device the DDMLIB device instance
-     * @return the AdbDevice for the same device
-     */
-    static AdbDevice fromIDevice(IDevice device) {
-        return new AdbDeviceImpl(device);
     }
 }

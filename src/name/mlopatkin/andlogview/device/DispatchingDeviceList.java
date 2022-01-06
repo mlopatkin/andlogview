@@ -24,6 +24,7 @@ import com.android.ddmlib.IDevice;
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
  * This is the primary dispatcher for AdbDeviceList implementations.
  */
 class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
+    private static final Logger logger = Logger.getLogger(DispatchingDeviceList.class);
+
     private final Object deviceLock = new Object();
     private final Object observerLock = new Object();
 
@@ -76,7 +79,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
 
                 @Override
                 public void deviceChanged(IDevice device, int changeMask) {
-                    if (isRelevantChange(changeMask)) {
+                    if (!isRelevantChange(changeMask)) {
                         return;
                     }
 
@@ -134,18 +137,21 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     private void notifyDeviceAdded(AdbDevice newDevice) {
+        logger.debug("Device connected " + newDevice.getIDevice().getSerialNumber());
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceConnected(newDevice);
         }
     }
 
     private void notifyDeviceRemoved(AdbDevice removedDevice) {
+        logger.debug("Device disconnected " + removedDevice.getIDevice().getSerialNumber());
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceDisconnected(removedDevice);
         }
     }
 
     private void notifyDeviceChanged(AdbDevice changedDevice) {
+        logger.debug("Device changed " + changedDevice.getIDevice().getSerialNumber());
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceChanged(changedDevice);
         }

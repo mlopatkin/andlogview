@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 
 /**
@@ -23,6 +24,8 @@ import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
  */
 public interface AdbServices {
     SelectDeviceDialog.Factory getSelectDeviceDialogFactory();
+
+    AdbDeviceList getDeviceList();
 
     AdbDeviceManager getDeviceManager();
 

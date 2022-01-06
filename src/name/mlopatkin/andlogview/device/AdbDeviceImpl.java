@@ -30,6 +30,11 @@ class AdbDeviceImpl implements AdbDevice {
     }
 
     @Override
+    public String getSerialNumber() {
+        return device.getSerialNumber();
+    }
+
+    @Override
     public String getName() {
         return device.getName();
     }

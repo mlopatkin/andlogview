@@ -15,6 +15,7 @@
  */
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
@@ -23,6 +24,7 @@ import com.android.ddmlib.IDevice;
 import org.apache.log4j.Logger;
 
 import java.awt.EventQueue;
+import java.util.Objects;
 
 import javax.swing.JOptionPane;
 
@@ -45,9 +47,12 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
         this.device = device;
     }
 
+    private boolean isTrackedDevice(IDevice device) {
+        return Objects.equals(device.getSerialNumber(), this.device.getSerialNumber());
+    }
     @Override
     public void deviceDisconnected(IDevice device) {
-        if (device == this.device) {
+        if (isTrackedDevice(device)) {
             onDeviceDisconnected(disconnectedInvoker);
             // one-shot
             deviceManager.removeDeviceChangeListener(this);
@@ -56,7 +61,7 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
 
     @Override
     public void deviceChanged(IDevice device, int changeMask) {
-        if (device == this.device && (changeMask & IDevice.CHANGE_STATE) != 0) {
+        if (isTrackedDevice(device) && (changeMask & IDevice.CHANGE_STATE) != 0) {
             if (!device.isOnline()) {
                 onDeviceDisconnected(offlineInvoker);
                 deviceManager.removeDeviceChangeListener(this);
@@ -85,8 +90,8 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
     private Runnable offlineInvoker = () -> showNotificationDialog("Device goes offline");
 
     public static void startWatching(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref,
-            AdbDeviceManager deviceManager, IDevice device) {
+            AdbDeviceManager deviceManager, AdbDevice device) {
         deviceManager.addDeviceChangeListener(
-                new DeviceDisconnectedHandler(mainFrame, adbConfigurationPref, deviceManager, device));
+                new DeviceDisconnectedHandler(mainFrame, adbConfigurationPref, deviceManager, device.getIDevice()));
     }
 }

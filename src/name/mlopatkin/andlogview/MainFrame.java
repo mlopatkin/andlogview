@@ -17,6 +17,8 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.AdbDeviceList.DeviceChangeObserver;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
@@ -51,8 +53,6 @@ import name.mlopatkin.andlogview.utils.SystemUtils;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
-import com.android.ddmlib.IDevice;
 import com.google.common.io.Files;
 
 import org.apache.log4j.Logger;
@@ -134,6 +134,9 @@ public class MainFrame extends JFrame {
     AdbManager adbManager;
     @Inject
     AdbServicesBridge adbServicesBridge;
+
+    @Nullable
+    private DeviceChangeObserver pendingAttacher;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -449,8 +452,8 @@ public class MainFrame extends JFrame {
                         adbServices.getSelectDeviceDialogFactory().show((dialog, selectedDevice) -> {
                             if (selectedDevice != null) {
                                 DeviceDisconnectedHandler.startWatching(MainFrame.this, adbConfigurationPref,
-                                        adbDeviceManager, selectedDevice.getIDevice());
-                                setSource(new AdbDataSource(adbDeviceManager, selectedDevice.getIDevice()));
+                                        adbDeviceManager, selectedDevice);
+                                setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
                             }
                         });
                     },
@@ -485,11 +488,9 @@ public class MainFrame extends JFrame {
         }
     };
 
-    private @Nullable IDeviceChangeListener pendingAttacher;
-
     public void tryToConnectToFirstAvailableDevice() {
         Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceManager(), adbDeviceManager -> {
-            IDevice device = adbDeviceManager.getDefaultDevice();
+            AdbDevice device = adbDeviceManager.getDefaultDevice();
             if (device != null) {
                 DeviceDisconnectedHandler.startWatching(this, adbConfigurationPref, adbDeviceManager, device);
                 setSourceAsync(new AdbDataSource(adbDeviceManager, device));
@@ -506,24 +507,25 @@ public class MainFrame extends JFrame {
         synchronized (this) {
             isWaitingForDevice = true;
         }
-        IDeviceChangeListener attacher = pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
+        DeviceChangeObserver attacher = pendingAttacher = new DeviceChangeObserver() {
             @Override
-            public void deviceConnected(final IDevice device) {
+            public void onDeviceConnected(AdbDevice device) {
                 if (device.isOnline()) {
                     connectDevicePending(device);
                 }
             }
 
             @Override
-            public void deviceChanged(IDevice device, int changeMask) {
-                if ((changeMask & IDevice.CHANGE_STATE) != 0 && device.isOnline()) {
+            public void onDeviceChanged(AdbDevice device) {
+                if (device.isOnline()) {
                     connectDevicePending(device);
                 }
             }
         };
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceManager(), adbDeviceManager -> {
-            adbDeviceManager.addDeviceChangeListener(attacher);
-            IDevice device = adbDeviceManager.getDefaultDevice();
+
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(), adbServices -> {
+            adbServices.getDeviceList().asObservable().addObserver(attacher);
+            AdbDevice device = adbServices.getDeviceManager().getDefaultDevice();
             if (device != null) {
                 connectDevicePending(device);
             }
@@ -532,7 +534,7 @@ public class MainFrame extends JFrame {
 
     private volatile boolean isWaitingForDevice;
 
-    private synchronized void connectDevicePending(IDevice device) {
+    private synchronized void connectDevicePending(AdbDevice device) {
         if (!isWaitingForDevice) {
             return;
         }
@@ -545,10 +547,10 @@ public class MainFrame extends JFrame {
     }
 
     private void stopWaitingForDevice() {
-        IDeviceChangeListener attacher = pendingAttacher;
+        DeviceChangeObserver attacher = pendingAttacher;
         if (attacher != null) {
-            Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceManager(), adbDeviceManager -> {
-                adbDeviceManager.removeDeviceChangeListener(attacher);
+            Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceList(), adbDeviceList -> {
+                adbDeviceList.asObservable().removeObserver(attacher);
             }, this::disableAdbCommandsAsync);
         }
         pendingAttacher = null;
