@@ -161,11 +161,6 @@ public class Configuration {
             return config.get(EXECUTABLE_KEY);
         }
 
-        @Deprecated
-        public static void executable(String newExecutable) {
-            config.set(EXECUTABLE_KEY, newExecutable);
-        }
-
         public static Boolean showSetupDialog() {
             return config.get(SHOW_SETUP_DIALOG_KEY);
         }
@@ -174,12 +169,9 @@ public class Configuration {
             config.set(SHOW_SETUP_DIALOG_KEY, value);
         }
 
+        @Deprecated
         public static Boolean isAutoReconnectEnabled() {
             return config.get(AUTORECONNECT_KEY);
-        }
-
-        public static void setAutoReconnectEnabled(boolean enabled) {
-            config.set(AUTORECONNECT_KEY, enabled);
         }
     }
 

@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import com.android.ddmlib.IDevice;
 
@@ -33,11 +33,14 @@ import javax.swing.JOptionPane;
 public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceListener {
     private static final Logger logger = Logger.getLogger(DeviceDisconnectedHandler.class);
     private final MainFrame mainFrame;
+    private final AdbConfigurationPref adbConfigurationPref;
     private final AdbDeviceManager deviceManager;
     private final IDevice device;
 
-    private DeviceDisconnectedHandler(MainFrame mainFrame, AdbDeviceManager deviceManager, IDevice device) {
+    private DeviceDisconnectedHandler(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref,
+            AdbDeviceManager deviceManager, IDevice device) {
         this.mainFrame = mainFrame;
+        this.adbConfigurationPref = adbConfigurationPref;
         this.deviceManager = deviceManager;
         this.device = device;
     }
@@ -63,7 +66,7 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
 
     private void onDeviceDisconnected(Runnable notificationInvoker) {
         logger.debug("showNotification");
-        if (Configuration.adb.isAutoReconnectEnabled()) {
+        if (adbConfigurationPref.isAutoReconnectEnabled()) {
             mainFrame.waitForDevice();
         } else {
             EventQueue.invokeLater(notificationInvoker);
@@ -81,7 +84,9 @@ public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceLi
 
     private Runnable offlineInvoker = () -> showNotificationDialog("Device goes offline");
 
-    public static void startWatching(MainFrame mainFrame, AdbDeviceManager deviceManager, IDevice device) {
-        deviceManager.addDeviceChangeListener(new DeviceDisconnectedHandler(mainFrame, deviceManager, device));
+    public static void startWatching(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref,
+            AdbDeviceManager deviceManager, IDevice device) {
+        deviceManager.addDeviceChangeListener(
+                new DeviceDisconnectedHandler(mainFrame, adbConfigurationPref, deviceManager, device));
     }
 }

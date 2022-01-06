@@ -453,8 +453,8 @@ public class MainFrame extends JFrame {
                 SelectDeviceDialog.Factory dialogFactory = dialogFactoryOpt.get();
                 dialogFactory.show((dialog, selectedDevice) -> {
                     if (selectedDevice != null) {
-                        DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager,
-                                selectedDevice);
+                        DeviceDisconnectedHandler.startWatching(MainFrame.this, adbConfigurationPref,
+                                adbDeviceManager, selectedDevice);
                         setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
                     }
                 });
@@ -497,7 +497,7 @@ public class MainFrame extends JFrame {
         Optionals.ifPresentOrElse(adbServices.getAdbDeviceManager(), adbDeviceManager -> {
             IDevice device = adbDeviceManager.getDefaultDevice();
             if (device != null) {
-                DeviceDisconnectedHandler.startWatching(this, adbDeviceManager, device);
+                DeviceDisconnectedHandler.startWatching(this, adbConfigurationPref, adbDeviceManager, device);
                 setSourceAsync(new AdbDataSource(adbDeviceManager, device));
             } else {
                 waitForDevice();
@@ -545,7 +545,7 @@ public class MainFrame extends JFrame {
         isWaitingForDevice = false;
         stopWaitingForDevice();
         Optionals.ifPresentOrElse(adbServices.getAdbDeviceManager(), adbDeviceManager -> {
-            DeviceDisconnectedHandler.startWatching(this, adbDeviceManager, device);
+            DeviceDisconnectedHandler.startWatching(this, adbConfigurationPref, adbDeviceManager, device);
             setSourceAsync(new AdbDataSource(adbDeviceManager, device));
         }, this::disableAdbCommandsAsync);
     }
