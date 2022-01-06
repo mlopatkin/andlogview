@@ -38,12 +38,12 @@ import javax.inject.Inject;
  * services to the rest of the application.
  */
 @MainFrameScoped
-public class AdbServices {
+public class AdbServicesBridge {
     // Why does this class live in the ui layer? So far everything ADB-related goes through UI layer be it device dump,
     // device selection or the actual logcat retrieval. Moreover, ADB initialization code shows error dialogs if
     // something goes wrong, so it has some UI dependency already. If this becomes problematic then the class may be
     // split into two in the future.
-    private static final Logger logger = Logger.getLogger(AdbServices.class);
+    private static final Logger logger = Logger.getLogger(AdbServicesBridge.class);
 
     private final AdbManager adbManager;
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
@@ -58,7 +58,7 @@ public class AdbServices {
     // are not recommended and nullable Optionals are a recipe for disaster anyway.
 
     @Inject
-    AdbServices(AdbManager adbManager, AdbServicesSubcomponent.Factory adbSubcomponentFactory,
+    AdbServicesBridge(AdbManager adbManager, AdbServicesSubcomponent.Factory adbSubcomponentFactory,
             Lazy<ErrorDialogs> errorDialogs) {
         this.adbManager = adbManager;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
