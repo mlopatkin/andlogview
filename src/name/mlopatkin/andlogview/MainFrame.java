@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.filters.MainFilterController;
@@ -72,6 +73,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -480,14 +482,13 @@ public class MainFrame extends JFrame {
     };
 
     public void tryToConnectToFirstAvailableDevice() {
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(), adbServices -> {
-            AdbDevice device = adbServices.getDeviceManager().getDefaultDevice();
-            if (device != null) {
-                adbServices.getDataSourceFactory().openDeviceAsDataSource(device, this::setSourceAsync);
-            } else {
-                waitForDevice();
-            }
-        }, this::disableAdbCommandsAsync);
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(),
+                adbServices -> Optionals.ifPresentOrElse(
+                        getFirstOnlineDevice(adbServices.getDeviceList()),
+                        device -> adbServices.getDataSourceFactory().openDeviceAsDataSource(
+                                device, this::setSourceAsync),
+                        this::waitForDevice),
+                this::disableAdbCommandsAsync);
     }
 
     /**
@@ -513,12 +514,9 @@ public class MainFrame extends JFrame {
             }
         };
 
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(), adbServices -> {
-            adbServices.getDeviceList().asObservable().addObserver(attacher);
-            AdbDevice device = adbServices.getDeviceManager().getDefaultDevice();
-            if (device != null) {
-                connectDevicePending(device);
-            }
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceList(), deviceList -> {
+            deviceList.asObservable().addObserver(attacher);
+            getFirstOnlineDevice(deviceList).ifPresent(this::connectDevicePending);
         }, this::disableAdbCommandsAsync);
     }
 
@@ -614,5 +612,9 @@ public class MainFrame extends JFrame {
             errorDialogs.showAdbNotFoundError();
         }
         return false;
+    }
+
+    private Optional<AdbDevice> getFirstOnlineDevice(AdbDeviceList deviceList) {
+        return deviceList.getDevices().stream().filter(AdbDevice::isOnline).findFirst();
     }
 }

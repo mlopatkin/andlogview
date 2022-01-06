@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
@@ -105,10 +104,6 @@ public class AdbServicesBridge {
      */
     public Optional<AdbDataSourceFactory> getAdbDataSourceFactory() {
         return getAdbServices().map(AdbServices::getDataSourceFactory);
-    }
-
-    public Optional<AdbDeviceManager> getAdbDeviceManager() {
-        return getAdbServices().map(AdbServices::getDeviceManager);
     }
 
     /**
