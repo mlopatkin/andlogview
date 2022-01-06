@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.device;
 
 import name.mlopatkin.andlogview.utils.events.Observable;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -27,7 +28,7 @@ import java.util.concurrent.Executor;
  * <p>
  * This list is not thread-safe and has to be used on the same executor that was used to obtain its instance.
  */
-public interface AdbDeviceList extends Iterable<AdbDevice> {
+public interface AdbDeviceList {
     /**
      * The device change observer.
      */
@@ -56,6 +57,11 @@ public interface AdbDeviceList extends Iterable<AdbDevice> {
         default void onDeviceChanged(AdbDevice device) {
         }
     }
+
+    /**
+     * @return the list of currently connected devices
+     */
+    List<AdbDevice> getDevices();
 
     /**
      * @return the observable to register observers on this list

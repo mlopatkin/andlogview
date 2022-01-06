@@ -19,10 +19,9 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 
-import com.google.common.collect.Lists;
-
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -35,7 +34,7 @@ class DeviceListModel extends AbstractListModel<AdbDevice> implements AdbDeviceL
 
     private DeviceListModel(AdbDeviceList adbDeviceList) {
         this.adbDeviceList = adbDeviceList;
-        devices = Lists.newArrayList(adbDeviceList);
+        devices = new ArrayList<>(adbDeviceList.getDevices());
     }
 
     @Override

@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 class AdbDeviceListImpl
@@ -64,8 +64,8 @@ class AdbDeviceListImpl
     }
 
     @Override
-    public Iterator<AdbDevice> iterator() {
-        return dispatcher.iterator();
+    public List<AdbDevice> getDevices() {
+        return dispatcher.getDevices();
     }
 
     @Override

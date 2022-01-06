@@ -28,7 +28,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * This is the primary dispatcher for AdbDeviceList implementations.
  */
-class DispatchingDeviceList implements Iterable<AdbDevice>, Observable<DeviceChangeObserver> {
+class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     private final Object deviceLock = new Object();
     private final Object observerLock = new Object();
 
@@ -119,14 +118,13 @@ class DispatchingDeviceList implements Iterable<AdbDevice>, Observable<DeviceCha
         }
     }
 
-    @Override
-    public Iterator<AdbDevice> iterator() {
+    public ImmutableList<AdbDevice> getDevices() {
         final ImmutableList.Builder<AdbDevice> snapshot;
         synchronized (deviceLock) {
             snapshot = ImmutableList.builderWithExpectedSize(devices.size());
             snapshot.addAll(devices.values());
         }
-        return snapshot.build().iterator();
+        return snapshot.build();
     }
 
     private List<DeviceChangeObserver> getObservers() {
