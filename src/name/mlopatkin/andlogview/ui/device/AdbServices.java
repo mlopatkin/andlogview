@@ -30,4 +30,6 @@ public interface AdbServices {
     AdbDeviceManager getDeviceManager();
 
     DumpDevicePresenter getDumpDevicePresenter();
+
+    AdbDataSourceFactory getDataSourceFactory();
 }

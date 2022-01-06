@@ -97,6 +97,16 @@ public class AdbServicesBridge {
         return getAdbServices().map(AdbServices::getDeviceList);
     }
 
+    /**
+     * Tries to create AdbDataSourceFactory, potentially initializing ADB connection if is it is not ready yet.
+     * This may fail and show an error dialog.
+     *
+     * @return an {@link AdbDataSourceFactory} or empty Optional if ADB is not ready
+     */
+    public Optional<AdbDataSourceFactory> getAdbDataSourceFactory() {
+        return getAdbServices().map(AdbServices::getDataSourceFactory);
+    }
+
     public Optional<AdbDeviceManager> getAdbDeviceManager() {
         return getAdbServices().map(AdbServices::getDeviceManager);
     }

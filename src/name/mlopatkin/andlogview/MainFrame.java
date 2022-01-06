@@ -25,8 +25,6 @@ import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
@@ -446,17 +444,10 @@ public class MainFrame extends JFrame {
     private final Action acConnectToDevice = new AbstractAction("Connect to device...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(),
-                    adbServices -> {
-                        AdbDeviceManager adbDeviceManager = adbServices.getDeviceManager();
-                        adbServices.getSelectDeviceDialogFactory().show((dialog, selectedDevice) -> {
-                            if (selectedDevice != null) {
-                                DeviceDisconnectedHandler.startWatching(MainFrame.this, adbConfigurationPref,
-                                        adbDeviceManager, selectedDevice);
-                                setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
-                            }
-                        });
-                    },
+            Optionals.ifPresentOrElse(
+                    adbServicesBridge.getAdbDataSourceFactory(),
+                    adbDataSourceFactory -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
+                            MainFrame.this::setSourceAsync),
                     MainFrame.this::disableAdbCommandsAsync);
         }
     };
@@ -489,11 +480,10 @@ public class MainFrame extends JFrame {
     };
 
     public void tryToConnectToFirstAvailableDevice() {
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceManager(), adbDeviceManager -> {
-            AdbDevice device = adbDeviceManager.getDefaultDevice();
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(), adbServices -> {
+            AdbDevice device = adbServices.getDeviceManager().getDefaultDevice();
             if (device != null) {
-                DeviceDisconnectedHandler.startWatching(this, adbConfigurationPref, adbDeviceManager, device);
-                setSourceAsync(new AdbDataSource(adbDeviceManager, device));
+                adbServices.getDataSourceFactory().openDeviceAsDataSource(device, this::setSourceAsync);
             } else {
                 waitForDevice();
             }
@@ -540,10 +530,9 @@ public class MainFrame extends JFrame {
         }
         isWaitingForDevice = false;
         stopWaitingForDevice();
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceManager(), adbDeviceManager -> {
-            DeviceDisconnectedHandler.startWatching(this, adbConfigurationPref, adbDeviceManager, device);
-            setSourceAsync(new AdbDataSource(adbDeviceManager, device));
-        }, this::disableAdbCommandsAsync);
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDataSourceFactory(),
+                dataSourceFactory -> dataSourceFactory.openDeviceAsDataSource(device, this::setSourceAsync),
+                this::disableAdbCommandsAsync);
     }
 
     private void stopWaitingForDevice() {

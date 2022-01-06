@@ -45,6 +45,12 @@ public class MainFrameModule {
         this.mainFrame = mainFrame;
     }
 
+    // TODO(mlopatkin) get rid of this
+    @Provides
+    MainFrame getMainFrame() {
+        return mainFrame;
+    }
+
     @Provides
     @MainFrameScoped
     DialogFactory provideDialogFactory() {
