@@ -203,7 +203,7 @@ distributions {
 def additionalFiles = copySpec {
     from project.projectDir
     from generateNotices.flatMap { it.outputNoticeFile }
-    include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
+    include 'AUTHORS.md', 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
 }
 
 distributions.all { it.contents.with(additionalFiles) }
