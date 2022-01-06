@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.device;
 
+import name.mlopatkin.andlogview.AtExitManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 
 import java.util.Optional;
@@ -53,4 +54,16 @@ public interface AdbManager {
      * @return the current started server or empty Optional if it isn't running
      */
     Optional<AdbServer> getRunningServer();
+
+    /**
+     * Creates an instance of the AdbManager but doesn't initialize the DDMLIB yet.
+     *
+     * @param atExitManager the {@link AtExitManager} to register cleanup hooks
+     * @param initialAdbLocation the ADB location to use when starting server
+     *
+     * @return the AdbManager
+     */
+    static AdbManager create(AtExitManager atExitManager, AdbLocation initialAdbLocation) {
+        return new AdbManagerImpl(atExitManager, initialAdbLocation);
+    }
 }

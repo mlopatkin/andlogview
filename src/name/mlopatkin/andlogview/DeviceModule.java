@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.device;
+package name.mlopatkin.andlogview;
 
-import dagger.Binds;
+import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+
 import dagger.Module;
+import dagger.Provides;
+
+import javax.inject.Singleton;
 
 @Module
 public abstract class DeviceModule {
-    @Binds
-    abstract AdbManager getAdbManager(AdbManagerImpl impl);
+    private DeviceModule() {
+    }
+
+    @Provides
+    @Singleton
+    static AdbManager getAdbManager(AtExitManager atExitManager, AdbConfigurationPref adbLocation) {
+        return AdbManager.create(atExitManager, adbLocation);
+    }
 }

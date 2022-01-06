@@ -22,7 +22,6 @@ import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.device.AdbManager;
-import name.mlopatkin.andlogview.device.DeviceModule;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;

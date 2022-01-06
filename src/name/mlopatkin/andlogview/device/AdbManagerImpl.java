@@ -30,10 +30,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 class AdbManagerImpl implements AdbManager {
     private static final Logger logger = Logger.getLogger(AdbManagerImpl.class);
 
@@ -47,11 +43,11 @@ class AdbManagerImpl implements AdbManager {
     private volatile AdbServerImpl server;
 
     @GuardedBy("lock")
-    private AdbLocation adbLocation = Optional::empty;
+    private AdbLocation adbLocation;
 
-    @Inject
-    AdbManagerImpl(AtExitManager atExitManager) {
+    AdbManagerImpl(AtExitManager atExitManager, AdbLocation initialAdbLocation) {
         this.atExitManager = atExitManager;
+        adbLocation = initialAdbLocation;
     }
 
     @Override
