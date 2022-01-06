@@ -16,6 +16,7 @@
 
 import name.mlopatkin.andlogview.building.BuildEnvironment
 import name.mlopatkin.andlogview.building.GenerateBuildMetadata
+import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.bitbucket.gradle.UploadTask
 
 plugins {
@@ -67,6 +68,19 @@ dependencies {
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
+configurations {
+    runtimeClasspath {
+        // These annotations aren't needed in runtime
+        exclude(group: 'com.google.code.findbugs', module: 'jsr305')
+        exclude(group: 'org.checkerframework', module: 'checker-qual')
+        exclude(group: 'com.google.errorprone', module: 'error_prone_annotations')
+        exclude(group: 'com.google.j2objc', module: 'j2objc-annotations')
+        exclude(group: 'org.codehaus.mojo', module: 'animal-sniffer-annotations')
+        // Guava includes listenable future
+        exclude(group: 'com.google.guava', module: 'listenablefuture')
+    }
+}
+
 checkstyle {
     toolVersion = '8.12'
 }
@@ -94,6 +108,7 @@ sourceSets {
         resources {
             srcDirs = []
             srcDir 'resources'
+            srcDir 'third-party/tangoIcons/resources'
         }
     }
     test {
@@ -156,6 +171,15 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+def generateNotices = tasks.register('generateNotices', GenerateNotices) {
+    packagedClasspath = project.configurations.runtimeClasspath
+    libraryNoticesDirectory = project.file("third-party/libs/notices")
+    sourceFilesNotices.from(
+            'third-party/observerList/NOTICE',
+            'third-party/systemUtils/NOTICE',
+            'third-party/tangoIcons/NOTICE')
+}
+
 // Configure distribution (archive creation).
 distributions {
     main {
@@ -174,6 +198,7 @@ distributions {
 // - simply listing from/include in contents completely replaces the archive content
 def additionalFiles = copySpec {
     from project.projectDir
+    from generateNotices.flatMap { it.outputNoticeFile }
     include 'HISTORY', 'LICENSE', 'NOTICE', 'README.md'
 }
 
@@ -227,14 +252,6 @@ shadowJar {
     exclude '**/LICENSE'
     exclude 'META-INF/maven/**'
 
-    // These annotations aren't needed in runtime
-    dependencies {
-        exclude(dependency('com.google.code.findbugs:jsr305'))
-        exclude(dependency('org.checkerframework:checker-qual'))
-        exclude(dependency('com.google.errorprone:error_prone_annotations'))
-        exclude(dependency('com.google.j2objc:j2objc-annotations'))
-        exclude(dependency('org.codehaus.mojo:animal-sniffer-annotations'))
-    }
 }
 
 bitbucket {
