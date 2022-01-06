@@ -20,7 +20,10 @@ import name.mlopatkin.andlogview.utils.events.Observable;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
@@ -52,13 +55,14 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
             new AndroidDebugBridge.IDeviceChangeListener() {
                 @Override
                 public void deviceConnected(IDevice device) {
+                    logger.debug(formatDeviceLog(device, "connected"));
                     AdbDevice prevDevice;
                     AdbDevice newDevice = new AdbDeviceImpl(device);
                     synchronized (deviceLock) {
                         prevDevice = devices.putIfAbsent(device, newDevice);
                     }
                     if (prevDevice == null) {
-                        notifyDeviceAdded(newDevice);
+                        notifyDeviceConnected(newDevice);
                     } else {
                         // We already have this device in our list, a disconnect was probably missed.
                         notifyDeviceChanged(prevDevice);
@@ -67,17 +71,30 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
 
                 @Override
                 public void deviceDisconnected(IDevice device) {
+                    logger.debug(formatDeviceLog(device, "disconnected"));
                     AdbDevice adbDevice;
                     synchronized (deviceLock) {
                         adbDevice = devices.remove(device);
                     }
                     if (adbDevice != null) {
-                        notifyDeviceRemoved(adbDevice);
+                        notifyDeviceDisconnected(adbDevice);
                     }
                 }
 
                 @Override
                 public void deviceChanged(IDevice device, int changeMask) {
+                    List<String> changes = new ArrayList<>(3);
+                    if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
+                        changes.add("CHANGE_BUILD_INFO");
+                    }
+                    if ((changeMask & IDevice.CHANGE_CLIENT_LIST) != 0) {
+                        changes.add("CHANGE_CLIENT_LIST");
+                    }
+                    if ((changeMask & IDevice.CHANGE_STATE) != 0) {
+                        changes.add("CHANGE_STATE");
+                    }
+                    logger.debug(formatDeviceLog(device, "state changed {%s}", Joiner.on(" | ").join(changes)));
+
                     if (!isRelevantChange(changeMask)) {
                         return;
                     }
@@ -135,24 +152,24 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         }
     }
 
-    private void notifyDeviceAdded(AdbDevice newDevice) {
-        logger.debug("Device connected " + newDevice.getIDevice().getSerialNumber());
+    private void notifyDeviceConnected(AdbDevice device) {
+        logger.debug(formatDeviceLog(device, "notifyDeviceConnected"));
         for (DeviceChangeObserver obs : getObservers()) {
-            obs.onDeviceConnected(newDevice);
+            obs.onDeviceConnected(device);
         }
     }
 
-    private void notifyDeviceRemoved(AdbDevice removedDevice) {
-        logger.debug("Device disconnected " + removedDevice.getIDevice().getSerialNumber());
+    private void notifyDeviceDisconnected(AdbDevice device) {
+        logger.debug(formatDeviceLog(device, "notifyDeviceDisconnected"));
         for (DeviceChangeObserver obs : getObservers()) {
-            obs.onDeviceDisconnected(removedDevice);
+            obs.onDeviceDisconnected(device);
         }
     }
 
-    private void notifyDeviceChanged(AdbDevice changedDevice) {
-        logger.debug("Device changed " + changedDevice.getIDevice().getSerialNumber());
+    private void notifyDeviceChanged(AdbDevice device) {
+        logger.debug(formatDeviceLog(device, "notifyDeviceChanged (online=%s)", device.isOnline()));
         for (DeviceChangeObserver obs : getObservers()) {
-            obs.onDeviceChanged(changedDevice);
+            obs.onDeviceChanged(device);
         }
     }
 
@@ -168,5 +185,15 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         synchronized (observerLock) {
             deviceChangeObservers.remove(observer);
         }
+    }
+
+    @FormatMethod
+    private static String formatDeviceLog(AdbDevice device, @FormatString String format, Object... args) {
+        return ("[" + device.getSerialNumber() + "]: ") + String.format(format, args);
+    }
+
+    @FormatMethod
+    private static String formatDeviceLog(IDevice device, @FormatString String format, Object... args) {
+        return ("[" + device.getSerialNumber() + "]: ") + String.format(format, args);
     }
 }
