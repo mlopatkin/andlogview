@@ -33,6 +33,7 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServices;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
+import name.mlopatkin.andlogview.ui.device.SelectDeviceDialog;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -55,8 +56,6 @@ import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.google.common.io.Files;
 
-import dagger.Lazy;
-
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -76,6 +75,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -131,10 +131,6 @@ public class MainFrame extends JFrame {
     @Inject
     @Named(AppExecutors.UI_EXECUTOR)
     Executor uiExecutor;
-
-    // TODO(mlopatkin) remove this obsolete class eventually
-    @Inject
-    Lazy<AdbDeviceManager> adbDeviceManager;
 
     @Inject
     AdbManager adbManager;
@@ -449,17 +445,22 @@ public class MainFrame extends JFrame {
     private final Action acConnectToDevice = new AbstractAction("Connect to device...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Optionals.ifPresentOrElse(adbServices.getSelectDeviceDialogFactory(),
-                    dialogFactory -> {
-                        dialogFactory.show((dialog, selectedDevice) -> {
-                            if (selectedDevice != null) {
-                                DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager.get(),
-                                        selectedDevice);
-                                setSource(new AdbDataSource(adbDeviceManager.get(), selectedDevice));
-                            }
-                        });
-                    },
-                    MainFrame.this::disableAdbCommandsAsync);
+            // TODO(mlopatkin) this is rough but should go away when DeviceDisconnectedHandler is gone.
+            Optional<SelectDeviceDialog.Factory> dialogFactoryOpt = adbServices.getSelectDeviceDialogFactory();
+            Optional<AdbDeviceManager> deviceManagerOpt = adbServices.getAdbDeviceManager();
+            if (dialogFactoryOpt.isPresent() && deviceManagerOpt.isPresent()) {
+                AdbDeviceManager adbDeviceManager = deviceManagerOpt.get();
+                SelectDeviceDialog.Factory dialogFactory = dialogFactoryOpt.get();
+                dialogFactory.show((dialog, selectedDevice) -> {
+                    if (selectedDevice != null) {
+                        DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager,
+                                selectedDevice);
+                        setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
+                    }
+                });
+            } else {
+                disableAdbCommandsAsync();
+            }
         }
     };
 
@@ -492,6 +493,18 @@ public class MainFrame extends JFrame {
 
     private @Nullable IDeviceChangeListener pendingAttacher;
 
+    public void tryToConnectToFirstAvailableDevice() {
+        Optionals.ifPresentOrElse(adbServices.getAdbDeviceManager(), adbDeviceManager -> {
+            IDevice device = adbDeviceManager.getDefaultDevice();
+            if (device != null) {
+                DeviceDisconnectedHandler.startWatching(this, adbDeviceManager, device);
+                setSourceAsync(new AdbDataSource(adbDeviceManager, device));
+            } else {
+                waitForDevice();
+            }
+        }, this::disableAdbCommandsAsync);
+    }
+
     /**
      * Wait for device to connect.
      */
@@ -499,7 +512,7 @@ public class MainFrame extends JFrame {
         synchronized (this) {
             isWaitingForDevice = true;
         }
-        pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
+        IDeviceChangeListener attacher = pendingAttacher = new AdbDeviceManager.AbstractDeviceListener() {
             @Override
             public void deviceConnected(final IDevice device) {
                 if (device.isOnline()) {
@@ -514,11 +527,13 @@ public class MainFrame extends JFrame {
                 }
             }
         };
-        adbDeviceManager.get().addDeviceChangeListener(pendingAttacher);
-        IDevice device = adbDeviceManager.get().getDefaultDevice();
-        if (device != null) {
-            connectDevicePending(device);
-        }
+        Optionals.ifPresentOrElse(adbServices.getAdbDeviceManager(), adbDeviceManager -> {
+            adbDeviceManager.addDeviceChangeListener(attacher);
+            IDevice device = adbDeviceManager.getDefaultDevice();
+            if (device != null) {
+                connectDevicePending(device);
+            }
+        }, this::disableAdbCommandsAsync);
     }
 
     private volatile boolean isWaitingForDevice;
@@ -529,15 +544,20 @@ public class MainFrame extends JFrame {
         }
         isWaitingForDevice = false;
         stopWaitingForDevice();
-        DeviceDisconnectedHandler.startWatching(this, adbDeviceManager.get(), device);
-        setSourceAsync(new AdbDataSource(adbDeviceManager.get(), device));
+        Optionals.ifPresentOrElse(adbServices.getAdbDeviceManager(), adbDeviceManager -> {
+            DeviceDisconnectedHandler.startWatching(this, adbDeviceManager, device);
+            setSourceAsync(new AdbDataSource(adbDeviceManager, device));
+        }, this::disableAdbCommandsAsync);
     }
 
     private void stopWaitingForDevice() {
-        if (pendingAttacher != null) {
-            adbDeviceManager.get().removeDeviceChangeListener(pendingAttacher);
-            pendingAttacher = null;
+        IDeviceChangeListener attacher = pendingAttacher;
+        if (attacher != null) {
+            Optionals.ifPresentOrElse(adbServices.getAdbDeviceManager(), adbDeviceManager -> {
+                adbDeviceManager.removeDeviceChangeListener(attacher);
+            }, this::disableAdbCommandsAsync);
         }
+        pendingAttacher = null;
     }
 
     private Action acSaveToFile = new AbstractAction("Save...") {

@@ -15,6 +15,9 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
+import name.mlopatkin.andlogview.device.AdbServer;
+import name.mlopatkin.andlogview.ui.device.AdbServicesSubcomponent;
+
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
@@ -27,22 +30,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
+@AdbServicesSubcomponent.AdbServicesScoped
 public class AdbDeviceManager {
     private static final Logger logger = Logger.getLogger(AdbDeviceManager.class);
-
-    private final AdbConnectionManager adbConnectionManager;
+    private final AdbServer adbServer;
 
     @Inject
-    public AdbDeviceManager(AdbConnectionManager adbConnectionManager) {
-        this.adbConnectionManager = adbConnectionManager;
+    public AdbDeviceManager(AdbServer adbServer) {
+        this.adbServer = adbServer;
         addDeviceChangeListener(new DeviceStateLogger());
     }
 
     public void addDeviceChangeListener(IDeviceChangeListener listener) {
-        adbConnectionManager.getAdb();
         AndroidDebugBridge.addDeviceChangeListener(listener);
     }
 
@@ -51,7 +51,8 @@ public class AdbDeviceManager {
     }
 
     public @Nullable IDevice getDefaultDevice() {
-        AndroidDebugBridge adb = adbConnectionManager.getAdb();
+        @SuppressWarnings("deprecation")
+        AndroidDebugBridge adb = adbServer.getConnection().getBridge();
         if (adb.hasInitialDeviceList() && adb.getDevices().length > 0 && adb.getDevices()[0].isOnline()) {
             return adb.getDevices()[0];
         } else {

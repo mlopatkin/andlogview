@@ -16,17 +16,11 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.utils.SystemUtils;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
-
-import com.android.ddmlib.IDevice;
-
-import dagger.Lazy;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +41,6 @@ public class Main {
     private static final String SHORT_APP_NAME = "logview";
     private final Provider<MainFrame> mainFrameProvider;
     private final CommandLine commandLine;
-    private final Lazy<AdbDeviceManager> adbDeviceManager;
 
     public static File getConfigurationDir() {
         return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
@@ -96,10 +89,9 @@ public class Main {
     }
 
     @Inject
-    Main(MainFrame.Factory mainFrameFactory, CommandLine commandLine, Lazy<AdbDeviceManager> adbDeviceManager) {
+    Main(MainFrame.Factory mainFrameFactory, CommandLine commandLine) {
         this.mainFrameProvider = mainFrameFactory;
         this.commandLine = commandLine;
-        this.adbDeviceManager = adbDeviceManager;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -140,13 +132,7 @@ public class Main {
             }
         } else {
             if (window.tryInitAdbBridge()) {
-                IDevice device = adbDeviceManager.get().getDefaultDevice();
-                if (device != null) {
-                    DeviceDisconnectedHandler.startWatching(window, adbDeviceManager.get(), device);
-                    window.setSourceAsync(new AdbDataSource(adbDeviceManager.get(), device));
-                } else {
-                    window.waitForDevice();
-                }
+                window.tryToConnectToFirstAvailableDevice();
             }
         }
     }

@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbServer;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 
 import dagger.BindsInstance;
 import dagger.Module;
@@ -51,6 +52,8 @@ public interface AdbServicesSubcomponent {
     }
 
     SelectDeviceDialog.Factory getSelectDeviceDialogFactory();
+
+    AdbDeviceManager getDeviceManager();
 
     DumpDevicePresenter getDumpDevicePresenter();
 

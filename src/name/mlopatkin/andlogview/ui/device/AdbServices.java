@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
@@ -82,6 +83,10 @@ public class AdbServices {
      */
     public Optional<SelectDeviceDialog.Factory> getSelectDeviceDialogFactory() {
         return getAdb().map(AdbServicesSubcomponent::getSelectDeviceDialogFactory);
+    }
+
+    public Optional<AdbDeviceManager> getAdbDeviceManager() {
+        return getAdb().map(AdbServicesSubcomponent::getDeviceManager);
     }
 
     private Optional<AdbServicesSubcomponent> getAdb() {
