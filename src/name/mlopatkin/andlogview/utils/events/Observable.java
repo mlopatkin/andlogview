@@ -45,4 +45,15 @@ public interface Observable<T> {
      * @param observer the observer to remove
      */
     void removeObserver(@Nullable T observer);
+
+    /**
+     * Adds an observer and returns a {@link ScopedObserver} instance that can be used to remove the added observer.
+     *
+     * @param observer the observer to add
+     * @return the scoped observer that removes the added observer upon {@link ScopedObserver#close()} call
+     */
+    default ScopedObserver addScopedObserver(T observer) {
+        addObserver(observer);
+        return () -> removeObserver(observer);
+    }
 }

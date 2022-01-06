@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
+import java.util.Objects;
+
 /**
  * The device change observer.
  */
@@ -42,5 +44,49 @@ public interface DeviceChangeObserver {
      * @param device the changed device
      */
     default void onDeviceChanged(AdbDevice device) {
+    }
+
+    /**
+     * Creates a new observer that forwards events from only the given device to this observer.
+     *
+     * @param trackedDevice the device to get events from
+     * @return the new observer that only forwards events for the given device
+     */
+    default DeviceChangeObserver scopeToSingleDevice(AdbDevice trackedDevice) {
+        DeviceChangeObserver parent = this;
+        return new DeviceChangeObserver() {
+            @Override
+            public void onDeviceConnected(AdbDevice device) {
+                if (isTrackedDevice(device)) {
+                    parent.onDeviceConnected(device);
+                }
+            }
+
+            @Override
+            public void onDeviceDisconnected(AdbDevice device) {
+                if (isTrackedDevice(device)) {
+                    parent.onDeviceDisconnected(device);
+                }
+            }
+
+            @Override
+            public void onDeviceChanged(AdbDevice device) {
+                if (isTrackedDevice(device)) {
+                    parent.onDeviceChanged(device);
+                }
+            }
+
+            @Override
+            public DeviceChangeObserver scopeToSingleDevice(AdbDevice anotherTrackedDevice) {
+                if (!isTrackedDevice(anotherTrackedDevice)) {
+                    throw new IllegalArgumentException("Can't scope an already scoped observer");
+                }
+                return this;
+            }
+
+            private boolean isTrackedDevice(AdbDevice device) {
+                return Objects.equals(trackedDevice.getSerialNumber(), device.getSerialNumber());
+            }
+        };
     }
 }

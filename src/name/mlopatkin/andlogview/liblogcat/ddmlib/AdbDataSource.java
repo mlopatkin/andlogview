@@ -17,6 +17,8 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.Field;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
@@ -24,9 +26,7 @@ import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
 import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
-
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
-import com.android.ddmlib.IDevice;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -34,22 +34,22 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public final class AdbDataSource implements DataSource, BufferReceiver {
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
-    private @Nullable RecordListener<LogRecord> listener;
-
-    private final AdbDeviceManager deviceManager;
     private final AdbDevice device;
+
     private final AdbPidToProcessConverter converter;
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
     private final SourceMetadata sourceMetadata;
+    private final ScopedObserver deviceChangeObserver;
 
-    public AdbDataSource(AdbDeviceManager deviceManager, AdbDevice device) {
-        this.deviceManager = deviceManager;
+    private @Nullable RecordListener<LogRecord> listener;
+    private boolean closed = false;
+
+    public AdbDataSource(AdbDevice device, AdbDeviceList deviceList) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
@@ -57,11 +57,23 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         for (Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }
-        deviceManager.addDeviceChangeListener(deviceListener);
         sourceMetadata = new AdbSourceMetadata(device.getIDevice());
-    }
+        deviceChangeObserver = deviceList.asObservable().addScopedObserver(new DeviceChangeObserver() {
+            @Override
+            public void onDeviceDisconnected(AdbDevice device) {
+                logger.debug("Device " + device.getSerialNumber() + " was disconnected, closing the source");
+                close();
+            }
 
-    private boolean closed = false;
+            @Override
+            public void onDeviceChanged(AdbDevice device) {
+                if (!device.isOnline()) {
+                    logger.debug("Device " + device.getSerialNumber() + " is offline, closing the source");
+                    close();
+                }
+            }
+        }.scopeToSingleDevice(device));
+    }
 
     @Override
     public void close() {
@@ -69,6 +81,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
             stream.close();
         }
         converter.close();
+        deviceChangeObserver.close();
         closed = true;
     }
 
@@ -161,26 +174,4 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     public SourceMetadata getMetadata() {
         return sourceMetadata;
     }
-
-    private IDeviceChangeListener deviceListener = new AdbDeviceManager.AbstractDeviceListener() {
-        @Override
-        public void deviceDisconnected(IDevice device) {
-            if (isTrackedDevice(device)) {
-                close();
-                deviceManager.removeDeviceChangeListener(this);
-            }
-        }
-
-        @Override
-        public void deviceChanged(IDevice device, int changeMask) {
-            if (isTrackedDevice(device) && (changeMask & IDevice.CHANGE_STATE) != 0 && device.isOffline()) {
-                close();
-                deviceManager.removeDeviceChangeListener(this);
-            }
-        }
-
-        private boolean isTrackedDevice(IDevice device) {
-            return Objects.equals(device.getSerialNumber(), AdbDataSource.this.device.getSerialNumber());
-        }
-    };
 }
