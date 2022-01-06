@@ -16,31 +16,26 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
-import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 public class AdbDataSourceFactory {
-    // TODO(mlopatkin) get rid of MainFrame injection here.
-    private final MainFrame mainFrame;
     private final SelectDeviceDialog.Factory selectDeviceDialogFactory;
     private final AdbDeviceList adbDeviceList;
-    private final AdbConfigurationPref adbConfigurationPref;
+    private final DeviceDisconnectedHandler deviceDisconnectedHandler;
 
     @Inject
-    AdbDataSourceFactory(MainFrame mainFrame, SelectDeviceDialog.Factory selectDeviceDialogFactory,
-            AdbDeviceList adbDeviceList, AdbConfigurationPref adbConfigurationPref) {
-        this.mainFrame = mainFrame;
+    AdbDataSourceFactory(SelectDeviceDialog.Factory selectDeviceDialogFactory,
+            AdbDeviceList adbDeviceList, DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.selectDeviceDialogFactory = selectDeviceDialogFactory;
         this.adbDeviceList = adbDeviceList;
-        this.adbConfigurationPref = adbConfigurationPref;
+        this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
 
     public void selectDeviceAndOpenAsDataSource(Consumer<AdbDataSource> callback) {
@@ -53,7 +48,7 @@ public class AdbDataSourceFactory {
 
     public void openDeviceAsDataSource(AdbDevice device, Consumer<AdbDataSource> callback) {
         AdbDataSource dataSource = new AdbDataSource(device, adbDeviceList);
-        DeviceDisconnectedHandler.startWatching(dataSource, mainFrame, adbConfigurationPref);
+        deviceDisconnectedHandler.startWatching(dataSource);
         callback.accept(dataSource);
     }
 }

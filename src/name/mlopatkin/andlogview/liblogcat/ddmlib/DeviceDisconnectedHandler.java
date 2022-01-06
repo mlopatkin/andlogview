@@ -20,16 +20,20 @@ import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import java.awt.EventQueue;
 
+import javax.inject.Inject;
 import javax.swing.JOptionPane;
 
 /**
  * This class is responsible for showing notification dialog when device is disconnected.
  */
 public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
+    // TODO(mlopatkin) Replace MainFrame with something more specific. DialogFactory covers one use case but the call
+    //  to waitForDevice is still problematic
     private final MainFrame mainFrame;
     private final AdbConfigurationPref adbConfigurationPref;
 
-    private DeviceDisconnectedHandler(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref) {
+    @Inject
+    DeviceDisconnectedHandler(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref) {
         this.mainFrame = mainFrame;
         this.adbConfigurationPref = adbConfigurationPref;
     }
@@ -61,8 +65,13 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
         JOptionPane.showMessageDialog(mainFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
     }
 
-    public static void startWatching(AdbDataSource dataSource, MainFrame mainFrame,
-            AdbConfigurationPref adbConfigurationPref) {
-        dataSource.asStateObservable().addObserver(new DeviceDisconnectedHandler(mainFrame, adbConfigurationPref));
+    /**
+     * Starts tracking the invalidation of the given data source. When the data source becomes invalid a notification is
+     * shown or the reconnection attempt is made.
+     *
+     * @param dataSource the data source to track
+     */
+    public void startWatching(AdbDataSource dataSource) {
+        dataSource.asStateObservable().addObserver(this);
     }
 }
