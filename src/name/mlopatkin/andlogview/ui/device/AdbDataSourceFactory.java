@@ -16,11 +16,11 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import java.util.function.Consumer;

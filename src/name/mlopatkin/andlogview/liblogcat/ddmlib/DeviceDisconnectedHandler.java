@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Mikhail Lopatkin
+ * Copyright 2022 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview;
+package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
+import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import java.awt.EventQueue;
