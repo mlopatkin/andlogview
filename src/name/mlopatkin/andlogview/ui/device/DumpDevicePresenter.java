@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.device.AdbDevice;
-import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.dump.DeviceDumpFactory;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
@@ -48,18 +47,18 @@ public class DumpDevicePresenter {
     private final Executor uiExecutor;
     private final Executor fileExecutor;
     private final FileDialog fileDialog;
-    private final AdbDeviceList adbDevices;
+    private final SelectDeviceDialog.Factory selectDeviceDialogFactory;
 
     @Inject
     DumpDevicePresenter(DialogFactory dialogFactory, DeviceDumpFactory dumpFactory, @Named(AppExecutors.UI_EXECUTOR)
             Executor uiExecutor, @Named(AppExecutors.FILE_EXECUTOR) Executor fileExecutor,
-            FileDialog fileDialog, AdbDeviceList adbDevices) {
+            FileDialog fileDialog, SelectDeviceDialog.Factory selectDeviceDialogFactory) {
         this.dialogFactory = dialogFactory;
         this.dumpFactory = dumpFactory;
         this.uiExecutor = uiExecutor;
         this.fileExecutor = fileExecutor;
         this.fileDialog = fileDialog;
-        this.adbDevices = adbDevices;
+        this.selectDeviceDialogFactory = selectDeviceDialogFactory;
     }
 
     /**
@@ -70,8 +69,7 @@ public class DumpDevicePresenter {
         // TODO(mlopatkin): Wrap this dialog interaction into View interface. This isn't particularly Clean because
         //   another indirection layer is needed: use case (this class) should call real presenter via an interface and
         //   the presenter should show dialog via view interface. This complexity isn't justified here though.
-        SelectDeviceDialog.showDialog(dialogFactory.getOwner(), adbDevices,
-                (dialog, selectedDevice) -> dumpDevice(selectedDevice));
+        selectDeviceDialogFactory.show((dialog, selectedDevice) -> dumpDevice(selectedDevice));
     }
 
     /**

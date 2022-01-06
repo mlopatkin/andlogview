@@ -50,6 +50,8 @@ public interface AdbServicesSubcomponent {
         AdbServicesSubcomponent build(@BindsInstance AdbServer server);
     }
 
+    SelectDeviceDialog.Factory getSelectDeviceDialogFactory();
+
     DumpDevicePresenter getDumpDevicePresenter();
 
     @Module

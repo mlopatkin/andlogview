@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.AdbManager;
-import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
@@ -34,7 +33,6 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServices;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
-import name.mlopatkin.andlogview.ui.device.SelectDeviceDialog;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -451,20 +449,17 @@ public class MainFrame extends JFrame {
     private final Action acConnectToDevice = new AbstractAction("Connect to device...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (tryInitAdbBridge()) {
-                AdbServer adbServer = adbManager.getRunningServer()
-                        .orElseThrow(() -> new IllegalStateException("DDMLIB not started"));
-                SelectDeviceDialog.showDialog(
-                        MainFrame.this,
-                        adbServer.getDeviceList(uiExecutor),
-                        (dialog, selectedDevice) -> {
+            Optionals.ifPresentOrElse(adbServices.getSelectDeviceDialogFactory(),
+                    dialogFactory -> {
+                        dialogFactory.show((dialog, selectedDevice) -> {
                             if (selectedDevice != null) {
                                 DeviceDisconnectedHandler.startWatching(MainFrame.this, adbDeviceManager.get(),
                                         selectedDevice);
                                 setSource(new AdbDataSource(adbDeviceManager.get(), selectedDevice));
                             }
                         });
-            }
+                    },
+                    MainFrame.this::disableAdbCommandsAsync);
         }
     };
 

@@ -17,9 +17,14 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.android.ddmlib.IDevice;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -28,7 +33,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JFrame;
 import javax.swing.Timer;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -48,8 +52,9 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
 
     private boolean resultDelivered = false;
 
-    private SelectDeviceDialog(JFrame owner, AdbDeviceList adbDeviceList, ResultReceiver receiver) {
-        super(owner);
+    @AssistedInject
+    SelectDeviceDialog(DialogFactory dialogFactory, AdbDeviceList adbDeviceList, @Assisted ResultReceiver receiver) {
+        super(dialogFactory.getOwner());
         this.receiver = receiver;
         deviceListModel = DeviceListModel.create(adbDeviceList);
 
@@ -97,6 +102,8 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         updater.start();
+
+        setVisible(true);
     }
 
     private boolean trySelectFirstAvailableDevice() {
@@ -106,17 +113,6 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Shows a modal device selection dialog. The adb bridge should be initialized before calling this method.
-     *
-     * @param owner the parent frame to show dialog in
-     * @param resultReceiver the callback to get a selected device
-     */
-    public static void showDialog(JFrame owner, AdbDeviceList adbDeviceList, ResultReceiver resultReceiver) {
-        SelectDeviceDialog dialog = new SelectDeviceDialog(owner, adbDeviceList, resultReceiver);
-        dialog.setVisible(true);
     }
 
     private void onPositiveResult() {
@@ -141,5 +137,11 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         }
         updater.stop();
         deviceListModel.unsubscribe();
+    }
+
+    // TODO(mlopatkin) Make this closer to FileDialog maybe?
+    @AssistedFactory
+    public interface Factory {
+        SelectDeviceDialog show(ResultReceiver resultReceiver);
     }
 }

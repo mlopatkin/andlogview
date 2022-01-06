@@ -74,6 +74,16 @@ public class AdbServices {
         return getAdb().map(AdbServicesSubcomponent::getDumpDevicePresenter);
     }
 
+    /**
+     * Tries to create SelectDeviceDialog.Factory, potentially initializing ADB connection if is it is not ready yet.
+     * This may fail and show an error dialog dialog.
+     *
+     * @return a {@link SelectDeviceDialog.Factory} or empty Optional if ADB is not ready
+     */
+    public Optional<SelectDeviceDialog.Factory> getSelectDeviceDialogFactory() {
+        return getAdb().map(AdbServicesSubcomponent::getSelectDeviceDialogFactory);
+    }
+
     private Optional<AdbServicesSubcomponent> getAdb() {
         Try<AdbServicesSubcomponent> result = adbSubcomponent;
         if (result == null) {
