@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 class AdbDeviceListImpl
-        implements AdbDeviceList, AdbDeviceList.DeviceChangeObserver, Observable<AdbDeviceList.DeviceChangeObserver> {
+        implements AdbDeviceList, DeviceChangeObserver, Observable<DeviceChangeObserver> {
     private final DispatchingDeviceList dispatcher;
     private final Executor listenerExecutor;
     private final Subject<DeviceChangeObserver> deviceChangeObservers = new Subject<>();

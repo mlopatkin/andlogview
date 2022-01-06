@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.device;
 
-import name.mlopatkin.andlogview.device.AdbDeviceList.DeviceChangeObserver;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import com.android.ddmlib.AndroidDebugBridge;

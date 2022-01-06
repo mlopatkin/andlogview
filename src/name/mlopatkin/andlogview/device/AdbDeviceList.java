@@ -29,34 +29,6 @@ import java.util.concurrent.Executor;
  * This list is not thread-safe and has to be used on the same executor that was used to obtain its instance.
  */
 public interface AdbDeviceList {
-    /**
-     * The device change observer.
-     */
-    interface DeviceChangeObserver {
-        /**
-         * Called when the new device is connected.
-         *
-         * @param device the connected device
-         */
-        default void onDeviceConnected(AdbDevice device) {
-        }
-
-        /**
-         * Called when the device is disconnected
-         *
-         * @param device the disconnected device
-         */
-        default void onDeviceDisconnected(AdbDevice device) {
-        }
-
-        /**
-         * Called when the device status is changed.
-         *
-         * @param device the changed device
-         */
-        default void onDeviceChanged(AdbDevice device) {
-        }
-    }
 
     /**
      * @return the list of currently connected devices

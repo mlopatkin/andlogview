@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,7 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-class DeviceListModel extends AbstractListModel<AdbDevice> implements AdbDeviceList.DeviceChangeObserver {
+class DeviceListModel extends AbstractListModel<AdbDevice> implements DeviceChangeObserver {
     private static final Logger logger = Logger.getLogger(DeviceListModel.class);
 
     private final AdbDeviceList adbDeviceList;
