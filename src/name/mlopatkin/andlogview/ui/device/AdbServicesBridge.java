@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.utils.Try;
 
 import dagger.Lazy;
@@ -72,29 +73,35 @@ public class AdbServicesBridge {
      * @return a {@link DumpDevicePresenter} or empty Optional if ADB is not ready
      */
     public Optional<DumpDevicePresenter> getDumpDevicePresenter() {
-        return getAdb().map(AdbServicesSubcomponent::getDumpDevicePresenter);
+        return getAdbServices().map(AdbServices::getDumpDevicePresenter);
     }
 
     /**
      * Tries to create SelectDeviceDialog.Factory, potentially initializing ADB connection if is it is not ready yet.
-     * This may fail and show an error dialog dialog.
+     * This may fail and show an error dialog.
      *
      * @return a {@link SelectDeviceDialog.Factory} or empty Optional if ADB is not ready
      */
     public Optional<SelectDeviceDialog.Factory> getSelectDeviceDialogFactory() {
-        return getAdb().map(AdbServicesSubcomponent::getSelectDeviceDialogFactory);
+        return getAdbServices().map(AdbServices::getSelectDeviceDialogFactory);
     }
 
     public Optional<AdbDeviceManager> getAdbDeviceManager() {
-        return getAdb().map(AdbServicesSubcomponent::getDeviceManager);
+        return getAdbServices().map(AdbServices::getDeviceManager);
     }
 
-    private Optional<AdbServicesSubcomponent> getAdb() {
+    /**
+     * Tries to create AdbServices, potentially initializing ADB connection if is it is not ready yet.
+     * This may fail and show an error dialog.
+     *
+     * @return an {@link AdbServices} or empty Optional if ADB is not ready
+     */
+    public Optional<AdbServices> getAdbServices() {
         Try<AdbServicesSubcomponent> result = adbSubcomponent;
         if (result == null) {
             result = adbSubcomponent = Try.ofCallable(this::tryCreateAdbServer).map(adbSubcomponentFactory::build);
         }
-        return result.toOptional();
+        return Optionals.upcast(result.toOptional());
     }
 
     private AdbServer tryCreateAdbServer() throws AdbException {

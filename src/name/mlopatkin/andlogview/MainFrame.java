@@ -33,7 +33,6 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
-import name.mlopatkin.andlogview.ui.device.SelectDeviceDialog;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -75,7 +74,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -445,22 +443,18 @@ public class MainFrame extends JFrame {
     private final Action acConnectToDevice = new AbstractAction("Connect to device...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO(mlopatkin) this is rough but should go away when DeviceDisconnectedHandler is gone.
-            Optional<SelectDeviceDialog.Factory> dialogFactoryOpt = adbServicesBridge.getSelectDeviceDialogFactory();
-            Optional<AdbDeviceManager> deviceManagerOpt = adbServicesBridge.getAdbDeviceManager();
-            if (dialogFactoryOpt.isPresent() && deviceManagerOpt.isPresent()) {
-                AdbDeviceManager adbDeviceManager = deviceManagerOpt.get();
-                SelectDeviceDialog.Factory dialogFactory = dialogFactoryOpt.get();
-                dialogFactory.show((dialog, selectedDevice) -> {
-                    if (selectedDevice != null) {
-                        DeviceDisconnectedHandler.startWatching(MainFrame.this, adbConfigurationPref,
-                                adbDeviceManager, selectedDevice);
-                        setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
-                    }
-                });
-            } else {
-                disableAdbCommandsAsync();
-            }
+            Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(),
+                    adbServices -> {
+                        AdbDeviceManager adbDeviceManager = adbServices.getDeviceManager();
+                        adbServices.getSelectDeviceDialogFactory().show((dialog, selectedDevice) -> {
+                            if (selectedDevice != null) {
+                                DeviceDisconnectedHandler.startWatching(MainFrame.this, adbConfigurationPref,
+                                        adbDeviceManager, selectedDevice);
+                                setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
+                            }
+                        });
+                    },
+                    MainFrame.this::disableAdbCommandsAsync);
         }
     };
 

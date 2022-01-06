@@ -39,4 +39,20 @@ public final class Optionals {
             ifEmpty.run();
         }
     }
+
+    /**
+     * Upcasts the return type of the Optional. Optional is return-type covariant (i.e. if A extends B then Optional[A]
+     * can safely be used anywhere Optional[B] is expected). Unfortunately, Java prohibits lower bounds on generic
+     * methods so this helper cannot make it into the Optional class itself.
+     * <p>
+     * Due to the type erasure this method is only a hint to the compiler, it does nothing.
+     *
+     * @param opt the optional to convert that holds some subtype of {@code T}
+     * @param <T> the resulting type
+     * @return the same optional but with upcasted result type
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Optional<T> upcast(Optional<? extends T> opt) {
+        return (Optional<T>) opt;
+    }
 }

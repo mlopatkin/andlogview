@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbServer;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
 
 import dagger.BindsInstance;
 import dagger.Module;
@@ -36,11 +35,12 @@ import javax.inject.Named;
 import javax.inject.Scope;
 
 /**
- * A special scope that includes services that require running ADB connection to work.
+ * A special scope that includes services that require running ADB connection to work. Use {@link AdbServicesBridge} to
+ * access services in this scope from outside.
  */
 @Subcomponent(modules = AdbServicesSubcomponent.AdbModule.class)
 @AdbServicesSubcomponent.AdbServicesScoped
-public interface AdbServicesSubcomponent {
+public interface AdbServicesSubcomponent extends AdbServices {
     @Scope
     @Retention(RetentionPolicy.CLASS)
     @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
@@ -50,12 +50,6 @@ public interface AdbServicesSubcomponent {
     interface Factory {
         AdbServicesSubcomponent build(@BindsInstance AdbServer server);
     }
-
-    SelectDeviceDialog.Factory getSelectDeviceDialogFactory();
-
-    AdbDeviceManager getDeviceManager();
-
-    DumpDevicePresenter getDumpDevicePresenter();
 
     @Module
     abstract class AdbModule {
