@@ -19,7 +19,7 @@
 // - Changed package name
 // - Removed unused methods and constants
 
-package name.mlopatkin.andlogview.utils;
+package name.mlopatkin.andlogview.thirdparty.systemutils;
 
 import java.io.File;
 

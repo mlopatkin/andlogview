@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.utils.events;
 
+import name.mlopatkin.andlogview.thirdparty.observerlist.ObserverList;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Iterator;

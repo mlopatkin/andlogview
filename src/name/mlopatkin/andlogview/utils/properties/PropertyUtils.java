@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.utils.properties;
 
 import name.mlopatkin.andlogview.Main;
-import name.mlopatkin.andlogview.utils.SystemUtils;
+import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;

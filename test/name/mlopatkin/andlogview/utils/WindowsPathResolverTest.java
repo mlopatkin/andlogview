@@ -19,6 +19,8 @@ package name.mlopatkin.andlogview.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;

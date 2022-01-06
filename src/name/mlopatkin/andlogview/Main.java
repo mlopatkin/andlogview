@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
-import name.mlopatkin.andlogview.utils.SystemUtils;
+import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 

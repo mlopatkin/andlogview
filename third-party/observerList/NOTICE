@@ -1,5 +1,5 @@
 ================================================================================
-NOTICE for name/mlopatkin/andlogview/utils/events/ObserverList.java
+NOTICE for name/mlopatkin/andlogview/thirdparty/observerlist/ObserverList.java
 --------------------------------------------------------------------------------
 This file is derived from the original in the Chromium project
 https://chromium.googlesource.com/chromium/src/+/bef05e34c1bf1886d9d9d1a19e171bb19222b84b/base/android/java/src/org/chromium/base/ObserverList.java

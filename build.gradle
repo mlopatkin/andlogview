@@ -104,6 +104,8 @@ sourceSets {
             srcDirs = []
             srcDir 'src'
             srcDir metadataBuildDir
+            srcDir 'third-party/systemUtils/src'
+            srcDir 'third-party/observerList/src'
         }
         resources {
             srcDirs = []
