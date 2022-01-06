@@ -30,11 +30,8 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * This is the primary dispatcher for AdbDeviceList implementations.
@@ -117,23 +114,22 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     public static DispatchingDeviceList create(AdbServerImpl server) {
-        DispatchingDeviceList result = new DispatchingDeviceList(server);
-        AndroidDebugBridge.addDeviceChangeListener(result.deviceChangeListener);
+        DispatchingDeviceList result = new DispatchingDeviceList();
+        result.init(server);
         return result;
     }
 
-    private DispatchingDeviceList(AdbServerImpl server) {
+    private DispatchingDeviceList() {
+        devices = new LinkedHashMap<>();
+    }
+
+    private void init(AdbServerImpl server) {
+        AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
+        IDevice[] knownDevices = server.getBridge().getDevices();
         synchronized (deviceLock) {
-            // Seed devices with whatever bridge knows about.
-            devices = Arrays.stream(server.getBridge().getDevices())
-                    .collect(
-                            Collectors.toMap(
-                                    Function.identity(),
-                                    AdbDeviceImpl::new,
-                                    (a, b) -> {
-                                        throw new IllegalArgumentException("Duplicate devices");
-                                    },
-                                    LinkedHashMap::new));
+            for (IDevice device : knownDevices) {
+                this.devices.putIfAbsent(device, new AdbDeviceImpl(device));
+            }
         }
     }
 
