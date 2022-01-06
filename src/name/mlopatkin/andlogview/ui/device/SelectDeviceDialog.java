@@ -16,11 +16,10 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.UiHelper;
-
-import com.android.ddmlib.IDevice;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
@@ -116,7 +115,7 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
     }
 
     private void onPositiveResult() {
-        deliverResult(deviceList.getSelectedValue().getIDevice());
+        deliverResult(deviceList.getSelectedValue());
         dispose();
     }
 
@@ -125,7 +124,7 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         dispose();
     }
 
-    private void deliverResult(@Nullable IDevice selectedDevice) {
+    private void deliverResult(@Nullable AdbDevice selectedDevice) {
         assert !resultDelivered;
         resultDelivered = true;
         receiver.onDialogResult(this, selectedDevice);

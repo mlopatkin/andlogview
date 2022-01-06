@@ -449,8 +449,8 @@ public class MainFrame extends JFrame {
                         adbServices.getSelectDeviceDialogFactory().show((dialog, selectedDevice) -> {
                             if (selectedDevice != null) {
                                 DeviceDisconnectedHandler.startWatching(MainFrame.this, adbConfigurationPref,
-                                        adbDeviceManager, selectedDevice);
-                                setSource(new AdbDataSource(adbDeviceManager, selectedDevice));
+                                        adbDeviceManager, selectedDevice.getIDevice());
+                                setSource(new AdbDataSource(adbDeviceManager, selectedDevice.getIDevice()));
                             }
                         });
                     },

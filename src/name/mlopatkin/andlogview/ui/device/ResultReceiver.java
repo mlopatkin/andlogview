@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import com.android.ddmlib.IDevice;
+import name.mlopatkin.andlogview.device.AdbDevice;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -30,5 +30,5 @@ public interface ResultReceiver {
      * @param dialog the dialog that triggered a callback
      * @param selectedDevice the selected device or null if the user cancelled the dialog
      */
-    void onDialogResult(SelectDeviceDialog dialog, @Nullable IDevice selectedDevice);
+    void onDialogResult(SelectDeviceDialog dialog, @Nullable AdbDevice selectedDevice);
 }

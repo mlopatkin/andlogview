@@ -23,7 +23,6 @@ import name.mlopatkin.andlogview.device.dump.DeviceDumpFactory;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
-import com.android.ddmlib.IDevice;
 import com.google.common.io.Files;
 
 import org.apache.log4j.Logger;
@@ -77,15 +76,13 @@ public class DumpDevicePresenter {
      *
      * @param selectedDevice the device to dump
      */
-    public void dumpDevice(@Nullable IDevice selectedDevice) {
-        // TODO(mlopatkin) Eventually everything should talk AdbDevice and not IDevice.
+    private void dumpDevice(@Nullable AdbDevice selectedDevice) {
         if (selectedDevice == null) {
             // User cancelled dump.
             return;
         }
-        AdbDevice device = AdbDevice.fromIDevice(selectedDevice);
-        String provisionalFileName = dumpFactory.getProvisionalOutputFileName(device);
-        fileDialog.selectFileToSave(provisionalFileName).ifPresent(file -> onOutputFileSelected(device, file));
+        String provisionalFileName = dumpFactory.getProvisionalOutputFileName(selectedDevice);
+        fileDialog.selectFileToSave(provisionalFileName).ifPresent(file -> onOutputFileSelected(selectedDevice, file));
     }
 
     private void onOutputFileSelected(AdbDevice selectedDevice, File outputFile) {
