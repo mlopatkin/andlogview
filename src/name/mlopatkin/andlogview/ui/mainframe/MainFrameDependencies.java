@@ -24,7 +24,7 @@ import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
-import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
+import name.mlopatkin.andlogview.ui.device.AdbServicesSubcomponent;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -38,7 +38,12 @@ import javax.swing.JTable;
  * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
  */
 @MainFrameScoped
-@Component(modules = MainFrameModule.class, dependencies = AppGlobals.class)
+@Component(
+        modules = {
+                AdbServicesSubcomponent.AdbMainModule.class,
+                MainFrameModule.class,
+        },
+        dependencies = AppGlobals.class)
 public interface MainFrameDependencies {
     String FOR_MAIN_FRAME = "Main frame";
 
@@ -60,8 +65,6 @@ public interface MainFrameDependencies {
     MainFilterController getMainFilterController();
 
     DataSourceHolder getDataSourceHolder();
-
-    DumpDevicePresenter getDumpDevicePresenter();
 
     TableColumnModelFactory getColumnModelFactory();
 

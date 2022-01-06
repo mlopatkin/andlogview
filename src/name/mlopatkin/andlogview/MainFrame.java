@@ -32,6 +32,8 @@ import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
+import name.mlopatkin.andlogview.ui.device.AdbServices;
+import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
 import name.mlopatkin.andlogview.ui.device.SelectDeviceDialog;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
@@ -46,6 +48,7 @@ import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
+import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.utils.SystemUtils;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.UiHelper;
@@ -137,6 +140,8 @@ public class MainFrame extends JFrame {
 
     @Inject
     AdbManager adbManager;
+    @Inject
+    AdbServices adbServices;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -484,12 +489,9 @@ public class MainFrame extends JFrame {
     private final Action acDumpDevice = new AbstractAction("Prepare device dump...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                dependencies.getDumpDevicePresenter().selectDeviceAndDump();
-            } catch (AdbException ex) {
-                // TODO(mlopatkin) - show error here?
-                disableAdbCommandsAsync();
-            }
+            Optionals.ifPresentOrElse(adbServices.getDumpDevicePresenter(),
+                    DumpDevicePresenter::selectDeviceAndDump,
+                    MainFrame.this::disableAdbCommandsAsync);
         }
     };
 

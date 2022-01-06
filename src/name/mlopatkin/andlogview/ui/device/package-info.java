@@ -16,6 +16,7 @@
  */
 
 /**
- * Device selection dialog and its helpers.
+ * This package holds GUI related to the interaction with the Android device through ADB. This includes device selection
+ * dialog, and device dump.
  */
 package name.mlopatkin.andlogview.ui.device;
