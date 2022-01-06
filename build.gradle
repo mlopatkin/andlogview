@@ -256,6 +256,7 @@ shadowJar {
     exclude '**/LICENSE'
     exclude 'META-INF/maven/**'
 
+    minimize()
 }
 
 bitbucket {
