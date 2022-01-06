@@ -15,83 +15,54 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDeviceManager;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
-import com.android.ddmlib.IDevice;
-
-import org.apache.log4j.Logger;
-
 import java.awt.EventQueue;
-import java.util.Objects;
 
 import javax.swing.JOptionPane;
 
 /**
- * This class is responsible for showing notification dialog when device is
- * disconnected.
+ * This class is responsible for showing notification dialog when device is disconnected.
  */
-public class DeviceDisconnectedHandler extends AdbDeviceManager.AbstractDeviceListener {
-    private static final Logger logger = Logger.getLogger(DeviceDisconnectedHandler.class);
+public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
     private final MainFrame mainFrame;
     private final AdbConfigurationPref adbConfigurationPref;
-    private final AdbDeviceManager deviceManager;
-    private final IDevice device;
 
-    private DeviceDisconnectedHandler(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref,
-            AdbDeviceManager deviceManager, IDevice device) {
+    private DeviceDisconnectedHandler(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref) {
         this.mainFrame = mainFrame;
         this.adbConfigurationPref = adbConfigurationPref;
-        this.deviceManager = deviceManager;
-        this.device = device;
-    }
-
-    private boolean isTrackedDevice(IDevice device) {
-        return Objects.equals(device.getSerialNumber(), this.device.getSerialNumber());
-    }
-    @Override
-    public void deviceDisconnected(IDevice device) {
-        if (isTrackedDevice(device)) {
-            onDeviceDisconnected(disconnectedInvoker);
-            // one-shot
-            deviceManager.removeDeviceChangeListener(this);
-        }
     }
 
     @Override
-    public void deviceChanged(IDevice device, int changeMask) {
-        if (isTrackedDevice(device) && (changeMask & IDevice.CHANGE_STATE) != 0) {
-            if (!device.isOnline()) {
-                onDeviceDisconnected(offlineInvoker);
-                deviceManager.removeDeviceChangeListener(this);
-            }
+    public void onDataSourceInvalidated(AdbDataSource.InvalidationReason reason) {
+        switch (reason) {
+            case DISCONNECT:
+                onDeviceDisconnected("Device is disconnected");
+                break;
+            case OFFLINE:
+                onDeviceDisconnected("Device goes offline");
+                break;
+            default:
+                throw new AssertionError("Unexpected reason " + reason);
         }
     }
 
-    private void onDeviceDisconnected(Runnable notificationInvoker) {
-        logger.debug("showNotification");
+    private void onDeviceDisconnected(String message) {
         if (adbConfigurationPref.isAutoReconnectEnabled()) {
             mainFrame.waitForDevice();
         } else {
-            EventQueue.invokeLater(notificationInvoker);
+            EventQueue.invokeLater(() -> showNotificationDialog(message));
         }
     }
 
     private void showNotificationDialog(String message) {
         assert EventQueue.isDispatchThread();
-        logger.debug("show notification dialog");
         JOptionPane.showMessageDialog(mainFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
-        logger.debug("close notification dialog");
     }
 
-    private Runnable disconnectedInvoker = () -> showNotificationDialog("Device is disconnected");
-
-    private Runnable offlineInvoker = () -> showNotificationDialog("Device goes offline");
-
-    public static void startWatching(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref,
-            AdbDeviceManager deviceManager, AdbDevice device) {
-        deviceManager.addDeviceChangeListener(
-                new DeviceDisconnectedHandler(mainFrame, adbConfigurationPref, deviceManager, device.getIDevice()));
+    public static void startWatching(AdbDataSource dataSource, MainFrame mainFrame,
+            AdbConfigurationPref adbConfigurationPref) {
+        dataSource.asStateObservable().addObserver(new DeviceDisconnectedHandler(mainFrame, adbConfigurationPref));
     }
 }

@@ -26,7 +26,9 @@ import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
 import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbBuffer.BufferReceiver;
+import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -37,6 +39,33 @@ import java.util.Map;
 import java.util.Set;
 
 public final class AdbDataSource implements DataSource, BufferReceiver {
+    /**
+     * The reason for the data source to become invalid.
+     */
+    public enum InvalidationReason {
+        OFFLINE, DISCONNECT
+    }
+
+    /**
+     * The interface receives updates about the state of this data source.
+     */
+    public interface StateObserver {
+        /**
+         * Called when the data source is no longer valid and will not produce any useful data anymore. The invalidation
+         * doesn't include calling {@link AdbDataSource#close()} as this is a part of the normal lifecycle. There is no
+         * need to close the data source after invalidation, it closes itself automatically.
+         *
+         * @param reason the reason for invalidation
+         */
+        void onDataSourceInvalidated(InvalidationReason reason);
+
+        /**
+         * Called when the data source is closed whether normally or because of invalidation.
+         */
+        default void onDataSourceClosed() {
+        }
+    }
+
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
     private final AdbDevice device;
@@ -45,6 +74,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
     private final SourceMetadata sourceMetadata;
     private final ScopedObserver deviceChangeObserver;
+    private final Subject<StateObserver> stateObservers = new Subject<>();
 
     private @Nullable RecordListener<LogRecord> listener;
     private boolean closed = false;
@@ -62,14 +92,14 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
             @Override
             public void onDeviceDisconnected(AdbDevice device) {
                 logger.debug("Device " + device.getSerialNumber() + " was disconnected, closing the source");
-                close();
+                invalidateAndClose(InvalidationReason.DISCONNECT);
             }
 
             @Override
             public void onDeviceChanged(AdbDevice device) {
                 if (!device.isOnline()) {
                     logger.debug("Device " + device.getSerialNumber() + " is offline, closing the source");
-                    close();
+                    invalidateAndClose(InvalidationReason.OFFLINE);
                 }
             }
         }.scopeToSingleDevice(device));
@@ -83,6 +113,16 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         converter.close();
         deviceChangeObserver.close();
         closed = true;
+        for (StateObserver stateObserver : stateObservers) {
+            stateObserver.onDataSourceClosed();
+        }
+    }
+
+    private void invalidateAndClose(InvalidationReason reason) {
+        for (StateObserver stateObserver : stateObservers) {
+            stateObserver.onDataSourceInvalidated(reason);
+        }
+        close();
     }
 
     @Override
@@ -173,5 +213,9 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     @Override
     public SourceMetadata getMetadata() {
         return sourceMetadata;
+    }
+
+    public Observable<StateObserver> asStateObservable() {
+        return stateObservers.asObservable();
     }
 }
