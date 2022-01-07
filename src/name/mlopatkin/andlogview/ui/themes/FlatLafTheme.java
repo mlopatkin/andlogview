@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
+import name.mlopatkin.andlogview.widgets.ConfigurableFlatBorder;
+
 import com.formdev.flatlaf.IntelliJTheme;
 import com.google.common.io.Resources;
 
@@ -23,6 +25,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Locale;
+
+import javax.swing.UIManager;
 
 /**
  * FlatLaf L&amp;F with Light Flat IDEA theme.
@@ -44,6 +48,15 @@ class FlatLafTheme implements Theme {
     public boolean install() {
         try {
             IntelliJTheme.setup(Resources.asByteSource(FlatLafThemes.LIGHTFLAT.getUrl()).openStream());
+            // This theme shows a thick blue outline when the JTable is focused. This doesn't look good in this app, so
+            // we are disabling it by providing a custom border for JScrollPanes wrapping JTables which are displaying
+            // the border.
+            ConfigurableFlatBorder tableBorder = new ConfigurableFlatBorder();
+            tableBorder.focusWidthProp.setDefault(0);
+            tableBorder.innerFocusWidthProp.setDefault(0f);
+            tableBorder.focusedBorderColorProp.setDefault(UIManager.getColor("Component.borderColor"));
+            UIManager.put("Table.scrollPaneBorder", tableBorder);
+
         } catch (IOException e) {
             logger.error(
                     String.format("Failed to load %s theme", FlatLafThemes.LIGHTFLAT.name().toLowerCase(Locale.ROOT)),
