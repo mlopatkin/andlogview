@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.utils;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -58,6 +59,13 @@ public abstract class Try<T> {
      * @return the result of applying function to the value or an exception wrapped in {@code Try}
      */
     public abstract <V> Try<V> map(Function<? super T, ? extends V> function);
+
+    /**
+     * If the exception is present then it is passed to the {@code handler}. Does nothing if the value is present.
+     *
+     * @param handler the handler to handle the exception
+     */
+    public abstract void handleError(Consumer<? super Throwable> handler);
 
     /**
      * Wraps the value to Optional. If the value isn't present then empty Optional is returned.
@@ -101,6 +109,10 @@ public abstract class Try<T> {
             public <V> Try<V> map(Function<? super T, ? extends V> function) {
                 return Try.ofCallable(() -> function.apply(value));
             }
+
+            @Override
+            public void handleError(Consumer<? super Throwable> handler) {
+            }
         };
     }
 
@@ -136,6 +148,11 @@ public abstract class Try<T> {
             public <V> Try<V> map(Function<? super T, ? extends V> function) {
                 // This is a safe cast because the Error instance doesn't actually hold the value.
                 return (Try<V>) this;
+            }
+
+            @Override
+            public void handleError(Consumer<? super Throwable> handler) {
+                handler.accept(throwable);
             }
         };
     }
