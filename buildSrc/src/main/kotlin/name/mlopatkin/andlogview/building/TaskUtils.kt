@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-plugins {
-    `kotlin-dsl`
-}
+package name.mlopatkin.andlogview.building
 
-repositories {
-    mavenCentral()
-}
+import org.gradle.api.Project
 
-dependencies {
-    implementation("com.squareup:javapoet:1.10.0")
+fun Project.disableTasks(vararg taskNames: String) {
+    taskNames.forEach {
+        tasks.named(it).configure {
+            enabled = false
+        }
+    }
 }

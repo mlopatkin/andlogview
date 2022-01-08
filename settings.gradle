@@ -22,7 +22,7 @@ pluginManagement {
 
     plugins {
         id 'name.mlopatkin.bitbucket' version '0.5-rc4'
-        id 'com.github.johnrengelman.shadow' version '5.2.0'
+        id 'com.github.johnrengelman.shadow' version '7.1.2'
         id 'net.ltgt.errorprone' version '2.0.2'
         id 'com.diffplug.eclipse.apt' version '3.22.0'
         id 'me.champeau.gradle.jmh' version '0.5.0'
