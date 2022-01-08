@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 repositories {
-     mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-    implementation 'com.squareup:javapoet:1.10.0'
+    implementation("com.squareup:javapoet:1.10.0")
 }
