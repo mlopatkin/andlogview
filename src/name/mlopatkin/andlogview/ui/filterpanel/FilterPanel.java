@@ -188,6 +188,8 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         acScrollRight.setEnabled(canScrollRight);
 
         btScrollRight.setVisible(canScroll);
+        sepScrollableLeft.setVisible(canScroll);
+        sepScrollableRight.setVisible(canScroll);
         btScrollLeft.setVisible(canScroll);
     }
 

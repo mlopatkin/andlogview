@@ -26,7 +26,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JViewport;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 /**
@@ -40,19 +42,31 @@ class FilterPanelUi extends JPanel {
     protected final JButton btAddFilter;
     protected final JPanel content;
     protected final JButton btScrollLeft = new JButton();
+    protected final JSeparator sepScrollableLeft = createSeparator();
+    protected final JSeparator sepScrollableRight = createSeparator();
     protected final JButton btScrollRight = new JButton();
     protected final JViewport contentViewport;
 
     FilterPanelUi() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         setBackground(UIManager.getColor("ToolBar.background"));
+
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+
         btAddFilter = new JButton();
         btAddFilter.setToolTipText("Add new filter");
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
         add(btAddFilter);
+
         add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+
         add(btScrollLeft);
+
         add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+
+        add(sepScrollableLeft);
+
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+
         content = new JPanel();
         content.setBackground(UIManager.getColor("ToolBar.background"));
         content.setBorder(UiHelper.NO_BORDER);
@@ -61,9 +75,22 @@ class FilterPanelUi extends JPanel {
                 new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(UiHelper.NO_BORDER);
         add(scrollPane);
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
-        add(btScrollRight);
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
         contentViewport = scrollPane.getViewport();
+
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+
+        add(sepScrollableRight);
+
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+
+        add(btScrollRight);
+
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+    }
+
+    private JSeparator createSeparator() {
+        JSeparator result = new JSeparator(SwingConstants.VERTICAL);
+        result.setForeground(UIManager.getColor("Toolbar.separatorColor"));
+        return result;
     }
 }
