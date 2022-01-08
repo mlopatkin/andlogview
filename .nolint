@@ -6,6 +6,9 @@ jmh/resources/*
 *.png
 *.jar
 
+# Nobody cares
+*.svg
+
 # Submodules
 .gitmodules
 bitbucket-plugin

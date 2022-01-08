@@ -46,4 +46,9 @@ class BasicTheme implements Theme {
         }
         return true;
     }
+
+    @Override
+    public ThemedWidgetFactory getWidgetFactory() {
+        return new BasicWidgetFactory();
+    }
 }

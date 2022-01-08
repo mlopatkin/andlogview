@@ -46,6 +46,8 @@ public interface Theme {
      */
     boolean install();
 
+    ThemedWidgetFactory getWidgetFactory();
+
     /**
      * Returns the list of all available themes. Some themes may be unsupported on some platforms.
      *

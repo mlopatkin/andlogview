@@ -56,4 +56,9 @@ class MacOsSystemTheme implements Theme {
             return false;
         }
     }
+
+    @Override
+    public ThemedWidgetFactory getWidgetFactory() {
+        return new BasicWidgetFactory();
+    }
 }

@@ -27,6 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.UIManager;
 
 /**
  * FilterPanel implementation. Generated class from WindowBuilder editor.
@@ -34,7 +35,7 @@ import javax.swing.JViewport;
 class FilterPanelUi extends JPanel {
     private static final int SEPARATOR_HEIGHT = 42;
     private static final int SEPARATOR_WIDTH = 5;
-    private static final int SCROLL_BUTTON_WIDTH = 26;
+
 
     protected final JButton btAddFilter;
     protected final JPanel content;
@@ -44,7 +45,7 @@ class FilterPanelUi extends JPanel {
 
     FilterPanelUi() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-
+        setBackground(UIManager.getColor("ToolBar.background"));
         btAddFilter = new JButton();
         btAddFilter.setToolTipText("Add new filter");
         add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
@@ -53,6 +54,7 @@ class FilterPanelUi extends JPanel {
         add(btScrollLeft);
         add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
         content = new JPanel();
+        content.setBackground(UIManager.getColor("ToolBar.background"));
         content.setBorder(UiHelper.NO_BORDER);
         ((FlowLayout) content.getLayout()).setAlignment(FlowLayout.LEFT);
         JScrollPane scrollPane =
@@ -63,8 +65,5 @@ class FilterPanelUi extends JPanel {
         add(btScrollRight);
         add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
         contentViewport = scrollPane.getViewport();
-
-        UiHelper.setWidths(btScrollLeft, SCROLL_BUTTON_WIDTH);
-        UiHelper.setWidths(btScrollRight, SCROLL_BUTTON_WIDTH);
     }
 }

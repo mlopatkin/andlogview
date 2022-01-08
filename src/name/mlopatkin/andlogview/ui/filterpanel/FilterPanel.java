@@ -16,6 +16,8 @@
 package name.mlopatkin.andlogview.ui.filterpanel;
 
 import name.mlopatkin.andlogview.ui.Icons;
+import name.mlopatkin.andlogview.ui.themes.Theme;
+import name.mlopatkin.andlogview.ui.themes.ThemedWidgetFactory;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -33,7 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
@@ -41,48 +42,15 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 public class FilterPanel extends FilterPanelUi implements FilterPanelModel.FilterPanelModelListener {
-    private static final ImageIcon FILTER_ICON = new ImageIcon(Icons.FILTER.getUrl());
-    private static final ImageIcon ADD_ICON = new ImageIcon(Icons.ADD.getUrl());
-    private static final ImageIcon NEXT_ICON = new ImageIcon(Icons.NEXT.getUrl());
-    private static final ImageIcon PREV_ICON = new ImageIcon(Icons.PREVIOUS.getUrl());
-
+    private final ThemedWidgetFactory themed;
     private final FilterPanelModel model;
     private final FilterCreator filterCreator;
     private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
 
-    private final ComponentListener resizeListener = new ComponentAdapter() {
-        @Override
-        public void componentResized(ComponentEvent e) {
-            updateScrollState();
-        }
-    };
+    private final ImageIcon filterIcon;
 
-    private final Action acCreateFilter = new AbstractAction("", ADD_ICON) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            filterCreator.createFilterWithDialog();
-        }
-    };
-
-    private final Action acScrollLeft = new AbstractAction("", PREV_ICON) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeButtonIndices();
-            if (leftmostButton > 0) {
-                scrollTo(leftmostButton - 1);
-            }
-        }
-    };
-
-    private final Action acScrollRight = new AbstractAction("", NEXT_ICON) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeButtonIndices();
-            if (rightmostButton < content.getComponentCount() - 1) {
-                scrollTo(rightmostButton + 1);
-            }
-        }
-    };
+    private final Action acScrollLeft;
+    private final Action acScrollRight;
 
     private final PopupMenuHandler menuHandler = new PopupMenuHandler();
 
@@ -90,23 +58,57 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private int rightmostButton = -1;
 
     @Inject
-    public FilterPanel(FilterPanelModel model, FilterCreator filterCreator) {
+    public FilterPanel(Theme theme, FilterPanelModel model, FilterCreator filterCreator) {
+        this.themed = theme.getWidgetFactory();
         this.model = model;
         this.filterCreator = filterCreator;
 
+        filterIcon = themed.getIcon(Icons.FILTER);
+        ImageIcon addIcon = themed.getIcon(Icons.ADD);
+        ImageIcon nextIcon = themed.getIcon(Icons.NEXT);
+        ImageIcon prevIcon = themed.getIcon(Icons.PREVIOUS);
+
         model.addListener(this);
 
-        btAddFilter.setAction(acCreateFilter);
+        ComponentListener resizeListener = new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateScrollState();
+            }
+        };
+        addComponentListener(resizeListener);
+
+        Action createFilterAction = UiHelper.makeAction("", addIcon, filterCreator::createFilterWithDialog);
+        acScrollLeft = UiHelper.makeAction("", prevIcon, this::scrollPanelLeft);
+        acScrollRight = UiHelper.makeAction("", nextIcon, this::scrollPanelRight);
+
+        btAddFilter.setAction(createFilterAction);
         btScrollLeft.setAction(acScrollLeft);
         btScrollRight.setAction(acScrollRight);
 
-        addComponentListener(resizeListener);
+        UiHelper.addDoubleClickAction(this, createFilterAction);
+        UiHelper.addDoubleClickAction(content, createFilterAction);
 
-        UiHelper.addDoubleClickAction(this, acCreateFilter);
-        UiHelper.addDoubleClickAction(content, acCreateFilter);
+        themed.configureFilterPanelButton(btAddFilter);
+        themed.configureFilterPanelScrollButton(btScrollLeft);
+        themed.configureFilterPanelScrollButton(btScrollRight);
 
         for (PanelFilterView filter : model.getFilters()) {
             onFilterAdded(filter);
+        }
+    }
+
+    private void scrollPanelLeft() {
+        computeButtonIndices();
+        if (leftmostButton > 0) {
+            scrollTo(leftmostButton - 1);
+        }
+    }
+
+    private void scrollPanelRight() {
+        computeButtonIndices();
+        if (rightmostButton < content.getComponentCount() - 1) {
+            scrollTo(rightmostButton + 1);
         }
     }
 
@@ -193,10 +195,11 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         private PanelFilterView filter;
 
         public FilterButton(PanelFilterView filter) {
-            super(FILTER_ICON, true);
+            super(filterIcon, true);
 
             setFilter(filter);
             addActionListener(this);
+            themed.configureFilterPanelButton(this);
         }
 
         public PanelFilterView getFilter() {

@@ -66,9 +66,12 @@ public class Main {
             return true;
         });
 
-        initLaf();
+        Theme theme = initLaf();
 
-        AppGlobals globals = DaggerAppGlobals.factory().create(new GlobalsModule(getConfigurationDir()), commandLine);
+        AppGlobals globals = DaggerAppGlobals.factory().create(
+                new GlobalsModule(getConfigurationDir()),
+                commandLine,
+                theme);
 
         logger.info("AndLogView " + getVersionString());
         logger.info("Revision " + BuildInfo.REVISION);
@@ -76,13 +79,15 @@ public class Main {
         EventQueue.invokeLater(() -> globals.getMain().start(configurationState));
     }
 
-    private static void initLaf() {
+    private static Theme initLaf() {
         String configuredThemeName = System.getProperty(THEME_SYSTEM_PROPERTY);
         Theme theme = Theme.findByName(configuredThemeName).orElseGet(Theme::getDefault);
         assert theme.isSupported();
         if (!theme.install()) {
-            Theme.getFallback().install();
+            theme = Theme.getFallback();
+            theme.install();
         }
+        return theme;
     }
 
     @Inject

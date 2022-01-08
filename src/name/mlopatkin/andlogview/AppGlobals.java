@@ -25,6 +25,7 @@ import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
 import dagger.BindsInstance;
@@ -65,8 +66,13 @@ public interface AppGlobals {
 
     AdbManager getAdbManager();
 
+    Theme getTheme();
+
     @Component.Factory
     interface Factory {
-        AppGlobals create(GlobalsModule module, @BindsInstance CommandLine cmdline);
+        AppGlobals create(
+                GlobalsModule module,
+                @BindsInstance CommandLine cmdline,
+                @BindsInstance Theme selectedTheme);
     }
 }

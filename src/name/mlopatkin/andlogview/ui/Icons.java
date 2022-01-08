@@ -16,6 +16,10 @@
 
 package name.mlopatkin.andlogview.ui;
 
+import com.google.common.base.Preconditions;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.net.URL;
 import java.util.Objects;
 
@@ -23,18 +27,32 @@ import java.util.Objects;
  * Built-in icons for UI.
  */
 public enum Icons {
-    NEXT("icons/go-next.png"),
-    PREVIOUS("icons/go-previous.png"),
-    ADD("icons/list-add.png"),
-    FILTER("icons/system-search.png");
+    NEXT("icons/legacy/go-next.png", "icons/fontawesome/angle-right.svg"),
+    PREVIOUS("icons/legacy/go-previous.png", "icons/fontawesome/angle-left.svg"),
+    ADD("icons/legacy/list-add.png", "icons/fontawesome/plus.svg"),
+    FILTER("icons/legacy/system-search.png", "icons/fontawesome/magnifying-glass.svg");
 
-    private final String path;
+    private final String legacyPath;
+    private final String modernPath;
 
-    Icons(String path) {
-        this.path = path;
+    Icons(String legacyPath, String modernPath) {
+        this.legacyPath = legacyPath;
+        this.modernPath = modernPath;
     }
 
-    public URL getUrl() {
-        return Objects.requireNonNull(Icons.class.getResource(path));
+    public URL getLegacyUrl() {
+        return getUrl(legacyPath);
+    }
+
+    // TODO(mlopatkin) Use modern URL instead after switching to flatlaf-2.0 which allows to use URL in SVGImage
+    //  constructor.
+    public String resolveModernPath() {
+        return "name/mlopatkin/andlogview/ui/" + modernPath;
+    }
+
+    private URL getUrl(String path) {
+        @Nullable URL result = Icons.class.getResource(path);
+        Preconditions.checkArgument(result != null, "Can't find resource for path %s", path);
+        return Objects.requireNonNull(result);
     }
 }

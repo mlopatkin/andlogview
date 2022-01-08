@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
@@ -284,6 +285,24 @@ public class UiHelper {
      */
     public static Action makeAction(String actionTitle, Runnable action) {
         return new AbstractAction(actionTitle) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+            }
+        };
+    }
+
+    /**
+     * Wraps a {@link Runnable} to an {@link Action} with the given title and icon. This method allows using simpler
+     * lambdas for callbacks that doesn't care about the {@link ActionEvent}.
+     *
+     * @param actionTitle the title of the resulting Action
+     * @param icon the icon of the action
+     * @param action the action to be executed when Action is triggered
+     * @return the Action object
+     */
+    public static Action makeAction(String actionTitle, Icon icon, Runnable action) {
+        return new AbstractAction(actionTitle, icon) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 action.run();
