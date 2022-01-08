@@ -1,0 +1,11 @@
+project:
+  name: andlogview
+  version: 0.21-SNAPSHOT
+  snapshot:
+    label: latest-snapshot
+  description: A tool to view Android logs from devices and files
+  website: https://github.com/mlopatkin/andlogview
+  authors:
+    - The AndLogView authors
+  license: Apache-2.0
+  licenseUrl: https://spdx.org/licenses/Apache-2.0.html

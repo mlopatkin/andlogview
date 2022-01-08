@@ -41,6 +41,8 @@ plugins {
     id("me.champeau.gradle.jmh") version "0.5.0"
     // Runtime plugin allows preparing runtime images with JDK included
     id("org.beryx.runtime") version "1.12.5"
+    // JReleaser plugin helps to publish snapshot releases to Github
+    id("org.jreleaser") version "0.10.0"
 }
 
 repositories {
@@ -294,6 +296,8 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isReproducibleFileOrder = true
 }
 
+val shadowDistZip = tasks.named<AbstractArchiveTask>("shadowDistZip")
+
 // Configure publishing
 bitbucket {
     repository.set("android-log-viewer")
@@ -304,9 +308,71 @@ bitbucket {
 }
 
 tasks.register<UploadTask>("bitbucketUpload") {
-    val shadowDistZip = tasks.named<AbstractArchiveTask>("shadowDistZip")
     fileToUpload.set(shadowDistZip.flatMap { it.archiveFile })
 }
+
+description = "A tool to view Android logs from devices and files"
+group = "name.mlopatkin.andlogview"
+
+jreleaser {
+    configFile.set(layout.projectDirectory.file("jreleaser.yaml"))
+    project {
+        website.set("https://github.com/mlopatkin/andlogview")
+        license.set("Apache-2.0")
+        licenseUrl.set("https://www.apache.org/licenses/LICENSE-2.0")
+    }
+//    project {
+//        snapshot {
+//            label.set("latest")
+//        }
+//
+//        website.set("https://github.com/mlopatkin/andlogview")
+//        license.set("Apache-2.0")
+//        authors.addAll(file("AUTHORS.md").readLines())
+//        copyright.set("2011–2021 the Andlogview authors")
+//        java {
+//        }
+//    }
+//
+//    this.distributions {
+//        val shadowDist by creating {
+//            this.distributionType.set(DistributionType.JAVA_BINARY)
+//            artifact {
+//                this.path.set(shadowDistZip.flatMap { it.archiveFile })
+//            }
+//        }
+//    }
+//
+//    announce {
+//        enabled.set(false)
+//    }
+//
+//    release {
+//        github {
+//            checksums.set(false)
+//            signatures.set(false)
+//
+//            changelog {
+//                external.set(layout.projectDirectory.file("HISTORY"))
+//                sort.set(org.jreleaser.model.Changelog.Sort.ASC)
+//            }
+//
+//            // TODO(mlopatkin): This is crap to get things running
+//            draft.set(true)
+//            branch.set("master")
+//            token.set(providers.gradleProperty("name.mlopatkin.ghtoken"))
+//            dryrun.set(true)
+//        }
+//    }
+}
+
+tasks.named("assembleDist") {
+    dependsOn(shadowDistZip)
+}
+
+//afterEvaluate {
+//    disableTasks("jreleaserChangelog")
+//}
 
 // Configure jpackage distribution
 if (System.getProperty("os.name").toLowerCase(Locale.US).contains("linux")) {
