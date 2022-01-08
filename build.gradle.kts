@@ -30,17 +30,17 @@ plugins {
     application
 
     // Shadow plugin provides means to prepare a single-JAR distribution of the tool
-    id("com.github.johnrengelman.shadow")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     // Errorprone plugin allows to configure Errorprone compiler
-    id("net.ltgt.errorprone")
+    id("net.ltgt.errorprone") version "2.0.2"
     // Bitbucket plugin allows to publish releases to the Bitbucket project's Downloads page
-    id("name.mlopatkin.bitbucket")
+    id("name.mlopatkin.bitbucket") version "0.5-rc4"
     // Eclipse APT plugin configures annotation processors when importing the project into Eclipse
-    id("com.diffplug.eclipse.apt")
+    id("com.diffplug.eclipse.apt") version "3.22.0"
     // JMH plugin allows building and running JMH benchmarks
-    id("me.champeau.gradle.jmh")
+    id("me.champeau.gradle.jmh") version "0.5.0"
     // Runtime plugin allows preparing runtime images with JDK included
-    id("org.beryx.runtime")
+    id("org.beryx.runtime") version "1.12.5"
 }
 
 repositories {

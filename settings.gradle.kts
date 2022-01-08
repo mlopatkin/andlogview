@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
-
-    plugins {
-        id 'name.mlopatkin.bitbucket' version '0.5-rc4'
-        id 'com.github.johnrengelman.shadow' version '7.1.2'
-        id 'net.ltgt.errorprone' version '2.0.2'
-        id 'com.diffplug.eclipse.apt' version '3.22.0'
-        id 'me.champeau.gradle.jmh' version '0.5.0'
-        id 'org.beryx.runtime' version '1.12.5'
-    }
-}
-
-rootProject.name = 'andlogview'
+rootProject.name = "andlogview"
