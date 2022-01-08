@@ -264,6 +264,8 @@ shadowJar {
     minimize {
         // FlatLaf doesn't survive minimization
         exclude(dependency('com.formdev:flatlaf:.*'))
+        // log4j appenders are referenced by name only
+        exclude(dependency('log4j:log4j:1.2.17'))
     }
 }
 
