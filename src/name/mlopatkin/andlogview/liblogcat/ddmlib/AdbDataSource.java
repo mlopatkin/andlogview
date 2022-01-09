@@ -18,7 +18,10 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.device.Command;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
+import name.mlopatkin.andlogview.device.DeviceGoneException;
+import name.mlopatkin.andlogview.device.OutputTarget;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.Field;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
@@ -33,6 +36,7 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
@@ -163,8 +167,22 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private Set<AdbBuffer> buffers = new HashSet<>();
 
     private boolean isBufferHere(String bufferName) {
-        String cmd = "logcat -b " + bufferName + " -s -d  > /dev/null 2> /dev/null || echo 0";
-        return SyncAdbShellCommand.execute(device.getIDevice(), cmd).isEmpty();
+        try {
+            // Try to dump buffer contents (-d) while filtering everything out (-s). In an essence, we only get an exit
+            // code from the logcat run - 0 if the buffer is available or something else if it is not.
+            Command.Result checkResult = device.command("logcat", "-b", bufferName, "-s", "-d")
+                    .redirectOutput(OutputTarget.toDevNull())
+                    .redirectError(OutputTarget.toDevNull())
+                    .execute();
+            return checkResult.isSuccessful();
+        } catch (InterruptedException e) {
+            // This is unlikely, but let's play safe there.
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (IOException | DeviceGoneException e) {
+            logger.error("Failed to retrieve the buffer status from the device", e);
+            return false;
+        }
     }
 
     private void setUpStream(LogRecord.Buffer buffer) {

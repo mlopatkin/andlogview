@@ -42,5 +42,9 @@ public interface Command {
 
     interface Result {
         String getExitCode();
+
+        default boolean isSuccessful() {
+            return "0".endsWith(getExitCode().trim());
+        }
     }
 }
