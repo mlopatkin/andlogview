@@ -55,7 +55,8 @@ public class LogRecord implements Comparable<LogRecord> {
         SYSTEM("System"),
         RADIO("Radio"),
         EVENTS("Events"),
-        CRASH("Crash");
+        CRASH("Crash"),
+        KERNEL("Kernel");
 
         private final String name;
 
