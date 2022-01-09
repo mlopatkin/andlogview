@@ -17,7 +17,6 @@
 package name.mlopatkin.andlogview.device;
 
 import name.mlopatkin.andlogview.AtExitManager;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 
 import java.util.Optional;
 

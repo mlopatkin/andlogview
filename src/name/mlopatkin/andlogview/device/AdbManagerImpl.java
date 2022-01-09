@@ -17,8 +17,6 @@
 package name.mlopatkin.andlogview.device;
 
 import name.mlopatkin.andlogview.AtExitManager;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
-import name.mlopatkin.andlogview.liblogcat.ddmlib.DdmlibToLog4jWrapper;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;

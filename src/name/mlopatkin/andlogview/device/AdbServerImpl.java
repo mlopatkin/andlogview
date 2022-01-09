@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.device;
 
 import static name.mlopatkin.andlogview.utils.LazyInstance.lazy;
 
-import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbException;
 import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.android.ddmlib.AndroidDebugBridge;
