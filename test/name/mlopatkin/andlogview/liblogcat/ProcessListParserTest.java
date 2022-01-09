@@ -34,6 +34,8 @@ public class ProcessListParserTest {
             "root      29392 2     0      0     fg  cpu_stoppe 00000000 S migration/3";
     private static final String PS_NO_WCHAN_LINE =
             "u0_a251   4851  216   884420 35064 bg             00000000 R com.mapswithme.maps.pro";
+    private static final String PS_IDLE_KERNEL_THREAD_LINE =
+            "root            53     2       0      0 0                   0 I [kworker/6:0H-events_highpri]";
 
     @Test
     public void testParseProcessListLine() {
@@ -65,6 +67,12 @@ public class ProcessListParserTest {
     public void testParseProcessListMissingWchan() throws Exception {
         assertThat(ProcessListParser.parseProcessListLine(PS_NO_WCHAN_LINE),
                 hasPidAndAppName(4851, "com.mapswithme.maps.pro"));
+    }
+
+    @Test
+    public void testParseProcessListIdleKernel() throws Exception {
+        assertThat(ProcessListParser.parseProcessListLine(PS_IDLE_KERNEL_THREAD_LINE),
+                hasPidAndAppName(53, "[kworker/6:0H-events_highpri]"));
     }
 
     public static org.hamcrest.Matcher<Matcher> hasPidAndAppName(int expectedPid, String expectedAppname) {

@@ -43,14 +43,16 @@ public class ProcessListParser {
     private static final String PC_REGEX = HEX_NUMBER_REGEX;
     /*
      * D Uninterruptible sleep (usually IO)
+     * I Idle kernel thread
      * R Running or runnable (on run queue)
      * S Interruptible sleep (waiting for an event to complete)
      * T Stopped, either by a job control signal or because it is being traced.
+     * t stopped by debugger during the tracing
      * W paging (not valid since the 2.6.xx kernel)
      * X dead (should never be seen)
      * Z Defunct ("zombie") process, terminated but not reaped by its parent.
      */
-    private static final String PROCESS_STATUS_REGEX = "[DRSTWXZ]";
+    private static final String PROCESS_STATUS_REGEX = "[DIRSTtWXZ]";
     private static final String PROCESS_NAME = "(.*)";
 
     private static final String[] PS_LINE_FIELDS = {USERNAME_REGEX,
