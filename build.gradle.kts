@@ -292,6 +292,15 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.withType<AbstractArchiveTask>().configureEach {
     isPreserveFileTimestamps = false
     isReproducibleFileOrder = true
+
+    // Set up consistent permissions on files. This is consistent with the permissions on Windows machines and the
+    // Docker image.
+    val permissionsMask = 0x1ED // octal 0755, aka rwxr-xr-x
+    dirMode = permissionsMask
+    eachFile {
+        // Some files are executable, we want to keep them as such, thus we apply the mask.
+        mode = mode and permissionsMask
+    }
 }
 
 // Configure publishing
