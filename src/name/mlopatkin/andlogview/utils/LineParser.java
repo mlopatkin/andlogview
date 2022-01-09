@@ -20,18 +20,43 @@ import com.google.common.base.MoreObjects;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A simple state-machine-based push parser that operates on lines. When the current state receives a next line, it can
+ * return the next state to proceed following lines.
+ */
 public class LineParser {
+    /**
+     * A single state of the parser. The state is typically implemented as a lambda assigned to a variable.
+     */
     @FunctionalInterface
     public interface State {
+        /**
+         * Called when this is a current state and the parser receives a new line. This method should return a new
+         * state. As a workaround from the fact that lambdas have no {@code this}, implementation should return
+         * {@code null} from this method to stay in the current state.
+         *
+         * @param line the new line
+         * @return the new state or {@code null} to stay in this state
+         */
         @Nullable State nextLine(String line);
     }
 
     private State state;
 
+    /**
+     * Constructs a new LineParser
+     * @param initialState the initial state of the parser
+     */
     public LineParser(State initialState) {
         this.state = initialState;
     }
 
+    /**
+     * Pushes a new line into the parser. This invokes {@link State#nextLine(String)} of the current state and update
+     * the current state according to the result afterwards.
+     *
+     * @param line the new line
+     */
     public void nextLine(String line) {
         state = MoreObjects.firstNonNull(state.nextLine(line), state);
     }
