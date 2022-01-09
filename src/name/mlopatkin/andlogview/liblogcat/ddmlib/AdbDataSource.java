@@ -33,12 +33,15 @@ import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.collect.ImmutableList;
+
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -157,11 +160,8 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         listener.addRecord(record);
     }
 
-    private String createLogcatCommandLine(String buffer) {
-        StringBuilder b = new StringBuilder(Configuration.adb.commandline());
-        b.append(' ').append(Configuration.adb.bufferswitch());
-        b.append(' ').append(buffer);
-        return b.toString();
+    private List<String> createLogcatCommandLine(String buffer) {
+        return ImmutableList.of("logcat", "-v", "threadtime", "-b", buffer);
     }
 
     private Set<AdbBuffer> buffers = new HashSet<>();
@@ -196,9 +196,10 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
             return;
         }
         availableBuffers.add(buffer);
-        final String commandLine = createLogcatCommandLine(bufferName);
+        List<String> commandLine = createLogcatCommandLine(bufferName);
         final AdbBuffer adbBuffer =
-                new AdbBuffer(this, device.getIDevice(), buffer, commandLine, getPidToProcessConverter());
+                new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
+        adbBuffer.start();
         buffers.add(adbBuffer);
     }
 

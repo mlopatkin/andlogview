@@ -100,7 +100,7 @@ class CommandImpl implements Command {
 
                 @Override
                 public boolean isCancelled() {
-                    return false;
+                    return Thread.currentThread().isInterrupted();
                 }
             };
             DeviceUtils.executeShellCommand(device, commandLineWithRedirects, outputReceiver);

@@ -136,21 +136,12 @@ public class Configuration {
 
         private static final String SHOW_SETUP_DIALOG_KEY = PREFIX + "show_setup_dialog";
         private static final String EXECUTABLE_KEY = PREFIX + "executable";
-        private static final String BUFFERSWITCH_KEY = PREFIX + "bufferswitch";
-        private static final String LOGCAT_COMMANDLINE_KEY = PREFIX + "logcat_cmdline";
         private static final String KMSG_COMMANDLINE_KEY = PREFIX + "kmsg_cmdline";
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
 
         public static final String DEFAULT_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb").intern();
 
-        public static String commandline() {
-            return config.get(LOGCAT_COMMANDLINE_KEY);
-        }
-
-        public static String bufferswitch() {
-            return config.get(BUFFERSWITCH_KEY);
-        }
 
         public static String bufferName(Buffer buffer) {
             return config.get(BUFFER_NAME_KEY, buffer);
@@ -240,10 +231,8 @@ public class Configuration {
         cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
 
         cfg.property(adb.BUFFER_NAME_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
-        cfg.property(adb.BUFFERSWITCH_KEY, string());
         cfg.property(adb.EXECUTABLE_KEY, string());
         cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
-        cfg.property(adb.LOGCAT_COMMANDLINE_KEY, string());
         cfg.property(adb.SHOW_SETUP_DIALOG_KEY, bool().defaultVal(true));
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
 

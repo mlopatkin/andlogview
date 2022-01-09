@@ -15,14 +15,20 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
+import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.Command;
+import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
-import name.mlopatkin.andlogview.liblogcat.LogRecordStream;
-
-import com.android.ddmlib.IDevice;
+import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.utils.Threads;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class retrieves log records from the device using a background thread
@@ -36,52 +42,52 @@ class AdbBuffer {
     private static final Logger logger = Logger.getLogger(AdbBuffer.class);
 
     private final BufferReceiver receiver;
-    private final ShellInputStream shellInput = new ShellInputStream();
-    private final LogRecordStream in;
     private final LogRecord.Buffer buffer;
-    private final PollingThread pollingThread;
-    private final Thread shellExecutor;
+    private final Map<Integer, String> pidToProcess;
+    private final ExecutorService executorService;
+    private final Command command;
 
-    public AdbBuffer(BufferReceiver receiver, IDevice device, LogRecord.Buffer buffer, String commandLine,
+    public AdbBuffer(BufferReceiver receiver, AdbDevice device, LogRecord.Buffer buffer, List<String> commandLine,
             Map<Integer, String> pidToProcess) {
         this.receiver = receiver;
         this.buffer = buffer;
-        in = new LogRecordStream(shellInput, pidToProcess);
-        shellExecutor =
-                new Thread(new AutoClosingAdbShellCommand(device, commandLine, shellInput), "Shell-reader-" + buffer);
-        pollingThread = new PollingThread();
-        shellExecutor.start();
-        pollingThread.start();
+        this.pidToProcess = pidToProcess;
+        this.executorService = Executors.newSingleThreadExecutor(
+                Threads.withName(String.format("logcat-%s-%s", buffer, device.getSerialNumber())));
+        this.command = device.command(commandLine);
     }
 
-    void close() {
-        pollingThread.close();
-        shellInput.close();
+    public void start() {
+        executorService.execute(this::executeCommand);
     }
 
-    private class PollingThread extends Thread {
-        public PollingThread() {
-            super("ADB-polling-" + buffer);
-        }
+    public void close() {
+        executorService.shutdownNow();
+    }
 
-        @Override
-        public void run() {
-            LogRecord record = in.next(buffer);
-            while (!closed && record != null) {
-                receiver.pushRecord(record);
-                record = in.next(buffer);
-            }
-            if (closed) {
-                logger.debug(getName() + " successfully ended");
+    private void executeCommand() {
+        try {
+            command.executeStreaming(line -> {
+                LogRecord record = LogRecordParser.parseThreadTime(buffer, line, pidToProcess);
+                if (record != null) {
+                    receiver.pushRecord(record);
+                } else {
+                    logger.debug("Non-parsed line: " + line);
+                }
+            });
+            if (Thread.currentThread().isInterrupted()) {
+                logger.debug("cancelled because of interruption, stopping providing new lines");
             } else {
-                logger.warn(getName() + " ends due to null record");
+                // TODO(mlopatkin) if we get there without interruption then logcat has died unexpectedly. This should
+                //  be handled somehow because it is not that different from device disconnect. In theory it should be
+                //  possible even to recover, e.g. by restarting and waiting for the last read line to come.
+                logger.error("logcat streaming completed on its own");
             }
-        }
-
-        private volatile boolean closed = false;
-
-        public void close() {
-            closed = true;
+        } catch (InterruptedException e) {
+            logger.debug("interrupted, stopping providing new lines");
+            Thread.currentThread().interrupt();
+        } catch (DeviceGoneException | IOException e) {
+            logger.error("Device is gone, closing", e);
         }
     }
 }
