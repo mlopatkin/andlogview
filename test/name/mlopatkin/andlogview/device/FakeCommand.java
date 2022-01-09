@@ -16,38 +16,26 @@
 
 package name.mlopatkin.andlogview.device;
 
-import com.google.common.io.ByteStreams;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 public class FakeCommand implements Command {
-    private OutputStream stdout = ByteStreams.nullOutputStream();
-    private OutputStream stderr = ByteStreams.nullOutputStream();
-
     private final String exitCode = "0";
-    private String out = "";
-    private String err = "";
 
     public FakeCommand() {
     }
 
     @Override
-    public Command redirectOutput(OutputStream stdout) {
+    public Command redirectOutput(OutputTarget.ForStdout stdout) {
         return this;
     }
 
     @Override
-    public Command redirectError(OutputStream stderr) {
+    public Command redirectError(OutputTarget.ForStderr stderr) {
         return this;
     }
 
     @Override
     public Result execute() throws IOException {
-        ByteStreams.copy(new ByteArrayInputStream(out.getBytes(StandardCharsets.UTF_8)), stdout);
-        ByteStreams.copy(new ByteArrayInputStream(err.getBytes(StandardCharsets.UTF_8)), stderr);
         return () -> exitCode;
     }
 }

@@ -24,9 +24,19 @@ import java.io.OutputStream;
  * uses. This API is incubating and subject to change.
  */
 public interface Command {
-    Command redirectOutput(OutputStream stdout);
+    Command redirectOutput(OutputTarget.ForStdout target);
 
-    Command redirectError(OutputStream stderr);
+    default Command redirectOutput(OutputStream stdout) {
+        redirectOutput(OutputTarget.toOutputStream(stdout));
+        return this;
+    }
+
+    Command redirectError(OutputTarget.ForStderr target);
+
+    default Command redirectError(OutputStream stderr) {
+        redirectError(OutputTarget.toOutputStream(stderr));
+        return this;
+    }
 
     Result execute() throws InterruptedException, IOException, DeviceGoneException;
 

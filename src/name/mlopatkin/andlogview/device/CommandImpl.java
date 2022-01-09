@@ -18,12 +18,10 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
-import com.google.common.io.ByteStreams;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 class CommandImpl implements Command {
@@ -32,8 +30,8 @@ class CommandImpl implements Command {
     private final IDevice device;
     private final List<String> commandLine;
 
-    private OutputStream stdout = ByteStreams.nullOutputStream();
-    private OutputStream stderr = ByteStreams.nullOutputStream();
+    private OutputTarget.ForStdout stdout = OutputTarget.toDevNull();
+    private OutputTarget.ForStderr stderr = OutputTarget.toDevNull();
 
     public CommandImpl(IDevice device, List<String> commandLine) {
         this.device = device;
@@ -42,35 +40,35 @@ class CommandImpl implements Command {
 
     @Override
     public Command.Result execute() throws IOException, InterruptedException, DeviceGoneException {
-        try (DeviceTempFile tempStdout = new DeviceTempFile(device);
-                DeviceTempFile tempStderr = new DeviceTempFile(device)) {
+        try (OutputTarget.OutputHandle tempStdout = stdout.openOutput(device);
+                OutputTarget.OutputHandle tempStderr = stderr.openOutput(device)) {
             // TODO(mlopatkin) Try to implement shell api v2 on top of ddmlib. Shell v2 allows to get stdout and stderr
             //   along with the exit code without the need to resort to the shell.
             // TODO(mlopatkin) Add shell escaping here
             // TODO(mlopatkin) Add timeouts API here
             String commandLineWithRedirects =
-                    String.format("(%s) >%s 2>%s; echo $?", String.join(" ", commandLine), tempStdout.getPath(),
-                            tempStderr.getPath());
+                    String.format("(%s) >%s 2>%s; echo $?",
+                            String.join(" ", commandLine),
+                            tempStdout.getRedirectTarget(),
+                            tempStderr.getRedirectTarget());
             CollectingOutputReceiver exitCodeReceiver = new CollectingOutputReceiver();
             DeviceUtils.executeShellCommand(device, commandLineWithRedirects, exitCodeReceiver);
             String exitCode = exitCodeReceiver.getOutput().trim();
             logger.debug("exit code output=" + exitCode);
-            tempStdout.copyContentsTo(stdout);
-            tempStderr.copyContentsTo(stderr);
 
             return new Result(exitCode);
         }
     }
 
     @Override
-    public Command redirectOutput(OutputStream stdout) {
-        this.stdout = stdout;
+    public Command redirectOutput(OutputTarget.ForStdout target) {
+        stdout = target;
         return this;
     }
 
     @Override
-    public Command redirectError(OutputStream stderr) {
-        this.stderr = stderr;
+    public Command redirectError(OutputTarget.ForStderr target) {
+        stderr = target;
         return this;
     }
 
