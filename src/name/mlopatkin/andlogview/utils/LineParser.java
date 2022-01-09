@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.device;
+package name.mlopatkin.andlogview.utils;
 
-public class FakeCommand implements Command {
-    private final String exitCode = "0";
+import com.google.common.base.MoreObjects;
 
-    public FakeCommand() {
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public class LineParser {
+    @FunctionalInterface
+    public interface State {
+        @Nullable State nextLine(String line);
     }
 
-    @Override
-    public Command redirectOutput(OutputTarget.ForStdout stdout) {
-        return this;
+    private State state;
+
+    public LineParser(State initialState) {
+        this.state = initialState;
     }
 
-    @Override
-    public Command redirectError(OutputTarget.ForStderr stderr) {
-        return this;
-    }
-
-    @Override
-    public Result execute() {
-        return () -> exitCode;
-    }
-
-    @Override
-    public void executeStreaming(LineReceiver receiver) {
-        receiver.complete();
+    public void nextLine(String line) {
+        state = MoreObjects.firstNonNull(state.nextLine(line), state);
     }
 }

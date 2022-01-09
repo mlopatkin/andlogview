@@ -15,21 +15,19 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
+import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
+import name.mlopatkin.andlogview.utils.LineParser;
+import name.mlopatkin.andlogview.utils.Threads;
 
-import com.android.ddmlib.IDevice;
 import com.android.sdklib.AndroidVersion;
-import com.google.common.io.CharStreams;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -40,13 +38,13 @@ import java.util.regex.Matcher;
 class AdbPidToProcessConverter {
     private static final Logger logger = Logger.getLogger(AdbPidToProcessConverter.class);
 
-    private static final String PS_COMMAND_LINE = "ps";
-    private static final String PS_COMMAND_LINE_API_26 = "ps -A";
+    private static final String[] PS_COMMAND_LINE = {"ps"};
+    private static final String[] PS_COMMAND_LINE_API_26 = {"ps", "-A"};
     private static final String NO_INFO = "No info available";
 
-    private final ExecutorService backgroundUpdater = Executors.newSingleThreadExecutor();
-    private final IDevice device;
-    private final String psCmdline;
+    private final ExecutorService backgroundUpdater;
+    private final AdbDevice device;
+    private final String[] psCmdline;
     @GuardedBy("this")
     private @Nullable Future<?> result;
 
@@ -61,13 +59,15 @@ class AdbPidToProcessConverter {
         }
     };
 
-    AdbPidToProcessConverter(IDevice device) {
+    AdbPidToProcessConverter(AdbDevice device) {
         this.device = device;
         if (getAndroidVersionWithRetries(device, 10).getApiLevel() >= AndroidVersion.VersionCodes.O) {
             psCmdline = PS_COMMAND_LINE_API_26;
         } else {
             psCmdline = PS_COMMAND_LINE;
         }
+        backgroundUpdater =
+                Executors.newSingleThreadExecutor(Threads.withName("ps-reader-" + device.getSerialNumber()));
     }
 
     public Map<Integer, String> getMap() {
@@ -76,47 +76,38 @@ class AdbPidToProcessConverter {
 
     private synchronized void scheduleUpdate() {
         if (!backgroundUpdater.isShutdown() && (result == null || result.isDone())) {
-            ShellInputStream in = new ShellInputStream();
-            BackgroundUpdateTask updateTask = new BackgroundUpdateTask(in);
-            AdbShellCommand<?> command = new AutoClosingAdbShellCommand(device, psCmdline, in);
-
-            result = backgroundUpdater.submit(updateTask);
-            command.start();
+            result = backgroundUpdater.submit(this::update);
         }
     }
 
-    private class BackgroundUpdateTask implements Runnable {
-        private BufferedReader in;
+    private void update() {
+        try {
+            LineParser.State error = line -> null;
 
-        BackgroundUpdateTask(InputStream in) {
-            this.in = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-        }
-
-        @Override
-        public void run() {
-            try {
-                String line = in.readLine();
-
-                if (line == null || !ProcessListParser.isProcessListHeader(line)) {
-                    logger.warn("Can't parse header");
-                    CharStreams.exhaust(in);
-                    return;
+            LineParser.State handleProcessLine = line -> {
+                Matcher m = ProcessListParser.parseProcessListLine(line);
+                if (m.matches()) {
+                    String processName = ProcessListParser.getProcessName(m);
+                    int pid = ProcessListParser.getPid(m);
+                    processMap.put(pid, processName);
+                } else {
+                    logger.debug("Failed to parse line " + line);
                 }
-                line = in.readLine();
-                while (line != null) {
-                    Matcher m = ProcessListParser.parseProcessListLine(line);
-                    if (m.matches()) {
-                        String processName = ProcessListParser.getProcessName(m);
-                        int pid = ProcessListParser.getPid(m);
-                        processMap.put(pid, processName);
-                    } else {
-                        logger.debug("Failed to parse line " + line);
-                    }
-                    line = in.readLine();
+                return null;
+            };
+
+            LineParser.State waitForHeader = line -> {
+                if (!ProcessListParser.isProcessListHeader(line)) {
+                    return error;
                 }
-            } catch (IOException e) {
-                logger.error("Unexpected IO exception", e);
-            }
+                return handleProcessLine;
+            };
+
+            device.command(psCmdline).executeStreaming(new LineParser(waitForHeader)::nextLine);
+        } catch (DeviceGoneException | IOException e) {
+            logger.error("Unexpected IO exception", e);
+        } catch (InterruptedException e) {
+            // do nothing, just return.
         }
     }
 
@@ -124,11 +115,11 @@ class AdbPidToProcessConverter {
         backgroundUpdater.shutdown();
     }
 
-    private static AndroidVersion getAndroidVersionWithRetries(IDevice device, int retryCount) {
+    private static AndroidVersion getAndroidVersionWithRetries(AdbDevice device, int retryCount) {
         AndroidVersion version;
         int numRetry = 0;
         do {
-            version = device.getVersion();
+            version = device.getIDevice().getVersion();
         } while (AndroidVersion.DEFAULT.compareTo(version) == 0 && numRetry++ < retryCount);
         logger.debug("Got version " + version + " with " + numRetry + " retries");
         return version;

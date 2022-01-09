@@ -87,7 +87,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         assert device != null;
         assert device.isOnline();
         this.device = device;
-        converter = new AdbPidToProcessConverter(this.device.getIDevice());
+        converter = new AdbPidToProcessConverter(this.device);
         for (Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }

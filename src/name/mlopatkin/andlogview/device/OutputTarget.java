@@ -70,6 +70,16 @@ public abstract class OutputTarget {
     }
 
     /**
+     * Doesn't redirect the stream at all. Use sparingly as the {@link Command#execute()} uses stream redirection
+     * internally and disabling it may break exit code analysis.
+     *
+     * @return the redirector
+     */
+    static ForStdoutAndStderr noRedirection() {
+        return new NoRedirTarget();
+    }
+
+    /**
      * Redirects the {@code stderr} stream into {@code stdout}. The latter can be redirected somewhere else.
      *
      * @return the redirector
@@ -80,11 +90,33 @@ public abstract class OutputTarget {
 
     abstract OutputHandle openOutput(IDevice device);
 
+    enum StdStream {
+        STDOUT("1"),
+        STDERR("2");
+
+        private final String id;
+
+        StdStream(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
     interface OutputHandle extends AutoCloseable {
+        /**
+         * Returns the full "sh"-compatible redirect string, e.g. {@code "1>/dev/null"}.
+         *
+         * @param redirectFrom the stream to redirect from
+         * @return the redirect string
+         */
+        String getRedirectString(StdStream redirectFrom);
+
         @Override
         void close() throws IOException, DeviceGoneException, InterruptedException;
 
-        String getRedirectTarget();
     }
 
     private static class NullOutputTarget extends ForStdoutAndStderr {
@@ -101,6 +133,13 @@ public abstract class OutputTarget {
         }
     }
 
+    private static class NoRedirTarget extends ForStdoutAndStderr {
+        @Override
+        OutputHandle openOutput(IDevice device) {
+            return new NoRedirectHandle();
+        }
+    }
+
     private static class StreamOutputTarget extends ForStdoutAndStderr {
         private final OutputStream stream;
 
@@ -114,8 +153,8 @@ public abstract class OutputTarget {
                 final DeviceTempFile tempFile = new DeviceTempFile(device);
 
                 @Override
-                public String getRedirectTarget() {
-                    return tempFile.getPath();
+                public String getRedirectString(StdStream redirectFrom) {
+                    return redirectFrom.getId() + ">" + tempFile.getPath();
                 }
 
                 @Override
@@ -136,13 +175,27 @@ public abstract class OutputTarget {
         }
 
         @Override
-        public String getRedirectTarget() {
-            return redirectTarget;
+        public String getRedirectString(StdStream redirectFrom) {
+            return redirectFrom.getId() + ">" + redirectTarget;
         }
 
         @Override
         public void close() {
             // Nothing to close as this only exists as a redirect target.
+        }
+    }
+
+    private static class NoRedirectHandle implements OutputHandle {
+
+        @Override
+        public void close() {
+            // Nothing to close as this only exists as a redirect target.
+        }
+
+        @Override
+        public String getRedirectString(StdStream redirectFrom) {
+            // Don't do redirection at all
+            return "";
         }
     }
 

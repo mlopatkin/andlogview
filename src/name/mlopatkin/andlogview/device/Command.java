@@ -24,6 +24,13 @@ import java.io.OutputStream;
  * uses. This API is incubating and subject to change.
  */
 public interface Command {
+    interface LineReceiver {
+        void nextLine(String line);
+
+        default void complete() {
+        }
+    }
+
     Command redirectOutput(OutputTarget.ForStdout target);
 
     default Command redirectOutput(OutputStream stdout) {
@@ -39,6 +46,8 @@ public interface Command {
     }
 
     Result execute() throws InterruptedException, IOException, DeviceGoneException;
+
+    void executeStreaming(LineReceiver receiver) throws InterruptedException, IOException, DeviceGoneException;
 
     interface Result {
         String getExitCode();
