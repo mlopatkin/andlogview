@@ -45,9 +45,11 @@ public class FilterDialogFactory {
         return FilterDialogPresenter.create(dialogView, filter).show();
     }
 
-    public CompletionStage<Optional<FilterFromDialog>> startEditFilterDialog(FilterFromDialog filter) {
+    public FilterDialogHandle startEditFilterDialog(FilterFromDialog filter) {
         FilterDialog dialogView = filterDialogViewFactory.get();
         dialogView.setTitle(EDIT_FILTER_DIALOG_TITLE);
-        return FilterDialogPresenter.create(dialogView, filter).show();
+        FilterDialogPresenter dialogPresenter = FilterDialogPresenter.create(dialogView, filter);
+        dialogPresenter.show();
+        return dialogPresenter;
     }
 }

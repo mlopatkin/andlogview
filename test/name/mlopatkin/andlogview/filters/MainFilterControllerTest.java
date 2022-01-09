@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,7 @@ import name.mlopatkin.andlogview.config.FakeDefaultConfigStorage;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
 import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
@@ -151,10 +153,10 @@ public class MainFilterControllerTest {
 
         List<SavedFilterData> savedFilterData = savedFilterDataCaptor.getValue();
 
-        mockStorage = Mockito.mock(ConfigStorage.class);
+        mockStorage = mock(ConfigStorage.class);
         when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
 
-        filterPanelModel = Mockito.mock(FilterPanelModel.class);
+        filterPanelModel = mock(FilterPanelModel.class);
         controller = new MainFilterController(
                 filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
 
@@ -191,8 +193,9 @@ public class MainFilterControllerTest {
     }
 
     private PanelFilter editFilterWithDialog(FilterFromDialog newFilter, PanelFilter oldFilter) {
-        when(dialogFactory.startEditFilterDialog(any())).thenReturn(
-                CompletableFuture.completedFuture(Optional.of(newFilter)));
+        FilterDialogHandle dialogHandle = mock(FilterDialogHandle.class);
+        when(dialogHandle.getResult()).thenReturn(CompletableFuture.completedFuture(Optional.of(newFilter)));
+        when(dialogFactory.startEditFilterDialog(any())).thenReturn(dialogHandle);
         oldFilter.openFilterEditor();
 
         order.verify(filterPanelModel).replaceFilter(eq(oldFilter), panelFilterCaptor.capture());
@@ -201,7 +204,9 @@ public class MainFilterControllerTest {
 
     private CompletableFuture<Optional<FilterFromDialog>> openFilterDialog(PanelFilter filter) {
         CompletableFuture<Optional<FilterFromDialog>> future = new CompletableFuture<>();
-        when(dialogFactory.startEditFilterDialog(any())).thenReturn(future);
+        FilterDialogHandle dialogHandle = mock(FilterDialogHandle.class);
+        when(dialogHandle.getResult()).thenReturn(future);
+        when(dialogFactory.startEditFilterDialog(any())).thenReturn(dialogHandle);
         filter.openFilterEditor();
 
         return future;

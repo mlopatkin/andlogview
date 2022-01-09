@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
@@ -30,6 +31,7 @@ import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 import name.mlopatkin.andlogview.utils.Threads;
 
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -212,13 +214,22 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     }
 
     private class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
+        private @Nullable FilterDialogHandle dialogHandle;
+
         protected DialogPanelFilter(FilterCollection<? super FilterFromDialog> collection, FilterFromDialog filter) {
             super(collection, filter.getMode(), filter);
         }
 
         @Override
         public void openFilterEditor() {
-            dialogFactory.startEditFilterDialog(this.filter).thenAccept(newFilter -> {
+            FilterDialogHandle currentDialogHandle = dialogHandle;
+            if (currentDialogHandle != null) {
+                currentDialogHandle.bringToFront();
+                return;
+            }
+            dialogHandle = currentDialogHandle = dialogFactory.startEditFilterDialog(this.filter);
+            currentDialogHandle.getResult().thenAccept(newFilter -> {
+                dialogHandle = null;
                 if (newFilter.isPresent()) {
                     DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
                     replaceMeWith(newPanelFilter);

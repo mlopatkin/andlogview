@@ -173,4 +173,8 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
         ErrorDialogsHelper.showError(this, text);
     }
 
+    @Override
+    public void bringToFront() {
+        this.toFront();
+    }
 }

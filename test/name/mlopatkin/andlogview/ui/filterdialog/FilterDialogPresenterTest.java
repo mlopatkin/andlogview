@@ -154,6 +154,10 @@ public class FilterDialogPresenterTest {
             errorText = text;
         }
 
+        @Override
+        public void bringToFront() {
+        }
+
         public void commit() {
             commitAction.run();
         }

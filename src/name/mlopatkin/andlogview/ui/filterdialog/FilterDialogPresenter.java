@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 /**
  * Presenter for the FilterEditor dialog. Allows to open dialog to create new or edit existing filter.
  */
-class FilterDialogPresenter {
+class FilterDialogPresenter implements FilterDialogHandle {
     /**
      * Presenter talks to view through this interface.
      */
@@ -76,6 +76,8 @@ class FilterDialogPresenter {
         void hide();
 
         void showError(String text);
+
+        void bringToFront();
     }
 
     private final FilterDialogView dialogView;
@@ -164,6 +166,17 @@ class FilterDialogPresenter {
         }
         dialogView.hide();
         editingPromise.complete(Optional.empty());
+    }
+
+    @Override
+    public void bringToFront() {
+        dialogView.bringToFront();
+    }
+
+    @Override
+    public CompletionStage<Optional<FilterFromDialog>> getResult() {
+        Preconditions.checkState(editingPromise != null, "Dialog is not shown");
+        return editingPromise;
     }
 
     public CompletionStage<Optional<FilterFromDialog>> show() {
