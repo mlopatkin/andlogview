@@ -94,7 +94,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         for (Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }
-        sourceMetadata = new AdbSourceMetadata(device.getIDevice());
+        sourceMetadata = new AdbSourceMetadata(device);
         deviceChangeObserver = deviceList.asObservable().addScopedObserver(new DeviceChangeObserver() {
             @Override
             public void onDeviceDisconnected(AdbDevice device) {
