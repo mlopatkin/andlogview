@@ -56,7 +56,7 @@ public abstract class OutputTarget {
      * @return the redirector
      */
     public static ForStdoutAndStderr toDevNull() {
-        return new NullOutputTarget();
+        return NullOutputTarget.INSTANCE;
     }
 
     /**
@@ -76,7 +76,7 @@ public abstract class OutputTarget {
      * @return the redirector
      */
     static ForStdoutAndStderr noRedirection() {
-        return new NoRedirTarget();
+        return NoRedirTarget.INSTANCE;
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class OutputTarget {
      * @return the redirector
      */
     public static ForStderr toStdout() {
-        return new StdoutRedirOutputTarget();
+        return StdoutRedirOutputTarget.INSTANCE;
     }
 
     abstract OutputHandle openOutput(IDevice device);
@@ -120,6 +120,8 @@ public abstract class OutputTarget {
     }
 
     private static class NullOutputTarget extends ForStdoutAndStderr {
+        static final NullOutputTarget INSTANCE = new NullOutputTarget();
+
         @Override
         OutputHandle openOutput(IDevice device) {
             return new EphemeralOutputHandle("/dev/null");
@@ -127,6 +129,8 @@ public abstract class OutputTarget {
     }
 
     private static class StdoutRedirOutputTarget extends ForStderr {
+        static final StdoutRedirOutputTarget INSTANCE = new StdoutRedirOutputTarget();
+
         @Override
         OutputHandle openOutput(IDevice device) {
             return new EphemeralOutputHandle("&1");
@@ -134,6 +138,8 @@ public abstract class OutputTarget {
     }
 
     private static class NoRedirTarget extends ForStdoutAndStderr {
+        static final NoRedirTarget INSTANCE = new NoRedirTarget();
+
         @Override
         OutputHandle openOutput(IDevice device) {
             return new NoRedirectHandle();
