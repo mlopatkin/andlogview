@@ -38,6 +38,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,16 +84,16 @@ public abstract class GenerateNotices extends DefaultTask {
             boolean first = true;
             for (File sourceFileNotice : getSourceFilesNotices()) {
                 if (!first) {
-                    notice.newLine();
-                    notice.newLine();
+                    newLine(notice);
+                    newLine(notice);
                 }
                 appendNoticeFromFile(notice, sourceFileNotice);
                 first = false;
             }
             for (ModuleComponentIdentifier dependency : getDependencies()) {
                 if (!first) {
-                    notice.newLine();
-                    notice.newLine();
+                    newLine(notice);
+                    newLine(notice);
                 }
                 appendNoticeFromFile(notice,
                         findNoticeFileForDependency(dependency)
@@ -125,11 +126,18 @@ public abstract class GenerateNotices extends DefaultTask {
             reader.lines().forEach(line -> {
                 try {
                     notice.write(line);
-                    notice.newLine();
+
+                    newLine(notice);
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             });
         }
+    }
+
+    private static void newLine(Writer writer) throws IOException {
+        // Do not use Writer.newLine as it writes a platform-specific EOL which is different on different
+        // platforms.
+        writer.write('\n');
     }
 }
