@@ -233,4 +233,20 @@ public class LogRecordParserTest {
                 .hasMessage("Failed sending reply to debugger: Broken pipe")
                 .andAllOtherFieldAreDefaults();
     }
+
+    @Test
+    public void testThreadTimeWithEmptyMessage() {
+        String logString = "01-09 23:11:34.523 32181 32278 E native  :";
+        LogRecord record = LogRecordParser.parseThreadTime(BUFFER, logString, Collections.emptyMap());
+
+        assertThatRecord(record)
+                .hasDate(1, 9).hasTime(23, 11, 34, 523)
+                .hasPid(32181)
+                .hasTid(32278)
+                .hasBuffer(BUFFER)
+                .hasPriority(LogRecord.Priority.ERROR)
+                .hasTag("native")
+                .hasMessage("")
+                .andAllOtherFieldAreDefaults();
+    }
 }

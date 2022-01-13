@@ -46,7 +46,7 @@ public class LogRecordParser {
     private static final String SEP_OPT = "\\s*";
 
     private static class ThreadTime {
-        private static final String TAG = TAG_REGEX + "\\s*: ";
+        private static final String TAG = TAG_REGEX + "\\s*:(?: |$)";
         private static final String[] LOG_RECORD_FIELDS = {
                 TIMESTAMP_REGEX, SEP, PID_REGEX, SEP, TID_REGEX, SEP, PRIORITY_REGEX, SEP, TAG, MESSAGE_REGEX};
         private static final Pattern threadTimeRecordPattern =
