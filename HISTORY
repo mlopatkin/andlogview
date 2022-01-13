@@ -1,7 +1,20 @@
 version 0.21
+    [!] The tool is now renamed to AndLogView and the development moved to Github
+
     [+] Support parsing Android Studio's logcat format
     [+] Automatically gather device logs dumps into an archive for compatibility investigations (available if the too is
         started in debug mode - with `-d` command-line key)
+    [+] Copy device/file metadata to the clipboard with context menu action
+    [+] Better MacOS support - platform-native shortucts, global menu bar, native look&feel
+    [+] Better HiDPI support on Windows and Linux on Java 8+, including fractional scaling
+
+    [*] Fixed compatibility with Android P, 10, 11, 12
+    [*] Modernized look&feel on Windows and Linux
+    [*] Esc key closes dialogs (filter editor, device selector, and configuration)
+    [*] The AndLogView's build is now deterministic, i. e. you can produce byte-to-byte identical binary
+    [*] "Device disconnected" alert only shows when viewing the logs from a device
+    [*] Configuration dialog highlights invalid ADB location if one is entered
+    [*] Fixed the "ability" to open the filter editor twice for the same filter
 
 version 0.20
     [+] Quick filters based on the content of the clicked cell
