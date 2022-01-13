@@ -91,10 +91,10 @@ public final class LogRecordTableColumnModel extends DefaultTableColumnModel imp
         this.columnTogglesModel = columnTogglesModel;
 
         addTextColumn(Column.INDEX).setWidth(30).setMaxWidth(50);
-        addTimeColumn(Column.TIME).setWidth(150).setMaxWidth(150);
-        addPidColumn(Column.PID).setWidth(40).setMaxWidth(50);
-        addTextColumn(Column.TID).setWidth(40).setMaxWidth(50);
-        addPriorityColumn(Column.PRIORITY).setWidth(30).setMaxWidth(50);
+        addTimeColumn(Column.TIME).setWidth(180).setMaxWidth(250);
+        addPidColumn(Column.PID).setWidth(40).setMaxWidth(100);
+        addTextColumn(Column.TID).setWidth(40).setMaxWidth(100);
+        addPriorityColumn(Column.PRIORITY).setWidth(30).setMaxWidth(80);
         addTextColumn(Column.TAG).setWidth(120);
         addTextColumn(Column.APP_NAME).setWidth(150);
         addTextColumn(Column.MESSAGE).setWidth(1000);
