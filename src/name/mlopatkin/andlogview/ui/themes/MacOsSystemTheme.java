@@ -41,12 +41,6 @@ class MacOsSystemTheme implements Theme {
 
     @Override
     public boolean install() {
-        // Move JMenuBar to macOS native global Menu bar.
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-        // Change App name in menu bar.
-        System.setProperty("apple.awt.application.name", "AndLogView");
-        // Force default light style even with global system dark mode to fix black-on-black text in some controls.
-        System.setProperty("apple.awt.application.appearance", "NSAppearanceNameAqua");
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             return true;
