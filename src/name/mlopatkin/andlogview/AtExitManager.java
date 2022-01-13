@@ -1,4 +1,4 @@
-/*
+    /*
  * Copyright 2018 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,10 +38,12 @@ public class AtExitManager {
     public AtExitManager() {}
 
     public void registerExitAction(Runnable action) {
-        if (actions.isEmpty()) {
-            addHook();
+        synchronized (actions) {
+            if (actions.isEmpty()) {
+                addHook();
+            }
+            actions.add(action);
         }
-        actions.add(action);
     }
 
     private void addHook() {
@@ -49,7 +51,11 @@ public class AtExitManager {
     }
 
     private void onExit() {
-        for (Runnable action : actions) {
+        List<Runnable> actionsCopy;
+        synchronized (actions) {
+            actionsCopy = new ArrayList<>(actions);
+        }
+        for (Runnable action : actionsCopy) {
             try {
                 action.run();
             } catch (Throwable ex) { // OK to catch Throwable here
