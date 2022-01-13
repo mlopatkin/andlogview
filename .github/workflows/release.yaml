@@ -28,11 +28,3 @@ jobs:
           LOGVIEW_SNAPSHOT_BUILD: false
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
-      - name: Publish Github release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
-        if: ${{ success() }}
-        with:
-          files: build/distributions/*
-          draft: true
-          prerelease: false
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
