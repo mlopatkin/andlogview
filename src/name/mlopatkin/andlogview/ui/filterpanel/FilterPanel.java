@@ -63,6 +63,8 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         this.model = model;
         this.filterCreator = filterCreator;
 
+        themed.configureFilterPanel(this, content);
+
         filterIcon = themed.getIcon(Icons.FILTER);
         ImageIcon addIcon = themed.getIcon(Icons.ADD);
         ImageIcon nextIcon = themed.getIcon(Icons.NEXT);
@@ -118,7 +120,8 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         buttonByFilter.put(newFilter, button);
         content.add(button);
         menuHandler.addPopup(button);
-        validate();
+        revalidate();
+        repaint();
     }
 
     @Override

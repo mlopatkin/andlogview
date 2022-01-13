@@ -19,8 +19,11 @@ package name.mlopatkin.andlogview.ui.themes;
 import name.mlopatkin.andlogview.ui.Icons;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
+import java.awt.FlowLayout;
+
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 class BasicWidgetFactory implements ThemedWidgetFactory {
     private static final int SCROLL_BUTTON_WIDTH = 26;
@@ -37,5 +40,10 @@ class BasicWidgetFactory implements ThemedWidgetFactory {
     @Override
     public void configureFilterPanelScrollButton(AbstractButton button) {
         UiHelper.setWidths(button, SCROLL_BUTTON_WIDTH);
+    }
+
+    @Override
+    public void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel) {
+        filterButtonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
     }
 }

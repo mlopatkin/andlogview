@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.ui.filterpanel;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -70,7 +69,6 @@ class FilterPanelUi extends JPanel {
         content = new JPanel();
         content.setBackground(UIManager.getColor("ToolBar.background"));
         content.setBorder(UiHelper.NO_BORDER);
-        ((FlowLayout) content.getLayout()).setAlignment(FlowLayout.LEFT);
         JScrollPane scrollPane =
                 new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(UiHelper.NO_BORDER);

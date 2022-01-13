@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.ui.Icons;
 
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 public interface ThemedWidgetFactory {
     ImageIcon getIcon(Icons iconId);
@@ -27,4 +28,6 @@ public interface ThemedWidgetFactory {
     void configureFilterPanelButton(AbstractButton button);
 
     void configureFilterPanelScrollButton(AbstractButton button);
+
+    void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel);
 }

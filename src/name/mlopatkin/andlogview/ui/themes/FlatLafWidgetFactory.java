@@ -22,11 +22,14 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 class FlatLafWidgetFactory implements ThemedWidgetFactory {
     @Override
@@ -61,5 +64,11 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
             return 16;
         }
         return 24;
+    }
+
+    @Override
+    public void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel) {
+        filterPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        filterButtonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
     }
 }
