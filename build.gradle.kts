@@ -94,7 +94,7 @@ configurations {
     }
 }
 
-version = "0.21" + (if (BuildEnvironment.isSnapshotBuild()) "-SNAPSHOT" else "")
+version = "0.21.1" + (if (BuildEnvironment.isSnapshotBuild()) "-SNAPSHOT" else "")
 
 application {
     applicationName = "andlogview"
