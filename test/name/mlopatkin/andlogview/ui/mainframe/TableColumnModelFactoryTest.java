@@ -19,8 +19,8 @@ package name.mlopatkin.andlogview.ui.mainframe;
 import static name.mlopatkin.andlogview.ui.logtable.TogglesModelTestUtils.availableColumns;
 import static name.mlopatkin.andlogview.ui.logtable.TogglesModelTestUtils.visibleColumns;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 import name.mlopatkin.andlogview.PidToProcessMapper;
 import name.mlopatkin.andlogview.config.ConfigStorage;
@@ -31,11 +31,16 @@ import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 public class TableColumnModelFactoryTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     private ConfigStorage mockStorage = new FakeDefaultConfigStorage();
     @Mock
     private PidToProcessMapper mockMapper;
@@ -44,8 +49,6 @@ public class TableColumnModelFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         factory = new TableColumnModelFactory(new ColumnPrefs.Factory(mockStorage).loadFromConfig());
     }
 

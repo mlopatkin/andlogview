@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.liblogcat.filters;
 import static name.mlopatkin.andlogview.utils.PredicateMatchers.accepts;
 import static name.mlopatkin.andlogview.utils.PredicateMatchers.rejects;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.LogRecordUtils;

@@ -17,10 +17,10 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
@@ -294,7 +294,7 @@ public class ColumnPrefsTest {
     }
 
     private JsonElement toJsonElement(String s) {
-        return new JsonParser().parse(s);
+        return JsonParser.parseString(s);
     }
 
     private static Matcher<ColumnOrder> matchesOrder(ColumnOrder expectedOrder) {

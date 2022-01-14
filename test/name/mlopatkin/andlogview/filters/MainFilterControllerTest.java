@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,13 +50,16 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -65,6 +69,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class MainFilterControllerTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     FilterPanelModel filterPanelModel;
     @Mock
@@ -89,7 +96,6 @@ public class MainFilterControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         when(indexFilterCollection.asObservable()).thenReturn(indexFilterCollectionObservers);
     }
 
@@ -205,8 +211,8 @@ public class MainFilterControllerTest {
     private CompletableFuture<Optional<FilterFromDialog>> openFilterDialog(PanelFilter filter) {
         CompletableFuture<Optional<FilterFromDialog>> future = new CompletableFuture<>();
         FilterDialogHandle dialogHandle = mock(FilterDialogHandle.class);
-        when(dialogHandle.getResult()).thenReturn(future);
-        when(dialogFactory.startEditFilterDialog(any())).thenReturn(dialogHandle);
+        lenient().when(dialogHandle.getResult()).thenReturn(future);
+        lenient().when(dialogFactory.startEditFilterDialog(any())).thenReturn(dialogHandle);
         filter.openFilterEditor();
 
         return future;

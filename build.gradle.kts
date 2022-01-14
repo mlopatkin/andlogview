@@ -49,25 +49,28 @@ repositories {
 }
 
 dependencies {
-    val daggerVersion = "2.37"
-    val flatlafVersion = "1.6.5"
-    val nullawayVersion = "0.9.3"
+    val daggerVersion = "2.40.5"
+    val flatlafVersion = "2.0"
+    val nullawayVersion = "0.9.5"
 
     implementation("com.google.dagger:dagger:$daggerVersion")
-    implementation("com.google.guava:guava:30.1.1-jre")
-    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.google.guava:guava:31.0.1-jre")
+    implementation("com.google.code.gson:gson:2.8.9")
     implementation("log4j:log4j:1.2.17")
-    implementation("net.sf.jopt-simple:jopt-simple:4.6")
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
     implementation("com.android.tools.ddms:ddmlib:26.1.3")
     implementation("com.formdev:flatlaf:$flatlafVersion")
     implementation("com.formdev:flatlaf-extras:$flatlafVersion")
 
-    compileOnly("org.checkerframework:checker-qual:3.2.0")
+    compileOnly("org.checkerframework:checker-qual:3.21.1")
 
-    testImplementation("junit:junit:4.12")
-    testImplementation("org.mockito:mockito-core:2.19.1")
+    val mockitoVersion = "4.2.0"
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
-    testImplementation("com.spotify:hamcrest-optional:1.1.5")
+    testImplementation("com.spotify:hamcrest-optional:1.2.0")
     testImplementation(platform("org.junit:junit-bom:5.8.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")

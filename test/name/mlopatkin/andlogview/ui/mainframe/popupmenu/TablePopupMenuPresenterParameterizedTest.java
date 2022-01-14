@@ -27,12 +27,11 @@ import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasTags;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
@@ -50,7 +49,9 @@ import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.Matcher;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -58,13 +59,14 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.Color;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@ExtendWith(MockitoExtension.class)
 public class TablePopupMenuPresenterParameterizedTest {
     public static final LogRecord RECORD = Objects.requireNonNull(LogRecordParser.parseThreadTime(null,
             "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117)",
@@ -80,9 +82,8 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
-        when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
+        lenient().when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -99,7 +100,7 @@ public class TablePopupMenuPresenterParameterizedTest {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
-        assertTrue(popupMenuView.isHeaderShowing());
+        Assertions.assertTrue(popupMenuView.isHeaderShowing());
         assertEquals(headerColumn, popupMenuView.getHeaderColumn());
         assertEquals(headerValue, popupMenuView.getHeaderText());
     }

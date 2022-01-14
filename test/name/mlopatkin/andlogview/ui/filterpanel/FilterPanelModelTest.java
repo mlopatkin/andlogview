@@ -25,22 +25,22 @@ import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 public class FilterPanelModelTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private FilterPanelModel.FilterPanelModelListener listener;
 
     @Mock
     private PanelFilter filter;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testAddFilterNotifies() throws Exception {

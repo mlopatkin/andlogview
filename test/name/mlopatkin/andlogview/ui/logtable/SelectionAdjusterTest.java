@@ -16,10 +16,10 @@
 
 package name.mlopatkin.andlogview.ui.logtable;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import name.mlopatkin.andlogview.test.TestData;
 

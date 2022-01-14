@@ -22,19 +22,20 @@ import static org.mockito.Mockito.verify;
 import name.mlopatkin.andlogview.test.TestData;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter.PopupMenuView;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 public class PopupMenuPresenterTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+
     @Mock
     PopupMenuPresenter.PopupMenuView popupMenuView;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void contextMenuIsShownIfSelectionEmpty() {

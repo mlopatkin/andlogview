@@ -24,12 +24,18 @@ import static org.mockito.Mockito.verify;
 import name.mlopatkin.andlogview.test.TestData;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 public class BookmarkModelTest {
     private BookmarkModel model;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock
     private BookmarkModel.Observer observer;
@@ -37,8 +43,8 @@ public class BookmarkModelTest {
     @Before
     public void setUp() {
         model = new BookmarkModel();
-        MockitoAnnotations.initMocks(this);
     }
+
 
     @Test
     public void testAsObservable() throws Exception {

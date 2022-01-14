@@ -36,11 +36,17 @@ import name.mlopatkin.andlogview.ui.logtable.TestSelectedRows;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 public class BookmarkPopupMenuPresenterTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     BookmarkPopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
@@ -49,8 +55,6 @@ public class BookmarkPopupMenuPresenterTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         when(popupMenuView.setDeleteBookmarksActionEnabled(anyBoolean())).thenReturn(
                 bookmarkDeleteAction.asObservable());
 

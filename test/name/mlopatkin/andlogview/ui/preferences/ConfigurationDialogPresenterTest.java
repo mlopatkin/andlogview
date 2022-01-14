@@ -29,7 +29,8 @@ import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+@ExtendWith(MockitoExtension.class)
 class ConfigurationDialogPresenterTest {
 
     private static final String DEFAULT_ADB_LOCATION = "adb";
@@ -56,8 +58,6 @@ class ConfigurationDialogPresenterTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         adbConfiguration.setAutoReconnectEnabled(DEFAULT_AUTO_RECONNECT);
         adbConfiguration.setAdbLocation(DEFAULT_ADB_LOCATION);
     }

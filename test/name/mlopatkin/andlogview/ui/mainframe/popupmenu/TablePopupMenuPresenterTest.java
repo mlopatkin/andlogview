@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.HighlightColors;
@@ -38,11 +38,13 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.Color;
 
+@ExtendWith(MockitoExtension.class)
 public class TablePopupMenuPresenterTest {
     FakeTablePopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
@@ -55,9 +57,8 @@ public class TablePopupMenuPresenterTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         popupMenuView = new FakeTablePopupMenuView();
-        when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
+        lenient().when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
     }
 
     @Test

@@ -68,9 +68,8 @@ class ConfigStorageImpl implements ConfigStorage {
     }
 
     void load() {
-        JsonParser parser = new JsonParser();
         try (Reader in = inStorage.openBufferedStream()) {
-            load(parser.parse(in));
+            load(JsonParser.parseReader(in));
             logger.debug("Successfully parsed config data");
         } catch (IOException e) {
             logger.error("Failed to open JSON config data file", e);

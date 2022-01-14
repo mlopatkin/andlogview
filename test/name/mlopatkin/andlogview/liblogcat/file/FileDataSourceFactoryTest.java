@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.Field;

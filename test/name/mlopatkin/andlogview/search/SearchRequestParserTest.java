@@ -19,16 +19,22 @@
 package name.mlopatkin.andlogview.search;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
 public class SearchRequestParserTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     SearchRequestParser.Delegate<String> mockDelegate;
 
@@ -36,12 +42,10 @@ public class SearchRequestParserTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
-        when(mockDelegate.createPlainSearcher(anyString())).thenAnswer(
+        lenient().when(mockDelegate.createPlainSearcher(anyString())).thenAnswer(
                 (Answer<String>) invocation -> "Plain: " + invocation.getArguments()[0]);
 
-        when(mockDelegate.createRegexpSearcher(anyString())).thenAnswer(
+        lenient().when(mockDelegate.createRegexpSearcher(anyString())).thenAnswer(
                 (Answer<String>) invocation -> "Regexp: " + invocation.getArguments()[0]);
 
         parser = new SearchRequestParser<>(mockDelegate);

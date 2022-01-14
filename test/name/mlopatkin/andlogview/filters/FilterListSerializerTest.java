@@ -52,8 +52,7 @@ class FilterListSerializerTest {
 
 
     private JsonElement loadTestResource(String resourceName) throws IOException {
-        JsonParser parser = new JsonParser();
-        return parser.parse(
+        return JsonParser.parseString(
                 Resources.asCharSource(Resources.getResource(getClass(), resourceName), StandardCharsets.UTF_8).read());
     }
 }
