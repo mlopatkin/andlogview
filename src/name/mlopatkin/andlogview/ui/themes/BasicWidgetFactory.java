@@ -46,4 +46,9 @@ class BasicWidgetFactory implements ThemedWidgetFactory {
     public void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel) {
         filterButtonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
     }
+
+    @Override
+    public float scale(float value) {
+        return value;
+    }
 }

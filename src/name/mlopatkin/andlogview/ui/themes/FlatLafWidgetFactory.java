@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.ui.Icons;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.util.UIScale;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -43,32 +44,37 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
 
     @Override
     public void configureFilterPanelButton(AbstractButton button) {
-        button.setMargin(new Insets(4, 4, 4, 4));
+        button.setMargin(UIScale.scale(new Insets(5, 5, 5, 5)));
         button.putClientProperty(FlatClientProperties.BUTTON_TYPE,
                 FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
     }
 
     @Override
     public void configureFilterPanelScrollButton(AbstractButton button) {
-        button.setMargin(new Insets(4 , 2, 4, 2));
+        button.setMargin(UIScale.scale(new Insets(4, 2, 4, 2)));
         button.putClientProperty(FlatClientProperties.BUTTON_TYPE,
                 FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
     }
 
     private int getIconHeight(Icons iconId) {
-        return 24;
+        return UIScale.scale(24);
     }
 
     private int getIconWidth(Icons iconId) {
         if (iconId == Icons.NEXT || iconId == Icons.PREVIOUS) {
-            return 16;
+            return UIScale.scale(16);
         }
-        return 24;
+        return UIScale.scale(24);
     }
 
     @Override
     public void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel) {
-        filterPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        filterButtonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        filterPanel.setBorder(new EmptyBorder(UIScale.scale(new Insets(4, 4, 4, 4))));
+        filterButtonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, UIScale.scale(4), 0));
+    }
+
+    @Override
+    public float scale(float value) {
+        return UIScale.scale(value);
     }
 }

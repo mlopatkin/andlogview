@@ -34,7 +34,6 @@ import javax.swing.UIManager;
  * FilterPanel implementation. Generated class from WindowBuilder editor.
  */
 class FilterPanelUi extends JPanel {
-    private static final int SEPARATOR_HEIGHT = 42;
     private static final int SEPARATOR_WIDTH = 5;
 
 
@@ -46,25 +45,25 @@ class FilterPanelUi extends JPanel {
     protected final JButton btScrollRight = new JButton();
     protected final JViewport contentViewport;
 
-    FilterPanelUi() {
+    FilterPanelUi(int separatorHeight) {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         setBackground(UIManager.getColor("ToolBar.background"));
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
 
         btAddFilter = new JButton();
         btAddFilter.setToolTipText("Add new filter");
         add(btAddFilter);
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
 
         add(btScrollLeft);
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
 
         add(sepScrollableLeft);
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
 
         content = new JPanel();
         content.setBackground(UIManager.getColor("ToolBar.background"));
@@ -75,15 +74,15 @@ class FilterPanelUi extends JPanel {
         add(scrollPane);
         contentViewport = scrollPane.getViewport();
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
 
         add(sepScrollableRight);
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
 
         add(btScrollRight);
 
-        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, SEPARATOR_HEIGHT)));
+        add(Box.createRigidArea(new Dimension(SEPARATOR_WIDTH, separatorHeight)));
     }
 
     private JSeparator createSeparator() {

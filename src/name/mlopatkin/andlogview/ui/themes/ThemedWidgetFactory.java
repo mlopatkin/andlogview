@@ -30,4 +30,6 @@ public interface ThemedWidgetFactory {
     void configureFilterPanelScrollButton(AbstractButton button);
 
     void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel);
+
+    float scale(float value);
 }

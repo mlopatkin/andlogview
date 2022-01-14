@@ -59,6 +59,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
     @Inject
     public FilterPanel(Theme theme, FilterPanelModel model, FilterCreator filterCreator) {
+        super((int) theme.getWidgetFactory().scale(36));
         this.themed = theme.getWidgetFactory();
         this.model = model;
         this.filterCreator = filterCreator;
