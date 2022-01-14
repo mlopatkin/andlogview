@@ -401,6 +401,9 @@ public class MainFrame extends JFrame {
         JMenu mnView = new JMenu("View");
         mnView.add(acShowBookmarks);
         mnView.add(acShowProcesses);
+        if (commandLine.isDebug()) {
+            mnView.add(UiHelper.makeAction("Dump view hierarchy", this::list));
+        }
         mainMenu.add(mnView);
 
         JMenu mnAdb = new JMenu("ADB");
