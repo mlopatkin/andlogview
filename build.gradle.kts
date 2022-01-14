@@ -33,14 +33,14 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     // Errorprone plugin allows to configure Errorprone compiler
     id("net.ltgt.errorprone") version "2.0.2"
-    // Bitbucket plugin allows to publish releases to the Bitbucket project's Downloads page
+    // Bitbucket plugin allows publishing releases to the Bitbucket project's Downloads page
     id("name.mlopatkin.bitbucket") version "0.5-rc4"
     // Eclipse APT plugin configures annotation processors when importing the project into Eclipse
-    id("com.diffplug.eclipse.apt") version "3.22.0"
+    id("com.diffplug.eclipse.apt") version "3.34.1"
     // JMH plugin allows building and running JMH benchmarks
-    id("me.champeau.gradle.jmh") version "0.5.0"
+    id("me.champeau.jmh") version "0.6.6"
     // Runtime plugin allows preparing runtime images with JDK included
-    id("org.beryx.runtime") version "1.12.5"
+    id("org.beryx.runtime") version "1.12.7"
 }
 
 repositories {
@@ -113,7 +113,7 @@ tasks.withType<Test> {
 }
 
 jmh {
-    humanOutputFile = file("$buildDir/reports/jmh/human.txt")
+    humanOutputFile.set(file("$buildDir/reports/jmh/human.txt"))
 }
 
 checkstyle {
