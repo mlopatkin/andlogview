@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -44,9 +45,9 @@ public class LastUsedDirPref {
 
                 @Override
                 public Optional<String> fromJson(Gson gson, JsonElement element)
-                        throws ConfigStorage.InvalidJsonContentException {
+                        throws InvalidJsonContentException {
                     if (!(element.isJsonPrimitive() && element.getAsJsonPrimitive().isString())) {
-                        throw new ConfigStorage.InvalidJsonContentException("Expecting string");
+                        throw new InvalidJsonContentException("Expecting string");
                     }
                     return Optional.of(element.getAsString());
                 }

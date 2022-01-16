@@ -16,15 +16,20 @@
 
 package name.mlopatkin.andlogview.config;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 
-public interface ConfigStorageClient<T> {
-    String getName();
+public class InvalidJsonContentException extends Exception {
+    public InvalidJsonContentException(String message) {
+        super(message);
+    }
 
-    T fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException;
+    @FormatMethod
+    public InvalidJsonContentException(@FormatString String message, Object... args) {
+        super(String.format(message, args));
+    }
 
-    T getDefault();
-
-    JsonElement toJson(Gson gson, T value);
+    public InvalidJsonContentException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -24,8 +24,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.test.AdaptingMatcher;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;

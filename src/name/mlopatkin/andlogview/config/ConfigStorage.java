@@ -19,8 +19,6 @@ package name.mlopatkin.andlogview.config;
 import name.mlopatkin.andlogview.AtExitManager;
 
 import com.google.common.io.Files;
-import com.google.errorprone.annotations.FormatMethod;
-import com.google.errorprone.annotations.FormatString;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,21 +38,6 @@ public interface ConfigStorage {
     <T> void saveConfig(ConfigStorageClient<T> client, T value);
 
     <T> T loadConfig(ConfigStorageClient<T> client);
-
-    class InvalidJsonContentException extends Exception {
-        public InvalidJsonContentException(String message) {
-            super(message);
-        }
-
-        @FormatMethod
-        public InvalidJsonContentException(@FormatString String message, Object... args) {
-            super(String.format(message, args));
-        }
-
-        public InvalidJsonContentException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 
     @Singleton
     class Factory {

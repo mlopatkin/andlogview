@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedDialogFilterData;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
 
