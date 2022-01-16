@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.widgets;
 
-import com.google.common.base.MoreObjects;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
@@ -49,7 +47,11 @@ public final class ClientProperty<V> {
      * @return the value stored in the component or the default value from the UIManager or {@code null}
      */
     public @Nullable V get(Component c) {
-        return MoreObjects.firstNonNull(getFromComponent(c), getDefault());
+        V result = getFromComponent(c);
+        if (result != null) {
+            return result;
+        }
+        return getDefault();
     }
 
     /**
