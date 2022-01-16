@@ -16,7 +16,6 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
@@ -30,8 +29,11 @@ import name.mlopatkin.andlogview.liblogcat.RecordListener;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
+import name.mlopatkin.andlogview.ui.FrameDimensions;
+import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
@@ -58,7 +60,6 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -124,6 +125,8 @@ public class MainFrame extends JFrame {
     ErrorDialogs errorDialogs;
     @Inject
     AdbConfigurationPref adbConfigurationPref;
+    @Inject
+    WindowsPositionsPref windowsPositionsPref;
     @Inject
     ConfigurationDialogPresenter configurationDialogPresenter;
     @Inject
@@ -269,18 +272,20 @@ public class MainFrame extends JFrame {
 
         setupSearchButtons();
         setupMainMenu(dependencies.getMainFilterController());
-        setPreferredSize(new Dimension(Configuration.ui.mainWindowWidth(), Configuration.ui.mainWindowHeight()));
-        if (Configuration.ui.mainWindowPosition() != null) {
-            setLocation(Configuration.ui.mainWindowPosition());
+        setPreferredSize(windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
+        Optional<FrameLocation> frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
+        if (frameLocation.isPresent()) {
+            setLocation(frameLocation.get().x, frameLocation.get().y);
         } else {
             setLocationByPlatform(true);
         }
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                Configuration.ui.mainWindowHeight(getHeight());
-                Configuration.ui.mainWindowWidth(getWidth());
-                Configuration.ui.mainWindowPosition(getLocation());
+                windowsPositionsPref.setFrameInfo(WindowsPositionsPref.Frame.MAIN,
+                        new FrameLocation(getLocation().x, getLocation().y),
+                        new FrameDimensions(getWidth(), getHeight()));
             }
         });
         pack();

@@ -73,14 +73,36 @@ public abstract class Try<T> {
     }
 
     /**
+     * Applies a function to the value if it is present and returns the result. If the value is not present then the
+     * original exception is preserved in the result. If the function throws exception then the result holds this
+     * exception instead of the value.
+     *
+     * @param function the function that converts a value to some other value
+     * @param <V> the type of the result
+     * @return the result of applying function to the value or an exception wrapped in {@code Try}
+     */
+    public final <V> Try<V> tryMap(TryFunction<? super T, ? extends V> function) {
+        if (isPresent()) {
+            return Try.ofCallable(() -> function.apply(get()));
+        }
+
+        // This is a safe cast because the Error instance doesn't actually hold the value.
+        @SuppressWarnings("unchecked")
+        Try<V> r = (Try<V>) this;
+        return r;
+    }
+
+    /**
      * If the exception is present then it is passed to the {@code handler}. Does nothing if the value is present.
      *
      * @param handler the handler to handle the exception
+     * @return this {@code Try} for chaining
      */
-    public final void handleError(Consumer<? super Throwable> handler) {
+    public final Try<T> handleError(Consumer<? super Throwable> handler) {
         if (!isPresent()) {
             handler.accept(getError());
         }
+        return this;
     }
 
     /**

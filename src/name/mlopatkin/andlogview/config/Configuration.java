@@ -97,28 +97,19 @@ public class Configuration {
             return config.get(HIDE_LOGGING_PROCESSES_KEY);
         }
 
+        @Deprecated
         public static Point mainWindowPosition() {
             return config.get(MAIN_WINDOW_POSITION_KEY);
         }
 
-        public static void mainWindowPosition(Point pos) {
-            config.set(MAIN_WINDOW_POSITION_KEY, pos);
-        }
-
+        @Deprecated
         public static Integer mainWindowWidth() {
             return config.get(MAIN_WINDOW_WIDTH_KEY);
         }
 
-        public static void mainWindowWidth(int width) {
-            config.set(MAIN_WINDOW_WIDTH_KEY, width);
-        }
-
+        @Deprecated
         public static Integer mainWindowHeight() {
             return config.get(MAIN_WINDOW_HEIGHT_KEY);
-        }
-
-        public static void mainWindowHeight(int height) {
-            config.set(MAIN_WINDOW_HEIGHT_KEY, height);
         }
 
         public static Point processWindowPosition() {

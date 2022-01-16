@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
+import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
 import name.mlopatkin.andlogview.ui.themes.Theme;
@@ -66,6 +67,8 @@ public interface AppGlobals {
     AdbConfigurationPref getAdbConfiguration();
 
     LastUsedDirPref getLastUsedDir();
+
+    WindowsPositionsPref getWindowsPositions();
 
     AdbManager getAdbManager();
 

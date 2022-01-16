@@ -31,4 +31,15 @@ public interface Preference<T> {
      * Retrieves the value from the bound config storage.
      */
     T get();
+
+    /**
+     * Returns a memoized version of this preference. Memoized preference caches the value on first read/write and
+     * subsequent reads return cached value without hitting the config storage.
+     */
+    default Preference<T> memoize() {
+        if (this instanceof MemoizedPreference) {
+            return this;
+        }
+        return new MemoizedPreference<>(this);
+    }
 }
