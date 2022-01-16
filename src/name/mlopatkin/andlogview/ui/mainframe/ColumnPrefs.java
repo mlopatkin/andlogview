@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.ConfigStorage.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
+import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
 import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;

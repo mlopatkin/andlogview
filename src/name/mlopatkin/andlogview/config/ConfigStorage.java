@@ -21,8 +21,6 @@ import name.mlopatkin.andlogview.AtExitManager;
 import com.google.common.io.Files;
 import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,16 +40,6 @@ public interface ConfigStorage {
     <T> void saveConfig(ConfigStorageClient<T> client, T value);
 
     <T> T loadConfig(ConfigStorageClient<T> client);
-
-    interface ConfigStorageClient<T> {
-        String getName();
-
-        T fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException;
-
-        T getDefault();
-
-        JsonElement toJson(Gson gson, T value);
-    }
 
     class InvalidJsonContentException extends Exception {
         public InvalidJsonContentException(String message) {

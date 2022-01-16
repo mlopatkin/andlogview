@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorage.InvalidJsonContentException;
+import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedDialogFilterData;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
 
@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-class FilterListSerializer implements ConfigStorage.ConfigStorageClient<List<SavedFilterData>> {
+class FilterListSerializer implements ConfigStorageClient<List<SavedFilterData>> {
     private enum ClassNameToken {
         LEGACY_DIALOG_FILTER_DATA(
                 SavedDialogFilterData.class,

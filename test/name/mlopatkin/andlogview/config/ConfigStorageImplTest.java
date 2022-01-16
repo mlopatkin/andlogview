@@ -44,7 +44,7 @@ public class ConfigStorageImplTest {
         }
     }
 
-    public static class TestClient implements ConfigStorage.ConfigStorageClient<TestClientData> {
+    public static class TestClient implements ConfigStorageClient<TestClientData> {
         @Override
         public String getName() {
             return "TestClient";

@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.ConfigStorageClient;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -34,8 +35,8 @@ import javax.inject.Inject;
  * directory in file selection dialogs.
  */
 public class LastUsedDirPref {
-    private static final ConfigStorage.ConfigStorageClient<Optional<String>> STORAGE_CLIENT =
-            new ConfigStorage.ConfigStorageClient<Optional<String>>() {
+    private static final ConfigStorageClient<Optional<String>> STORAGE_CLIENT =
+            new ConfigStorageClient<Optional<String>>() {
                 @Override
                 public String getName() {
                     return "last_used_dir";
