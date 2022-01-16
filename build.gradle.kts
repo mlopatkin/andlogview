@@ -71,6 +71,7 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
     testImplementation("com.spotify:hamcrest-optional:1.2.0")
+    testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation(platform("org.junit:junit-bom:5.8.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")

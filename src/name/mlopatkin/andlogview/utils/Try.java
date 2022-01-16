@@ -24,10 +24,13 @@ import java.util.function.Function;
 
 /**
  * This class represents a result of computation that could throw an exception. It closely resembles a classic
- * {@code Either} monad but is bit more limited - can only hold an exception as an alternative instead of anything.
+ * {@code Either} monad but is a bit more limited - can only hold an exception as an alternative instead of anything.
  * Another analogy would be an Optional with the additional explanation why it is empty.
+ * <p>
+ * There is no exception type parameter, so the {@code Try} can store runtime exceptions that occur when applying
+ * {@link #map(Function)} to the value.
  *
- * @param <T> the type of the result.
+ * @param <T> the type of the result
  */
 public abstract class Try<T> {
     private Try() {}
@@ -58,21 +61,68 @@ public abstract class Try<T> {
      * @param <V> the type of the result
      * @return the result of applying function to the value or an exception wrapped in {@code Try}
      */
-    public abstract <V> Try<V> map(Function<? super T, ? extends V> function);
+    public final <V> Try<V> map(Function<? super T, ? extends V> function) {
+        if (isPresent()) {
+            return Try.ofCallable(() -> function.apply(get()));
+        }
+
+        // This is a safe cast because the Error instance doesn't actually hold the value.
+        @SuppressWarnings("unchecked")
+        Try<V> r = (Try<V>) this;
+        return r;
+    }
 
     /**
      * If the exception is present then it is passed to the {@code handler}. Does nothing if the value is present.
      *
      * @param handler the handler to handle the exception
      */
-    public abstract void handleError(Consumer<? super Throwable> handler);
+    public final void handleError(Consumer<? super Throwable> handler) {
+        if (!isPresent()) {
+            handler.accept(getError());
+        }
+    }
+
+    /**
+     * Returns the value is it is present. If the exception is present then wraps it in {@code E} with the
+     * {@code exceptionWrapper} and throws the result.
+     *
+     * @param exceptionWrapper the function to wrap an exception held by this Try
+     * @param <E> the type of the exception to throw
+     * @return the value if this Try holds any
+     * @throws E if this Try holds an exception
+     */
+    public final <E extends Throwable> T orElseThrow(Function<Throwable, E> exceptionWrapper) throws E {
+        if (isPresent()) {
+            return get();
+        }
+        throw exceptionWrapper.apply(getError());
+    }
+
+    /**
+     * If the exception is present and is of type {@code E} then it is thrown. Does nothing if the value is present.
+     *
+     * @param exceptionClass the class of the exception to rethrow.
+     * @param <E> the type of the exception to rethrow
+     * @return this Try instance
+     * @throws E if this Try holds an exception of type {@code E}
+     */
+    public final <E extends Throwable> Try<T> rethrowOfType(Class<E> exceptionClass) throws E {
+        if (!isPresent()) {
+            Throwable th = getError();
+            if (exceptionClass.isInstance(th)) {
+                throw exceptionClass.cast(th);
+            }
+        }
+        return this;
+    }
 
     /**
      * Wraps the value to Optional. If the value isn't present then empty Optional is returned.
      *
      * @return the Optional which holds the value or empty Optional if this instance holds an exception
      */
-    public Optional<T> toOptional() {
+    public final Optional<T> toOptional() {
         if (isPresent()) {
             return Optional.of(get());
         }
@@ -104,15 +154,6 @@ public abstract class Try<T> {
             public Throwable getError() throws IllegalStateException {
                 throw new IllegalStateException("Error is not present");
             }
-
-            @Override
-            public <V> Try<V> map(Function<? super T, ? extends V> function) {
-                return Try.ofCallable(() -> function.apply(value));
-            }
-
-            @Override
-            public void handleError(Consumer<? super Throwable> handler) {
-            }
         };
     }
 
@@ -141,18 +182,6 @@ public abstract class Try<T> {
             @Override
             public Throwable getError() throws IllegalStateException {
                 return throwable;
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public <V> Try<V> map(Function<? super T, ? extends V> function) {
-                // This is a safe cast because the Error instance doesn't actually hold the value.
-                return (Try<V>) this;
-            }
-
-            @Override
-            public void handleError(Consumer<? super Throwable> handler) {
-                handler.accept(throwable);
             }
         };
     }
