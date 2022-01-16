@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui;
+package name.mlopatkin.andlogview.preferences;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
@@ -32,11 +32,13 @@ import java.io.File;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * This preference stores the directory last used to load or save a file. It is intended to be used as an initial
  * directory in file selection dialogs.
  */
+@Singleton
 public class LastUsedDirPref {
     private static final ConfigStorageClient<Optional<String>> STORAGE_CLIENT =
             new NamedClient<Optional<String>>("last_used_dir") {

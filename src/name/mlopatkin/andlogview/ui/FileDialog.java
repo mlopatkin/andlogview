@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui;
 
+import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import org.checkerframework.checker.nullness.qual.Nullable;

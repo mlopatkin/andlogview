@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui;
+package name.mlopatkin.andlogview.preferences;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
