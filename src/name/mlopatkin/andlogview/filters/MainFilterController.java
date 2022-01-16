@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
@@ -29,6 +30,8 @@ import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 import name.mlopatkin.andlogview.utils.Threads;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -53,20 +56,26 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
     private final IndexFilterCollection indexFilterCollection;
-    private final ConfigStorage storage;
+    private final Preference<List<SavedFilterData>> savedFiltersPref;
     private final LogModelFilterImpl filter;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
 
-    private static final FilterListSerializer SERIALIZER = new FilterListSerializer();
-
     @Inject
-    public MainFilterController(final FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
+    public MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
             FilterDialogFactory dialogFactory, ConfigStorage storage, LogModelFilterImpl logModelFilter) {
+        this(filterPanelModel, indexFilterCollection, dialogFactory, storage.preference(new FilterListSerializer()),
+                logModelFilter);
+    }
+
+    @VisibleForTesting
+    MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
+            FilterDialogFactory dialogFactory, Preference<List<SavedFilterData>> savedFiltersPref,
+            LogModelFilterImpl logModelFilter) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.indexFilterCollection = indexFilterCollection;
-        this.storage = storage;
+        this.savedFiltersPref = savedFiltersPref;
         this.filter = logModelFilter;
 
         indexFilterCollection.asObservable().addObserver(new IndexFilterCollection.Observer() {
@@ -80,7 +89,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             }
         });
 
-        for (SavedFilterData savedFilterData : storage.loadConfig(SERIALIZER)) {
+        for (SavedFilterData savedFilterData : savedFiltersPref.get()) {
             savedFilterData.appendMe(this);
         }
     }
@@ -115,7 +124,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         for (BaseToggleFilter<?> filter : filters) {
             serializedFilters.add(filter.getSerializedVersion());
         }
-        storage.saveConfig(SERIALIZER, serializedFilters);
+        savedFiltersPref.set(serializedFilters);
     }
 
     private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {

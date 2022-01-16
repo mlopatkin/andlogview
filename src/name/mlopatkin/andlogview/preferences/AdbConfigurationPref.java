@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.NamedClient;
+import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.device.AdbLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
@@ -74,7 +75,7 @@ public class AdbConfigurationPref implements AdbLocation {
                 }
             };
 
-    private final ConfigStorage configStorage;
+    private final Preference<AdbConfiguration> preference;
     private final SystemPathResolver systemPathResolver;
 
     private String rawAdbLocation;
@@ -85,15 +86,15 @@ public class AdbConfigurationPref implements AdbLocation {
 
     @Inject
     public AdbConfigurationPref(ConfigStorage configStorage, SystemPathResolver systemPathResolver) {
-        this.configStorage = configStorage;
+        this.preference = configStorage.preference(STORAGE_CLIENT);
         this.systemPathResolver = systemPathResolver;
-        AdbConfiguration stored = this.configStorage.loadConfig(STORAGE_CLIENT);
+        AdbConfiguration stored = preference.get();
         setRawAdbLocation(stored.location, null);
         isAutoReconnectEnabled = stored.isAutoReconnectEnabled;
     }
 
     private void save() {
-        configStorage.saveConfig(STORAGE_CLIENT, new AdbConfiguration(rawAdbLocation, isAutoReconnectEnabled));
+        preference.set(new AdbConfiguration(rawAdbLocation, isAutoReconnectEnabled));
     }
 
     /** @return the location of the ADB executable as set up by the user */

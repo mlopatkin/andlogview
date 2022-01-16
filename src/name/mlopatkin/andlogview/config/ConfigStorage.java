@@ -39,6 +39,10 @@ public interface ConfigStorage {
 
     <T> T loadConfig(ConfigStorageClient<T> client);
 
+    default <T> Preference<T> preference(ConfigStorageClient<T> client) {
+        return new PreferenceImpl<>(this, client);
+    }
+
     @Singleton
     class Factory {
         private final ExecutorService ioThreadPool;

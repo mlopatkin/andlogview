@@ -34,8 +34,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.FakeDefaultConfigStorage;
+import name.mlopatkin.andlogview.config.FakePreference;
+import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
@@ -84,15 +84,11 @@ public class MainFilterControllerTest {
     @Captor
     ArgumentCaptor<PanelFilter> panelFilterCaptor;
 
-    @Captor
-    ArgumentCaptor<List<SavedFilterData>> savedFilterDataCaptor;
-
     LogModelFilterImpl filterImpl = new LogModelFilterImpl();
 
     @MonotonicNonNull InOrder order;
 
-    @Mock
-    ConfigStorage mockStorage;
+    Preference<List<SavedFilterData>> savedFiltersPref = new FakePreference<>(Collections.emptyList());
 
     @Before
     public void setUp() throws Exception {
@@ -101,9 +97,8 @@ public class MainFilterControllerTest {
 
     @Test
     public void testInitialState() throws Exception {
-        mockStorage = new FakeDefaultConfigStorage();
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
 
         verify(indexFilterCollectionObservers).addObserver(any(IndexFilterCollection.Observer.class));
 
@@ -125,7 +120,7 @@ public class MainFilterControllerTest {
         // However if you change filter's mode from highlight to other and back - it becomes last in the highlight
         // chain. Its button however stays in the same place.
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog colorer1 = createColoringFilter(Color.BLACK, MATCH_ALL);
@@ -145,26 +140,16 @@ public class MainFilterControllerTest {
 
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
-        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(Collections.emptyList());
-
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
 
         FilterFromDialog colorer = createColoringFilter(Color.BLACK, MATCH_ALL);
         createFilterWithDialog(controller, colorer);
 
-        verify(mockStorage).saveConfig(Mockito.<FilterListSerializer>any(), savedFilterDataCaptor.capture());
-
-        List<SavedFilterData> savedFilterData = savedFilterDataCaptor.getValue();
-
-        mockStorage = mock(ConfigStorage.class);
-        when(mockStorage.loadConfig(Mockito.<FilterListSerializer>any())).thenReturn(savedFilterData);
-
         filterPanelModel = mock(FilterPanelModel.class);
-        controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, mockStorage, filterImpl);
+        new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
 
         verify(filterPanelModel).addFilter(Mockito.any());
         assertEquals(Color.BLACK, filterImpl.getHighlightColor(RECORD2));
@@ -173,7 +158,7 @@ public class MainFilterControllerTest {
     @Test
     public void editFilterTwiceDoesntCrash() {
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, new FakeDefaultConfigStorage(), filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog initialFilter = createColoringFilter(Color.BLACK, MATCH_ALL);

@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.config.NamedClient;
+import name.mlopatkin.andlogview.config.Preference;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -58,14 +59,14 @@ public class LastUsedDirPref {
                     return value.map(gson::toJsonTree).orElse(JsonNull.INSTANCE);
                 }
             };
-    private final ConfigStorage configStorage;
+    private final Preference<Optional<String>> preference;
 
     private @Nullable File lastUsedDir;
 
     @Inject
     LastUsedDirPref(ConfigStorage configStorage) {
-        this.configStorage = configStorage;
-        set(configStorage.loadConfig(STORAGE_CLIENT).flatMap(fileName -> {
+        this.preference = configStorage.preference(STORAGE_CLIENT);
+        set(preference.get().flatMap(fileName -> {
             File file = new File(fileName);
             if (file.exists() && file.isDirectory()) {
                 return Optional.of(file);
@@ -80,6 +81,6 @@ public class LastUsedDirPref {
 
     public void set(@Nullable File lastUsedDir) {
         this.lastUsedDir = lastUsedDir;
-        configStorage.saveConfig(STORAGE_CLIENT, Optional.ofNullable(lastUsedDir).map(File::getAbsolutePath));
+        preference.set(Optional.ofNullable(lastUsedDir).map(File::getAbsolutePath));
     }
 }
