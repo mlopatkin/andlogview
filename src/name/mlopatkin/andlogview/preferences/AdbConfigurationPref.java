@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.preferences;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.NamedClient;
 import name.mlopatkin.andlogview.device.AdbLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
@@ -51,12 +52,7 @@ public class AdbConfigurationPref implements AdbLocation {
     }
 
     private static final ConfigStorageClient<AdbConfiguration> STORAGE_CLIENT =
-            new ConfigStorageClient<AdbConfiguration>() {
-                @Override
-                public String getName() {
-                    return "adb";
-                }
-
+            new NamedClient<AdbConfiguration>("adb") {
                 @Override
                 public AdbConfiguration fromJson(Gson gson, JsonElement element) {
                     return gson.fromJson(element, AdbConfiguration.class);

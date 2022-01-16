@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.InvalidJsonContentException;
+import name.mlopatkin.andlogview.config.NamedClient;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -37,12 +38,7 @@ import javax.inject.Inject;
  */
 public class LastUsedDirPref {
     private static final ConfigStorageClient<Optional<String>> STORAGE_CLIENT =
-            new ConfigStorageClient<Optional<String>>() {
-                @Override
-                public String getName() {
-                    return "last_used_dir";
-                }
-
+            new NamedClient<Optional<String>>("last_used_dir") {
                 @Override
                 public Optional<String> fromJson(Gson gson, JsonElement element)
                         throws InvalidJsonContentException {

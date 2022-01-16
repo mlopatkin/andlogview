@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.mainframe;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.InvalidJsonContentException;
+import name.mlopatkin.andlogview.config.NamedClient;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
 import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
@@ -110,17 +111,13 @@ class ColumnPrefs implements ColumnTogglesModel {
         }
     }
 
-    static class Factory implements ConfigStorageClient<ColumnPrefs> {
+    static class Factory extends NamedClient<ColumnPrefs> {
         private final ConfigStorage storage;
 
         @Inject
         Factory(ConfigStorage storage) {
+            super("columns");
             this.storage = storage;
-        }
-
-        @Override
-        public String getName() {
-            return "columns";
         }
 
         @Override
