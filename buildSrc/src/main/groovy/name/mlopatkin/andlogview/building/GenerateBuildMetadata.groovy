@@ -24,7 +24,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs
 
 import javax.lang.model.element.Modifier
 
@@ -45,7 +44,7 @@ class GenerateBuildMetadata extends DefaultTask {
     File into
 
     @TaskAction
-    def generate(IncrementalTaskInputs inputs) {
+    def generate() {
         def buildEnv = new BuildEnvironment(project.projectDir)
         def fullClassName = ClassName.get(packageName, className)
         def metadataClass = TypeSpec.classBuilder(fullClassName).addModifiers(Modifier.FINAL, Modifier.PUBLIC)
