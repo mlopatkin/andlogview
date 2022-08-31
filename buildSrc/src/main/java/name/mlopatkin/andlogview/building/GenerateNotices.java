@@ -18,14 +18,14 @@ package name.mlopatkin.andlogview.building;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.artifacts.ArtifactCollection;
-import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.SetProperty;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
@@ -48,20 +48,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 public abstract class GenerateNotices extends DefaultTask {
-    private ArtifactCollection packagedClasspath;
+
     private final Map<String, File> sourceFileNoticesByFileMask = new HashMap<>();
 
-    @InputFiles
-    @PathSensitive(PathSensitivity.NONE)
-    public FileCollection getPackagedClasspath() {
-        // This is a workaround for Gradle quirk: ArtifactCollection cannot be specified as input.
-        // See https://github.com/gradle/gradle/issues/19490
-        return packagedClasspath.getArtifactFiles();
-    }
-
-    public void setPackagedClasspath(Configuration configuration) {
-        packagedClasspath = configuration.getIncoming().getArtifacts();
-    }
+    @Input
+    public abstract SetProperty<ComponentIdentifier> getBundledDependencies();
 
     @InputDirectory
     public abstract DirectoryProperty getLibraryNoticesDirectory();
@@ -114,8 +105,7 @@ public abstract class GenerateNotices extends DefaultTask {
     }
 
     private Iterable<ModuleComponentIdentifier> getDependencies() {
-        return packagedClasspath.getArtifacts().stream()
-                .map(artifact -> artifact.getId().getComponentIdentifier())
+        return getBundledDependencies().get().stream()
                 .filter(componentId -> componentId instanceof ModuleComponentIdentifier)
                 .map(componentId -> (ModuleComponentIdentifier) componentId)
                 .collect(Collectors.toList());

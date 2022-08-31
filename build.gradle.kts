@@ -215,7 +215,11 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
-    setPackagedClasspath(configurations.runtimeClasspath.get())
+    bundledDependencies.set(configurations.runtimeClasspath.flatMap { rtCp ->
+        rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
+            artifacts.map { artifact -> artifact.id.componentIdentifier }
+        }
+    })
     libraryNoticesDirectory.set(file("third-party/libs/notices"))
     sourceFilesNotices.from(
             "third-party/observerList/NOTICE",
