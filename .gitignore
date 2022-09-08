@@ -12,3 +12,4 @@ gen/
 *.zip
 *.iml
 logview.properties
+!.github
