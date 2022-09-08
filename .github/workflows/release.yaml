@@ -11,8 +11,6 @@ jobs:
       PYTHON_BINARY: python3
     steps:
       - uses: actions/checkout@v2
-      - name: Set up environment
-        uses: ./.github/actions/common-linux-setup
       - name: Build and publish release
         # Do not use Gradle Daemon because we only have a single invocation.
         uses: gradle/gradle-build-action@356abb47e7664b5505e25d7997a5a522a17c62d9
