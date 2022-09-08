@@ -24,12 +24,12 @@ import name.mlopatkin.andlogview.config.NamedClient;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
-import name.mlopatkin.andlogview.utils.Try;
 
 import com.google.errorprone.annotations.Immutable;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -80,11 +80,13 @@ public class WindowsPositionsPref {
                     for (Frame frame : Frame.values()) {
                         if (json.has(frame.getPrefName())) {
                             JsonElement frameData = json.get(frame.getPrefName());
-                            Try.ofCallable(() -> gson.fromJson(frameData, FrameInfoSerialized.class))
-                                    .tryMap(FrameInfo::new)
-                                    .handleError(th -> logger.error("Incorrect entry for frame " + frame, th))
-                                    .toOptional()
-                                    .ifPresent(frameInfo -> result.put(frame, frameInfo));
+                            try {
+                                FrameInfoSerialized frameInfoSerialized =
+                                        gson.fromJson(frameData, FrameInfoSerialized.class);
+                                result.put(frame, frameInfoSerialized.tryDeserialize());
+                            } catch (JsonSyntaxException | InvalidJsonContentException e) {
+                                logger.error("Incorrect entry for frame " + frame, e);
+                            }
                         }
                     }
                     return result;
@@ -158,19 +160,6 @@ public class WindowsPositionsPref {
         private final FrameLocation location;
         private final FrameDimensions dimensions;
 
-        public FrameInfo(FrameInfoSerialized serializedData) throws InvalidJsonContentException {
-            if (serializedData.x != null && serializedData.y != null) {
-                location = new FrameLocation(serializedData.x, serializedData.y);
-            } else {
-                location = null;
-            }
-            if (serializedData.width <= 0 || serializedData.height <= 0) {
-                throw new InvalidJsonContentException(
-                        "Unsupported window size (%d x %d)", serializedData.width, serializedData.height);
-            }
-            dimensions = new FrameDimensions(serializedData.width, serializedData.height);
-        }
-
         public FrameInfo(@Nullable FrameLocation location, FrameDimensions dimensions) {
             this.location = location;
             this.dimensions = dimensions;
@@ -213,6 +202,15 @@ public class WindowsPositionsPref {
             this.y = null;
             this.width = width;
             this.height = height;
+        }
+
+        public FrameInfo tryDeserialize() throws InvalidJsonContentException {
+            @Nullable FrameLocation location = (x != null && y != null) ? new FrameLocation(x, y) : null;
+            if (width <= 0 || height <= 0) {
+                throw new InvalidJsonContentException("Unsupported window size (%d x %d)", width, height);
+            }
+            FrameDimensions dimensions = new FrameDimensions(width, height);
+            return new FrameInfo(location, dimensions);
         }
     }
 }
