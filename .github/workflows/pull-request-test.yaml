@@ -7,7 +7,7 @@ on:
 jobs:
   run-precommit-tests:
     runs-on: ubuntu-latest
-    container: openjdk:8u302-jdk@sha256:e94c5b7f0f428b581053fbb8c0f994f1a27df570e0f7753fad6dffb06c3baf22
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
     env:
       PYTHON_BINARY: python3
     steps:
