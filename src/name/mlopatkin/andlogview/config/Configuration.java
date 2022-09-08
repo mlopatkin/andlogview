@@ -34,13 +34,22 @@ import name.mlopatkin.andlogview.utils.properties.PropertyBuilder;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Configuration {
+    private static final AtomicReference<name.mlopatkin.andlogview.utils.properties.@NonNull Configuration> config =
+            new AtomicReference<>(createDefaultConfiguration());
+
     public static class ui { // NO CHECKSTYLE
 
         private static final String PREFIX = "ui.";
@@ -62,62 +71,62 @@ public class Configuration {
         private static final String PROCESS_LIST_WINDOW_POSITION_KEY = PREFIX + "proc_window_pos";
 
         public static List<String> columns() {
-            return config.get(COLUMNS_KEY);
+            return getConfig().get(COLUMNS_KEY);
         }
 
         public static Integer tooltipMaxWidth() {
-            return config.get(TOOLTIP_MAX_WIDTH_KEY);
+            return getConfig().get(TOOLTIP_MAX_WIDTH_KEY);
         }
 
         public static Color priorityColor(Priority p) {
-            return config.get(PRIORITY_FOREGROUND_KEY, p);
+            return getConfig().get(PRIORITY_FOREGROUND_KEY, p);
         }
 
         public static Color bookmarkBackground() {
-            return config.get(BOOKMARK_BACKGROUND_KEY);
+            return getConfig().get(BOOKMARK_BACKGROUND_KEY);
         }
 
         public static Color bookmarkedForeground() {
-            return config.get(BOOKMARK_FOREGROUND_KEY);
+            return getConfig().get(BOOKMARK_FOREGROUND_KEY);
         }
 
         public static List<Color> highlightColors() {
-            return config.get(HIGHLIGHT_FOREGROUNDS_KEY);
+            return getConfig().get(HIGHLIGHT_FOREGROUNDS_KEY);
         }
 
         public static Color backgroundColor() {
-            return config.get(BACKGROUND_COLOR_KEY);
+            return getConfig().get(BACKGROUND_COLOR_KEY);
         }
 
         public static Boolean bufferEnabled(Buffer buffer) {
-            return config.get(BUFFER_ENABLED_KEY, buffer);
+            return getConfig().get(BUFFER_ENABLED_KEY, buffer);
         }
 
         public static Boolean hideLoggingProcesses() {
-            return config.get(HIDE_LOGGING_PROCESSES_KEY);
+            return getConfig().get(HIDE_LOGGING_PROCESSES_KEY);
         }
 
         @Deprecated
         public static Point mainWindowPosition() {
-            return config.get(MAIN_WINDOW_POSITION_KEY);
+            return getConfig().get(MAIN_WINDOW_POSITION_KEY);
         }
 
         @Deprecated
         public static Integer mainWindowWidth() {
-            return config.get(MAIN_WINDOW_WIDTH_KEY);
+            return getConfig().get(MAIN_WINDOW_WIDTH_KEY);
         }
 
         @Deprecated
         public static Integer mainWindowHeight() {
-            return config.get(MAIN_WINDOW_HEIGHT_KEY);
+            return getConfig().get(MAIN_WINDOW_HEIGHT_KEY);
         }
 
         public static Point processWindowPosition() {
-            return config.get(PROCESS_LIST_WINDOW_POSITION_KEY);
+            return getConfig().get(PROCESS_LIST_WINDOW_POSITION_KEY);
         }
 
         public static void processWindowPosition(Point pos) {
-            config.set(PROCESS_LIST_WINDOW_POSITION_KEY, pos);
+            getConfig().set(PROCESS_LIST_WINDOW_POSITION_KEY, pos);
         }
     }
 
@@ -135,25 +144,25 @@ public class Configuration {
 
 
         public static String bufferName(Buffer buffer) {
-            return config.get(BUFFER_NAME_KEY, buffer);
+            return getConfig().get(BUFFER_NAME_KEY, buffer);
         }
 
         @Deprecated
         public static String executable() {
-            return config.get(EXECUTABLE_KEY);
+            return getConfig().get(EXECUTABLE_KEY);
         }
 
         public static Boolean showSetupDialog() {
-            return config.get(SHOW_SETUP_DIALOG_KEY);
+            return getConfig().get(SHOW_SETUP_DIALOG_KEY);
         }
 
         public static void showSetupDialog(boolean value) {
-            config.set(SHOW_SETUP_DIALOG_KEY, value);
+            getConfig().set(SHOW_SETUP_DIALOG_KEY, value);
         }
 
         @Deprecated
         public static Boolean isAutoReconnectEnabled() {
-            return config.get(AUTORECONNECT_KEY);
+            return getConfig().get(AUTORECONNECT_KEY);
         }
     }
 
@@ -163,7 +172,7 @@ public class Configuration {
         private static final String BUFFER_HEADER_KEY = PREFIX + "buffer";
 
         public static String bufferHeader(Buffer buffer) {
-            return config.get(BUFFER_HEADER_KEY, buffer);
+            return getConfig().get(BUFFER_HEADER_KEY, buffer);
         }
     }
 
@@ -192,16 +201,18 @@ public class Configuration {
         } else {
             Logging.loadNormal();
         }
-        Utils.loadConfiguration(config);
+        Utils.loadConfiguration(getConfig());
     }
 
     public static void save() {
-        Utils.saveConfiguration(config);
+        Utils.saveConfiguration(getConfig());
     }
 
-    private static final name.mlopatkin.andlogview.utils.properties.Configuration config;
+    private static name.mlopatkin.andlogview.utils.properties.Configuration getConfig() {
+        return Objects.requireNonNull(config.get());
+    }
 
-    static {
+    private static name.mlopatkin.andlogview.utils.properties.Configuration createDefaultConfiguration() {
         PropertyBuilder<Color> color = type(Color.class, colorParser);
         ConfigurationMap cfg = new ConfigurationMap();
 
@@ -216,7 +227,7 @@ public class Configuration {
         cfg.property(ui.PRIORITY_FOREGROUND_KEY, enumMap(Priority.class, Color.class, colorParser));
         cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
 
-        cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(new Point(0, 0)));
+        cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(null));
         cfg.property(ui.PROCESS_LIST_WINDOW_POSITION_KEY, point().defaultVal(null));
         cfg.property(ui.MAIN_WINDOW_WIDTH_KEY, integer(800));
         cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
@@ -233,6 +244,32 @@ public class Configuration {
         // setup default values from resource
         PropertyUtils.loadValuesFromResource(cfg, "logview.properties");
 
-        config = new SynchronizedConfiguration(cfg);
+        return new SynchronizedConfiguration(cfg);
+    }
+
+    /**
+     * A hook for test to execute with known default configuration values. Do not use at production.
+     *
+     * @param action the action to execute with the default configuration
+     * @throws IllegalStateException if the configuration instance is modified outside the test
+     * @throws Exception if the {@code action} throws the exception is propagated to the caller
+     */
+    @VisibleForTesting
+    public static void withDefaultConfiguration(Callable<?> action) throws Exception {
+        name.mlopatkin.andlogview.utils.properties.Configuration oldConfig = getConfig();
+        name.mlopatkin.andlogview.utils.properties.Configuration defaultConfig = createDefaultConfiguration();
+        trySetConfig(oldConfig, defaultConfig);
+        try {
+            action.call();
+        } finally {
+            trySetConfig(defaultConfig, oldConfig);
+        }
+    }
+
+    private static void trySetConfig(name.mlopatkin.andlogview.utils.properties.Configuration expectedValue,
+            name.mlopatkin.andlogview.utils.properties.Configuration newValue) {
+        if (!config.compareAndSet(expectedValue, newValue)) {
+            throw new IllegalStateException("Configuration instance was modified while overriding it");
+        }
     }
 }

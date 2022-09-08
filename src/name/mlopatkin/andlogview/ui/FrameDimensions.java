@@ -21,6 +21,9 @@ import com.google.errorprone.annotations.Immutable;
 
 import java.awt.Dimension;
 
+/**
+ * Represents the size of a frame (aka window) on screen.
+ */
 @Immutable
 public class FrameDimensions {
     public final int width;
@@ -36,5 +39,10 @@ public class FrameDimensions {
 
     public Dimension toAwtDimension() {
         return new Dimension(width, height);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("FrameDimensions{ %dx%d }", width, height);
     }
 }
