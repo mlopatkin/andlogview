@@ -22,8 +22,6 @@ import static name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Date;
-
 /**
  * Some factory methods to construct log records for tests.
  */
@@ -31,31 +29,31 @@ public final class LogRecordUtils {
     private LogRecordUtils() {}
 
     public static LogRecord forPid(int pid) {
-        return new LogRecord(new Date(), pid, NO_ID, "", Priority.INFO, "", "");
+        return LogRecord.createWithoutTimestamp(pid, NO_ID, "", Priority.INFO, "", "");
     }
 
     public static LogRecord forAppName(String appName) {
-        return new LogRecord(new Date(), NO_ID, NO_ID, appName, Priority.INFO, "", "");
+        return LogRecord.createWithoutTimestamp(NO_ID, NO_ID, appName, Priority.INFO, "", "");
     }
 
     public static LogRecord forTag(String tag) {
-        return new LogRecord(new Date(), NO_ID, NO_ID, "", Priority.INFO, tag, "");
+        return LogRecord.createWithoutTimestamp(NO_ID, NO_ID, "", Priority.INFO, tag, "");
     }
 
     public static LogRecord forMessage(String message) {
-        return new LogRecord(new Date(), NO_ID, NO_ID, "", Priority.INFO, "", message);
+        return LogRecord.createWithoutTimestamp(NO_ID, NO_ID, "", Priority.INFO, "", message);
     }
 
     public static LogRecord forPriority(Priority priority) {
-        return new LogRecord(new Date(), NO_ID, NO_ID, "", priority, "", "");
+        return LogRecord.createWithoutTimestamp(NO_ID, NO_ID, "", priority, "", "");
     }
 
     public static LogRecord forBuffer(@Nullable Buffer buffer) {
-        return new LogRecord(new Date(), NO_ID, NO_ID, "", Priority.INFO, "", "", buffer);
+        return LogRecord.createWithoutTimestamp(NO_ID, NO_ID, "", Priority.INFO, "", "", buffer);
     }
 
     public static LogRecord forPidAndAppName(int pid, String appName) {
-        return new LogRecord(new Date(), pid, NO_ID, appName, Priority.INFO, "", "");
+        return LogRecord.createWithoutTimestamp(pid, NO_ID, appName, Priority.INFO, "", "");
     }
 
     /**
@@ -65,43 +63,44 @@ public final class LogRecordUtils {
      * @param newTime the new time to use
      * @return new record with all fields identical to r except time
      */
-    public static LogRecord withTime(LogRecord r, Date newTime) {
-        return new LogRecord(newTime, r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
-                r.getMessage(), r.getBuffer());
+    public static LogRecord withTime(LogRecord r, Timestamp newTime) {
+        return LogRecord.createWithTimestamp(
+                newTime, r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(), r.getMessage(),
+                r.getBuffer());
     }
 
     public static LogRecord withPid(LogRecord r, int pid) {
-        return new LogRecord(r.getTime(), pid, r.getTid(), r.getAppName(), r.getPriority(), r.getTag(), r.getMessage(),
-                r.getBuffer());
+        return LogRecord.create(r.getTime(), pid, r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
+                r.getMessage(), r.getBuffer());
     }
 
     public static LogRecord withTid(LogRecord r, int tid) {
-        return new LogRecord(r.getTime(), r.getPid(), tid, r.getAppName(), r.getPriority(), r.getTag(), r.getMessage(),
-                r.getBuffer());
+        return LogRecord.create(r.getTime(), r.getPid(), tid, r.getAppName(), r.getPriority(), r.getTag(),
+                r.getMessage(), r.getBuffer());
     }
 
     public static LogRecord withAppName(LogRecord r, String appName) {
-        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), appName, r.getPriority(), r.getTag(), r.getMessage(),
-                r.getBuffer());
+        return LogRecord.create(r.getTime(), r.getPid(), r.getTid(), appName, r.getPriority(), r.getTag(),
+                r.getMessage(), r.getBuffer());
     }
 
     public static LogRecord withPriority(LogRecord r, Priority priority) {
-        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), priority, r.getTag(), r.getMessage(),
-                r.getBuffer());
+        return LogRecord.create(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), priority, r.getTag(),
+                r.getMessage(), r.getBuffer());
     }
 
     public static LogRecord withTag(LogRecord r, String tag) {
-        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), tag, r.getMessage(),
-                r.getBuffer());
+        return LogRecord.create(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), tag,
+                r.getMessage(), r.getBuffer());
     }
 
     public static LogRecord withMessage(LogRecord r, String message) {
-        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(), message,
-                r.getBuffer());
+        return LogRecord.create(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
+                message, r.getBuffer());
     }
 
     public static LogRecord withBuffer(LogRecord r, @Nullable Buffer buffer) {
-        return new LogRecord(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
+        return LogRecord.create(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
                 r.getMessage(), buffer);
     }
 }

@@ -222,8 +222,8 @@ public class TablePopupMenuPresenterParameterizedTest {
     }
 
     private static TableRow makeRegexishRow() {
-        LogRecord record = new LogRecord(null, 123, 456, "/usr/bin/[/", LogRecord.Priority.INFO, "/Broken(/",
-                "/Broken \\E[Message/");
+        LogRecord record = LogRecord.createWithoutTimestamp(
+                123, 456, "/usr/bin/[/", LogRecord.Priority.INFO, "/Broken(/", "/Broken \\E[Message/");
         return new TableRow(1, record);
     }
 
@@ -252,7 +252,7 @@ public class TablePopupMenuPresenterParameterizedTest {
     }
 
     private static TableRow makeValueRow(String value) {
-        LogRecord record = new LogRecord(null, 123, 456, value, LogRecord.Priority.INFO, value, value);
+        LogRecord record = LogRecord.createWithoutTimestamp(123, 456, value, LogRecord.Priority.INFO, value, value);
         return new TableRow(1, record);
     }
 

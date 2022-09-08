@@ -30,9 +30,13 @@ import java.util.Date;
 import java.util.stream.Stream;
 
 public class LogRecordTest {
-    public static final long BASE_DATE = 1584719894000L;
-    private static final LogRecord BASE = new LogRecord(
-            new Date(BASE_DATE), 123, 123, "com.example.app", Priority.INFO, "tag", "message", Buffer.EVENTS);
+    private static final long BASE_DATE_LONG = 1584719894000L;
+    private static final Timestamp BASE_TIME = new Timestamp(new Date(BASE_DATE_LONG));
+    private static final Timestamp AFTER_BASE_TIME = new Timestamp(new Date(BASE_DATE_LONG + 1));
+
+    private static final LogRecord BASE =
+            LogRecord.createWithTimestamp(BASE_TIME, 123, 123, "com.example.app", Priority.INFO, "tag", "message",
+                    Buffer.EVENTS);
 
 
     @Test
@@ -43,7 +47,7 @@ public class LogRecordTest {
 
     @Test
     public void logRecordsAreOrderedByTime() {
-        LogRecord later = withTime(BASE, new Date(BASE_DATE + 1));
+        LogRecord later = withTime(BASE, AFTER_BASE_TIME);
 
         assertEquals("BASE < later", -1, BASE.compareTo(later));
         assertEquals("later < BASE", 1, later.compareTo(BASE));
@@ -61,7 +65,7 @@ public class LogRecordTest {
     @Test
     public void logRecordsAreOrderedByTimeFirst() {
         // EVENTS < MAIN
-        LogRecord later = withTime(withBuffer(BASE, Buffer.MAIN), new Date(BASE_DATE + 1));
+        LogRecord later = withTime(withBuffer(BASE, Buffer.MAIN), AFTER_BASE_TIME);
 
         assertEquals("BASE < later", -1, BASE.compareTo(later));
         assertEquals("later < BASE", 1, later.compareTo(BASE));

@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,15 +61,17 @@ public class LogRecordParser {
                 return null;
             }
             try {
-                Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+                Timestamp dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
                 int pid = Integer.parseInt(m.group(2));
                 int tid = Integer.parseInt(m.group(3));
                 Priority priority = getPriorityFromChar(m.group(4));
                 String tag = m.group(5);
                 String message = m.group(6);
-                return new LogRecord(dateTime, pid, tid, pidToProcess.get(pid), priority, tag, message, buffer);
+                return LogRecord.createWithTimestamp(dateTime, pid, tid, pidToProcess.get(pid), priority, tag, message,
+                        buffer);
             } catch (ParseException e) {
-                return new LogRecord(new Date(), -1, -1, "", Priority.ERROR, "Parse Error", m.group());
+                // TODO(mlopatkin) This is weird and should be removed.
+                return LogRecord.createWithoutTimestamp(-1, -1, "", Priority.ERROR, "Parse Error", m.group());
             }
         }
     }
@@ -95,7 +96,8 @@ public class LogRecordParser {
             int pid = Integer.parseInt(m.group(3));
             String message = m.group(4);
 
-            return new LogRecord(null, pid, LogRecord.NO_ID, pidToProcess.get(pid), priority, tag, message, buffer);
+            return LogRecord.createWithoutTimestamp(pid, LogRecord.NO_ID, pidToProcess.get(pid), priority, tag, message,
+                    buffer);
         }
     }
 
@@ -120,7 +122,8 @@ public class LogRecordParser {
             String message = m.group(3);
             String tag = m.group(4);
 
-            return new LogRecord(null, pid, LogRecord.NO_ID, pidToProcess.get(pid), priority, tag, message, buffer);
+            return LogRecord.createWithoutTimestamp(pid, LogRecord.NO_ID, pidToProcess.get(pid), priority, tag, message,
+                    buffer);
         }
     }
 
@@ -140,7 +143,8 @@ public class LogRecordParser {
             String tag = m.group(2);
             String message = m.group(3);
 
-            return new LogRecord(null, LogRecord.NO_ID, LogRecord.NO_ID, "", priority, tag, message, buffer);
+            return LogRecord.createWithoutTimestamp(LogRecord.NO_ID, LogRecord.NO_ID, "", priority, tag, message,
+                    buffer);
         }
     }
 
@@ -160,15 +164,16 @@ public class LogRecordParser {
                 return null;
             }
             try {
-                Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+                Timestamp dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
                 Priority priority = getPriorityFromChar(m.group(2));
                 String tag = m.group(3);
                 int pid = Integer.parseInt(m.group(4));
                 String message = m.group(5);
-                return new LogRecord(
+                return LogRecord.createWithTimestamp(
                         dateTime, pid, LogRecord.NO_ID, pidToProcess.get(pid), priority, tag, message, buffer);
             } catch (ParseException e) {
-                return new LogRecord(new Date(), -1, -1, "", Priority.ERROR, "Parse Error", m.group());
+                // TODO(mlopatkin) This is weird and should be removed.
+                return LogRecord.createWithoutTimestamp(-1, -1, "", Priority.ERROR, "Parse Error", m.group());
             }
         }
     }
@@ -190,7 +195,7 @@ public class LogRecordParser {
                 return null;
             }
             try {
-                Date dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
+                Timestamp dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
                 int pid = Integer.parseInt(m.group(2));
                 int tid = Integer.parseInt(m.group(3));
                 String rawAppName = m.group(4);
@@ -198,9 +203,10 @@ public class LogRecordParser {
                 Priority priority = getPriorityFromChar(m.group(5));
                 String tag = m.group(6);
                 String message = m.group(7);
-                return new LogRecord(dateTime, pid, tid, appName, priority, tag, message);
+                return LogRecord.createWithTimestamp(dateTime, pid, tid, appName, priority, tag, message);
             } catch (ParseException e) {
-                return new LogRecord(new Date(), -1, -1, "", Priority.ERROR, "Parse Error", m.group());
+                // TODO(mlopatkin) This is weird and should be removed.
+                return LogRecord.createWithoutTimestamp(-1, -1, "", Priority.ERROR, "Parse Error", m.group());
             }
         }
     }

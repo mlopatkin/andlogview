@@ -26,7 +26,7 @@ public class RowSearchStrategyFactoryTest {
     private LogRecord system;
 
     private static LogRecord makeRecord(String tag, String app, String msg) {
-        return new LogRecord(null, -1, -1, app, LogRecord.Priority.FATAL, tag, msg);
+        return LogRecord.createWithoutTimestamp(-1, -1, app, LogRecord.Priority.FATAL, tag, msg);
     }
 
     @Before

@@ -16,10 +16,10 @@
 package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.liblogcat.TimeFormatUtils;
+import name.mlopatkin.andlogview.liblogcat.Timestamp;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.Component;
-import java.util.Date;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -31,8 +31,8 @@ class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
             super.setValue(null);
             return;
         }
-        assert value instanceof Date;
-        String strValue = TimeFormatUtils.convertTimeToString((Date) value);
+        assert value instanceof Timestamp;
+        String strValue = TimeFormatUtils.convertTimeToString((Timestamp) value);
         super.setValue(strValue);
     }
 

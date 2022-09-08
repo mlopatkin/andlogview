@@ -24,7 +24,7 @@ public class RowSearchersTest {
     static final String MSG_SYSTEM_SERVER = "System_server died";
 
     private static LogRecord makeRecord(String tag, String app, String msg) {
-        return new LogRecord(null, -1, -1, app, LogRecord.Priority.FATAL, tag, msg);
+        return LogRecord.createWithoutTimestamp(-1, -1, app, LogRecord.Priority.FATAL, tag, msg);
     }
 
     @Test

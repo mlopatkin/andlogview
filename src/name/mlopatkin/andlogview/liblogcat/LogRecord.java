@@ -22,7 +22,6 @@ import com.google.common.collect.ComparisonChain;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * This class contains all available log record data like timestamp, tag,
@@ -32,7 +31,7 @@ public class LogRecord implements Comparable<LogRecord> {
 
     private static final Comparator<@Nullable Buffer> NULL_SAFE_BUFFER_COMPARATOR =
             Comparator.nullsFirst(Comparator.naturalOrder());
-    private static final Comparator<@Nullable Date> NULL_SAFE_DATE_COMPARATOR =
+    private static final Comparator<@Nullable Timestamp> NULL_SAFE_TIME_COMPARATOR =
             Comparator.nullsFirst(Comparator.naturalOrder());
 
     public enum Priority {
@@ -71,7 +70,7 @@ public class LogRecord implements Comparable<LogRecord> {
 
     public static final int NO_ID = -1;
 
-    private final @Nullable Date time;
+    private final @Nullable Timestamp time;
     private final int pid;
     private final int tid;
     private final Priority priority;
@@ -80,13 +79,33 @@ public class LogRecord implements Comparable<LogRecord> {
     private final @Nullable Buffer buffer;
     private final String appName;
 
-    public LogRecord(@Nullable Date time, int pid, int tid, @Nullable String appName, Priority priority, String tag,
-            String message) {
-        this(time, pid, tid, appName, priority, tag, message, null);
+    public static LogRecord createWithoutTimestamp(int pid, int tid, @Nullable String appName, Priority priority,
+            String tag, String message) {
+        return createWithoutTimestamp(pid, tid, appName, priority, tag, message, null);
     }
 
-    public LogRecord(@Nullable Date time, int pid, int tid, @Nullable String appName, Priority priority, String tag,
-            String message, @Nullable Buffer buffer) {
+    public static LogRecord createWithoutTimestamp(int pid, int tid, @Nullable String appName, Priority priority,
+            String tag, String message, @Nullable Buffer buffer) {
+        return LogRecord.create(null, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    public static LogRecord createWithTimestamp(Timestamp time, int pid, int tid, @Nullable String appName,
+            Priority priority, String tag, String message) {
+        return LogRecord.create(time, pid, tid, appName, priority, tag, message, null);
+    }
+
+    public static LogRecord createWithTimestamp(Timestamp time, int pid, int tid, @Nullable String appName,
+            Priority priority, String tag, String message, @Nullable Buffer buffer) {
+        return LogRecord.create(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    public static LogRecord create(@Nullable Timestamp time, int pid, int tid, @Nullable String appName,
+            Priority priority, String tag, String message, @Nullable Buffer buffer) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    private LogRecord(@Nullable Timestamp time, int pid, int tid, @Nullable String appName, Priority priority,
+            String tag, String message, @Nullable Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -97,7 +116,7 @@ public class LogRecord implements Comparable<LogRecord> {
         this.buffer = buffer;
     }
 
-    public @Nullable Date getTime() {
+    public @Nullable Timestamp getTime() {
         return time;
     }
 
@@ -159,7 +178,7 @@ public class LogRecord implements Comparable<LogRecord> {
     @Override
     public int compareTo(LogRecord o) {
         return ComparisonChain.start()
-                .compare(getTime(), o.getTime(), NULL_SAFE_DATE_COMPARATOR)
+                .compare(getTime(), o.getTime(), NULL_SAFE_TIME_COMPARATOR)
                 .compare(getBuffer(), o.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)
                 .result();
     }

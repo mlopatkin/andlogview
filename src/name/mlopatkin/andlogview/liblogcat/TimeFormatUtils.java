@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.liblogcat;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Thread-safe routines that perform reading and writing of the timestamps in
@@ -30,11 +29,11 @@ public class TimeFormatUtils {
     private static final ThreadLocal<DateFormat> LOGCAT_DATE_FORMAT =
             ThreadLocal.withInitial(() -> new SimpleDateFormat("MM-dd HH:mm:ss.SSS"));
 
-    public static Date getTimeFromString(String s) throws ParseException {
-        return LOGCAT_DATE_FORMAT.get().parse(s);
+    public static Timestamp getTimeFromString(String s) throws ParseException {
+        return new Timestamp(LOGCAT_DATE_FORMAT.get().parse(s));
     }
 
-    public static String convertTimeToString(Date date) {
-        return LOGCAT_DATE_FORMAT.get().format(date);
+    public static String convertTimeToString(Timestamp time) {
+        return LOGCAT_DATE_FORMAT.get().format(time.asDate());
     }
 }

@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
@@ -92,9 +91,9 @@ public class AssertLogRecord {
     }
 
     private LocalDateTime getTimeAsLocalDateTime() {
-        Date time = item.getTime();
+        Timestamp time = item.getTime();
         Assert.assertNotNull("Time is null", time);
-        return time.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return time.asDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
 

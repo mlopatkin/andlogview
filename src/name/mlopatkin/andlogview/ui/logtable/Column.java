@@ -20,13 +20,13 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.liblogcat.Field;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.TimeFormatUtils;
+import name.mlopatkin.andlogview.liblogcat.Timestamp;
 import name.mlopatkin.andlogview.widgets.TableColumnBuilder;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -43,13 +43,13 @@ public enum Column {
     },
     TIME(Field.TIME, "time", "Time") {
         @Override
-        public @Nullable Date getValue(int rowIndex, LogRecord record) {
+        public @Nullable Timestamp getValue(int rowIndex, LogRecord record) {
             return record.getTime();
         }
 
         @Override
         public String getStrValue(int rowIndex, LogRecord record) {
-            Date time = record.getTime();
+            Timestamp time = record.getTime();
             assert time != null;
             return TimeFormatUtils.convertTimeToString(time);
         }
