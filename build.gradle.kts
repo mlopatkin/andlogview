@@ -18,29 +18,22 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import name.mlopatkin.andlogview.building.BuildEnvironment
 import name.mlopatkin.andlogview.building.GenerateBuildMetadata
 import name.mlopatkin.andlogview.building.GenerateNotices
+import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import net.ltgt.gradle.errorprone.errorprone
-import java.util.*
+import java.util.Locale
 
 @Suppress("DSL_SCOPE_VIOLATION")  // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-    java
-    checkstyle
     idea
     application
 
     alias(libs.plugins.shadow)
-    alias(libs.plugins.errorprone)
     alias(libs.plugins.bitbucket)
-    alias(libs.plugins.eclipseApt)
     alias(libs.plugins.jmh)
     alias(libs.plugins.jlink)
-}
 
-repositories {
-    mavenCentral()
-    google()
+    id("name.mlopatkin.andlogview.building.java-conventions")
 }
 
 dependencies {
@@ -53,8 +46,6 @@ dependencies {
     implementation(libs.flatlaf.core)
     implementation(libs.flatlaf.extras)
 
-    compileOnly(libs.checkerframeworkAnnotations)
-
     testImplementation(libs.test.junit4)
     testImplementation(libs.test.mockito.core)
     testImplementation(libs.test.mockito.jupiter)
@@ -65,13 +56,8 @@ dependencies {
     testImplementation(libs.test.junit5.jupiter)
     testRuntimeOnly(libs.test.junit5.vintageEngine)
 
-    annotationProcessor(libs.dagger.compiler)
-    annotationProcessor(libs.build.nullaway)
-    testAnnotationProcessor(libs.build.nullaway)
-    jmhAnnotationProcessor(libs.build.nullaway)
+    annotationProcessor(buildLibs.dagger.compiler)
 
-    errorprone(libs.build.errorprone.core)
-    errorproneJavac(libs.build.errorprone.javac)
 }
 
 configurations {
@@ -94,23 +80,8 @@ application {
     mainClass.set("name.mlopatkin.andlogview.Main")
 }
 
-java {
-    toolchain {
-        this.languageVersion.set(JavaLanguageVersion.of(8))
-    }
-}
-
-// Configure testing frameworks
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
 jmh {
     humanOutputFile.set(file("$buildDir/reports/jmh/human.txt"))
-}
-
-checkstyle {
-    toolVersion = libs.versions.checkstyle.get()
 }
 
 // Configure sources
@@ -173,35 +144,6 @@ tasks.named("compileJava") {
 }
 
 idea.module.generatedSourceDirs.add(file(metadataBuildDir))
-
-// Configure compilation warnings
-tasks.withType<JavaCompile>().configureEach {
-    // Configure javac warnings
-    options.compilerArgs.addAll(listOf(
-            "-Xlint:unchecked",
-            "-Xlint:deprecation",
-            "-Werror",  // Treat warnings as errors
-    ))
-    options.errorprone {
-        // Configure ErrorProne
-        errorproneArgs.addAll(
-                "-Xep:JavaLangClash:OFF",
-                "-Xep:MissingSummary:OFF",
-                "-Xep:JavaUtilDate:OFF",
-                "-Xep:UnusedVariable:OFF", // Incompatible with Dagger-generated class
-                "-Xep:EmptyBlockTag:OFF",
-        )
-        // Configure NullAway
-        option("NullAway:AnnotatedPackages", "name.mlopatkin")
-        option("NullAway:AssertsEnabled", "true")
-        option("NullAway:ExcludedClassAnnotations", "javax.annotation.Generated")
-        option("NullAway:ExcludedFieldAnnotations",
-                listOf("org.checkerframework.checker.nullness.qual.MonotonicNonNull",
-                        "org.mockito.Mock,org.mockito.Captor",
-                        "org.junit.jupiter.api.io.TempDir").joinToString(separator = ","))
-        errorproneArgs.add("-Xep:NullAway:ERROR")
-    }
-}
 
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     bundledDependencies.set(configurations.runtimeClasspath.flatMap { rtCp ->

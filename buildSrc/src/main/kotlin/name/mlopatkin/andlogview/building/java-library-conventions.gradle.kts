@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
+package name.mlopatkin.andlogview.building
+
 plugins {
-    `kotlin-dsl`
-}
+    `java-library`
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
-
-dependencies {
-    // Workaround to expose version catalog to script plugins.
-    // See https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
-    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
-
-    implementation(libs.build.errorprone.plugin)
-    implementation(libs.build.eclipseAptPlugin)
-    implementation(libs.build.javapoet)
+    id("name.mlopatkin.andlogview.building.java-conventions")
 }
