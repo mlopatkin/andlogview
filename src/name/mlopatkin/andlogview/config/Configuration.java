@@ -24,6 +24,7 @@ import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.point;
 import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.string;
 import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.type;
 
+import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
@@ -242,7 +243,7 @@ public class Configuration {
         // @formatter:on
 
         // setup default values from resource
-        PropertyUtils.loadValuesFromResource(cfg, "logview.properties");
+        PropertyUtils.loadValuesFromResource(cfg, Main.class, "logview.properties");
 
         return new SynchronizedConfiguration(cfg);
     }

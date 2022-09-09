@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
-import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
 import java.io.File;
@@ -33,9 +32,8 @@ public class PropertyUtils {
         return props;
     }
 
-    public static Properties getPropertiesFromResources(String resourceName) {
-        // TODO(mlopatkin) remove reference to Main.class here
-        InputStream resourceStream = Main.class.getResourceAsStream(resourceName);
+    public static Properties getPropertiesFromResources(Class<?> clazz, String resourceName) {
+        InputStream resourceStream = clazz.getResourceAsStream(resourceName);
         if (resourceStream == null) {
             throw new IllegalArgumentException("Couldn't load resource " + resourceName);
         }
@@ -54,8 +52,8 @@ public class PropertyUtils {
         cfg.assign(getPropertiesFromStream(stream));
     }
 
-    public static void loadValuesFromResource(ConfigurationMap cfg, String resourceName) {
-        cfg.assign(getPropertiesFromResources(resourceName));
+    public static void loadValuesFromResource(ConfigurationMap cfg, Class<?> clazz, String resourceName) {
+        cfg.assign(getPropertiesFromResources(clazz, resourceName));
     }
 
     public static File getSystemConfigDir() {

@@ -15,6 +15,7 @@
  */
 package name.mlopatkin.andlogview.config;
 
+import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import org.apache.log4j.BasicConfigurator;
@@ -34,10 +35,10 @@ class Logging {
     }
 
     static void loadNormal() {
-        PropertyConfigurator.configure(PropertyUtils.getPropertiesFromResources("normal_log.properties"));
+        PropertyConfigurator.configure(PropertyUtils.getPropertiesFromResources(Main.class, "normal_log.properties"));
     }
 
     static void loadDebug() {
-        PropertyConfigurator.configure(PropertyUtils.getPropertiesFromResources("debug_log.properties"));
+        PropertyConfigurator.configure(PropertyUtils.getPropertiesFromResources(Main.class, "debug_log.properties"));
     }
 }
