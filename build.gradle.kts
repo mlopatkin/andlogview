@@ -39,12 +39,12 @@ plugins {
 
 dependencies {
     implementation(project("base"))
+    implementation(project("device"))
     implementation(libs.dagger.runtime)
     implementation(libs.guava)
     implementation(libs.gson)
     implementation(libs.log4j)
     implementation(libs.jopt)
-    implementation(libs.ddmlib)
     implementation(libs.flatlaf.core)
     implementation(libs.flatlaf.extras)
 

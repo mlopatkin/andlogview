@@ -33,6 +33,7 @@ public final class AppResources {
      * @throws IllegalArgumentException if the resource isn't available
      */
     public static ByteSource getResource(String resourcePath) {
-        return Resources.asByteSource(Resources.getResource(AppResources.class, "../" + resourcePath));
+        return Resources.asByteSource(
+                Resources.getResource(AppResources.class, "/name/mlopatkin/andlogview/" + resourcePath));
     }
 }

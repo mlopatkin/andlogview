@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
+plugins {
+    id("name.mlopatkin.andlogview.building.java-library-conventions")
 
-include("base")
-include("device")
+    `java-test-fixtures`
+}
+
+description = "Interaction with a connected device through ADB"
+
+dependencies {
+    implementation(project(":base"))
+    api(libs.ddmlib)  // TODO(mlopatkin) Make this an implementation dependency
+    implementation(libs.gson)
+    implementation(libs.guava)
+    implementation(libs.log4j)
+}
