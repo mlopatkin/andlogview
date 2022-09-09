@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.bitbucket.gradle.UploadTask
+import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier
 import java.util.Locale
 
 @Suppress("DSL_SCOPE_VIOLATION")  // https://youtrack.jetbrains.com/issue/KTIJ-19369
@@ -37,6 +38,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project("base"))
     implementation(libs.dagger.runtime)
     implementation(libs.guava)
     implementation(libs.gson)
@@ -46,18 +48,9 @@ dependencies {
     implementation(libs.flatlaf.core)
     implementation(libs.flatlaf.extras)
 
-    testImplementation(libs.test.junit4)
-    testImplementation(libs.test.mockito.core)
-    testImplementation(libs.test.mockito.jupiter)
-    testImplementation(libs.test.hamcrest.all)
-    testImplementation(libs.test.hamcrest.optional)
-    testImplementation(libs.test.assertj)
-    testImplementation(platform(libs.test.junit5.bom))
-    testImplementation(libs.test.junit5.jupiter)
-    testRuntimeOnly(libs.test.junit5.vintageEngine)
-
     annotationProcessor(buildLibs.dagger.compiler)
 
+    testImplementation(testFixtures(project("base")))
 }
 
 configurations {
@@ -95,9 +88,7 @@ sourceSets {
             srcDirs.clear()
             srcDir("src")
             srcDir(metadataBuildDir)
-            srcDir("third-party/observerList/src")
             srcDir("third-party/styledLabel/src")
-            srcDir("third-party/systemUtils/src")
         }
         resources {
             srcDirs.clear()
@@ -148,13 +139,16 @@ idea.module.generatedSourceDirs.add(file(metadataBuildDir))
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     bundledDependencies.set(configurations.runtimeClasspath.flatMap { rtCp ->
         rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
-            artifacts.map { artifact -> artifact.id.componentIdentifier }
+            artifacts.map { artifact -> artifact.id.componentIdentifier }.filter {
+                // TODO(mlopatkin) This is ugly but Gradle cannot serialize a project dependency here.
+                id -> id is ModuleComponentArtifactIdentifier
+            }
         }
     })
     libraryNoticesDirectory.set(file("third-party/libs/notices"))
     sourceFilesNotices.from(
-            "third-party/observerList/NOTICE",
-            "third-party/systemUtils/NOTICE",
+            "base/third-party/observerList/NOTICE",
+            "base/third-party/systemUtils/NOTICE",
             "third-party/tangoIcons/NOTICE",
             "third-party/styledLabel/NOTICE",
     )

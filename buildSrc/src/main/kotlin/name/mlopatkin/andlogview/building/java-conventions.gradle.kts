@@ -35,6 +35,16 @@ repositories {
 dependencies {
     compileOnly(buildLibs.checkerframeworkAnnotations)
 
+    testImplementation(buildLibs.test.junit4)
+    testImplementation(buildLibs.test.mockito.core)
+    testImplementation(buildLibs.test.mockito.jupiter)
+    testImplementation(buildLibs.test.hamcrest.all)
+    testImplementation(buildLibs.test.hamcrest.optional)
+    testImplementation(buildLibs.test.assertj)
+    testImplementation(platform(buildLibs.test.junit5.bom))
+    testImplementation(buildLibs.test.junit5.jupiter)
+    testRuntimeOnly(buildLibs.test.junit5.vintageEngine)
+
     annotationProcessor(buildLibs.build.nullaway)
     testAnnotationProcessor(buildLibs.build.nullaway)
 
@@ -46,6 +56,12 @@ dependencies {
 pluginManager.withPlugin(buildLibs.plugins.jmh.pluginId) {
     dependencies {
         "jmhAnnotationProcessor"(buildLibs.build.nullaway)
+    }
+}
+
+pluginManager.withPlugin("java-test-fixtures") {
+    dependencies {
+        "testFixturesAnnotationProcessor"(buildLibs.build.nullaway)
     }
 }
 
