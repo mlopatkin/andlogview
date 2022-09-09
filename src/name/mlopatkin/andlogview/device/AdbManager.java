@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.device;
 
-import name.mlopatkin.andlogview.AtExitManager;
+import name.mlopatkin.andlogview.base.AtExitManager;
 
 import java.util.Optional;
 

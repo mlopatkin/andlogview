@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview;
+package name.mlopatkin.andlogview.base;
 
 import org.apache.log4j.Logger;
 

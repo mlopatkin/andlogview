@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.config;
 
-import name.mlopatkin.andlogview.AtExitManager;
+import name.mlopatkin.andlogview.base.AtExitManager;
 
 import com.google.common.io.Files;
 

@@ -26,6 +26,7 @@ dependencies {
     api(libs.dagger.runtime)
 
     implementation(libs.guava)
+    implementation(libs.log4j)
 
     testFixturesImplementation(libs.guava)
     testFixturesApi(libs.test.hamcrest.all)

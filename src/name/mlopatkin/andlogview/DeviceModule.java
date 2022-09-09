@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.base.AtExitManager;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 

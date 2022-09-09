@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.device.dump;
 
-import name.mlopatkin.andlogview.AppResources;
+import name.mlopatkin.andlogview.base.AppResources;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
