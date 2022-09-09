@@ -23,24 +23,19 @@ import name.mlopatkin.bitbucket.gradle.UploadTask
 import net.ltgt.gradle.errorprone.errorprone
 import java.util.*
 
+@Suppress("DSL_SCOPE_VIOLATION")  // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     java
     checkstyle
     idea
     application
 
-    // Shadow plugin provides means to prepare a single-JAR distribution of the tool
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    // Errorprone plugin allows to configure Errorprone compiler
-    id("net.ltgt.errorprone") version "2.0.2"
-    // Bitbucket plugin allows publishing releases to the Bitbucket project's Downloads page
-    id("name.mlopatkin.bitbucket") version "0.5-rc4"
-    // Eclipse APT plugin configures annotation processors when importing the project into Eclipse
-    id("com.diffplug.eclipse.apt") version "3.34.1"
-    // JMH plugin allows building and running JMH benchmarks
-    id("me.champeau.jmh") version "0.6.6"
-    // Runtime plugin allows preparing runtime images with JDK included
-    id("org.beryx.runtime") version "1.12.7"
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.errorprone)
+    alias(libs.plugins.bitbucket)
+    alias(libs.plugins.eclipseApt)
+    alias(libs.plugins.jmh)
+    alias(libs.plugins.jlink)
 }
 
 repositories {
@@ -49,40 +44,34 @@ repositories {
 }
 
 dependencies {
-    val daggerVersion = "2.40.5"
-    val flatlafVersion = "2.0"
-    val nullawayVersion = "0.9.5"
+    implementation(libs.dagger.runtime)
+    implementation(libs.guava)
+    implementation(libs.gson)
+    implementation(libs.log4j)
+    implementation(libs.jopt)
+    implementation(libs.ddmlib)
+    implementation(libs.flatlaf.core)
+    implementation(libs.flatlaf.extras)
 
-    implementation("com.google.dagger:dagger:$daggerVersion")
-    implementation("com.google.guava:guava:31.0.1-jre")
-    implementation("com.google.code.gson:gson:2.8.9")
-    implementation("log4j:log4j:1.2.17")
-    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
-    implementation("com.android.tools.ddms:ddmlib:26.1.3")
-    implementation("com.formdev:flatlaf:$flatlafVersion")
-    implementation("com.formdev:flatlaf-extras:$flatlafVersion")
+    compileOnly(libs.checkerframeworkAnnotations)
 
-    compileOnly("org.checkerframework:checker-qual:3.21.1")
+    testImplementation(libs.test.junit4)
+    testImplementation(libs.test.mockito.core)
+    testImplementation(libs.test.mockito.jupiter)
+    testImplementation(libs.test.hamcrest.all)
+    testImplementation(libs.test.hamcrest.optional)
+    testImplementation(libs.test.assertj)
+    testImplementation(platform(libs.test.junit5.bom))
+    testImplementation(libs.test.junit5.jupiter)
+    testRuntimeOnly(libs.test.junit5.vintageEngine)
 
-    val mockitoVersion = "4.2.0"
+    annotationProcessor(libs.dagger.compiler)
+    annotationProcessor(libs.build.nullaway)
+    testAnnotationProcessor(libs.build.nullaway)
+    jmhAnnotationProcessor(libs.build.nullaway)
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:$mockitoVersion")
-    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-    testImplementation("org.hamcrest:hamcrest-all:1.3")
-    testImplementation("com.spotify:hamcrest-optional:1.2.0")
-    testImplementation("org.assertj:assertj-core:3.22.0")
-    testImplementation(platform("org.junit:junit-bom:5.8.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
-
-    annotationProcessor("com.google.dagger:dagger-compiler:$daggerVersion")
-    annotationProcessor("com.uber.nullaway:nullaway:$nullawayVersion")
-    testAnnotationProcessor("com.uber.nullaway:nullaway:$nullawayVersion")
-    jmhAnnotationProcessor("com.uber.nullaway:nullaway:$nullawayVersion")
-
-    errorprone("com.google.errorprone:error_prone_core:2.10.0")
-    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
+    errorprone(libs.build.errorprone.core)
+    errorproneJavac(libs.build.errorprone.javac)
 }
 
 configurations {
@@ -98,7 +87,7 @@ configurations {
     }
 }
 
-version = "0.22" + (if (BuildEnvironment.isSnapshotBuild()) "-SNAPSHOT" else "")
+version = libs.versions.andlogview.get() + (if (BuildEnvironment.isSnapshotBuild()) "-SNAPSHOT" else "")
 
 application {
     applicationName = "andlogview"
@@ -121,7 +110,7 @@ jmh {
 }
 
 checkstyle {
-    toolVersion = "8.12"
+    toolVersion = libs.versions.checkstyle.get()
 }
 
 // Configure sources

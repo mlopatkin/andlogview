@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-plugins {
-    `kotlin-dsl`
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation(libs.build.javapoet)
+@Suppress("UnstableApiUsage")
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
 }
