@@ -31,9 +31,16 @@ import java.util.concurrent.Executor;
 public interface AdbDeviceList {
 
     /**
-     * @return the list of currently connected devices
+     * @return the list of currently connected and provisioned devices
      */
     List<AdbDevice> getDevices();
+
+    /**
+     * Returns the list of all connected devices, including not yet provisioned ones
+     *
+     * @return the list of all connected devices
+     */
+    List<ProvisionalAdbDevice> getAllDevices();
 
     /**
      * @return the observable to register observers on this list

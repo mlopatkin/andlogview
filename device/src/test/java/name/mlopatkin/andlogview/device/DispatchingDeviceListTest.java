@@ -52,8 +52,8 @@ class DispatchingDeviceListTest {
 
         DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
 
-        assertThat(deviceList.getDevices())
-                .map(AdbDevice::getSerialNumber)
+        assertThat(deviceList.getAllDevices())
+                .map(ProvisionalAdbDevice::getSerialNumber)
                 .as("Check serials of returned devices")
                 .containsExactlyInAnyOrder("DeviceA", "DeviceB");
     }
@@ -64,8 +64,8 @@ class DispatchingDeviceListTest {
 
         adbFacade.connectDevice(createDevice("DeviceA"));
 
-        assertThat(deviceList.getDevices())
-                .map(AdbDevice::getSerialNumber)
+        assertThat(deviceList.getAllDevices())
+                .map(ProvisionalAdbDevice::getSerialNumber)
                 .as("Check serial of returned device")
                 .containsExactly("DeviceA");
     }

@@ -136,6 +136,21 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         }
     }
 
+    /**
+     * Returns the list of all connected devices, both provisioned and not.
+     *
+     * @return the list of all connected devices
+     */
+    public ImmutableList<ProvisionalAdbDevice> getAllDevices() {
+        // This isn't really a copy, just a typecast.
+        return ImmutableList.copyOf(getDevices());
+    }
+
+    /**
+     * Returns the list of already provisioned devices.
+     *
+     * @return the list of provisioned devices
+     */
     public ImmutableList<AdbDevice> getDevices() {
         synchronized (deviceLock) {
             return ImmutableList.copyOf(devices.values());

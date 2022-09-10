@@ -69,6 +69,11 @@ class AdbDeviceListImpl
     }
 
     @Override
+    public List<ProvisionalAdbDevice> getAllDevices() {
+        return dispatcher.getAllDevices();
+    }
+
+    @Override
     public void addObserver(DeviceChangeObserver observer) {
         if (deviceChangeObservers.isEmpty()) {
             dispatcher.addObserver(this);
