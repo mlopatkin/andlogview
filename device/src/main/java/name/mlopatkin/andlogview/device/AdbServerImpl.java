@@ -24,25 +24,27 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.Closeable;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.Executor;
 
-class AdbServerImpl implements AdbServer, Closeable {
+class AdbServerImpl implements AdbServer {
+    // AdbServerImpl wraps the current connection to the adb server. The connection can be replaced within the same
+    // server instance. Currently, this only happens when someone changes the path to the ADB executable.
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
 
     private final Object lock = new Object();
 
     @GuardedBy("lock")
-    private AdbConnectionImpl adbConnection;
+    private AndroidDebugBridge currentBridge;
     private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList =
             lazy(() -> DispatchingDeviceList.create(this));
 
     public AdbServerImpl(AdbLocation adbLocation) throws AdbException {
         synchronized (lock) {
-            adbConnection = createConnectionLocked(adbLocation);
+            currentBridge = createBridge(adbLocation);
         }
     }
 
@@ -53,21 +55,22 @@ class AdbServerImpl implements AdbServer, Closeable {
 
     public void updateConnection(AdbLocation adbLocation) throws AdbException {
         synchronized (lock) {
-            adbConnection.close();
-            adbConnection = createConnectionLocked(adbLocation);
+            currentBridge = createBridge(adbLocation);
         }
     }
 
-    @GuardedBy("lock")
-    private AdbConnectionImpl createConnectionLocked(AdbLocation adbLocation) throws AdbException {
+    private static AndroidDebugBridge createBridge(AdbLocation adbLocation) throws AdbException {
         logger.info("Starting ADB server");
         File adbExecutable = adbLocation.getExecutable().orElseThrow(() -> new AdbException("ADB location is invalid"));
         logger.debug("ADB server executable: " + adbExecutable.getAbsolutePath());
-        AndroidDebugBridge bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);
+        @Nullable AndroidDebugBridge bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);
+        if (bridge == null) {
+            throw new AdbException("Failed to create the bridge at " + adbExecutable);
+        }
         if (!isBridgeReady(bridge)) {
             throw new AdbException("Bridge is not ready");
         }
-        return new AdbConnectionImpl(bridge);
+        return bridge;
     }
 
     private static boolean isBridgeReady(AndroidDebugBridge adb) {
@@ -78,21 +81,13 @@ class AdbServerImpl implements AdbServer, Closeable {
             started.setAccessible(true);
             return started.getBoolean(adb);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new AssertionError("DDMLIB is not supported");
+            throw new AssertionError("This DDMLIB is not supported");
         }
     }
 
-    @Override
-    public void close() {
-        synchronized (lock) {
-            adbConnection.close();
-        }
-    }
-
-    @SuppressWarnings("deprecation")
     public AndroidDebugBridge getBridge() {
         synchronized (lock) {
-            return adbConnection.getBridge();
+            return currentBridge;
         }
     }
 }

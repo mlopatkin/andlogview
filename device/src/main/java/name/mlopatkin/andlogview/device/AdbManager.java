@@ -21,7 +21,8 @@ import name.mlopatkin.andlogview.base.AtExitManager;
 import java.util.Optional;
 
 /**
- * This class represents the global state of the DDMLIB library. It can be created without the need to use
+ * This class represents the global state of the DDMLIB library. The library is initialized lazily, so one could safely
+ * obtain an instance of the manager without worrying about bringing up ADB.
  * <p>
  * The implementation is thread-safe.
  */

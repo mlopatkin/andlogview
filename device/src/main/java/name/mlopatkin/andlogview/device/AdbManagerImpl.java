@@ -29,6 +29,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Optional;
 
 class AdbManagerImpl implements AdbManager {
+    // AdbManagerImpl is responsible for the state of the DDMLIB as a whole. The manager lazily initializes the library
+    // when the AdbServer is first requested.
     private static final Logger logger = Logger.getLogger(AdbManagerImpl.class);
 
     private final AtExitManager atExitManager;
