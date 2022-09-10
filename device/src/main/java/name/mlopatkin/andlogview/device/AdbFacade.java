@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
+package name.mlopatkin.andlogview.device;
 
-    `java-test-fixtures`
-}
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
 
-description = "Interaction with a connected device through ADB"
+/**
+ * A facade for the {@link AndroidDebugBridge}. Main purpose is to facilitate testing.
+ */
+interface AdbFacade {
+    IDevice[] getDevices();
 
-dependencies {
-    implementation(project(":base"))
-    api(libs.ddmlib)  // TODO(mlopatkin) Make this an implementation dependency
-    implementation(libs.gson)
-    implementation(libs.guava)
-    implementation(libs.log4j)
-
-    testFixturesApi(libs.test.hamcrest.all)
-    testFixturesImplementation(testFixtures(project(":base")))
+    void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener);
 }

@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.utils.LazyInstance.lazy;
 import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
@@ -30,7 +31,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.Executor;
 
-class AdbServerImpl implements AdbServer {
+class AdbServerImpl implements AdbServer, AdbFacade {
     // AdbServerImpl wraps the current connection to the adb server. The connection can be replaced within the same
     // server instance. Currently, this only happens when someone changes the path to the ADB executable.
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
@@ -85,9 +86,19 @@ class AdbServerImpl implements AdbServer {
         }
     }
 
-    public AndroidDebugBridge getBridge() {
+    private AndroidDebugBridge getBridge() {
         synchronized (lock) {
             return currentBridge;
         }
+    }
+
+    @Override
+    public IDevice[] getDevices() {
+        return getBridge().getDevices();
+    }
+
+    @Override
+    public void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
+        AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
     }
 }

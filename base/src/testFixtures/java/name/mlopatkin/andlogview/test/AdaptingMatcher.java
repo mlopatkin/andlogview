@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.test;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -35,6 +36,9 @@ import java.util.function.Function;
  * @param <R> the type of the method
  */
 public class AdaptingMatcher<T, R> extends TypeSafeMatcher<T> {
+    @Nullable
+    private final String adapterDescription;
+
     private final Function<T, R> adapter;
     private final Matcher<? super R> matcher;
 
@@ -45,6 +49,11 @@ public class AdaptingMatcher<T, R> extends TypeSafeMatcher<T> {
      * @param matcher the matcher that does actual work
      */
     public AdaptingMatcher(Function<T, R> adapter, Matcher<? super R> matcher) {
+        this(null, adapter, matcher);
+    }
+
+    public AdaptingMatcher(@Nullable String adapterDescription, Function<T, R> adapter, Matcher<? super R> matcher) {
+        this.adapterDescription = adapterDescription;
         this.adapter = adapter;
         this.matcher = matcher;
     }
@@ -56,6 +65,10 @@ public class AdaptingMatcher<T, R> extends TypeSafeMatcher<T> {
 
     @Override
     public void describeTo(Description description) {
+        if (adapterDescription != null) {
+            description.appendText(adapterDescription);
+            description.appendText(" ");
+        }
         matcher.describeTo(description);
     }
 

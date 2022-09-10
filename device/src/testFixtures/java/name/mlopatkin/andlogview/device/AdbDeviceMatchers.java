@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
+package name.mlopatkin.andlogview.device;
 
-    `java-test-fixtures`
-}
+import name.mlopatkin.andlogview.test.AdaptingMatcher;
 
-description = "Interaction with a connected device through ADB"
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
-dependencies {
-    implementation(project(":base"))
-    api(libs.ddmlib)  // TODO(mlopatkin) Make this an implementation dependency
-    implementation(libs.gson)
-    implementation(libs.guava)
-    implementation(libs.log4j)
+public class AdbDeviceMatchers {
+    private AdbDeviceMatchers() {}
 
-    testFixturesApi(libs.test.hamcrest.all)
-    testFixturesImplementation(testFixtures(project(":base")))
+    public static Matcher<AdbDevice> hasSerial(Matcher<? super String> serial) {
+        return new AdaptingMatcher<>("serial", AdbDevice::getSerialNumber, serial);
+    }
+
+    public static Matcher<AdbDevice> hasSerial(String serial) {
+        return hasSerial(Matchers.is(serial));
+    }
 }

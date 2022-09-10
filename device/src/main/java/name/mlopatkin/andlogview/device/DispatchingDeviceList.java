@@ -115,9 +115,9 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         return (changeMask & (IDevice.CHANGE_STATE | IDevice.CHANGE_BUILD_INFO)) != 0;
     }
 
-    public static DispatchingDeviceList create(AdbServerImpl server) {
+    public static DispatchingDeviceList create(AdbFacade adb) {
         DispatchingDeviceList result = new DispatchingDeviceList();
-        result.init(server);
+        result.init(adb);
         return result;
     }
 
@@ -125,9 +125,9 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         devices = new LinkedHashMap<>();
     }
 
-    private void init(AdbServerImpl server) {
-        AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
-        IDevice[] knownDevices = server.getBridge().getDevices();
+    private void init(AdbFacade adb) {
+        adb.addDeviceChangeListener(deviceChangeListener);
+        IDevice[] knownDevices = adb.getDevices();
         synchronized (deviceLock) {
             for (IDevice device : knownDevices) {
                 this.devices.putIfAbsent(device, new AdbDeviceImpl(device));
@@ -136,12 +136,9 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     public ImmutableList<AdbDevice> getDevices() {
-        final ImmutableList.Builder<AdbDevice> snapshot;
         synchronized (deviceLock) {
-            snapshot = ImmutableList.builderWithExpectedSize(devices.size());
-            snapshot.addAll(devices.values());
+            return ImmutableList.copyOf(devices.values());
         }
-        return snapshot.build();
     }
 
     private List<DeviceChangeObserver> getObservers() {
