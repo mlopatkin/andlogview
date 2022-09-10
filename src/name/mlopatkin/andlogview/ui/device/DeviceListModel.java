@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
+import name.mlopatkin.andlogview.device.ProvisionalAdbDevice;
 
 import org.apache.log4j.Logger;
 
@@ -27,11 +28,11 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-class DeviceListModel extends AbstractListModel<AdbDevice> implements DeviceChangeObserver {
+class DeviceListModel extends AbstractListModel<ProvisionalAdbDevice> implements DeviceChangeObserver {
     private static final Logger logger = Logger.getLogger(DeviceListModel.class);
 
     private final AdbDeviceList adbDeviceList;
-    private final List<AdbDevice> devices;
+    private final List<ProvisionalAdbDevice> devices;
 
     private DeviceListModel(AdbDeviceList adbDeviceList) {
         this.adbDeviceList = adbDeviceList;
@@ -44,15 +45,28 @@ class DeviceListModel extends AbstractListModel<AdbDevice> implements DeviceChan
     }
 
     @Override
-    public AdbDevice getElementAt(int index) {
+    public ProvisionalAdbDevice getElementAt(int index) {
         return devices.get(index);
     }
 
     @Override
-    public void onDeviceConnected(AdbDevice device) {
-        logger.debug("device added " + device);
+    public void onProvisionalDeviceConnected(ProvisionalAdbDevice device) {
+        logger.debug("provisional device added " + device);
         devices.add(device);
         fireIntervalAdded(this, devices.size() - 1, devices.size() - 1);
+    }
+
+    @Override
+    public void onDeviceConnected(AdbDevice device) {
+        logger.debug("device provisioned " + device);
+        int index = devices.indexOf(device);
+        if (index >= 0) {
+            devices.set(index, device);
+            fireContentsChanged(this, index, index);
+        } else {
+            devices.add(device);
+            fireIntervalAdded(this, devices.size() - 1, devices.size() - 1);
+        }
     }
 
     @Override
@@ -73,8 +87,8 @@ class DeviceListModel extends AbstractListModel<AdbDevice> implements DeviceChan
 
     public int getFirstOnlineDeviceIndex() {
         for (int i = 0; i < devices.size(); ++i) {
-            AdbDevice device = devices.get(i);
-            if (device.isOnline()) {
+            ProvisionalAdbDevice device = devices.get(i);
+            if ((device instanceof AdbDevice) && ((AdbDevice) device).isOnline()) {
                 return i;
             }
         }

@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.ProvisionalAdbDevice;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -33,7 +33,7 @@ import javax.swing.border.EmptyBorder;
  * UI base for SelectDeviceDialog. Should be edited with WindowBuilder.
  */
 class SelectDeviceDialogUi extends JDialog {
-    protected final JList<AdbDevice> deviceList;
+    protected final JList<ProvisionalAdbDevice> deviceList;
     protected final JButton okButton;
     protected final JButton cancelButton;
 

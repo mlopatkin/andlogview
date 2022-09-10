@@ -26,16 +26,8 @@ import java.util.concurrent.CompletableFuture;
  * Device or emulator that is connected via ADB.
  */
 public interface AdbDevice extends ProvisionalAdbDevice {
-    // TODO(mlopatkin) serial numbers aren't unique in reality, especially in case of the low-end phones with
-    //  low-quality firmware. It is better to use something like usb address but DDMLIB doesn't expose it.
-
     /** @return the user-friendly name of the device */
     String getName();
-
-    /**
-     * @return the user-friendly name of the device with unique id
-     */
-    String getDisplayName();
 
     /** @return the product string of the device ({@code android.os.Build.PRODUCT}) */
     @Nullable

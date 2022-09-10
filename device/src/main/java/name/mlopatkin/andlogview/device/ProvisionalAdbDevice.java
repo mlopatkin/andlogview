@@ -30,6 +30,8 @@ import java.util.concurrent.CompletableFuture;
  * the {@code ProvisionalAdbDevice}.
  */
 public interface ProvisionalAdbDevice {
+    // TODO(mlopatkin) serial numbers aren't unique in reality, especially in case of the low-end phones with
+    //  low-quality firmware. It is better to use something like usb address but DDMLIB doesn't expose it.
     /**
      * @return the serial number of the connected device
      */
@@ -41,6 +43,11 @@ public interface ProvisionalAdbDevice {
      * @return the DDMLIB's IDevice instance
      */
     IDevice getIDevice();
+
+    /**
+     * @return the user-friendly name of the device with unique id
+     */
+    String getDisplayName();
 
     /**
      * Returns a Future that a caller can use to wait for this device to become fully functional.

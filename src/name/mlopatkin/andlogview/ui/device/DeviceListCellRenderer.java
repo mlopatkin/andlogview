@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.ProvisionalAdbDevice;
 
 import java.awt.Component;
 
@@ -24,22 +25,25 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-class DeviceListCellRenderer implements ListCellRenderer<AdbDevice> {
+class DeviceListCellRenderer implements ListCellRenderer<ProvisionalAdbDevice> {
     private final DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer();
 
     @Override
     public Component getListCellRendererComponent(
-            JList<? extends AdbDevice> jList, AdbDevice device, int index, boolean selected, boolean focused) {
+            JList<? extends ProvisionalAdbDevice> jList, ProvisionalAdbDevice device, int index, boolean selected,
+            boolean focused) {
         return cellRenderer.getListCellRendererComponent(jList, getDeviceDisplayName(device), index, selected, focused);
     }
 
-    private String getDeviceDisplayName(AdbDevice device) {
+    private String getDeviceDisplayName(ProvisionalAdbDevice device) {
         String deviceName = device.getDisplayName();
-        if (device.isOnline()) {
-            return deviceName;
-        } else {
-            return formatOfflineDevice(deviceName);
+        if (device instanceof AdbDevice) {
+            AdbDevice adbDevice = (AdbDevice) device;
+            if (adbDevice.isOnline()) {
+                return deviceName;
+            }
         }
+        return formatOfflineDevice(deviceName);
     }
 
     private String formatOfflineDevice(String deviceName) {

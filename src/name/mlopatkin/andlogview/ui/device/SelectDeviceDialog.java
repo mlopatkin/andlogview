@@ -115,7 +115,9 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
     }
 
     private void onPositiveResult() {
-        deliverResult(deviceList.getSelectedValue());
+        // TODO(mlopatkin) This dialog is broken, as it allows to selecting offline devices. Cast is just making things
+        //   slightly worse.
+        deliverResult((AdbDevice) deviceList.getSelectedValue());
         dispose();
     }
 
