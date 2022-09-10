@@ -80,17 +80,19 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
 
                 @Override
                 public void deviceChanged(IDevice device, int changeMask) {
-                    List<String> changes = new ArrayList<>(3);
-                    if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
-                        changes.add("CHANGE_BUILD_INFO");
+                    if (logger.isDebugEnabled()) {
+                        List<String> changes = new ArrayList<>(3);
+                        if ((changeMask & IDevice.CHANGE_BUILD_INFO) != 0) {
+                            changes.add("CHANGE_BUILD_INFO");
+                        }
+                        if ((changeMask & IDevice.CHANGE_CLIENT_LIST) != 0) {
+                            changes.add("CHANGE_CLIENT_LIST");
+                        }
+                        if ((changeMask & IDevice.CHANGE_STATE) != 0) {
+                            changes.add("CHANGE_STATE");
+                        }
+                        logger.debug(formatDeviceLog(device, "state changed {%s}", Joiner.on(" | ").join(changes)));
                     }
-                    if ((changeMask & IDevice.CHANGE_CLIENT_LIST) != 0) {
-                        changes.add("CHANGE_CLIENT_LIST");
-                    }
-                    if ((changeMask & IDevice.CHANGE_STATE) != 0) {
-                        changes.add("CHANGE_STATE");
-                    }
-                    logger.debug(formatDeviceLog(device, "state changed {%s}", Joiner.on(" | ").join(changes)));
 
                     if (!isRelevantChange(changeMask)) {
                         return;
