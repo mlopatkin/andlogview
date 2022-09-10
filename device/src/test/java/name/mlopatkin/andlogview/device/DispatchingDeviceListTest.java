@@ -88,7 +88,8 @@ class DispatchingDeviceListTest {
         deviceList.addObserver(observer);
         adbFacade.connectDevice(createDevice("DeviceA"));
 
-        verify(observer, only()).onDeviceConnected(argThat(hasSerial("DeviceA")));
+        verify(observer).onProvisionalDeviceConnected(argThat(hasSerial("DeviceA")));
+        verify(observer).onDeviceConnected(argThat(hasSerial("DeviceA")));
     }
 
     @Test
@@ -168,7 +169,8 @@ class DispatchingDeviceListTest {
 
         adbFacade.changeNotConnectedDevice(createDevice("DeviceA"), IDevice.CHANGE_STATE);
 
-        verify(observer, only()).onDeviceConnected(argThat(hasSerial("DeviceA")));
+        verify(observer).onProvisionalDeviceConnected(argThat(hasSerial("DeviceA")));
+        verify(observer).onDeviceConnected(argThat(hasSerial("DeviceA")));
     }
 
     @Test
@@ -182,6 +184,7 @@ class DispatchingDeviceListTest {
         adbFacade.connectDevice(deviceA);
 
         InOrder order = inOrder(observer);
+        order.verify(observer).onProvisionalDeviceConnected(argThat(hasSerial("DeviceA")));
         order.verify(observer).onDeviceConnected(argThat(hasSerial("DeviceA")));
         order.verify(observer).onDeviceChanged(argThat(hasSerial("DeviceA")));
         order.verifyNoMoreInteractions();

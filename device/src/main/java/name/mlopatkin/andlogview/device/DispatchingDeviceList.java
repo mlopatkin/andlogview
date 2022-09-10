@@ -43,7 +43,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     private final Object observerLock = new Object();
 
     @GuardedBy("deviceLock")
-    private final LinkedHashMap<IDevice, AdbDevice> devices;
+    private final LinkedHashMap<IDevice, AdbDeviceImpl> devices;
 
     @GuardedBy("observerLock")
     private final ArrayList<DeviceChangeObserver> deviceChangeObservers = new ArrayList<>();
@@ -53,12 +53,13 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
                 @Override
                 public void deviceConnected(IDevice device) {
                     logger.debug(formatDeviceLog(device, "connected"));
-                    AdbDevice prevDevice;
-                    AdbDevice newDevice = new AdbDeviceImpl(device);
+                    AdbDeviceImpl prevDevice;
+                    AdbDeviceImpl newDevice = new AdbDeviceImpl(device);
                     synchronized (deviceLock) {
                         prevDevice = devices.putIfAbsent(device, newDevice);
                     }
                     if (prevDevice == null) {
+                        notifyProvisionalDeviceConnected(newDevice);
                         notifyDeviceConnected(newDevice);
                     } else {
                         // We already have this device in our list, a disconnect was probably missed.
@@ -98,7 +99,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
                         return;
                     }
 
-                    AdbDevice adbDevice;
+                    AdbDeviceImpl adbDevice;
                     synchronized (deviceLock) {
                         adbDevice = devices.get(device);
                     }
@@ -147,6 +148,12 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         }
     }
 
+    private void notifyProvisionalDeviceConnected(ProvisionalAdbDevice provisionalDevice) {
+        logger.debug(formatDeviceLog(provisionalDevice, "notifyDeviceConnected"));
+        for (DeviceChangeObserver obs : getObservers()) {
+            obs.onProvisionalDeviceConnected(provisionalDevice);
+        }
+    }
     private void notifyDeviceConnected(AdbDevice device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceConnected"));
         for (DeviceChangeObserver obs : getObservers()) {
@@ -183,7 +190,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     @FormatMethod
-    private static String formatDeviceLog(AdbDevice device, @FormatString String format, Object... args) {
+    private static String formatDeviceLog(ProvisionalAdbDevice device, @FormatString String format, Object... args) {
         return ("[" + device.getSerialNumber() + "]: ") + String.format(format, args);
     }
 

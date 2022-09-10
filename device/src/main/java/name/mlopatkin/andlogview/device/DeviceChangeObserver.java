@@ -23,28 +23,32 @@ import java.util.Objects;
  */
 public interface DeviceChangeObserver {
     /**
-     * Called when the new device is connected.
+     * Called when the new device is connected, but before it was provisioned
      *
      * @param device the connected device
      */
-    default void onDeviceConnected(AdbDevice device) {
-    }
+    default void onProvisionalDeviceConnected(ProvisionalAdbDevice device) {}
+
+    /**
+     * Called when the new device is connected and provisioned.
+     *
+     * @param device the connected device
+     */
+    default void onDeviceConnected(AdbDevice device) {}
 
     /**
      * Called when the device is disconnected
      *
      * @param device the disconnected device
      */
-    default void onDeviceDisconnected(AdbDevice device) {
-    }
+    default void onDeviceDisconnected(AdbDevice device) {}
 
     /**
      * Called when the device status is changed.
      *
      * @param device the changed device
      */
-    default void onDeviceChanged(AdbDevice device) {
-    }
+    default void onDeviceChanged(AdbDevice device) {}
 
     /**
      * Creates a new observer that forwards events from only the given device to this observer.
@@ -52,9 +56,16 @@ public interface DeviceChangeObserver {
      * @param trackedDevice the device to get events from
      * @return the new observer that only forwards events for the given device
      */
-    default DeviceChangeObserver scopeToSingleDevice(AdbDevice trackedDevice) {
+    default DeviceChangeObserver scopeToSingleDevice(ProvisionalAdbDevice trackedDevice) {
         DeviceChangeObserver parent = this;
         return new DeviceChangeObserver() {
+            @Override
+            public void onProvisionalDeviceConnected(ProvisionalAdbDevice device) {
+                if (isTrackedDevice(device)) {
+                    parent.onProvisionalDeviceConnected(device);
+                }
+            }
+
             @Override
             public void onDeviceConnected(AdbDevice device) {
                 if (isTrackedDevice(device)) {
@@ -77,14 +88,14 @@ public interface DeviceChangeObserver {
             }
 
             @Override
-            public DeviceChangeObserver scopeToSingleDevice(AdbDevice anotherTrackedDevice) {
+            public DeviceChangeObserver scopeToSingleDevice(ProvisionalAdbDevice anotherTrackedDevice) {
                 if (!isTrackedDevice(anotherTrackedDevice)) {
                     throw new IllegalArgumentException("Can't scope an already scoped observer");
                 }
                 return this;
             }
 
-            private boolean isTrackedDevice(AdbDevice device) {
+            private boolean isTrackedDevice(ProvisionalAdbDevice device) {
                 return Objects.equals(trackedDevice.getSerialNumber(), device.getSerialNumber());
             }
         };

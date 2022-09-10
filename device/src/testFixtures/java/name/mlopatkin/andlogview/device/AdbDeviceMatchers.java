@@ -24,11 +24,11 @@ import org.hamcrest.Matchers;
 public class AdbDeviceMatchers {
     private AdbDeviceMatchers() {}
 
-    public static Matcher<AdbDevice> hasSerial(Matcher<? super String> serial) {
-        return new AdaptingMatcher<>("serial", AdbDevice::getSerialNumber, serial);
+    public static <T extends ProvisionalAdbDevice> Matcher<T> hasSerial(Matcher<? super String> serial) {
+        return new AdaptingMatcher<>("serial", ProvisionalAdbDevice::getSerialNumber, serial);
     }
 
-    public static Matcher<AdbDevice> hasSerial(String serial) {
+    public static <T extends ProvisionalAdbDevice> Matcher<T> hasSerial(String serial) {
         return hasSerial(Matchers.is(serial));
     }
 }
