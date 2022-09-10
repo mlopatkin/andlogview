@@ -51,13 +51,6 @@ class AdbServerImpl implements AdbServer, Closeable {
         return new AdbDeviceListImpl(dispatchingDeviceList.get(), listenerExecutor);
     }
 
-    @Override
-    public AdbConnection getConnection() {
-        synchronized (lock) {
-            return adbConnection;
-        }
-    }
-
     public void updateConnection(AdbLocation adbLocation) throws AdbException {
         synchronized (lock) {
             adbConnection.close();

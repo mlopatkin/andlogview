@@ -20,14 +20,13 @@ import com.android.ddmlib.AndroidDebugBridge;
 
 import java.io.Closeable;
 
-class AdbConnectionImpl implements AdbConnection, Closeable {
+class AdbConnectionImpl implements Closeable {
     private final AndroidDebugBridge bridge;
 
     public AdbConnectionImpl(AndroidDebugBridge bridge) {
         this.bridge = bridge;
     }
 
-    @Override
     @Deprecated
     public AndroidDebugBridge getBridge() {
         return bridge;

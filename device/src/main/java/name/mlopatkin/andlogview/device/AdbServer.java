@@ -30,11 +30,4 @@ public interface AdbServer {
      * @return the AdbDeviceList.
      */
     AdbDeviceList getDeviceList(Executor listenerExecutor);
-
-    /**
-     * Do not use in new code.
-     *
-     * @return the live AdbConnection
-     */
-    AdbConnection getConnection();
 }
