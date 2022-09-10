@@ -16,23 +16,18 @@
 
 package name.mlopatkin.andlogview.device;
 
-import com.android.ddmlib.IDevice;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Device or emulator that is connected via ADB.
  */
-public interface AdbDevice {
+public interface AdbDevice extends ProvisionalAdbDevice {
     // TODO(mlopatkin) serial numbers aren't unique in reality, especially in case of the low-end phones with
     //  low-quality firmware. It is better to use something like usb address but DDMLIB doesn't expose it.
-    /**
-     * @return the serial number of the connected device
-     */
-    String getSerialNumber();
 
     /** @return the user-friendly name of the device */
     String getName();
@@ -64,13 +59,6 @@ public interface AdbDevice {
      */
     Command command(List<String> commandLine);
 
-    /**
-     * Do not use in new code. This method is intended to be used during transitional period.
-     *
-     * @return the DDMLIB's IDevice instance
-     */
-    IDevice getIDevice();
-
 
     /**
      * @return {@code true} if the device is online and can run commands
@@ -85,5 +73,10 @@ public interface AdbDevice {
      */
     default Command command(String... commandLine) {
         return command(Arrays.asList(commandLine));
+    }
+
+    @Override
+    default CompletableFuture<AdbDevice> getProvisionedDevice() {
+        return CompletableFuture.completedFuture(this);
     }
 }
