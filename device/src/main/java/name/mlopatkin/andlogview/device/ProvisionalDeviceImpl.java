@@ -36,7 +36,6 @@ class ProvisionalDeviceImpl implements ProvisionalDevice {
         return device.getSerialNumber();
     }
 
-    @Override
     public LoggingDevice getIDevice() {
         return device;
     }

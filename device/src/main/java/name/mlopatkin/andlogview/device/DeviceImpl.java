@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.device;
 
-import com.android.ddmlib.IDevice;
-
 import java.util.List;
 
 class DeviceImpl implements Device {
@@ -68,8 +66,8 @@ class DeviceImpl implements Device {
     }
 
     @Override
-    public IDevice getIDevice() {
-        return device;
+    public int getApiLevel() {
+        return deviceProperties.getApiLevel();
     }
 
     @Override

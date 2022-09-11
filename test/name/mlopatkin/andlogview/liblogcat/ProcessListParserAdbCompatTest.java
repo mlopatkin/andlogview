@@ -21,7 +21,7 @@ import static name.mlopatkin.andlogview.liblogcat.ProcessListParserTest.hasPidAn
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.android.sdklib.AndroidVersion;
+import name.mlopatkin.andlogview.thirdparty.device.AndroidVersionCodes;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,42 +42,42 @@ public class ProcessListParserAdbCompatTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                 {
-                        AndroidVersion.VersionCodes.GINGERBREAD_MR1,
+                        AndroidVersionCodes.GINGERBREAD_MR1,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME",
                         "radio     1998  1162  191340 26512 ffffffff 8011466b S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.ICE_CREAM_SANDWICH_MR1,
+                        AndroidVersionCodes.ICE_CREAM_SANDWICH_MR1,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME",
                         "radio     1998  1164  307580 32356 ffffffff b770ded7 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.JELLY_BEAN,
+                        AndroidVersionCodes.JELLY_BEAN,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME",
                         "radio     1998  1165  327664 31596 ffffffff b7712157 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.JELLY_BEAN_MR1,
+                        AndroidVersionCodes.JELLY_BEAN_MR1,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME",
                         "radio     1998  1165  337944 26588 ffffffff b7671827 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.JELLY_BEAN_MR2,
+                        AndroidVersionCodes.JELLY_BEAN_MR2,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME",
                         "radio     1998  1167  353212 29068 ffffffff b773c89b S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.KITKAT,
+                        AndroidVersionCodes.KITKAT,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME",
                         "radio     1998  1175  379100 30900 ffffffff b7749f1b S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.LOLLIPOP,
+                        AndroidVersionCodes.LOLLIPOP,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC        NAME",
                         "radio     1998  1187  721476 48248 ffffffff b7677f15 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.LOLLIPOP_MR1,
+                        AndroidVersionCodes.LOLLIPOP_MR1,
                         "USER     PID   PPID  VSIZE  RSS     WCHAN    PC        NAME",
                         "radio     1998  1189  858364 45288 ffffffff b756b5b5 S com.android.phone",
                         },
@@ -87,22 +87,22 @@ public class ProcessListParserAdbCompatTest {
                         "radio     1998  1308  889828 50184 SyS_epoll_ b7363fa5 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.N,
+                        AndroidVersionCodes.N,
                         "USER      PID   PPID  VSIZE  RSS   WCHAN            PC  NAME",
                         "radio     1998  1448  1020332 63872 SyS_epoll_ 00000000 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.N_MR1,
+                        AndroidVersionCodes.N_MR1,
                         "USER      PID   PPID  VSIZE  RSS   WCHAN            PC  NAME",
                         "radio     1998  1450  1007260 52480 SyS_epoll_ 00000000 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.O,
+                        AndroidVersionCodes.O,
                         "USER           PID  PPID     VSZ    RSS WCHAN            ADDR S NAME                       ",
                         "radio         1998  1890 1023936  64040 SyS_epoll_wait      0 S com.android.phone",
                         },
                 {
-                        AndroidVersion.VersionCodes.O_MR1,
+                        AndroidVersionCodes.O_MR1,
                         "USER           PID  PPID     VSZ    RSS WCHAN            ADDR S NAME                       ",
                         "radio         1998  1578  999616  49816 ep_poll             0 S com.android.phone",
                         },

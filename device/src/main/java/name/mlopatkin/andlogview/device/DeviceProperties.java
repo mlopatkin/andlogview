@@ -24,7 +24,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * The set of immutable device properties.
  */
-public class DeviceProperties {
+class DeviceProperties {
     public static final String PROP_BUILD_PRODUCT = "ro.build.product";
     public static final String PROP_BUILD_API_LEVEL = IDevice.PROP_BUILD_API_LEVEL;
     public static final String PROP_BUILD_CODENAME = IDevice.PROP_BUILD_CODENAME;

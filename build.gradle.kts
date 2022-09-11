@@ -149,6 +149,7 @@ val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     sourceFilesNotices.from(
             "base/third-party/observerList/NOTICE",
             "base/third-party/systemUtils/NOTICE",
+            "device/third-party/versionCodes/NOTICE",
             "third-party/tangoIcons/NOTICE",
             "third-party/styledLabel/NOTICE",
     )

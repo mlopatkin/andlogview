@@ -18,10 +18,10 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
+import name.mlopatkin.andlogview.thirdparty.device.AndroidVersionCodes;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.Threads;
 
-import com.android.sdklib.AndroidVersion;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
@@ -61,7 +61,7 @@ class AdbPidToProcessConverter {
 
     AdbPidToProcessConverter(Device device) {
         this.device = device;
-        if (getAndroidVersionWithRetries(device, 10).getApiLevel() >= AndroidVersion.VersionCodes.O) {
+        if (device.getApiLevel() >= AndroidVersionCodes.O) {
             psCmdline = PS_COMMAND_LINE_API_26;
         } else {
             psCmdline = PS_COMMAND_LINE;
@@ -113,15 +113,5 @@ class AdbPidToProcessConverter {
 
     public void close() {
         backgroundUpdater.shutdown();
-    }
-
-    private static AndroidVersion getAndroidVersionWithRetries(Device device, int retryCount) {
-        AndroidVersion version;
-        int numRetry = 0;
-        do {
-            version = device.getIDevice().getVersion();
-        } while (AndroidVersion.DEFAULT.compareTo(version) == 0 && numRetry++ < retryCount);
-        logger.debug("Got version " + version + " with " + numRetry + " retries");
-        return version;
     }
 }

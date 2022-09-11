@@ -39,6 +39,11 @@ public interface Device extends ProvisionalDevice {
     String getApiString();
 
     /**
+     * @return the api version of the device ({@code android.os.Build.VERSION.SDK_INT}
+     */
+    int getApiLevel();
+
+    /**
      * Creates a {@link Command} to run a command on this device.
      *
      * @param commandLine the command line as a series of arguments

@@ -24,7 +24,7 @@ description = "Interaction with a connected device through ADB"
 
 dependencies {
     implementation(project(":base"))
-    api(libs.ddmlib)  // TODO(mlopatkin) Make this an implementation dependency
+    implementation(libs.ddmlib)
     implementation(libs.gson)
     implementation(libs.guava)
     implementation(libs.log4j)
@@ -33,4 +33,12 @@ dependencies {
     testFixturesImplementation(testFixtures(project(":base")))
 
     testImplementation(testFixtures(project(":base")))
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(file("third-party/versionCodes/src"))
+        }
+    }
 }

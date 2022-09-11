@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.device;
 
-import com.android.ddmlib.IDevice;
+import name.mlopatkin.andlogview.thirdparty.device.AndroidVersionCodes;
 
 import java.util.List;
 
@@ -62,8 +62,8 @@ public class FakeDevice implements Device {
     }
 
     @Override
-    public IDevice getIDevice() {
-        throw new UnsupportedOperationException();
+    public int getApiLevel() {
+        return AndroidVersionCodes.TIRAMISU;
     }
 
     @Override

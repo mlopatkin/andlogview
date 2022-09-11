@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.device;
 
-import com.android.ddmlib.IDevice;
-
 /**
  * Provisional device represents device that is connected to the host, but cannot be interacted with. It might be
  * offline from the start or some important information that is available through {@link Device} (like product name
@@ -34,13 +32,6 @@ public interface ProvisionalDevice {
      * @return the serial number of the connected device
      */
     String getSerialNumber();
-
-    /**
-     * Do not use in new code. This method is intended to be used during transitional period.
-     *
-     * @return the DDMLIB's IDevice instance
-     */
-    IDevice getIDevice();
 
     /**
      * @return the user-friendly name of the device with unique id
