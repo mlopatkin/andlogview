@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * This class is responsible for creating an async chain to wait for device to come online and collect required
- * properties, creating an instance of {@link AdbDeviceImpl} at the end.
+ * properties, creating an instance of {@link DeviceImpl} at the end.
  */
 class DeviceProvisionerImpl implements DeviceProvisioner {
     // 100ms might be too little. I'm leaving an escape hatch in case some devices would be too slow to respond.
@@ -47,16 +47,16 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
     }
 
     @Override
-    public CompletableFuture<AdbDeviceImpl> provisionDevice(ProvisionalAdbDeviceImpl provisionalDevice) {
+    public CompletableFuture<DeviceImpl> provisionDevice(ProvisionalDeviceImpl provisionalDevice) {
         return waitForDeviceToComeOnline(provisionalDevice)
                 .thenCompose(onlineDevice ->
                         MyFutures.runAsync(() -> getRequiredProperties(onlineDevice), provisionalWorker))
-                .thenApply(deviceProperties -> new AdbDeviceImpl(provisionalDevice.getDeviceKey(),
+                .thenApply(deviceProperties -> new DeviceImpl(provisionalDevice.getDeviceKey(),
                         provisionalDevice.getIDevice(), deviceProperties));
     }
 
 
-    private CompletableFuture<LoggingDevice> waitForDeviceToComeOnline(ProvisionalAdbDeviceImpl provisionalDevice) {
+    private CompletableFuture<LoggingDevice> waitForDeviceToComeOnline(ProvisionalDeviceImpl provisionalDevice) {
         // ProvisionalAdbDeviceImpl.getIDevice may return a wrapper. We should use it for doing the actual work.
         LoggingDevice ddmlibDevice = provisionalDevice.getIDevice();
         // The device key corresponds to the IDevice from the DDMLIB, we should use it to check if the update is for

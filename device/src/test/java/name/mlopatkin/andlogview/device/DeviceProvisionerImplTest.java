@@ -47,8 +47,8 @@ class DeviceProvisionerImplTest {
                         immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
         assertThat(result).isNotDone();
     }
@@ -60,8 +60,8 @@ class DeviceProvisionerImplTest {
                         immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
         setOnline(device);
 
         assertThat(result).isCompleted();
@@ -79,8 +79,8 @@ class DeviceProvisionerImplTest {
                         immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
         assertThat(result).isCompleted();
         assertThat(result.get().getProduct()).isEqualTo("product");
@@ -99,8 +99,8 @@ class DeviceProvisionerImplTest {
         ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, backgroundExecutor);
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
         assertThat(result).isNotDone();
 
@@ -128,8 +128,8 @@ class DeviceProvisionerImplTest {
                         immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
         adbFacade.disconnectDevice(device);
 
@@ -145,8 +145,8 @@ class DeviceProvisionerImplTest {
                         immediateFuture("30"), immediateFuture(null), immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
         assertThat(result).isCompletedExceptionally();
 
@@ -165,8 +165,8 @@ class DeviceProvisionerImplTest {
                 immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
         setOnline(otherDevice);
 
         assertThat(result).isNotDone();
@@ -179,8 +179,8 @@ class DeviceProvisionerImplTest {
                         immediateFuture("fingerprint")));
 
         DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<AdbDeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device));
+        CompletableFuture<DeviceImpl> result =
+                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
         adbFacade.changeDevice(device, IDevice.CHANGE_STATE);
 
         assertThat(result).isNotDone();

@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -117,7 +117,7 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
     private void onPositiveResult() {
         // TODO(mlopatkin) This dialog is broken, as it allows to selecting offline devices. Cast is just making things
         //   slightly worse.
-        deliverResult((AdbDevice) deviceList.getSelectedValue());
+        deliverResult((Device) deviceList.getSelectedValue());
         dispose();
     }
 
@@ -126,7 +126,7 @@ public class SelectDeviceDialog extends SelectDeviceDialogUi {
         dispose();
     }
 
-    private void deliverResult(@Nullable AdbDevice selectedDevice) {
+    private void deliverResult(@Nullable Device selectedDevice) {
         assert !resultDelivered;
         resultDelivered = true;
         receiver.onDialogResult(this, selectedDevice);

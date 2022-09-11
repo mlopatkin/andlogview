@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.device.dump;
 
 import name.mlopatkin.andlogview.base.AppResources;
-import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.io.ByteSink;
@@ -49,7 +49,7 @@ public class DeviceDumpFactory {
     /**
      * @return the provisional file name for a dump of the device based on certain device info
      */
-    public String getProvisionalOutputFileName(AdbDevice device) {
+    public String getProvisionalOutputFileName(Device device) {
         return String.format("%s.sdk-%s.dump.zip", device.getProduct(), device.getApiString());
     }
 
@@ -75,7 +75,7 @@ public class DeviceDumpFactory {
      * @throws IOException if something goes wrong during dumping/writing dump
      * @throws InterruptedException if the thread is interrupted
      */
-    public void collect(AdbDevice device, ByteSink zipOutput) throws IOException, InterruptedException {
+    public void collect(Device device, ByteSink zipOutput) throws IOException, InterruptedException {
         try (OutputStream outputStream = zipOutput.openBufferedStream();
                 DeviceDumpBuilder dumpBuilder = new DeviceDumpBuilder(device, outputStream)) {
             for (DeviceDumpCommand command : getCommands()) {
@@ -94,7 +94,7 @@ public class DeviceDumpFactory {
      * @param executor the executor to run the dumping tasks on
      * @return the CompletionStage to be notified about dumping completion/failure
      */
-    public CompletionStage<Void> collectAsync(AdbDevice device, ByteSink zipOutput, Executor executor) {
+    public CompletionStage<Void> collectAsync(Device device, ByteSink zipOutput, Executor executor) {
         return MyFutures.runAsync(() -> collect(device, zipOutput), executor);
     }
 }

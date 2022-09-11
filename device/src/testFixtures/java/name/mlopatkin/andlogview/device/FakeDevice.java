@@ -20,7 +20,7 @@ import com.android.ddmlib.IDevice;
 
 import java.util.List;
 
-public class FakeDevice implements AdbDevice {
+public class FakeDevice implements Device {
     private final String buildFingerprint;
     private final String product;
     private final String apiString;

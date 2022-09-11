@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.Command;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
@@ -47,7 +47,7 @@ class AdbBuffer {
     private final ExecutorService executorService;
     private final Command command;
 
-    public AdbBuffer(BufferReceiver receiver, AdbDevice device, LogRecord.Buffer buffer, List<String> commandLine,
+    public AdbBuffer(BufferReceiver receiver, Device device, LogRecord.Buffer buffer, List<String> commandLine,
             Map<Integer, String> pidToProcess) {
         this.receiver = receiver;
         this.buffer = buffer;

@@ -16,9 +16,9 @@
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.Command;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.device.OutputTarget;
@@ -75,7 +75,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
 
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
-    private final AdbDevice device;
+    private final Device device;
 
     private final AdbPidToProcessConverter converter;
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
@@ -86,7 +86,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private @Nullable RecordListener<LogRecord> listener;
     private boolean closed = false;
 
-    public AdbDataSource(AdbDevice device, AdbDeviceList deviceList) {
+    public AdbDataSource(Device device, AdbDeviceList deviceList) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
@@ -97,13 +97,13 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         sourceMetadata = new AdbSourceMetadata(device);
         deviceChangeObserver = deviceList.asObservable().addScopedObserver(new DeviceChangeObserver() {
             @Override
-            public void onDeviceDisconnected(AdbDevice device) {
+            public void onDeviceDisconnected(Device device) {
                 logger.debug("Device " + device.getSerialNumber() + " was disconnected, closing the source");
                 invalidateAndClose(InvalidationReason.DISCONNECT);
             }
 
             @Override
-            public void onDeviceChanged(AdbDevice device) {
+            public void onDeviceChanged(Device device) {
                 if (!device.isOnline()) {
                     logger.debug("Device " + device.getSerialNumber() + " is offline, closing the source");
                     invalidateAndClose(InvalidationReason.OFFLINE);

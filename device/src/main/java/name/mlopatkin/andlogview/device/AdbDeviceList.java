@@ -33,14 +33,14 @@ public interface AdbDeviceList {
     /**
      * @return the list of currently connected and provisioned devices
      */
-    List<AdbDevice> getDevices();
+    List<Device> getDevices();
 
     /**
      * Returns the list of all connected devices, including not yet provisioned ones
      *
      * @return the list of all connected devices
      */
-    List<ProvisionalAdbDevice> getAllDevices();
+    List<ProvisionalDevice> getAllDevices();
 
     /**
      * @return the observable to register observers on this list

@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.device.dump;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.Command;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 
 import com.google.gson.Gson;
@@ -41,7 +41,7 @@ import java.util.zip.ZipOutputStream;
  * commands in a ZIP archive along with a metadata file.
  */
 class DeviceDumpBuilder implements Closeable {
-    private final AdbDevice device;
+    private final Device device;
     private final ZipOutputStream zipOutput;
     private final List<DeviceDumpMetadata.CommandOutput> commandOutputs = new ArrayList<>();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -54,7 +54,7 @@ class DeviceDumpBuilder implements Closeable {
      * @param device the device to get the dump from
      * @param zipOutput the output stream to write zip archive into
      */
-    public DeviceDumpBuilder(AdbDevice device, OutputStream zipOutput) {
+    public DeviceDumpBuilder(Device device, OutputStream zipOutput) {
         this.device = device;
         this.zipOutput = new ZipOutputStream(zipOutput);
     }

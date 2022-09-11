@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
 import name.mlopatkin.andlogview.utils.LineParser;
@@ -43,7 +43,7 @@ class AdbPidToProcessConverter {
     private static final String NO_INFO = "No info available";
 
     private final ExecutorService backgroundUpdater;
-    private final AdbDevice device;
+    private final Device device;
     private final String[] psCmdline;
     @GuardedBy("this")
     private @Nullable Future<?> result;
@@ -59,7 +59,7 @@ class AdbPidToProcessConverter {
         }
     };
 
-    AdbPidToProcessConverter(AdbDevice device) {
+    AdbPidToProcessConverter(Device device) {
         this.device = device;
         if (getAndroidVersionWithRetries(device, 10).getApiLevel() >= AndroidVersion.VersionCodes.O) {
             psCmdline = PS_COMMAND_LINE_API_26;
@@ -115,7 +115,7 @@ class AdbPidToProcessConverter {
         backgroundUpdater.shutdown();
     }
 
-    private static AndroidVersion getAndroidVersionWithRetries(AdbDevice device, int retryCount) {
+    private static AndroidVersion getAndroidVersionWithRetries(Device device, int retryCount) {
         AndroidVersion version;
         int numRetry = 0;
         do {

@@ -20,14 +20,14 @@ import com.android.ddmlib.IDevice;
 
 /**
  * Provisional device represents device that is connected to the host, but cannot be interacted with. It might be
- * offline from the start or some important information that is available through {@link AdbDevice} (like product name
+ * offline from the start or some important information that is available through {@link Device} (like product name
  * or build fingerprint) might be missing. The user can use this class to obtain a corresponding {@code AdbDevice}
  * instance, but this involves waiting on a {@code Future}.
  * <p>
  * Note that the {@code AdbDevice} can become offline as well, it wouldn't be converted to
  * the {@code ProvisionalAdbDevice}.
  */
-public interface ProvisionalAdbDevice {
+public interface ProvisionalDevice {
     // TODO(mlopatkin) serial numbers aren't unique in reality, especially in case of the low-end phones with
     //  low-quality firmware. It is better to use something like usb address but DDMLIB doesn't expose it.
     /**

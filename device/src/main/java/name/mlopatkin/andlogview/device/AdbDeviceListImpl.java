@@ -37,7 +37,7 @@ class AdbDeviceListImpl
     }
 
     @Override
-    public void onDeviceConnected(AdbDevice device) {
+    public void onDeviceConnected(Device device) {
         listenerExecutor.execute(() -> {
             for (DeviceChangeObserver obs : deviceChangeObservers) {
                 obs.onDeviceConnected(device);
@@ -46,7 +46,7 @@ class AdbDeviceListImpl
     }
 
     @Override
-    public void onDeviceDisconnected(AdbDevice device) {
+    public void onDeviceDisconnected(Device device) {
         listenerExecutor.execute(() -> {
             for (DeviceChangeObserver obs : deviceChangeObservers) {
                 obs.onDeviceDisconnected(device);
@@ -55,7 +55,7 @@ class AdbDeviceListImpl
     }
 
     @Override
-    public void onDeviceChanged(AdbDevice device) {
+    public void onDeviceChanged(Device device) {
         listenerExecutor.execute(() -> {
             for (DeviceChangeObserver obs : deviceChangeObservers) {
                 obs.onDeviceChanged(device);
@@ -64,12 +64,12 @@ class AdbDeviceListImpl
     }
 
     @Override
-    public List<AdbDevice> getDevices() {
+    public List<Device> getDevices() {
         return dispatcher.getDevices();
     }
 
     @Override
-    public List<ProvisionalAdbDevice> getAllDevices() {
+    public List<ProvisionalDevice> getAllDevices() {
         return dispatcher.getAllDevices();
     }
 

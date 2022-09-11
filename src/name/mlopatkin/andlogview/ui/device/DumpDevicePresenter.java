@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
-import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.dump.DeviceDumpFactory;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
@@ -76,7 +76,7 @@ public class DumpDevicePresenter {
      *
      * @param selectedDevice the device to dump
      */
-    private void dumpDevice(@Nullable AdbDevice selectedDevice) {
+    private void dumpDevice(@Nullable Device selectedDevice) {
         if (selectedDevice == null) {
             // User cancelled dump.
             return;
@@ -85,7 +85,7 @@ public class DumpDevicePresenter {
         fileDialog.selectFileToSave(provisionalFileName).ifPresent(file -> onOutputFileSelected(selectedDevice, file));
     }
 
-    private void onOutputFileSelected(AdbDevice selectedDevice, File outputFile) {
+    private void onOutputFileSelected(Device selectedDevice, File outputFile) {
         dumpFactory.collectAsync(selectedDevice, Files.asByteSink(outputFile), fileExecutor).handleAsync(
                 (unused, throwable) -> {
                     if (throwable == null) {

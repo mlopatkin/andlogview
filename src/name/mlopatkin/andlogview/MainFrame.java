@@ -16,10 +16,10 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
@@ -508,14 +508,14 @@ public class MainFrame extends JFrame {
         }
         DeviceChangeObserver attacher = pendingAttacher = new DeviceChangeObserver() {
             @Override
-            public void onDeviceConnected(AdbDevice device) {
+            public void onDeviceConnected(Device device) {
                 if (device.isOnline()) {
                     connectDevicePending(device);
                 }
             }
 
             @Override
-            public void onDeviceChanged(AdbDevice device) {
+            public void onDeviceChanged(Device device) {
                 if (device.isOnline()) {
                     connectDevicePending(device);
                 }
@@ -530,7 +530,7 @@ public class MainFrame extends JFrame {
 
     private volatile boolean isWaitingForDevice;
 
-    private synchronized void connectDevicePending(AdbDevice device) {
+    private synchronized void connectDevicePending(Device device) {
         if (!isWaitingForDevice) {
             return;
         }
@@ -622,7 +622,7 @@ public class MainFrame extends JFrame {
         return false;
     }
 
-    private Optional<AdbDevice> getFirstOnlineDevice(AdbDeviceList deviceList) {
-        return deviceList.getDevices().stream().filter(AdbDevice::isOnline).findFirst();
+    private Optional<Device> getFirstOnlineDevice(AdbDeviceList deviceList) {
+        return deviceList.getDevices().stream().filter(Device::isOnline).findFirst();
     }
 }

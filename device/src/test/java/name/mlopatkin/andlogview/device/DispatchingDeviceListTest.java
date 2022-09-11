@@ -58,7 +58,7 @@ class DispatchingDeviceListTest {
         DispatchingDeviceList deviceList = createDeviceList();
 
         assertThat(deviceList.getAllDevices())
-                .map(ProvisionalAdbDevice::getSerialNumber)
+                .map(ProvisionalDevice::getSerialNumber)
                 .as("Check serials of returned devices")
                 .containsExactlyInAnyOrder("DeviceA", "DeviceB");
     }
@@ -70,7 +70,7 @@ class DispatchingDeviceListTest {
         adbFacade.connectDevice(createDevice("DeviceA"));
 
         assertThat(deviceList.getAllDevices())
-                .map(ProvisionalAdbDevice::getSerialNumber)
+                .map(ProvisionalDevice::getSerialNumber)
                 .as("Check serial of returned device")
                 .containsExactly("DeviceA");
     }
@@ -210,9 +210,9 @@ class DispatchingDeviceListTest {
     private DeviceProvisioner createProvisioner() {
         return new DeviceProvisioner() {
             @Override
-            public CompletableFuture<AdbDeviceImpl> provisionDevice(ProvisionalAdbDeviceImpl provisionalDevice) {
+            public CompletableFuture<DeviceImpl> provisionDevice(ProvisionalDeviceImpl provisionalDevice) {
                 return CompletableFuture.completedFuture(
-                        new AdbDeviceImpl(provisionalDevice.getDeviceKey(), provisionalDevice.getIDevice(),
+                        new DeviceImpl(provisionalDevice.getDeviceKey(), provisionalDevice.getIDevice(),
                                 new DeviceProperties(
                                         "product", "30", null, "fingerprint"
                                 )));

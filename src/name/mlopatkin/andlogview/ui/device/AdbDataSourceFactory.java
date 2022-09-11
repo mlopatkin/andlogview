@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 
@@ -46,7 +46,7 @@ public class AdbDataSourceFactory {
         });
     }
 
-    public void openDeviceAsDataSource(AdbDevice device, Consumer<AdbDataSource> callback) {
+    public void openDeviceAsDataSource(Device device, Consumer<AdbDataSource> callback) {
         AdbDataSource dataSource = new AdbDataSource(device, adbDeviceList);
         deviceDisconnectedHandler.startWatching(dataSource);
         callback.accept(dataSource);

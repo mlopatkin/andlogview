@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.device.AdbDevice;
+import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
 import name.mlopatkin.andlogview.liblogcat.SourceMetadataItem;
 
@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 class AdbSourceMetadata implements SourceMetadata {
-    private final AdbDevice device;
+    private final Device device;
 
-    public AdbSourceMetadata(AdbDevice device) {
+    public AdbSourceMetadata(Device device) {
         this.device = device;
     }
 

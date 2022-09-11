@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Device or emulator that is connected via ADB.
  */
-public interface AdbDevice extends ProvisionalAdbDevice {
+public interface Device extends ProvisionalDevice {
     /** @return the user-friendly name of the device */
     String getName();
 

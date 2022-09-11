@@ -20,12 +20,12 @@ import com.android.ddmlib.IDevice;
 
 import java.util.List;
 
-class AdbDeviceImpl implements AdbDevice {
+class DeviceImpl implements Device {
     private final DeviceKey deviceKey;
     private final LoggingDevice device;
     private final DeviceProperties deviceProperties;
 
-    public AdbDeviceImpl(DeviceKey deviceKey, LoggingDevice device, DeviceProperties deviceProperties) {
+    public DeviceImpl(DeviceKey deviceKey, LoggingDevice device, DeviceProperties deviceProperties) {
         this.deviceKey = deviceKey;
         this.device = device;
         this.deviceProperties = deviceProperties;

@@ -18,11 +18,11 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.IDevice;
 
-class ProvisionalAdbDeviceImpl implements ProvisionalAdbDevice {
+class ProvisionalDeviceImpl implements ProvisionalDevice {
     private final DeviceKey deviceKey;
     private final LoggingDevice device;
 
-    public ProvisionalAdbDeviceImpl(DeviceKey deviceKey, IDevice device) {
+    public ProvisionalDeviceImpl(DeviceKey deviceKey, IDevice device) {
         this.deviceKey = deviceKey;
         this.device = new LoggingDevice(device);
     }
