@@ -45,4 +45,9 @@ class ProvisionalDeviceImpl implements ProvisionalDevice {
     public String getDisplayName() {
         return device.getSerialNumber();
     }
+
+    @Override
+    public boolean isOnline() {
+        return device.isOnline();
+    }
 }

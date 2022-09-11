@@ -40,4 +40,9 @@ public interface ProvisionalDevice {
      * @return the user-friendly name of the device with unique id
      */
     String getDisplayName();
+
+    /**
+     * @return {@code true} if the device is online and can run commands
+     */
+    boolean isOnline();
 }

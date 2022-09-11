@@ -32,16 +32,13 @@ class DeviceListCellRenderer implements ListCellRenderer<ProvisionalDevice> {
     public Component getListCellRendererComponent(
             JList<? extends ProvisionalDevice> jList, ProvisionalDevice device, int index, boolean selected,
             boolean focused) {
-        return cellRenderer.getListCellRendererComponent(jList, getDeviceDisplayName(device), index, selected, focused);
+        return cellRenderer.getListCellRendererComponent(jList, getDeviceDisplayName(device), index, selected, false);
     }
 
     private String getDeviceDisplayName(ProvisionalDevice device) {
         String deviceName = device.getDisplayName();
-        if (device instanceof Device) {
-            Device adbDevice = (Device) device;
-            if (adbDevice.isOnline()) {
-                return deviceName;
-            }
+        if (device.isOnline() && (device instanceof Device)) {
+            return deviceName;
         }
         return formatOfflineDevice(deviceName);
     }

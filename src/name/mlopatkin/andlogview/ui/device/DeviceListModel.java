@@ -95,10 +95,14 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
         return Iterables.indexOf(devices, d -> Objects.equals(d.getDeviceKey(), device.getDeviceKey()));
     }
 
+    public boolean isSelectable(int index) {
+        ProvisionalDevice device = devices.get(index);
+        return device.isOnline() && (device instanceof Device);
+    }
+
     public int getFirstOnlineDeviceIndex() {
         for (int i = 0; i < devices.size(); ++i) {
-            ProvisionalDevice device = devices.get(i);
-            if ((device instanceof Device) && ((Device) device).isOnline()) {
+            if (isSelectable(i)) {
                 return i;
             }
         }

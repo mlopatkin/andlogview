@@ -51,12 +51,6 @@ public interface Device extends ProvisionalDevice {
      */
     Command command(List<String> commandLine);
 
-
-    /**
-     * @return {@code true} if the device is online and can run commands
-     */
-    boolean isOnline();
-
     /**
      * Creates a {@link Command} to run a command on this device.
      *
