@@ -36,7 +36,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
 
     private DeviceListModel(AdbDeviceList adbDeviceList) {
         this.adbDeviceList = adbDeviceList;
-        devices = new ArrayList<>(adbDeviceList.getDevices());
+        devices = new ArrayList<>(adbDeviceList.getAllDevices());
     }
 
     @Override
