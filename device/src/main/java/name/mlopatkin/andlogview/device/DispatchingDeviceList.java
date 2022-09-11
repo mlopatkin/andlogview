@@ -22,6 +22,7 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -42,8 +43,10 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     private final Object deviceLock = new Object();
     private final Object observerLock = new Object();
 
+    private final DeviceProvisioner deviceProvisioner;
+
     @GuardedBy("deviceLock")
-    private final LinkedHashMap<IDevice, AdbDeviceImpl> devices;
+    private final LinkedHashMap<DeviceKey, ProvisionalAdbDevice> devices = new LinkedHashMap<>();
 
     @GuardedBy("observerLock")
     private final ArrayList<DeviceChangeObserver> deviceChangeObservers = new ArrayList<>();
@@ -53,30 +56,36 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
                 @Override
                 public void deviceConnected(IDevice device) {
                     logger.debug(formatDeviceLog(device, "connected"));
-                    AdbDeviceImpl prevDevice;
-                    AdbDeviceImpl newDevice = new AdbDeviceImpl(device);
+                    ProvisionalAdbDevice prevDevice;
+                    ProvisionalAdbDeviceImpl newDevice = new ProvisionalAdbDeviceImpl(DeviceKey.of(device), device);
                     synchronized (deviceLock) {
-                        prevDevice = devices.putIfAbsent(device, newDevice);
+                        prevDevice = devices.putIfAbsent(newDevice.getDeviceKey(), newDevice);
                     }
                     if (prevDevice == null) {
                         notifyProvisionalDeviceConnected(newDevice);
-                        notifyDeviceConnected(newDevice);
+                        startProvisioning(newDevice);
                     } else {
-                        // We already have this device in our list, a disconnect was probably missed.
-                        notifyDeviceChanged(prevDevice);
+                        logger.debug(formatDeviceLog(device, "device is already known as %s", prevDevice));
+                        // We already have this device in our list, maybe some races between listener and initializing
+                        // the initial list. The device might be being provisioned, though.
+                        if (prevDevice instanceof AdbDevice) {
+                            notifyDeviceChanged((AdbDevice) prevDevice);
+                        }
                     }
                 }
 
                 @Override
                 public void deviceDisconnected(IDevice device) {
                     logger.debug(formatDeviceLog(device, "disconnected"));
-                    AdbDevice adbDevice;
+                    ProvisionalAdbDevice adbDevice;
                     synchronized (deviceLock) {
-                        adbDevice = devices.remove(device);
+                        adbDevice = devices.remove(DeviceKey.of(device));
                     }
-                    if (adbDevice != null) {
-                        notifyDeviceDisconnected(adbDevice);
+                    if (adbDevice instanceof AdbDevice) {
+                        // Clients don't care about non-provisioned devices.
+                        notifyDeviceDisconnected((AdbDevice) adbDevice);
                     }
+                    // The pending provision job, if any, will complete itself abnormally.
                 }
 
                 @Override
@@ -99,12 +108,14 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
                         return;
                     }
 
-                    AdbDeviceImpl adbDevice;
+                    ProvisionalAdbDevice adbDevice;
                     synchronized (deviceLock) {
-                        adbDevice = devices.get(device);
+                        adbDevice = devices.get(DeviceKey.of(device));
                     }
                     if (adbDevice != null) {
-                        notifyDeviceChanged(adbDevice);
+                        if (adbDevice instanceof AdbDevice) {
+                            notifyDeviceChanged((AdbDevice) adbDevice);
+                        }
                     } else {
                         // We don't know about this device yet.
                         deviceConnected(device);
@@ -116,23 +127,34 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         return (changeMask & (IDevice.CHANGE_STATE | IDevice.CHANGE_BUILD_INFO)) != 0;
     }
 
-    public static DispatchingDeviceList create(AdbFacade adb) {
-        DispatchingDeviceList result = new DispatchingDeviceList();
+    public static DispatchingDeviceList create(AdbFacade adb, DeviceProvisioner deviceProvisioner) {
+        DispatchingDeviceList result = new DispatchingDeviceList(deviceProvisioner);
         result.init(adb);
         return result;
     }
 
-    private DispatchingDeviceList() {
-        devices = new LinkedHashMap<>();
+    private DispatchingDeviceList(DeviceProvisioner deviceProvisioner) {
+        this.deviceProvisioner = deviceProvisioner;
     }
 
     private void init(AdbFacade adb) {
         adb.addDeviceChangeListener(deviceChangeListener);
         IDevice[] knownDevices = adb.getDevices();
+        ArrayList<ProvisionalAdbDeviceImpl> devicesToProvision = new ArrayList<>(knownDevices.length);
         synchronized (deviceLock) {
             for (IDevice device : knownDevices) {
-                this.devices.putIfAbsent(device, new AdbDeviceImpl(device));
+                DeviceKey key = DeviceKey.of(device);
+                ProvisionalAdbDeviceImpl newDevice = new ProvisionalAdbDeviceImpl(key, device);
+                ProvisionalAdbDevice prevDevice = devices.putIfAbsent(key, newDevice);
+                if (prevDevice == null) {
+                    // The device listener might have added some devices already and started provisioning.
+                    devicesToProvision.add(newDevice);
+                }
             }
+        }
+        // No need to notify listeners as this is a part of the initialization.
+        for (ProvisionalAdbDeviceImpl device : devicesToProvision) {
+            startProvisioning(device);
         }
     }
 
@@ -142,8 +164,9 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
      * @return the list of all connected devices
      */
     public ImmutableList<ProvisionalAdbDevice> getAllDevices() {
-        // This isn't really a copy, just a typecast.
-        return ImmutableList.copyOf(getDevices());
+        synchronized (deviceLock) {
+            return ImmutableList.copyOf(devices.values());
+        }
     }
 
     /**
@@ -151,9 +174,10 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
      *
      * @return the list of provisioned devices
      */
+    @SuppressWarnings("StaticPseudoFunctionalStyleMethod")
     public ImmutableList<AdbDevice> getDevices() {
         synchronized (deviceLock) {
-            return ImmutableList.copyOf(devices.values());
+            return ImmutableList.copyOf(Iterables.filter(devices.values(), AdbDevice.class));
         }
     }
 
@@ -164,11 +188,12 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     private void notifyProvisionalDeviceConnected(ProvisionalAdbDevice provisionalDevice) {
-        logger.debug(formatDeviceLog(provisionalDevice, "notifyDeviceConnected"));
+        logger.debug(formatDeviceLog(provisionalDevice, "notifyProvisionalDeviceConnected"));
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onProvisionalDeviceConnected(provisionalDevice);
         }
     }
+
     private void notifyDeviceConnected(AdbDevice device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceConnected"));
         for (DeviceChangeObserver obs : getObservers()) {
@@ -205,12 +230,44 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     @FormatMethod
-    private static String formatDeviceLog(ProvisionalAdbDevice device, @FormatString String format, Object... args) {
+    private static String formatDeviceLog(ProvisionalAdbDevice device, @FormatString String format,
+            @Nullable Object... args) {
         return ("[" + device.getSerialNumber() + "]: ") + String.format(format, args);
     }
 
     @FormatMethod
-    private static String formatDeviceLog(IDevice device, @FormatString String format, Object... args) {
+    private static String formatDeviceLog(IDevice device, @FormatString String format, @Nullable Object... args) {
         return ("[" + device.getSerialNumber() + "]: ") + String.format(format, args);
+    }
+
+    private void startProvisioning(ProvisionalAdbDeviceImpl device) {
+        logger.debug(formatDeviceLog(device, "Started provisioning"));
+        deviceProvisioner.provisionDevice(device)
+                .thenAccept(
+                        provisionedDevice -> finishProvisioning(device, provisionedDevice))
+                .exceptionally(
+                        th -> {
+                            abandonProvisioning(device, th);
+                            return null;
+                        });
+    }
+
+    private void abandonProvisioning(ProvisionalAdbDeviceImpl device, Throwable exception) {
+        logger.debug(formatDeviceLog(device, "Failed to complete device provisioning"), exception);
+        synchronized (deviceLock) {
+            devices.remove(device.getDeviceKey(), device);
+        }
+    }
+
+    private void finishProvisioning(ProvisionalAdbDeviceImpl provisionalDevice, AdbDeviceImpl provisionedDevice) {
+        logger.debug(formatDeviceLog(provisionalDevice, "Completed provisioning"));
+        synchronized (deviceLock) {
+            if (devices.replace(provisionalDevice.getDeviceKey(), provisionalDevice, provisionedDevice)) {
+                notifyDeviceConnected(provisionedDevice);
+            } else {
+                assert false :
+                        "Provisioned device was replaced before, got " + devices.get(provisionedDevice.getDeviceKey());
+            }
+        }
     }
 }

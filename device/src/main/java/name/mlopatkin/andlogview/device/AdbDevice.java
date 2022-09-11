@@ -16,11 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Device or emulator that is connected via ADB.
@@ -30,11 +27,9 @@ public interface AdbDevice extends ProvisionalAdbDevice {
     String getName();
 
     /** @return the product string of the device ({@code android.os.Build.PRODUCT}) */
-    @Nullable
     String getProduct();
 
     /** @return the build fingerprint string of the device ({@code android.os.Build.FINGERPRINT}) */
-    @Nullable
     String getBuildFingerprint();
 
     /**
@@ -67,8 +62,4 @@ public interface AdbDevice extends ProvisionalAdbDevice {
         return command(Arrays.asList(commandLine));
     }
 
-    @Override
-    default CompletableFuture<AdbDevice> getProvisionedDevice() {
-        return CompletableFuture.completedFuture(this);
-    }
 }

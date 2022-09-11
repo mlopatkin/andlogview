@@ -14,30 +14,10 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
+package name.mlopatkin.andlogview.device;
 
-    `java-test-fixtures`
-}
+import java.util.concurrent.CompletableFuture;
 
-description = "Common utilities that every other model can use"
-
-dependencies {
-    api(libs.dagger.runtime)
-
-    implementation(libs.guava)
-    implementation(libs.log4j)
-
-    testFixturesApi(libs.test.hamcrest.all)
-    testFixturesImplementation(libs.guava)
-    testFixturesImplementation(libs.test.mockito.core)
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir(file("third-party/observerList/src"))
-            srcDir(file("third-party/systemUtils/src"))
-        }
-    }
+public interface DeviceProvisioner {
+    CompletableFuture<AdbDeviceImpl> provisionDevice(ProvisionalAdbDeviceImpl provisionalDevice);
 }

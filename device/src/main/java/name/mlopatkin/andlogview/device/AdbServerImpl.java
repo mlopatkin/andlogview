@@ -40,10 +40,11 @@ class AdbServerImpl implements AdbServer, AdbFacade {
 
     @GuardedBy("lock")
     private AndroidDebugBridge currentBridge;
-    private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList =
-            lazy(() -> DispatchingDeviceList.create(this));
+    private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList;
 
-    public AdbServerImpl(AdbLocation adbLocation) throws AdbException {
+    public AdbServerImpl(AdbLocation adbLocation, Executor ioExecutor) throws AdbException {
+        dispatchingDeviceList =
+                lazy(() -> DispatchingDeviceList.create(this, new DeviceProvisionerImpl(this, ioExecutor)));
         synchronized (lock) {
             currentBridge = createBridge(adbLocation);
         }
@@ -100,5 +101,10 @@ class AdbServerImpl implements AdbServer, AdbFacade {
     @Override
     public void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
         AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
+    }
+
+    @Override
+    public void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
+        AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
     }
 }

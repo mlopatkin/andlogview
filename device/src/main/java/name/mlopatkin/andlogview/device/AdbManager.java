@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.device;
 import name.mlopatkin.andlogview.base.AtExitManager;
 
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 /**
  * This class represents the global state of the DDMLIB library. The library is initialized lazily, so one could safely
@@ -59,11 +60,11 @@ public interface AdbManager {
      * Creates an instance of the AdbManager but doesn't initialize the DDMLIB yet.
      *
      * @param atExitManager the {@link AtExitManager} to register cleanup hooks
+     * @param ioExecutor the executor for non-CPU intensive blocking background work
      * @param initialAdbLocation the ADB location to use when starting server
-     *
      * @return the AdbManager
      */
-    static AdbManager create(AtExitManager atExitManager, AdbLocation initialAdbLocation) {
-        return new AdbManagerImpl(atExitManager, initialAdbLocation);
+    static AdbManager create(AtExitManager atExitManager, Executor ioExecutor, AdbLocation initialAdbLocation) {
+        return new AdbManagerImpl(atExitManager, ioExecutor, initialAdbLocation);
     }
 }

@@ -28,6 +28,14 @@ public final class MyFutures {
     private MyFutures() {}
 
     /**
+     * Helper interface for {@code runAsync}.
+     */
+    @FunctionalInterface
+    public interface ThrowingRunnable {
+        void run() throws Exception;
+    }
+
+    /**
      * Executes a callable on the provided executor. Result is delivered as a {@link CompletableFuture}. Note that it
      * isn't possible to cancel a running callable with {@link CompletableFuture#cancel(boolean)}, only callback chain
      * is cancelled.
@@ -47,5 +55,21 @@ public final class MyFutures {
             }
         });
         return future;
+    }
+
+    /**
+     * Executes a runnable on the provided executor. Result signal is delivered as a {@link CompletableFuture}. Note
+     * that it isn't possible to cancel a running callable with {@link CompletableFuture#cancel(boolean)}, only callback
+     * chain is cancelled.
+     *
+     * @param runnable the runnable to execute
+     * @param executor the executor to run the callable on
+     * @return the completable future that completes with the result of a callable
+     */
+    public static CompletableFuture<Void> runAsync(ThrowingRunnable runnable, Executor executor) {
+        return runAsync(() -> {
+            runnable.run();
+            return null;
+        }, executor);
     }
 }

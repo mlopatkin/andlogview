@@ -95,9 +95,6 @@ public class DeviceDumpFactory {
      * @return the CompletionStage to be notified about dumping completion/failure
      */
     public CompletionStage<Void> collectAsync(AdbDevice device, ByteSink zipOutput, Executor executor) {
-        return MyFutures.runAsync(() -> {
-            collect(device, zipOutput);
-            return null;
-        }, executor);
+        return MyFutures.runAsync(() -> collect(device, zipOutput), executor);
     }
 }

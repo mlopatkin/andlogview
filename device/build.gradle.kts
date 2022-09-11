@@ -31,4 +31,6 @@ dependencies {
 
     testFixturesApi(libs.test.hamcrest.all)
     testFixturesImplementation(testFixtures(project(":base")))
+
+    testImplementation(testFixtures(project(":base")))
 }

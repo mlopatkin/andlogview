@@ -18,15 +18,21 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.IDevice;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.List;
 
 class AdbDeviceImpl implements AdbDevice {
-    final IDevice device;
+    private final DeviceKey deviceKey;
+    private final LoggingDevice device;
+    private final DeviceProperties deviceProperties;
 
-    public AdbDeviceImpl(IDevice device) {
-        this.device = new LoggingDevice(device);
+    public AdbDeviceImpl(DeviceKey deviceKey, LoggingDevice device, DeviceProperties deviceProperties) {
+        this.deviceKey = deviceKey;
+        this.device = device;
+        this.deviceProperties = deviceProperties;
+    }
+
+    public DeviceKey getDeviceKey() {
+        return deviceKey;
     }
 
     @Override
@@ -43,32 +49,22 @@ class AdbDeviceImpl implements AdbDevice {
     public String getDisplayName() {
         String serial = device.getSerialNumber();
         String productName = device.isEmulator() ? device.getAvdName() : getProduct();
-        if (productName != null) {
-            return productName + " (" + serial + ")";
-        } else {
-            return serial;
-        }
+        return productName + " (" + serial + ")";
     }
 
     @Override
-    @Nullable
     public String getProduct() {
-        return device.getProperty("ro.build.product");
+        return deviceProperties.getProduct();
     }
 
     @Override
-    @Nullable
     public String getBuildFingerprint() {
-        return device.getProperty("ro.build.fingerprint");
+        return deviceProperties.getBuildFingerprint();
     }
 
     @Override
     public String getApiString() {
-        String codename = device.getVersion().getCodename();
-        if (codename != null) {
-            return codename;
-        }
-        return String.valueOf(device.getVersion().getApiLevel());
+        return deviceProperties.getApiVersionString();
     }
 
     @Override

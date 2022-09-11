@@ -30,7 +30,7 @@ public class FakeAdbFacade implements AdbFacade {
 
     private final List<IDevice> connectedDevices = new ArrayList<>();
 
-    public IDevice connectDevice(IDevice device) {
+    public <T extends IDevice> T connectDevice(T device) {
         Preconditions.checkArgument(connectedDevices.add(device), "The device %s is already connected",
                 device.getSerialNumber());
 
@@ -85,5 +85,14 @@ public class FakeAdbFacade implements AdbFacade {
     @Override
     public void addDeviceChangeListener(IDeviceChangeListener deviceChangeListener) {
         deviceChangeListeners.asObservable().addObserver(deviceChangeListener);
+    }
+
+    @Override
+    public void removeDeviceChangeListener(IDeviceChangeListener deviceChangeListener) {
+        deviceChangeListeners.asObservable().removeObserver(deviceChangeListener);
+    }
+
+    public boolean hasRegisteredListeners() {
+        return !deviceChangeListeners.isEmpty();
     }
 }

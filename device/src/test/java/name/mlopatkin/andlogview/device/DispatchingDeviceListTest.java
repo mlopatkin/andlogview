@@ -20,12 +20,15 @@ import static name.mlopatkin.andlogview.device.AdbDeviceMatchers.hasSerial;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+
+import name.mlopatkin.andlogview.test.StrictMock;
 
 import com.android.ddmlib.IDevice;
 
@@ -35,12 +38,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.util.concurrent.CompletableFuture;
+
 class DispatchingDeviceListTest {
     private final FakeAdbFacade adbFacade = new FakeAdbFacade();
 
     @Test
     void initialListOfDevicesIsEmpty() {
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
 
         assertThat(deviceList.getDevices()).isEmpty();
     }
@@ -50,7 +55,7 @@ class DispatchingDeviceListTest {
         adbFacade.connectDevice(createDevice("DeviceA"));
         adbFacade.connectDevice(createDevice("DeviceB"));
 
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
 
         assertThat(deviceList.getAllDevices())
                 .map(ProvisionalAdbDevice::getSerialNumber)
@@ -60,7 +65,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void connectedDeviceIsInList() {
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
 
         adbFacade.connectDevice(createDevice("DeviceA"));
 
@@ -72,7 +77,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void connectedDeviceIsNotInListAfterDisconnect() {
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
 
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         adbFacade.disconnectDevice(deviceA);
@@ -83,7 +88,7 @@ class DispatchingDeviceListTest {
     @Test
     void notificationAboutConnectedDeviceIsPassedToRegisteredObserver() {
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
 
         deviceList.addObserver(observer);
         adbFacade.connectDevice(createDevice("DeviceA"));
@@ -98,7 +103,7 @@ class DispatchingDeviceListTest {
         adbFacade.connectDevice(createDevice("DeviceB"));
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
         adbFacade.disconnectDevice(deviceA);
@@ -110,7 +115,7 @@ class DispatchingDeviceListTest {
     void disconnectingConnectedDeviceTriggersNotification() {
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         deviceList.addObserver(observer);
 
@@ -131,7 +136,7 @@ class DispatchingDeviceListTest {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
         adbFacade.changeDevice(deviceA, changeMask);
 
@@ -143,7 +148,7 @@ class DispatchingDeviceListTest {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
         adbFacade.changeDevice(deviceA, IDevice.CHANGE_CLIENT_LIST);
 
@@ -153,7 +158,7 @@ class DispatchingDeviceListTest {
     @Test
     void outOfOrderDisconnectIsTolerated() {
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
         adbFacade.disconnectUnconnectedDevice(createDevice("DeviceA"));
@@ -164,7 +169,7 @@ class DispatchingDeviceListTest {
     @Test
     void changeBeforeConnectIsTolerated() {
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
         adbFacade.changeNotConnectedDevice(createDevice("DeviceA"), IDevice.CHANGE_STATE);
@@ -176,7 +181,7 @@ class DispatchingDeviceListTest {
     @Test
     void outOfOrderChangeAndConnectAreTolerated() {
         DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = DispatchingDeviceList.create(adbFacade);
+        DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
         IDevice deviceA = createDevice("DeviceA");
@@ -191,8 +196,27 @@ class DispatchingDeviceListTest {
     }
 
     private IDevice createDevice(String serial) {
-        IDevice result = Mockito.mock(IDevice.class);
-        Mockito.when(result.getSerialNumber()).thenReturn(serial);
+        IDevice result = StrictMock.strictMock(IDevice.class);
+        doReturn(serial).when(result).getSerialNumber();
+        doReturn(true).when(result).isOnline();
         return result;
+    }
+
+    private DispatchingDeviceList createDeviceList() {
+        return DispatchingDeviceList.create(adbFacade, createProvisioner());
+    }
+
+    @SuppressWarnings("Convert2Lambda")
+    private DeviceProvisioner createProvisioner() {
+        return new DeviceProvisioner() {
+            @Override
+            public CompletableFuture<AdbDeviceImpl> provisionDevice(ProvisionalAdbDeviceImpl provisionalDevice) {
+                return CompletableFuture.completedFuture(
+                        new AdbDeviceImpl(provisionalDevice.getDeviceKey(), provisionalDevice.getIDevice(),
+                                new DeviceProperties(
+                                        "product", "30", null, "fingerprint"
+                                )));
+            }
+        };
     }
 }

@@ -16,16 +16,33 @@
 
 package name.mlopatkin.andlogview.device;
 
-import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 
-/**
- * A facade for the {@link AndroidDebugBridge}. Main purpose is to facilitate testing.
- */
-interface AdbFacade {
-    IDevice[] getDevices();
+class ProvisionalAdbDeviceImpl implements ProvisionalAdbDevice {
+    private final DeviceKey deviceKey;
+    private final LoggingDevice device;
 
-    void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener);
+    public ProvisionalAdbDeviceImpl(DeviceKey deviceKey, IDevice device) {
+        this.deviceKey = deviceKey;
+        this.device = new LoggingDevice(device);
+    }
 
-    void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener);
+    public DeviceKey getDeviceKey() {
+        return deviceKey;
+    }
+
+    @Override
+    public String getSerialNumber() {
+        return device.getSerialNumber();
+    }
+
+    @Override
+    public LoggingDevice getIDevice() {
+        return device;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return device.getSerialNumber();
+    }
 }

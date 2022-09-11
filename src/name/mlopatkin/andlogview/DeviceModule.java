@@ -23,6 +23,9 @@ import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.concurrent.Executor;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Module
@@ -32,7 +35,8 @@ public abstract class DeviceModule {
 
     @Provides
     @Singleton
-    static AdbManager getAdbManager(AtExitManager atExitManager, AdbConfigurationPref adbLocation) {
-        return AdbManager.create(atExitManager, adbLocation);
+    static AdbManager getAdbManager(AtExitManager atExitManager, @Named(AppExecutors.FILE_EXECUTOR) Executor ioExecutor,
+            AdbConfigurationPref adbLocation) {
+        return AdbManager.create(atExitManager, ioExecutor, adbLocation);
     }
 }

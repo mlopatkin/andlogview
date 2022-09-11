@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 class AdbManagerImpl implements AdbManager {
     // AdbManagerImpl is responsible for the state of the DDMLIB as a whole. The manager lazily initializes the library
@@ -34,6 +35,7 @@ class AdbManagerImpl implements AdbManager {
     private static final Logger logger = Logger.getLogger(AdbManagerImpl.class);
 
     private final AtExitManager atExitManager;
+    private final Executor ioExecutor;
 
     private final Object lock = new Object();
 
@@ -45,9 +47,10 @@ class AdbManagerImpl implements AdbManager {
     @GuardedBy("lock")
     private AdbLocation adbLocation;
 
-    AdbManagerImpl(AtExitManager atExitManager, AdbLocation initialAdbLocation) {
+    AdbManagerImpl(AtExitManager atExitManager, Executor ioExecutor, AdbLocation initialAdbLocation) {
         this.atExitManager = atExitManager;
-        adbLocation = initialAdbLocation;
+        this.ioExecutor = ioExecutor;
+        this.adbLocation = initialAdbLocation;
     }
 
     @Override
@@ -80,7 +83,7 @@ class AdbManagerImpl implements AdbManager {
     @GuardedBy("lock")
     private AdbServerImpl createServerLocked() throws AdbException {
         initIfNeededLocked();
-        return new AdbServerImpl(adbLocation);
+        return new AdbServerImpl(adbLocation, ioExecutor);
     }
 
     @GuardedBy("lock")

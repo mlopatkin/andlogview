@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.IDevice;
 
-import java.util.concurrent.CompletableFuture;
-
 /**
  * Provisional device represents device that is connected to the host, but cannot be interacted with. It might be
  * offline from the start or some important information that is available through {@link AdbDevice} (like product name
@@ -48,11 +46,4 @@ public interface ProvisionalAdbDevice {
      * @return the user-friendly name of the device with unique id
      */
     String getDisplayName();
-
-    /**
-     * Returns a Future that a caller can use to wait for this device to become fully functional.
-     *
-     * @return the Future that will convert to the fully functional device instance
-     */
-    CompletableFuture<AdbDevice> getProvisionedDevice();
 }
