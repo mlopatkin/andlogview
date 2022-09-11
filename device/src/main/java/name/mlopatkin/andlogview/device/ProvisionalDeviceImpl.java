@@ -27,6 +27,7 @@ class ProvisionalDeviceImpl implements ProvisionalDevice {
         this.device = new LoggingDevice(device);
     }
 
+    @Override
     public DeviceKey getDeviceKey() {
         return deviceKey;
     }

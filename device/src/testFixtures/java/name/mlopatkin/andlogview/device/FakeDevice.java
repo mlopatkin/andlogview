@@ -16,11 +16,15 @@
 
 package name.mlopatkin.andlogview.device;
 
+import name.mlopatkin.andlogview.test.StrictMock;
 import name.mlopatkin.andlogview.thirdparty.device.AndroidVersionCodes;
+
+import com.android.ddmlib.IDevice;
 
 import java.util.List;
 
 public class FakeDevice implements Device {
+    private final DeviceKey key = DeviceKey.of(StrictMock.strictMock(IDevice.class));
     private final String buildFingerprint;
     private final String product;
     private final String apiString;
@@ -29,6 +33,11 @@ public class FakeDevice implements Device {
         this.buildFingerprint = buildFingerprint;
         this.product = product;
         this.apiString = apiString;
+    }
+
+    @Override
+    public DeviceKey getDeviceKey() {
+        return key;
     }
 
     @Override

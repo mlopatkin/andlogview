@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.device.OutputTarget;
+import name.mlopatkin.andlogview.device.ProvisionalDevice;
 import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.Field;
 import name.mlopatkin.andlogview.liblogcat.LogRecord;
@@ -97,7 +98,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         sourceMetadata = new AdbSourceMetadata(device);
         deviceChangeObserver = deviceList.asObservable().addScopedObserver(new DeviceChangeObserver() {
             @Override
-            public void onDeviceDisconnected(Device device) {
+            public void onDeviceDisconnected(ProvisionalDevice device) {
                 logger.debug("Device " + device.getSerialNumber() + " was disconnected, closing the source");
                 invalidateAndClose(InvalidationReason.DISCONNECT);
             }

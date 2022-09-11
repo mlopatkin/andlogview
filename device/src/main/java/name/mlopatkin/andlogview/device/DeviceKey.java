@@ -25,9 +25,7 @@ import java.util.Objects;
  * A holder for the {@link IDevice} instance that adds equality check for them.
  * It should only be created from the original IDevice implementations provided by the DDMLIB, not the wrappers.
  */
-final class DeviceKey {
-    // TODO(mlopatkin): consider making DelegatingDevice a separate type and not an IDevice subtype and avoid the
-    //  confusion. With this change IDevice can serve as its own key.
+public final class DeviceKey {
     private final IDevice device;
 
     private DeviceKey(IDevice device) {
@@ -77,7 +75,7 @@ final class DeviceKey {
      * @return the key of the device
      * @throws IllegalArgumentException if the device is of unsupported type, e.g. a wrapper
      */
-    public static DeviceKey of(IDevice device) {
+    static DeviceKey of(IDevice device) {
         return new DeviceKey(device);
     }
 }

@@ -29,6 +29,7 @@ class DeviceImpl implements Device {
         this.deviceProperties = deviceProperties;
     }
 
+    @Override
     public DeviceKey getDeviceKey() {
         return deviceKey;
     }

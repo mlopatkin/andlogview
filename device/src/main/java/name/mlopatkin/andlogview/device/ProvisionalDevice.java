@@ -26,8 +26,11 @@ package name.mlopatkin.andlogview.device;
  * the {@code ProvisionalAdbDevice}.
  */
 public interface ProvisionalDevice {
-    // TODO(mlopatkin) serial numbers aren't unique in reality, especially in case of the low-end phones with
-    //  low-quality firmware. It is better to use something like usb address but DDMLIB doesn't expose it.
+    /**
+     * @return the key of the device that doesn't change during the device lifetime
+     */
+    DeviceKey getDeviceKey();
+
     /**
      * @return the serial number of the connected device
      */

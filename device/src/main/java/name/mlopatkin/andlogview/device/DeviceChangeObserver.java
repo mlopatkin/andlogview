@@ -41,7 +41,7 @@ public interface DeviceChangeObserver {
      *
      * @param device the disconnected device
      */
-    default void onDeviceDisconnected(Device device) {}
+    default void onDeviceDisconnected(ProvisionalDevice device) {}
 
     /**
      * Called when the device status is changed.
@@ -74,7 +74,7 @@ public interface DeviceChangeObserver {
             }
 
             @Override
-            public void onDeviceDisconnected(Device device) {
+            public void onDeviceDisconnected(ProvisionalDevice device) {
                 if (isTrackedDevice(device)) {
                     parent.onDeviceDisconnected(device);
                 }
@@ -96,7 +96,7 @@ public interface DeviceChangeObserver {
             }
 
             private boolean isTrackedDevice(ProvisionalDevice device) {
-                return Objects.equals(trackedDevice.getSerialNumber(), device.getSerialNumber());
+                return Objects.equals(trackedDevice.getDeviceKey(), device.getDeviceKey());
             }
         };
     }

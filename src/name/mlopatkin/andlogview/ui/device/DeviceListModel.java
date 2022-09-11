@@ -21,10 +21,13 @@ import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.device.ProvisionalDevice;
 
+import com.google.common.collect.Iterables;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.AbstractListModel;
 
@@ -52,6 +55,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
     @Override
     public void onProvisionalDeviceConnected(ProvisionalDevice device) {
         logger.debug("provisional device added " + device);
+        assert findIndexOfDevice(device) < 0;
         devices.add(device);
         fireIntervalAdded(this, devices.size() - 1, devices.size() - 1);
     }
@@ -59,7 +63,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
     @Override
     public void onDeviceConnected(Device device) {
         logger.debug("device provisioned " + device);
-        int index = devices.indexOf(device);
+        int index = findIndexOfDevice(device);
         if (index >= 0) {
             devices.set(index, device);
             fireContentsChanged(this, index, index);
@@ -70,9 +74,9 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
     }
 
     @Override
-    public void onDeviceDisconnected(Device device) {
+    public void onDeviceDisconnected(ProvisionalDevice device) {
         logger.debug("device removed " + device);
-        int index = devices.indexOf(device);
+        int index = findIndexOfDevice(device);
         if (index >= 0) {
             devices.remove(index);
             fireIntervalRemoved(this, index, index);
@@ -82,7 +86,13 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
     @Override
     public void onDeviceChanged(Device device) {
         logger.debug("Device changed: " + device);
-        fireContentsChanged(DeviceListModel.this, 0, devices.size() - 1);
+        int index = findIndexOfDevice(device);
+        assert index >= 0;
+        fireContentsChanged(DeviceListModel.this, index, index);
+    }
+
+    private int findIndexOfDevice(ProvisionalDevice device) {
+        return Iterables.indexOf(devices, d -> Objects.equals(d.getDeviceKey(), device.getDeviceKey()));
     }
 
     public int getFirstOnlineDeviceIndex() {

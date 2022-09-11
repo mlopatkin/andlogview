@@ -37,6 +37,15 @@ class AdbDeviceListImpl
     }
 
     @Override
+    public void onProvisionalDeviceConnected(ProvisionalDevice device) {
+        listenerExecutor.execute(() -> {
+            for (DeviceChangeObserver obs : deviceChangeObservers) {
+                obs.onProvisionalDeviceConnected(device);
+            }
+        });
+    }
+
+    @Override
     public void onDeviceConnected(Device device) {
         listenerExecutor.execute(() -> {
             for (DeviceChangeObserver obs : deviceChangeObservers) {
@@ -46,7 +55,7 @@ class AdbDeviceListImpl
     }
 
     @Override
-    public void onDeviceDisconnected(Device device) {
+    public void onDeviceDisconnected(ProvisionalDevice device) {
         listenerExecutor.execute(() -> {
             for (DeviceChangeObserver obs : deviceChangeObservers) {
                 obs.onDeviceDisconnected(device);

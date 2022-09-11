@@ -81,9 +81,8 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
                     synchronized (deviceLock) {
                         adbDevice = devices.remove(DeviceKey.of(device));
                     }
-                    if (adbDevice instanceof Device) {
-                        // Clients don't care about non-provisioned devices.
-                        notifyDeviceDisconnected((Device) adbDevice);
+                    if (adbDevice != null) {
+                        notifyDeviceDisconnected(adbDevice);
                     }
                     // The pending provision job, if any, will complete itself abnormally.
                 }
@@ -201,7 +200,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         }
     }
 
-    private void notifyDeviceDisconnected(Device device) {
+    private void notifyDeviceDisconnected(ProvisionalDevice device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceDisconnected"));
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceDisconnected(device);
