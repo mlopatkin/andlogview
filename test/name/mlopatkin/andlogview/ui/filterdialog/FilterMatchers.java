@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.test.AdaptingMatcher;
 
 import org.hamcrest.Matcher;

@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import com.google.common.base.Preconditions;

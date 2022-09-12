@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.filters.LogBufferFilter;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.events.Observable;

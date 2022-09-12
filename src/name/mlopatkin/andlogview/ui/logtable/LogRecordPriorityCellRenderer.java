@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview.ui.logtable;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 
 import javax.swing.table.DefaultTableCellRenderer;
 

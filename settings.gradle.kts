@@ -18,3 +18,4 @@ rootProject.name = "andlogview"
 
 include("base")
 include("device")
+include("logmodel")

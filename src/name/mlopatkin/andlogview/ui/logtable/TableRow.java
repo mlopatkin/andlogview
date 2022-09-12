@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.logtable;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import com.google.common.base.MoreObjects;
 

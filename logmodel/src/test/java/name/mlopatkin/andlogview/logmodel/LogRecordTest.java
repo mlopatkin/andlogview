@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.liblogcat;
+package name.mlopatkin.andlogview.logmodel;
 
-import static name.mlopatkin.andlogview.liblogcat.LogRecordUtils.withBuffer;
-import static name.mlopatkin.andlogview.liblogcat.LogRecordUtils.withTime;
+import static name.mlopatkin.andlogview.logmodel.LogRecordUtils.withBuffer;
+import static name.mlopatkin.andlogview.logmodel.LogRecordUtils.withTime;
 
 import static org.junit.Assert.assertEquals;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 
 import org.junit.Test;
 

@@ -16,9 +16,9 @@
 
 package name.mlopatkin.andlogview.test;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
-import name.mlopatkin.andlogview.liblogcat.LogRecordPredicates;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
 
 import java.util.Collections;
 import java.util.Objects;

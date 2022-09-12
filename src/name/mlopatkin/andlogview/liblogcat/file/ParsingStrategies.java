@@ -15,10 +15,10 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.liblogcat.Field;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

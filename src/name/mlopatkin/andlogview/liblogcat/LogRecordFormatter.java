@@ -15,6 +15,10 @@
  */
 package name.mlopatkin.andlogview.liblogcat;
 
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
+import name.mlopatkin.andlogview.logmodel.Timestamp;
+
 /**
  * Utility methods for printing log files in native formats.
  */

@@ -19,8 +19,8 @@ package name.mlopatkin.andlogview.liblogcat.file;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import name.mlopatkin.andlogview.liblogcat.DataSource;
-import name.mlopatkin.andlogview.liblogcat.Field;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;

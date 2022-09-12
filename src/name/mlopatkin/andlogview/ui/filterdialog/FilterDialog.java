@@ -21,7 +21,7 @@ import static name.mlopatkin.andlogview.ui.filterdialog.FilteringModesPanel.Mode
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 

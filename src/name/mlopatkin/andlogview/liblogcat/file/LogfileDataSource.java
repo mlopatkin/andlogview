@@ -16,12 +16,12 @@
 package name.mlopatkin.andlogview.liblogcat.file;
 
 import name.mlopatkin.andlogview.liblogcat.DataSource;
-import name.mlopatkin.andlogview.liblogcat.Field;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.liblogcat.RecordListener;
 import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
+import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import com.google.common.base.CharMatcher;
 

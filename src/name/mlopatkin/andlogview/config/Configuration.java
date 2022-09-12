@@ -25,8 +25,8 @@ import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.string;
 import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.type;
 
 import name.mlopatkin.andlogview.Main;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.utils.properties.ConfigurationMap;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;

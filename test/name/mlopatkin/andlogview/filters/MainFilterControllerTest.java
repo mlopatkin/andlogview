@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 import name.mlopatkin.andlogview.config.FakePreference;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;

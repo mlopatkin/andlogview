@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.HighlightColors;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.PatternsList;

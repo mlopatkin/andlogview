@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.liblogcat;
+package name.mlopatkin.andlogview.logmodel;
 
 import java.text.DateFormat;
 import java.text.ParseException;

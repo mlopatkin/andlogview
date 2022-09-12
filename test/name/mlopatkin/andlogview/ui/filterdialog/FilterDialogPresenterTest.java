@@ -42,7 +42,7 @@ import static org.junit.Assume.assumeTrue;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

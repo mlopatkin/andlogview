@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 

@@ -16,7 +16,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 

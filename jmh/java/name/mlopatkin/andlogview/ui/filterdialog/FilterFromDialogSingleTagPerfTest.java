@@ -18,8 +18,8 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.jmh.BenchmarkResources;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import com.google.common.collect.ImmutableList;
 

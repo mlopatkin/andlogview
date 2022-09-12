@@ -16,7 +16,7 @@
 package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;

@@ -21,8 +21,8 @@ import static name.mlopatkin.andlogview.utils.PredicateMatchers.rejects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
-import name.mlopatkin.andlogview.liblogcat.LogRecordUtils;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 
 import org.junit.Test;
 

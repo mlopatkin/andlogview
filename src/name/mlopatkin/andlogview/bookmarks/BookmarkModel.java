@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.bookmarks;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.liblogcat;
+package name.mlopatkin.andlogview.logmodel;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

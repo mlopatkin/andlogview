@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

@@ -15,10 +15,12 @@
  */
 package name.mlopatkin.andlogview.liblogcat;
 
-import static name.mlopatkin.andlogview.liblogcat.AssertLogRecord.assertThatRecord;
+import static name.mlopatkin.andlogview.logmodel.AssertLogRecord.assertThatRecord;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.junit.Test;
 

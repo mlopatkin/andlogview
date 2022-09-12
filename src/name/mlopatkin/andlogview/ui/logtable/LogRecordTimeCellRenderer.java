@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview.ui.logtable;
 
-import name.mlopatkin.andlogview.liblogcat.TimeFormatUtils;
-import name.mlopatkin.andlogview.liblogcat.Timestamp;
+import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
+import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.Component;

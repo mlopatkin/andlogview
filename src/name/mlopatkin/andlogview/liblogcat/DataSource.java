@@ -15,6 +15,9 @@
  */
 package name.mlopatkin.andlogview.liblogcat;
 
+import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.EnumSet;

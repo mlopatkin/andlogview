@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.ColumnOrder;
 import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordClipboardFormatter;

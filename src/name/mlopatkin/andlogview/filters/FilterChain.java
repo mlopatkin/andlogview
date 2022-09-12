@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MultimapBuilder;

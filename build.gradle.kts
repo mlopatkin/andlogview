@@ -38,8 +38,9 @@ plugins {
 }
 
 dependencies {
-    implementation(project("base"))
-    implementation(project("device"))
+    implementation(project(":base"))
+    implementation(project(":device"))
+    implementation(project(":logmodel"))
     implementation(libs.dagger.runtime)
     implementation(libs.guava)
     implementation(libs.gson)
@@ -50,7 +51,8 @@ dependencies {
 
     annotationProcessor(buildLibs.dagger.compiler)
 
-    testImplementation(testFixtures(project("base")))
+    testImplementation(testFixtures(project(":base")))
+    testImplementation(testFixtures(project(":logmodel")))
 }
 
 configurations {

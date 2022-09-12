@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;

@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
-import name.mlopatkin.andlogview.liblogcat.LogRecordUtils;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import org.junit.Before;

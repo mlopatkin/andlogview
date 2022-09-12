@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.liblogcat;
+package name.mlopatkin.andlogview.logmodel;
 
-import static name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
-import static name.mlopatkin.andlogview.liblogcat.LogRecord.NO_ID;
-import static name.mlopatkin.andlogview.liblogcat.LogRecord.Priority;
+import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+import static name.mlopatkin.andlogview.logmodel.LogRecord.NO_ID;
+import static name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

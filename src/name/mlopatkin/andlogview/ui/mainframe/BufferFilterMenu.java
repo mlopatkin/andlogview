@@ -17,7 +17,7 @@ package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.MainFilterController;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

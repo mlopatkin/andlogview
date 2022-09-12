@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.liblogcat;
-
 /**
- * Fields in the log record.
+ * This is a core model of the application - the log entries aka {@link name.mlopatkin.andlogview.logmodel.LogRecord}.
  */
-public enum Field {TIME, PID, TID, PRIORITY, TAG, MESSAGE, BUFFER, APP_NAME}
+package name.mlopatkin.andlogview.logmodel;

@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.indexfilter;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;

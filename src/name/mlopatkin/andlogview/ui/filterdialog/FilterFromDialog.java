@@ -18,8 +18,8 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.ColoringFilter;
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
-import name.mlopatkin.andlogview.liblogcat.LogRecordPredicates;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.search.SearchRequestParser;
 import name.mlopatkin.andlogview.search.SearcherBuilder;

@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.ui.bookmarks;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;

@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

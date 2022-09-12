@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkPopupMenuPresenter.BookmarkPopupMenuView;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;

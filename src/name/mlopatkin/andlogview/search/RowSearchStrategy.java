@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview.search;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 public interface RowSearchStrategy {
     boolean isRowMatched(LogRecord record);

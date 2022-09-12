@@ -18,8 +18,8 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 import name.mlopatkin.andlogview.device.Command;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.utils.Threads;
 
 import org.apache.log4j.Logger;

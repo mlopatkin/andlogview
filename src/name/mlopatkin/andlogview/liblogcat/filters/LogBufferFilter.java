@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.liblogcat.filters;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecord;
-import name.mlopatkin.andlogview.liblogcat.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
