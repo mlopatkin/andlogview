@@ -1,0 +1,87 @@
+name: Run releasing action (snapshot or release)
+on:
+  push:
+    branches:
+      - master
+      - release/*
+    tags-ignore:
+      - "*-snapshot"
+env:
+  PYTHON_BINARY: python3
+  BUILD_CONTAINER: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
+  GRADLE_BUILD_ACTION: gradle/gradle-build-action@356abb47e7664b5505e25d7997a5a522a17c62d9
+jobs:
+  build-snapshot:
+    runs-on: ubuntu-latest
+    container: ${{ env.BUILD_CONTAINER }}
+    # Only build snapshots on master
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and publish snapshot
+        uses: ${{ env.GRADLE_BUILD_ACTION }}
+        # Do not use Gradle Daemon because we only have a single invocation.
+        with:
+          arguments: |
+            -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
+            --no-daemon
+            --stacktrace
+            check bitbucketUpload
+        env:
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
+          BITBUCKET_USER: mlopatkin
+      - name: Publish artifacts
+        uses: ./.github/actions/publish-gradle-outputs
+      - name: Publish Github release
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        if: ${{ success() }}
+        with:
+          files: build/distributions/*
+          prerelease: true
+          automatic_release_tag: "latest-snapshot"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+  build-release:
+    runs-on: ubuntu-latest
+    container: ${{ env.BUILD_CONTAINER }}
+    # Only build releases out of tags
+    if: github.ref_type == 'tag' && !endsWith(github.ref, "-snapshot")
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and publish release
+        uses: ${{ env.GRADLE_BUILD_ACTION }}
+        # Do not use Gradle Daemon because we only have a single invocation.
+        with:
+          arguments: |
+            -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
+            --no-daemon
+            --stacktrace
+            check bitbucketUpload
+        env:
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
+          BITBUCKET_USER: mlopatkin
+          LOGVIEW_SNAPSHOT_BUILD: false
+      - name: Publish artifacts
+        uses: ./.github/actions/publish-gradle-outputs
+  mirror-to-bitbucket:
+    runs-on: ubuntu-latest
+    # build-snapshot publishes a tag that we want to sync with bitbucket as well, so wait for it to complete
+    needs:
+      - build-snapshot
+    if: ${{ always() }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup git for bitbucket
+        run: tools/bitbucket-mirror/setup-bitbucket.sh
+        shell: bash
+        env:
+          BITBUCKET_SSH_PRIVATE_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+          BITBUCKET_HOST_FINGERPRINT: ${{ secrets.BITBUCKET_HOST_FINGERPRINT }}
+      - name: clone origin as mirror and push to bitbucket
+        run: tools/bitbucket-mirror/clone-and-push.sh
+        shell: bash
+        env:
+          MIRROR_REPO_PATH: ${{ runner.temp }}/origin
+      - name: cleanup config
+        run: tools/bitbucket-mirror/cleanup.sh
+        shell: bash
+        if: ${{ always() }}
