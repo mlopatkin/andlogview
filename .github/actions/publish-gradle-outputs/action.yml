@@ -8,6 +8,6 @@ runs:
       with:
         name: Build results
         path: |
-          build/reports/**
-          build/distributions/*
-          build/libs/*
+          **/build/reports/**
+          **/build/distributions/*
+          **/build/libs/*
