@@ -6,6 +6,8 @@ on:
       - release/*
     tags:
       - "**"
+  workflow_dispatch:
+
 jobs:
   push-to-bitbucket:
     runs-on: ubuntu-latest
