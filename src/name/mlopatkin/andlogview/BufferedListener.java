@@ -40,12 +40,10 @@ import javax.swing.Timer;
 public class BufferedListener<T> implements RecordListener<T> {
     private static final Logger logger = Logger.getLogger(BufferedListener.class);
 
-    private BatchRecordsReceiver<T> receiver;
-    private AutoScrollController scrollController;
+    private final BatchRecordsReceiver<T> receiver;
 
-    public BufferedListener(BatchRecordsReceiver<T> receiver, AutoScrollController scrollController) {
+    public BufferedListener(BatchRecordsReceiver<T> receiver) {
         this.receiver = receiver;
-        this.scrollController = scrollController;
         mergeTimer.start();
         watchdogTimer.start();
     }
@@ -119,7 +117,6 @@ public class BufferedListener<T> implements RecordListener<T> {
 
     private void addOneRecord(T record) {
         assert EventQueue.isDispatchThread();
-        scrollController.notifyBeforeInsert();
         receiver.addRecord(record);
     }
 
@@ -142,7 +139,6 @@ public class BufferedListener<T> implements RecordListener<T> {
             setPolicy(Policy.IMMEDIATE);
         }
         sortRecordsIfPossible(records);
-        scrollController.notifyBeforeInsert();
         receiver.addRecords(records);
     }
 

@@ -254,7 +254,7 @@ public class MainFrame extends JFrame {
 
         // TODO(mlopatkin) Replace this cast with injection
         searchController = new SearchController((DecoratingRendererTable) logElements, recordsModel);
-        listener = new BufferedListener<>(recordsModel, scrollController);
+        listener = new BufferedListener<>(new ScrollControllerDelegatingReceiver(scrollController, recordsModel));
 
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);
