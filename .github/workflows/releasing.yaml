@@ -8,11 +8,10 @@ on:
       - "*-snapshot"
 env:
   PYTHON_BINARY: python3
-  BUILD_CONTAINER: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
 jobs:
   build-snapshot:
     runs-on: ubuntu-latest
-    container: ${{ env.BUILD_CONTAINER }}
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
     steps:
@@ -41,7 +40,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
   build-release:
     runs-on: ubuntu-latest
-    container: ${{ env.BUILD_CONTAINER }}
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, "-snapshot")
     steps:
