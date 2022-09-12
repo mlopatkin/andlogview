@@ -1,0 +1,26 @@
+name: Mirror important branches and tags to bitbucket
+on:
+  push:
+    branches:
+      - master
+      - release/*
+    tags:
+      - "**"
+jobs:
+  push-to-bitbucket:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: setup git for bitbucket
+        run: tools/bitbucket-mirror/setup-bitbucket.sh
+        shell: bash
+        env:
+          BITBUCKET_SSH_PRIVATE_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+      - name: push to bitbucket
+        run: git push bitbucket --mirror
+      - name: cleanup config
+        run: tools/bitbucket-mirror/cleanup.sh
+        shell: bash
+        if: ${{ always() }}
