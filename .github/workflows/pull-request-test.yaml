@@ -24,5 +24,6 @@ jobs:
             --stacktrace
             --continue
             check
+            shadowDistZip
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
