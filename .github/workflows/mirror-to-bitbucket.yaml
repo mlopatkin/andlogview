@@ -20,6 +20,7 @@ jobs:
         shell: bash
         env:
           BITBUCKET_SSH_PRIVATE_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+          BITBUCKET_HOST_FINGERPRINT: ${{ secrets.BITBUCKET_HOST_FINGERPRINT }}
       - name: push to bitbucket
         run: git push bitbucket --mirror
       - name: cleanup config

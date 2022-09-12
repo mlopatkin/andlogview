@@ -32,3 +32,10 @@ then
   mv $SSH_CONFIG_BACKUP $SSH_CONFIG
   chmod 600 $SSH_CONFIG
 fi
+
+if [ -e $KNOWN_HOSTS_BACKUP ]
+then
+  rm -f $KNOWN_HOSTS
+  mv $KNOWN_HOSTS_BACKUP $KNOWN_HOSTS
+  chmod 644 $KNOWN_HOSTS
+fi

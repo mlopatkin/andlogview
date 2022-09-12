@@ -18,4 +18,6 @@ SSH_DIR=$HOME/.ssh
 BITBUCKET_SSH_KEYFILE=$SSH_DIR/id_rsa.bitbucket
 SSH_CONFIG=$SSH_DIR/config
 SSH_CONFIG_BACKUP=${SSH_CONFIG}.bak
+KNOWN_HOSTS=$SSH_DIR/known_hosts
+KNOWN_HOSTS_BACKUP=${KNOWN_HOSTS}.bak
 BITBUCKET_ORIGIN_SSH_URL=git@bitbucket.org:mlopatkin/android-log-viewer.git

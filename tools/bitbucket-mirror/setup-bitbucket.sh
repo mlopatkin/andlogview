@@ -22,9 +22,17 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 . $SCRIPT_DIR/env.sh
 
-if [ -z "$BITBUCKET_SSH_PRIVATE_KEY" ]
+if [ ! -v BITBUCKET_SSH_PRIVATE_KEY ]
 then
   echo "Please set up base64-encoded BITBUCKET_SSH_PRIVATE_KEY. Exiting."
+  exit 1
+fi
+
+if [ ! -v BITBUCKET_HOST_FINGERPRINT ]
+then
+  echo "Please set up base64-encoded BITBUCKET_HOST_FINGERPRINT!"
+  echo "Use sh-keyscan bitbucket.org | base64 -w0 | xclip -sel clip to copy it to clipboard"
+  echo "Exiting"
   exit 1
 fi
 
@@ -49,5 +57,14 @@ Host bitbucket.org
   IdentityFile $BITBUCKET_SSH_KEYFILE
   IdentitiesOnly yes
 EOF
+
+if [ -e $KNOWN_HOSTS ]
+then
+  cp $KNOWN_HOSTS $KNOWN_HOSTS_BACKUP
+else
+  touch $KNOWN_HOSTS_BACKUP
+fi
+
+echo $BITBUCKET_HOST_FINGERPRINT | base64 -d >> $KNOWN_HOSTS
 
 git remote add bitbucket $BITBUCKET_ORIGIN_SSH_URL
