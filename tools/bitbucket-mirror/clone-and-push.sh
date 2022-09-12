@@ -22,18 +22,12 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 . $SCRIPT_DIR/env.sh
 
-rm -f $BITBUCKET_SSH_KEYFILE
-
-if [ -e $SSH_CONFIG_BACKUP ]
+if [ ! -v MIRROR_REPO_PATH ]
 then
-  rm -f $SSH_CONFIG
-  mv $SSH_CONFIG_BACKUP $SSH_CONFIG
-  chmod 600 $SSH_CONFIG
+  echo "Please set up MIRROR_REPO_PATH! Exiting."
+  exit 1
 fi
 
-if [ -e $KNOWN_HOSTS_BACKUP ]
-then
-  rm -f $KNOWN_HOSTS
-  mv $KNOWN_HOSTS_BACKUP $KNOWN_HOSTS
-  chmod 644 $KNOWN_HOSTS
-fi
+git clone https://github.com/mlopatkin/andlogview.git --bare $MIRROR_REPO_PATH
+git -C $MIRROR_REPO_PATH remote add bitbucket $BITBUCKET_ORIGIN_SSH_URL
+git -C $MIRROR_REPO_PATH push bitbucket --mirror

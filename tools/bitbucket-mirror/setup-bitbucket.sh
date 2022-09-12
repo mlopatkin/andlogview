@@ -66,5 +66,3 @@ else
 fi
 
 echo $BITBUCKET_HOST_FINGERPRINT | base64 -d >> $KNOWN_HOSTS
-
-git remote add bitbucket $BITBUCKET_ORIGIN_SSH_URL

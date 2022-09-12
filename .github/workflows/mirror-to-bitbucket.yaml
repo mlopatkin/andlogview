@@ -6,23 +6,22 @@ on:
       - release/*
     tags:
       - "**"
-  workflow_dispatch:
-
 jobs:
   push-to-bitbucket:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: setup git for bitbucket
         run: tools/bitbucket-mirror/setup-bitbucket.sh
         shell: bash
         env:
           BITBUCKET_SSH_PRIVATE_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
           BITBUCKET_HOST_FINGERPRINT: ${{ secrets.BITBUCKET_HOST_FINGERPRINT }}
-      - name: push to bitbucket
-        run: git push bitbucket --mirror
+      - name: clone origin as mirror and push to bitbucket
+        run: tools/bitbucket-mirror/clone-and-push.sh
+        shell: bash
+        env:
+          MIRROR_REPO_PATH: ${{ runner.temp }}/origin
       - name: cleanup config
         run: tools/bitbucket-mirror/cleanup.sh
         shell: bash
