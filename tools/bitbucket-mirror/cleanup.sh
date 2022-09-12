@@ -22,6 +22,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 . $SCRIPT_DIR/env.sh
 
+git remote remove bitbucket
+
 rm -f $BITBUCKET_SSH_KEYFILE
 
 if [ -e $SSH_CONFIG_BACKUP ]

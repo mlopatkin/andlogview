@@ -40,11 +40,12 @@ chmod 600 $BITBUCKET_SSH_KEYFILE
 if [ -e $SSH_CONFIG ]
 then
   cp $SSH_CONFIG $SSH_CONFIG_BACKUP
+else
+  touch $SSH_CONFIG_BACKUP
 fi
 
 cat << EOF >> $SSH_CONFIG
-Host bitbucket
-  HostName bitbucket.org
+Host bitbucket.org
   IdentityFile $BITBUCKET_SSH_KEYFILE
   IdentitiesOnly yes
 EOF
