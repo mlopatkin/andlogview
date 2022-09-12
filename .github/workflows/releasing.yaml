@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
     # Only build releases out of tags
-    if: github.ref_type == 'tag' && !endsWith(github.ref, "-snapshot")
+    if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
     steps:
       - uses: actions/checkout@v2
       - name: Build and publish release
