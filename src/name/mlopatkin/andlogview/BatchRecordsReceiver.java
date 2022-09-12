@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.liblogcat.RecordListener;
+import name.mlopatkin.andlogview.logmodel.RecordListener;
 
 import java.util.List;
 

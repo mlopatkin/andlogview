@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.liblogcat;
+package name.mlopatkin.andlogview.logmodel;
 
-import java.util.Collection;
+public class SourceMetadataItem {
+    private final String displayName;
+    private final String value;
 
-/** A collection of metadata that describes the data source. */
-public interface SourceMetadata {
-    /** @return the collection of metadata items available for the data source */
-    Collection<SourceMetadataItem> getMetadataItems();
+    public SourceMetadataItem(String displayName, String value) {
+        this.displayName = displayName;
+        this.value = value;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

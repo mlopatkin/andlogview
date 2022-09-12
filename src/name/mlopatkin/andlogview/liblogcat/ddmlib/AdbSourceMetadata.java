@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import name.mlopatkin.andlogview.device.Device;
-import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
-import name.mlopatkin.andlogview.liblogcat.SourceMetadataItem;
+import name.mlopatkin.andlogview.logmodel.SourceMetadata;
+import name.mlopatkin.andlogview.logmodel.SourceMetadataItem;
 
 import java.util.Collection;
 import java.util.Collections;

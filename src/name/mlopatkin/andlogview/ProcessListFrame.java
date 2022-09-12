@@ -16,7 +16,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.widgets.TableCellHelper;
 
 import org.checkerframework.checker.nullness.qual.Nullable;

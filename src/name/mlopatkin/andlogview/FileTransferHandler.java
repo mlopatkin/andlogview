@@ -15,9 +15,9 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
+import name.mlopatkin.andlogview.logmodel.DataSource;
 
 import org.apache.log4j.Logger;
 

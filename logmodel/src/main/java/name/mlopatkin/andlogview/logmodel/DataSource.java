@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.liblogcat;
-
-import name.mlopatkin.andlogview.logmodel.Field;
-import name.mlopatkin.andlogview.logmodel.LogRecord;
+package name.mlopatkin.andlogview.logmodel;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 

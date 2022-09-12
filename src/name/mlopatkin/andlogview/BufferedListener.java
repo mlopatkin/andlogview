@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.liblogcat.RecordListener;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
+import name.mlopatkin.andlogview.logmodel.RecordListener;
 
 import org.apache.log4j.Logger;
 

@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.liblogcat.DataSource;
 import name.mlopatkin.andlogview.liblogcat.LogFormatSniffer;
+import name.mlopatkin.andlogview.logmodel.DataSource;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;

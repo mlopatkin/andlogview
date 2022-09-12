@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.logmodel.DataSource;
 
 import org.junit.Test;
 

@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.DataSourceHolder;
-import name.mlopatkin.andlogview.liblogcat.DataSource;
-import name.mlopatkin.andlogview.liblogcat.SourceMetadataItem;
+import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.logmodel.SourceMetadataItem;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 

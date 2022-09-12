@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.DataSourceHolder;
-import name.mlopatkin.andlogview.liblogcat.DataSource;
+import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.events.Observable;
 

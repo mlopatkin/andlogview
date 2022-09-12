@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.liblogcat.SourceMetadata;
-import name.mlopatkin.andlogview.liblogcat.SourceMetadataItem;
+import name.mlopatkin.andlogview.logmodel.SourceMetadata;
+import name.mlopatkin.andlogview.logmodel.SourceMetadataItem;
 
 import com.google.common.collect.ImmutableList;
 
