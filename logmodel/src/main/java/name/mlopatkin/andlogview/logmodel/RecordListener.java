@@ -28,7 +28,7 @@ public interface RecordListener<T> {
     /**
      * Called when a new log record is available in the {@link DataSource}.
      * There is a possibility that the order of {@code addRecord} calls
-     * doesn't match the actual order of records, i. e. there can be two
+     * doesn't match the actual order of records, i.e. there can be two
      * consequent calls "add record A" and "add record B" but the record B is
      * created earlier than the record A.
      *
@@ -38,7 +38,7 @@ public interface RecordListener<T> {
 
     /**
      * Called when the {@link DataSource} sends all containing data to the
-     * listener and guarantees that there never be any more. The list supplied
+     * listener and guarantees that there never be more. The list supplied
      * cannot be null or contain nulls.
      *
      * @param records list of records sorted by time in ascending order

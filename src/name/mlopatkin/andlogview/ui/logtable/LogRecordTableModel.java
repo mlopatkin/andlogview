@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview.ui.logtable;
 
-import name.mlopatkin.andlogview.BatchRecordsReceiver;
+import name.mlopatkin.andlogview.logmodel.BatchRecordsReceiver;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
@@ -68,14 +68,6 @@ public class LogRecordTableModel extends AbstractTableModel implements BatchReco
         }
     }
 
-    @Override
-    public void addRecord(LogRecord record) {
-        assert EventQueue.isDispatchThread();
-        int pos = MyListUtils.getUpperBoundPos(records, record);
-        records.add(pos, record);
-        fireTableRowsInserted(pos, pos);
-    }
-
     public TableRow getRow(int row) {
         return new TableRow(row, getRowData(row));
     }
@@ -110,7 +102,7 @@ public class LogRecordTableModel extends AbstractTableModel implements BatchReco
     @Override
     public void setRecords(List<LogRecord> copy) {
         assert EventQueue.isDispatchThread();
-        records = copy;
+        records = new ArrayList<>(copy);
         fireTableDataChanged();
     }
 

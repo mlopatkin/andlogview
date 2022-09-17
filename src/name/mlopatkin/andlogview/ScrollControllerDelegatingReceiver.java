@@ -16,11 +16,16 @@
 
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.logmodel.BatchRecordsReceiver;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.utils.TextUtils;
+
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
 public class ScrollControllerDelegatingReceiver implements BatchRecordsReceiver<LogRecord> {
+    private static final Logger logger = Logger.getLogger(BatchRecordsReceiver.class);
 
     private final AutoScrollController scrollController;
     private final BatchRecordsReceiver<LogRecord> delegate;
@@ -33,13 +38,11 @@ public class ScrollControllerDelegatingReceiver implements BatchRecordsReceiver<
     }
 
     @Override
-    public void addRecord(LogRecord record) {
-        scrollController.notifyBeforeInsert();
-        delegate.addRecord(record);
-    }
-
-    @Override
     public void addRecords(List<LogRecord> records) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Got batch of " + records.size() + " " + TextUtils.plural(records.size(), "record", "records"));
+        }
         scrollController.notifyBeforeInsert();
         delegate.addRecords(records);
 

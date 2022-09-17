@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview;
-
-import name.mlopatkin.andlogview.logmodel.RecordListener;
+package name.mlopatkin.andlogview.logmodel;
 
 import java.util.List;
 
@@ -30,11 +28,6 @@ import java.util.List;
  * @param <T> the actual type of records
  */
 public interface BatchRecordsReceiver<T> {
-    /**
-     * @see RecordListener#addRecord(Object)
-     */
-    void addRecord(T record);
-
     /**
      * Add several records at once. It is guaranteed that these records are
      * correctly sorted.

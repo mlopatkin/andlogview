@@ -25,6 +25,7 @@ import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
+import name.mlopatkin.andlogview.logmodel.BufferedListener;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.RecordListener;
@@ -254,8 +255,8 @@ public class MainFrame extends JFrame {
 
         // TODO(mlopatkin) Replace this cast with injection
         searchController = new SearchController((DecoratingRendererTable) logElements, recordsModel);
-        listener = new BufferedListener<>(new ScrollControllerDelegatingReceiver(scrollController, recordsModel));
-
+        listener = new BufferedListener<>(new ScrollControllerDelegatingReceiver(scrollController, recordsModel),
+                EventQueue::invokeLater);
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
