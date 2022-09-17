@@ -53,11 +53,6 @@
       <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
-    <module name="LineLength">
-      <property name="severity" value="error"/>
-      <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-      <property name="max" value="120"/>
-    </module>
     <module name="LeftCurly">
       <property name="severity" value="error"/>
     </module>
@@ -89,7 +84,10 @@
       <property name="severity" value="error"/>
       <property name="tokens" value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, EQUAL, GE, GT, LAND, LE, LITERAL_ASSERT, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR, STAR_ASSIGN, TYPE_EXTENSION_AND" />
       <property name="allowEmptyConstructors" value="true"/>
+      <property name="allowEmptyLambdas" value="true"/>
+      <property name="allowEmptyLoops" value="true"/>
       <property name="allowEmptyMethods" value="true"/>
+      <property name="allowEmptyTypes" value="true"/>
    </module>
     <module name="WhitespaceAfter">
       <property name="severity" value="error"/>
@@ -145,7 +143,6 @@
       <property name="throwsIndent" value="8"/>
       <property name="lineWrappingIndentation" value="8"/>
     </module>
-    <!-- TODO(aurimas): make OperatorWrap into an error once all the warnings are fixed. -->
     <module name="OperatorWrap">
       <property name="severity" value="error"/>
       <property name="option" value="NL" />
@@ -178,7 +175,6 @@
       <module name="SuppressWithNearbyCommentFilter">
           <property name="commentFormat" value="NO CHECKSTYLE"/>
           <property name="checkFormat" value=".*"/>
-          <property name="messageFormat" value="$1"/>
           <property name="influenceFormat" value="0"/>
       </module>
   </module>
@@ -189,5 +185,10 @@
         <property name="severity" value="error"/>
         <property name="format" value="[ \t]+$"/>
         <property name="message" value="Trailing whitespace"/>
+  </module>
+  <module name="LineLength">
+        <property name="severity" value="error"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <property name="max" value="120"/>
   </module>
 </module>

@@ -1,6 +1,6 @@
 [versions]
 andlogview = "0.22"
-checkstyle = "8.12"
+checkstyle = "8.45.1"
 dagger = "2.40.5"
 errorpronePlugin = "2.0.2"
 eclipseAptPlugin = "3.34.1"
