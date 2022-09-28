@@ -21,6 +21,7 @@ import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -30,7 +31,10 @@ import javax.lang.model.element.Modifier
 /**
  * A task to generate build metadata java class.
  */
-class GenerateBuildMetadata extends DefaultTask {
+abstract class GenerateBuildMetadata extends DefaultTask {
+    @Input
+    abstract Property<String> getRevision()
+
     @Input
     String packageName
 
@@ -45,11 +49,10 @@ class GenerateBuildMetadata extends DefaultTask {
 
     @TaskAction
     def generate() {
-        def buildEnv = new BuildEnvironment(project.projectDir)
         def fullClassName = ClassName.get(packageName, className)
         def metadataClass = TypeSpec.classBuilder(fullClassName).addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .addField(stringConstant('VERSION', version, 'Version of the application.'))
-                .addField(stringConstant('REVISION', buildEnv.sourceRevision, 'Source revision of which app is built.'))
+                .addField(stringConstant('REVISION', getRevision().get(), 'Source revision of which app is built.'))
                 .build()
         JavaFile.builder(fullClassName.packageName(), metadataClass)
                 .indent('    ')

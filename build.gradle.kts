@@ -15,7 +15,6 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import name.mlopatkin.andlogview.building.BuildEnvironment
 import name.mlopatkin.andlogview.building.GenerateBuildMetadata
 import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
@@ -34,6 +33,7 @@ plugins {
     alias(libs.plugins.jmh)
     alias(libs.plugins.jlink)
 
+    id("name.mlopatkin.andlogview.building.build-environment")
     id("name.mlopatkin.andlogview.building.java-conventions")
 }
 
@@ -66,7 +66,7 @@ configurations {
     }
 }
 
-version = libs.versions.andlogview.get() + (if (BuildEnvironment.isSnapshotBuild()) "-SNAPSHOT" else "")
+version = libs.versions.andlogview.get() + (if (buildEnvironment.isSnapshot) "-SNAPSHOT" else "")
 
 application {
     applicationName = "andlogview"
@@ -124,6 +124,7 @@ sourceSets {
 // TODO(mlopatkin) make this a plugin
 // Configure build metadata generator
 val generateBuildMetadata = tasks.register<GenerateBuildMetadata>("generateBuildMetadata") {
+    revision.set(buildEnvironment.sourceRevision)
     packageName = "name.mlopatkin.andlogview"
     className = "BuildInfo"
     into = file(metadataBuildDir)
@@ -282,4 +283,3 @@ disableTasks("eclipse")
 // TODO(mlopatkin) do we need this for modern Buildship versions?
 // Order of tasks is important or generated metadata sources will not be imported
 eclipse.synchronizationTasks("generateBuildMetadata", "eclipseJdtApt", "eclipseFactorypath", "eclipseJdt")
-
