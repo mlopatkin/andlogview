@@ -121,14 +121,14 @@ sourceSets {
     }
 }
 
-// TODO(mlopatkin) make this a plugin
+// TODO(mlopatkin) make this a plugin?
 // Configure build metadata generator
 val generateBuildMetadata = tasks.register<GenerateBuildMetadata>("generateBuildMetadata") {
     revision.set(buildEnvironment.sourceRevision)
-    packageName = "name.mlopatkin.andlogview"
-    className = "BuildInfo"
-    into = file(metadataBuildDir)
-    version = project.version.toString()
+    packageName.set("name.mlopatkin.andlogview")
+    className.set("BuildInfo")
+    version.set(project.version.toString())
+    into.set(file(metadataBuildDir))
 }
 
 tasks.named("compileJava") {
