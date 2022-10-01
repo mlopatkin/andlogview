@@ -33,6 +33,8 @@ import javax.swing.JTable;
 public interface MainLogTableComponent {
     JTable getLogTable();
 
+    BookmarkHighlighter getBookmarkHighlighter();
+
     @Component.Factory
     interface Factory {
         MainLogTableComponent create(
