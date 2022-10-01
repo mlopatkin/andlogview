@@ -21,13 +21,13 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
+import name.mlopatkin.andlogview.logmodel.StaticLogModel;
 import name.mlopatkin.andlogview.test.TestData;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.EventQueue;
-import java.util.Arrays;
 
 import javax.swing.JTable;
 
@@ -42,7 +42,7 @@ public class SelectedRowsImplTest {
         // TODO(mlopatkin) Add custom runner to allow writing tests without invokeAndWait
         EventQueue.invokeAndWait(() -> {
             model = new LogRecordTableModel();
-            model.addRecords(Arrays.asList(TestData.RECORD1, TestData.RECORD2));
+            model.setLogModel(new StaticLogModel(TestData.RECORD1, TestData.RECORD2));
             table = new JTable(model);
         });
 

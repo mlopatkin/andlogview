@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
-    `java-test-fixtures`
-}
+package name.mlopatkin.andlogview.logmodel;
 
-dependencies {
-    implementation(project(":base"))
-    implementation(libs.guava)
+import name.mlopatkin.andlogview.utils.events.EmptyObservable;
+import name.mlopatkin.andlogview.utils.events.Observable;
 
-    testFixturesApi(libs.test.assertj)
-    testFixturesImplementation(project(":base"))
-    testFixturesImplementation(libs.checkerframeworkAnnotations)
-    testFixturesImplementation(libs.guava)
-    testFixturesImplementation(libs.test.junit4)
+class EmptyLogModel implements LogModel {
+    @Override
+    public int size() {
+        return 0;
+    }
 
-    testImplementation(testFixtures(project(":base")))
+    @Override
+    public LogRecord getAt(int index) {
+        throw new IndexOutOfBoundsException("Cannot get record at " + index + " because the model is empty");
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    @Override
+    public Observable<Observer> asObservable() {
+        return EmptyObservable.instance();
+    }
 }

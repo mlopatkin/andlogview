@@ -15,6 +15,7 @@
  */
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
@@ -25,10 +26,9 @@ import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
-import name.mlopatkin.andlogview.logmodel.BufferedListener;
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.logmodel.LogModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.logmodel.RecordListener;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
@@ -101,11 +101,13 @@ public class MainFrame extends JFrame {
 
     private final DataSourceHolder sourceHolder;
 
-    private LogRecordTableModel recordsModel;
+    @Inject
+    LogRecordTableModel recordsModel;
     private TableScrollController scrollController;
     private SearchController searchController;
 
-    private RecordListener<LogRecord> listener;
+    @Nullable
+    private LogModel logModel;
     private BookmarkController bookmarkController;
     private BookmarkModel bookmarkModel;
 
@@ -182,12 +184,12 @@ public class MainFrame extends JFrame {
         }
         stopWaitingForDevice();
         sourceHolder.setDataSource(newSource);
-        recordsModel.clear();
         bookmarkModel.clear();
-        newSource.setLogRecordListener(listener);
         bufferMenu.setAvailableBuffers(newSource.getAvailableBuffers());
         updatingTimer.start();
-        if (newSource != null && newSource.getPidToProcessConverter() != null) {
+        logModel = LogModel.fromDataSource(newSource, SequentialExecutor.edt());
+        recordsModel.setLogModel(logModel);
+        if (newSource.getPidToProcessConverter() != null) {
             acShowProcesses.setEnabled(true);
             processListFrame.setSource(newSource);
         } else {
@@ -234,7 +236,6 @@ public class MainFrame extends JFrame {
 
         bookmarkModel = dependencies.getBookmarkModel();
         bookmarkController = dependencies.getBookmarkController();
-        recordsModel = dependencies.getLogModel();
         logElements = dependencies.getLogTable();
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
@@ -255,8 +256,6 @@ public class MainFrame extends JFrame {
 
         // TODO(mlopatkin) Replace this cast with injection
         searchController = new SearchController((DecoratingRendererTable) logElements, recordsModel);
-        listener = new BufferedListener<>(new ScrollControllerDelegatingReceiver(scrollController, recordsModel),
-                EventQueue::invokeLater);
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
@@ -389,7 +388,11 @@ public class MainFrame extends JFrame {
     });
 
     public void reset() {
-        recordsModel.clear();
+        LogModel model = logModel;
+        if (model != null) {
+            // TODO(mlopatkin) We should only do this if the source is resettable.
+            model.clear();
+        }
         DataSource source = sourceHolder.getDataSource();
         if (source != null && !source.reset()) {
             bookmarkModel.clear();

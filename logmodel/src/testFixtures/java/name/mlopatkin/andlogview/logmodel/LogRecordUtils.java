@@ -103,4 +103,8 @@ public final class LogRecordUtils {
         return LogRecord.create(r.getTime(), r.getPid(), r.getTid(), r.getAppName(), r.getPriority(), r.getTag(),
                 r.getMessage(), buffer);
     }
+
+    public static LogRecordBuilder logRecord(String message) {
+        return new LogRecordBuilder(message);
+    }
 }

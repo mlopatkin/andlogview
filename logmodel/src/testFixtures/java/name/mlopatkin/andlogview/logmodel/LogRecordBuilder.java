@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
-    `java-test-fixtures`
-}
+package name.mlopatkin.andlogview.logmodel;
 
-dependencies {
-    implementation(project(":base"))
-    implementation(libs.guava)
+import java.text.ParseException;
 
-    testFixturesApi(libs.test.assertj)
-    testFixturesImplementation(project(":base"))
-    testFixturesImplementation(libs.checkerframeworkAnnotations)
-    testFixturesImplementation(libs.guava)
-    testFixturesImplementation(libs.test.junit4)
+public class LogRecordBuilder {
+    private LogRecord record;
 
-    testImplementation(testFixtures(project(":base")))
+    LogRecordBuilder(String message) {
+        this.record = LogRecordUtils.forMessage(message);
+    }
+
+    public LogRecordBuilder withTime(String timestamp) {
+        try {
+            record = LogRecordUtils.withTime(record, TimeFormatUtils.getTimeFromString(timestamp));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return this;
+    }
+
+    public LogRecord build() {
+        return record;
+    }
 }
