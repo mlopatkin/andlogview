@@ -31,15 +31,16 @@ public class SingleEntryParser {
     }
 
     public static AssertLogRecord assertOnlyParsedRecord(
-            Function<LogcatParseEventsHandler, LogcatPushParser> parserFactory,
+            Function<LogcatParseEventsHandler, LogcatPushParser<?>> parserFactory,
             String line) {
         return assertOnlyRecord(parseLine(parserFactory, line));
     }
 
-    private static ListCollectingHandler parseLine(Function<LogcatParseEventsHandler, LogcatPushParser> parserFactory,
+    private static ListCollectingHandler parseLine(
+            Function<LogcatParseEventsHandler, LogcatPushParser<?>> parserFactory,
             String line) {
         ListCollectingHandler collector = new ListCollectingHandler();
-        try (LogcatPushParser parser = parserFactory.apply(collector)) {
+        try (LogcatPushParser<?> parser = parserFactory.apply(collector)) {
             parser.nextLine(line);
         }
         return collector;

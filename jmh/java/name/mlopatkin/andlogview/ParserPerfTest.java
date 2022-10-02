@@ -96,7 +96,7 @@ public class ParserPerfTest {
     @Benchmark
     public void parseWithPushParser(Blackhole bh) {
         Collector cl = new Collector();
-        try (LogcatPushParser pushParser = LogcatParsers.threadTime(cl)) {
+        try (LogcatPushParser<?> pushParser = LogcatParsers.threadTime(cl)) {
             for (String line : lines) {
                 if (!pushParser.nextLine(line)) {
                     break;

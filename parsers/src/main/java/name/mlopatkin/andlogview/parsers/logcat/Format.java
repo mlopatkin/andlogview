@@ -62,6 +62,10 @@ enum Format {
         return availableFields;
     }
 
+    public final boolean isSupported() {
+        return parserFactory != null;
+    }
+
     public final RegexLogcatParserDelegate createParser(LogcatParseEventsHandler eventsHandler) {
         if (parserFactory != null) {
             return parserFactory.apply(eventsHandler);

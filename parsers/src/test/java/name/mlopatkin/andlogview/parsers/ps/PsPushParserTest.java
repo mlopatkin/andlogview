@@ -132,7 +132,7 @@ class PsPushParserTest {
     void compatibilityWithAdbPsData(int ignoredSdkVersion, String header, String psLine) {
         PsParseEventsHandler eventsHandler = createMockHandler();
 
-        try (PsPushParser pushParser = new PsPushParser(eventsHandler)) {
+        try (PsPushParser<?> pushParser = new PsPushParser<>(eventsHandler)) {
             assertTrue(pushParser.nextLine(header), "Parser stopped after header");
             assertTrue(pushParser.nextLine(psLine), "Parser stopped after first line");
         }
@@ -232,7 +232,7 @@ class PsPushParserTest {
     void compatibilityWithDumpstatePsData(int ignoredSdkVersion, String header, String psLine) {
         PsParseEventsHandler eventsHandler = createMockHandler();
 
-        try (PsPushParser pushParser = new PsPushParser(eventsHandler)) {
+        try (PsPushParser<?> pushParser = new PsPushParser<>(eventsHandler)) {
             assertTrue(pushParser.nextLine(header), "Parser stopped after header");
             assertTrue(pushParser.nextLine(psLine), "Parser stopped after first line");
         }
@@ -295,7 +295,7 @@ class PsPushParserTest {
     }
 
     private static void parseLines(PsParseEventsHandler handler, String[] lines) {
-        try (PsPushParser pushParser = new PsPushParser(handler)) {
+        try (PsPushParser<?> pushParser = new PsPushParser<>(handler)) {
             for (String line : lines) {
                 assertTrue(pushParser.nextLine(line), "Parser should accept all lines");
             }

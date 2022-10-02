@@ -20,7 +20,7 @@ package name.mlopatkin.andlogview.parsers;
  * The base interface of a push parser. The implementation is expected to hold a listener and invoke callbacks on this
  * listener for parsing events as a reaction to input.
  */
-public interface PushParser extends AutoCloseable {
+public interface PushParser<H extends PushParser.ParseEventsHandler> extends AutoCloseable {
     interface ParseEventsHandler {
         /**
          * Called when the new line is fed into the parser, for each line.
@@ -36,6 +36,8 @@ public interface PushParser extends AutoCloseable {
          */
         default void documentEnded() {}
     }
+
+    H getHandler();
 
     /**
      * Passes the line to the parser to process. The line should have the trailing EOL trimmed. The parser can signal

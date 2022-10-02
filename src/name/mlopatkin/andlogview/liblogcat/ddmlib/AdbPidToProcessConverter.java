@@ -95,7 +95,7 @@ class AdbPidToProcessConverter {
             }
         };
 
-        try (PsPushParser pushParser = new PsPushParser(eventsHandler)) {
+        try (PsPushParser<?> pushParser = new PsPushParser<>(eventsHandler)) {
             device.command(psCmdline).executeStreaming(pushParser::nextLine);
         } catch (DeviceGoneException | IOException e) {
             logger.error("Unexpected IO exception", e);

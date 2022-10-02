@@ -27,7 +27,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PsPushParser implements PushParser {
+public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<H> {
     private static final String HEADER_REGEX =
             "^USER\\s+PID\\s+PPID\\s+(VSIZE|VSZ)\\s+RSS\\s+(PCY\\s+)?WCHAN\\s+(PC|ADDR)\\s+(S\\s+)?NAME\\s*$";
 
@@ -70,14 +70,19 @@ public class PsPushParser implements PushParser {
             PROCESS_STATUS_REGEX,
             PROCESS_NAME);
 
-    private final PsParseEventsHandler eventsHandler;
+    private final H eventsHandler;
     private final LineParser lineParser;
 
     private boolean shouldStop;
 
-    public PsPushParser(PsParseEventsHandler eventsHandler) {
+    public PsPushParser(H eventsHandler) {
         this.eventsHandler = eventsHandler;
         this.lineParser = new LineParser(this::seekHeader);
+    }
+
+    @Override
+    public H getHandler() {
+        return eventsHandler;
     }
 
     @Override

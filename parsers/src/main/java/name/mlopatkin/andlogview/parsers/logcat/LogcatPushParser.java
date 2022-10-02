@@ -24,20 +24,25 @@ import java.util.Set;
 /**
  * The push parser for the logcat log. Use {@link LogcatParsers} to obtain the instance for the desired format.
  */
-public class LogcatPushParser implements PushParser {
+public class LogcatPushParser<H extends LogcatParseEventsHandler> implements PushParser<H> {
     private final Format format;
     private final RegexLogcatParserDelegate parserDelegate;
-    private final LogcatParseEventsHandler eventsReceiver;
+    private final H eventsHandler;
 
-    LogcatPushParser(Format format, LogcatParseEventsHandler eventsReceiver) {
+    LogcatPushParser(Format format, H eventsHandler) {
         this.format = format;
-        this.parserDelegate = format.createParser(eventsReceiver);
-        this.eventsReceiver = eventsReceiver;
+        this.parserDelegate = format.createParser(eventsHandler);
+        this.eventsHandler = eventsHandler;
+    }
+
+    @Override
+    public H getHandler() {
+        return eventsHandler;
     }
 
     @Override
     public boolean nextLine(CharSequence line) {
-        if (!eventsReceiver.lineConsumed().shouldProceed()) {
+        if (!eventsHandler.lineConsumed().shouldProceed()) {
             return false;
         }
         return parserDelegate.parseLine(line).shouldProceed();
@@ -45,7 +50,7 @@ public class LogcatPushParser implements PushParser {
 
     @Override
     public void close() {
-        eventsReceiver.documentEnded();
+        eventsHandler.documentEnded();
     }
 
     public Set<Field> getAvailableFields() {

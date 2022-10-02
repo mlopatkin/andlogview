@@ -82,7 +82,7 @@ class AdbBuffer {
                 return ParserControl.proceed();
             }
         };
-        try (LogcatPushParser parser = LogcatParsers.threadTime(parserEventsHandler)) {
+        try (LogcatPushParser<?> parser = LogcatParsers.threadTime(parserEventsHandler)) {
             command.executeStreaming(parser::nextLine);
             if (Thread.currentThread().isInterrupted()) {
                 logger.debug("cancelled because of interruption, stopping providing new lines");

@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.junit.jupiter.api.Test;
 
-public class ParsersTest {
+public class LogcatParsersTest {
     static final String BRIEF_RECORD = "D/MediaScanner(417): postscan return";
     static final String BRIEF_RECORD_PAD = "D/MediaScanner   (  417): postscan return";
     static final String PROCESS_RECORD = "D(  417) postscan return  (MediaScanner)";

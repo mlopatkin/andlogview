@@ -28,8 +28,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in brief format
      */
-    public static LogcatPushParser brief(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.BRIEF, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> brief(H eventsHandler) {
+        return new LogcatPushParser<>(Format.BRIEF, eventsHandler);
     }
 
     /**
@@ -39,8 +39,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in brief format
      */
-    public static LogcatPushParser logcatLong(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.LONG, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> logcatLong(H eventsHandler) {
+        return new LogcatPushParser<>(Format.LONG, eventsHandler);
     }
 
     /**
@@ -49,8 +49,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in process format
      */
-    public static LogcatPushParser process(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.PROCESS, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> process(H eventsHandler) {
+        return new LogcatPushParser<>(Format.PROCESS, eventsHandler);
     }
 
     /**
@@ -59,8 +59,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in raw format
      */
-    public static LogcatPushParser raw(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.RAW, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> raw(H eventsHandler) {
+        return new LogcatPushParser<>(Format.RAW, eventsHandler);
     }
 
     /**
@@ -69,8 +69,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in Android Studio format
      */
-    public static LogcatPushParser androidStudio(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.STUDIO, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> androidStudio(H eventsHandler) {
+        return new LogcatPushParser<>(Format.STUDIO, eventsHandler);
     }
 
     /**
@@ -79,8 +79,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in tag format
      */
-    public static LogcatPushParser tag(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.TAG, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> tag(H eventsHandler) {
+        return new LogcatPushParser<>(Format.TAG, eventsHandler);
     }
 
     /**
@@ -89,8 +89,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in thread format
      */
-    public static LogcatPushParser thread(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.THREAD, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> thread(H eventsHandler) {
+        return new LogcatPushParser<>(Format.THREAD, eventsHandler);
     }
 
     /**
@@ -99,8 +99,8 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in threadtime format
      */
-    public static LogcatPushParser threadTime(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.THREADTIME, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> threadTime(H eventsHandler) {
+        return new LogcatPushParser<>(Format.THREADTIME, eventsHandler);
     }
 
     /**
@@ -109,7 +109,7 @@ public final class LogcatParsers {
      * @param eventsHandler the handler of parse events
      * @return the push parser that processes logs in time format
      */
-    public static LogcatPushParser time(LogcatParseEventsHandler eventsHandler) {
-        return new LogcatPushParser(Format.TIME, eventsHandler);
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> time(H eventsHandler) {
+        return new LogcatPushParser<>(Format.TIME, eventsHandler);
     }
 }
