@@ -25,6 +25,12 @@ import name.mlopatkin.andlogview.utils.events.Observable;
  */
 public interface LogModel {
     interface Observer {
+
+        /**
+         * Called just before the new records are added to the model.
+         */
+        default void onBeforeRecordsInserted() {}
+
         /**
          * Called once after new records are added to the model. As these records may be scattered among existing
          * records it is hard (and not really necessary) to provide exact insert positions. Instead, only the position

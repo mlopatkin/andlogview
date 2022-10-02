@@ -106,8 +106,7 @@ public class MainFrame extends JFrame {
     private TableScrollController scrollController;
     private SearchController searchController;
 
-    @Nullable
-    private LogModel logModel;
+    private LogModel logModel = LogModel.empty();
     private BookmarkController bookmarkController;
     private BookmarkModel bookmarkModel;
 
@@ -146,6 +145,12 @@ public class MainFrame extends JFrame {
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
+    private final LogModel.Observer autoscrollObserver = new LogModel.Observer() {
+        @Override
+        public void onBeforeRecordsInserted() {
+            scrollController.notifyBeforeInsert();
+        }
+    };
 
     public static class Factory implements Provider<MainFrame> {
         private final AppGlobals globals;
@@ -187,7 +192,9 @@ public class MainFrame extends JFrame {
         bookmarkModel.clear();
         bufferMenu.setAvailableBuffers(newSource.getAvailableBuffers());
         updatingTimer.start();
+        logModel.asObservable().removeObserver(autoscrollObserver);
         logModel = LogModel.fromDataSource(newSource, SequentialExecutor.edt());
+        logModel.asObservable().addObserver(autoscrollObserver);
         recordsModel.setLogModel(logModel);
         if (newSource.getPidToProcessConverter() != null) {
             acShowProcesses.setEnabled(true);

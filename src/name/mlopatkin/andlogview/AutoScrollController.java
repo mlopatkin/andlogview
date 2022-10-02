@@ -32,8 +32,9 @@ import javax.swing.JComponent;
  * {@link #scrollIfNeeded()} after your action.
  */
 abstract class AutoScrollController {
+    private final JComponent scrollable;
+
     private boolean shouldScroll;
-    private JComponent scrollable;
 
     public AutoScrollController(JComponent scrollable) {
         this.scrollable = scrollable;
@@ -51,7 +52,7 @@ abstract class AutoScrollController {
     /**
      * Call this before inserting anything into the table or changing its size.
      * <p>
-     * This methods checks if scrolling is needed after the action.
+     * This method checks if scrolling is needed after the action.
      * <p>
      * NOTE: this should be called on the UI thread.
      */
@@ -63,7 +64,7 @@ abstract class AutoScrollController {
     private final Runnable scrollToTheEnd = this::performScrollToTheEnd;
 
     /**
-     * Call this method after any action other then inserting something into the
+     * Call this method after any action other than inserting something into the
      * table.
      * <p>
      * NOTE: this should be called on the UI thread.

@@ -107,7 +107,7 @@ class SingleThreadInMemoryLogModelTest {
         model.asObservable().addObserver(observer);
         addRecords(model, logRecord("record0").withTime("01-01 09:00:00.000"));
 
-        verify(observer, only()).onRecordsInserted(0, 1);
+        verify(observer).onRecordsInserted(0, 1);
     }
 
     @Test
@@ -120,7 +120,7 @@ class SingleThreadInMemoryLogModelTest {
         model.asObservable().addObserver(observer);
         addRecords(model, logRecord("record2").withTime("01-01 11:00:00.000"));
 
-        verify(observer, only()).onRecordsInserted(1, 1);
+        verify(observer).onRecordsInserted(1, 1);
     }
 
     @Test
@@ -136,7 +136,25 @@ class SingleThreadInMemoryLogModelTest {
         model.asObservable().addObserver(observer);
         addRecords(model, logRecord("record0_5").withTime("01-01 11:00:00.000"));
 
-        verify(observer, only()).onRecordsInserted(1, 1);
+        verify(observer).onRecordsInserted(1, 1);
+    }
+
+    @Test
+    void observerIsNotifiedBeforeRecordsAreInserted() {
+        SingleThreadInMemoryLogModel model = createModel();
+        LogModel.Observer observer = createObserver();
+        doAnswer(invocation -> assertThat(model).hasSize(2)).when(observer).onBeforeRecordsInserted();
+        addRecords(
+                model,
+                logRecord("record1").withTime("01-01 10:00:00.000"),
+                logRecord("record2").withTime("01-01 12:00:00.000"));
+
+        model.asObservable().addObserver(observer);
+        addRecords(model, logRecord("record3").withTime("01-01 14:00:00.000"));
+
+        InOrder order = inOrder(observer);
+        order.verify(observer).onBeforeRecordsInserted();
+        order.verify(observer).onRecordsInserted(2, 1);
     }
 
     @Test
@@ -207,6 +225,7 @@ class SingleThreadInMemoryLogModelTest {
         SingleThreadInMemoryLogModel model = createModel();
         LogModel.Observer observer = createObserver();
         doAnswer(invocation -> assertThat(model).isEmpty()).when(observer).onRecordsDiscarded(anyInt());
+        doAnswer(invocation -> assertThat(model).isEmpty()).when(observer).onBeforeRecordsInserted();
         doAnswer(invocation -> assertThat(model).hasSize(1)).when(observer).onRecordsInserted(anyInt(), anyInt());
         addRecords(
                 model,
@@ -219,6 +238,7 @@ class SingleThreadInMemoryLogModelTest {
 
         InOrder order = inOrder(observer);
         order.verify(observer).onRecordsDiscarded(2);
+        order.verify(observer).onBeforeRecordsInserted();
         order.verify(observer).onRecordsInserted(0, 1);
         order.verifyNoMoreInteractions();
     }
