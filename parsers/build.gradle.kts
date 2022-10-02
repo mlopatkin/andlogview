@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
+plugins {
+    id("name.mlopatkin.andlogview.building.java-library-conventions")
+}
 
-include("base")
-include("device")
-include("logmodel")
-include("parsers")
+dependencies {
+    api(project(":logmodel"))
+    implementation(project(":base"))
+    implementation(libs.guava)
+
+    testImplementation(testFixtures(project(":logmodel")))
+}

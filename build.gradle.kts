@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":base"))
     implementation(project(":device"))
     implementation(project(":logmodel"))
+    implementation(project(":parsers"))
     implementation(libs.dagger.runtime)
     implementation(libs.guava)
     implementation(libs.gson)

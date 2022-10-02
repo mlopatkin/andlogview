@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.logmodel;
 
 import com.google.common.primitives.Ints;
 
+import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * AssertJ-styled verifier for the LogRecord.
  */
+@CanIgnoreReturnValue
 public class AssertLogRecord {
     private final Set<Field> checkedFields = EnumSet.noneOf(Field.class);
     private final LogRecord item;
@@ -211,6 +213,30 @@ public class AssertLogRecord {
     public AssertLogRecord hasAppName(String appName) {
         checkedFields.add(Field.APP_NAME);
         Assert.assertEquals("App name mismatch", appName, item.getAppName());
+        return this;
+    }
+
+    /**
+     * Checks that the record's app name is not set.
+     *
+     * @return the assertion chain builder
+     * @throws AssertionError if the check fails
+     */
+    public AssertLogRecord hasNoAppName() {
+        checkedFields.add(Field.APP_NAME);
+        Assert.assertEquals("App name should not be set", "", item.getAppName());
+        return this;
+    }
+
+    /**
+     * Checks that the record's buffer is not set.
+     *
+     * @return the assertion chain builder
+     * @throws AssertionError if the check fails
+     */
+    public AssertLogRecord hasNoBuffer() {
+        checkedFields.add(Field.BUFFER);
+        Assert.assertNull("Buffer should not be set", item.getBuffer());
         return this;
     }
 }

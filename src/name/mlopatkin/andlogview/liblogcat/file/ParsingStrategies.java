@@ -26,14 +26,14 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-class ParsingStrategies {
-    interface Strategy {
+public class ParsingStrategies {
+    public interface Strategy {
         @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess);
 
         Set<Field> getAvailableFields();
     }
 
-    static final ParsingStrategies.Strategy threadTime = new ParsingStrategies.Strategy() {
+    public static final ParsingStrategies.Strategy threadTime = new ParsingStrategies.Strategy() {
         @Override
         public @Nullable LogRecord parse(@Nullable Buffer buffer, String line, Map<Integer, String> pidToProcess) {
             return LogRecordParser.parseThreadTime(buffer, line, pidToProcess);
