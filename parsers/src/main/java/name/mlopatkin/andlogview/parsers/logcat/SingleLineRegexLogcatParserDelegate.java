@@ -43,7 +43,7 @@ abstract class SingleLineRegexLogcatParserDelegate extends RegexLogcatParserDele
     public final ParserControl parseLine(CharSequence line) {
         Matcher matcher = pattern.matcher(line);
         if (!matcher.matches()) {
-            return eventsHandler.unparseableLine();
+            return eventsHandler.unparseableLine(line);
         }
         try {
             return fromGroups(matcher);

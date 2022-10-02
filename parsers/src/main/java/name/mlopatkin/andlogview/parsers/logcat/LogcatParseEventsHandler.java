@@ -152,11 +152,12 @@ public interface LogcatParseEventsHandler extends PushParser.ParseEventsHandler 
     }
 
     /**
-     * Called for lines that cannot be attributed to any record
+     * Called for lines that cannot be attributed to any record.
      *
+     * @param line the line that failed to parse
      * @return {@linkplain ParserControl} instance to determine next parser action
      */
-    default ParserControl unparseableLine() {
+    default ParserControl unparseableLine(CharSequence line) {
         return ParserControl.proceed();
     }
 }

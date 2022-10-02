@@ -18,8 +18,11 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 import name.mlopatkin.andlogview.device.Command;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
-import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 import name.mlopatkin.andlogview.utils.Threads;
 
 import org.apache.log4j.Logger;
@@ -66,15 +69,21 @@ class AdbBuffer {
     }
 
     private void executeCommand() {
-        try {
-            command.executeStreaming(line -> {
-                LogRecord record = LogRecordParser.parseThreadTime(buffer, line, pidToProcess);
-                if (record != null) {
-                    receiver.pushRecord(record);
-                } else {
-                    logger.debug("Non-parsed line: " + line);
-                }
-            });
+        CollectingHandler parserEventsHandler = new CollectingHandler(buffer, pidToProcess::get) {
+            @Override
+            protected ParserControl logRecord(LogRecord record) {
+                receiver.pushRecord(record);
+                return ParserControl.proceed();
+            }
+
+            @Override
+            public ParserControl unparseableLine(CharSequence line) {
+                logger.debug("Non-parsed line: " + line);
+                return ParserControl.proceed();
+            }
+        };
+        try (LogcatPushParser parser = LogcatParsers.threadTime(parserEventsHandler)) {
+            command.executeStreaming(parser::nextLine);
             if (Thread.currentThread().isInterrupted()) {
                 logger.debug("cancelled because of interruption, stopping providing new lines");
             } else {
