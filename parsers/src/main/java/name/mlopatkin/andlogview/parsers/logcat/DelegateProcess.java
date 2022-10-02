@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.Patterns;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +27,7 @@ class DelegateProcess extends SingleLineRegexLogcatParserDelegate {
     private static final String TAG_BRACKETS = "\\(" + TAG_REGEX + "\\)";
 
     private static final Pattern PATTERN =
-            compileFromParts(PRIORITY_REGEX, PID_BRACKETS, " ", MESSAGE_REGEX, "  ", TAG_BRACKETS);
+            Patterns.compileFromParts(PRIORITY_REGEX, PID_BRACKETS, " ", MESSAGE_REGEX, "  ", TAG_BRACKETS);
 
     public DelegateProcess(LogcatParseEventsHandler eventsHandler) {
         super(eventsHandler, PATTERN);

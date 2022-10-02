@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
-}
-
-dependencies {
-    api(project(":logmodel"))
-    implementation(project(":base"))
-    implementation(libs.guava)
-
-    testImplementation(project(":device"))
-    testImplementation(testFixtures(project(":logmodel")))
-}
+/**
+ * Parsers for the output of the {@code ps} tool.
+ */
+package name.mlopatkin.andlogview.parsers.ps;

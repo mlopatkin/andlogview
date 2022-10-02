@@ -18,12 +18,13 @@ package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.Patterns;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class DelegateBrief extends SingleLineRegexLogcatParserDelegate {
-    private static final Pattern PATTERN = compileFromParts(
+    private static final Pattern PATTERN = Patterns.compileFromParts(
             PRIORITY_REGEX, "/", TAG_REGEX,
             SEP_OPT,
             PID_BRACKETS, ": ", MESSAGE_REGEX);

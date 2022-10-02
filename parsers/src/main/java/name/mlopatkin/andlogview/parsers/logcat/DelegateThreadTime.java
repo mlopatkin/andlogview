@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.Patterns;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
 
 class DelegateThreadTime extends SingleLineRegexLogcatParserDelegate {
     private static final String TAG = TAG_REGEX + "\\s*:(?: |$)";
-    private static final Pattern PATTERN = compileFromParts(
+    private static final Pattern PATTERN = Patterns.compileFromParts(
             TIMESTAMP_REGEX,
             SEP,
             PID_REGEX,

@@ -33,10 +33,10 @@ public class LineParser {
         /**
          * Called when this is a current state and the parser receives a new line. This method should return a new
          * state. As a workaround from the fact that lambdas have no {@code this}, implementation should return
-         * {@code null} from this method to stay in the current state.
+         * {@link LineParser#currentState()} from this method to stay in the current state.
          *
          * @param line the new line
-         * @return the new state or {@code null} to stay in this state
+         * @return the new state or {@link LineParser#currentState()} to stay in this state
          */
         @Nullable State nextLine(String line);
     }
@@ -45,6 +45,7 @@ public class LineParser {
 
     /**
      * Constructs a new LineParser
+     *
      * @param initialState the initial state of the parser
      */
     public LineParser(State initialState) {
@@ -59,5 +60,21 @@ public class LineParser {
      */
     public void nextLine(String line) {
         state = MoreObjects.firstNonNull(state.nextLine(line), state);
+    }
+
+    /**
+     * Returns the special state value that the Parser recognizes as "stay in the current state".
+     * @return the special state value
+     */
+    public static @Nullable State currentState() {
+        return null;
+    }
+
+    /**
+     * Returns a state that always stays in itself, the so-called "sink".
+     * @return the sink state
+     */
+    public static State sinkState() {
+        return line -> currentState();
     }
 }

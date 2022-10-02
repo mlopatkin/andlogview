@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.Patterns;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 class DelegateStudio extends SingleLineRegexLogcatParserDelegate {
     private static final String PROC_NAME_REGEX = "(\\S+)";
     private static final Pattern PATTERN =
-            compileFromParts(
+            Patterns.compileFromParts(
                     TIMESTAMP_REGEX,
                     SEP,
                     PID_REGEX, "-", TID_REGEX, "/", PROC_NAME_REGEX,

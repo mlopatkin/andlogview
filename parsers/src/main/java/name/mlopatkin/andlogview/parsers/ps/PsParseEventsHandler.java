@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
-}
+package name.mlopatkin.andlogview.parsers.ps;
 
-dependencies {
-    api(project(":logmodel"))
-    implementation(project(":base"))
-    implementation(libs.guava)
+import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.PushParser;
 
-    testImplementation(project(":device"))
-    testImplementation(testFixtures(project(":logmodel")))
+public interface PsParseEventsHandler extends PushParser.ParseEventsHandler {
+    default ParserControl header() {
+        return ParserControl.proceed();
+    }
+
+    default ParserControl processLine(int pid, CharSequence processName) {
+        return ParserControl.proceed();
+    }
+
+    default ParserControl unparseableLine(CharSequence line) {
+        return ParserControl.proceed();
+    }
 }

@@ -62,13 +62,4 @@ abstract class SingleLineRegexLogcatParserDelegate extends RegexLogcatParserDele
      */
     protected abstract ParserControl fromGroups(Matcher m) throws ParseException;
 
-    /**
-     * Helper that concatenates all patternParts, wrap them in "^..$" and compiles the result
-     *
-     * @param patternParts the parts of the regular expression
-     * @return the compiled Pattern
-     */
-    protected static Pattern compileFromParts(String... patternParts) {
-        return Pattern.compile("^" + String.join("", patternParts) + "$");
-    }
 }
