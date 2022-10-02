@@ -24,7 +24,7 @@ public interface PsParseEventsHandler extends PushParser.ParseEventsHandler {
         return ParserControl.proceed();
     }
 
-    default ParserControl processLine(int pid, CharSequence processName) {
+    default ParserControl processLine(int pid, String processName) {
         return ParserControl.proceed();
     }
 

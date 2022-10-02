@@ -17,9 +17,10 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
-import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
+import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.ps.PsParseEventsHandler;
+import name.mlopatkin.andlogview.parsers.ps.PsPushParser;
 import name.mlopatkin.andlogview.thirdparty.device.AndroidVersionCodes;
-import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.Threads;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
@@ -33,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.regex.Matcher;
 
 class AdbPidToProcessConverter {
     private static final Logger logger = Logger.getLogger(AdbPidToProcessConverter.class);
@@ -81,29 +81,22 @@ class AdbPidToProcessConverter {
     }
 
     private void update() {
-        try {
-            LineParser.State error = line -> null;
+        PsParseEventsHandler eventsHandler = new PsParseEventsHandler() {
+            @Override
+            public ParserControl processLine(int pid, String processName) {
+                processMap.put(pid, processName);
+                return ParserControl.proceed();
+            }
 
-            LineParser.State handleProcessLine = line -> {
-                Matcher m = ProcessListParser.parseProcessListLine(line);
-                if (m.matches()) {
-                    String processName = ProcessListParser.getProcessName(m);
-                    int pid = ProcessListParser.getPid(m);
-                    processMap.put(pid, processName);
-                } else {
-                    logger.debug("Failed to parse line " + line);
-                }
-                return null;
-            };
+            @Override
+            public ParserControl unparseableLine(CharSequence line) {
+                logger.debug("Failed to parse line: " + line);
+                return ParserControl.proceed();
+            }
+        };
 
-            LineParser.State waitForHeader = line -> {
-                if (!ProcessListParser.isProcessListHeader(line)) {
-                    return error;
-                }
-                return handleProcessLine;
-            };
-
-            device.command(psCmdline).executeStreaming(new LineParser(waitForHeader)::nextLine);
+        try (PsPushParser pushParser = new PsPushParser(eventsHandler)) {
+            device.command(psCmdline).executeStreaming(pushParser::nextLine);
         } catch (DeviceGoneException | IOException e) {
             logger.error("Unexpected IO exception", e);
         } catch (InterruptedException e) {
