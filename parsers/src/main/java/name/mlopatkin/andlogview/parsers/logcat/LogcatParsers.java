@@ -145,7 +145,7 @@ public final class LogcatParsers {
     private static List<Format> getSupportedFormatsForAutodetect() {
         return Arrays.stream(Format.values())
                 .filter(Format::isSupported)  // Do not try to parse formats for which we don't have parsers
-                .filter(Format.RAW::equals)   // Do not try to autodetect raw format, as it matches everything,
+                .filter(f -> f != Format.RAW)   // Do not try to autodetect raw format, as it matches everything,
                 // including garbage prefix lines.
                 .collect(Collectors.toList());
     }
