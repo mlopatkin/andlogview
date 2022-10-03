@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.parsers.logcat;
 
-import name.mlopatkin.andlogview.parsers.PushParser;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,18 +115,6 @@ public final class LogcatParsers {
      */
     public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> time(H eventsHandler) {
         return new LogcatPushParser<>(Format.TIME, eventsHandler);
-    }
-
-    /**
-     * Creates a parser that tries to autodetect the format and skips unrecognizable lines. The format should be
-     * consistent throughout the whole input.
-     *
-     * @param eventsHandler the handler of parse events
-     * @param <H> the type of eventsHandler
-     * @return the push parser that processes the logs in any supported format
-     */
-    public static <H extends LogcatParseEventsHandler> PushParser<H> autodetect(H eventsHandler) {
-        return new FormatSelectingLogcatPushParser<>(eventsHandler, getSupportedFormatsForAutodetect());
     }
 
     /**
