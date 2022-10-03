@@ -16,6 +16,12 @@
 
 package name.mlopatkin.andlogview.parsers.logcat;
 
+import name.mlopatkin.andlogview.parsers.PushParser;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Push parsers for supported logcat formats.
  */
@@ -111,5 +117,36 @@ public final class LogcatParsers {
      */
     public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> time(H eventsHandler) {
         return new LogcatPushParser<>(Format.TIME, eventsHandler);
+    }
+
+    /**
+     * Creates a parser that tries to autodetect the format and skips unrecognizable lines. The format should be
+     * consistent throughout the whole input.
+     *
+     * @param eventsHandler the handler of parse events
+     * @param <H> the type of eventsHandler
+     * @return the push parser that processes the logs in any supported format
+     */
+    public static <H extends LogcatParseEventsHandler> PushParser<H> autodetect(H eventsHandler) {
+        return new FormatSelectingLogcatPushParser<>(eventsHandler, getSupportedFormatsForAutodetect());
+    }
+
+    /**
+     * Creates a special parser that tries to autodetect the format of logcat logs. When a line in a supported format
+     * is encountered, the format is considered detected. The parser then can be used to create a normal parser to
+     * recognize the format.
+     *
+     * @return the push parser that detects the format of the logs and can create parsers to handle these logs
+     */
+    public static LogcatFormatSniffer detectFormat() {
+        return new LogcatFormatSniffer(getSupportedFormatsForAutodetect());
+    }
+
+    private static List<Format> getSupportedFormatsForAutodetect() {
+        return Arrays.stream(Format.values())
+                .filter(Format::isSupported)  // Do not try to parse formats for which we don't have parsers
+                .filter(Format.RAW::equals)   // Do not try to autodetect raw format, as it matches everything,
+                // including garbage prefix lines.
+                .collect(Collectors.toList());
     }
 }

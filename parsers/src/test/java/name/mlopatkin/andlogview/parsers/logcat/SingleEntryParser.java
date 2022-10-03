@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.logmodel.AssertLogRecord.assertThatRecor
 import static org.assertj.core.api.Assertions.assertThat;
 
 import name.mlopatkin.andlogview.logmodel.AssertLogRecord;
+import name.mlopatkin.andlogview.parsers.PushParser;
 
 import java.util.function.Function;
 
@@ -31,16 +32,16 @@ public class SingleEntryParser {
     }
 
     public static AssertLogRecord assertOnlyParsedRecord(
-            Function<LogcatParseEventsHandler, LogcatPushParser<?>> parserFactory,
+            Function<LogcatParseEventsHandler, PushParser<LogcatParseEventsHandler>> parserFactory,
             String line) {
         return assertOnlyRecord(parseLine(parserFactory, line));
     }
 
     private static ListCollectingHandler parseLine(
-            Function<LogcatParseEventsHandler, LogcatPushParser<?>> parserFactory,
+            Function<LogcatParseEventsHandler, PushParser<LogcatParseEventsHandler>> parserFactory,
             String line) {
         ListCollectingHandler collector = new ListCollectingHandler();
-        try (LogcatPushParser<?> parser = parserFactory.apply(collector)) {
+        try (PushParser<?> parser = parserFactory.apply(collector)) {
             parser.nextLine(line);
         }
         return collector;
