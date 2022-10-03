@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.parsers.BasePushParser;
+import name.mlopatkin.andlogview.parsers.FormatSniffer;
 import name.mlopatkin.andlogview.parsers.MultiplexParser;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * A special parser that detects format of the logs and can create a {@link LogcatPushParser} to parse this format.
  */
-public class LogcatFormatSniffer implements BasePushParser {
+public class LogcatFormatSniffer implements BasePushParser, FormatSniffer<LogcatParseEventsHandler> {
     private final MultiplexParser<LogcatPushParser<SniffingHandler>> parser;
     private @Nullable Format detectedFormat;
 
@@ -43,17 +44,22 @@ public class LogcatFormatSniffer implements BasePushParser {
                 .map(format -> new LogcatPushParser<SniffingHandler>(format, new SniffingHandler(lookaheadLimit) {
                     @Override
                     public ParserControl logRecord() {
-                        detectedFormat = format;
+                        if (detectedFormat == null
+                                || detectedFormat.getAvailableFields().size() < format.getAvailableFields().size()) {
+                            detectedFormat = format;
+                        }
                         return super.logRecord();
                     }
                 }))
                 .collect(Collectors.toList()));
     }
 
+    @Override
     public boolean isFormatDetected() {
         return detectedFormat != null;
     }
 
+    @Override
     public <H extends LogcatParseEventsHandler> LogcatPushParser<H> createParser(H eventsHandler) {
         Preconditions.checkState(detectedFormat != null, "The format is not yet detected");
         // NullAway cannot infer detectedFormat != null from the checkState

@@ -85,6 +85,30 @@ class LogcatFormatSnifferTest {
     }
 
     @Test
+    void canDistinguishBriefAndTag() {
+        try (LogcatFormatSniffer sniffer = new LogcatFormatSniffer(Arrays.asList(Format.BRIEF, Format.TAG))) {
+            sniffer.nextLine(LogcatParsersTest.BRIEF_RECORD);
+
+            SingleEntryParser
+                    .assertOnlyParsedRecord(sniffer::createParser, LogcatParsersTest.BRIEF_RECORD)
+                    .hasTag("MediaScanner")
+                    .hasPid(417);
+        }
+    }
+
+    @Test
+    void canDistinguishTagAndBrief() {
+        try (LogcatFormatSniffer sniffer = new LogcatFormatSniffer(Arrays.asList(Format.TAG, Format.BRIEF))) {
+            sniffer.nextLine(LogcatParsersTest.BRIEF_RECORD);
+
+            SingleEntryParser
+                    .assertOnlyParsedRecord(sniffer::createParser, LogcatParsersTest.BRIEF_RECORD)
+                    .hasTag("MediaScanner")
+                    .hasPid(417);
+        }
+    }
+
+    @Test
     void creatingFormatBeforeDetectingFails() {
         try (LogcatFormatSniffer sniffer = createSniffer()) {
             sniffer.nextLine("123");
