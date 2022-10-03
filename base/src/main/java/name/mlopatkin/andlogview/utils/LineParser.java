@@ -16,15 +16,35 @@
 
 package name.mlopatkin.andlogview.utils;
 
-import com.google.common.base.MoreObjects;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * A simple state-machine-based push parser that operates on lines. When the current state receives a next line, it can
  * return the next state to proceed following lines.
  */
 public class LineParser {
+    private static final State CURRENT = new State() {
+        @Override
+        public State nextLine(CharSequence line) {
+            return CURRENT;
+        }
+
+        @Override
+        public String toString() {
+            return "[CURRENT]";
+        }
+    };
+
+    private static final State SINK = new State() {
+        @Override
+        public State nextLine(CharSequence line) {
+            return currentState();
+        }
+
+        @Override
+        public String toString() {
+            return "[SINK]";
+        }
+    };
+
     /**
      * A single state of the parser. The state is typically implemented as a lambda assigned to a variable.
      */
@@ -38,7 +58,7 @@ public class LineParser {
          * @param line the new line
          * @return the new state or {@link LineParser#currentState()} to stay in this state
          */
-        @Nullable State nextLine(String line);
+        State nextLine(CharSequence line);
     }
 
     private State state;
@@ -53,28 +73,32 @@ public class LineParser {
     }
 
     /**
-     * Pushes a new line into the parser. This invokes {@link State#nextLine(String)} of the current state and update
-     * the current state according to the result afterwards.
+     * Pushes a new line into the parser. This invokes {@link State#nextLine(CharSequence)} of the current state and
+     * update the current state according to the result afterwards.
      *
      * @param line the new line
      */
-    public void nextLine(String line) {
-        state = MoreObjects.firstNonNull(state.nextLine(line), state);
+    public void nextLine(CharSequence line) {
+        State newState = state.nextLine(line);
+        // Reference equality is used intentionally, as the CURRENT is a singleton.
+        state = newState != CURRENT ? newState : state;
     }
 
     /**
      * Returns the special state value that the Parser recognizes as "stay in the current state".
+     *
      * @return the special state value
      */
-    public static @Nullable State currentState() {
-        return null;
+    public static State currentState() {
+        return CURRENT;
     }
 
     /**
      * Returns a state that always stays in itself, the so-called "sink".
+     *
      * @return the sink state
      */
     public static State sinkState() {
-        return line -> currentState();
+        return SINK;
     }
 }

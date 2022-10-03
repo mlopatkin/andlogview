@@ -21,8 +21,6 @@ import name.mlopatkin.andlogview.parsers.PushParser;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.LineParser.State;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,7 +89,7 @@ public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<
             return false;
         }
 
-        lineParser.nextLine(line.toString());
+        lineParser.nextLine(line);
         return !shouldStop;
     }
 
@@ -100,7 +98,7 @@ public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<
         eventsHandler.documentEnded();
     }
 
-    private @Nullable State seekHeader(CharSequence line) {
+    private State seekHeader(CharSequence line) {
         if (isProcessListHeader(line)) {
             shouldStop = !eventsHandler.header().shouldProceed();
             return shouldStop ? LineParser.sinkState() : this::parseProcessListLine;
@@ -110,7 +108,7 @@ public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<
         return shouldStop ? LineParser.sinkState() : LineParser.currentState();
     }
 
-    private @Nullable State parseProcessListLine(CharSequence line) {
+    private State parseProcessListLine(CharSequence line) {
         Matcher m = PS_LINE_PATTERN.matcher(line);
         if (m.matches()) {
             shouldStop = !eventsHandler.processLine(getPid(m), getProcessName(m)).shouldProceed();

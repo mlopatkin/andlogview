@@ -29,10 +29,10 @@ import java.util.List;
 class LineParserTest {
     @Test
     void pushedLinePropagatesToState() {
-        List<String> items = new ArrayList<>();
+        List<CharSequence> items = new ArrayList<>();
         LineParser.State pushToList = line -> {
             items.add(line);
-            return null;
+            return LineParser.currentState();
         };
 
         LineParser parser = new LineParser(pushToList);
@@ -42,11 +42,11 @@ class LineParserTest {
     }
 
     @Test
-    void returningNullKeepsInTheCurrentState() {
-        List<String> items = new ArrayList<>();
+    void returningCurrentKeepsInTheCurrentState() {
+        List<CharSequence> items = new ArrayList<>();
         LineParser.State pushToList = line -> {
             items.add(line);
-            return null;
+            return LineParser.currentState();
         };
 
         LineParser parser = new LineParser(pushToList);
@@ -58,12 +58,12 @@ class LineParserTest {
 
     @Test
     void returningNewStateUpdatesCurrentState() {
-        List<String> first = new ArrayList<>();
-        List<String> second = new ArrayList<>();
+        List<CharSequence> first = new ArrayList<>();
+        List<CharSequence> second = new ArrayList<>();
 
         LineParser.State pushToSecond = line -> {
             second.add(line);
-            return null;
+            return LineParser.currentState();
         };
 
         LineParser.State pushToFirst = line -> {
