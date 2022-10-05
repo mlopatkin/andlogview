@@ -7,7 +7,7 @@ on:
 jobs:
   run-precommit-tests:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:e30a7aaba23b1ae1abc90018eba4bdd148baee3faa975d0c84fed4009d4b30f3
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:b6d32e5bcf3e74d1a1f29b712ee53f6858398fa71a2c89eca249b0053d72229a
     env:
       PYTHON_BINARY: python3
     steps:
@@ -20,6 +20,7 @@ jobs:
         with:
           arguments: |
             -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
+            -Dorg.gradle.java.installations.fromEnv=JDK8,JDK17
             --no-daemon
             --stacktrace
             --continue
