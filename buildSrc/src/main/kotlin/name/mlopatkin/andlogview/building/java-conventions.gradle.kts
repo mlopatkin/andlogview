@@ -99,6 +99,7 @@ tasks.withType<JavaCompile>().configureEach {
     // Configure javac warnings
     options.compilerArgs.addAll(listOf(
             "-Xlint:unchecked",
+            "-Xlint:rawtypes",
             "-Xlint:deprecation",
             "-Werror",  // Treat warnings as errors
     ))
