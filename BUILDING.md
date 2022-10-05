@@ -76,4 +76,20 @@ Import project into your Eclipse workspace with "File > Import... > Gradle > Exi
 processing should work "out-of-the-box". Eclipse is still a preferred way to work with GUI because of the WindowBuilder
 plugin.
 
+## Updating the CI build environment
+
+The CI runs Linux build inside the docker container. The container definition lives in
+`tools/build-environment/Dockerfile`. To build a new image locally run `docker build tools/build-environment/`. You'll
+get an image id, and you can use this ID to start containers. Deploying the new container to the CI is harder and
+requires several steps:
+1. Submit a PR with the updated Dockerfile
+2. Run the ["Build and publish build environment docker image"][docker-workflow] workflow.
+3. Grab the digest of the built image from the workflow logs:
+   ![](docs/build-docker.png)
+4. Replace the digest in GitHub workflows in `.github/workflows` with the new digest.
+5. Commit changes, update your pull request and merge it as usual
+6. ????
+7. PROFIT
+
 [idea]: https://www.jetbrains.com/idea/
+[docker-workflow]: https://github.com/mlopatkin/andlogview/actions/workflows/publish-docker-environment.yaml
