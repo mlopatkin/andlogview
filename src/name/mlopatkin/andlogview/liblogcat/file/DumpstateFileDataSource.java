@@ -15,18 +15,19 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
-import name.mlopatkin.andlogview.liblogcat.ProcessListParser;
-import name.mlopatkin.andlogview.liblogcat.file.ParsingStrategies.Strategy;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.RecordListener;
 import name.mlopatkin.andlogview.logmodel.SourceMetadata;
-
-import com.google.common.base.CharMatcher;
+import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
+import name.mlopatkin.andlogview.parsers.PushParser;
+import name.mlopatkin.andlogview.parsers.dumpstate.DumpstateParseEventsHandler;
+import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
+import name.mlopatkin.andlogview.parsers.ps.PsParseEventsHandler;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -34,86 +35,39 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 
 public final class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
-    private static final int READ_AHEAD_LIMIT = 65536;
-
-    private List<SectionHandler> handlers = new ArrayList<>();
-    private List<LogRecord> records = new ArrayList<>();
-    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
-    private @Nullable RecordListener<LogRecord> logcatListener;
 
     private final String fileName;
     private final SourceMetadata sourceMetadata;
 
-    public DumpstateFileDataSource(String fileName, BufferedReader in) throws IOException, ParseException {
+    private final List<LogRecord> records;
+    private final Set<Field> availableFields;
+    private final EnumSet<Buffer> buffers;
+    private final Map<Integer, String> converter;
+
+    private @Nullable RecordListener<LogRecord> logcatListener;
+
+    private DumpstateFileDataSource(String fileName, List<LogRecord> records, Set<Field> availableFields,
+            EnumSet<Buffer> buffers, Map<Integer, String> converter) {
         this.fileName = fileName;
-        sourceMetadata = new FileSourceMetadata(new File(fileName));
-        initSectionHandlers();
-        parseFile(in);
-    }
-
-    private void parseFile(BufferedReader in) throws IOException, ParseException {
-        String line = in.readLine();
-        while (line != null) {
-            String sectionName = getSectionName(line);
-            if (sectionName != null) {
-                parseSection(in, sectionName);
-            }
-            line = in.readLine();
-        }
-    }
-
-    private void parseSection(BufferedReader in, String sectionName) throws IOException, ParseException {
-        SectionHandler handler = getSectionHandler(sectionName);
-        if (handler == null) {
-            return;
-        }
-        handler.startSection(sectionName);
-        in.mark(READ_AHEAD_LIMIT);
-        String line = in.readLine();
-        while (line != null) {
-            if (getSectionName(line) != null) {
-                // found start of a new section
-                in.reset();
-                break;
-            }
-            boolean shouldBreak = !handler.handleLine(line);
-            if (shouldBreak) {
-                // handler reported that his section is over
-                break;
-            }
-            in.mark(READ_AHEAD_LIMIT);
-            line = in.readLine();
-        }
-        handler.endSection();
-    }
-
-    private @Nullable SectionHandler getSectionHandler(String sectionName) {
-        for (SectionHandler handler : handlers) {
-            if (handler.isSupportedSection(sectionName)) {
-                logger.debug("Supported section: " + sectionName);
-                return handler;
-            }
-        }
-        logger.debug("Unsupported section: " + sectionName);
-        return null;
-    }
-
-    private void initSectionHandlers() {
-        handlers.add(new LogcatSectionHandler());
-        handlers.add(new ProcessesSectionHandler());
+        this.sourceMetadata = new FileSourceMetadata(new File(fileName));
+        this.records = records;
+        this.availableFields = availableFields;
+        this.buffers = buffers;
+        this.converter = converter;
     }
 
     @Override
@@ -126,7 +80,7 @@ public final class DumpstateFileDataSource implements DataSource {
 
     @Override
     public Set<Field> getAvailableFields() {
-        return EnumSet.allOf(Field.class);
+        return availableFields;
     }
 
     @Override
@@ -145,170 +99,7 @@ public final class DumpstateFileDataSource implements DataSource {
     @Override
     public void setLogRecordListener(RecordListener<LogRecord> listener) {
         this.logcatListener = listener;
-        Collections.sort(records);
         listener.setRecords(records);
-    }
-
-    /**
-     * Handles one section of the dumpstate file
-     */
-    private interface SectionHandler {
-        /**
-         * Checks if the implementation supports some section.
-         *
-         * @param sectionName section name as appears in the file without wrapping
-         *         dashes
-         * @return {@code true} if the implementation can handle this section
-         */
-        boolean isSupportedSection(String sectionName);
-
-        /**
-         * Handles one line from the file.
-         *
-         * @param line one line from the file (not null but can be empty)
-         * @return {@code true} if the line wasn't last line in section and the
-         *         handler is expecting more
-         */
-        boolean handleLine(String line) throws ParseException;
-
-        /**
-         * Called when the section ends due to end of the file or because other
-         * section starts.
-         */
-        void endSection();
-
-        /**
-         * Starts section processing.
-         */
-        void startSection(String sectionName);
-    }
-
-    private static final Pattern SECTION_NAME_PATTERN = Pattern.compile("^------ (.*) ------\\s*$");
-
-    private static @Nullable String getSectionName(String line) {
-        Matcher m = SECTION_NAME_PATTERN.matcher(line);
-        if (m.matches()) {
-            return m.group(1);
-        } else {
-            return null;
-        }
-    }
-
-    private static final Pattern SECTION_END_PATTERN = Pattern.compile("^\\[.*: .* elapsed\\]$");
-
-    private void addLogRecord(LogRecord record) {
-        records.add(record);
-    }
-
-    private void addBuffer(Buffer buffer) {
-        buffers.add(buffer);
-    }
-
-    private class LogcatSectionHandler implements SectionHandler {
-        private @Nullable Buffer buffer;
-        private @Nullable Strategy parsingStrategy;
-
-        @Override
-        public void endSection() {
-            assert buffer != null;
-            addBuffer(buffer);
-        }
-
-        @Override
-        public boolean handleLine(String line) throws ParseException {
-            if (isEnd(line)) {
-                return false;
-            }
-            if (CharMatcher.whitespace().matchesAllOf(line) || LogRecordParser.isLogBeginningLine(line)) {
-                return true;
-            }
-            if (parsingStrategy == null) {
-                parsingStrategy = chooseParsingStrategy(line);
-            }
-            assert buffer != null;
-            LogRecord record = parsingStrategy.parse(buffer, line, getPidToProcessConverter());
-            if (record == null) {
-                logger.debug("Null record: " + line);
-            } else {
-                addLogRecord(record);
-            }
-            return true;
-        }
-
-        private Strategy chooseParsingStrategy(String line) throws ParseException {
-            for (Strategy strategy : ParsingStrategies.supportedStrategies) {
-                if (strategy.parse(null, line, Collections.emptyMap()) != null) {
-                    return strategy;
-                }
-            }
-            throw new ParseException("Cannot figure out log format from " + line, 0);
-        }
-
-        @Override
-        public boolean isSupportedSection(String sectionName) {
-            for (Buffer buffer : Buffer.values()) {
-                String header = Configuration.dump.bufferHeader(buffer);
-                if (header != null && sectionName.startsWith(header + " LOG")) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public void startSection(String sectionName) {
-            parsingStrategy = null;
-            buffer = getBufferFromName(sectionName);
-        }
-
-        private Buffer getBufferFromName(String sectionName) {
-            for (Buffer buffer : Buffer.values()) {
-                String header = Configuration.dump.bufferHeader(buffer);
-                if (header != null && sectionName.startsWith(header)) {
-                    return buffer;
-                }
-            }
-            throw new IllegalArgumentException(
-                    "Unknown buffer, startSection called before isSupportedSection? header=" + sectionName);
-        }
-
-        private boolean isEnd(String line) {
-            return SECTION_END_PATTERN.matcher(line).matches();
-        }
-    }
-
-    private static final String PROCESSES_SECTION = "PROCESSES (ps -P)";
-    private Map<Integer, String> converter = new HashMap<>();
-
-    private class ProcessesSectionHandler implements SectionHandler {
-        @Override
-        public void endSection() {}
-
-        @Override
-        public boolean handleLine(String line) throws ParseException {
-            if (isEnd(line)) {
-                return false;
-            }
-
-            if (CharMatcher.whitespace().matchesAllOf(line) || ProcessListParser.isProcessListHeader(line)) {
-                return true;
-            }
-            Matcher m = ProcessListParser.parseProcessListLine(line);
-            converter.put(ProcessListParser.getPid(m), ProcessListParser.getProcessName(m));
-            return true;
-        }
-
-        @Override
-        public boolean isSupportedSection(String sectionName) {
-            return PROCESSES_SECTION.equalsIgnoreCase(sectionName);
-        }
-
-        @Override
-        public void startSection(String sectionName) {}
-
-        private boolean isEnd(String line) {
-            return SECTION_END_PATTERN.matcher(line).matches();
-        }
     }
 
     @Override
@@ -319,5 +110,77 @@ public final class DumpstateFileDataSource implements DataSource {
     @Override
     public SourceMetadata getMetadata() {
         return sourceMetadata;
+    }
+
+    public static class Builder {
+        private final String fileName;
+        private @Nullable PushParser<?> pushParser;
+        private final Map<Buffer, ArrayList<LogRecord>> records = new EnumMap<>(Buffer.class);
+        private final Map<Integer, String> pidToProcessConverter = new HashMap<>();
+
+        public Builder(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public Builder setParserFactory(
+                Function<DumpstateParseEventsHandler, PushParser<DumpstateParseEventsHandler>> factory) {
+            pushParser = factory.apply(new DumpstateParseEventsHandler() {
+                @Override
+                public Optional<LogcatParseEventsHandler> logcatSectionBegin(Buffer buffer) {
+                    return Optional.of(new CollectingHandler(buffer, pidToProcessConverter::get) {
+                        @Override
+                        protected ParserControl logRecord(LogRecord record) {
+                            records.computeIfAbsent(buffer, b -> new ArrayList<>()).add(record);
+                            return ParserControl.proceed();
+                        }
+
+                        @Override
+                        public ParserControl unparseableLine(CharSequence line) {
+                            logger.debug("Failed to parse dumpstate logcat line: " + line);
+                            return ParserControl.proceed();
+                        }
+                    });
+                }
+
+                @Override
+                public Optional<PsParseEventsHandler> psSectionBegin() {
+                    return Optional.of(new PsParseEventsHandler() {
+                        @Override
+                        public ParserControl processLine(int pid, String processName) {
+                            pidToProcessConverter.put(pid, processName);
+                            return ParserControl.proceed();
+                        }
+
+                        @Override
+                        public ParserControl unparseableLine(CharSequence line) {
+                            logger.debug("Failed to parse ps output line: " + line);
+                            return ParserControl.proceed();
+                        }
+                    });
+                }
+            });
+            return this;
+        }
+
+        public DumpstateFileDataSource readFrom(BufferedReader in) throws IOException {
+            ParserUtils.readInto(Objects.requireNonNull(pushParser), in::readLine);
+
+            EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
+            buffers.addAll(records.keySet());
+
+            int totalRecordCount = 0;
+            for (ArrayList<LogRecord> value : records.values()) {
+                totalRecordCount += value.size();
+            }
+
+            ArrayList<LogRecord> allRecords = new ArrayList<>(totalRecordCount);
+            for (ArrayList<LogRecord> value : records.values()) {
+                allRecords.addAll(value);
+            }
+            Collections.sort(allRecords);
+
+            return new DumpstateFileDataSource(fileName, allRecords, EnumSet.allOf(Field.class), buffers,
+                    pidToProcessConverter);
+        }
     }
 }

@@ -47,7 +47,7 @@ public class FileDataSourceFactoryTest {
 
         DataSource dumpstate = FileDataSourceFactory.createDataSource("dumpstate.log", dumpstateFile);
         assertThat(dumpstate.getAvailableBuffers(),
-                Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.SYSTEM));
+                Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.MAIN));
     }
 
     @Test
@@ -73,10 +73,9 @@ public class FileDataSourceFactoryTest {
         CharSource log = openTestData("galaxy_nexus_jbmr2_threadtime.log");
 
         DataSource source = FileDataSourceFactory.createDataSource("threadtime.log", log);
-        // TODO(mlopatkin) Having BUFFER here is quite incosistent.
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
-                        Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE, Field.BUFFER));
+                        Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE));
     }
 
     @Test

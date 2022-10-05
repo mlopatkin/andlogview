@@ -15,15 +15,17 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.RecordListener;
 import name.mlopatkin.andlogview.logmodel.SourceMetadata;
-
-import com.google.common.base.CharMatcher;
+import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
+import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -37,6 +39,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * This class implements simple log parser with the ability to determine actual
@@ -45,41 +48,19 @@ import java.util.Set;
 public class LogfileDataSource implements DataSource {
     private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
 
-    private @Nullable RecordListener<LogRecord> listener;
-    private final ParsingStrategies.Strategy strategy;
-    private final List<LogRecord> records = new ArrayList<>();
     private final String fileName;
+    private final Set<Field> availableFields;
+    private final List<LogRecord> records;
     private final SourceMetadata sourceMetadata;
 
+    private @Nullable RecordListener<LogRecord> listener;
 
-    private LogfileDataSource(String fileName, ParsingStrategies.Strategy strategy) {
-        this.strategy = strategy;
+    private LogfileDataSource(String fileName, Set<Field> availableFields, List<LogRecord> records) {
         this.fileName = fileName;
+        this.availableFields = availableFields;
+        // records may be huge, do not copy it needlessly
+        this.records = Collections.unmodifiableList(records);
         this.sourceMetadata = new FileSourceMetadata(new File(fileName));
-        logger.debug("Strategy implemented: " + strategy);
-    }
-
-    void parse(BufferedReader in) throws IOException {
-        String line = in.readLine();
-        while (line != null) {
-            if (!LogRecordParser.isLogBeginningLine(line) && !CharMatcher.whitespace().matchesAllOf(line)) {
-                LogRecord record = strategy.parse(null, line, Collections.emptyMap());
-                // sometimes we cannot handle the line well: if we didn't guess
-                // the log type correctly or if there is some weird formatting
-                // (probably binary output)
-
-                // in the first case to stop and throw may be better but there
-                // is no reliable way to distinguish these two cases
-                // in the second case it is obviously better to ignore these
-                // weird lines
-                if (record != null) {
-                    records.add(record);
-                } else {
-                    logger.debug("Null record: " + line);
-                }
-            }
-            line = in.readLine();
-        }
     }
 
     @Override
@@ -92,7 +73,7 @@ public class LogfileDataSource implements DataSource {
 
     @Override
     public Set<Field> getAvailableFields() {
-        return strategy.getAvailableFields();
+        return availableFields;
     }
 
     @Override
@@ -104,16 +85,6 @@ public class LogfileDataSource implements DataSource {
     public void setLogRecordListener(RecordListener<LogRecord> listener) {
         this.listener = listener;
         this.listener.setRecords(records);
-    }
-
-    static LogfileDataSource createLogfileDataSourceWithStrategy(String fileName, String checkLine)
-            throws UnrecognizedFormatException {
-        for (ParsingStrategies.Strategy current : ParsingStrategies.supportedStrategies) {
-            if (current.parse(null, checkLine, Collections.emptyMap()) != null) {
-                return new LogfileDataSource(fileName, current);
-            }
-        }
-        throw new UnrecognizedFormatException();
     }
 
     @Override
@@ -131,5 +102,33 @@ public class LogfileDataSource implements DataSource {
     @Override
     public SourceMetadata getMetadata() {
         return sourceMetadata;
+    }
+
+    public static class Builder {
+        private final String fileName;
+        private final ArrayList<LogRecord> records = new ArrayList<>();
+
+        private @Nullable LogcatPushParser<?> pushParser;
+
+        public Builder(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public Builder setParserFactory(Function<LogcatParseEventsHandler, LogcatPushParser<?>> factory) {
+            pushParser = factory.apply(new CollectingHandler() {
+                @Override
+                protected ParserControl logRecord(LogRecord record) {
+                    records.add(record);
+                    return ParserControl.proceed();
+                }
+            });
+            return this;
+        }
+
+        public LogfileDataSource readFrom(BufferedReader in) throws IOException {
+            assert pushParser != null;
+            ParserUtils.readInto(pushParser, in::readLine);
+            return new LogfileDataSource(fileName, pushParser.getAvailableFields(), records);
+        }
     }
 }

@@ -15,8 +15,14 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.liblogcat.LogFormatSniffer;
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.parsers.FormatSniffer;
+import name.mlopatkin.andlogview.parsers.MultiplexParser;
+import name.mlopatkin.andlogview.parsers.ReplayParser;
+import name.mlopatkin.andlogview.parsers.dumpstate.DumpstateFormatSniffer;
+import name.mlopatkin.andlogview.parsers.dumpstate.DumpstateParsers;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatFormatSniffer;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
@@ -25,12 +31,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.util.Collections;
 
 public class FileDataSourceFactory {
-    private static final int READ_AHEAD_LIMIT = 65536;
-
     private FileDataSourceFactory() {}
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException, IOException {
@@ -39,61 +41,40 @@ public class FileDataSourceFactory {
 
     public static DataSource createDataSource(String fileName, CharSource file)
             throws UnrecognizedFormatException, IOException {
-        LogFormatSniffer dumpstateSniffer = new DumpstateSniffer();
-        LogFormatSniffer logfileSniffer = new LogFileSniffer();
-
-        // check first non-empty line of the file
         try (BufferedReader in = file.openBufferedStream()) {
-            in.mark(READ_AHEAD_LIMIT);
-            String checkLine = in.readLine();
-            while (checkLine != null) {
-                if (dumpstateSniffer.push(checkLine)) {
-                    return createDumpstateFileSource(fileName, in);
-                } else if (logfileSniffer.push(checkLine)) {
-                    return createLogFileSource(fileName, checkLine, in);
+            DumpstateFormatSniffer dumpstateSniffer = DumpstateParsers.detectFormat();
+            LogcatFormatSniffer logcatSniffer = LogcatParsers.detectFormat();
+
+            try (ReplayParser<MultiplexParser<?>> parser =
+                    new ReplayParser<>(new MultiplexParser<>(dumpstateSniffer, logcatSniffer))) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    boolean parserStopped = !parser.nextLine(line);
+                    if (dumpstateSniffer.isFormatDetected()) {
+                        return createDumpstateFileSource(fileName, dumpstateSniffer, parser, in);
+                    } else if (logcatSniffer.isFormatDetected()) {
+                        return createLogFileSource(fileName, logcatSniffer, parser, in);
+                    }
+                    if (parserStopped) {
+                        break;
+                    }
                 }
-                in.mark(READ_AHEAD_LIMIT);
-                checkLine = in.readLine();
             }
             throw new UnrecognizedFormatException("There are no recognizable lines in the file");
         }
     }
 
-    private static DataSource createLogFileSource(String fileName, String checkLine, BufferedReader in)
-            throws IOException, UnrecognizedFormatException {
-        LogfileDataSource source = LogfileDataSource.createLogfileDataSourceWithStrategy(fileName, checkLine);
-        in.reset();
-        source.parse(in);
-        return source;
+    private static DataSource createLogFileSource(String fileName, LogcatFormatSniffer formatSniffer,
+            ReplayParser<?> replayParser, BufferedReader in)
+            throws IOException {
+        return new LogfileDataSource.Builder(fileName).setParserFactory(
+                        handler -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, handler))
+                .readFrom(in);
     }
 
-    private static DataSource createDumpstateFileSource(String fileName, BufferedReader in)
-            throws IOException, UnrecognizedFormatException {
-        try {
-            return new DumpstateFileDataSource(fileName, in);
-        } catch (ParseException e) {
-            throw new UnrecognizedFormatException("Cannot parse dumpstate file", e);
-        }
-    }
-
-    private static class DumpstateSniffer extends LogFormatSniffer.SkipNullOrEmpty {
-        private static final String DUMPSTATE_FIRST_LINE = "========================================================";
-
-        @Override
-        protected boolean pushNonEmpty(String nextLine) {
-            return DUMPSTATE_FIRST_LINE.equals(nextLine);
-        }
-    }
-
-    private static class LogFileSniffer extends LogFormatSniffer.SkipNullOrEmpty {
-        @Override
-        protected boolean pushNonEmpty(String nextLine) {
-            for (ParsingStrategies.Strategy strategy : ParsingStrategies.supportedStrategies) {
-                if (strategy.parse(null, nextLine, Collections.emptyMap()) != null) {
-                    return true;
-                }
-            }
-            return false;
-        }
+    private static DataSource createDumpstateFileSource(String fileName, DumpstateFormatSniffer formatSniffer,
+            ReplayParser<?> replayParser, BufferedReader in) throws IOException {
+        return new DumpstateFileDataSource.Builder(fileName).setParserFactory(
+                h -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, h)).readFrom(in);
     }
 }

@@ -16,9 +16,14 @@
 package name.mlopatkin.andlogview.utils;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+
+import java.util.stream.Stream;
 
 public class MyStringUtils {
     private MyStringUtils() {}
+
+    private static final Splitter EOL_SPLITTER = Splitter.on('\n');
 
     public static final int NOT_FOUND = -1;
 
@@ -55,7 +60,8 @@ public class MyStringUtils {
      * @return the string of up to {@code maxLength} symbols with extra symbols in the middle replaced with {@code
      *         replacement}
      * @throws NullPointerException if {@code str} is {@code null}
-     * @throws IllegalArgumentException if {@code maxLength <= 0} or {@code prefixLength <= 0} or {@code maxLength
+     * @throws IllegalArgumentException if {@code maxLength <= 0} or {@code prefixLength <= 0} or
+     *         {@code maxLength
      *         < prefixLength + 2} (length of prefix, length of replacement, and length of shortest possible suffix).
      */
     public static String abbreviateMiddle(String str, char replacement, int maxLength, int prefixLength) {
@@ -79,5 +85,22 @@ public class MyStringUtils {
         result.append(replacement);
         result.append(str, suffixStart, str.length());
         return result.toString();
+    }
+
+    /**
+     * Splits the char sequence at line terminators into a stream of strings. Similar to Java 11's
+     * {@code String.lines()}, but has some quirks:
+     * <ol>
+     * <li>Only {@code \n} is recognized as a line terminator.
+     * <li>The last line not ending with a terminator is returned, even if it is empty. This means that empty
+     * sequence produces one empty string, and an empty string is produced at the end if the sequence ends with line
+     * terminator.
+     * </ol>
+     *
+     * @param sequence the sequence to split
+     * @return the stream of strings
+     */
+    public static Stream<String> lines(CharSequence sequence) {
+        return EOL_SPLITTER.splitToStream(sequence);
     }
 }
