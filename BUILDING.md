@@ -2,13 +2,17 @@
 
 ## Prerequisites
 
- * Windows or Linux
- * OpenJDK 8 or newer (e. g. from [Eclipse Adoptium](https://adoptium.net/))
+ * Windows or Linux (macOS would probably work too)
+ * OpenJDK 8 or newer (e.g. from [Eclipse Adoptium](https://adoptium.net/)) to run Gradle
  * Internet connection to download dependencies from Maven Central, Gradle Plugin Portal, etc.
  * Git (to check out and commit)
 
+Andlogview is written in Java. It supports JDKs starting from 8 as its runtime environment. However, to make development
+easier, the [Jabel](https://github.com/bsideup/jabel) compiler plugin is applied to allow using modern language
+constructs from recent Java versions, such as text blocks and `var`.
+
 ## Checking out the sources
-The repository can be cloned with Git or you can download a latest snapshot in archive from Github. The rest of this
+The repository can be cloned with Git or you can download the latest snapshot in archive from GitHub. The rest of this
 chapter assumes that you use Git.
 
 This project uses Unix-style line endings (LF) for all files on all platforms except for Windows Batch (bat/cmd) files
@@ -48,6 +52,12 @@ each line ends with line ending symbol, there are no tab symbols. To install the
 `.git/hooks/` directory. Make sure that the copy is marked executable.
 
 ## Building with Gradle
+### Setting up the JDK
+Technically, the build uses JDK 17 to compile everything and JDK 8 to run tests. It utilizes Gradle's
+[Java Toolchains](https://docs.gradle.org/current/userguide/toolchains.html) to select the proper JDK. You have to
+either provide JDKs to Gradle somehow, as described in the docs, or rely on its automated provisioning.
+
+### Useful commands
 Run `./gradlew assemble` to build everything. First run takes some time because Gradle binaries and app dependencies
 must be downloaded from repositories.
 
