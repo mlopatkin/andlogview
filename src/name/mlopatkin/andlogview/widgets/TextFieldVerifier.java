@@ -70,6 +70,7 @@ public class TextFieldVerifier {
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         public boolean shouldYieldFocus(JComponent input) {
             if (!super.shouldYieldFocus(input)) {
                 showFailure();

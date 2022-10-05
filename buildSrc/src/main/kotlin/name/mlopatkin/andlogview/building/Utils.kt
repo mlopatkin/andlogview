@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.building
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.the
 import org.gradle.plugin.use.PluginDependency
 
@@ -28,3 +29,17 @@ val Project.buildLibs: LibrariesForLibs
 
 val Provider<PluginDependency>.pluginId
     get() = get().pluginId
+
+class JdkVersion(private val provider: Provider<String>) {
+    val intProvider
+        get() = provider.map { it.toInt() }
+
+    val int
+        get() = intProvider.get()
+
+    val string
+        get() = provider.get()
+
+    val languageVersion
+        get() = provider.map { JavaLanguageVersion.of(it) }
+}

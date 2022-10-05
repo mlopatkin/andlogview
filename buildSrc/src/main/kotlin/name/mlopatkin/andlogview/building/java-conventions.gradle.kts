@@ -45,7 +45,9 @@ dependencies {
     testImplementation(buildLibs.test.junit5.jupiter)
     testRuntimeOnly(buildLibs.test.junit5.vintageEngine)
 
+    annotationProcessor(buildLibs.build.jabel)
     annotationProcessor(buildLibs.build.nullaway)
+    testAnnotationProcessor(buildLibs.build.jabel)
     testAnnotationProcessor(buildLibs.build.nullaway)
 
     errorprone(buildLibs.build.errorprone.core)
@@ -55,19 +57,24 @@ dependencies {
 // Apply NullAway to JMH benchmark sources, if the plugin is available
 pluginManager.withPlugin(buildLibs.plugins.jmh.pluginId) {
     dependencies {
+        "jmhAnnotationProcessor"(buildLibs.build.jabel)
         "jmhAnnotationProcessor"(buildLibs.build.nullaway)
     }
 }
 
 pluginManager.withPlugin("java-test-fixtures") {
     dependencies {
+        "testFixturesAnnotationProcessor"(buildLibs.build.jabel)
         "testFixturesAnnotationProcessor"(buildLibs.build.nullaway)
     }
 }
 
+val compileJdk = JdkVersion(buildLibs.versions.compileJdkVersion)
+val runtimeJdk = JdkVersion(buildLibs.versions.runtimeJdkVersion)
+
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(compileJdk.languageVersion)
     }
 }
 
@@ -78,10 +85,17 @@ checkstyle {
 // Configure testing frameworks
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(runtimeJdk.languageVersion)
+    })
 }
 
 // Configure compilation warnings
 tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = buildLibs.versions.sourceJavaVersion.get() // for the IDE support
+    options.release.set(runtimeJdk.intProvider)
+
     // Configure javac warnings
     options.compilerArgs.addAll(listOf(
             "-Xlint:unchecked",
@@ -100,7 +114,7 @@ tasks.withType<JavaCompile>().configureEach {
         // Configure NullAway
         option("NullAway:AnnotatedPackages", "name.mlopatkin")
         option("NullAway:AssertsEnabled", "true")
-        option("NullAway:ExcludedClassAnnotations", "javax.annotation.Generated")
+        option("NullAway:ExcludedClassAnnotations", "javax.annotation.Generated,javax.annotation.processing.Generated")
         option("NullAway:ExcludedFieldAnnotations",
                 listOf("org.checkerframework.checker.nullness.qual.MonotonicNonNull",
                         "org.mockito.Mock,org.mockito.Captor",

@@ -39,9 +39,7 @@ class WindowsPositionsPrefTest {
     @Test
     void setPreferenceValuesAreAvailable() {
         pref.setFrameInfo(Frame.MAIN, new FrameLocation(10, 10), new FrameDimensions(1024, 768));
-        assertThat(pref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(
-                location -> assertThat(location).isAt(10, 10)
-        );
+        assertThat(pref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(location -> assertThat(location).isAt(10, 10));
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
     }
 
@@ -52,8 +50,7 @@ class WindowsPositionsPrefTest {
         WindowsPositionsPref newPref = new WindowsPositionsPref(configStorage);
 
         assertThat(newPref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(
-                location -> assertThat(location).isAt(10, 10)
-        );
+                location -> assertThat(location).isAt(10, 10));
         assertThat(newPref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
     }
 
@@ -71,17 +68,29 @@ class WindowsPositionsPrefTest {
 
     @Test
     void preferenceCanBeRestoredFromFrozenSerializedForm() {
-        configStorage.setJsonData("windows", "{ \"main\": { \"width\": 1024, \"height\": 768, \"x\": 12, \"y\": 21} }");
+        configStorage.setJsonData("windows", """
+                {
+                    "main": {
+                        "width": 1024,
+                        "height": 768,
+                        "x": 12,
+                        "y": 21
+                    }
+                }""");
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
-        assertThat(pref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(
-                location -> assertThat(location).isAt(12, 21)
-        );
+        assertThat(pref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(location -> assertThat(location).isAt(12, 21));
     }
 
     @Test
     void preferenceCanBeRestoredFromSerializedFormWithoutLocation() {
-        configStorage.setJsonData("windows", "{ \"main\": { \"width\": 1024, \"height\": 768} }");
+        configStorage.setJsonData("windows", """
+                {
+                  "main": {
+                    "width": 1024,
+                    "height": 768
+                  }
+                }""");
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
         assertThat(pref.getFrameLocation(Frame.MAIN)).isNotPresent();
@@ -90,8 +99,15 @@ class WindowsPositionsPrefTest {
     @Test
     @SuppressWarnings("deprecation")
     void invalidWidthFallbacksToDefaultSizeAndPos() {
-        configStorage.setJsonData("windows",
-                "{ \"main\": { \"width\": -1024, \"height\": 768, \"x\": 12, \"y\": 21} }");
+        configStorage.setJsonData("windows", """
+                {
+                  "main": {
+                    "width": -1024,
+                    "height": 768,
+                    "x": 12,
+                    "y": 21
+                  }
+                }""");
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
                 Configuration.ui.mainWindowHeight());
@@ -101,8 +117,15 @@ class WindowsPositionsPrefTest {
     @Test
     @SuppressWarnings("deprecation")
     void invalidHeightFallbacksToDefaultSizeAndPos() {
-        configStorage.setJsonData("windows",
-                "{ \"main\": { \"width\": 1024, \"height\": -768, \"x\": 12, \"y\": 21} }");
+        configStorage.setJsonData("windows", """
+                {
+                  "main": {
+                    "width": 1024,
+                    "height": -768,
+                    "x": 12,
+                    "y": 21
+                  }
+                }""");
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
                 Configuration.ui.mainWindowHeight());
