@@ -38,7 +38,7 @@ dependencies {
     testImplementation(buildLibs.test.junit4)
     testImplementation(buildLibs.test.mockito.core)
     testImplementation(buildLibs.test.mockito.jupiter)
-    testImplementation(buildLibs.test.hamcrest.all)
+    testImplementation(buildLibs.test.hamcrest.hamcrest)
     testImplementation(buildLibs.test.hamcrest.optional)
     testImplementation(buildLibs.test.assertj)
     testImplementation(platform(buildLibs.test.junit5.bom))

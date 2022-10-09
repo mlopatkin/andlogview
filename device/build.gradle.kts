@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.log4j)
 
-    testFixturesApi(libs.test.hamcrest.all)
+    testFixturesApi(libs.test.hamcrest.hamcrest)
     testFixturesImplementation(testFixtures(project(":base")))
     testFixturesImplementation(libs.ddmlib)
 
