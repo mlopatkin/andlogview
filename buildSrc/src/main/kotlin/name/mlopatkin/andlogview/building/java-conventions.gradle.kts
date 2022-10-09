@@ -93,6 +93,9 @@ tasks.withType<Test> {
 
 // Configure compilation warnings
 tasks.withType<JavaCompile>().configureEach {
+    // Workaround for JMH plugin not respecting the toolchain
+    javaCompiler.convention(javaToolchains.compilerFor(java.toolchain))
+
     sourceCompatibility = buildLibs.versions.sourceJavaVersion.get() // for the IDE support
     options.release.set(runtimeJdk.intProvider)
 
