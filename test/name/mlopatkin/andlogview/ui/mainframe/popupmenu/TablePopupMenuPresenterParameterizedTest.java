@@ -37,7 +37,6 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.HighlightColors;
-import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -63,15 +62,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.Color;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 public class TablePopupMenuPresenterParameterizedTest {
-    public static final LogRecord RECORD = Objects.requireNonNull(LogRecordParser.parseThreadTime(
-            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117)",
-            Collections.singletonMap(98, "media_server")));
+    static final LogRecord RECORD = LogRecordUtils.forTimestamp("08-03 16:21:35.538")
+            .withPid(98)
+            .withAppName("media_server")
+            .withTid(231)
+            .withTag("AudioFlinger")
+            .withMessage("start(4117)");
+
     FakeTablePopupMenuView popupMenuView;
     BookmarkModel bookmarkModel = new BookmarkModel();
     @Mock

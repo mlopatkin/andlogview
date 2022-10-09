@@ -16,23 +16,28 @@
 
 package name.mlopatkin.andlogview.test;
 
-import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
+import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 
-import java.util.Collections;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public final class TestData {
     private TestData() {}
 
-    public static final LogRecord RECORD1 = Objects.requireNonNull(LogRecordParser.parseThreadTime(
-            "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117), calling thread 172", Collections.emptyMap()));
+    public static final LogRecord RECORD1 = LogRecordUtils.forTimestamp("08-03 16:21:35.538")
+            .withPid(98)
+            .withTid(231)
+            .withPriority(LogRecord.Priority.VERBOSE)
+            .withTag("AudioFlinger")
+            .withMessage("start(4117), calling thread 172");
 
-    public static final LogRecord RECORD2 = Objects.requireNonNull(LogRecordParser.parseThreadTime(
-            "08-03 16:21:35.538    98   231 V NotAudioFlinger: start(4117), calling thread 172",
-            Collections.emptyMap()));
+    public static final LogRecord RECORD2 = LogRecordUtils.forTimestamp("08-03 16:21:35.538")
+            .withPid(98)
+            .withTid(231)
+            .withPriority(LogRecord.Priority.VERBOSE)
+            .withTag("NotAudioFlinger")
+            .withMessage("start(4117), calling thread 172");
 
     public static final LogRecord RECORD1_IN_MAIN = RECORD1.withBuffer(LogRecord.Buffer.MAIN);
 

@@ -18,8 +18,10 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.jmh.BenchmarkResources;
-import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
+import name.mlopatkin.andlogview.parsers.logcat.ListCollectingHandler;
+import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,7 +38,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -53,14 +54,13 @@ public class FilterFromDialogSingleTagPerfTest {
 
     @Setup(Level.Trial)
     public void setUp() throws Exception {
-        try (Stream<String> lines = BenchmarkResources.loadResource("goldfish_omr1_threadtime.log").lines()) {
-            records = lines.map(line -> LogRecordParser.parseThreadTime(line, Collections.emptyMap()))
-                    .filter(Objects::nonNull)
-                    .collect(ImmutableList.toImmutableList());
+        try (Stream<String> lines = BenchmarkResources.loadResource("goldfish_omr1_threadtime.log").lines();
+                var parser = LogcatParsers.threadTime(new ListCollectingHandler())) {
+            ParserUtils.readInto(parser, lines);
+            records = ImmutableList.copyOf(parser.getHandler().getCollectedRecords());
         }
 
         simplestPredicate = p -> "ActivityManager".equalsIgnoreCase(p.getTag());
-
 
         FilterFromDialog plainTextFilter = new FilterFromDialog().setMode(FilteringMode.SHOW).setTags(
                 Collections.singletonList("ActivityManager"));
