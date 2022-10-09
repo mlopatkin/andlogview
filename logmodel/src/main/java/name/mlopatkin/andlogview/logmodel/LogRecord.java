@@ -71,6 +71,7 @@ public class LogRecord implements Comparable<LogRecord> {
 
     public static final int NO_ID = -1;
 
+    private final SequenceNumber seqNo;
     private final @Nullable Timestamp time;
     private final int pid;
     private final int tid;
@@ -81,6 +82,7 @@ public class LogRecord implements Comparable<LogRecord> {
     private final String appName;
 
     LogRecord(
+            SequenceNumber seqNo,
             @Nullable Timestamp time,
             int pid,
             int tid,
@@ -89,6 +91,7 @@ public class LogRecord implements Comparable<LogRecord> {
             String tag,
             String message,
             @Nullable Buffer buffer) {
+        this.seqNo = seqNo;
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -97,6 +100,10 @@ public class LogRecord implements Comparable<LogRecord> {
         this.tag = tag;
         this.message = message;
         this.buffer = buffer;
+    }
+
+    public SequenceNumber getSeqNo() {
+        return seqNo;
     }
 
     public @Nullable Timestamp getTime() {
@@ -173,7 +180,8 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withTimestamp(Timestamp timestamp) {
-        return new LogRecord(Preconditions.checkNotNull(timestamp), pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, Preconditions.checkNotNull(timestamp), pid, tid, appName, priority, tag, message,
+                buffer);
     }
 
     /**
@@ -182,7 +190,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withoutTimestamp() {
-        return new LogRecord(null, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, null, pid, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -192,7 +200,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withPid(int pid) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -201,7 +209,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withoutPid() {
-        return new LogRecord(time, NO_ID, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, NO_ID, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -211,7 +219,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withTid(int tid) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -220,7 +228,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withoutTid() {
-        return new LogRecord(time, pid, NO_ID, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, NO_ID, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -230,7 +238,8 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withAppName(String appName) {
-        return new LogRecord(time, pid, tid, Preconditions.checkNotNull(appName), priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, Preconditions.checkNotNull(appName), priority, tag, message,
+                buffer);
     }
 
     /**
@@ -239,7 +248,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withoutAppName() {
-        return new LogRecord(time, pid, tid, null, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, null, priority, tag, message, buffer);
     }
 
     /**
@@ -249,7 +258,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withPriority(Priority priority) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -259,7 +268,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withTag(String tag) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -269,7 +278,7 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withMessage(String message) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message, buffer);
     }
 
     /**
@@ -279,7 +288,8 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withBuffer(Buffer buffer) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, Preconditions.checkNotNull(buffer));
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message,
+                Preconditions.checkNotNull(buffer));
     }
 
     /**
@@ -288,6 +298,6 @@ public class LogRecord implements Comparable<LogRecord> {
      * @return the new record
      */
     public LogRecord withoutBuffer() {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, null);
+        return new LogRecord(seqNo, time, pid, tid, appName, priority, tag, message, null);
     }
 }

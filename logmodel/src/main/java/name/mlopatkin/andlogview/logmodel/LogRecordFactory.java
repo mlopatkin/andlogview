@@ -22,9 +22,15 @@ import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Creates the instances of the LogRecord, bound to the given buffer (if known). Assigns proper sequence numbers to the
+ * produced records.
+ */
 public class LogRecordFactory {
     private final @Nullable Buffer buffer;
+    private final AtomicInteger seqNo = new AtomicInteger();
 
     public LogRecordFactory(Buffer buffer) {
         this.buffer = Objects.requireNonNull(buffer);
@@ -37,11 +43,13 @@ public class LogRecordFactory {
     public LogRecord create(
             Timestamp timestamp, int pid, int tid, @Nullable String appName, Priority priority, String tag,
             String message) {
-        return new LogRecord(timestamp, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(new SequenceNumber(seqNo.incrementAndGet()), timestamp, pid, tid, appName, priority, tag,
+                message, buffer);
     }
 
     public LogRecord create(
             int pid, int tid, @Nullable String appName, Priority priority, String tag, String message) {
-        return new LogRecord(null, pid, tid, appName, priority, tag, message, buffer);
+        return new LogRecord(new SequenceNumber(seqNo.incrementAndGet()), /* timestamp */null, pid, tid, appName,
+                priority, tag, message, buffer);
     }
 }

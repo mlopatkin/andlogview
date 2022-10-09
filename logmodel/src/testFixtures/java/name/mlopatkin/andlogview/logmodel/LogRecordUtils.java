@@ -26,7 +26,7 @@ import static name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 public final class LogRecordUtils {
     // A record without any fields set to anything meaningful, used as a baseline for more specialized records.
     private static final LogRecord DEFAULT_RECORD =
-            new LogRecord(null, NO_ID, NO_ID, null, Priority.LOWEST, "", "", null);
+            new LogRecord(new SequenceNumber(-1), null, NO_ID, NO_ID, null, Priority.LOWEST, "", "", null);
 
     private LogRecordUtils() {}
 
