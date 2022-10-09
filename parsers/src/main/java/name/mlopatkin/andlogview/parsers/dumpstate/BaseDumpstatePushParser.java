@@ -52,8 +52,7 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
 
     @Override
     public boolean nextLine(CharSequence line) {
-        if (shouldStop || !eventsHandler.lineConsumed().shouldProceed()) {
-            shouldStop = true;
+        if (shouldStop) {
             return false;
         }
 

@@ -85,7 +85,7 @@ public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<
 
     @Override
     public boolean nextLine(CharSequence line) {
-        if (shouldStop || !eventsHandler.lineConsumed().shouldProceed()) {
+        if (shouldStop) {
             return false;
         }
 

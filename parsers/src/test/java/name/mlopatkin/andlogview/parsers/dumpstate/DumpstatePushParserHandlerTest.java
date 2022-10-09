@@ -82,7 +82,6 @@ class DumpstatePushParserHandlerTest {
         var handler = mock(DumpstateParseEventsHandler.class);
         when(handler.logcatSectionBegin(any())).thenReturn(Optional.empty());
         when(handler.psSectionBegin()).thenReturn(Optional.empty());
-        when(handler.lineConsumed()).thenReturn(ParserControl.proceed());
         when(handler.unparseableLogcatSection()).thenReturn(ParserControl.proceed());
         return handler;
     }

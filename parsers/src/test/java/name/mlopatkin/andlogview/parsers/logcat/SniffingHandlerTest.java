@@ -37,7 +37,6 @@ class SniffingHandlerTest {
     @MethodSource
     void allKindsOfLogRecordEventsAreDetectedByHandler(Function<LogcatParseEventsHandler, ParserControl> event) {
         SniffingHandler handler = new SniffingHandler();
-        handler.lineConsumed();
         ParserControl result = event.apply(handler);
 
         assertThat(result.shouldProceed()).isFalse();

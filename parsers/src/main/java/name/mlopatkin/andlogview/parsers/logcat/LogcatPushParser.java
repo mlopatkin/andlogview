@@ -42,9 +42,6 @@ public class LogcatPushParser<H extends LogcatParseEventsHandler> implements Pus
 
     @Override
     public boolean nextLine(CharSequence line) {
-        if (!eventsHandler.lineConsumed().shouldProceed()) {
-            return false;
-        }
         return parserDelegate.parseLine(line).shouldProceed();
     }
 

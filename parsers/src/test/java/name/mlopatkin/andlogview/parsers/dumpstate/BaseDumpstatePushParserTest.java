@@ -376,7 +376,6 @@ class BaseDumpstatePushParserTest {
 
     private BaseDumpstateParseEventsHandler createHandler() {
         var handler = mock(BaseDumpstateParseEventsHandler.class);
-        when(handler.lineConsumed()).thenReturn(ParserControl.proceed());
         when(handler.header()).thenReturn(ParserControl.proceed());
         when(handler.sectionStarted(any())).thenReturn(DumpstateParserControl.skipSection());
         when(handler.sectionEnded(any())).thenReturn(ParserControl.proceed());

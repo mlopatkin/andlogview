@@ -55,11 +55,6 @@ class DumpstatePushParserHandler implements BaseDumpstateParseEventsHandler {
     }
 
     @Override
-    public ParserControl lineConsumed() {
-        return eventsHandler.lineConsumed();
-    }
-
-    @Override
     public void documentEnded() {
         eventsHandler.documentEnded();
     }

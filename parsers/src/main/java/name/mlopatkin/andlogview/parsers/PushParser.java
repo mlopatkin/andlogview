@@ -23,14 +23,6 @@ package name.mlopatkin.andlogview.parsers;
 public interface PushParser<H extends PushParser.ParseEventsHandler> extends BasePushParser {
     interface ParseEventsHandler {
         /**
-         * Called when the new line is fed into the parser, for each line.
-         * @return {@linkplain ParserControl} instance to determine next parser action
-         */
-        default ParserControl lineConsumed() {
-            return ParserControl.proceed();
-        }
-
-        /**
          * Called when the document parsing is complete. This is the last parsing event. As there is nothing to control,
          * there is no return value.
          */
@@ -38,5 +30,4 @@ public interface PushParser<H extends PushParser.ParseEventsHandler> extends Bas
     }
 
     H getHandler();
-
 }
