@@ -133,7 +133,7 @@ public abstract class BufferedListenerPerfTest {
     public static class Buffered extends BufferedListenerPerfTest {
         @Override
         protected RecordListener<LogRecord> createListener() {
-            return new BufferedListener<>(consumer, EventQueue::invokeLater);
+            return new BufferedListener<>(consumer, EventQueue::invokeLater, LogRecord.LEGACY_COMPARATOR);
         }
     }
 }

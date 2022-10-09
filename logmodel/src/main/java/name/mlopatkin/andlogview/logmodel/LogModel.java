@@ -86,7 +86,8 @@ public interface LogModel {
      */
     static LogModel fromDataSource(DataSource dataSource, SequentialExecutor modelOwner) {
         SingleThreadInMemoryLogModel model = new SingleThreadInMemoryLogModel();
-        BufferedListener<LogRecord> recordListener = new BufferedListener<>(model, modelOwner);
+        BufferedListener<LogRecord> recordListener =
+                new BufferedListener<>(model, modelOwner, LogRecord.LEGACY_COMPARATOR);
         dataSource.setLogRecordListener(recordListener);
         return model;
     }

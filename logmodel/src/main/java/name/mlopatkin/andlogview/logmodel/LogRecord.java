@@ -28,12 +28,17 @@ import java.util.Comparator;
  * This class contains all available log record data like timestamp, tag,
  * message, etc.
  */
-public class LogRecord implements Comparable<LogRecord> {
+public class LogRecord {
 
     private static final Comparator<@Nullable Buffer> NULL_SAFE_BUFFER_COMPARATOR =
             Comparator.nullsFirst(Comparator.naturalOrder());
     private static final Comparator<@Nullable Timestamp> NULL_SAFE_TIME_COMPARATOR =
             Comparator.nullsFirst(Comparator.naturalOrder());
+
+    public static final Comparator<LogRecord> LEGACY_COMPARATOR = (a, b) -> ComparisonChain.start()
+            .compare(a.getTime(), b.getTime(), NULL_SAFE_TIME_COMPARATOR)
+            .compare(a.getBuffer(), b.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)
+            .result();
 
     public enum Priority {
         VERBOSE,
@@ -160,17 +165,6 @@ public class LogRecord implements Comparable<LogRecord> {
             b.append(message);
         }
         return b.toString();
-    }
-
-    /**
-     * Performs timestamp comparison in ascending order.
-     */
-    @Override
-    public int compareTo(LogRecord o) {
-        return ComparisonChain.start()
-                .compare(getTime(), o.getTime(), NULL_SAFE_TIME_COMPARATOR)
-                .compare(getBuffer(), o.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)
-                .result();
     }
 
     /**

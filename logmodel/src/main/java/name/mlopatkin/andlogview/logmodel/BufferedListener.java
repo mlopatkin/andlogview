@@ -20,8 +20,10 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executor;
+
 /**
  * This class tries to limit the number of events pushing records into the
  * model.
@@ -30,18 +32,26 @@ import java.util.concurrent.Executor;
  * then the event queue becomes overloaded with these events. The UI becomes
  * unresponsive. However, new records should appear as fast as possible.
  */
-public class BufferedListener<T extends Comparable<T>> implements RecordListener<T> {
+public class BufferedListener<T> implements RecordListener<T> {
     private final BatchRecordsReceiver<T> receiver;
     private final Executor receiverExecutor;
+    private final Comparator<? super T> comparator;
 
     private final Object lock = new Object();
 
     @GuardedBy("lock")
     private ArrayList<T> pendingRecords = new ArrayList<>();
 
-    public BufferedListener(BatchRecordsReceiver<T> receiver, Executor receiverExecutor) {
+    public static <V extends Comparable<? super V>> BufferedListener<V> create(BatchRecordsReceiver<V> receiver,
+            Executor receiverExecutor) {
+        return new BufferedListener<>(receiver, receiverExecutor, Comparator.naturalOrder());
+    }
+
+    public BufferedListener(BatchRecordsReceiver<T> receiver, Executor receiverExecutor,
+            Comparator<? super T> comparator) {
         this.receiver = receiver;
         this.receiverExecutor = receiverExecutor;
+        this.comparator = comparator;
     }
 
     @Override
@@ -66,7 +76,7 @@ public class BufferedListener<T extends Comparable<T>> implements RecordListener
             records = pendingRecords;
             pendingRecords = new ArrayList<>();
         }
-        Collections.sort(records);
+        Collections.sort(records, comparator);
         receiver.addRecords(records);
     }
 }

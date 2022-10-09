@@ -100,10 +100,10 @@ class BufferedListenerTest {
 
 
     private BufferedListener<Integer> createListener() {
-        return new BufferedListener<>(receiver, MoreExecutors.directExecutor());
+        return BufferedListener.create(receiver, MoreExecutors.directExecutor());
     }
 
     private BufferedListener<Integer> createListener(Executor executor) {
-        return new BufferedListener<>(receiver, executor);
+        return BufferedListener.create(receiver, executor);
     }
 }

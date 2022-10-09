@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview.utils;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -24,8 +25,8 @@ import java.util.List;
 public class MyListUtils {
     private MyListUtils() {}
 
-    private static <T extends Comparable<? super T>> boolean lessOrEq(T a, T b) {
-        return a.compareTo(b) <= 0;
+    private static <T> boolean lessOrEq(T a, T b, Comparator<? super T> comparator) {
+        return comparator.compare(a, b) <= 0;
     }
 
     /**
@@ -36,6 +37,10 @@ public class MyListUtils {
      * @return index of first inserted row
      */
     public static <T extends Comparable<? super T>> int mergeOrdered(List<T> base, List<T> elems) {
+        return mergeOrdered(base, elems, Comparator.naturalOrder());
+    }
+
+    public static <T> int mergeOrdered(List<T> base, List<T> elems, Comparator<? super T> comparator) {
         // handle specific cases
         if (elems.isEmpty()) {
             return base.size();
@@ -54,7 +59,7 @@ public class MyListUtils {
         while (basePos < base.size() && elemsPos < elems.size()) {
             T baseItem = base.get(basePos);
             T elemsItem = elems.get(elemsPos);
-            if (lessOrEq(baseItem, elemsItem)) {
+            if (lessOrEq(baseItem, elemsItem, comparator)) {
                 ++basePos;
             } else {
                 // elemsItem and possibly some more should be inserted before
@@ -62,7 +67,7 @@ public class MyListUtils {
                 int elemsIntervalEndPos = elemsPos + 1;
                 while (elemsIntervalEndPos < elems.size()) {
                     T elemsIntervalEndItem = elems.get(elemsIntervalEndPos);
-                    if (!lessOrEq(baseItem, elemsIntervalEndItem)) {
+                    if (!lessOrEq(baseItem, elemsIntervalEndItem, comparator)) {
                         // still should be inserted before
                         ++elemsIntervalEndPos;
                     } else {

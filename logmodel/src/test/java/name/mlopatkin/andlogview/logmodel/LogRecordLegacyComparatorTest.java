@@ -25,7 +25,7 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.stream.Stream;
 
-public class LogRecordTest {
+public class LogRecordLegacyComparatorTest {
     private static final long BASE_DATE_LONG = 1584719894000L;
     private static final Timestamp BASE_TIME = new Timestamp(new Date(BASE_DATE_LONG));
     private static final Timestamp AFTER_BASE_TIME = new Timestamp(new Date(BASE_DATE_LONG + 1));
@@ -33,17 +33,17 @@ public class LogRecordTest {
     private static final LogRecord BASE = LogRecordUtils.forBuffer(Buffer.EVENTS).withTimestamp(BASE_TIME);
 
     @Test
-    @SuppressWarnings({"SelfComparison", "EqualsWithItself"})
+    @SuppressWarnings({"SelfComparison"})
     public void logRecordIsEqualToItself() {
-        assertEquals("BASE == BASE", 0, BASE.compareTo(BASE));
+        assertEquals("BASE == BASE", 0, compare(BASE, BASE));
     }
 
     @Test
     public void logRecordsAreOrderedByTime() {
         LogRecord later = BASE.withTimestamp(AFTER_BASE_TIME);
 
-        assertEquals("BASE < later", -1, BASE.compareTo(later));
-        assertEquals("later < BASE", 1, later.compareTo(BASE));
+        assertEquals("BASE < later", -1, compare(BASE, later));
+        assertEquals("later < BASE", 1, compare(later, BASE));
     }
 
     @Test
@@ -51,8 +51,8 @@ public class LogRecordTest {
         // CRASH > EVENTS
         LogRecord later = BASE.withBuffer(Buffer.CRASH);
 
-        assertEquals("BASE < later", -1, BASE.compareTo(later));
-        assertEquals("later < BASE", 1, later.compareTo(BASE));
+        assertEquals("BASE < later", -1, compare(BASE, later));
+        assertEquals("later < BASE", 1, compare(later, BASE));
     }
 
     @Test
@@ -60,8 +60,8 @@ public class LogRecordTest {
         // EVENTS < MAIN
         LogRecord later = BASE.withBuffer(Buffer.MAIN).withTimestamp(AFTER_BASE_TIME);
 
-        assertEquals("BASE < later", -1, BASE.compareTo(later));
-        assertEquals("later < BASE", 1, later.compareTo(BASE));
+        assertEquals("BASE < later", -1, compare(BASE, later));
+        assertEquals("later < BASE", 1, compare(later, BASE));
     }
 
     @Test
@@ -69,17 +69,21 @@ public class LogRecordTest {
         LogRecord nullBuffer = BASE.withoutBuffer();
 
         Stream.of(Buffer.values()).map(BASE::withBuffer).forEach(r -> {
-            assertEquals("nullBuffer < r{" + r.getBuffer() + "}", -1, nullBuffer.compareTo(r));
-            assertEquals("r{" + r.getBuffer() + "} < nullBuffer", 1, r.compareTo(nullBuffer));
+            assertEquals("nullBuffer < r{" + r.getBuffer() + "}", -1, compare(nullBuffer, r));
+            assertEquals("r{" + r.getBuffer() + "} < nullBuffer", 1, compare(r, nullBuffer));
         });
     }
 
     @Test
-    @SuppressWarnings({"SelfComparison", "EqualsWithItself"})
+    @SuppressWarnings({"SelfComparison"})
     public void logRecordWithNullBufferEqualsItself() {
         LogRecord nullBuffer = BASE.withoutBuffer();
 
-        assertEquals("nullBuffer == nullBuffer", 0, nullBuffer.compareTo(nullBuffer));
+        assertEquals("nullBuffer == nullBuffer", 0, compare(nullBuffer, nullBuffer));
+    }
+
+    private static int compare(LogRecord a, LogRecord b) {
+        return LogRecord.LEGACY_COMPARATOR.compare(a, b);
     }
 }
 

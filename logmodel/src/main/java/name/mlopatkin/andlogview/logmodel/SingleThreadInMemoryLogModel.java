@@ -51,7 +51,7 @@ class SingleThreadInMemoryLogModel implements LogModel, BatchRecordsReceiver<Log
         for (Observer observer : observers) {
             observer.onBeforeRecordsInserted();
         }
-        int position = MyListUtils.mergeOrdered(records, newRecords);
+        int position = MyListUtils.mergeOrdered(records, newRecords, LogRecord.LEGACY_COMPARATOR);
         for (Observer observer : observers) {
             observer.onRecordsInserted(position, newRecords.size());
         }

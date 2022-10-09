@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -188,7 +187,7 @@ public final class DumpstateFileDataSource implements DataSource {
             for (ArrayList<LogRecord> value : records.values()) {
                 allRecords.addAll(value);
             }
-            Collections.sort(allRecords);
+            allRecords.sort(LogRecord.LEGACY_COMPARATOR);
 
             return new DumpstateFileDataSource(fileName, allRecords, EnumSet.allOf(Field.class), buffers,
                     pidToProcessConverter);
