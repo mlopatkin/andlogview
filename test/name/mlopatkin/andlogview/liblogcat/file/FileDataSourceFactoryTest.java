@@ -20,15 +20,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
+import name.mlopatkin.andlogview.logmodel.RecordListener;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileDataSourceFactoryTest {
     @Test(expected = UnrecognizedFormatException.class)
@@ -94,6 +102,38 @@ public class FileDataSourceFactoryTest {
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
                         Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE, Field.APP_NAME));
+    }
+
+    @Test
+    public void openDumpstateWithTimeTravel() throws Exception {
+        CharSource log = openTestData("emulator_nougat.minimized.with-time-travel.dump");
+
+        DataSource source = FileDataSourceFactory.createDataSource("time-travel.dump", log);
+
+        ArrayList<LogRecord> records = new ArrayList<>();
+        source.setLogRecordListener(new RecordListener<>() {
+            @Override
+            public void addRecord(LogRecord record) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setRecords(List<LogRecord> newRecords) {
+                records.clear();
+                records.addAll(newRecords);
+            }
+        });
+
+        var mainBuffer =
+                records.stream().filter(LogRecordPredicates.withBuffer(Buffer.MAIN)).collect(Collectors.toList());
+        var radioBuffer =
+                records.stream().filter(LogRecordPredicates.withBuffer(Buffer.RADIO)).collect(Collectors.toList());
+        var eventsBuffer =
+                records.stream().filter(LogRecordPredicates.withBuffer(Buffer.EVENTS)).collect(Collectors.toList());
+
+        Assertions.assertThat(mainBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+        Assertions.assertThat(radioBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+        Assertions.assertThat(eventsBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
     }
 
     private CharSource openTestData(String testDataName) {
