@@ -53,7 +53,7 @@ public class FileDataSourceFactoryTest {
     public void openDumpstate() throws Exception {
         CharSource dumpstateFile = openTestData("galaxy_nexus_jbmr2.minimized.dump");
 
-        DataSource dumpstate = FileDataSourceFactory.createDataSource("dumpstate.log", dumpstateFile);
+        DataSource dumpstate = FileDataSourceFactory.createDataSource("dumpstate.log", dumpstateFile).getDataSource();
         assertThat(dumpstate.getAvailableBuffers(),
                 Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.MAIN));
     }
@@ -62,7 +62,7 @@ public class FileDataSourceFactoryTest {
     public void openBrief() throws Exception {
         CharSource briefLog = openTestData("galaxy_nexus_jbmr2_brief.log");
 
-        DataSource brief = FileDataSourceFactory.createDataSource("brief.log", briefLog);
+        DataSource brief = FileDataSourceFactory.createDataSource("brief.log", briefLog).getDataSource();
         assertThat(brief.getAvailableFields(),
                 Matchers.containsInAnyOrder(Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
     }
@@ -71,7 +71,7 @@ public class FileDataSourceFactoryTest {
     public void openTime() throws Exception {
         CharSource log = openTestData("galaxy_nexus_jbmr2_time.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("time.log", log);
+        DataSource source = FileDataSourceFactory.createDataSource("time.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
     }
@@ -80,7 +80,7 @@ public class FileDataSourceFactoryTest {
     public void openThreadtime() throws Exception {
         CharSource log = openTestData("galaxy_nexus_jbmr2_threadtime.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("threadtime.log", log);
+        DataSource source = FileDataSourceFactory.createDataSource("threadtime.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
                         Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE));
@@ -90,7 +90,7 @@ public class FileDataSourceFactoryTest {
     public void openLogFileWithExtraStuffInTheBeginning() throws Exception {
         CharSource extraStuffLog = openTestData("huawei_p10_log_snippet.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("huawei.log", extraStuffLog);
+        DataSource source = FileDataSourceFactory.createDataSource("huawei.log", extraStuffLog).getDataSource();
         source.close();
     }
 
@@ -98,7 +98,7 @@ public class FileDataSourceFactoryTest {
     public void openAndroidStudioLog() throws Exception {
         CharSource log = openTestData("emulator_cupcake_android_studio.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("androidstudio.log", log);
+        DataSource source = FileDataSourceFactory.createDataSource("androidstudio.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
                         Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE, Field.APP_NAME));
@@ -108,7 +108,7 @@ public class FileDataSourceFactoryTest {
     public void openDumpstateWithTimeTravel() throws Exception {
         CharSource log = openTestData("emulator_nougat.minimized.with-time-travel.dump");
 
-        DataSource source = FileDataSourceFactory.createDataSource("time-travel.dump", log);
+        DataSource source = FileDataSourceFactory.createDataSource("time-travel.dump", log).getDataSource();
 
         ArrayList<LogRecord> records = new ArrayList<>();
         source.setLogRecordListener(new RecordListener<>() {

@@ -169,7 +169,7 @@ public final class DumpstateFileDataSource implements DataSource {
             return this;
         }
 
-        public DumpstateFileDataSource readFrom(BufferedReader in) throws IOException, UnrecognizedFormatException {
+        public ImportResult readFrom(BufferedReader in) throws IOException, UnrecognizedFormatException {
             ParserUtils.readInto(Objects.requireNonNull(pushParser), in::readLine);
 
             if (isUnparseable) {
@@ -182,8 +182,9 @@ public final class DumpstateFileDataSource implements DataSource {
             OfflineSorter sorter = new OfflineSorter();
             records.values().forEach(list -> list.forEach(sorter::add));
 
-            return new DumpstateFileDataSource(fileName, sorter.build(), EnumSet.allOf(Field.class), buffers,
-                    pidToProcessConverter);
+            return new ImportResult(
+                    new DumpstateFileDataSource(fileName, sorter.build(), EnumSet.allOf(Field.class), buffers,
+                            pidToProcessConverter));
         }
     }
 }

@@ -138,7 +138,7 @@ public class Main {
             File baseDir = fileToOpen.getAbsoluteFile().getParentFile();
             window.setRecentDir(baseDir);
             try {
-                window.setSourceAsync(FileDataSourceFactory.createDataSource(fileToOpen));
+                window.setSourceAsync(FileDataSourceFactory.createDataSource(fileToOpen).getDataSource());
             } catch (UnrecognizedFormatException e) {
                 ErrorDialogsHelper.showError(window, "Unrecognized file format for " + fileToOpen);
                 logger.error("Exception while reading the file", e);

@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
-import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.parsers.FormatSniffer;
 import name.mlopatkin.andlogview.parsers.MultiplexParser;
 import name.mlopatkin.andlogview.parsers.ReplayParser;
@@ -40,11 +39,11 @@ public class FileDataSourceFactory {
 
     private FileDataSourceFactory() {}
 
-    public static DataSource createDataSource(File file) throws UnrecognizedFormatException, IOException {
+    public static ImportResult createDataSource(File file) throws UnrecognizedFormatException, IOException {
         return createDataSource(file.getName(), Files.asCharSource(file, StandardCharsets.UTF_8));
     }
 
-    public static DataSource createDataSource(String fileName, CharSource file)
+    public static ImportResult createDataSource(String fileName, CharSource file)
             throws UnrecognizedFormatException, IOException {
         try (BufferedReader in = file.openBufferedStream()) {
             DumpstateFormatSniffer dumpstateSniffer = DumpstateParsers.detectFormat();
@@ -71,7 +70,7 @@ public class FileDataSourceFactory {
         }
     }
 
-    private static DataSource createLogFileSource(String fileName, LogcatFormatSniffer formatSniffer,
+    private static ImportResult createLogFileSource(String fileName, LogcatFormatSniffer formatSniffer,
             ReplayParser<?> replayParser, BufferedReader in)
             throws IOException {
         return new LogfileDataSource.Builder(fileName).setParserFactory(
@@ -79,7 +78,7 @@ public class FileDataSourceFactory {
                 .readFrom(in);
     }
 
-    private static DataSource createDumpstateFileSource(String fileName, DumpstateFormatSniffer formatSniffer,
+    private static ImportResult createDumpstateFileSource(String fileName, DumpstateFormatSniffer formatSniffer,
             ReplayParser<?> replayParser, BufferedReader in) throws IOException, UnrecognizedFormatException {
         return new DumpstateFileDataSource.Builder(fileName).setParserFactory(
                 h -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, h)).readFrom(in);

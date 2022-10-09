@@ -125,10 +125,10 @@ public class LogfileDataSource implements DataSource {
             return this;
         }
 
-        public LogfileDataSource readFrom(BufferedReader in) throws IOException {
+        public ImportResult readFrom(BufferedReader in) throws IOException {
             assert pushParser != null;
             ParserUtils.readInto(pushParser, in::readLine);
-            return new LogfileDataSource(fileName, pushParser.getAvailableFields(), records);
+            return new ImportResult(new LogfileDataSource(fileName, pushParser.getAvailableFields(), records));
         }
     }
 }

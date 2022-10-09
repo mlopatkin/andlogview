@@ -449,7 +449,7 @@ public class MainFrame extends JFrame {
         public void actionPerformed(ActionEvent event) {
             dependencies.getFileDialog().selectFileToOpen().ifPresent(file -> {
                 try {
-                    DataSource source = FileDataSourceFactory.createDataSource(file);
+                    DataSource source = FileDataSourceFactory.createDataSource(file).getDataSource();
                     setSource(source);
                 } catch (UnrecognizedFormatException e) {
                     logger.error("Unrecognized source file " + file, e);

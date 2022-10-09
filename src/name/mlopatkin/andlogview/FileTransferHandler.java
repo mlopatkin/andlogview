@@ -57,7 +57,7 @@ public class FileTransferHandler extends TransferHandler {
             logger.debug("Start importing " + file);
             DataSource source;
             try {
-                source = FileDataSourceFactory.createDataSource(file);
+                source = FileDataSourceFactory.createDataSource(file).getDataSource();
                 frame.setSource(source);
             } catch (UnrecognizedFormatException e) {
                 ErrorDialogsHelper.showError(frame, "Unrecognized file format for " + file);
