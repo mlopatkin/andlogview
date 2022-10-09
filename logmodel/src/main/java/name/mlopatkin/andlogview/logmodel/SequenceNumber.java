@@ -16,6 +16,15 @@
 
 package name.mlopatkin.andlogview.logmodel;
 
+import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+
+import com.google.common.base.Preconditions;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Objects;
+
 /**
  * A sequence number of the log record. Log records produced by logcat have a strict writing order which is unrelated to
  * the timestamps. Timestamps can be affected by time adjustments or, in case of MM-DD timestamp, a New Year. The
@@ -28,13 +37,36 @@ package name.mlopatkin.andlogview.logmodel;
  */
 public class SequenceNumber implements Comparable<SequenceNumber> {
     private final int seqNo;
+    private final @Nullable Buffer buffer;
 
-    SequenceNumber(int seqNo) {
+    SequenceNumber(int seqNo, @Nullable Buffer buffer) {
         this.seqNo = seqNo;
+        this.buffer = buffer;
     }
 
     @Override
-    public int compareTo(SequenceNumber o) {
+    public int compareTo(@NonNull SequenceNumber o) {
+        Preconditions.checkArgument(isComparableTo(o), "Comparing non-comparable sequence numbers");
         return Integer.compare(seqNo, o.seqNo);
+    }
+
+    public boolean isComparableTo(SequenceNumber o) {
+        return Objects.equals(buffer, o.buffer);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof SequenceNumber that) {
+            return seqNo == that.seqNo && buffer == that.buffer;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(seqNo, buffer);
     }
 }

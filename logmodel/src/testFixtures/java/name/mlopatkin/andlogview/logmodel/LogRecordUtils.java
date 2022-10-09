@@ -20,15 +20,25 @@ import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import static name.mlopatkin.andlogview.logmodel.LogRecord.NO_ID;
 import static name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 
+import java.text.ParseException;
+
 /**
  * Some factory methods to construct log records for tests.
  */
 public final class LogRecordUtils {
     // A record without any fields set to anything meaningful, used as a baseline for more specialized records.
     private static final LogRecord DEFAULT_RECORD =
-            new LogRecord(new SequenceNumber(-1), null, NO_ID, NO_ID, null, Priority.LOWEST, "", "", null);
+            new LogRecord(new SequenceNumber(-1, null), null, NO_ID, NO_ID, null, Priority.LOWEST, "", "", null);
 
     private LogRecordUtils() {}
+
+    public static LogRecord forTimestamp(String timestamp) {
+        try {
+            return DEFAULT_RECORD.withTimestamp(TimeFormatUtils.getTimeFromString(timestamp));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
 
     public static LogRecord forPid(int pid) {
         return DEFAULT_RECORD.withPid(pid);

@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
-    `java-test-fixtures`
-}
+package name.mlopatkin.andlogview.logmodel;
 
-dependencies {
-    implementation(project(":base"))
-    implementation(libs.guava)
+import name.mlopatkin.andlogview.test.AdaptingMatcher;
 
-    testFixturesApi(libs.test.assertj)
-    testFixturesApi(libs.test.hamcrest.hamcrest)
-    testFixturesImplementation(project(":base"))
-    testFixturesImplementation(testFixtures(project(":base")))
-    testFixturesImplementation(libs.checkerframeworkAnnotations)
-    testFixturesImplementation(libs.guava)
-    testFixturesImplementation(libs.test.junit4)
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
-    testImplementation(testFixtures(project(":base")))
+public class LogRecordMatchers {
+
+    public static Matcher<LogRecord> hasMessage(Matcher<? super String> msgMatcher) {
+        return new AdaptingMatcher<>("message", LogRecord::getMessage, msgMatcher);
+    }
+
+    public static Matcher<LogRecord> hasMessage(String message) {
+        return hasMessage(Matchers.is(message));
+    }
 }

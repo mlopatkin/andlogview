@@ -43,13 +43,13 @@ public class LogRecordFactory {
     public LogRecord create(
             Timestamp timestamp, int pid, int tid, @Nullable String appName, Priority priority, String tag,
             String message) {
-        return new LogRecord(new SequenceNumber(seqNo.incrementAndGet()), timestamp, pid, tid, appName, priority, tag,
-                message, buffer);
+        return new LogRecord(new SequenceNumber(seqNo.incrementAndGet(), buffer), timestamp, pid, tid, appName,
+                priority, tag, message, buffer);
     }
 
     public LogRecord create(
             int pid, int tid, @Nullable String appName, Priority priority, String tag, String message) {
-        return new LogRecord(new SequenceNumber(seqNo.incrementAndGet()), /* timestamp */null, pid, tid, appName,
-                priority, tag, message, buffer);
+        return new LogRecord(new SequenceNumber(seqNo.incrementAndGet(), buffer), /* timestamp */null, pid, tid,
+                appName, priority, tag, message, buffer);
     }
 }

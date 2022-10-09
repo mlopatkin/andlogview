@@ -168,6 +168,17 @@ public class LogRecord {
     }
 
     /**
+     * Returns a copy of this record with sequence number changed to the integer value.
+     *
+     * @param seqNo the new sequence number
+     * @return the new record
+     */
+    public LogRecord withSequenceNumber(int seqNo) {
+        return new LogRecord(new SequenceNumber(seqNo, buffer), time, pid, tid, appName, priority, tag, message,
+                buffer);
+    }
+
+    /**
      * Returns a copy of this record with timestamp set to the given timestamp.
      *
      * @param timestamp the new timestamp

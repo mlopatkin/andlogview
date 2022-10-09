@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.RecordListener;
 import name.mlopatkin.andlogview.logmodel.SourceMetadata;
+import name.mlopatkin.andlogview.logmodel.order.OfflineSorter;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.ParserUtils;
 import name.mlopatkin.andlogview.parsers.PushParser;
@@ -178,18 +179,10 @@ public final class DumpstateFileDataSource implements DataSource {
             EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
             buffers.addAll(records.keySet());
 
-            int totalRecordCount = 0;
-            for (ArrayList<LogRecord> value : records.values()) {
-                totalRecordCount += value.size();
-            }
+            OfflineSorter sorter = new OfflineSorter();
+            records.values().forEach(list -> list.forEach(sorter::add));
 
-            ArrayList<LogRecord> allRecords = new ArrayList<>(totalRecordCount);
-            for (ArrayList<LogRecord> value : records.values()) {
-                allRecords.addAll(value);
-            }
-            allRecords.sort(LogRecord.LEGACY_COMPARATOR);
-
-            return new DumpstateFileDataSource(fileName, allRecords, EnumSet.allOf(Field.class), buffers,
+            return new DumpstateFileDataSource(fileName, sorter.build(), EnumSet.allOf(Field.class), buffers,
                     pidToProcessConverter);
         }
     }
