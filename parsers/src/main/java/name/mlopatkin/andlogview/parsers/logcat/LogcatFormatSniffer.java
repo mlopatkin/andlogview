@@ -36,12 +36,8 @@ public class LogcatFormatSniffer implements BasePushParser, FormatSniffer<Logcat
     private @Nullable Format detectedFormat;
 
     LogcatFormatSniffer(List<Format> candidates) {
-        this(SniffingHandler.NO_LIMIT, candidates);
-    }
-
-    LogcatFormatSniffer(int lookaheadLimit, List<Format> candidates) {
         parser = new MultiplexParser<>(candidates.stream()
-                .map(format -> new LogcatPushParser<SniffingHandler>(format, new SniffingHandler(lookaheadLimit) {
+                .map(format -> new LogcatPushParser<SniffingHandler>(format, new SniffingHandler() {
                     @Override
                     public ParserControl logRecord() {
                         if (detectedFormat == null

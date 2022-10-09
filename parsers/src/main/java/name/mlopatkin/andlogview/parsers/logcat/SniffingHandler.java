@@ -19,20 +19,7 @@ package name.mlopatkin.andlogview.parsers.logcat;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
 class SniffingHandler implements LogcatParseEventsHandler {
-    public static final int NO_LIMIT = Integer.MAX_VALUE;
-
-    private final int lookaheadLimit;
-
-    private int linesConsumed;
     private boolean parsed;
-
-    public SniffingHandler() {
-        this(NO_LIMIT);
-    }
-
-    public SniffingHandler(int lookaheadLimit) {
-        this.lookaheadLimit = lookaheadLimit;
-    }
 
     @Override
     public final ParserControl logRecord(String message) {
@@ -42,23 +29,6 @@ class SniffingHandler implements LogcatParseEventsHandler {
     protected ParserControl logRecord() {
         parsed = true;
         return ParserControl.stop();
-    }
-
-    @Override
-    public ParserControl lineConsumed() {
-        ++linesConsumed;
-        if (linesConsumed > lookaheadLimit) {
-            return ParserControl.stop();
-        }
-        return ParserControl.proceed();
-    }
-
-    @Override
-    public ParserControl unparseableLine(CharSequence line) {
-        if (linesConsumed >= lookaheadLimit) {
-            return ParserControl.stop();
-        }
-        return ParserControl.proceed();
     }
 
     public boolean hasParsed() {

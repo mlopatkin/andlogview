@@ -24,20 +24,51 @@ import java.util.List;
  * some other parser. The primary use case is format autodetect where you want to process some lines to determine
  * the format and then perform the actual parsing.
  *
- * @param <T> the type of the delegate parser.
+ * @param <T> the type of the delegate parser
  */
 public class ReplayParser<T extends BasePushParser> implements BasePushParser {
+    private static final long NO_LIMIT = Integer.MAX_VALUE + 1L;
+
     private final List<CharSequence> replayBuffer = new ArrayList<>();
+    private final long replayLimit;
     private final T delegate;
 
+    /**
+     * Creates an instance of the replay parser with limited replay buffer. When the buffer grows to the limit, no new
+     * lines are accepted or forwarded to the delegate.
+     *
+     * @param replayLimit the maximal number of lines stored in the replay buffer
+     * @param delegate the delegate parser
+     */
+    public ReplayParser(int replayLimit, T delegate) {
+        this((long) replayLimit, delegate);
+    }
+
+    /**
+     * Creates an instance of the replay parser with unlimited replay buffer.
+     *
+     * @param delegate the delegate parser
+     */
     public ReplayParser(T delegate) {
+        this(NO_LIMIT, delegate);
+    }
+
+    private ReplayParser(long replayLimit, T delegate) {
+        this.replayLimit = replayLimit;
         this.delegate = delegate;
     }
 
     @Override
     public boolean nextLine(CharSequence line) {
-        replayBuffer.add(line);
-        return delegate.nextLine(line);
+        if (hasMoreRoom()) {
+            replayBuffer.add(line);
+            return delegate.nextLine(line) && hasMoreRoom();
+        }
+        return false;
+    }
+
+    private boolean hasMoreRoom() {
+        return replayBuffer.size() < replayLimit;
     }
 
     /**

@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class FileDataSourceFactory {
+    private static final int MAX_LOOKAHEAD_LINES = 100;
+
     private FileDataSourceFactory() {}
 
     public static DataSource createDataSource(File file) throws UnrecognizedFormatException, IOException {
@@ -45,8 +47,8 @@ public class FileDataSourceFactory {
             DumpstateFormatSniffer dumpstateSniffer = DumpstateParsers.detectFormat();
             LogcatFormatSniffer logcatSniffer = LogcatParsers.detectFormat();
 
-            try (ReplayParser<MultiplexParser<?>> parser =
-                    new ReplayParser<>(new MultiplexParser<>(dumpstateSniffer, logcatSniffer))) {
+            try (var parser = new ReplayParser<>(
+                    MAX_LOOKAHEAD_LINES, new MultiplexParser<>(dumpstateSniffer, logcatSniffer))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     boolean parserStopped = !parser.nextLine(line);

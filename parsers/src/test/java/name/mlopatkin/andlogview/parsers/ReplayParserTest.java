@@ -20,17 +20,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 
 class ReplayParserTest {
 
     @Test
     void replayParserForwardsInputToDelegate() {
-        BasePushParser delegate = createMockParser();
+        var delegate = createMockParser();
         try (ReplayParser<BasePushParser> r = new ReplayParser<>(delegate)) {
             r.nextLine("1");
             r.nextLine("2");
@@ -44,8 +48,8 @@ class ReplayParserTest {
 
     @Test
     void replayingForwardsInputToTheArgument() {
-        try (BasePushParser target = createMockParser()) {
-            try (ReplayParser<BasePushParser> r = new ReplayParser<>(createMockParser())) {
+        try (var target = createMockParser()) {
+            try (var r = new ReplayParser<>(createMockParser())) {
                 r.nextLine("1");
                 r.nextLine("2");
                 r.replayInto(target);
@@ -58,13 +62,11 @@ class ReplayParserTest {
 
     @Test
     void cannotReplayAfterClosing() {
-        try (BasePushParser target = createMockParser()) {
-            ReplayParser<BasePushParser> r = new ReplayParser<>(createMockParser());
-            try {
+        try (var target = createMockParser()) {
+            var r = new ReplayParser<>(createMockParser());
+            try (r) {
                 r.nextLine("1");
                 r.nextLine("2");
-            } finally {
-                r.close();
             }
 
             r.replayInto(target);
@@ -74,9 +76,9 @@ class ReplayParserTest {
 
     @Test
     void replayStopsWhenTargetStops() {
-        try (BasePushParser target = createMockParser()) {
+        try (var target = createMockParser()) {
             when(target.nextLine(any())).thenReturn(true, false);
-            try (ReplayParser<BasePushParser> r = new ReplayParser<>(createMockParser())) {
+            try (var r = new ReplayParser<>(createMockParser())) {
                 r.nextLine("1");
                 r.nextLine("2");
                 r.nextLine("3");
@@ -89,9 +91,26 @@ class ReplayParserTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2})
+    void replayStopsAfterHittingLimit(int replayLimit) {
+        try (var target = createMockParser(); var r = new ReplayParser<>(replayLimit, target)) {
+            for (int i = 1; i < replayLimit; ++i) {
+                assertThat(r.nextLine("line " + i)).as("line %s should be consumed", i).isTrue();
+
+                verify(target).nextLine("line " + i);
+            }
+
+            assertThat(r.nextLine("line " + replayLimit)).as("should stop after last line").isFalse();
+            verify(target).nextLine("line " + replayLimit);
+
+            assertThat(r.nextLine("line " + (replayLimit + 1))).as("no lines consumed after hitting limit").isFalse();
+            verify(target, never()).nextLine("line " + (replayLimit + 1));
+        }
+    }
 
     private BasePushParser createMockParser() {
-        BasePushParser parser = mock(BasePushParser.class);
+        var parser = mock(BasePushParser.class);
         when(parser.nextLine(any())).thenReturn(true);
         return parser;
     }

@@ -26,8 +26,10 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 class LogcatSectionHandler implements SectionHandler {
+    private static final int MAX_LOOKAHEAD_LINES = 128;
+
     private final ReplayParser<LogcatFormatSniffer> replayParser =
-            new ReplayParser<>(LogcatParsers.detectFormat());
+            new ReplayParser<>(MAX_LOOKAHEAD_LINES, LogcatParsers.detectFormat());
     private final LogRecord.Buffer buffer;
     private final DumpstateParseEventsHandler eventsHandler;
     private @Nullable LogcatPushParser<?> delegate;
