@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Optional;
 
 class LogcatSectionHandlerTest {
+    private static final String THREADTIME_LOGCAT_LINE =
+            "09-11 12:52:56.962   188   188 I lowmemorykiller: Using psi monitors for memory pressure detection";
 
     @Test
     void emptyLogcatSectionFinishedWithProceed() {
@@ -95,6 +97,7 @@ class LogcatSectionHandlerTest {
         var handler = createHandler(eventsHandler);
 
         handler.nextLine(logcatLine);
+        handler.end();
 
         verify(eventsHandler, only()).logcatSectionBegin(LogRecord.Buffer.MAIN);
     }
@@ -108,6 +111,7 @@ class LogcatSectionHandlerTest {
         handler.nextLine("Garbage");
         handler.nextLine(logcatLine);
         handler.nextLine("Garbage");
+        handler.end();
 
         verify(eventsHandler, never()).unparseableLogcatSection();
     }
@@ -119,6 +123,7 @@ class LogcatSectionHandlerTest {
         var handler = createHandler(createEventsHandler(logcatHandler));
 
         handler.nextLine(logcatLine);
+        handler.end();
 
         assertThat(logcatHandler.getCollectedRecords())
                 .hasSize(1)
@@ -129,8 +134,33 @@ class LogcatSectionHandlerTest {
                 );
     }
 
+    @Test
+    void logcatSectionIsUnparseableIfLookaheadLimitIsExhausted() {
+        var eventsHandler = createEventsHandler(createLogcatEventsHandler());
+        var handler = createHandlerWithLookaheadLimit(eventsHandler);
+
+        assertThat(handler.nextLine("Garbage")).shouldSkip();
+        handler.end();
+
+        verify(eventsHandler, only()).unparseableLogcatSection();
+    }
+
+    @Test
+    void logcatSectionIsParseableIfLookaheadLimitIsHitButFormatDetected() {
+        var eventsHandler = createEventsHandler(createLogcatEventsHandler());
+        var handler = createHandlerWithLookaheadLimit(eventsHandler);
+
+        assertThat(handler.nextLine(THREADTIME_LOGCAT_LINE)).shouldProceed();
+
+        verify(eventsHandler, only()).logcatSectionBegin(LogRecord.Buffer.MAIN);
+    }
+
     private LogcatSectionHandler createHandler(DumpstateParseEventsHandler eventsHandler) {
         return new LogcatSectionHandler(LogRecord.Buffer.MAIN, eventsHandler);
+    }
+
+    private LogcatSectionHandler createHandlerWithLookaheadLimit(DumpstateParseEventsHandler eventsHandler) {
+        return new LogcatSectionHandler(1, LogRecord.Buffer.MAIN, eventsHandler);
     }
 
     private DumpstateParseEventsHandler createEventsHandler() {
@@ -156,8 +186,8 @@ class LogcatSectionHandlerTest {
                 "I/lowmemorykiller(  188): Using psi monitors for memory pressure detection",
                 "I(  188) Using psi monitors for memory pressure detection  (lowmemorykiller)",
                 "I/lowmemorykiller: Using psi monitors for memory pressure detection",
-                "09-11 12:52:56.962   188   188 I lowmemorykiller: Using psi monitors for memory pressure detection",
-                "09-11 12:52:56.962 I/lowmemorykiller(  188): Using psi monitors for memory pressure detection"
+                "09-11 12:52:56.962 I/lowmemorykiller(  188): Using psi monitors for memory pressure detection",
+                THREADTIME_LOGCAT_LINE
         );
     }
 }

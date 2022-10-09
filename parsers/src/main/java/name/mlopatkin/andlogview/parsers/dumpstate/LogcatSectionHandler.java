@@ -23,19 +23,25 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatFormatSniffer;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
+import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 class LogcatSectionHandler implements SectionHandler {
+    private static final Logger logger = Logger.getLogger(LogcatSectionHandler.class);
     private static final int MAX_LOOKAHEAD_LINES = 128;
 
-    private final ReplayParser<LogcatFormatSniffer> replayParser =
-            new ReplayParser<>(MAX_LOOKAHEAD_LINES, LogcatParsers.detectFormat());
+    private final ReplayParser<LogcatFormatSniffer> replayParser;
     private final LogRecord.Buffer buffer;
     private final DumpstateParseEventsHandler eventsHandler;
     private @Nullable LogcatPushParser<?> delegate;
     private boolean isSectionEmpty = true;
 
     public LogcatSectionHandler(LogRecord.Buffer buffer, DumpstateParseEventsHandler eventsHandler) {
+        this(MAX_LOOKAHEAD_LINES, buffer, eventsHandler);
+    }
+
+    LogcatSectionHandler(int maxLookAheadLines, LogRecord.Buffer buffer, DumpstateParseEventsHandler eventsHandler) {
+        this.replayParser = new ReplayParser<>(maxLookAheadLines, LogcatParsers.detectFormat());
         this.buffer = buffer;
         this.eventsHandler = eventsHandler;
     }
@@ -52,11 +58,12 @@ class LogcatSectionHandler implements SectionHandler {
             LogcatFormatSniffer formatSniffer = replayParser.getDelegate();
             if (formatSniffer.isFormatDetected()) {
                 boolean shouldProceed = eventsHandler.logcatSectionBegin(buffer).map(h -> {
+                    logger.debug("Detected format " + formatSniffer.getDetectedFormatDescription() + " for " + buffer);
                     delegate = formatSniffer.createParser(h);
                     boolean replayResult = replayParser.replayInto(delegate);
-                    replayParser.close();
                     return replayResult;
                 }).orElse(false);
+                replayParser.close();
                 return shouldProceed ? SectionParserControl.proceed() : SectionParserControl.skipSection();
             } else {
                 return SectionParserControl.skipSection();

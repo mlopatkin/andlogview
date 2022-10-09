@@ -34,7 +34,7 @@ interface SectionHandler {
     }
 
     /**
-     * Called when the section ends. Doesn't get called when the section is skipped.
+     * Called when the section ends.
      *
      * @return {@linkplain ParserControl} instance to determine next parser action
      */

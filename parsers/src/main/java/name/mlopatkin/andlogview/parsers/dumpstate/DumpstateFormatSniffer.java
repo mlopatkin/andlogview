@@ -43,6 +43,11 @@ public class DumpstateFormatSniffer implements BasePushParser, FormatSniffer<Dum
     }
 
     @Override
+    public String getDetectedFormatDescription() {
+        return isFormatDetected() ? "dumpstate file" : "not detected yet";
+    }
+
+    @Override
     public <H extends DumpstateParseEventsHandler> PushParser<H> createParser(H eventsHandler) {
         return new DumpstatePushParser<>(eventsHandler);
     }

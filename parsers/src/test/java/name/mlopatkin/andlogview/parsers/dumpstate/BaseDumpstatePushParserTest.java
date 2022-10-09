@@ -364,6 +364,78 @@ class BaseDumpstatePushParserTest {
 
         var order = inOrder(handler, sectionHandler);
         order.verify(sectionHandler).nextLine("procrank line");
+        order.verify(sectionHandler).end();
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void sectionHandlerEndCannotResumeParsing() {
+        var sectionHandler = createSectionHandler();
+        var handler = createHandler();
+        when(handler.sectionStarted("PROCRANK")).thenReturn(DumpstateParserControl.handleWith(sectionHandler));
+        when(sectionHandler.nextLine(any())).thenReturn(SectionParserControl.stop());
+        when(sectionHandler.end()).thenReturn(ParserControl.proceed());
+
+        boolean result;
+        try (var parser = createParser(handler)) {
+            result = ParserUtils.readInto(parser, linesWithHeader("""
+                    ------ PROCRANK ------
+                    procrank line
+                    other procrank line
+                    """));
+        }
+
+        assertThat(result).isFalse();
+
+        var order = inOrder(handler, sectionHandler);
+        order.verify(sectionHandler).nextLine("procrank line");
+        order.verify(sectionHandler).end();
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void sectionHandlerEndCanAbortParsing() {
+        var sectionHandler = createSectionHandler();
+        var handler = createHandler();
+        when(handler.sectionStarted("PROCRANK")).thenReturn(DumpstateParserControl.handleWith(sectionHandler));
+        when(sectionHandler.end()).thenReturn(ParserControl.stop());
+
+        boolean result;
+        try (var parser = createParser(handler)) {
+            result = ParserUtils.readInto(parser, linesWithHeader("""
+                    ------ PROCRANK ------
+                    procrank line
+                    ------ OTHER ------
+                    """));
+        }
+
+        assertThat(result).isFalse();
+
+        verify(handler, never()).sectionStarted("OTHER");
+    }
+
+    @Test
+    void sectionHandlerEndCanAbortAfterSkip() {
+        var sectionHandler = createSectionHandler();
+        var handler = createHandler();
+        when(handler.sectionStarted("PROCRANK")).thenReturn(DumpstateParserControl.handleWith(sectionHandler));
+        when(sectionHandler.nextLine(any())).thenReturn(SectionParserControl.skipSection());
+        when(sectionHandler.end()).thenReturn(ParserControl.stop());
+
+        boolean result;
+        try (var parser = createParser(handler)) {
+            result = ParserUtils.readInto(parser, linesWithHeader("""
+                    ------ PROCRANK ------
+                    procrank line
+                    other procrank line
+                    """));
+        }
+
+        assertThat(result).isFalse();
+
+        var order = inOrder(handler, sectionHandler);
+        order.verify(sectionHandler).nextLine("procrank line");
+        order.verify(sectionHandler).end();
         order.verifyNoMoreInteractions();
     }
 
@@ -388,7 +460,7 @@ class BaseDumpstatePushParserTest {
         return new BaseDumpstatePushParser<>(handler);
     }
 
-    private static Stream<String> linesWithHeader(String s) {
+    static Stream<String> linesWithHeader(String s) {
         return Stream.concat(header(), lines(s));
     }
 

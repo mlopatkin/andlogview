@@ -22,6 +22,7 @@ dependencies {
     api(project(":logmodel"))
     implementation(project(":base"))
     implementation(libs.guava)
+    implementation(libs.log4j)
 
     testImplementation(project(":device"))
     testImplementation(testFixtures(project(":logmodel")))

@@ -16,9 +16,43 @@
 
 package name.mlopatkin.andlogview.parsers.dumpstate;
 
+import static name.mlopatkin.andlogview.parsers.dumpstate.BaseDumpstatePushParserTest.linesWithHeader;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import name.mlopatkin.andlogview.parsers.ParserControl;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
 /*
  * Integration tests for the dumpstate push parser.
  */
 class DumpstatePushParserTest {
+    @Test
+    void unparseableLogcatSectionIsReported() {
+        var eventsHandler = createHandler();
+        try (var parser = new DumpstatePushParser<>(eventsHandler)) {
+            ParserUtils.readInto(parser, linesWithHeader("""
+                    ------ SYSTEM LOG (logcat -v threadtime -v printable -v uid -d *:v) ------
+                    Unrecognizable line 1
+                    Unrecognizable line 2"""));
+        }
 
+        verify(eventsHandler).unparseableLogcatSection();
+    }
+
+
+    private DumpstateParseEventsHandler createHandler() {
+        var handler = mock(DumpstateParseEventsHandler.class);
+        when(handler.psSectionBegin()).thenReturn(Optional.empty());
+        when(handler.logcatSectionBegin(any())).thenReturn(Optional.empty());
+        when(handler.unparseableLogcatSection()).thenReturn(ParserControl.proceed());
+        return handler;
+    }
 }

@@ -187,8 +187,6 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
         if (parserControl.shouldProceed()) {
             return true;
         }
-        // Section parsing is aborted, drop the handler without invoking endSection() callback.
-        sectionHandler = null;
         shouldStop |= parserControl.shouldStop();
         return false;
     }

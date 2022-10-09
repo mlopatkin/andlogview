@@ -33,6 +33,13 @@ public interface FormatSniffer<H extends PushParser.ParseEventsHandler> {
     boolean isFormatDetected();
 
     /**
+     * Returns a string description of the detected format or readable explanation that format is not detected.
+     *
+     * @return the string description of the detected format
+     */
+    String getDetectedFormatDescription();
+
+    /**
      * Creates a parser capable of handling the detected format, with the given handler
      *
      * @param handler the format handler for parser to feed
@@ -49,9 +56,9 @@ public interface FormatSniffer<H extends PushParser.ParseEventsHandler> {
      * @param r the replay parser used to capture the input when sniffing
      * @param factory the factory method to create the parser
      * @param handler the handler to for the newly created parser to feed
-     * @return the push parser
      * @param <H> the actual type of handler
      * @param <V> the actual type of the returned push parser
+     * @return the push parser
      */
     static <H extends PushParser.ParseEventsHandler, V extends PushParser<H>> V createAndReplay(
             ReplayParser<?> r, Function<H, V> factory, H handler) {

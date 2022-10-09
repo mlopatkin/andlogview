@@ -27,12 +27,15 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class FileDataSourceFactory {
+    private static final Logger logger = Logger.getLogger(FileDataSourceFactory.class);
     private static final int MAX_LOOKAHEAD_LINES = 100;
 
     private FileDataSourceFactory() {}
@@ -53,8 +56,10 @@ public class FileDataSourceFactory {
                 while ((line = in.readLine()) != null) {
                     boolean parserStopped = !parser.nextLine(line);
                     if (dumpstateSniffer.isFormatDetected()) {
+                        logger.debug("Recognized " + fileName + " as a dumpstate file");
                         return createDumpstateFileSource(fileName, dumpstateSniffer, parser, in);
                     } else if (logcatSniffer.isFormatDetected()) {
+                        logger.debug("Recognized " + fileName + " as a logcat file");
                         return createLogFileSource(fileName, logcatSniffer, parser, in);
                     }
                     if (parserStopped) {
@@ -75,7 +80,7 @@ public class FileDataSourceFactory {
     }
 
     private static DataSource createDumpstateFileSource(String fileName, DumpstateFormatSniffer formatSniffer,
-            ReplayParser<?> replayParser, BufferedReader in) throws IOException {
+            ReplayParser<?> replayParser, BufferedReader in) throws IOException, UnrecognizedFormatException {
         return new DumpstateFileDataSource.Builder(fileName).setParserFactory(
                 h -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, h)).readFrom(in);
     }

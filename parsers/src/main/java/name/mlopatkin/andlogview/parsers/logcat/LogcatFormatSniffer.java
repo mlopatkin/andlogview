@@ -56,6 +56,11 @@ public class LogcatFormatSniffer implements BasePushParser, FormatSniffer<Logcat
     }
 
     @Override
+    public String getDetectedFormatDescription() {
+        return detectedFormat != null ? detectedFormat.toString() : "not detected yet";
+    }
+
+    @Override
     public <H extends LogcatParseEventsHandler> LogcatPushParser<H> createParser(H eventsHandler) {
         Preconditions.checkState(detectedFormat != null, "The format is not yet detected");
         // NullAway cannot infer detectedFormat != null from the checkState

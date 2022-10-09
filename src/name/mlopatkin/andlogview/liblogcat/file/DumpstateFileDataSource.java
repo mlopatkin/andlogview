@@ -117,6 +117,7 @@ public final class DumpstateFileDataSource implements DataSource {
         private @Nullable PushParser<?> pushParser;
         private final Map<Buffer, ArrayList<LogRecord>> records = new EnumMap<>(Buffer.class);
         private final Map<Integer, String> pidToProcessConverter = new HashMap<>();
+        private boolean isUnparseable;
 
         public Builder(String fileName) {
             this.fileName = fileName;
@@ -158,12 +159,22 @@ public final class DumpstateFileDataSource implements DataSource {
                         }
                     });
                 }
+
+                @Override
+                public ParserControl unparseableLogcatSection() {
+                    isUnparseable = true;
+                    return ParserControl.stop();
+                }
             });
             return this;
         }
 
-        public DumpstateFileDataSource readFrom(BufferedReader in) throws IOException {
+        public DumpstateFileDataSource readFrom(BufferedReader in) throws IOException, UnrecognizedFormatException {
             ParserUtils.readInto(Objects.requireNonNull(pushParser), in::readLine);
+
+            if (isUnparseable) {
+                throw new UnrecognizedFormatException("Cannot load dumpstate file, logcat format is unparseable");
+            }
 
             EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
             buffers.addAll(records.keySet());
