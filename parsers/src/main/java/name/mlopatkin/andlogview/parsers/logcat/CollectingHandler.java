@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
+import name.mlopatkin.andlogview.logmodel.LogRecordFactory;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
@@ -37,39 +38,41 @@ import java.util.function.IntFunction;
 public abstract class CollectingHandler implements LogcatParseEventsHandler {
     private static final @Nullable String NO_APP_NAME = null;
 
-    private final @Nullable Buffer buffer;
+    private final LogRecordFactory logRecordFactory;
     private final IntFunction<String> appNameLookup;
 
     public CollectingHandler() {
-        this(null, id -> NO_APP_NAME);
+        this(new LogRecordFactory(), id -> NO_APP_NAME);
     }
 
     public CollectingHandler(IntFunction<String> appNameLookup) {
-        this(null, appNameLookup);
+        this(new LogRecordFactory(), appNameLookup);
     }
 
     public CollectingHandler(Buffer buffer) {
         this(buffer, id -> NO_APP_NAME);
     }
 
-    public CollectingHandler(@Nullable Buffer buffer, IntFunction<String> appNameLookup) {
-        this.buffer = buffer;
+    public CollectingHandler(Buffer buffer, IntFunction<String> appNameLookup) {
+        this(new LogRecordFactory(buffer), appNameLookup);
+    }
+
+    private CollectingHandler(LogRecordFactory logRecordFactory, IntFunction<String> appNameLookup) {
+        this.logRecordFactory = logRecordFactory;
         this.appNameLookup = appNameLookup;
     }
 
     @Override
     public ParserControl logRecord(int pid, LogRecord.Priority priority, String tag, String message) {
         return logRecord(
-                LogRecord.createWithoutTimestamp(
-                        pid, LogRecord.NO_ID, lookupAppByPid(pid), priority, tag, message, buffer));
+                logRecordFactory.create(pid, LogRecord.NO_ID, lookupAppByPid(pid), priority, tag, message));
     }
 
     @Override
     public ParserControl logRecord(Timestamp timestamp, int pid, int tid, LogRecord.Priority priority, String tag,
             String message) {
         return logRecord(
-                LogRecord.createWithTimestamp(
-                        timestamp, pid, tid, lookupAppByPid(pid), priority, tag, message, buffer));
+                logRecordFactory.create(timestamp, pid, tid, lookupAppByPid(pid), priority, tag, message));
     }
 
     @Override
@@ -78,36 +81,33 @@ public abstract class CollectingHandler implements LogcatParseEventsHandler {
         if (Objects.equals(NO_APP_NAME, appName)) {
             appName = lookupAppByPid(pid);
         }
-        return logRecord(
-                LogRecord.createWithTimestamp(timestamp, pid, tid, appName, priority, tag, message, buffer));
+        return logRecord(logRecordFactory.create(timestamp, pid, tid, appName, priority, tag, message));
     }
 
     @Override
     public ParserControl logRecord(String message) {
         return logRecord(
-                LogRecord.createWithoutTimestamp(
-                        LogRecord.NO_ID, LogRecord.NO_ID, NO_APP_NAME, LogRecord.Priority.INFO, "", message, buffer));
+                logRecordFactory.create(
+                        LogRecord.NO_ID, LogRecord.NO_ID, NO_APP_NAME, LogRecord.Priority.INFO, "", message));
     }
 
     @Override
     public ParserControl logRecord(LogRecord.Priority priority, String tag, String message) {
         return logRecord(
-                LogRecord.createWithoutTimestamp(
-                        LogRecord.NO_ID, LogRecord.NO_ID, NO_APP_NAME, priority, tag, message, buffer));
+                logRecordFactory.create(LogRecord.NO_ID, LogRecord.NO_ID, NO_APP_NAME, priority, tag, message));
     }
 
     @Override
     public ParserControl logRecord(int pid, int tid, LogRecord.Priority priority, String message) {
         return logRecord(
-                LogRecord.createWithoutTimestamp(pid, tid, lookupAppByPid(pid), priority, "", message, buffer));
+                logRecordFactory.create(pid, tid, lookupAppByPid(pid), priority, "", message));
     }
 
     @Override
     public ParserControl logRecord(Timestamp timestamp, int pid, LogRecord.Priority priority, String tag,
             String message) {
         return logRecord(
-                LogRecord.createWithTimestamp(
-                        timestamp, pid, LogRecord.NO_ID, lookupAppByPid(pid), priority, tag, message, buffer));
+                logRecordFactory.create(timestamp, pid, LogRecord.NO_ID, lookupAppByPid(pid), priority, tag, message));
     }
 
     protected abstract ParserControl logRecord(LogRecord record);

@@ -16,6 +16,8 @@
 
 plugins {
     id("name.mlopatkin.andlogview.building.java-library-conventions")
+
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -24,6 +26,9 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.log4j)
 
+    testFixturesImplementation(libs.guava)
+
     testImplementation(project(":device"))
     testImplementation(testFixtures(project(":logmodel")))
+
 }

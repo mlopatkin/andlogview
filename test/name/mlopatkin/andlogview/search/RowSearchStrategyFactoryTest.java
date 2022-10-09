@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -26,7 +27,7 @@ public class RowSearchStrategyFactoryTest {
     private LogRecord system;
 
     private static LogRecord makeRecord(String tag, String app, String msg) {
-        return LogRecord.createWithoutTimestamp(-1, -1, app, LogRecord.Priority.FATAL, tag, msg);
+        return LogRecordUtils.forMessage(msg).withTag(tag).withAppName(app);
     }
 
     @Before

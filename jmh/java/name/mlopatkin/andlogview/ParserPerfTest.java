@@ -17,12 +17,9 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.jmh.BenchmarkResources;
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.logmodel.Timestamp;
-import name.mlopatkin.andlogview.parsers.ParserControl;
-import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
+import name.mlopatkin.andlogview.parsers.logcat.ListCollectingHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
-import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
 import com.google.common.collect.ImmutableList;
 
@@ -40,8 +37,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -56,32 +51,6 @@ public class ParserPerfTest {
 
     private @MonotonicNonNull ImmutableList<String> lines;
 
-    private static class Collector implements LogcatParseEventsHandler {
-        private final List<LogRecord> parsedRecords = new ArrayList<>();
-
-        @Override
-        public ParserControl logRecord(String message) {
-            return logcatEntryCompleted(
-                    LogRecord.createWithoutTimestamp(-1, -1, null, LogRecord.Priority.INFO, "", message));
-        }
-
-        @Override
-        public ParserControl logRecord(Timestamp timestamp, int pid, int tid, LogRecord.Priority priority, String tag,
-                String message) {
-            return logcatEntryCompleted(
-                    LogRecord.createWithTimestamp(timestamp, pid, tid, null, priority, tag, message));
-        }
-
-        private ParserControl logcatEntryCompleted(LogRecord record) {
-            parsedRecords.add(record);
-            return ParserControl.proceed();
-        }
-
-        public List<LogRecord> getParsedRecords() {
-            return parsedRecords;
-        }
-    }
-
     @SuppressWarnings("UnstableApiUsage")
     @Setup(Level.Trial)
     public void setUp() throws Exception {
@@ -95,14 +64,10 @@ public class ParserPerfTest {
 
     @Benchmark
     public void parseWithPushParser(Blackhole bh) {
-        Collector cl = new Collector();
-        try (LogcatPushParser<?> pushParser = LogcatParsers.threadTime(cl)) {
-            for (String line : lines) {
-                if (!pushParser.nextLine(line)) {
-                    break;
-                }
-            }
+        ListCollectingHandler cl = new ListCollectingHandler();
+        try (var pushParser = LogcatParsers.threadTime(cl)) {
+            ParserUtils.readInto(pushParser, lines.stream());
         }
-        bh.consume(cl.getParsedRecords());
+        bh.consume(cl.getCollectedRecords());
     }
 }

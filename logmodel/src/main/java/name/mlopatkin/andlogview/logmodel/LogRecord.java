@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview.logmodel;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 
@@ -79,33 +80,15 @@ public class LogRecord implements Comparable<LogRecord> {
     private final @Nullable Buffer buffer;
     private final String appName;
 
-    public static LogRecord createWithoutTimestamp(int pid, int tid, @Nullable String appName, Priority priority,
-            String tag, String message) {
-        return createWithoutTimestamp(pid, tid, appName, priority, tag, message, null);
-    }
-
-    public static LogRecord createWithoutTimestamp(int pid, int tid, @Nullable String appName, Priority priority,
-            String tag, String message, @Nullable Buffer buffer) {
-        return LogRecord.create(null, pid, tid, appName, priority, tag, message, buffer);
-    }
-
-    public static LogRecord createWithTimestamp(Timestamp time, int pid, int tid, @Nullable String appName,
-            Priority priority, String tag, String message) {
-        return LogRecord.create(time, pid, tid, appName, priority, tag, message, null);
-    }
-
-    public static LogRecord createWithTimestamp(Timestamp time, int pid, int tid, @Nullable String appName,
-            Priority priority, String tag, String message, @Nullable Buffer buffer) {
-        return LogRecord.create(time, pid, tid, appName, priority, tag, message, buffer);
-    }
-
-    public static LogRecord create(@Nullable Timestamp time, int pid, int tid, @Nullable String appName,
-            Priority priority, String tag, String message, @Nullable Buffer buffer) {
-        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
-    }
-
-    private LogRecord(@Nullable Timestamp time, int pid, int tid, @Nullable String appName, Priority priority,
-            String tag, String message, @Nullable Buffer buffer) {
+    LogRecord(
+            @Nullable Timestamp time,
+            int pid,
+            int tid,
+            @Nullable String appName,
+            Priority priority,
+            String tag,
+            String message,
+            @Nullable Buffer buffer) {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
@@ -181,5 +164,130 @@ public class LogRecord implements Comparable<LogRecord> {
                 .compare(getTime(), o.getTime(), NULL_SAFE_TIME_COMPARATOR)
                 .compare(getBuffer(), o.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)
                 .result();
+    }
+
+    /**
+     * Returns a copy of this record with timestamp set to the given timestamp.
+     *
+     * @param timestamp the new timestamp
+     * @return the new record
+     */
+    public LogRecord withTimestamp(Timestamp timestamp) {
+        return new LogRecord(Preconditions.checkNotNull(timestamp), pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record without a timestamp.
+     *
+     * @return the new record
+     */
+    public LogRecord withoutTimestamp() {
+        return new LogRecord(null, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with PID set to the given PID.
+     *
+     * @param pid the new PID
+     * @return the new record
+     */
+    public LogRecord withPid(int pid) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with PID set to {@code NO_ID}.
+     *
+     * @return the new record
+     */
+    public LogRecord withoutPid() {
+        return new LogRecord(time, NO_ID, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with TID set to the given TID.
+     *
+     * @param tid the new TID
+     * @return the new record
+     */
+    public LogRecord withTid(int tid) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with TID set to {@code NO_ID}.
+     *
+     * @return the new record
+     */
+    public LogRecord withoutTid() {
+        return new LogRecord(time, pid, NO_ID, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with app name set to the given string.
+     *
+     * @param appName the new app name
+     * @return the new record
+     */
+    public LogRecord withAppName(String appName) {
+        return new LogRecord(time, pid, tid, Preconditions.checkNotNull(appName), priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record without an app name.
+     *
+     * @return the new record
+     */
+    public LogRecord withoutAppName() {
+        return new LogRecord(time, pid, tid, null, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with priority set to the given priority.
+     *
+     * @param priority the new priority
+     * @return the new record
+     */
+    public LogRecord withPriority(Priority priority) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with tag set to the given string.
+     *
+     * @param tag the new tag
+     * @return the new record
+     */
+    public LogRecord withTag(String tag) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with message set to the given string.
+     *
+     * @param message the new message
+     * @return the new record
+     */
+    public LogRecord withMessage(String message) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, buffer);
+    }
+
+    /**
+     * Returns a copy of this record with buffer set to the given buffer.
+     *
+     * @param buffer the new buffer
+     * @return the new record
+     */
+    public LogRecord withBuffer(Buffer buffer) {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, Preconditions.checkNotNull(buffer));
+    }
+
+    /**
+     * Returns a copy of this record without a buffer.
+     *
+     * @return the new record
+     */
+    public LogRecord withoutBuffer() {
+        return new LogRecord(time, pid, tid, appName, priority, tag, message, null);
     }
 }

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class RowSearchersTest {
     static final String MSG_SYSTEM_SERVER = "System_server died";
 
     private static LogRecord makeRecord(String tag, String app, String msg) {
-        return LogRecord.createWithoutTimestamp(-1, -1, app, LogRecord.Priority.FATAL, tag, msg);
+        return LogRecordUtils.forTag(tag).withAppName(app).withMessage(msg);
     }
 
     @Test

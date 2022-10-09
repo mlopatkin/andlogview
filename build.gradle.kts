@@ -54,6 +54,8 @@ dependencies {
 
     testImplementation(testFixtures(project(":base")))
     testImplementation(testFixtures(project(":logmodel")))
+
+    jmhImplementation(testFixtures(project(":parsers")))
 }
 
 configurations {

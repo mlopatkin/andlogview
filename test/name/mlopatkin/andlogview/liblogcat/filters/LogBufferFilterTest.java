@@ -31,7 +31,7 @@ public class LogBufferFilterTest {
     @Test
     public void defaultBufferFilterAcceptsRecordsWithNullBuffer() {
         LogBufferFilter filter = new LogBufferFilter();
-        assertThat(filter, accepts(LogRecordUtils.forBuffer(null)));
+        assertThat(filter, accepts(LogRecordUtils.forUnknownBuffer()));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class LogBufferFilterTest {
     public void filterWithOneBufferAcceptsNullBuffer() {
         LogBufferFilter filter = new LogBufferFilter();
         filter.setBufferEnabled(Buffer.MAIN, true);
-        assertThat(filter, accepts(LogRecordUtils.forBuffer(null)));
+        assertThat(filter, accepts(LogRecordUtils.forUnknownBuffer()));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class LogBufferFilterTest {
         LogBufferFilter filter = new LogBufferFilter();
         filter.setBufferEnabled(Buffer.MAIN, true);
         filter.setBufferEnabled(Buffer.SYSTEM, true);
-        assertThat(filter, accepts(LogRecordUtils.forBuffer(null)));
+        assertThat(filter, accepts(LogRecordUtils.forUnknownBuffer()));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class LogBufferFilterTest {
         filter.setBufferEnabled(Buffer.SYSTEM, true);
         filter.setBufferEnabled(Buffer.SYSTEM, false);
         filter.setBufferEnabled(Buffer.MAIN, false);
-        assertThat(filter, accepts(LogRecordUtils.forBuffer(null)));
+        assertThat(filter, accepts(LogRecordUtils.forUnknownBuffer()));
     }
 
     @Test

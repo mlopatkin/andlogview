@@ -22,8 +22,6 @@ import name.mlopatkin.andlogview.parsers.ParserControl;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -39,11 +37,6 @@ public class ListCollectingHandler extends CollectingHandler {
 
     public ListCollectingHandler(Buffer buffer) {
         super(buffer);
-    }
-
-    public ListCollectingHandler(@Nullable Buffer buffer,
-            IntFunction<String> appNameLookup) {
-        super(buffer, appNameLookup);
     }
 
     @Override

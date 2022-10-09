@@ -39,6 +39,7 @@ import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.HighlightColors;
 import name.mlopatkin.andlogview.liblogcat.LogRecordParser;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
@@ -68,7 +69,7 @@ import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 public class TablePopupMenuPresenterParameterizedTest {
-    public static final LogRecord RECORD = Objects.requireNonNull(LogRecordParser.parseThreadTime(null,
+    public static final LogRecord RECORD = Objects.requireNonNull(LogRecordParser.parseThreadTime(
             "08-03 16:21:35.538    98   231 V AudioFlinger: start(4117)",
             Collections.singletonMap(98, "media_server")));
     FakeTablePopupMenuView popupMenuView;
@@ -222,8 +223,10 @@ public class TablePopupMenuPresenterParameterizedTest {
     }
 
     private static TableRow makeRegexishRow() {
-        LogRecord record = LogRecord.createWithoutTimestamp(
-                123, 456, "/usr/bin/[/", LogRecord.Priority.INFO, "/Broken(/", "/Broken \\E[Message/");
+        LogRecord record = LogRecordUtils.forMessage("/Broken \\E[Message/")
+                .withAppName("/usr/bin/[/")
+                .withTag("/Broken(/");
+
         return new TableRow(1, record);
     }
 
@@ -252,7 +255,9 @@ public class TablePopupMenuPresenterParameterizedTest {
     }
 
     private static TableRow makeValueRow(String value) {
-        LogRecord record = LogRecord.createWithoutTimestamp(123, 456, value, LogRecord.Priority.INFO, value, value);
+        LogRecord record = LogRecordUtils.forMessage(value)
+                .withAppName(value)
+                .withTag(value);
         return new TableRow(1, record);
     }
 

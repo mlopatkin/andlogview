@@ -16,13 +16,9 @@
 
 package name.mlopatkin.andlogview.logmodel;
 
-import static name.mlopatkin.andlogview.logmodel.LogRecordUtils.withBuffer;
-import static name.mlopatkin.andlogview.logmodel.LogRecordUtils.withTime;
-
 import static org.junit.Assert.assertEquals;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
-import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 
 import org.junit.Test;
 
@@ -34,10 +30,7 @@ public class LogRecordTest {
     private static final Timestamp BASE_TIME = new Timestamp(new Date(BASE_DATE_LONG));
     private static final Timestamp AFTER_BASE_TIME = new Timestamp(new Date(BASE_DATE_LONG + 1));
 
-    private static final LogRecord BASE =
-            LogRecord.createWithTimestamp(BASE_TIME, 123, 123, "com.example.app", Priority.INFO, "tag", "message",
-                    Buffer.EVENTS);
-
+    private static final LogRecord BASE = LogRecordUtils.forBuffer(Buffer.EVENTS).withTimestamp(BASE_TIME);
 
     @Test
     @SuppressWarnings({"SelfComparison", "EqualsWithItself"})
@@ -47,7 +40,7 @@ public class LogRecordTest {
 
     @Test
     public void logRecordsAreOrderedByTime() {
-        LogRecord later = withTime(BASE, AFTER_BASE_TIME);
+        LogRecord later = BASE.withTimestamp(AFTER_BASE_TIME);
 
         assertEquals("BASE < later", -1, BASE.compareTo(later));
         assertEquals("later < BASE", 1, later.compareTo(BASE));
@@ -56,7 +49,7 @@ public class LogRecordTest {
     @Test
     public void logRecordsAreOrderedByBuffer() {
         // CRASH > EVENTS
-        LogRecord later = withBuffer(BASE, Buffer.CRASH);
+        LogRecord later = BASE.withBuffer(Buffer.CRASH);
 
         assertEquals("BASE < later", -1, BASE.compareTo(later));
         assertEquals("later < BASE", 1, later.compareTo(BASE));
@@ -65,7 +58,7 @@ public class LogRecordTest {
     @Test
     public void logRecordsAreOrderedByTimeFirst() {
         // EVENTS < MAIN
-        LogRecord later = withTime(withBuffer(BASE, Buffer.MAIN), AFTER_BASE_TIME);
+        LogRecord later = BASE.withBuffer(Buffer.MAIN).withTimestamp(AFTER_BASE_TIME);
 
         assertEquals("BASE < later", -1, BASE.compareTo(later));
         assertEquals("later < BASE", 1, later.compareTo(BASE));
@@ -73,9 +66,9 @@ public class LogRecordTest {
 
     @Test
     public void logRecordWithNullBufferIsSmallest() {
-        LogRecord nullBuffer = withBuffer(BASE, null);
+        LogRecord nullBuffer = BASE.withoutBuffer();
 
-        Stream.of(Buffer.values()).map(b -> withBuffer(BASE, b)).forEach(r -> {
+        Stream.of(Buffer.values()).map(BASE::withBuffer).forEach(r -> {
             assertEquals("nullBuffer < r{" + r.getBuffer() + "}", -1, nullBuffer.compareTo(r));
             assertEquals("r{" + r.getBuffer() + "} < nullBuffer", 1, r.compareTo(nullBuffer));
         });
@@ -84,7 +77,7 @@ public class LogRecordTest {
     @Test
     @SuppressWarnings({"SelfComparison", "EqualsWithItself"})
     public void logRecordWithNullBufferEqualsItself() {
-        LogRecord nullBuffer = withBuffer(BASE, null);
+        LogRecord nullBuffer = BASE.withoutBuffer();
 
         assertEquals("nullBuffer == nullBuffer", 0, nullBuffer.compareTo(nullBuffer));
     }

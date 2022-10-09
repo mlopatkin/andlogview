@@ -20,12 +20,11 @@ import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
-import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.IntFunction;
 
 /**
  * Utility class to parse log record lines in different formats.
@@ -33,21 +32,38 @@ import java.util.concurrent.atomic.AtomicReference;
 public class LogRecordParser {
     private LogRecordParser() {}
 
-    public static @Nullable LogRecord parseThreadTime(@Nullable Buffer buffer, String line,
-            Map<Integer, String> pidToProcess) {
-        AtomicReference<LogRecord> recordRef = new AtomicReference<>();
-        try (LogcatPushParser<CollectingHandler> parser = LogcatParsers.threadTime(
-                new CollectingHandler(buffer, pidToProcess::get) {
-                    @Override
-                    protected ParserControl logRecord(LogRecord record) {
-                        recordRef.set(record);
-                        return ParserControl.stop();
-                    }
-                })) {
-            parser.nextLine(line);
-        }
-
-        return recordRef.get();
+    public static @Nullable LogRecord parseThreadTime(String line, Map<Integer, String> pidToProcess) {
+        return new SingleLineParser(pidToProcess::get).parse(line);
     }
 
+    public static @Nullable LogRecord parseThreadTime(Buffer buffer, String line, Map<Integer, String> pidToProcess) {
+        return new SingleLineParser(buffer, pidToProcess::get).parse(line);
+    }
+
+    private static class SingleLineParser extends CollectingHandler {
+        private @Nullable LogRecord record;
+
+        public SingleLineParser(IntFunction<String> appNameLookup) {
+            super(appNameLookup);
+        }
+
+        public SingleLineParser(Buffer buffer, IntFunction<String> appNameLookup) {
+            super(buffer, appNameLookup);
+        }
+
+        @Override
+        protected ParserControl logRecord(LogRecord record) {
+            this.record = record;
+            return ParserControl.stop();
+        }
+
+        public @Nullable LogRecord parse(CharSequence line) {
+            try (var parser = LogcatParsers.threadTime(this)) {
+                parser.nextLine(line);
+                return record;
+            } finally {
+                record = null;
+            }
+        }
+    }
 }

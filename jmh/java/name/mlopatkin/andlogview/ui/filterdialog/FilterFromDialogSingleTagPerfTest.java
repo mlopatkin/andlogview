@@ -54,7 +54,7 @@ public class FilterFromDialogSingleTagPerfTest {
     @Setup(Level.Trial)
     public void setUp() throws Exception {
         try (Stream<String> lines = BenchmarkResources.loadResource("goldfish_omr1_threadtime.log").lines()) {
-            records = lines.map(line -> LogRecordParser.parseThreadTime(null, line, Collections.emptyMap()))
+            records = lines.map(line -> LogRecordParser.parseThreadTime(line, Collections.emptyMap()))
                     .filter(Objects::nonNull)
                     .collect(ImmutableList.toImmutableList());
         }

@@ -27,7 +27,7 @@ public class LogRecordBuilder {
 
     public LogRecordBuilder withTime(String timestamp) {
         try {
-            record = LogRecordUtils.withTime(record, TimeFormatUtils.getTimeFromString(timestamp));
+            record = record.withTimestamp(TimeFormatUtils.getTimeFromString(timestamp));
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
