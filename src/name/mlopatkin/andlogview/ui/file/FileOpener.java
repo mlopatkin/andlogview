@@ -18,19 +18,24 @@ package name.mlopatkin.andlogview.ui.file;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
+import name.mlopatkin.andlogview.liblogcat.file.ImportProblem;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.utils.CommonChars;
+import name.mlopatkin.andlogview.utils.TextUtils;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
+import javax.swing.JOptionPane;
 
 /**
  * Handles opening a files as a {@link DataSource}. Shows error or warning dialogs if the file cannot be opened
@@ -38,6 +43,7 @@ import javax.inject.Inject;
  */
 public class FileOpener {
     private static final Logger logger = Logger.getLogger(FileOpener.class);
+    private static final int MAX_PROBLEMS_DISPLAYED = 10;
 
     private final DialogFactory dialogFactory;
     private final LastUsedDirPref lastUsedDirPref;
@@ -66,6 +72,7 @@ public class FileOpener {
                 // this is the case though.
                 lastUsedDirPref.set(parentFile);
             }
+            showImportProblemsIfNeeded(importResult.getProblems());
             return CompletableFuture.completedFuture(importResult.getDataSource());
         } catch (UnrecognizedFormatException e) {
             logger.error("Unrecognized file format for " + file, e);
@@ -76,6 +83,44 @@ public class FileOpener {
             ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Cannot read " + file);
             return failedFuture(e);
         }
+    }
+
+    private void showImportProblemsIfNeeded(Collection<ImportProblem> problems) {
+        if (problems.isEmpty()) {
+            return;
+        }
+
+        var numProblems = problems.size();
+        int problemsToShow = Math.min(numProblems, MAX_PROBLEMS_DISPLAYED);
+        StringBuilder warningMessage = new StringBuilder("<html>");
+        warningMessage.append("File import finished with ")
+                .append(TextUtils.plural(numProblems, "a problem", "problems"))
+                .append(':');
+
+
+        warningMessage.append("<ul>");
+        formatProblemsList(problemsToShow, problems, warningMessage);
+        warningMessage.append("</ul>");
+        if (problemsToShow < numProblems) {
+            warningMessage.append(CommonChars.ELLIPSIS)
+                    .append("and ")
+                    .append(numProblems - problemsToShow)
+                    .append(" more.");
+        }
+        warningMessage.append("</html>");
+
+        JOptionPane.showMessageDialog(dialogFactory.getOwner(), warningMessage,
+                TextUtils.plural(numProblems, "Import problem", numProblems + " import problems"),
+                JOptionPane.WARNING_MESSAGE);
+    }
+
+    private void formatProblemsList(int problemsToShow, Collection<ImportProblem> problems, StringBuilder output) {
+        assert problems.size() >= problemsToShow;
+
+        problems.stream()
+                .limit(problemsToShow)
+                .map(ImportProblem::getMessage)
+                .forEachOrdered(msg -> output.append("<li>").append(msg).append("</li>"));
     }
 
     private static CompletionStage<DataSource> failedFuture(Throwable th) {
