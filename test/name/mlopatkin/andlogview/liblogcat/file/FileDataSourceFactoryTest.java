@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.liblogcat.file;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import name.mlopatkin.andlogview.logmodel.DataSource;
@@ -28,7 +29,6 @@ import name.mlopatkin.andlogview.logmodel.RecordListener;
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
-import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -108,7 +108,8 @@ public class FileDataSourceFactoryTest {
     public void openDumpstateWithTimeTravel() throws Exception {
         CharSource log = openTestData("emulator_nougat.minimized.with-time-travel.dump");
 
-        DataSource source = FileDataSourceFactory.createDataSource("time-travel.dump", log).getDataSource();
+        ImportResult importResult = FileDataSourceFactory.createDataSource("time-travel.dump", log);
+        DataSource source = importResult.getDataSource();
 
         ArrayList<LogRecord> records = new ArrayList<>();
         source.setLogRecordListener(new RecordListener<>() {
@@ -131,9 +132,11 @@ public class FileDataSourceFactoryTest {
         var eventsBuffer =
                 records.stream().filter(LogRecordPredicates.withBuffer(Buffer.EVENTS)).collect(Collectors.toList());
 
-        Assertions.assertThat(mainBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
-        Assertions.assertThat(radioBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
-        Assertions.assertThat(eventsBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+        assertThat(mainBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+        assertThat(radioBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+        assertThat(eventsBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+
+        assertThat(importResult.getProblems()).isNotEmpty();
     }
 
     private CharSource openTestData(String testDataName) {

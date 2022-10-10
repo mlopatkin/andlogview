@@ -117,7 +117,8 @@ public final class DumpstateFileDataSource implements DataSource {
         private @Nullable PushParser<?> pushParser;
         private final Map<Buffer, ArrayList<LogRecord>> records = new EnumMap<>(Buffer.class);
         private final Map<Integer, String> pidToProcessConverter = new HashMap<>();
-        private boolean isUnparseable;
+        private final List<ImportProblem> problems = new ArrayList<>();
+        private boolean isLogcatUnparseable;
 
         public Builder(String fileName) {
             this.fileName = fileName;
@@ -162,7 +163,7 @@ public final class DumpstateFileDataSource implements DataSource {
 
                 @Override
                 public ParserControl unparseableLogcatSection() {
-                    isUnparseable = true;
+                    isLogcatUnparseable = true;
                     return ParserControl.stop();
                 }
             });
@@ -172,7 +173,7 @@ public final class DumpstateFileDataSource implements DataSource {
         public ImportResult readFrom(BufferedReader in) throws IOException, UnrecognizedFormatException {
             ParserUtils.readInto(Objects.requireNonNull(pushParser), in::readLine);
 
-            if (isUnparseable) {
+            if (isLogcatUnparseable) {
                 throw new UnrecognizedFormatException("Cannot load dumpstate file, logcat format is unparseable");
             }
 
@@ -182,9 +183,13 @@ public final class DumpstateFileDataSource implements DataSource {
             OfflineSorter sorter = new OfflineSorter();
             records.values().forEach(list -> list.forEach(sorter::add));
 
+            if (sorter.hasTimeTravels()) {
+                problems.add(new ImportProblem(
+                        "Dumpstate file has time travels. Record ordering across buffers may not be consistent."));
+            }
             return new ImportResult(
                     new DumpstateFileDataSource(fileName, sorter.build(), EnumSet.allOf(Field.class), buffers,
-                            pidToProcessConverter));
+                            pidToProcessConverter), problems);
         }
     }
 }
