@@ -16,8 +16,6 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
-import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
@@ -28,7 +26,6 @@ import org.apache.log4j.Logger;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.inject.Inject;
@@ -134,18 +131,7 @@ public class Main {
         }
         File fileToOpen = commandLine.getFileArgument();
         if (fileToOpen != null) {
-            // TODO(mlopatkin) Handle null parent file here
-            File baseDir = fileToOpen.getAbsoluteFile().getParentFile();
-            window.setRecentDir(baseDir);
-            try {
-                window.setSourceAsync(FileDataSourceFactory.createDataSource(fileToOpen).getDataSource());
-            } catch (UnrecognizedFormatException e) {
-                ErrorDialogsHelper.showError(window, "Unrecognized file format for " + fileToOpen);
-                logger.error("Exception while reading the file", e);
-            } catch (IOException e) {
-                ErrorDialogsHelper.showError(window, "Cannot read " + fileToOpen);
-                logger.error("Exception while reading the file", e);
-            }
+            window.fileOpener.openFileAsDataSource(fileToOpen).thenAccept(window::setSourceAsync);
         } else {
             if (window.tryInitAdbBridge()) {
                 window.tryToConnectToFirstAvailableDevice();

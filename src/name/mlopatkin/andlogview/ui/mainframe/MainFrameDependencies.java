@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
-import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServicesSubcomponent;
@@ -69,8 +68,6 @@ public interface MainFrameDependencies {
     TableColumnModelFactory getColumnModelFactory();
 
     FileDialog getFileDialog();
-
-    LastUsedDirPref getLastUsedDir();
 
     void injectMainFrame(MainFrame frame);
 

@@ -15,9 +15,7 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
-import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
-import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.ui.file.FileOpener;
 
 import org.apache.log4j.Logger;
 
@@ -31,10 +29,12 @@ import javax.swing.TransferHandler;
 
 public class FileTransferHandler extends TransferHandler {
     private static final Logger logger = Logger.getLogger(FileTransferHandler.class);
-    private MainFrame frame;
+    private final MainFrame frame;
+    private final FileOpener fileOpener;
 
-    public FileTransferHandler(MainFrame frame) {
+    public FileTransferHandler(MainFrame frame, FileOpener fileOpener) {
         this.frame = frame;
+        this.fileOpener = fileOpener;
     }
 
     @Override
@@ -55,18 +55,8 @@ public class FileTransferHandler extends TransferHandler {
 
             File file = l.get(0);
             logger.debug("Start importing " + file);
-            DataSource source;
-            try {
-                source = FileDataSourceFactory.createDataSource(file).getDataSource();
-                frame.setSource(source);
-            } catch (UnrecognizedFormatException e) {
-                ErrorDialogsHelper.showError(frame, "Unrecognized file format for " + file);
-                return false;
-            } catch (IOException e) {
-                ErrorDialogsHelper.showError(frame, "Cannot read " + file);
-                return false;
-            }
-            frame.setRecentDir(file.getAbsoluteFile().getParentFile());
+
+            fileOpener.openFileAsDataSource(file).thenAccept(frame::setSourceAsync);
         } catch (UnsupportedFlavorException | IOException e) {
             return false;
         }

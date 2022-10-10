@@ -24,8 +24,6 @@ import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
-import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
-import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.LogModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -38,6 +36,7 @@ import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
+import name.mlopatkin.andlogview.ui.file.FileOpener;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -70,7 +69,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -139,6 +137,8 @@ public class MainFrame extends JFrame {
     AdbManager adbManager;
     @Inject
     AdbServicesBridge adbServicesBridge;
+    @Inject
+    FileOpener fileOpener;
 
     @Nullable
     private DeviceChangeObserver pendingAttacher;
@@ -252,7 +252,7 @@ public class MainFrame extends JFrame {
         logElements.setColumnModel(columnModel);
         UiHelper.addPopupMenu(
                 logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
-        TransferHandler fileHandler = new FileTransferHandler(this);
+        TransferHandler fileHandler = new FileTransferHandler(this, fileOpener);
         setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
 
@@ -447,18 +447,10 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            dependencies.getFileDialog().selectFileToOpen().ifPresent(file -> {
-                try {
-                    DataSource source = FileDataSourceFactory.createDataSource(file).getDataSource();
-                    setSource(source);
-                } catch (UnrecognizedFormatException e) {
-                    logger.error("Unrecognized source file " + file, e);
-                    ErrorDialogsHelper.showError(MainFrame.this, "Unrecognized file format for " + file);
-                } catch (IOException e) {
-                    logger.error("IO Exception while reading " + file, e);
-                    ErrorDialogsHelper.showError(MainFrame.this, "Cannot read " + file);
-                }
-            });
+            dependencies.getFileDialog()
+                    .selectFileToOpen()
+                    .ifPresent(
+                            file -> fileOpener.openFileAsDataSource(file).thenAccept(MainFrame.this::setSourceAsync));
         }
     };
 
@@ -614,10 +606,6 @@ public class MainFrame extends JFrame {
 
     void disableAdbCommandsAsync() {
         EventQueue.invokeLater(() -> acConnectToDevice.setEnabled(false));
-    }
-
-    void setRecentDir(File dir) {
-        dependencies.getLastUsedDir().set(dir);
     }
 
     public boolean tryInitAdbBridge() {
