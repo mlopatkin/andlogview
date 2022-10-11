@@ -71,6 +71,20 @@ class OfflineSorterTest {
     }
 
     @Test
+    void noTimeTravelForRecordsWithIdenticalTimestamps() {
+        var buffer = records(Buffer.MAIN,
+                forTimestamp("01-01 00:00:00.000").withMessage("main 1"),
+                forTimestamp("01-01 00:00:00.000").withMessage("main 2"),
+                forTimestamp("01-01 00:00:00.000").withMessage("main 3"));
+
+        var sorter = new OfflineSorter();
+
+        addAll(sorter, buffer);
+
+        assertThat(sorter.hasTimeTravels()).isFalse();
+    }
+
+    @Test
     void sortsSingleBufferWithTimeTravelProperly() {
         var buffer = records(Buffer.MAIN,
                 forTimestamp("01-01 00:00:00.000").withMessage("main 1"),

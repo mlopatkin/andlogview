@@ -68,7 +68,7 @@ public class OfflineSorter {
             var newTimestamp = newRecord.getTime();
             assert lastTimestamp != null && newTimestamp != null;
 
-            return lastTimestamp.compareTo(newTimestamp) >= 0;
+            return lastTimestamp.compareTo(newTimestamp) > 0;
         }
         return false;
     }
