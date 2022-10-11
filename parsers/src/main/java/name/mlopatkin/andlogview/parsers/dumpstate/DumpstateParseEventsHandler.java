@@ -53,7 +53,7 @@ public interface DumpstateParseEventsHandler extends PushParser.ParseEventsHandl
      *
      * @return ParserControl instance to proceed with parsing or to stop parsing the whole dumpstate file
      */
-    default ParserControl unparseableLogcatSection() {
+    default ParserControl unparseableLogcatSection(LogRecord.Buffer buffer) {
         return ParserControl.proceed();
     }
 

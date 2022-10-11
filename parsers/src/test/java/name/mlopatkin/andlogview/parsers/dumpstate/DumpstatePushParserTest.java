@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.ParserUtils;
 
@@ -44,7 +45,7 @@ class DumpstatePushParserTest {
                     Unrecognizable line 2"""));
         }
 
-        verify(eventsHandler).unparseableLogcatSection();
+        verify(eventsHandler).unparseableLogcatSection(LogRecord.Buffer.MAIN);
     }
 
 
@@ -52,7 +53,7 @@ class DumpstatePushParserTest {
         var handler = mock(DumpstateParseEventsHandler.class);
         when(handler.psSectionBegin()).thenReturn(Optional.empty());
         when(handler.logcatSectionBegin(any())).thenReturn(Optional.empty());
-        when(handler.unparseableLogcatSection()).thenReturn(ParserControl.proceed());
+        when(handler.unparseableLogcatSection(any())).thenReturn(ParserControl.proceed());
         return handler;
     }
 }

@@ -78,7 +78,7 @@ class LogcatSectionHandler implements SectionHandler {
         if (delegate != null) {
             delegate.close();
         } else if (!isSectionEmpty) {
-            return eventsHandler.unparseableLogcatSection();
+            return eventsHandler.unparseableLogcatSection(buffer);
         }
         return ParserControl.proceed();
     }

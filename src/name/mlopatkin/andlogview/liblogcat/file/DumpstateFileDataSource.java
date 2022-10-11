@@ -37,7 +37,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -114,11 +113,15 @@ public final class DumpstateFileDataSource implements DataSource {
 
     public static class Builder {
         private final String fileName;
-        private @Nullable PushParser<?> pushParser;
-        private final Map<Buffer, ArrayList<LogRecord>> records = new EnumMap<>(Buffer.class);
+        private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
+        private final List<LogRecord> records = new ArrayList<>();
         private final Map<Integer, String> pidToProcessConverter = new HashMap<>();
         private final List<ImportProblem> problems = new ArrayList<>();
-        private boolean isLogcatUnparseable;
+
+        private @Nullable PushParser<?> pushParser;
+
+        private boolean hasPsSection;
+        private boolean psSectionHadUnparseableLines;
 
         public Builder(String fileName) {
             this.fileName = fileName;
@@ -129,10 +132,11 @@ public final class DumpstateFileDataSource implements DataSource {
             pushParser = factory.apply(new DumpstateParseEventsHandler() {
                 @Override
                 public Optional<LogcatParseEventsHandler> logcatSectionBegin(Buffer buffer) {
+                    availableBuffers.add(buffer);
                     return Optional.of(new CollectingHandler(buffer, pidToProcessConverter::get) {
                         @Override
                         protected ParserControl logRecord(LogRecord record) {
-                            records.computeIfAbsent(buffer, b -> new ArrayList<>()).add(record);
+                            records.add(record);
                             return ParserControl.proceed();
                         }
 
@@ -146,6 +150,7 @@ public final class DumpstateFileDataSource implements DataSource {
 
                 @Override
                 public Optional<PsParseEventsHandler> psSectionBegin() {
+                    hasPsSection = true;
                     return Optional.of(new PsParseEventsHandler() {
                         @Override
                         public ParserControl processLine(int pid, String processName) {
@@ -155,6 +160,7 @@ public final class DumpstateFileDataSource implements DataSource {
 
                         @Override
                         public ParserControl unparseableLine(CharSequence line) {
+                            psSectionHadUnparseableLines = true;
                             logger.debug("Failed to parse ps output line: " + line);
                             return ParserControl.proceed();
                         }
@@ -162,8 +168,8 @@ public final class DumpstateFileDataSource implements DataSource {
                 }
 
                 @Override
-                public ParserControl unparseableLogcatSection() {
-                    isLogcatUnparseable = true;
+                public ParserControl unparseableLogcatSection(Buffer buffer) {
+                    problems.add(new ImportProblem("Failed to import logcat entries for " + buffer.getCaption()));
                     return ParserControl.stop();
                 }
             });
@@ -173,23 +179,29 @@ public final class DumpstateFileDataSource implements DataSource {
         public ImportResult readFrom(BufferedReader in) throws IOException, UnrecognizedFormatException {
             ParserUtils.readInto(Objects.requireNonNull(pushParser), in::readLine);
 
-            if (isLogcatUnparseable) {
-                throw new UnrecognizedFormatException("Cannot load dumpstate file, logcat format is unparseable");
+            if (availableBuffers.isEmpty()) {
+                throw new UnrecognizedFormatException("Cannot load dumpstate file, no valid logcat section found");
             }
 
-            EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
-            buffers.addAll(records.keySet());
-
             OfflineSorter sorter = new OfflineSorter();
-            records.values().forEach(list -> list.forEach(sorter::add));
+            records.forEach(sorter::add);
 
             if (sorter.hasTimeTravels()) {
                 problems.add(new ImportProblem(
                         "Dumpstate file has time travels. Record ordering across buffers may not be consistent."));
             }
+            if (!hasPsSection) {
+                problems.add(
+                        new ImportProblem("Failed to find Processes section. Application names are not available."));
+            } else if (psSectionHadUnparseableLines && pidToProcessConverter.isEmpty()) {
+                problems.add(
+                        new ImportProblem("Failed to parse Processes section. Application names are not available."));
+            }
             return new ImportResult(
-                    new DumpstateFileDataSource(fileName, sorter.build(), EnumSet.allOf(Field.class), buffers,
-                            pidToProcessConverter), problems);
+                    new DumpstateFileDataSource(
+                            fileName, sorter.build(), EnumSet.allOf(Field.class), availableBuffers,
+                            pidToProcessConverter),
+                    problems);
         }
     }
 }

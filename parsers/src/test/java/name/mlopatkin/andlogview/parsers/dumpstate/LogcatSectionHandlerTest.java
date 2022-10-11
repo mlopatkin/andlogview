@@ -59,7 +59,7 @@ class LogcatSectionHandlerTest {
 
         handler.end();
 
-        verify(eventsHandler, never()).unparseableLogcatSection();
+        verify(eventsHandler, never()).unparseableLogcatSection(LogRecord.Buffer.MAIN);
     }
 
     @Test
@@ -70,7 +70,7 @@ class LogcatSectionHandlerTest {
         handler.nextLine("non-logcat line");
         handler.end();
 
-        verify(eventsHandler, only()).unparseableLogcatSection();
+        verify(eventsHandler, only()).unparseableLogcatSection(LogRecord.Buffer.MAIN);
     }
 
     @ParameterizedTest
@@ -113,7 +113,7 @@ class LogcatSectionHandlerTest {
         handler.nextLine("Garbage");
         handler.end();
 
-        verify(eventsHandler, never()).unparseableLogcatSection();
+        verify(eventsHandler, never()).unparseableLogcatSection(LogRecord.Buffer.MAIN);
     }
 
     @ParameterizedTest
@@ -142,7 +142,7 @@ class LogcatSectionHandlerTest {
         assertThat(handler.nextLine("Garbage")).shouldSkip();
         handler.end();
 
-        verify(eventsHandler, only()).unparseableLogcatSection();
+        verify(eventsHandler, only()).unparseableLogcatSection(LogRecord.Buffer.MAIN);
     }
 
     @Test
@@ -167,7 +167,7 @@ class LogcatSectionHandlerTest {
         var handler = mock(DumpstateParseEventsHandler.class);
         when(handler.logcatSectionBegin(any())).thenReturn(Optional.empty());
         when(handler.psSectionBegin()).thenReturn(Optional.empty());
-        when(handler.unparseableLogcatSection()).thenReturn(ParserControl.proceed());
+        when(handler.unparseableLogcatSection(any())).thenReturn(ParserControl.proceed());
         return handler;
     }
 
