@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.building;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
@@ -51,8 +50,9 @@ public abstract class GenerateNotices extends DefaultTask {
 
     private final Map<String, File> sourceFileNoticesByFileMask = new HashMap<>();
 
+    // General ComponentIdentifier cannot be serialized.
     @Input
-    public abstract SetProperty<ComponentIdentifier> getBundledDependencies();
+    public abstract SetProperty<ModuleComponentIdentifier> getBundledDependencies();
 
     @InputDirectory
     public abstract DirectoryProperty getLibraryNoticesDirectory();
@@ -105,10 +105,7 @@ public abstract class GenerateNotices extends DefaultTask {
     }
 
     private Iterable<ModuleComponentIdentifier> getDependencies() {
-        return getBundledDependencies().get().stream()
-                .filter(componentId -> componentId instanceof ModuleComponentIdentifier)
-                .map(componentId -> (ModuleComponentIdentifier) componentId)
-                .collect(Collectors.toList());
+        return getBundledDependencies().get();
     }
 
     private void appendNoticeFromFile(BufferedWriter notice, File noticeFile) throws IOException {

@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import java.util.Locale
 
 @Suppress("DSL_SCOPE_VIOLATION")  // https://youtrack.jetbrains.com/issue/KTIJ-19369
@@ -145,10 +145,8 @@ idea.module.generatedSourceDirs.add(file(metadataBuildDir))
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     bundledDependencies.set(configurations.runtimeClasspath.flatMap { rtCp ->
         rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
-            artifacts.map { artifact -> artifact.id.componentIdentifier }.filter {
-                // TODO(mlopatkin) This is ugly but Gradle cannot serialize a project dependency here.
-                id -> id is ModuleComponentArtifactIdentifier
-            }
+            artifacts.map { artifact -> artifact.id.componentIdentifier }
+                .filterIsInstance<ModuleComponentIdentifier>()
         }
     })
     libraryNoticesDirectory.set(file("third-party/libs/notices"))
