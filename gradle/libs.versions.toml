@@ -3,7 +3,6 @@ andlogview = "0.22"
 checkstyle = "8.45.1"
 dagger = "2.40.5"
 errorpronePlugin = "2.0.2"
-eclipseAptPlugin = "3.34.1"
 flatlaf = "2.0"
 mockito = "4.2.0"
 compileJdkVersion = "17"  # JDK version used for compilation
@@ -13,7 +12,6 @@ sourceJavaVersion = "16"
 runtimeJdkVersion = "8"  # JDK version used at runtime, determines available APIs
 
 [libraries]
-build-eclipseAptPlugin = { module = "com.diffplug.gradle:goomph", version.ref = "eclipseAptPlugin" }
 build-errorprone-core = "com.google.errorprone:error_prone_core:2.10.0"
 build-errorprone-javac = "com.google.errorprone:javac:9+181-r4173-1"
 build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
@@ -43,8 +41,6 @@ test-mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.r
 [plugins]
 # Bitbucket plugin allows publishing releases to the Bitbucket project's Downloads page
 bitbucket = "name.mlopatkin.bitbucket:0.5-rc4"
-# Eclipse APT plugin configures annotation processors when importing the project into Eclipse
-eclipseApt = { id = "com.diffplug.eclipse.apt", version.ref = "eclipseAptPlugin" }
 # Errorprone plugin allows to configure Errorprone compiler
 errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included

@@ -280,11 +280,3 @@ if (System.getProperty("os.name").toLowerCase(Locale.US).contains("linux")) {
         }
     }
 }
-
-// Configure IDE support
-
-// Modern gradle support in eclipse (Buildship) doesn't require this task, but it is brought in by eclipse.apt plugin
-disableTasks("eclipse")
-// TODO(mlopatkin) do we need this for modern Buildship versions?
-// Order of tasks is important or generated metadata sources will not be imported
-eclipse.synchronizationTasks("generateBuildMetadata", "eclipseJdtApt", "eclipseFactorypath", "eclipseJdt")

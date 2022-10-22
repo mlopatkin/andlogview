@@ -68,12 +68,10 @@ You can specify JDK to use with JAVA_HOME environment variable.
 
 ## Importing into IDE
 #### IDEA
-You can use [IDEA Community Edition][idea] 14 or later. I didn't check earlier versions. Use "File > New Project From
-Existing Sources... > (Select project directory) > Gradle". Do not use "Create separate module per source set".
-Annotation processing should work "out-of-the-box".
-
-For newer versions (I've tested 2019.3.4) use "File > New Project From Existing Sources... > (Select build.gradle in
-project directory)" or use "Import Existing Project..." in the startup wizard.
+You can use [IDEA Community Edition][idea]. Modern versions work out of the box. Just use
+"File > New Project From Existing Sources... > (Select build.gradle in project directory)" or use "Import Existing
+Project..." in the startup wizard. The project tries to use the most recent version of Gradle, so it is preferred to
+use the latest available IDEA version.
 
 There are project-specific codestyle settings that can be imported. Open "File > Settings > Editor > Code Style". Select
 "Project" for "Scheme", then click on Gear icon, select "Import scheme...". Select
@@ -82,9 +80,8 @@ be imported for this project only. You can also import copyright profiles from `
 directory into `.idea` (but not when IDEA is running).
 
 ### Eclipse
-Import project into your Eclipse workspace with "File > Import... > Gradle > Existing Gradle Project". Annotation
-processing should work "out-of-the-box". Eclipse is still a preferred way to work with GUI because of the WindowBuilder
-plugin.
+Editing the project in Eclipse IDE is no longer supported. Contributions are welcomed. I had no success in setting up
+the project with Eclipse 2022-09.
 
 ## Updating the CI build environment
 

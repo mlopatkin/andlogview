@@ -23,7 +23,6 @@ plugins {
     checkstyle
 
     // It is not possible to use a constant from the version catalog there
-    id("com.diffplug.eclipse.apt")
     id("net.ltgt.errorprone")
 }
 
