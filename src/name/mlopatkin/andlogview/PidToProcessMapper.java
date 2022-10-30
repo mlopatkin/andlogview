@@ -17,6 +17,7 @@ package name.mlopatkin.andlogview;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+@FunctionalInterface
 public interface PidToProcessMapper {
     @Nullable String getProcessName(int pid);
 }

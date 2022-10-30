@@ -80,7 +80,6 @@ import java.util.concurrent.Executor;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -98,10 +97,25 @@ import javax.swing.TransferHandler;
 public class MainFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
-    private final DataSourceHolder sourceHolder;
+    private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
+    private static final String ACTION_HIDE_SEARCH_FIELD = "hide_search";
+    private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
+    private static final String ACTION_FIND_NEXT = "find_next";
+    private static final String ACTION_FIND_PREV = "find_prev";
 
-    @Inject
-    LogRecordTableModel recordsModel;
+    private static final KeyStroke KEY_HIDE_AND_START_SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+    private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    private static final KeyStroke KEY_SHOW_SEARCH_FIELD = UiHelper.createPlatformKeystroke(KeyEvent.VK_F);
+    private static final KeyStroke KEY_FIND_NEXT =
+            SystemUtils.IS_OS_MACOS
+                    ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G)
+                    : KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
+    private static final KeyStroke KEY_FIND_PREV =
+            SystemUtils.IS_OS_MACOS
+                    ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
+                    : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
+
+    private final DataSourceHolder sourceHolder;
     private TableScrollController scrollController;
     private SearchController searchController;
 
@@ -113,6 +127,8 @@ public class MainFrame extends JFrame {
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
+    @Inject
+    LogRecordTableModel recordsModel;
     @Inject
     ProcessListFrame processListFrame;
     @Inject
@@ -142,6 +158,7 @@ public class MainFrame extends JFrame {
 
     @Nullable
     private DeviceChangeObserver pendingAttacher;
+    private volatile boolean isWaitingForDevice;
 
     private final MainFrameDependencies dependencies;
     private final CommandLine commandLine;
@@ -152,24 +169,35 @@ public class MainFrame extends JFrame {
         }
     };
 
-    public static class Factory implements Provider<MainFrame> {
-        private final AppGlobals globals;
-        private final CommandLine commandLine;
+    private final PidToProcessMapper mapper = this::mapPidToProcessName;
 
-        @Inject
-        public Factory(AppGlobals globals, CommandLine commandLine) {
-            this.globals = globals;
-            this.commandLine = commandLine;
-        }
+    private final Action acOpenFile =
+            UiHelper.makeAction("Open...", UiHelper.createPlatformKeystroke(KeyEvent.VK_O), this::openFile);
+    private final Action acSaveToFile =
+            UiHelper.makeAction("Save...", UiHelper.createPlatformKeystroke(KeyEvent.VK_S), this::saveToFile);
 
+    private final Action acShowBookmarks =
+            UiHelper.makeAction("Show bookmarks", UiHelper.createPlatformKeystroke(KeyEvent.VK_P),
+                    () -> bookmarkController.showWindow());
+    private final Action acShowProcesses =
+            UiHelper.makeAction(this::showProcesses).name("Show processes").disabled().build();
+
+    private final Action acConnectToDevice = UiHelper.makeAction("Connect to device...", this::connectToDevice);
+    private final Action acResetLogs =
+            UiHelper.makeAction("Reset logs", UiHelper.createPlatformKeystroke(KeyEvent.VK_R), this::reset);
+    private final Action acChangeConfiguration =
+            UiHelper.makeAction("Configuration...", () -> configurationDialogPresenter.openDialog());
+    private final Action acDumpDevice = UiHelper.makeAction("Prepare device dump...", this::selectAndDumpDevice);
+
+    private final Timer updatingTimer = new Timer(2000, new ActionListener() {
         @Override
-        public MainFrame get() {
-            return new MainFrame(globals, commandLine);
+        public void actionPerformed(ActionEvent e) {
+            sourceStatusPresenter.updateSourceStatus();
         }
-    }
+    });
 
     @SuppressWarnings("NullAway")
-    public MainFrame(AppGlobals globals, CommandLine commandLine) {
+    private MainFrame(AppGlobals globals, CommandLine commandLine) {
         dependencies = DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), globals);
         sourceHolder = dependencies.getDataSourceHolder();
 
@@ -218,20 +246,17 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private PidToProcessMapper mapper = new PidToProcessMapper() {
-        @Override
-        public @Nullable String getProcessName(int pid) {
-            DataSource source = sourceHolder.getDataSource();
-            if (source == null) {
-                return null;
-            }
-            Map<Integer, String> pidToProcessConverter = source.getPidToProcessConverter();
-            if (pidToProcessConverter == null) {
-                return null;
-            }
-            return pidToProcessConverter.get(pid);
+    private @Nullable String mapPidToProcessName(int pid) {
+        DataSource source = sourceHolder.getDataSource();
+        if (source == null) {
+            return null;
         }
-    };
+        Map<Integer, String> pidToProcessConverter = source.getPidToProcessConverter();
+        if (pidToProcessConverter == null) {
+            return null;
+        }
+        return pidToProcessConverter.get(pid);
+    }
 
     /**
      * Initialize the contents of the frame.
@@ -349,24 +374,6 @@ public class MainFrame extends JFrame {
                 });
     }
 
-    private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
-    private static final String ACTION_HIDE_SEARCH_FIELD = "hide_search";
-    private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
-    private static final String ACTION_FIND_NEXT = "find_next";
-    private static final String ACTION_FIND_PREV = "find_prev";
-
-    private static final KeyStroke KEY_HIDE_AND_START_SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-    private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-    private static final KeyStroke KEY_SHOW_SEARCH_FIELD = UiHelper.createPlatformKeystroke(KeyEvent.VK_F);
-    private static final KeyStroke KEY_FIND_NEXT =
-            SystemUtils.IS_OS_MACOS
-                    ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G)
-                    : KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
-    private static final KeyStroke KEY_FIND_PREV =
-            SystemUtils.IS_OS_MACOS
-                    ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
-                    : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
-
     private void showSearchField() {
         scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(true);
@@ -385,13 +392,6 @@ public class MainFrame extends JFrame {
         controlsPanel.repaint();
         scrollController.scrollIfNeeded();
     }
-
-    Timer updatingTimer = new Timer(2000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            sourceStatusPresenter.updateSourceStatus();
-        }
-    });
 
     public void reset() {
         LogModel model = logModel;
@@ -439,57 +439,26 @@ public class MainFrame extends JFrame {
         setJMenuBar(mainMenu);
     }
 
-    private final Action acOpenFile = new AbstractAction("Open...") {
-        {
-            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_O));
-        }
+    private void openFile() {
+        dependencies.getFileDialog()
+                .selectFileToOpen()
+                .ifPresent(
+                        file -> fileOpener.openFileAsDataSource(file).thenAccept(MainFrame.this::setSourceAsync));
+    }
 
-        @Override
-        public void actionPerformed(ActionEvent event) {
-            dependencies.getFileDialog()
-                    .selectFileToOpen()
-                    .ifPresent(
-                            file -> fileOpener.openFileAsDataSource(file).thenAccept(MainFrame.this::setSourceAsync));
-        }
-    };
+    private void connectToDevice() {
+        Optionals.ifPresentOrElse(
+                adbServicesBridge.getAdbDataSourceFactory(),
+                adbDataSourceFactory -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
+                        MainFrame.this::setSourceAsync),
+                MainFrame.this::disableAdbCommandsAsync);
+    }
 
-    private final Action acConnectToDevice = new AbstractAction("Connect to device...") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Optionals.ifPresentOrElse(
-                    adbServicesBridge.getAdbDataSourceFactory(),
-                    adbDataSourceFactory -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
-                            MainFrame.this::setSourceAsync),
-                    MainFrame.this::disableAdbCommandsAsync);
-        }
-    };
-
-    private final Action acResetLogs = new AbstractAction("Reset logs") {
-        {
-            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_R));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            reset();
-        }
-    };
-
-    private final Action acChangeConfiguration = new AbstractAction("Configuration...") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            configurationDialogPresenter.openDialog();
-        }
-    };
-
-    private final Action acDumpDevice = new AbstractAction("Prepare device dump...") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Optionals.ifPresentOrElse(adbServicesBridge.getDumpDevicePresenter(),
-                    DumpDevicePresenter::selectDeviceAndDump,
-                    MainFrame.this::disableAdbCommandsAsync);
-        }
-    };
+    private void selectAndDumpDevice() {
+        Optionals.ifPresentOrElse(adbServicesBridge.getDumpDevicePresenter(),
+                DumpDevicePresenter::selectDeviceAndDump,
+                MainFrame.this::disableAdbCommandsAsync);
+    }
 
     public void tryToConnectToFirstAvailableDevice() {
         Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(),
@@ -530,8 +499,6 @@ public class MainFrame extends JFrame {
         }, this::disableAdbCommandsAsync);
     }
 
-    private volatile boolean isWaitingForDevice;
-
     private synchronized void connectDevicePending(Device device) {
         if (!isWaitingForDevice) {
             return;
@@ -553,41 +520,16 @@ public class MainFrame extends JFrame {
         pendingAttacher = null;
     }
 
-    private Action acSaveToFile = new AbstractAction("Save...") {
-        {
-            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_S));
-        }
+    private void saveToFile() {
+        dependencies.getFileDialog().selectFileToSave().ifPresent(MainFrame.this::saveTableToFile);
+    }
 
-        @Override
-        public void actionPerformed(ActionEvent arg0) {
-            dependencies.getFileDialog().selectFileToSave().ifPresent(MainFrame.this::saveTableToFile);
-        }
-    };
-
-    private AbstractAction acShowBookmarks = new AbstractAction("Show bookmarks") {
-        {
-            putValue(ACCELERATOR_KEY, UiHelper.createPlatformKeystroke(KeyEvent.VK_P));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            bookmarkController.showWindow();
-        }
-    };
-
-    private AbstractAction acShowProcesses = new AbstractAction("Show processes") {
-        {
-            setEnabled(false);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            DataSource source = sourceHolder.getDataSource();
-            assert source != null;
-            assert source.getPidToProcessConverter() != null;
-            processListFrame.show();
-        }
-    };
+    private void showProcesses() {
+        DataSource source = sourceHolder.getDataSource();
+        assert source != null;
+        assert source.getPidToProcessConverter() != null;
+        processListFrame.show();
+    }
 
     private void saveTableToFile(File file) {
         try {
@@ -622,5 +564,21 @@ public class MainFrame extends JFrame {
 
     private Optional<Device> getFirstOnlineDevice(AdbDeviceList deviceList) {
         return deviceList.getDevices().stream().filter(Device::isOnline).findFirst();
+    }
+
+    public static class Factory implements Provider<MainFrame> {
+        private final AppGlobals globals;
+        private final CommandLine commandLine;
+
+        @Inject
+        public Factory(AppGlobals globals, CommandLine commandLine) {
+            this.globals = globals;
+            this.commandLine = commandLine;
+        }
+
+        @Override
+        public MainFrame get() {
+            return new MainFrame(globals, commandLine);
+        }
     }
 }

@@ -284,12 +284,19 @@ public class UiHelper {
      * @return the Action object
      */
     public static Action makeAction(String actionTitle, Runnable action) {
-        return new AbstractAction(actionTitle) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                action.run();
-            }
-        };
+        return makeAction(action).name(actionTitle).build();
+    }
+    /**
+     * Wraps a {@link Runnable} to an {@link Action} with the given title and accelerator key. This method allows using
+     * simpler lambdas for callbacks that doesn't care about the {@link ActionEvent}.
+     *
+     * @param actionTitle the title of the resulting Action
+     * @param accelerator the accelerator key for the Action
+     * @param action the action to be executed when Action is triggered
+     * @return the Action object
+     */
+    public static Action makeAction(String actionTitle, KeyStroke accelerator, Runnable action) {
+        return makeAction(action).name(actionTitle).acceleratorKey(accelerator).build();
     }
 
     /**
@@ -302,11 +309,17 @@ public class UiHelper {
      * @return the Action object
      */
     public static Action makeAction(String actionTitle, Icon icon, Runnable action) {
-        return new AbstractAction(actionTitle, icon) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                action.run();
-            }
-        };
+        return makeAction(action).name(actionTitle).smallIcon(icon).build();
+    }
+
+    /**
+     * Wraps a {@link Runnable} to an {@link Action} and returns a build to configure the action further. This method
+     * allows using simpler lambdas for callbacks that doesn't care about the {@link ActionEvent}.
+     *
+     * @param action the action to be executed when Action is triggered
+     * @return the ActionBuilder object
+     */
+    public static ActionBuilder makeAction(Runnable action) {
+        return new ActionBuilder(action);
     }
 }
