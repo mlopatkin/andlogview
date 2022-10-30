@@ -21,7 +21,6 @@ jobs:
         # Do not use Gradle Daemon because we only have a single invocation.
         with:
           arguments: |
-            -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             --no-daemon
@@ -52,7 +51,6 @@ jobs:
         # Do not use Gradle Daemon because we only have a single invocation.
         with:
           arguments: |
-            -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             --no-daemon

@@ -19,7 +19,6 @@ jobs:
         uses: gradle/gradle-build-action@356abb47e7664b5505e25d7997a5a522a17c62d9
         with:
           arguments: |
-            -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             --no-daemon
