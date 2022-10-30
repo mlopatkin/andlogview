@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview;
+package name.mlopatkin.andlogview.ui.processes;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.DataSource;
-import name.mlopatkin.andlogview.ui.processes.ProcessListFrameUi;
 import name.mlopatkin.andlogview.widgets.TableCellHelper;
 
 import com.google.common.collect.ImmutableList;

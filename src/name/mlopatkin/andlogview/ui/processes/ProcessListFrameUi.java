@@ -25,7 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
-public class ProcessListFrameUi {
+class ProcessListFrameUi {
     private final JFrame processListFrame;
     private final JTable processListTable;
 
