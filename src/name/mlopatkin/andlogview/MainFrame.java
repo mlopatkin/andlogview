@@ -587,7 +587,7 @@ public class MainFrame extends JFrame {
             DataSource source = sourceHolder.getDataSource();
             assert source != null;
             assert source.getPidToProcessConverter() != null;
-            processListFrame.setVisible(true);
+            processListFrame.show();
         }
     };
 
