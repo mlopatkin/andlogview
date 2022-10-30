@@ -20,7 +20,8 @@ jobs:
         with:
           arguments: |
             -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
-            -Dorg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.auto-download=false
             --no-daemon
             --stacktrace
             --continue

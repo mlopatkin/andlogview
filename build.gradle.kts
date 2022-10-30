@@ -260,7 +260,7 @@ tasks.register<UploadTask>("bitbucketUpload") {
 // Configure jpackage distribution
 if (System.getProperty("os.name").toLowerCase(Locale.US).contains("linux")) {
     val jpackageJdkPath = javaToolchains.compilerFor {
-        languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_16.majorVersion))
+        languageVersion.set(libs.versions.compileJdkVersion.map(JavaLanguageVersion::of))
     }.get().metadata.installationPath.toString()
 
     runtime {
