@@ -108,14 +108,13 @@ public class MainFrame extends JFrame {
     private LogModel logModel = LogModel.empty();
     private BookmarkController bookmarkController;
     private BookmarkModel bookmarkModel;
-
-    private ProcessListFrame processListFrame;
-
     private BufferFilterMenu bufferMenu;
     private JTable logElements;
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
+    @Inject
+    ProcessListFrame processListFrame;
     @Inject
     SourceStatusPresenter sourceStatusPresenter;
     @Inject
@@ -178,7 +177,6 @@ public class MainFrame extends JFrame {
 
         dependencies.injectMainFrame(this);
         initialize();
-        processListFrame = new ProcessListFrame(this);
     }
 
     public void setSource(DataSource newSource) {

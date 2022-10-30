@@ -17,8 +17,11 @@ package name.mlopatkin.andlogview.ui.processes;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import com.google.common.collect.ImmutableList;
+
+import dagger.Lazy;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -26,6 +29,7 @@ import java.awt.Point;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.swing.JFrame;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter.SortKey;
@@ -45,7 +49,7 @@ public class ProcessListFrame {
     private static final ImmutableList<SortKey> DEFAULT_SORTING =
             ImmutableList.of(new SortKey(ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
 
-    private final JFrame owner;
+    private final Lazy<DialogFactory> dialogFactory;
     private final ProcessListFrameUi frameUi = new ProcessListFrameUi();
 
     private @Nullable ProcessListModel model;
@@ -56,8 +60,9 @@ public class ProcessListFrame {
         }
     });
 
-    public ProcessListFrame(JFrame owner) {
-        this.owner = owner;
+    @Inject
+    public ProcessListFrame(Lazy<DialogFactory> dialogFactory) {
+        this.dialogFactory = dialogFactory;
     }
 
     private void reset() {
@@ -103,7 +108,7 @@ public class ProcessListFrame {
         var frame = getFrame();
         Point position = Configuration.ui.processWindowPosition();
         if (position == null) {
-            frame.setLocationRelativeTo(owner);
+            frame.setLocationRelativeTo(dialogFactory.get().getOwner());
         } else {
             frame.setLocation(position);
         }
