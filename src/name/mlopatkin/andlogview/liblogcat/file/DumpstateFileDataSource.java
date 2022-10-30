@@ -199,7 +199,7 @@ public final class DumpstateFileDataSource implements DataSource {
             }
             return new ImportResult(
                     new DumpstateFileDataSource(
-                            fileName, sorter.build(), EnumSet.allOf(Field.class), availableBuffers,
+                            fileName, sorter.buildTimestampOrdered(), EnumSet.allOf(Field.class), availableBuffers,
                             pidToProcessConverter),
                     problems);
         }

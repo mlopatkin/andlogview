@@ -77,6 +77,13 @@ public class OfflineSorter {
         return hasTimeTravels;
     }
 
+    public List<LogRecord> buildTimestampOrdered() {
+        var output = new ArrayList<LogRecord>(buffer.size());
+        buffer.asMap().values().forEach(output::addAll);
+        output.sort(timestampBufferComparator());
+        return output;
+    }
+
     public List<LogRecord> build() {
         var output = new ArrayList<LogRecord>(buffer.size());
 
@@ -131,12 +138,15 @@ public class OfflineSorter {
         }
     }
 
+    /**
+     * Creates a comparator that orders entries within the same sequence by the sequence number. Different sequences are
+     * sorted by timestamp. Note that this comparator requires all timestamps to be consistent with sequence numbers,
+     * otherwise the comparison wouldn't be transitive.
+     *
+     * @return the comparator
+     */
     private static Comparator<LogRecord> timeBasedCrossSequenceComparator() {
-        Comparator<LogRecord.Buffer> bufferComparator = Comparator.nullsFirst(Comparator.naturalOrder());
-        Comparator<Timestamp> timestampComparator = Comparator.nullsFirst(Comparator.naturalOrder());
-
-        Comparator<LogRecord> crossSequenceComparator = Comparator.comparing(LogRecord::getTime, timestampComparator)
-                .thenComparing(LogRecord::getBuffer, bufferComparator);
+        Comparator<LogRecord> crossSequenceComparator = timestampBufferComparator();
 
         return (o1, o2) -> {
             if (o1.getSeqNo().isComparableTo(o2.getSeqNo())) {
@@ -144,6 +154,21 @@ public class OfflineSorter {
             }
             return crossSequenceComparator.compare(o1, o2);
         };
+    }
+
+    /**
+     * Creates a comparator that orders entries based on the timestamp. It doesn't take a sequence number into account
+     * at all. This comparator uses record's buffer as a tiebreaker. The comparator is not null-safe but can handle null
+     * timestamps and buffers.
+     *
+     * @return the comparator
+     */
+    private static Comparator<LogRecord> timestampBufferComparator() {
+        Comparator<LogRecord.Buffer> bufferComparator = Comparator.nullsFirst(Comparator.naturalOrder());
+        Comparator<Timestamp> timestampComparator = Comparator.nullsFirst(Comparator.naturalOrder());
+
+        return Comparator.comparing(LogRecord::getTime, timestampComparator)
+                .thenComparing(LogRecord::getBuffer, bufferComparator);
     }
 
     private static class BufferSplitter extends AbstractIterator<List<LogRecord>> {

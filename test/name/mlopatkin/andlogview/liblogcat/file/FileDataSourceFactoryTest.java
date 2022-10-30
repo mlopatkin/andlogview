@@ -132,9 +132,11 @@ public class FileDataSourceFactoryTest {
         var eventsBuffer =
                 records.stream().filter(LogRecordPredicates.withBuffer(Buffer.EVENTS)).collect(Collectors.toList());
 
-        assertThat(mainBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
-        assertThat(radioBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
-        assertThat(eventsBuffer).isSortedAccordingTo(Comparator.comparing(LogRecord::getSeqNo));
+
+        var timeComparator = Comparator.comparing(LogRecord::getTime);
+        assertThat(mainBuffer).isSortedAccordingTo(timeComparator);
+        assertThat(radioBuffer).isSortedAccordingTo(timeComparator);
+        assertThat(eventsBuffer).isSortedAccordingTo(timeComparator);
 
         assertThat(importResult.getProblems()).isNotEmpty();
     }
