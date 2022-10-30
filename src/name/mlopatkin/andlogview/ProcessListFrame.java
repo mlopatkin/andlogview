@@ -17,16 +17,15 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.ui.processes.ProcessListFrameUi;
 import name.mlopatkin.andlogview.widgets.TableCellHelper;
+
+import com.google.common.collect.ImmutableList;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.awt.BorderLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +33,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
@@ -54,44 +49,36 @@ import javax.swing.table.TableRowSorter;
 /**
  * Displays list of available processes and their pids.
  */
-@SuppressWarnings("NullAway")
-public class ProcessListFrame extends JFrame {
-    private JTable table;
-    private JFrame owner;
+public class ProcessListFrame {
+    private static final TableModel EMPTY_MODEL = new DefaultTableModel();
+    private static final ImmutableList<SortKey> DEFAULT_SORTING =
+            ImmutableList.of(new SortKey(ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
+
+    private static final String[] COLUMN_NAMES = new String[] {"PID", "Process"};
+    private static final Class<?>[] COLUMN_CLASSES = new Class<?>[] {Integer.class, String.class};
+
+    private final JFrame owner;
+    private final ProcessListFrameUi frameUi = new ProcessListFrameUi();
+    private @Nullable ProcessListModel model;
+    private final Timer updateTimer = new Timer(UPDATE_DELAY_MS, e -> {
+        if (model != null) {
+            model.update();
+        }
+    });
 
     public ProcessListFrame(JFrame owner) {
         this.owner = owner;
-        setTitle("Processes");
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        JPanel contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
-
-        JScrollPane scrollPane = new JScrollPane();
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        table = new JTable();
-        table.setFillsViewportHeight(true);
-        table.setAutoCreateRowSorter(true);
-        table.setAutoCreateColumnsFromModel(false);
-        scrollPane.setViewportView(table);
-        pack();
     }
-
-    private static final TableModel EMPTY_MODEL = new DefaultTableModel();
 
     private void reset() {
         updateTimer.stop();
         model = null;
-        table.setModel(EMPTY_MODEL);
+        frameUi.getProcessTable().setModel(EMPTY_MODEL);
     }
-
-    private static final List<SortKey> DEFAULT_SORTING =
-            Arrays.asList(new SortKey(ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
 
     public void setSource(@Nullable DataSource source) {
         assert SwingUtilities.isEventDispatchThread();
+        var table = frameUi.getProcessTable();
         @SuppressWarnings("unchecked")
         List<SortKey> oldKeys = (List<SortKey>) table.getRowSorter().getSortKeys();
         reset();
@@ -114,16 +101,11 @@ public class ProcessListFrame extends JFrame {
             }
             updateTimer.start();
         } else {
-            if (isVisible()) {
+            if (frameUi.getFrame().isVisible()) {
                 setVisible(false);
             }
         }
     }
-
-    private ProcessListModel model;
-
-    private static final String[] COLUMN_NAMES = new String[] {"PID", "Process"};
-    private static final Class<?>[] COLUMN_CLASSES = new Class<?>[] {Integer.class, String.class};
 
     @SuppressWarnings("rawtypes")
     private static class ProcessListModel extends AbstractTableModel {
@@ -209,13 +191,6 @@ public class ProcessListFrame extends JFrame {
 
     private static final int UPDATE_DELAY_MS = 1000;
 
-    private Timer updateTimer = new Timer(UPDATE_DELAY_MS, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            model.update();
-        }
-    });
-
     private static class ColumnModel extends DefaultTableColumnModel {
         private TableCellEditor readOnlyEditor = TableCellHelper.createReadOnlyCellTextEditor();
 
@@ -252,18 +227,17 @@ public class ProcessListFrame extends JFrame {
         }
     }
 
-    @Override
     public void setVisible(boolean b) {
         if (b) {
             Point position = Configuration.ui.processWindowPosition();
             if (position == null) {
-                setLocationRelativeTo(owner);
+                frameUi.getFrame().setLocationRelativeTo(owner);
             } else {
-                setLocation(position);
+                frameUi.getFrame().setLocation(position);
             }
         } else {
-            Configuration.ui.processWindowPosition(getLocation());
+            Configuration.ui.processWindowPosition(frameUi.getFrame().getLocation());
         }
-        super.setVisible(b);
+        frameUi.getFrame().setVisible(b);
     }
 }
