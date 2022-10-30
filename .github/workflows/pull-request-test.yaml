@@ -15,9 +15,10 @@ jobs:
       - name: Run lint checks
         run: bash tools/hooks/lint-all.sh
       - name: Run unit tests
-        # Do not use Gradle Daemon because we only have a single invocation.
-        uses: gradle/gradle-build-action@356abb47e7664b5505e25d7997a5a522a17c62d9
+        # gradle-build-action 2.3.3
+        uses: gradle/gradle-build-action@3fbe033aaae657f011f88f29be9e65ed26bd29ef
         with:
+          # Do not use Gradle Daemon because we only have a single invocation.
           arguments: |
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
