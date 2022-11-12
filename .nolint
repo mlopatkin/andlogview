@@ -9,6 +9,5 @@ jmh/resources/*
 # Nobody cares
 *.svg
 
-# Submodules
-.gitmodules
-bitbucket-plugin
+# IDEA Run Configurations (IDEA removes the trailing EOL when the configuration changes)
+config/idea/run/*.xml
