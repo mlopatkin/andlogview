@@ -29,7 +29,7 @@ import name.mlopatkin.andlogview.logmodel.LogModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
-import name.mlopatkin.andlogview.search.RequestCompilationException;
+import name.mlopatkin.andlogview.search.RowSearchStrategy;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
@@ -46,13 +46,15 @@ import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchPromptView;
 import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
 import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
+import name.mlopatkin.andlogview.ui.search.SearchPresenter;
+import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
 import name.mlopatkin.andlogview.utils.Optionals;
-import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
@@ -117,7 +119,6 @@ public class MainFrame extends JFrame {
 
     private final DataSourceHolder sourceHolder;
     private TableScrollController scrollController;
-    private SearchController searchController;
 
     private LogModel logModel = LogModel.empty();
     private BookmarkController bookmarkController;
@@ -135,6 +136,12 @@ public class MainFrame extends JFrame {
     SourceStatusPresenter sourceStatusPresenter;
     @Inject
     SearchStatusPresenter searchStatusPresenter;
+    @Inject
+    MainFrameSearchPromptView searchPromptView;
+
+    @Inject
+    SearchPresenter<LogRecord, TablePosition, RowSearchStrategy> searchPresenter;
+
     @Inject
     StatusPanel statusPanel;
     @Inject
@@ -285,8 +292,6 @@ public class MainFrame extends JFrame {
 
         scrollController = new TableScrollController(logElements);
 
-        // TODO(mlopatkin) Replace this cast with injection
-        searchController = new SearchController((DecoratingRendererTable) logElements, recordsModel);
         controlsPanel = new JPanel();
         getContentPane().add(controlsPanel, BorderLayout.SOUTH);
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
@@ -322,59 +327,27 @@ public class MainFrame extends JFrame {
         pack();
     }
 
-    private void setupSearchButtons() {
-        UiHelper.bindKeyGlobal(this, KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD, e -> showSearchField());
-        UiHelper.bindKeyGlobal(this, KEY_FIND_NEXT, ACTION_FIND_NEXT, e -> {
-            if (searchController.isActive()) {
-                if (searchController.searchNext()) {
-                    searchStatusPresenter.reset();
-                } else {
-                    searchStatusPresenter.showNotFoundMessage();
-                }
-            } else {
-                showSearchField();
-            }
-        });
+    public JTextField getInstantSearchTextField() {
+        return instantSearchTextField;
+    }
 
-        UiHelper.bindKeyGlobal(this, KEY_FIND_PREV, ACTION_FIND_PREV, e -> {
-            if (searchController.isActive()) {
-                if (searchController.searchPrev()) {
-                    searchStatusPresenter.reset();
-                } else {
-                    searchStatusPresenter.showNotFoundMessage();
-                }
-            } else {
-                showSearchField();
-            }
-        });
+    private void setupSearchButtons() {
+        UiHelper.bindKeyGlobal(this, KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD,
+                e -> searchPresenter.showSearchPrompt());
+        UiHelper.bindKeyGlobal(this, KEY_FIND_NEXT, ACTION_FIND_NEXT, e -> searchPresenter.findNext());
+
+        UiHelper.bindKeyGlobal(this, KEY_FIND_PREV, ACTION_FIND_PREV, e -> searchPresenter.findPrev());
 
         UiHelper.bindKeyGlobal(this, KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, e -> {
-            hideSearchField();
-            instantSearchTextField.setText(null);
-            try {
-                searchController.startSearch(null);
-            } catch (RequestCompilationException e1) {
-                logger.error("Unexpected exception", e1);
-            }
+            searchPresenter.stopSearch();
         });
 
         UiHelper.bindKeyFocused(
-                instantSearchTextField, KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH, e -> {
-                    hideSearchField();
-                    String request = instantSearchTextField.getText();
-                    try {
-                        if (!searchController.startSearch(request)) {
-                            logElements.requestFocusInWindow();
-                            searchStatusPresenter.showNotFoundMessage();
-                        }
-                    } catch (RequestCompilationException e1) {
-                        ErrorDialogsHelper.showError(
-                                MainFrame.this, "%s isn't a valid search expression: %s", request, e1.getMessage());
-                    }
-                });
+                instantSearchTextField, KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH,
+                e -> searchPromptView.commit());
     }
 
-    private void showSearchField() {
+    public void showSearchField() {
         scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(true);
         instantSearchTextField.selectAll();
@@ -385,7 +358,7 @@ public class MainFrame extends JFrame {
         scrollController.scrollIfNeeded();
     }
 
-    private void hideSearchField() {
+    public void hideSearchField() {
         scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(false);
         controlsPanel.revalidate();

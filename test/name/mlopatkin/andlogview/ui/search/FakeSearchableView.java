@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.search;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
+package name.mlopatkin.andlogview.ui.search;
 
-import java.util.function.Predicate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-public interface RowSearchStrategy extends Predicate<LogRecord> {
-    boolean isRowMatched(LogRecord record);
+import java.util.Optional;
 
-    void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter);
+public class FakeSearchableView implements SearchPresenter.SearchableView<Integer> {
+    private @Nullable Integer selectedRow;
+
+    public void setSelectedRow(int row) {
+        selectedRow = row;
+    }
 
     @Override
-    default boolean test(LogRecord logRecord) {
-        return isRowMatched(logRecord);
+    public void showSearchResult(Integer row) {
+        selectedRow = row;
+    }
+
+    @Override
+    public Optional<Integer> getSearchStartPosition() {
+        return Optional.ofNullable(selectedRow);
     }
 }

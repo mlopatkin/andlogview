@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
+package name.mlopatkin.andlogview.search;
 
-include("base")
-include("device")
-include("logmodel")
-include("parsers")
-include("search")
+/**
+ * A model that provides searchable data and their positions. A position can be used to look up data item in the model
+ * or associated structures.
+ *
+ * @param <T> the type of data
+ * @param <P> the type of position
+ */
+public interface SearchDataModel<T, P> {
+    /**
+     * Creates a new cursor that points to the beginning of the model.
+     *
+     * @return the new cursor
+     */
+    SearchCursor<T, P> newCursor();
+}

@@ -20,14 +20,30 @@ import dagger.Lazy;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * The lazy value. The actual value is computed upon the first access and then cached.
+ * <p>
+ * Thread safety note: the holder itself is thread-safe and the value is computed by a single thread only. The supplied
+ * computations must be thread-safe too if the lazy instance is going to be accessed from multiple threads.
+ *
+ * @param <T> the type of the underlying value.
+ */
 public abstract class LazyInstance<T> implements Lazy<T> {
     private LazyInstance() {
     }
 
+    /**
+     * Creates a lazy holder that uses the provided supplier to compute the value upon the first access.
+     *
+     * @param supplier the supplier to compute the value
+     * @param <T> the type of the value
+     * @return a lazy holder
+     */
     public static <T> LazyInstance<T> lazy(Supplier<? extends T> supplier) {
-        return new LazyInstance<T>() {
+        return new LazyInstance<>() {
             @Nullable
             private volatile T instance;
 
@@ -38,7 +54,7 @@ public abstract class LazyInstance<T> implements Lazy<T> {
                     synchronized (this) {
                         value = instance;
                         if (value == null) {
-                            value = instance = supplier.get();
+                            instance = value = Objects.requireNonNull(supplier.get());
                         }
                     }
                 }

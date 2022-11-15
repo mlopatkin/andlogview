@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
-
-include("base")
-include("device")
-include("logmodel")
-include("parsers")
-include("search")
+/**
+ * A GUI part of the text search feature.
+ */
+package name.mlopatkin.andlogview.ui.search;

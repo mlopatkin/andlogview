@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
+package name.mlopatkin.andlogview.ui.search;
 
-include("base")
-include("device")
-include("logmodel")
-include("parsers")
-include("search")
+import name.mlopatkin.andlogview.search.RequestCompilationException;
+
+public interface SearchPatternCompiler<S> {
+    S compile(String patternText) throws RequestCompilationException;
+}

@@ -121,7 +121,7 @@ tasks.withType<JavaCompile>().configureEach {
         option("NullAway:ExcludedClassAnnotations", "javax.annotation.Generated,javax.annotation.processing.Generated")
         option("NullAway:ExcludedFieldAnnotations",
                 listOf("org.checkerframework.checker.nullness.qual.MonotonicNonNull",
-                        "org.mockito.Mock,org.mockito.Captor",
+                        "org.mockito.Mock,org.mockito.Captor,org.mockito.Spy",
                         "org.junit.jupiter.api.io.TempDir").joinToString(separator = ","))
         errorproneArgs.add("-Xep:NullAway:ERROR")
     }

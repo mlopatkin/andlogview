@@ -27,6 +27,8 @@ import name.mlopatkin.andlogview.ui.device.AdbServicesSubcomponent;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.search.SearchScoped;
+import name.mlopatkin.andlogview.ui.search.logtable.LogTableSearchModule;
 
 import dagger.Component;
 
@@ -37,10 +39,12 @@ import javax.swing.JTable;
  * Bootstrap class to retrieve dependencies of the Main frame during transitional period.
  */
 @MainFrameScoped
+@SearchScoped
 @Component(
         modules = {
                 AdbServicesSubcomponent.AdbMainModule.class,
                 MainFrameModule.class,
+                LogTableSearchModule.class,
         },
         dependencies = AppGlobals.class)
 public interface MainFrameDependencies {

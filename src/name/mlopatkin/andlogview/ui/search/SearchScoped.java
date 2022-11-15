@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
+package name.mlopatkin.andlogview.ui.search;
 
-include("base")
-include("device")
-include("logmodel")
-include("parsers")
-include("search")
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
+
+/**
+ * A scope for the search. Only one active search can exist in the scope.
+ */
+@Scope
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+public @interface SearchScoped {
+}

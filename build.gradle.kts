@@ -20,7 +20,6 @@ import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import java.util.Locale
 
 @Suppress("DSL_SCOPE_VIOLATION")  // https://youtrack.jetbrains.com/issue/KTIJ-19369
@@ -42,6 +41,7 @@ dependencies {
     implementation(project(":device"))
     implementation(project(":logmodel"))
     implementation(project(":parsers"))
+    implementation(project(":search"))
     implementation(libs.dagger.runtime)
     implementation(libs.guava)
     implementation(libs.gson)
@@ -54,6 +54,7 @@ dependencies {
 
     testImplementation(testFixtures(project(":base")))
     testImplementation(testFixtures(project(":logmodel")))
+    testImplementation(testFixtures(project(":search")))
 
     jmhImplementation(testFixtures(project(":parsers")))
 }
