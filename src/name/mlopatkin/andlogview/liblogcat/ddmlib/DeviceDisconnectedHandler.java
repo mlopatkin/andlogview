@@ -17,6 +17,7 @@ package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import java.awt.EventQueue;
 
@@ -30,11 +31,14 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
     // TODO(mlopatkin) Replace MainFrame with something more specific. DialogFactory covers one use case but the call
     //  to waitForDevice is still problematic
     private final MainFrame mainFrame;
+    private final DialogFactory dialogFactory;
     private final AdbConfigurationPref adbConfigurationPref;
 
     @Inject
-    DeviceDisconnectedHandler(MainFrame mainFrame, AdbConfigurationPref adbConfigurationPref) {
+    DeviceDisconnectedHandler(MainFrame mainFrame, DialogFactory dialogFactory,
+            AdbConfigurationPref adbConfigurationPref) {
         this.mainFrame = mainFrame;
+        this.dialogFactory = dialogFactory;
         this.adbConfigurationPref = adbConfigurationPref;
     }
 
@@ -62,7 +66,7 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
 
     private void showNotificationDialog(String message) {
         assert EventQueue.isDispatchThread();
-        JOptionPane.showMessageDialog(mainFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(dialogFactory.getOwner(), message, "Warning", JOptionPane.WARNING_MESSAGE);
     }
 
     /**

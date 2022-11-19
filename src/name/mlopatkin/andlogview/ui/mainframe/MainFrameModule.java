@@ -58,11 +58,11 @@ public class MainFrameModule {
 
     @Provides
     @MainFrameScoped
-    DialogFactory provideDialogFactory() {
+    DialogFactory provideDialogFactory(MainFrameUi mainFrameUi) {
         return new DialogFactory() {
             @Override
             public JFrame getOwner() {
-                return mainFrame;
+                return mainFrameUi;
             }
         };
     }

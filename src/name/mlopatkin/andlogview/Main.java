@@ -111,7 +111,7 @@ public class Main {
 
     private MainFrame createAndShowWindow() {
         MainFrame window = mainFrameProvider.get();
-        window.setVisible(true);
+        window.mainFrameUi.setVisible(true);
         return window;
     }
 
@@ -122,11 +122,11 @@ public class Main {
         // As this shows a dialog, we have to do this on the EDT.
         configurationLoadingState.handleError(e -> {
             logger.warn("Unexpected exception while parsing config file", e);
-            ErrorDialogsHelper.showError(window, "Error in configuration file: " + e.getMessage());
+            ErrorDialogsHelper.showError(window.mainFrameUi, "Error in configuration file: " + e.getMessage());
         });
 
         if (commandLine.isShouldShowUsage()) {
-            JOptionPane.showMessageDialog(window, "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
+            JOptionPane.showMessageDialog(window.mainFrameUi, "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
                     "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
         }
         File fileToOpen = commandLine.getFileArgument();

@@ -48,6 +48,7 @@ import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameUi;
 import name.mlopatkin.andlogview.ui.mainframe.TableColumnModelFactory;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchPromptView;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchUi;
@@ -99,7 +100,7 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
 
-public class MainFrame extends JFrame implements MainFrameSearchUi {
+public class MainFrame implements MainFrameSearchUi {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
     private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
@@ -119,6 +120,9 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
             SystemUtils.IS_OS_MACOS
                     ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
+
+    @Inject
+    MainFrameUi mainFrameUi;
 
     @Inject
     DataSourceHolder sourceHolder;
@@ -280,27 +284,19 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
      * Initialize the contents of the frame.
      */
     private void initialize(boolean isDebug) {
-        setTitle("AndLogView " + Main.getVersionString());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrameUi.setTitle("AndLogView " + Main.getVersionString());
+        mainFrameUi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        logElements.setFillsViewportHeight(true);
-        logElements.setShowGrid(false);
+        initLogTable();
 
-        LogRecordTableColumnModel columnModel = columnModelFactory.create(mapper, Column.getSelectedColumns());
-        logElements.setColumnModel(columnModel);
-        UiHelper.addPopupMenu(
-                logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
         TransferHandler fileHandler = new FileTransferHandler(this, fileOpener);
-        setTransferHandler(fileHandler);
+        mainFrameUi.setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
-
-        JScrollPane scrollPane = new JScrollPane(logElements);
-        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         scrollController = new TableScrollController(logElements);
 
         controlsPanel = new JPanel();
-        getContentPane().add(controlsPanel, BorderLayout.SOUTH);
+        mainFrameUi.getContentPane().add(controlsPanel, BorderLayout.SOUTH);
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
 
         instantSearchTextField = new JTextField();
@@ -314,23 +310,37 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
 
         setupSearchButtons();
         setupMainMenu(isDebug);
-        setPreferredSize(windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
+        mainFrameUi.setPreferredSize(
+                windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
         Optional<FrameLocation> frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
         if (frameLocation.isPresent()) {
-            setLocation(frameLocation.get().x, frameLocation.get().y);
+            mainFrameUi.setLocation(frameLocation.get().x, frameLocation.get().y);
         } else {
-            setLocationByPlatform(true);
+            mainFrameUi.setLocationByPlatform(true);
         }
 
-        addWindowListener(new WindowAdapter() {
+        mainFrameUi.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 windowsPositionsPref.setFrameInfo(WindowsPositionsPref.Frame.MAIN,
-                        new FrameLocation(getLocation().x, getLocation().y),
-                        new FrameDimensions(getWidth(), getHeight()));
+                        new FrameLocation(mainFrameUi.getLocation().x, mainFrameUi.getLocation().y),
+                        new FrameDimensions(mainFrameUi.getWidth(), mainFrameUi.getHeight()));
             }
         });
-        pack();
+        mainFrameUi.pack();
+    }
+
+    private void initLogTable() {
+        logElements.setFillsViewportHeight(true);
+        logElements.setShowGrid(false);
+
+        LogRecordTableColumnModel columnModel = columnModelFactory.create(mapper, Column.getSelectedColumns());
+        logElements.setColumnModel(columnModel);
+        UiHelper.addPopupMenu(
+                logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
+
+        JScrollPane scrollPane = new JScrollPane(logElements);
+        mainFrameUi.getContentPane().add(scrollPane, BorderLayout.CENTER);
     }
 
     @Override
@@ -339,13 +349,13 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
     }
 
     private void setupSearchButtons() {
-        UiHelper.bindKeyGlobal(this, KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD,
+        UiHelper.bindKeyGlobal(mainFrameUi, KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD,
                 e -> searchPresenter.showSearchPrompt());
-        UiHelper.bindKeyGlobal(this, KEY_FIND_NEXT, ACTION_FIND_NEXT, e -> searchPresenter.findNext());
+        UiHelper.bindKeyGlobal(mainFrameUi, KEY_FIND_NEXT, ACTION_FIND_NEXT, e -> searchPresenter.findNext());
 
-        UiHelper.bindKeyGlobal(this, KEY_FIND_PREV, ACTION_FIND_PREV, e -> searchPresenter.findPrev());
+        UiHelper.bindKeyGlobal(mainFrameUi, KEY_FIND_PREV, ACTION_FIND_PREV, e -> searchPresenter.findPrev());
 
-        UiHelper.bindKeyGlobal(this, KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, e -> {
+        UiHelper.bindKeyGlobal(mainFrameUi, KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, e -> {
             searchPresenter.stopSearch();
         });
 
@@ -399,7 +409,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         mnView.add(acShowBookmarks);
         mnView.add(acShowProcesses);
         if (isDebug) {
-            mnView.add(UiHelper.makeAction("Dump view hierarchy", this::list));
+            mnView.add(UiHelper.makeAction("Dump view hierarchy", mainFrameUi::list));
         }
         mainMenu.add(mnView);
 
@@ -418,7 +428,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         bufferMenu = new BufferFilterMenu(mnFilters, mainFilterController);
         mainMenu.add(mnFilters);
 
-        setJMenuBar(mainMenu);
+        mainFrameUi.setJMenuBar(mainMenu);
     }
 
     private void openFile() {
