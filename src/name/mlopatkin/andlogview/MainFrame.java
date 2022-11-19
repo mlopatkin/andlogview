@@ -47,6 +47,7 @@ import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchPromptView;
+import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchUi;
 import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
 import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
@@ -96,7 +97,7 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements MainFrameSearchUi {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
     private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
@@ -327,7 +328,8 @@ public class MainFrame extends JFrame {
         pack();
     }
 
-    public JTextField getInstantSearchTextField() {
+    @Override
+    public JTextField getSearchField() {
         return instantSearchTextField;
     }
 
@@ -347,6 +349,7 @@ public class MainFrame extends JFrame {
                 e -> searchPromptView.commit());
     }
 
+    @Override
     public void showSearchField() {
         scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(true);
@@ -358,6 +361,7 @@ public class MainFrame extends JFrame {
         scrollController.scrollIfNeeded();
     }
 
+    @Override
     public void hideSearchField() {
         scrollController.notifyBeforeInsert();
         instantSearchTextField.setVisible(false);

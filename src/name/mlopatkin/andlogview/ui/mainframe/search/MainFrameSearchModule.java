@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.mainframe.search;
 
+import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.SearchModel;
 import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
@@ -57,4 +58,7 @@ public abstract class MainFrameSearchModule {
 
     @Binds
     abstract SearchPresenter.SearchPromptView getSearchPromptView(MainFrameSearchPromptView impl);
+
+    @Binds
+    abstract MainFrameSearchUi getSearchUi(MainFrame mainFrame);
 }

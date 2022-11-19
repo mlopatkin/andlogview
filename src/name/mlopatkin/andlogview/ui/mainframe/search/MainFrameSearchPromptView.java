@@ -17,7 +17,6 @@
 package name.mlopatkin.andlogview.ui.mainframe.search;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
-import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.search.AbstractSearchPromptView;
 import name.mlopatkin.andlogview.ui.search.SearchScoped;
@@ -29,21 +28,20 @@ import javax.swing.JTextField;
 @SearchScoped
 public class MainFrameSearchPromptView extends AbstractSearchPromptView {
     private final DialogFactory dialogFactory;
-    private final MainFrame mainFrame;
+    private final MainFrameSearchUi mainFrame;
 
     @Inject
-    public MainFrameSearchPromptView(DialogFactory dialogFactory, MainFrame mainFrame) {
+    public MainFrameSearchPromptView(DialogFactory dialogFactory, MainFrameSearchUi mainFrame) {
         this.dialogFactory = dialogFactory;
         this.mainFrame = mainFrame;
     }
 
-    protected JTextField getSearchPatternField() {
-        return mainFrame.getInstantSearchTextField();
+    private JTextField getSearchPatternField() {
+        return mainFrame.getSearchField();
     }
 
     @Override
     public DialogResult<String> show() {
-        getSearchPatternField().setVisible(true);
         var r = super.show();
         mainFrame.showSearchField();
         return r;
@@ -52,7 +50,6 @@ public class MainFrameSearchPromptView extends AbstractSearchPromptView {
     @Override
     public void hide() {
         super.hide();
-        getSearchPatternField().setVisible(false);
         mainFrame.hideSearchField();
     }
 
