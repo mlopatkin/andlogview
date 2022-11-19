@@ -57,6 +57,7 @@ import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
+import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -98,13 +99,6 @@ import javax.swing.TransferHandler;
 public class MainFrame implements MainFrameSearchUi {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
-    private static final String ACTION_SHOW_SEARCH_FIELD = "show_search";
-    private static final String ACTION_HIDE_SEARCH_FIELD = "hide_search";
-    private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
-    private static final String ACTION_FIND_NEXT = "find_next";
-    private static final String ACTION_FIND_PREV = "find_prev";
-
-    private static final KeyStroke KEY_HIDE_AND_START_SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
     private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     private static final KeyStroke KEY_SHOW_SEARCH_FIELD = UiHelper.createPlatformKeystroke(KeyEvent.VK_F);
     private static final KeyStroke KEY_FIND_NEXT =
@@ -187,17 +181,32 @@ public class MainFrame implements MainFrameSearchUi {
 
     private final PidToProcessMapper mapper = this::mapPidToProcessName;
 
+    // File menu
     private final Action acOpenFile =
             UiHelper.makeAction("Open...", UiHelper.createPlatformKeystroke(KeyEvent.VK_O), this::openFile);
     private final Action acSaveToFile =
             UiHelper.makeAction("Save...", UiHelper.createPlatformKeystroke(KeyEvent.VK_S), this::saveToFile);
 
+    // Edit menu
+    private final Action acFind =
+            UiHelper.makeAction("Find" + CommonChars.ELLIPSIS,
+                    KEY_SHOW_SEARCH_FIELD,
+                    () -> searchPresenter.showSearchPrompt());
+    private final Action acFindNext =
+            UiHelper.makeAction("Find next occurrence", KEY_FIND_NEXT, () -> searchPresenter.findNext());
+    private final Action acFindPrev =
+            UiHelper.makeAction("Find previous occurrence", KEY_FIND_PREV, () -> searchPresenter.findPrev());
+    private final Action acStopSearch =
+            UiHelper.makeAction("Stop search", KEY_HIDE, () -> searchPresenter.stopSearch());
+
+    // View menu
     private final Action acShowBookmarks =
             UiHelper.makeAction("Show bookmarks", UiHelper.createPlatformKeystroke(KeyEvent.VK_P),
                     () -> bookmarkController.showWindow());
     private final Action acShowProcesses =
             UiHelper.makeAction(this::showProcesses).name("Show processes").disabled().build();
 
+    // ADB menu
     private final Action acConnectToDevice = UiHelper.makeAction("Connect to device...", this::connectToDevice);
     private final Action acResetLogs =
             UiHelper.makeAction("Reset logs", UiHelper.createPlatformKeystroke(KeyEvent.VK_R), this::reset);
@@ -280,7 +289,6 @@ public class MainFrame implements MainFrameSearchUi {
 
         initControlPanel();
 
-        setupSearchButtons();
         setupMainMenu(isDebug);
         setupSize();
 
@@ -342,22 +350,6 @@ public class MainFrame implements MainFrameSearchUi {
         return instantSearchTextField;
     }
 
-    private void setupSearchButtons() {
-        UiHelper.bindKeyGlobal(mainFrameUi, KEY_SHOW_SEARCH_FIELD, ACTION_SHOW_SEARCH_FIELD,
-                e -> searchPresenter.showSearchPrompt());
-        UiHelper.bindKeyGlobal(mainFrameUi, KEY_FIND_NEXT, ACTION_FIND_NEXT, e -> searchPresenter.findNext());
-
-        UiHelper.bindKeyGlobal(mainFrameUi, KEY_FIND_PREV, ACTION_FIND_PREV, e -> searchPresenter.findPrev());
-
-        UiHelper.bindKeyGlobal(mainFrameUi, KEY_HIDE, ACTION_HIDE_SEARCH_FIELD, e -> {
-            searchPresenter.stopSearch();
-        });
-
-        UiHelper.bindKeyFocused(
-                instantSearchTextField, KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH,
-                e -> searchPromptView.commit());
-    }
-
     @Override
     public void showSearchField() {
         scrollController.notifyBeforeInsert();
@@ -397,6 +389,13 @@ public class MainFrame implements MainFrameSearchUi {
         mnFile.add(acOpenFile);
         mnFile.add(acSaveToFile);
         mainMenu.add(mnFile);
+
+        JMenu mnEdit = new JMenu("Edit");
+        mnEdit.add(acFind);
+        mnEdit.add(acFindNext);
+        mnEdit.add(acFindPrev);
+        mnEdit.add(acStopSearch);
+        mainMenu.add(mnEdit);
 
         JMenu mnView = new JMenu("View");
         mnView.add(acShowBookmarks);

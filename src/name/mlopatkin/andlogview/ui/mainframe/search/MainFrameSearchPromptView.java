@@ -21,19 +21,35 @@ import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.search.AbstractSearchPromptView;
 import name.mlopatkin.andlogview.ui.search.SearchScoped;
 import name.mlopatkin.andlogview.widgets.DialogResult;
+import name.mlopatkin.andlogview.widgets.UiHelper;
+
+import java.awt.event.KeyEvent;
 
 import javax.inject.Inject;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 @SearchScoped
 public class MainFrameSearchPromptView extends AbstractSearchPromptView {
+    private static final KeyStroke KEY_HIDE_AND_START_SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+    private static final String ACTION_HIDE_AND_START_SEARCH = "hide_and_start_search";
+
     private final DialogFactory dialogFactory;
     private final MainFrameSearchUi mainFrame;
+
+    private boolean keyBindingInitialized;
 
     @Inject
     public MainFrameSearchPromptView(DialogFactory dialogFactory, MainFrameSearchUi mainFrame) {
         this.dialogFactory = dialogFactory;
         this.mainFrame = mainFrame;
+    }
+
+    private void initKeyBindings() {
+        keyBindingInitialized = true;
+        UiHelper.bindKeyFocused(
+                getSearchPatternField(), KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH,
+                e -> commit());
     }
 
     private JTextField getSearchPatternField() {
@@ -42,6 +58,9 @@ public class MainFrameSearchPromptView extends AbstractSearchPromptView {
 
     @Override
     public DialogResult<String> show() {
+        if (!keyBindingInitialized) {
+            initKeyBindings();
+        }
         var r = super.show();
         mainFrame.showSearchField();
         return r;
