@@ -17,14 +17,9 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.AppGlobals;
-import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.filters.MainFilterController;
-import name.mlopatkin.andlogview.ui.FileDialog;
-import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServicesSubcomponent;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.search.SearchScoped;
@@ -50,28 +45,21 @@ import javax.swing.JTable;
 public interface MainFrameDependencies {
     String FOR_MAIN_FRAME = "Main frame";
 
+    // Used in Bookmarks and IndexFrame
     @Named(FOR_MAIN_FRAME)
     JTable getLogTable();
 
-    FilterPanel getFilterPanel();
-
+    // Used in Bookmarks and IndexFrame
     LogRecordTableModel getLogModel();
 
+    // Used in IndexFrame
     LogModelFilter getFilter();
 
+    // Used in Bookmarks and IndexFrame
     DialogFactory getDialogFactory();
 
+    // Used in BookmarksFrameComponent
     BookmarkModel getBookmarkModel();
-
-    BookmarkController getBookmarkController();
-
-    MainFilterController getMainFilterController();
-
-    DataSourceHolder getDataSourceHolder();
-
-    TableColumnModelFactory getColumnModelFactory();
-
-    FileDialog getFileDialog();
 
     void injectMainFrame(MainFrame frame);
 

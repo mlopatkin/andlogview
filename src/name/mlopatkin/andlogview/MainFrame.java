@@ -31,12 +31,14 @@ import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
+import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -46,6 +48,7 @@ import name.mlopatkin.andlogview.ui.mainframe.DaggerMainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameModule;
+import name.mlopatkin.andlogview.ui.mainframe.TableColumnModelFactory;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchPromptView;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchUi;
 import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
@@ -85,7 +88,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -118,17 +120,22 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
                     ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
 
-    private final DataSourceHolder sourceHolder;
+    @Inject
+    DataSourceHolder sourceHolder;
     private TableScrollController scrollController;
 
     private LogModel logModel = LogModel.empty();
-    private BookmarkController bookmarkController;
-    private BookmarkModel bookmarkModel;
+    @Inject
+    BookmarkController bookmarkController;
+    @Inject
+    BookmarkModel bookmarkModel;
     private BufferFilterMenu bufferMenu;
-    private JTable logElements;
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
+    @Inject
+    @Named(MainFrameDependencies.FOR_MAIN_FRAME)
+    JTable logElements;
     @Inject
     LogRecordTableModel recordsModel;
     @Inject
@@ -163,13 +170,19 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
     AdbServicesBridge adbServicesBridge;
     @Inject
     FileOpener fileOpener;
+    @Inject
+    TableColumnModelFactory columnModelFactory;
+    @Inject
+    FilterPanel filterPanel;
+    @Inject
+    MainFilterController mainFilterController;
+    @Inject
+    FileDialog fileDialog;
 
     @Nullable
     private DeviceChangeObserver pendingAttacher;
     private volatile boolean isWaitingForDevice;
 
-    private final MainFrameDependencies dependencies;
-    private final CommandLine commandLine;
     private final LogModel.Observer autoscrollObserver = new LogModel.Observer() {
         @Override
         public void onBeforeRecordsInserted() {
@@ -206,13 +219,10 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
 
     @SuppressWarnings("NullAway")
     private MainFrame(AppGlobals globals, CommandLine commandLine) {
-        dependencies = DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), globals);
-        sourceHolder = dependencies.getDataSourceHolder();
-
-        this.commandLine = commandLine;
-
+        MainFrameDependencies dependencies =
+                DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), globals);
         dependencies.injectMainFrame(this);
-        initialize();
+        initialize(commandLine.isDebug());
     }
 
     public void setSource(DataSource newSource) {
@@ -240,7 +250,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         }
 
         Collection<Column> availableColumns = Column.getColumnsForFields(newSource.getAvailableFields());
-        LogRecordTableColumnModel columns = dependencies.getColumnModelFactory().create(mapper, availableColumns);
+        LogRecordTableColumnModel columns = columnModelFactory.create(mapper, availableColumns);
         logElements.setColumnModel(columns);
         UiHelper.addPopupMenu(
                 logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columns).createMenu());
@@ -269,18 +279,14 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
     /**
      * Initialize the contents of the frame.
      */
-    private void initialize() {
+    private void initialize(boolean isDebug) {
         setTitle("AndLogView " + Main.getVersionString());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        bookmarkModel = dependencies.getBookmarkModel();
-        bookmarkController = dependencies.getBookmarkController();
-        logElements = dependencies.getLogTable();
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        LogRecordTableColumnModel columnModel =
-                dependencies.getColumnModelFactory().create(mapper, Column.getSelectedColumns());
+        LogRecordTableColumnModel columnModel = columnModelFactory.create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
         UiHelper.addPopupMenu(
                 logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
@@ -302,13 +308,12 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         instantSearchTextField.setColumns(10);
         instantSearchTextField.setVisible(false);
 
-        JComponent filterPanel = dependencies.getFilterPanel();
         controlsPanel.add(filterPanel);
         controlsPanel.add(statusPanel.getPanel());
         sourceStatusPresenter.init();
 
         setupSearchButtons();
-        setupMainMenu(dependencies.getMainFilterController());
+        setupMainMenu(isDebug);
         setPreferredSize(windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
         Optional<FrameLocation> frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
         if (frameLocation.isPresent()) {
@@ -382,7 +387,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         }
     }
 
-    private void setupMainMenu(MainFilterController mainFilterController) {
+    private void setupMainMenu(boolean isDebug) {
         JMenuBar mainMenu = new JMenuBar();
 
         JMenu mnFile = new JMenu("File");
@@ -393,7 +398,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         JMenu mnView = new JMenu("View");
         mnView.add(acShowBookmarks);
         mnView.add(acShowProcesses);
-        if (commandLine.isDebug()) {
+        if (isDebug) {
             mnView.add(UiHelper.makeAction("Dump view hierarchy", this::list));
         }
         mainMenu.add(mnView);
@@ -403,7 +408,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
         mnAdb.addSeparator();
         mnAdb.add(acResetLogs);
         mnAdb.add(acChangeConfiguration);
-        if (commandLine.isDebug()) {
+        if (isDebug) {
             mnAdb.addSeparator();
             mnAdb.add(acDumpDevice);
         }
@@ -417,10 +422,10 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
     }
 
     private void openFile() {
-        dependencies.getFileDialog()
-                .selectFileToOpen()
-                .ifPresent(
-                        file -> fileOpener.openFileAsDataSource(file).thenAccept(MainFrame.this::setSourceAsync));
+        fileDialog.selectFileToOpen()
+                .ifPresent(file ->
+                        fileOpener.openFileAsDataSource(file)
+                                .thenAccept(MainFrame.this::setSourceAsync));
     }
 
     private void connectToDevice() {
@@ -498,7 +503,7 @@ public class MainFrame extends JFrame implements MainFrameSearchUi {
     }
 
     private void saveToFile() {
-        dependencies.getFileDialog().selectFileToSave().ifPresent(MainFrame.this::saveTableToFile);
+        fileDialog.selectFileToSave().ifPresent(MainFrame.this::saveTableToFile);
     }
 
     private void showProcesses() {
