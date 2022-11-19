@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.search;
+package name.mlopatkin.andlogview.search.text;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import name.mlopatkin.andlogview.utils.MyStringUtils;
 
-class RegExpSearcher implements HighlightStrategy, SearchStrategy {
-    private Pattern pattern;
+class IgnoreCaseSearcher implements HighlightStrategy, SearchStrategy {
+    private final String textToSearch;
 
-    public RegExpSearcher(String regex) throws PatternSyntaxException {
-        pattern = Pattern.compile(regex);
+    public IgnoreCaseSearcher(String text) {
+        this.textToSearch = text;
     }
 
     @Override
     public boolean test(String s) {
-        return pattern.matcher(s).find();
+        return MyStringUtils.indexOfIgnoreCase(s, textToSearch) >= 0;
     }
 
     @Override
     public void highlightOccurences(String text, TextHighlighter highlighter) {
-        Matcher m = pattern.matcher(text);
-        int pos = 0;
-        while (m.find(pos)) {
-            highlighter.highlightText(m.start(), m.end());
-            pos = m.end();
+        int pos = MyStringUtils.indexOfIgnoreCase(text, textToSearch);
+        while (pos != MyStringUtils.NOT_FOUND && pos < text.length()) {
+            highlighter.highlightText(pos, pos + textToSearch.length());
+            pos = MyStringUtils.indexOfIgnoreCase(text, textToSearch, pos + textToSearch.length());
         }
     }
 }

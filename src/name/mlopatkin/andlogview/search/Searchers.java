@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.search;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.search.text.TextHighlighter;
 
 import com.google.common.collect.ImmutableList;
 

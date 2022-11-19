@@ -20,6 +20,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.regex.PatternSyntaxException;
 
+/**
+ * This exception is thrown when a string representation of a search pattern cannot be converted into something that the
+ * search machinery can use.
+ */
 public class RequestCompilationException extends Exception {
     private String request;
     private final @Nullable PatternSyntaxException cause;

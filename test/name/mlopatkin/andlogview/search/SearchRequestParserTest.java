@@ -21,6 +21,8 @@ package name.mlopatkin.andlogview.search;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 
+import name.mlopatkin.andlogview.search.text.SearchRequestParser;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

@@ -16,7 +16,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.search.TextHighlighter;
+import name.mlopatkin.andlogview.search.text.TextHighlighter;
 
 import com.google.common.collect.Range;
 import com.google.common.html.HtmlEscapers;
@@ -38,11 +38,6 @@ public class TooltipGenerator implements TextHighlighter {
     @Override
     public void highlightText(int from, int to) {
         highlightRanges.add(Range.closedOpen(from, to));
-    }
-
-    @Override
-    public void clearHighlight() {
-        highlightRanges.clear();
     }
 
     private static final String highlightBackgroundColor = "yellow";

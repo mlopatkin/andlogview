@@ -20,6 +20,8 @@ package name.mlopatkin.andlogview.search;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import name.mlopatkin.andlogview.search.text.SearcherBuilder;
+
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.BaseMatcher;

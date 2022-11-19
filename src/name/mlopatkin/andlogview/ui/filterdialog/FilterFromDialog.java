@@ -21,8 +21,8 @@ import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
-import name.mlopatkin.andlogview.search.SearchRequestParser;
-import name.mlopatkin.andlogview.search.SearcherBuilder;
+import name.mlopatkin.andlogview.search.text.SearchRequestParser;
+import name.mlopatkin.andlogview.search.text.SearcherBuilder;
 import name.mlopatkin.andlogview.utils.MorePredicates;
 
 import com.google.common.base.Joiner;

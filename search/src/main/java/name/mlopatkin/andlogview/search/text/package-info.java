@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Mikhail Lopatkin
+ * Copyright 2011 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.search;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.search.text.TextHighlighter;
-
-import java.util.function.Predicate;
-
-public interface RowSearchStrategy extends Predicate<LogRecord> {
-    boolean isRowMatched(LogRecord record);
-
-    void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter);
-
-    @Override
-    default boolean test(LogRecord logRecord) {
-        return isRowMatched(logRecord);
-    }
-}
+/**
+ * The infrastructure for the text search. Creating patterns from regular expressions, highlighting matches, etc.
+ */
+package name.mlopatkin.andlogview.search.text;

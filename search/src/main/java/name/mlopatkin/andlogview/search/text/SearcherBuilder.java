@@ -12,11 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- *
  */
 
-package name.mlopatkin.andlogview.search;
+package name.mlopatkin.andlogview.search.text;
+
+import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import java.util.function.Predicate;
 import java.util.regex.Pattern;

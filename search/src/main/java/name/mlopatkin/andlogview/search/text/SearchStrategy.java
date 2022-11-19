@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.search;
+package name.mlopatkin.andlogview.search.text;
 
-public interface HighlightStrategy extends SearchStrategy {
-    void highlightOccurences(String text, TextHighlighter highlighter);
-}
+import java.util.function.Predicate;
+
+/**
+ * A predicate that can check if the String contains some pattern.
+ */
+public interface SearchStrategy extends Predicate<String> {}

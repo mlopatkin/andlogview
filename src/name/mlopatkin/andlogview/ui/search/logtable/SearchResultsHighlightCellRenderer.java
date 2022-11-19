@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.search.logtable;
 import name.mlopatkin.andlogview.TooltipGenerator;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RowSearchStrategy;
-import name.mlopatkin.andlogview.search.TextHighlighter;
+import name.mlopatkin.andlogview.search.text.TextHighlighter;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
