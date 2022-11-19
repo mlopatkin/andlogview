@@ -21,11 +21,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.search.text.SearchStrategyFactory;
 import name.mlopatkin.andlogview.search.text.TextHighlighter;
-import name.mlopatkin.andlogview.ui.logtable.Column;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -52,27 +52,27 @@ public class RowSearchersTest {
         LogRecord recordNotMatch = makeRecord(TAG_1, APP_NAME_SF, MSG_CONTACTS);
 
         RowSearchStrategy searcher =
-                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.TAG);
-        assertTrue(searcher.isRowMatched(record));
-        assertFalse(searcher.isRowMatched(recordNotMatch));
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Field.TAG);
+        assertTrue(searcher.test(record));
+        assertFalse(searcher.test(recordNotMatch));
     }
 
     @Test
     public void testTagSearcher_highlight() throws Exception {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_CONTACTS);
         RowSearchStrategy searcher =
-                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.TAG);
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Field.TAG);
 
         TextHighlighter mockHighlighterTag = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.TAG.getIndex(), mockHighlighterTag);
+        searcher.highlightColumn(record, Field.TAG, mockHighlighterTag);
         verify(mockHighlighterTag).highlightText(0, TAG_CONTACTS.length());
 
         TextHighlighter mockHighlighterMsg = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.MESSAGE.getIndex(), mockHighlighterMsg);
+        searcher.highlightColumn(record, Field.MESSAGE, mockHighlighterMsg);
         verifyNoInteractions(mockHighlighterMsg);
 
         TextHighlighter mockHighlighterAppName = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.APP_NAME.getIndex(), mockHighlighterAppName);
+        searcher.highlightColumn(record, Field.APP_NAME, mockHighlighterAppName);
         verifyNoInteractions(mockHighlighterAppName);
     }
 
@@ -82,26 +82,26 @@ public class RowSearchersTest {
         LogRecord recordNotMatch = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_SYSTEM_SERVER);
 
         RowSearchStrategy searcher =
-                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.MESSAGE);
-        assertTrue(searcher.isRowMatched(record));
-        assertFalse(searcher.isRowMatched(recordNotMatch));
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Field.MESSAGE);
+        assertTrue(searcher.test(record));
+        assertFalse(searcher.test(recordNotMatch));
     }
 
     @Test
     public void testMsgSearcher_highlight() throws Exception {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_CONTACTS);
         RowSearchStrategy searcher =
-                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.MESSAGE);
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Field.MESSAGE);
 
         TextHighlighter mockHighlighterTag = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.TAG.getIndex(), mockHighlighterTag);
+        searcher.highlightColumn(record, Field.TAG, mockHighlighterTag);
         verifyNoInteractions(mockHighlighterTag);
         TextHighlighter mockHighlighterMsg = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.MESSAGE.getIndex(), mockHighlighterMsg);
+        searcher.highlightColumn(record, Field.MESSAGE, mockHighlighterMsg);
         verify(mockHighlighterMsg).highlightText(Mockito.anyInt(), Mockito.anyInt());
 
         TextHighlighter mockHighlighterAppName = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.APP_NAME.getIndex(), mockHighlighterAppName);
+        searcher.highlightColumn(record, Field.APP_NAME, mockHighlighterAppName);
         verifyNoInteractions(mockHighlighterAppName);
     }
 
@@ -111,27 +111,27 @@ public class RowSearchersTest {
         LogRecord recordNotMatch = makeRecord(TAG_CONTACTS, APP_NAME_SF, MSG_CONTACTS);
 
         RowSearchStrategy searcher =
-                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.APP_NAME);
-        assertTrue(searcher.isRowMatched(record));
-        assertFalse(searcher.isRowMatched(recordNotMatch));
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Field.APP_NAME);
+        assertTrue(searcher.test(record));
+        assertFalse(searcher.test(recordNotMatch));
     }
 
     @Test
     public void testAppNameSearcher_highlight() throws Exception {
         LogRecord record = makeRecord(TAG_CONTACTS, APP_CONTACTS, MSG_CONTACTS);
         RowSearchStrategy searcher =
-                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Column.APP_NAME);
+                new ValueSearcher(SearchStrategyFactory.createHighlightStrategy("contacts"), Field.APP_NAME);
 
         TextHighlighter mockHighlighterTag = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.TAG.getIndex(), mockHighlighterTag);
+        searcher.highlightColumn(record, Field.TAG, mockHighlighterTag);
         verifyNoInteractions(mockHighlighterTag);
 
         TextHighlighter mockHighlighterMsg = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.MESSAGE.getIndex(), mockHighlighterMsg);
+        searcher.highlightColumn(record, Field.MESSAGE, mockHighlighterMsg);
         verifyNoInteractions(mockHighlighterMsg);
 
         TextHighlighter mockHighlighterAppName = Mockito.mock(TextHighlighter.class);
-        searcher.highlightColumn(record, Column.APP_NAME.getIndex(), mockHighlighterAppName);
+        searcher.highlightColumn(record, Field.APP_NAME, mockHighlighterAppName);
         verify(mockHighlighterAppName).highlightText(Mockito.anyInt(), Mockito.anyInt());
     }
 }

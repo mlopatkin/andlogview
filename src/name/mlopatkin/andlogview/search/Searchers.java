@@ -16,29 +16,25 @@
 
 package name.mlopatkin.andlogview.search;
 
+import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.text.TextHighlighter;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.Arrays;
 import java.util.List;
 
 class OrSearcher implements RowSearchStrategy {
     private final List<RowSearchStrategy> searchers;
-
-    public OrSearcher(RowSearchStrategy... searchers) {
-        this.searchers = Arrays.asList(searchers);
-    }
 
     public OrSearcher(List<? extends RowSearchStrategy> searchers) {
         this.searchers = ImmutableList.copyOf(searchers);
     }
 
     @Override
-    public boolean isRowMatched(LogRecord record) {
-        for (RowSearchStrategy s : searchers) {
-            if (s.isRowMatched(record)) {
+    public boolean test(LogRecord record) {
+        for (var s : searchers) {
+            if (s.test(record)) {
                 return true;
             }
         }
@@ -46,9 +42,9 @@ class OrSearcher implements RowSearchStrategy {
     }
 
     @Override
-    public void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter) {
-        for (RowSearchStrategy s : searchers) {
-            s.highlightColumn(record, columnIndex, columnHighlighter);
+    public void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter) {
+        for (var s : searchers) {
+            s.highlightColumn(record, field, columnHighlighter);
         }
     }
 }

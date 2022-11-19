@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -43,59 +44,24 @@ public enum Column {
     },
     TIME(Field.TIME, "time", "Time") {
         @Override
-        public @Nullable Timestamp getValue(int rowIndex, LogRecord record) {
-            return record.getTime();
-        }
-
-        @Override
         public String getStrValue(int rowIndex, LogRecord record) {
             Timestamp time = record.getTime();
             assert time != null;
             return TimeFormatUtils.convertTimeToString(time);
         }
     },
-    PID(Field.PID, "pid", "pid") {
-        @Override
-        public Integer getValue(int rowIndex, LogRecord record) {
-            return record.getPid();
-        }
-    },
-    TID(Field.TID, "tid", "tid") {
-        @Override
-        public Integer getValue(int rowIndex, LogRecord record) {
-            return record.getTid();
-        }
-    },
-    APP_NAME(Field.APP_NAME, "app", "Application") {
-        @Override
-        public String getValue(int rowIndex, LogRecord record) {
-            return record.getAppName();
-        }
-    },
+    PID(Field.PID, "pid", "pid"),
+    TID(Field.TID, "tid", "tid"),
+    APP_NAME(Field.APP_NAME, "app", "Application"),
     PRIORITY(Field.PRIORITY, "priority", null) {
-        @Override
-        public LogRecord.Priority getValue(int rowIndex, LogRecord record) {
-            return record.getPriority();
-        }
-
         @Override
         public String getStrValue(int rowIndex, LogRecord record) {
             return record.getPriority().getLetter();
         }
     },
-    TAG(Field.TAG, "tag", "Tag") {
-        @Override
-        public String getValue(int rowIndex, LogRecord record) {
-            return record.getTag();
-        }
-    },
+    TAG(Field.TAG, "tag", "Tag"),
     // Message isn't toggleable so the user cannot disable everything.
-    MESSAGE(Field.MESSAGE, "message", "Message", false) {
-        @Override
-        public String getValue(int rowIndex, LogRecord record) {
-            return record.getMessage();
-        }
-    };
+    MESSAGE(Field.MESSAGE, "message", "Message", false);
 
     private final @Nullable Field recordField;
     private final String columnName;
@@ -141,6 +107,15 @@ public enum Column {
     }
 
     /**
+     * Returns the record field that this column displays or {@code null} if this is a synthetic field.
+     *
+     * @return the record field
+     */
+    public @Nullable Field getRecordField() {
+        return recordField;
+    }
+
+    /**
      * Extracts a (raw) value from the record at the rowIndex. This method is intended to be used by {@linkplain
      * LogRecordTableModel}. This value is then passed to the renderer.
      *
@@ -148,7 +123,9 @@ public enum Column {
      * @param record the record
      * @return the value (can be of any type)
      */
-    public abstract @Nullable Object getValue(int rowIndex, LogRecord record);
+    public @Nullable Object getValue(int rowIndex, LogRecord record) {
+        return Objects.requireNonNull(recordField).getValue(record);
+    }
 
     /**
      * Extracts a human-readable string representation from the record at the rowIndex.
@@ -161,9 +138,7 @@ public enum Column {
         return String.valueOf(getValue(rowIndex, record));
     }
 
-    // TODO: reduce visibility
-    // For now it is used by ValueSearcher and in SearchResultsHighlightCell renderer
-    public int getIndex() {
+    private int getIndex() {
         return ordinal();
     }
 

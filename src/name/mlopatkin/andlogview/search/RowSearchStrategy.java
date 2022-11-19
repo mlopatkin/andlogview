@@ -15,18 +15,12 @@
  */
 package name.mlopatkin.andlogview.search;
 
+import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.text.TextHighlighter;
 
 import java.util.function.Predicate;
 
 public interface RowSearchStrategy extends Predicate<LogRecord> {
-    boolean isRowMatched(LogRecord record);
-
-    void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter);
-
-    @Override
-    default boolean test(LogRecord logRecord) {
-        return isRowMatched(logRecord);
-    }
+    void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter);
 }

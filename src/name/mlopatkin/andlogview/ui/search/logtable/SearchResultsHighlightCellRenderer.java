@@ -28,6 +28,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Component;
+import java.util.Objects;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -44,20 +45,22 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
 
     @Override
     public Component getTableCellRendererComponent(
-            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int columnIndex) {
         JComponent c =
-                (JComponent) inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        int modelColumn = table.convertColumnIndexToModel(column);
+                (JComponent) inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, columnIndex);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
         LogRecord rowData = model.getRowData(table.convertRowIndexToModel(row));
-        if (modelColumn == Column.MESSAGE.getIndex() || modelColumn == Column.TAG.getIndex()
-                || modelColumn == Column.APP_NAME.getIndex()) {
+        Column column = model.getColumn(table.convertColumnIndexToModel(columnIndex));
+        if (isSearchableColumn(column)) {
             if (value != null) {
+                var field = column.getRecordField();
+                // searchable columns always have backing fields.
+                assert field != null;
                 String text = value.toString();
-                if (!UiHelper.isTextFit(c, table, row, column, text)) {
+                if (!UiHelper.isTextFit(c, table, row, columnIndex, text)) {
                     TooltipGenerator tooltip = new TooltipGenerator(text);
                     if (strategy != null) {
-                        strategy.highlightColumn(rowData, modelColumn, tooltip);
+                        strategy.highlightColumn(rowData, field, tooltip);
                     }
                     c.setToolTipText(tooltip.getTooltip());
                 } else {
@@ -65,11 +68,16 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
                 }
                 if (strategy != null) {
                     TextHighlighter th = (TextHighlighter) c;
-                    strategy.highlightColumn(rowData, modelColumn, th);
+                    strategy.highlightColumn(rowData, field, th);
                 }
             }
         }
         return c;
+    }
+
+    private boolean isSearchableColumn(Column c) {
+        return (Objects.equals(c, Column.MESSAGE) || Objects.equals(c, Column.TAG) || Objects.equals(c,
+                Column.APP_NAME));
     }
 
     public void setHighlightStrategy(@Nullable RowSearchStrategy strategy) {

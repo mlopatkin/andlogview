@@ -40,6 +40,10 @@ public class LogRecordTableModel extends AbstractTableModel implements LogModel.
         fireTableDataChanged();
     }
 
+    public Column getColumn(int columnIndex) {
+        return Column.getByColumnIndex(columnIndex);
+    }
+
     @Override
     public int getColumnCount() {
         return Column.values().length;

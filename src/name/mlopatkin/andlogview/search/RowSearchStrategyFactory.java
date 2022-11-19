@@ -16,9 +16,9 @@
 
 package name.mlopatkin.andlogview.search;
 
+import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.search.text.HighlightStrategy;
 import name.mlopatkin.andlogview.search.text.SearchStrategyFactory;
-import name.mlopatkin.andlogview.ui.logtable.Column;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
@@ -72,11 +72,11 @@ public final class RowSearchStrategyFactory {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(rest);
 
         if (PREFIX_APP.equals(prefix)) {
-            return new ValueSearcher(strategy, Column.APP_NAME);
+            return new ValueSearcher(strategy, Field.APP_NAME);
         } else if (PREFIX_MSG.equals(prefix)) {
-            return new ValueSearcher(strategy, Column.MESSAGE);
+            return new ValueSearcher(strategy, Field.MESSAGE);
         } else if (PREFIX_TAG.equals(prefix)) {
-            return new ValueSearcher(strategy, Column.TAG);
+            return new ValueSearcher(strategy, Field.TAG);
         } else {
             throw new AssertionError("Unrecognized prefix");
         }
@@ -84,10 +84,10 @@ public final class RowSearchStrategyFactory {
 
     private static RowSearchStrategy prepareWithoutPrefix(String pattern) throws RequestCompilationException {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(pattern);
-        Column[] searchableColumns = {Column.APP_NAME, Column.MESSAGE, Column.TAG};
-        List<ValueSearcher> searches = new ArrayList<>(searchableColumns.length);
-        for (Column c : searchableColumns) {
-            searches.add(new ValueSearcher(strategy, c));
+        Field[] searchableFields = {Field.APP_NAME, Field.MESSAGE, Field.TAG};
+        List<ValueSearcher> searches = new ArrayList<>(searchableFields.length);
+        for (var field : searchableFields) {
+            searches.add(new ValueSearcher(strategy, field));
         }
         return new OrSearcher(searches);
     }

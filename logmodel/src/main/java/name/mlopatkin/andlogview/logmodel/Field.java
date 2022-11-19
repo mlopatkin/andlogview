@@ -16,7 +16,90 @@
 
 package name.mlopatkin.andlogview.logmodel;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Fields in the log record.
  */
-public enum Field {TIME, PID, TID, PRIORITY, TAG, MESSAGE, BUFFER, APP_NAME}
+public enum Field {
+    /**
+     * The timestamp. This is an optional field with {@code null} representing the missing value.
+     */
+    TIME {
+        @Override
+        public @Nullable Timestamp getValue(LogRecord record) {
+            return record.getTime();
+        }
+    },
+    /**
+     * The PID. This is an optional field with {@link LogRecord#NO_ID} representing the missing value.
+     */
+    PID {
+        @Override
+        public Integer getValue(LogRecord record) {
+            return record.getPid();
+        }
+    },
+    /**
+     * The TID. This is an optional field with {@link LogRecord#NO_ID} representing the missing value.
+     */
+    TID {
+        @Override
+        public Integer getValue(LogRecord record) {
+            return record.getTid();
+        }
+    },
+    /**
+     * The priority.
+     */
+    PRIORITY {
+        @Override
+        public LogRecord.Priority getValue(LogRecord record) {
+            return record.getPriority();
+        }
+    },
+    /**
+     * The tag. This is an optional field with empty string representing the missing value.
+     */
+    TAG {
+        @Override
+        public String getValue(LogRecord record) {
+            return record.getTag();
+        }
+    },
+    /**
+     * The message.
+     */
+    MESSAGE {
+        @Override
+        public String getValue(LogRecord record) {
+            return record.getMessage();
+        }
+    },
+    /**
+     * The buffer. This is an optional field with {@code null} representing the missing value.
+     */
+    BUFFER {
+        @Override
+        public LogRecord.@Nullable Buffer getValue(LogRecord record) {
+            return record.getBuffer();
+        }
+    },
+    /**
+     * The app name. This is an optional field with empty string representing the missing value.
+     */
+    APP_NAME {
+        @Override
+        public String getValue(LogRecord record) {
+            return record.getAppName();
+        }
+    };
+
+    /**
+     * Extracts the value of this field from the given record.
+     *
+     * @param record the record to get the value from
+     * @return the value of the field of the record
+     */
+    public abstract @Nullable Object getValue(LogRecord record);
+}

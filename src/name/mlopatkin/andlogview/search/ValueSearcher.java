@@ -16,32 +16,32 @@
 
 package name.mlopatkin.andlogview.search;
 
+import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.text.HighlightStrategy;
 import name.mlopatkin.andlogview.search.text.TextHighlighter;
-import name.mlopatkin.andlogview.ui.logtable.Column;
 
 class ValueSearcher implements RowSearchStrategy {
     private final HighlightStrategy highlightStrategy;
-    private final Column column;
+    private final Field field;
 
-    public ValueSearcher(HighlightStrategy highlightStrategy, Column column) {
+    public ValueSearcher(HighlightStrategy highlightStrategy, Field field) {
         this.highlightStrategy = highlightStrategy;
-        this.column = column;
+        this.field = field;
     }
 
     @Override
-    public boolean isRowMatched(LogRecord record) {
+    public boolean test(LogRecord record) {
         return highlightStrategy.test(getValue(record));
     }
 
     private String getValue(LogRecord record) {
-        return String.valueOf(column.getValue(0, record));
+        return String.valueOf(field.getValue(record));
     }
 
     @Override
-    public void highlightColumn(LogRecord record, int columnIndex, TextHighlighter columnHighlighter) {
-        if (columnIndex == column.getIndex()) {
+    public void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter) {
+        if (this.field.equals(field)) {
             highlightStrategy.highlightOccurences(getValue(record), columnHighlighter);
         }
     }
