@@ -22,9 +22,6 @@ import name.mlopatkin.andlogview.search.text.HighlightStrategy;
 import name.mlopatkin.andlogview.search.text.SearchStrategyFactory;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Strings;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,19 +50,16 @@ public final class RowSearchStrategyFactory {
 
     private static final List<String> PREFIXES = Arrays.asList(PREFIX_APP, PREFIX_MSG, PREFIX_TAG);
 
-    public static @Nullable RowSearchStrategy compile(@Nullable String pattern) throws RequestCompilationException {
-        if (CharMatcher.whitespace().matchesAllOf(Strings.nullToEmpty(pattern))) {
-            return null;
-        }
-        assert pattern != null;
-        pattern = pattern.trim();
+    public static RowSearchStrategy compile(String pattern) throws RequestCompilationException {
+        var trimmedPattern = CharMatcher.whitespace().trimFrom(pattern);
+
         // check for prefix
         for (String prefix : PREFIXES) {
-            if (pattern.startsWith(prefix)) {
-                return prepareWithPrefix(prefix, pattern.substring(prefix.length()));
+            if (trimmedPattern.startsWith(prefix)) {
+                return prepareWithPrefix(prefix, trimmedPattern.substring(prefix.length()));
             }
         }
-        return prepareWithoutPrefix(pattern);
+        return prepareWithoutPrefix(trimmedPattern);
     }
 
     private static RowSearchStrategy prepareWithPrefix(String prefix, String rest) throws RequestCompilationException {

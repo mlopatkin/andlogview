@@ -197,7 +197,7 @@ public class SearchPresenter<T, P, S extends Predicate<? super T>> {
             find(Search.Direction.FORWARD.alsoSearchCurrent());
         } catch (RequestCompilationException e) {
             searchPromptView.showPatternError(
-                    String.format("%s isn't a valid search expression: %s", patternText, e.getMessage()));
+                    String.format("'%s' isn't a valid search expression. %s", patternText, e.getMessage()));
         }
     }
 

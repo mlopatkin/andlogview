@@ -21,8 +21,6 @@ import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
 import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategyFactory;
 import name.mlopatkin.andlogview.ui.search.SearchPatternCompiler;
 
-import java.util.Objects;
-
 import javax.inject.Inject;
 
 public class LogRecordSearchPatternCompiler implements SearchPatternCompiler<RowSearchStrategy> {
@@ -32,6 +30,6 @@ public class LogRecordSearchPatternCompiler implements SearchPatternCompiler<Row
 
     @Override
     public RowSearchStrategy compile(String patternText) throws RequestCompilationException {
-        return Objects.requireNonNull(RowSearchStrategyFactory.compile(patternText));
+        return RowSearchStrategyFactory.compile(patternText);
     }
 }

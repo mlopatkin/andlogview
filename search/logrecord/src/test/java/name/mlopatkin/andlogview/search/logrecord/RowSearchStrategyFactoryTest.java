@@ -16,18 +16,18 @@
 
 package name.mlopatkin.andlogview.search.logrecord;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class RowSearchStrategyFactoryTest {
     static final String TAG_CONTACTS = "contacts";
@@ -47,8 +47,8 @@ public class RowSearchStrategyFactoryTest {
         return LogRecordUtils.forMessage(msg).withTag(tag).withAppName(app);
     }
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         tagContacts = makeRecord(TAG_CONTACTS, APP_NAME_SYSTEM_SERVER, MSG_SYSTEM_SERVER);
         appnameContacts = makeRecord(TAG_SYSTEM, APP_CONTACTS, MSG_SYSTEM_SERVER);
         msgContacts = makeRecord(TAG_SYSTEM, APP_NAME_SYSTEM_SERVER, MSG_CONTACTS);
@@ -56,152 +56,128 @@ public class RowSearchStrategyFactoryTest {
     }
 
     @Test
-    public void testCompile_Simple() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("contacts");
+    public void simplePatternMatchesAllFields() throws Exception {
+        var strategy = RowSearchStrategyFactory.compile("contacts");
 
-        assertNotNull(simple);
-        assertTrue(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertTrue(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(msgContacts, appnameContacts, tagContacts)
+                .rejects(system);
     }
 
     @Test
-    public void testCompile_Regex() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("/contacts/");
+    public void plainRegexPatternMatchesAllFields() throws Exception {
+        var strategy = RowSearchStrategyFactory.compile("/contacts/");
 
-        assertNotNull(simple);
-        assertTrue(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertTrue(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(msgContacts, appnameContacts, tagContacts)
+                .rejects(system);
+
     }
 
     @Test
-    public void testCompile_ComplexRegex() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("/con.*ts/");
+    public void trickyRegex() throws Exception {
+        var strategy = RowSearchStrategyFactory.compile("/con.*ts/");
 
-        assertNotNull(simple);
-        assertTrue(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertTrue(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(msgContacts, appnameContacts, tagContacts)
+                .rejects(system);
     }
 
     @Test
     public void testCompile_AppNameSimple() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("app:contacts");
+        var strategy = RowSearchStrategyFactory.compile("app:contacts");
 
-        assertNotNull(simple);
-        assertFalse(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(appnameContacts)
+                .rejects(msgContacts, tagContacts, system);
     }
 
     @Test
     public void testCompile_TagSimple() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("tag:contacts");
+        var strategy = RowSearchStrategyFactory.compile("tag:contacts");
 
-        assertNotNull(simple);
-        assertFalse(simple.test(msgContacts));
-        assertFalse(simple.test(appnameContacts));
-        assertTrue(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(tagContacts)
+                .rejects(msgContacts, appnameContacts, system);
     }
 
     @Test
     public void testCompile_MsgSimple() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:contacts");
+        var strategy = RowSearchStrategyFactory.compile("msg:contacts");
 
-        assertNotNull(simple);
-        assertTrue(simple.test(msgContacts));
-        assertFalse(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(msgContacts)
+                .rejects(appnameContacts, tagContacts, system);
     }
 
     @Test
     public void testCompile_AppNameRegex() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("app:/c.ntacts/");
+        var strategy = RowSearchStrategyFactory.compile("app:/c.ntacts/");
 
-        assertNotNull(simple);
-        assertFalse(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(appnameContacts)
+                .rejects(msgContacts, tagContacts, system);
     }
 
     @Test
     public void testCompile_TagRegex() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("tag:/c.ntacts/");
+        var strategy = RowSearchStrategyFactory.compile("tag:/c.ntacts/");
 
-        assertNotNull(simple);
-        assertFalse(simple.test(msgContacts));
-        assertFalse(simple.test(appnameContacts));
-        assertTrue(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(tagContacts)
+                .rejects(msgContacts, appnameContacts, system);
     }
 
     @Test
     public void testCompile_MsgRegex() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:/c.ntacts/");
+        var strategy = RowSearchStrategyFactory.compile("msg:/c.ntacts/");
 
-        assertNotNull(simple);
-        assertTrue(simple.test(msgContacts));
-        assertFalse(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(msgContacts)
+                .rejects(appnameContacts, tagContacts, system);
     }
 
     @Test
-    @Ignore("Not supported yet")
-    public void testCompile_Several() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("msg:/c.ntacts/   app:contacts");
-
-        assertNotNull(simple);
-        assertTrue(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
-    }
-
-    @Test
-    @Ignore("No escaping, just treat this as a usual string")
+    @Disabled("No escaping, just treat this as a usual string")
     public void testCompile_Escape() throws Exception {
         LogRecord withEscaped = makeRecord(TAG_CONTACTS, APP_CONTACTS, "This contains a escaped app:contacts");
 
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("app\\:contacts");
+        var strategy = RowSearchStrategyFactory.compile("app\\:contacts");
 
-        assertNotNull(simple);
-        assertFalse(simple.test(msgContacts));
-        assertFalse(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
-        assertTrue(simple.test(withEscaped));
+        assertThat(strategy)
+                .accepts(withEscaped)
+                .rejects(appnameContacts, msgContacts, tagContacts, system);
     }
 
-    @Test(expected = RequestCompilationException.class)
-    @Ignore("No escaping, just treat this as a usual string")
+    @Test
     public void testCompile_InvalidPrefix() throws Exception {
-        RowSearchStrategyFactory.compile("foobar:contacts");
+        var strategy = RowSearchStrategyFactory.compile("foobar:contacts");
+
+        assertThat(strategy)
+                .accepts(LogRecordUtils.forMessage("Some foobar:contacts"))
+                .rejects(LogRecordUtils.forMessage("Some contacts"));
     }
 
     @Test
     public void testCompile_Spaces() throws Exception {
-        RowSearchStrategy simple = RowSearchStrategyFactory.compile("  \t    app:/c.ntacts/      ");
+        var strategy = RowSearchStrategyFactory.compile("  \t    app:/c.ntacts/      ");
 
-        assertNotNull(simple);
-        assertFalse(simple.test(msgContacts));
-        assertTrue(simple.test(appnameContacts));
-        assertFalse(simple.test(tagContacts));
-        assertFalse(simple.test(system));
+        assertThat(strategy)
+                .accepts(appnameContacts)
+                .rejects(msgContacts, tagContacts, system);
     }
 
-    @Test
-    public void testCompile_Empty() throws Exception {
-        assertNull(RowSearchStrategyFactory.compile(""));
-        assertNull(RowSearchStrategyFactory.compile("          "));
-        assertNull(RowSearchStrategyFactory.compile(null));
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "",
+        "            ",
+        "        app:  ",
+        "\t\t\t\n",
+        "app:",
+        " "
+    })
+    public void testCompile_Empty(String invalidPattern) throws Exception {
+        assertThatExceptionOfType(RequestCompilationException.class)
+                .isThrownBy(() -> RowSearchStrategyFactory.compile(invalidPattern));
     }
 }
