@@ -332,6 +332,10 @@ public class MainFrame implements MainFrameSearchUi {
         controlsPanel.add(instantSearchTextField);
         instantSearchTextField.setColumns(10);
         instantSearchTextField.setVisible(false);
+
+        // Menu accelerators are significantly slower than key bindings.
+        UiHelper.bindKeyGlobal(mainFrameUi, KEY_FIND_NEXT, "find_next", acFindNext);
+        UiHelper.bindKeyGlobal(mainFrameUi, KEY_FIND_PREV, "find_prev", acFindPrev);
     }
 
     private void setupSize() {
