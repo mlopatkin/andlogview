@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Mikhail Lopatkin
+ * Copyright 2022 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package name.mlopatkin.andlogview.search;
 
-import name.mlopatkin.andlogview.logmodel.Field;
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.search.text.TextHighlighter;
+plugins {
+    id("name.mlopatkin.andlogview.building.java-library-conventions")
+}
 
-import java.util.function.Predicate;
+dependencies {
+    api(project(":logmodel"))
+    api(project(":search"))
 
-public interface RowSearchStrategy extends Predicate<LogRecord> {
-    void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter);
+    implementation(project(":base"))
+    implementation(libs.guava)
+
+    testImplementation(testFixtures(project(":logmodel")))
 }

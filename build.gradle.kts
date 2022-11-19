@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":logmodel"))
     implementation(project(":parsers"))
     implementation(project(":search"))
+    implementation(project(":search:logrecord"))
     implementation(libs.dagger.runtime)
     implementation(libs.guava)
     implementation(libs.gson)

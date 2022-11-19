@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview.ui.search.logtable;
 
 import name.mlopatkin.andlogview.search.RequestCompilationException;
-import name.mlopatkin.andlogview.search.RowSearchStrategy;
-import name.mlopatkin.andlogview.search.RowSearchStrategyFactory;
+import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
+import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategyFactory;
 import name.mlopatkin.andlogview.ui.search.SearchPatternCompiler;
 
 import java.util.Objects;

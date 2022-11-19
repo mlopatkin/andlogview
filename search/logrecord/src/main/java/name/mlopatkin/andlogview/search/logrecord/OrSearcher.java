@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.search;
+package name.mlopatkin.andlogview.search.logrecord;
 
 import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;

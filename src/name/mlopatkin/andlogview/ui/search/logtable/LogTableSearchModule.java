@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview.ui.search.logtable;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.search.RowSearchStrategy;
 import name.mlopatkin.andlogview.search.SearchModel;
+import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
 import name.mlopatkin.andlogview.ui.search.SearchPatternCompiler;
 import name.mlopatkin.andlogview.ui.search.SearchScoped;
 

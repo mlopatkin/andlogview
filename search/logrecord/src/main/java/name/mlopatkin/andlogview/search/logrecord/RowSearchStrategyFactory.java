@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.search;
+package name.mlopatkin.andlogview.search.logrecord;
 
 import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.search.text.HighlightStrategy;
 import name.mlopatkin.andlogview.search.text.SearchStrategyFactory;
 

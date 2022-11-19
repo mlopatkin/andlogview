@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.search;
+package name.mlopatkin.andlogview.search.logrecord;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
+import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import org.junit.Before;
 import org.junit.Ignore;

@@ -29,7 +29,7 @@ import name.mlopatkin.andlogview.logmodel.LogModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
-import name.mlopatkin.andlogview.search.RowSearchStrategy;
+import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
