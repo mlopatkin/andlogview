@@ -56,8 +56,6 @@ import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
 import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
-import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
-import name.mlopatkin.andlogview.ui.status.SourceStatusPresenter;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
 import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.widgets.UiHelper;
@@ -69,8 +67,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -97,7 +93,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.Timer;
 import javax.swing.TransferHandler;
 
 public class MainFrame implements MainFrameSearchUi {
@@ -144,10 +139,6 @@ public class MainFrame implements MainFrameSearchUi {
     LogRecordTableModel recordsModel;
     @Inject
     ProcessListFrame processListFrame;
-    @Inject
-    SourceStatusPresenter sourceStatusPresenter;
-    @Inject
-    SearchStatusPresenter searchStatusPresenter;
     @Inject
     MainFrameSearchPromptView searchPromptView;
 
@@ -214,13 +205,6 @@ public class MainFrame implements MainFrameSearchUi {
             UiHelper.makeAction("Configuration...", () -> configurationDialogPresenter.openDialog());
     private final Action acDumpDevice = UiHelper.makeAction("Prepare device dump...", this::selectAndDumpDevice);
 
-    private final Timer updatingTimer = new Timer(2000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            sourceStatusPresenter.updateSourceStatus();
-        }
-    });
-
     @SuppressWarnings("NullAway")
     private MainFrame(AppGlobals globals, CommandLine commandLine) {
         MainFrameDependencies dependencies =
@@ -240,7 +224,6 @@ public class MainFrame implements MainFrameSearchUi {
         sourceHolder.setDataSource(newSource);
         bookmarkModel.clear();
         bufferMenu.setAvailableBuffers(newSource.getAvailableBuffers());
-        updatingTimer.start();
         logModel.asObservable().removeObserver(autoscrollObserver);
         logModel = LogModel.fromDataSource(newSource, SequentialExecutor.edt());
         logModel.asObservable().addObserver(autoscrollObserver);
@@ -295,29 +278,11 @@ public class MainFrame implements MainFrameSearchUi {
 
         scrollController = new TableScrollController(logElements);
 
-        controlsPanel = new JPanel();
-        mainFrameUi.getContentPane().add(controlsPanel, BorderLayout.SOUTH);
-        controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
-
-        instantSearchTextField = new JTextField();
-        controlsPanel.add(instantSearchTextField);
-        instantSearchTextField.setColumns(10);
-        instantSearchTextField.setVisible(false);
-
-        controlsPanel.add(filterPanel);
-        controlsPanel.add(statusPanel.getPanel());
-        sourceStatusPresenter.init();
+        initControlPanel();
 
         setupSearchButtons();
         setupMainMenu(isDebug);
-        mainFrameUi.setPreferredSize(
-                windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
-        Optional<FrameLocation> frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
-        if (frameLocation.isPresent()) {
-            mainFrameUi.setLocation(frameLocation.get().x, frameLocation.get().y);
-        } else {
-            mainFrameUi.setLocationByPlatform(true);
-        }
+        setupSize();
 
         mainFrameUi.addWindowListener(new WindowAdapter() {
             @Override
@@ -341,6 +306,35 @@ public class MainFrame implements MainFrameSearchUi {
 
         JScrollPane scrollPane = new JScrollPane(logElements);
         mainFrameUi.getContentPane().add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void initControlPanel() {
+        controlsPanel = new JPanel();
+        mainFrameUi.getContentPane().add(controlsPanel, BorderLayout.SOUTH);
+        controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
+
+        initInstantSearch();
+
+        controlsPanel.add(filterPanel);
+        controlsPanel.add(statusPanel.getPanel());
+    }
+
+    private void initInstantSearch() {
+        instantSearchTextField = new JTextField();
+        controlsPanel.add(instantSearchTextField);
+        instantSearchTextField.setColumns(10);
+        instantSearchTextField.setVisible(false);
+    }
+
+    private void setupSize() {
+        mainFrameUi.setPreferredSize(
+                windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
+        Optional<FrameLocation> frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
+        if (frameLocation.isPresent()) {
+            mainFrameUi.setLocation(frameLocation.get().x, frameLocation.get().y);
+        } else {
+            mainFrameUi.setLocationByPlatform(true);
+        }
     }
 
     @Override
@@ -370,7 +364,6 @@ public class MainFrame implements MainFrameSearchUi {
         instantSearchTextField.setVisible(true);
         instantSearchTextField.selectAll();
         instantSearchTextField.requestFocusInWindow();
-        searchStatusPresenter.reset();
         controlsPanel.revalidate();
         controlsPanel.repaint();
         scrollController.scrollIfNeeded();

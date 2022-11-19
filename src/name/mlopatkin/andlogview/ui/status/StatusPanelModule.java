@@ -29,13 +29,24 @@ public class StatusPanelModule {
 
     @Provides
     @MainFrameScoped
-    static SourceStatusPresenter.View sourceStatusView(StatusPanel statusPanel) {
-        return statusPanel.getSourceStatusView();
+    static SourceStatusPresenter.View sourceStatusView(StatusPanelUi statusPanel) {
+        return new SourceStatusViewImpl(statusPanel.sourceStatusLabel);
     }
 
     @Provides
     @MainFrameScoped
-    static SearchStatusPresenter.View searchStatusView(StatusPanel statusPanel) {
-        return statusPanel.getSearchStatusView();
+    static SearchStatusPresenter.View searchStatusView(StatusPanelUi statusPanel) {
+        return new SearchStatusPresenter.View() {
+            @Override
+            public void showSearchMessage(String message) {
+                statusPanel.searchStatusLabel.setVisible(true);
+                statusPanel.searchStatusLabel.setText(message);
+            }
+
+            @Override
+            public void hideSearchMessage() {
+                statusPanel.searchStatusLabel.setVisible(false);
+            }
+        };
     }
 }

@@ -16,9 +16,12 @@
 
 package name.mlopatkin.andlogview.ui.status;
 
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.inject.Inject;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -26,11 +29,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
+@MainFrameScoped
 class StatusPanelUi {
     protected final JPanel statusPanel;
     protected final JLabel searchStatusLabel;
     protected final JLabel sourceStatusLabel;
 
+    @Inject
     public StatusPanelUi() {
         statusPanel = new JPanel();
         statusPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));

@@ -132,6 +132,7 @@ public class SearchPresenter<T, P, S extends Predicate<? super T>> {
             return;
         }
 
+        searchStatusPresenter.reset();
         searchPromptView.show()
                 .onCommit(this::tryStartSearchWithPrompt)
                 .onDiscard(this::discardSearchPrompt);
@@ -201,6 +202,7 @@ public class SearchPresenter<T, P, S extends Predicate<? super T>> {
     }
 
     private void discardSearchPrompt() {
+        searchStatusPresenter.reset();
         searchPromptView.hide();
         searchPromptView.clearSearchPattern();
         searchModel.finishSearch();

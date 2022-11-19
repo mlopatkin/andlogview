@@ -16,6 +16,10 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import com.google.common.primitives.Ints;
+
+import java.time.Duration;
+
 import javax.swing.Timer;
 
 public class SwingUiThreadScheduler implements UiThreadScheduler {
@@ -24,6 +28,14 @@ public class SwingUiThreadScheduler implements UiThreadScheduler {
         Timer timer = new Timer(delayMs, event -> task.run());
         timer.setRepeats(false);
         timer.start();
+        return new CancellableTask(timer);
+    }
+
+    @Override
+    public Cancellable postRepeatableTask(Runnable task, Duration interval) {
+        int delayMs = Ints.checkedCast(interval.toMillis());
+        Timer timer = new Timer(delayMs, event -> task.run());
+        timer.setRepeats(true);
         return new CancellableTask(timer);
     }
 

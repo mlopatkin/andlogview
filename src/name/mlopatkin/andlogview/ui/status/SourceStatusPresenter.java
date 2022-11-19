@@ -19,10 +19,12 @@ package name.mlopatkin.andlogview.ui.status;
 import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.time.Duration;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -34,6 +36,7 @@ import javax.inject.Inject;
 public class SourceStatusPresenter {
     private final DataSourceHolder dataSourceHolder;
     private final View view;
+    private final UiThreadScheduler updateScheduler;
 
     interface View {
         void showWaitingStatus();
@@ -43,19 +46,23 @@ public class SourceStatusPresenter {
 
     @Inject
     public SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view,
-            SourcePopupMenuPresenter popupMenuPresenter) {
+            SourcePopupMenuPresenter popupMenuPresenter, UiThreadScheduler updateScheduler) {
         this.dataSourceHolder = dataSourceHolder;
         this.view = view;
+        this.updateScheduler = updateScheduler;
         view.popupMenuAction().addObserver(popupMenuPresenter::showPopupMenuIfNeeded);
     }
 
-    public void init() {
+    @Inject
+    void init() {
         dataSourceHolder.asObservable().addObserver(this::onDataSourceChanged);
+        if (dataSourceHolder.getDataSource() != null) {
+            scheduleUpdates();
+        }
         updateSourceStatus();
     }
 
-    // TODO(mlopatkin): having this public is kind of lame
-    public void updateSourceStatus() {
+    private void updateSourceStatus() {
         DataSource dataSource = dataSourceHolder.getDataSource();
         if (dataSource != null) {
             view.showSourceStatus(dataSource.toString());
@@ -65,6 +72,13 @@ public class SourceStatusPresenter {
     }
 
     private void onDataSourceChanged(@Nullable DataSource oldSource, DataSource newSource) {
+        if (oldSource == null) {
+            scheduleUpdates();
+        }
         updateSourceStatus();
+    }
+
+    private void scheduleUpdates() {
+        updateScheduler.postRepeatableTask(this::updateSourceStatus, Duration.ofSeconds(2));
     }
 }

@@ -16,6 +16,9 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
+import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
@@ -24,9 +27,22 @@ import java.util.concurrent.ScheduledExecutorService;
 public interface UiThreadScheduler {
     /**
      * Posts a delayed task to the UI thread.
+     *
      * @param task the task to run
      * @param delayMs the delay in milliseconds
      * @return the handle to cancel pending task
      */
+    @CanIgnoreReturnValue
     Cancellable postDelayedTask(Runnable task, int delayMs);
+
+    /**
+     * Posts a repeatable task to the UI thread. The task will run after {@code interval} initial delay, and will
+     * repeat until cancelled with {@code interval} period.
+     *
+     * @param task the task to run
+     * @param interval the interval between repeats and initial delay before first run
+     * @return the handle to cancel pending task
+     */
+    @CanIgnoreReturnValue
+    Cancellable postRepeatableTask(Runnable task, Duration interval);
 }

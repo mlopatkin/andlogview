@@ -19,32 +19,25 @@ package name.mlopatkin.andlogview.ui.status;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
 import javax.inject.Inject;
+import javax.swing.JPanel;
 
 /**
  * The Status Panel UI component.
  */
 @MainFrameScoped
-public class StatusPanel extends StatusPanelUi {
+public class StatusPanel {
+    private final StatusPanelUi statusPanelUi;
+
     @Inject
-    public StatusPanel() {
+    public StatusPanel(
+            StatusPanelUi statusPanelUi,
+            @SuppressWarnings("unused") SearchStatusPresenter searchStatusPresenter,
+            @SuppressWarnings("unused") SourceStatusPresenter sourceStatusPresenter) {
+        // Unused parameters are to bootstrap presenters as otherwise there's nobody to create them.
+        this.statusPanelUi = statusPanelUi;
     }
 
-    public SourceStatusPresenter.View getSourceStatusView() {
-        return new SourceStatusViewImpl(sourceStatusLabel);
-    }
-
-    public SearchStatusPresenter.View getSearchStatusView() {
-        return new SearchStatusPresenter.View() {
-            @Override
-            public void showSearchMessage(String message) {
-                searchStatusLabel.setVisible(true);
-                searchStatusLabel.setText(message);
-            }
-
-            @Override
-            public void hideSearchMessage() {
-                searchStatusLabel.setVisible(false);
-            }
-        };
+    public JPanel getPanel() {
+        return statusPanelUi.getPanel();
     }
 }

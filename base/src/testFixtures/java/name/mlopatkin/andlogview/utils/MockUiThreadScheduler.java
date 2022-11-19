@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import java.time.Duration;
 import java.util.PriorityQueue;
 
 /**
@@ -71,6 +72,11 @@ public class MockUiThreadScheduler implements UiThreadScheduler {
         while (!taskQueue.isEmpty()) {
             executeSingleTask();
         }
+    }
+
+    @Override
+    public Cancellable postRepeatableTask(Runnable task, Duration interval) {
+        throw new UnsupportedOperationException("Not supported");
     }
 
     private class ScheduledTask implements Cancellable, Comparable<ScheduledTask>, Runnable {
