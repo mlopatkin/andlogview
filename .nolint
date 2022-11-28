@@ -11,3 +11,7 @@ jmh/resources/*
 
 # IDEA Run Configurations (IDEA removes the trailing EOL when the configuration changes)
 config/idea/run/*.xml
+
+# Gradle start scripts are provided by Gradle, we don't care much about what they contain
+gradlew
+gradlew.bat
