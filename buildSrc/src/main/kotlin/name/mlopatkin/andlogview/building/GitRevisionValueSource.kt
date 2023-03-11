@@ -48,7 +48,7 @@ internal abstract class GitRevisionValueSource : ValueSource<String, GitRevision
                 .start()
 
             gitDescribe.use {
-                val result = inputStream.bufferedReader().readText().toString().trim()
+                val result = inputStream.bufferedReader().readText().trim()
                 if (waitForSuccess()) {
                     return result
                 }

@@ -223,7 +223,7 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("META-INF/maven/**")
 
     minimize {
-        // FlatLaf doesn"t survive minimization
+        // FlatLaf doesn't survive minimization
         exclude(dependency("com.formdev:flatlaf:.*"))
         // log4j appenders are referenced by name only
         exclude(dependency("log4j:log4j:1.2.17"))
@@ -260,7 +260,7 @@ tasks.register<UploadTask>("bitbucketUpload") {
 }
 
 // Configure jpackage distribution
-if (System.getProperty("os.name").toLowerCase(Locale.US).contains("linux")) {
+if (System.getProperty("os.name").lowercase(Locale.US).contains("linux")) {
     val jpackageJdkPath = javaToolchains.compilerFor {
         languageVersion.set(libs.versions.compileJdkVersion.map(JavaLanguageVersion::of))
     }.get().metadata.installationPath.toString()

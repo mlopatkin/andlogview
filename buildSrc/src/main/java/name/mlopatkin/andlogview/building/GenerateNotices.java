@@ -39,17 +39,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 public abstract class GenerateNotices extends DefaultTask {
-
-    private final Map<String, File> sourceFileNoticesByFileMask = new HashMap<>();
-
     // General ComponentIdentifier cannot be serialized.
     @Input
     public abstract SetProperty<ModuleComponentIdentifier> getBundledDependencies();
@@ -94,7 +88,7 @@ public abstract class GenerateNotices extends DefaultTask {
         }
     }
 
-    private Optional<File> findNoticeFileForDependency(ModuleComponentIdentifier dependency) throws IOException {
+    private Optional<File> findNoticeFileForDependency(ModuleComponentIdentifier dependency) {
         String noticeFileName = String.format("%s.%s.%s.NOTICE", dependency.getGroup(), dependency.getModule(),
                 dependency.getVersion());
         File noticeFile = getLibraryNoticesDirectory().file(noticeFileName).get().getAsFile();
