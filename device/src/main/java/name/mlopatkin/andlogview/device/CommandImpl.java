@@ -81,6 +81,10 @@ class CommandImpl implements Command {
         // makes it impossible to discard stdout while keeping stderr.
         ForStderr stderr = getRedirectWithDefault(this.configuredStderr, OutputTarget.noRedirection());
 
+        // IDEA's null checker seems to be unable to figure out that getRedirectWithDefault is NonNull, even if I
+        // explicitly annotate it with @NonNull.
+        assert stdout != null;
+        assert stderr != null;
         try (OutputTarget.OutputHandle tempStdout = stdout.openOutput(device);
                 OutputTarget.OutputHandle tempStderr = stderr.openOutput(device)) {
             // TODO(mlopatkin) Try to implement shell api v2 on top of ddmlib. Shell v2 allows to get stdout and stderr
