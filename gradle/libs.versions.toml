@@ -2,7 +2,7 @@
 andlogview = "0.22"
 checkstyle = "8.45.1"
 dagger = "2.40.5"
-errorpronePlugin = "2.0.2"
+errorpronePlugin = "3.0.1"
 flatlaf = "2.0"
 mockito = "4.2.0"
 compileJdkVersion = "17"  # JDK version used for compilation
@@ -46,6 +46,6 @@ errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included
 jlink = "org.beryx.runtime:1.12.7"
 # JMH plugin allows building and running JMH benchmarks
-jmh = "me.champeau.jmh:0.6.6"
+jmh = "me.champeau.jmh:0.7.0"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool
 shadow = "com.github.johnrengelman.shadow:7.1.2"
