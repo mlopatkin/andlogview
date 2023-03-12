@@ -1,6 +1,7 @@
 # Test resources may have whatever format they want
 test_resources/*
 jmh/resources/*
+base/src/jmh/resources/*
 
 # Binary files
 *.png
