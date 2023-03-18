@@ -17,12 +17,14 @@
 package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.logmodel.Field;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import com.google.common.collect.ImmutableSet;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -71,5 +73,17 @@ public enum Format {
             return parserFactory.apply(eventsHandler);
         }
         throw new IllegalArgumentException("Unsupported format " + name());
+    }
+
+    /**
+     * Creates a log record comparator, that only compares fields present in this format.
+     *
+     * @return the comparator
+     */
+    final Comparator<LogRecord> createComparator() {
+        return getAvailableFields().stream()
+                .map(Field::createComparator)
+                .reduce(Comparator::thenComparing)
+                .orElseThrow(() -> new AssertionError("Number of fields in " + this + " is empty, cannot reduce"));
     }
 }

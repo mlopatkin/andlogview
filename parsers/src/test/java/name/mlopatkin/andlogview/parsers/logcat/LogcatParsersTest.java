@@ -19,8 +19,13 @@ package name.mlopatkin.andlogview.parsers.logcat;
 import static name.mlopatkin.andlogview.parsers.logcat.SingleEntryParser.assertOnlyParsedRecord;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+
+import java.util.List;
 
 public class LogcatParsersTest {
     static final String BRIEF_RECORD = "D/MediaScanner(417): postscan return";
@@ -197,5 +202,28 @@ public class LogcatParsersTest {
                 .hasDate(8, 18).hasTime(13, 40, 59, 546)
                 .hasPriority(PRIORITY)
                 .andAllOtherFieldAreDefaults();
+    }
+
+    @ParameterizedTest(name = "{0} with Eoln.{2}")
+    @LogcatCompatSource(
+            path = "parsers/logcat/golden.json",
+            formats = {
+                    Format.BRIEF,
+                    Format.PROCESS,
+                    Format.TAG,
+                    Format.THREADTIME,
+                    Format.TIME
+            },
+            eolns = {Eoln.NONE, Eoln.LF, Eoln.CRLF}
+    )
+    void compatibilityTest(Format format, List<LogRecord> expectedRecords, Eoln ignoredEoln, List<String> lines) {
+        ListCollectingHandler handler = new ListCollectingHandler();
+        try (var parser = new LogcatPushParser<>(format, handler)) {
+            Assertions.assertThat(ParserUtils.readInto(parser, lines.stream())).as("should consume all lines").isTrue();
+        }
+
+        Assertions.assertThat(handler.getCollectedRecords())
+                .usingElementComparator(format.createComparator())
+                .isEqualTo(expectedRecords);
     }
 }

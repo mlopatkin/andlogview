@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 class DelegateTag extends SingleLineRegexLogcatParserDelegate {
     private static final Pattern PATTERN =
-            Patterns.compileFromParts(PRIORITY_REGEX, "/", TAG_REGEX, ": ", MESSAGE_REGEX);
+            Patterns.compileFromParts(PRIORITY_REGEX, "/", TAG_REGEX, "\\s*: ", MESSAGE_REGEX);
 
     public DelegateTag(LogcatParseEventsHandler eventsHandler) {
         super(eventsHandler, PATTERN);
