@@ -30,7 +30,7 @@ import java.util.function.Function;
 /**
  * Metadata about the supported log formats.
  */
-enum Format {
+public enum Format {
     BRIEF(DelegateBrief::new, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE),
     LONG(Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE),
     PROCESS(DelegateProcess::new, Field.PRIORITY, Field.PID, Field.MESSAGE, Field.TAG),
@@ -66,7 +66,7 @@ enum Format {
         return parserFactory != null;
     }
 
-    public final RegexLogcatParserDelegate createParser(LogcatParseEventsHandler eventsHandler) {
+    final RegexLogcatParserDelegate createParser(LogcatParseEventsHandler eventsHandler) {
         if (parserFactory != null) {
             return parserFactory.apply(eventsHandler);
         }

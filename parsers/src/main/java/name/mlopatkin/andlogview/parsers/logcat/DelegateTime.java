@@ -42,7 +42,7 @@ class DelegateTime extends SingleLineRegexLogcatParserDelegate {
     @Override
     protected ParserControl fromGroups(Matcher m) throws ParseException {
         Timestamp dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
-        LogRecord.Priority priority = getPriorityFromChar(m.group(2));
+        LogRecord.Priority priority = LogRecord.Priority.fromChar(m.group(2));
         String tag = m.group(3);
         int pid = Integer.parseInt(m.group(4));
         String message = m.group(5);

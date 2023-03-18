@@ -35,7 +35,7 @@ class DelegateProcess extends SingleLineRegexLogcatParserDelegate {
 
     @Override
     protected ParserControl fromGroups(Matcher m) {
-        LogRecord.Priority priority = getPriorityFromChar(m.group(1));
+        LogRecord.Priority priority = LogRecord.Priority.fromChar(m.group(1));
         int pid = Integer.parseInt(m.group(2));
         String message = m.group(3);
         String tag = m.group(4);

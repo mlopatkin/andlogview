@@ -1,0 +1,4 @@
+--------- beginning of main
+09-11 12:52:56.962 I/lowmemorykiller(  188): Using psi monitors for memory pressure detection
+09-11 12:52:56.963 I/lowmemorykiller(  188): Process polling is supported
+09-11 12:52:53.169 W/auditd  (  187): type=2000 audit(0.0:1): state=initialized audit_enabled=0 res=1

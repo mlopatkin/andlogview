@@ -1,0 +1,38 @@
+{
+  "entries": [
+    {
+      "time": "09-11 12:52:56.962",
+      "pid": "188",
+      "tid": "188",
+      "prio": "I",
+      "tag": "lowmemorykiller",
+      "message": "Using psi monitors for memory pressure detection"
+    },
+    {
+      "time": "09-11 12:52:56.963",
+      "pid": "188",
+      "tid": "188",
+      "prio": "I",
+      "tag": "lowmemorykiller",
+      "message": "Process polling is supported"
+    },
+    {
+      "time": "09-11 12:52:53.169",
+      "pid": "187",
+      "tid": "187",
+      "prio": "W",
+      "tag": "auditd",
+      "message": "type=2000 audit(0.0:1): state=initialized audit_enabled=0 res=1"
+    }
+  ],
+  "formats": {
+    "BRIEF": "brief.txt",
+    "LONG": "long.txt",
+    "PROCESS": "process.txt",
+    "RAW": "raw.txt",
+    "TAG": "tag.txt",
+    "THREAD": "thread.txt",
+    "THREADTIME": "threadtime.txt",
+    "TIME": "time.txt"
+  }
+}

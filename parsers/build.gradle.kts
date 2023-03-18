@@ -26,9 +26,15 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.log4j)
 
+    testFixturesApi(platform(libs.test.junit5.bom))
+    testFixturesApi(libs.test.junit5.jupiter)
+
+    testFixturesImplementation(project(":base"))
+    testFixturesImplementation(testFixtures(project(":logmodel")))
+    testFixturesImplementation(libs.gson)
     testFixturesImplementation(libs.guava)
 
     testImplementation(project(":device"))
     testImplementation(testFixtures(project(":logmodel")))
-
+    testImplementation(libs.gson)
 }

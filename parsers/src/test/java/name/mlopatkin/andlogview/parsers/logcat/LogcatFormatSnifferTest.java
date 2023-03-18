@@ -19,9 +19,14 @@ package name.mlopatkin.andlogview.parsers.logcat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 
 import java.util.Arrays;
+import java.util.List;
 
 class LogcatFormatSnifferTest {
     @Test
@@ -115,6 +120,19 @@ class LogcatFormatSnifferTest {
 
             assertThatThrownBy(() -> sniffer.createParser(new ListCollectingHandler())).isInstanceOf(
                     IllegalStateException.class);
+        }
+    }
+
+    @ParameterizedTest(name = "{0} with Eoln.{2}")
+    @LogcatCompatSource(
+            path = "parsers/logcat/golden.json",
+            formats = {Format.BRIEF, Format.THREADTIME},
+            eolns = {Eoln.NONE})
+    void canDetectFormat(Format ignoredFormat, List<LogRecord> ignoredRecords, Eoln ignoredEoln, List<String> lines) {
+        try (var sniffer = LogcatParsers.detectFormat()) {
+            ParserUtils.readInto(sniffer, lines.stream());
+
+            assertThat(sniffer.isFormatDetected()).isTrue();
         }
     }
 

@@ -50,7 +50,7 @@ class DelegateStudio extends SingleLineRegexLogcatParserDelegate {
         int tid = Integer.parseInt(m.group(3));
         String rawAppName = m.group(4);
         @Nullable String appName = "?".equals(rawAppName) ? null : rawAppName;
-        LogRecord.Priority priority = getPriorityFromChar(m.group(5));
+        LogRecord.Priority priority = LogRecord.Priority.fromChar(m.group(5));
         String tag = m.group(6);
         String message = m.group(7);
         return eventsHandler.logRecord(dateTime, pid, tid, priority, tag, message, appName);

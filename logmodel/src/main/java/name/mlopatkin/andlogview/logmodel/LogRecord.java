@@ -48,6 +48,16 @@ public class LogRecord {
         ERROR,
         FATAL;
 
+        public static Priority fromChar(String next) {
+            next = next.trim();
+            for (Priority val : values()) {
+                if (val.getLetter().equalsIgnoreCase(next)) {
+                    return val;
+                }
+            }
+            throw new IllegalArgumentException("Symbol '" + next + "' doesn't correspond to valid priority value");
+        }
+
         public String getLetter() {
             return toString().substring(0, 1);
         }

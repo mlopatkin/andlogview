@@ -1,0 +1,4 @@
+--------- beginning of main
+I(  188:  188) Using psi monitors for memory pressure detection
+I(  188:  188) Process polling is supported
+W(  187:  187) type=2000 audit(0.0:1): state=initialized audit_enabled=0 res=1

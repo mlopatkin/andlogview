@@ -33,7 +33,7 @@ class DelegateTag extends SingleLineRegexLogcatParserDelegate {
 
     @Override
     protected ParserControl fromGroups(Matcher m) {
-        LogRecord.Priority priority = getPriorityFromChar(m.group(1));
+        LogRecord.Priority priority = LogRecord.Priority.fromChar(m.group(1));
         String tag = m.group(2);
         String message = m.group(3);
         eventsHandler.logRecord(priority, tag, message);

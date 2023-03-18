@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.parsers.logcat;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
 abstract class RegexLogcatParserDelegate {
@@ -40,14 +39,4 @@ abstract class RegexLogcatParserDelegate {
     }
 
     public abstract ParserControl parseLine(CharSequence line);
-
-    static LogRecord.Priority getPriorityFromChar(String next) {
-        next = next.trim();
-        for (LogRecord.Priority val : LogRecord.Priority.values()) {
-            if (val.getLetter().equalsIgnoreCase(next)) {
-                return val;
-            }
-        }
-        throw new IllegalArgumentException("Symbol '" + next + "' doesn't correspond to valid priority value");
-    }
 }

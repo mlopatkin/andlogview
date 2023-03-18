@@ -34,6 +34,30 @@ public class LogRecordBuilder {
         return this;
     }
 
+    public LogRecordBuilder withPid(int pid) {
+        record = record.withPid(pid);
+        return this;
+    }
+
+    public LogRecordBuilder withTid(int tid) {
+        record = record.withTid(tid);
+        return this;
+    }
+
+    public LogRecordBuilder withPriority(String priorityChar) {
+        return withPriority(LogRecord.Priority.fromChar(priorityChar));
+    }
+
+    public LogRecordBuilder withPriority(LogRecord.Priority priority) {
+        record = record.withPriority(priority);
+        return this;
+    }
+
+    public LogRecordBuilder withTag(String tag) {
+        record = record.withTag(tag);
+        return this;
+    }
+
     public LogRecord build() {
         return record;
     }

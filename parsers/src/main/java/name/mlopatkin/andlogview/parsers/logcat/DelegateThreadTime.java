@@ -48,7 +48,7 @@ class DelegateThreadTime extends SingleLineRegexLogcatParserDelegate {
         Timestamp dateTime = TimeFormatUtils.getTimeFromString(m.group(1));
         int pid = Integer.parseInt(m.group(2));
         int tid = Integer.parseInt(m.group(3));
-        LogRecord.Priority priority = getPriorityFromChar(m.group(4));
+        LogRecord.Priority priority = LogRecord.Priority.fromChar(m.group(4));
         String tag = m.group(5);
         String message = m.group(6);
         return eventsHandler.logRecord(dateTime, pid, tid, priority, tag, message);
