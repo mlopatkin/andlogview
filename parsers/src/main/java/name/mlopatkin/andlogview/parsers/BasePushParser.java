@@ -21,8 +21,8 @@ package name.mlopatkin.andlogview.parsers;
  */
 public interface BasePushParser extends AutoCloseable {
     /**
-     * Passes the line to the parser to process. The line should have the trailing EOL trimmed. The parser can signal
-     * that it no longer intends to process the input by returning {@code false} from this method.
+     * Passes the line to the parser to process. The parser can signal that it no longer intends to process the input by
+     * returning {@code false} from this method.
      *
      * @param line the next line of input
      * @return {@code true} if the parser can process more lines or {@code false} if the parser cannot process the input

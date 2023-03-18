@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.liblogcat.file;
 
+import static name.mlopatkin.andlogview.logmodel.AssertLogRecord.assertThatRecord;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -34,6 +36,7 @@ import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,8 +57,18 @@ public class FileDataSourceFactoryTest {
         CharSource dumpstateFile = openTestData("galaxy_nexus_jbmr2.minimized.dump");
 
         DataSource dumpstate = FileDataSourceFactory.createDataSource("dumpstate.log", dumpstateFile).getDataSource();
+
         assertThat(dumpstate.getAvailableBuffers(),
                 Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.MAIN));
+        assertThat(dumpstate.getPidToProcessConverter())
+                .isNotNull()
+                .containsEntry(961, "com.google.android.gms");
+        assertThat(getRecordsWithBuffer(getRecords(dumpstate), Buffer.MAIN))
+                .first().satisfies(record ->
+                        assertThatRecord(record)
+                                .hasTag("ActivityManager")
+                                .hasMessage("No longer want com.google.android.music:main (pid 32401): empty for "
+                                        + "1806s"));
     }
 
     @Test
@@ -108,11 +121,23 @@ public class FileDataSourceFactoryTest {
     public void openDumpstateWithTimeTravel() throws Exception {
         CharSource log = openTestData("emulator_nougat.minimized.with-time-travel.dump");
 
-        ImportResult importResult = FileDataSourceFactory.createDataSource("time-travel.dump", log);
-        DataSource source = importResult.getDataSource();
+        var records = getRecords(FileDataSourceFactory.createDataSource("time-travel.dump", log).getDataSource());
 
-        ArrayList<LogRecord> records = new ArrayList<>();
-        source.setLogRecordListener(new RecordListener<>() {
+        var timeComparator = Comparator.comparing(LogRecord::getTime);
+        assertThat(getRecordsWithBuffer(records, Buffer.MAIN)).isSortedAccordingTo(timeComparator);
+        assertThat(getRecordsWithBuffer(records, Buffer.RADIO)).isSortedAccordingTo(timeComparator);
+        assertThat(getRecordsWithBuffer(records, Buffer.EVENTS)).isSortedAccordingTo(timeComparator);
+
+        assertThat(FileDataSourceFactory.createDataSource("time-travel.dump", log).getProblems()).isNotEmpty();
+    }
+
+    private CharSource openTestData(String testDataName) {
+        return Resources.asCharSource(Resources.getResource(getClass(), testDataName), StandardCharsets.UTF_8);
+    }
+
+    private static List<LogRecord> getRecords(DataSource dataSource) {
+        var records = new ArrayList<LogRecord>();
+        dataSource.setLogRecordListener(new RecordListener<>() {
             @Override
             public void addRecord(LogRecord record) {
                 throw new UnsupportedOperationException();
@@ -124,24 +149,10 @@ public class FileDataSourceFactoryTest {
                 records.addAll(newRecords);
             }
         });
-
-        var mainBuffer =
-                records.stream().filter(LogRecordPredicates.withBuffer(Buffer.MAIN)).collect(Collectors.toList());
-        var radioBuffer =
-                records.stream().filter(LogRecordPredicates.withBuffer(Buffer.RADIO)).collect(Collectors.toList());
-        var eventsBuffer =
-                records.stream().filter(LogRecordPredicates.withBuffer(Buffer.EVENTS)).collect(Collectors.toList());
-
-
-        var timeComparator = Comparator.comparing(LogRecord::getTime);
-        assertThat(mainBuffer).isSortedAccordingTo(timeComparator);
-        assertThat(radioBuffer).isSortedAccordingTo(timeComparator);
-        assertThat(eventsBuffer).isSortedAccordingTo(timeComparator);
-
-        assertThat(importResult.getProblems()).isNotEmpty();
+        return records;
     }
 
-    private CharSource openTestData(String testDataName) {
-        return Resources.asCharSource(Resources.getResource(getClass(), testDataName), StandardCharsets.UTF_8);
+    private static List<LogRecord> getRecordsWithBuffer(Collection<? extends LogRecord> records, Buffer buffer) {
+        return records.stream().filter(LogRecordPredicates.withBuffer(buffer)).collect(Collectors.toList());
     }
 }

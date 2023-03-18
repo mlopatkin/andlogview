@@ -23,6 +23,8 @@ import java.util.Set;
 
 /**
  * The push parser for the logcat log. Use {@link LogcatParsers} to obtain the instance for the desired format.
+ * <p>
+ * Logcat push parsers are tolerant to input lines with trailing EOLN characters.
  */
 public class LogcatPushParser<H extends LogcatParseEventsHandler> implements PushParser<H> {
     private final Format format;

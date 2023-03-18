@@ -15,6 +15,7 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
+import name.mlopatkin.andlogview.base.io.LineReader;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -30,7 +31,6 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,7 +125,7 @@ public class LogfileDataSource implements DataSource {
             return this;
         }
 
-        public ImportResult readFrom(BufferedReader in) throws IOException {
+        public ImportResult readFrom(LineReader in) throws IOException {
             assert pushParser != null;
             ParserUtils.readInto(pushParser, in::readLine);
             return new ImportResult(new LogfileDataSource(fileName, pushParser.getAvailableFields(), records));

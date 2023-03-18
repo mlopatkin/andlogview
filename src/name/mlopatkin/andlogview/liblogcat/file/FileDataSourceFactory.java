@@ -15,6 +15,7 @@
  */
 package name.mlopatkin.andlogview.liblogcat.file;
 
+import name.mlopatkin.andlogview.base.io.LineReader;
 import name.mlopatkin.andlogview.parsers.FormatSniffer;
 import name.mlopatkin.andlogview.parsers.MultiplexParser;
 import name.mlopatkin.andlogview.parsers.ReplayParser;
@@ -28,7 +29,6 @@ import com.google.common.io.Files;
 
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -45,12 +45,13 @@ public class FileDataSourceFactory {
 
     public static ImportResult createDataSource(String fileName, CharSource file)
             throws UnrecognizedFormatException, IOException {
-        try (BufferedReader in = file.openBufferedStream()) {
+        try (LineReader in = new LineReader(file)) {
             DumpstateFormatSniffer dumpstateSniffer = DumpstateParsers.detectFormat();
             LogcatFormatSniffer logcatSniffer = LogcatParsers.detectFormat();
 
             try (var parser = new ReplayParser<>(
-                    MAX_LOOKAHEAD_LINES, new MultiplexParser<>(dumpstateSniffer, logcatSniffer))) {
+                    MAX_LOOKAHEAD_LINES,
+                    new MultiplexParser<>(dumpstateSniffer, logcatSniffer))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     boolean parserStopped = !parser.nextLine(line);
@@ -71,7 +72,7 @@ public class FileDataSourceFactory {
     }
 
     private static ImportResult createLogFileSource(String fileName, LogcatFormatSniffer formatSniffer,
-            ReplayParser<?> replayParser, BufferedReader in)
+            ReplayParser<?> replayParser, LineReader in)
             throws IOException {
         return new LogfileDataSource.Builder(fileName).setParserFactory(
                         handler -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, handler))
@@ -79,7 +80,7 @@ public class FileDataSourceFactory {
     }
 
     private static ImportResult createDumpstateFileSource(String fileName, DumpstateFormatSniffer formatSniffer,
-            ReplayParser<?> replayParser, BufferedReader in) throws IOException, UnrecognizedFormatException {
+            ReplayParser<?> replayParser, LineReader in) throws IOException, UnrecognizedFormatException {
         return new DumpstateFileDataSource.Builder(fileName).setParserFactory(
                 h -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, h)).readFrom(in);
     }
