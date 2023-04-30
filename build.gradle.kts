@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.bitbucket.gradle.UploadTask
 import java.util.Locale
 
-@Suppress("DSL_SCOPE_VIOLATION")  // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     idea
     application
