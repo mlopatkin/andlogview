@@ -21,9 +21,11 @@ import static name.mlopatkin.andlogview.logmodel.AssertLogRecord.assertThatRecor
 import static org.assertj.core.api.Assertions.assertThat;
 
 import name.mlopatkin.andlogview.logmodel.AssertLogRecord;
+import name.mlopatkin.andlogview.parsers.ParserUtils;
 import name.mlopatkin.andlogview.parsers.PushParser;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class SingleEntryParser {
     public static AssertLogRecord assertOnlyRecord(ListCollectingHandler collector) {
@@ -34,15 +36,21 @@ public class SingleEntryParser {
     public static AssertLogRecord assertOnlyParsedRecord(
             Function<LogcatParseEventsHandler, PushParser<LogcatParseEventsHandler>> parserFactory,
             String line) {
-        return assertOnlyRecord(parseLine(parserFactory, line));
+        return assertOnlyParsedRecord(parserFactory, Stream.of(line));
     }
 
-    private static ListCollectingHandler parseLine(
+    public static AssertLogRecord assertOnlyParsedRecord(
             Function<LogcatParseEventsHandler, PushParser<LogcatParseEventsHandler>> parserFactory,
-            String line) {
+            Stream<String> lines) {
+        return assertOnlyRecord(parseLines(parserFactory, lines));
+    }
+
+    private static ListCollectingHandler parseLines(
+            Function<LogcatParseEventsHandler, PushParser<LogcatParseEventsHandler>> parserFactory,
+            Stream<String> lines) {
         ListCollectingHandler collector = new ListCollectingHandler();
         try (PushParser<?> parser = parserFactory.apply(collector)) {
-            parser.nextLine(line);
+            ParserUtils.readInto(parser, lines);
         }
         return collector;
     }

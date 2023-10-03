@@ -118,6 +118,16 @@ public class FileDataSourceFactoryTest {
     }
 
     @Test
+    public void openLongLog() throws Exception {
+        CharSource log = openTestData("emulator_api31_long.log");
+
+        DataSource source = FileDataSourceFactory.createDataSource("long.log", log).getDataSource();
+        assertThat(source.getAvailableFields(),
+                Matchers.containsInAnyOrder(
+                        Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE));
+    }
+
+    @Test
     public void openDumpstateWithTimeTravel() throws Exception {
         CharSource log = openTestData("emulator_nougat.minimized.with-time-travel.dump");
 

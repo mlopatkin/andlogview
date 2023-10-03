@@ -34,7 +34,7 @@ import java.util.function.Function;
  */
 public enum Format {
     BRIEF(DelegateBrief::new, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE),
-    LONG(Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE),
+    LONG(DelegateLong::new, Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE),
     PROCESS(DelegateProcess::new, Field.PRIORITY, Field.PID, Field.MESSAGE, Field.TAG),
     RAW(Field.MESSAGE),
     STUDIO(DelegateStudio::new, Field.TIME, Field.PID, Field.TID, Field.APP_NAME, Field.PRIORITY, Field.TAG,

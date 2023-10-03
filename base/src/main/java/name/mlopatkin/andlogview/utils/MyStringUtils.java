@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public class MyStringUtils {
     private MyStringUtils() {}
 
-    private static final Splitter EOL_SPLITTER = Splitter.on('\n');
+    private static final Splitter EOL_SPLITTER = Splitter.onPattern("((?<=\n))");
 
     public static final int NOT_FOUND = -1;
 
@@ -42,7 +42,7 @@ public class MyStringUtils {
      * with {@code replacement} symbol. If the string is not longer than {@code maxLength} then the unchanged string is
      * returned. If the replacement takes place then non-empty suffix of the string follows the replacement symbol in
      * the result.
-     *
+     * <p>
      * Examples:
      * <pre>{@code
      * abbreviateMiddle("hello", '*', 3, 1) -> "h*o";
@@ -61,8 +61,8 @@ public class MyStringUtils {
      *         replacement}
      * @throws NullPointerException if {@code str} is {@code null}
      * @throws IllegalArgumentException if {@code maxLength <= 0} or {@code prefixLength <= 0} or
-     *         {@code maxLength
-     *         < prefixLength + 2} (length of prefix, length of replacement, and length of shortest possible suffix).
+     *         {@code maxLength < prefixLength + 2} (length of prefix, length of
+     *         replacement, and length of shortest possible suffix).
      */
     public static String abbreviateMiddle(String str, char replacement, int maxLength, int prefixLength) {
         Preconditions.checkNotNull(str, "str is null");
@@ -88,14 +88,31 @@ public class MyStringUtils {
     }
 
     /**
+     * Returns {@code true} if the given CharSequence is empty. Backport of Java 15's instance method.
+     */
+    public static boolean isEmpty(CharSequence cs) {
+        return cs.length() == 0;
+    }
+
+    /**
+     * Returns the first character of a non-empty {@link CharSequence}.
+     */
+    public static char first(CharSequence cs) {
+        Preconditions.checkArgument(!isEmpty(cs), "CharSequence is empty");
+        return cs.charAt(0);
+    }
+
+    /**
+     * Returns the last character of a non-empty {@link CharSequence}.
+     */
+    public static char last(CharSequence cs) {
+        Preconditions.checkArgument(!isEmpty(cs), "CharSequence is empty");
+        return cs.charAt(cs.length() - 1);
+    }
+
+    /**
      * Splits the char sequence at line terminators into a stream of strings. Similar to Java 11's
-     * {@code String.lines()}, but has some quirks:
-     * <ol>
-     * <li>Only {@code \n} is recognized as a line terminator.
-     * <li>The last line not ending with a terminator is returned, even if it is empty. This means that empty
-     * sequence produces one empty string, and an empty string is produced at the end if the sequence ends with line
-     * terminator.
-     * </ol>
+     * {@code String.lines()}, but only recognizes {@code \n} as a line terminator.
      *
      * @param sequence the sequence to split
      * @return the stream of strings

@@ -18,7 +18,9 @@ package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
-abstract class RegexLogcatParserDelegate {
+import java.io.Closeable;
+
+abstract class RegexLogcatParserDelegate implements Closeable {
     static final String TIMESTAMP_REGEX = "(?:\\d\\d\\d\\d-)?(\\d\\d-\\d\\d "
             + "\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d)(?:\\d\\d\\d)?";
     static final String ID_REGEX = "(\\d+)";
@@ -39,4 +41,9 @@ abstract class RegexLogcatParserDelegate {
     }
 
     public abstract ParserControl parseLine(CharSequence line);
+
+    @Override
+    public void close() {
+        // Do nothing
+    }
 }

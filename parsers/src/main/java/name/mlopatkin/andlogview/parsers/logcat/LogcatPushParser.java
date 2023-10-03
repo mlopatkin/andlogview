@@ -49,6 +49,7 @@ public class LogcatPushParser<H extends LogcatParseEventsHandler> implements Pus
 
     @Override
     public void close() {
+        parserDelegate.close();
         eventsHandler.documentEnded();
     }
 

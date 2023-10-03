@@ -1,0 +1,205 @@
+--------- beginning of main
+[ 03-25 23:53:27.339   747:  990 D/EGL_emulation ]
+app_time_stats: avg=610.64ms min=2.29ms max=5404.50ms count=9
+
+--------- beginning of kernel
+[ 03-25 23:53:30.028     0:    0 I/logd     ]
+logdr: UID=2000 GID=2000 PID=2746 n tail=20 logMask=99 pid=0 start=0ns deadline=0ns
+
+[ 03-25 23:53:32.918  1009: 1009 D/TaplEvents ]
+Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=948.9551, y[0]=414.96094, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=META_NUM_LOCK_ON, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=3318904, downTime=3318904, deviceId=5, source=0x5002, displayId=0, eventId=784119338 }
+
+[ 03-25 23:53:32.967  1009: 1009 D/TaplEvents ]
+Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=948.9551, y[0]=414.96094, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=META_NUM_LOCK_ON, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=3318954, downTime=3318904, deviceId=5, source=0x5002, displayId=0, eventId=958597057 }
+
+[ 03-25 23:53:32.984  1009: 1009 D/TaplEvents ]
+Main / start: startAppShortcutOrInfoActivity
+
+[ 03-25 23:53:32.984  1009: 1304 D/EGL_emulation ]
+app_time_stats: avg=407.34ms min=0.68ms max=10812.38ms count=27
+
+--------- beginning of system
+[ 03-25 23:53:32.984   555: 2344 I/ActivityTaskManager ]
+START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.documentsui/.LauncherActivity bnds=[843,268][1045,545]} from uid 10090
+
+[ 03-25 23:53:32.985   555: 2344 W/ActivityTaskManager ]
+Can't find TaskDisplayArea to determine support for multi window. Task id=36 attached=false
+
+[ 03-25 23:53:32.986   555: 2344 V/SplashScreenExceptionList ]
+SplashScreen checking exception for package com.android.documentsui (target sdk:30) -> false
+
+[ 03-25 23:53:32.988   555:  575 D/CompatibilityChangeReporter ]
+Compat change id reported: 135634846; UID 10051; state: DISABLED
+
+[ 03-25 23:53:32.988   555:  575 D/CompatibilityChangeReporter ]
+Compat change id reported: 177438394; UID 10051; state: DISABLED
+
+[ 03-25 23:53:32.988   555:  575 D/CompatibilityChangeReporter ]
+Compat change id reported: 135772972; UID 10051; state: DISABLED
+
+[ 03-25 23:53:32.988   555:  575 D/CompatibilityChangeReporter ]
+Compat change id reported: 135754954; UID 10051; state: ENABLED
+
+[ 03-25 23:53:32.989   555:  584 D/CompatibilityChangeReporter ]
+Compat change id reported: 143937733; UID 10051; state: ENABLED
+
+[ 03-25 23:53:32.997   360:  360 D/Zygote   ]
+Forked child process 2750
+
+[ 03-25 23:53:32.998   555:  584 I/ActivityManager ]
+Start proc 2750:com.android.documentsui/u0a51 for pre-top-activity {com.android.documentsui/com.android.documentsui.LauncherActivity}
+
+[ 03-25 23:53:33.003  2750: 2750 W/oid.documentsu ]
+Unexpected CPU variant for X86 using defaults: x86_64
+
+[ 03-25 23:53:33.006   440:  480 I/adbd     ]
+jdwp connection from 2750
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_7 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_11 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_5 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_3 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_9 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_4 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.010   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_10 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_6 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_2 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_8 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_7 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_11 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_5 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_3 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_9 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_4 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_10 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_6 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_2 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.011   555: 2344 W/InputReader ]
+Device virtio_input_multi_touch_8 is associated with display ADISPLAY_ID_NONE.
+
+[ 03-25 23:53:33.012  2750: 2750 D/CompatibilityChangeReporter ]
+Compat change id reported: 171979766; UID 10051; state: DISABLED
+
+[ 03-25 23:53:33.017   405:  405 I/BpBinder ]
+onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+
+[ 03-25 23:53:33.020  2750: 2750 V/GraphicsEnvironment ]
+ANGLE Developer option for 'com.android.documentsui' set to: 'default'
+
+[ 03-25 23:53:33.020  2750: 2750 V/GraphicsEnvironment ]
+Neither updatable production driver nor prerelease driver is supported.
+
+[ 03-25 23:53:33.020  2750: 2750 D/NetworkSecurityConfig ]
+No Network Security Config specified, using platform default
+
+[ 03-25 23:53:33.020  2750: 2750 D/NetworkSecurityConfig ]
+No Network Security Config specified, using platform default
+
+[ 03-25 23:53:33.026  2750: 2750 E/StrictMode ]
+Tried to access the API:LayoutInflater which needs to have proper configuration from a non-UI Context:com.android.documentsui.DocumentsApplication@8a3f66f The API:LayoutInflater needs a proper configuration. Use UI contexts such as an activity or a context created via createWindowContext(Display, int, Bundle) or  createConfigurationContext(Configuration) with a proper configuration.
+java.lang.IllegalAccessException: Tried to access the API:LayoutInflater which needs to have proper configuration from a non-UI Context:com.android.documentsui.DocumentsApplication@8a3f66f
+	at android.os.StrictMode.assertConfigurationContext(StrictMode.java:2296)
+	at android.view.LayoutInflater.<init>(LayoutInflater.java:260)
+	at com.android.internal.policy.PhoneLayoutInflater.<init>(PhoneLayoutInflater.java:44)
+	at android.app.SystemServiceRegistry$33.createService(SystemServiceRegistry.java:534)
+	at android.app.SystemServiceRegistry$33.createService(SystemServiceRegistry.java:531)
+	at android.app.SystemServiceRegistry$CachedServiceFetcher.getService(SystemServiceRegistry.java:1848)
+	at android.app.SystemServiceRegistry.getSystemService(SystemServiceRegistry.java:1525)
+	at android.app.ContextImpl.getSystemService(ContextImpl.java:2064)
+	at android.content.ContextWrapper.getSystemService(ContextWrapper.java:857)
+	at android.view.LayoutInflater.from(LayoutInflater.java:288)
+	at com.android.documentsui.DragShadowBuilder.<init>(DragShadowBuilder.java:49)
+	at com.android.documentsui.DragAndDropManager$RuntimeDragAndDropManager.<init>(DragAndDropManager.java:195)
+	at com.android.documentsui.DragAndDropManager$RuntimeDragAndDropManager.<init>(DragAndDropManager.java:166)
+	at com.android.documentsui.DragAndDropManager.create(DragAndDropManager.java:163)
+	at com.android.documentsui.DocumentsApplication.onCreate(DocumentsApplication.java:145)
+	at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1211)
+	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:6725)
+	at android.app.ActivityThread.access$1500(ActivityThread.java:247)
+	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2053)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loopOnce(Looper.java:201)
+	at android.os.Looper.loop(Looper.java:288)
+	at android.app.ActivityThread.main(ActivityThread.java:7839)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:548)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1003)
+
+
+[ 03-25 23:53:33.027  2750: 2750 E/StrictMode ]
+Tried to access the API:ViewConfiguration which needs to have proper configuration from a non-UI Context:com.android.documentsui.DocumentsApplication@8a3f66f The API:ViewConfiguration needs a proper configuration. Use UI contexts such as an activity or a context created via createWindowContext(Display, int, Bundle) or  createConfigurationContext(Configuration) with a proper configuration.
+java.lang.IllegalAccessException: Tried to access the API:ViewConfiguration which needs to have proper configuration from a non-UI Context:com.android.documentsui.DocumentsApplication@8a3f66f
+	at android.os.StrictMode.assertConfigurationContext(StrictMode.java:2296)
+	at android.view.ViewConfiguration.get(ViewConfiguration.java:522)
+	at android.view.View.<init>(View.java:5307)
+	at android.view.View.<init>(View.java:5452)
+	at android.view.ViewGroup.<init>(ViewGroup.java:702)
+	at android.widget.LinearLayout.<init>(LinearLayout.java:254)
+	at android.widget.LinearLayout.<init>(LinearLayout.java:250)
+	at android.widget.LinearLayout.<init>(LinearLayout.java:246)
+	at java.lang.reflect.Constructor.newInstance0(Native Method)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:343)
+	at android.view.LayoutInflater.createView(LayoutInflater.java:858)
+	at android.view.LayoutInflater.createView(LayoutInflater.java:780)
+	at com.android.internal.policy.PhoneLayoutInflater.onCreateView(PhoneLayoutInflater.java:58)
+	at android.view.LayoutInflater.onCreateView(LayoutInflater.java:934)
+	at android.view.LayoutInflater.onCreateView(LayoutInflater.java:954)
+	at android.view.LayoutInflater.createViewFromTag(LayoutInflater.java:1008)
+	at android.view.LayoutInflater.createViewFromTag(LayoutInflater.java:965)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:663)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:538)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:485)
+	at com.android.documentsui.DragShadowBuilder.<init>(DragShadowBuilder.java:49)
+	at com.android.documentsui.DragAndDropManager$RuntimeDragAndDropManager.<init>(DragAndDropManager.java:195)
+	at com.android.documentsui.DragAndDropManager$RuntimeDragAndDropManager.<init>(DragAndDropManager.java:166)
+	at com.android.documentsui.DragAndDropManager.create(DragAndDropManager.java:163)
+	at com.android.documentsui.DocumentsApplication.onCreate(DocumentsApplication.java:145)
+	at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1211)
+	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:6725)
+	at android.app.ActivityThread.access$1500(ActivityThread.java:247)
+	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2053)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loopOnce(Looper.java:201)
+	at android.os.Looper.loop(Looper.java:288)
+	at android.app.ActivityThread.main(ActivityThread.java:7839)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:548)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1003)
