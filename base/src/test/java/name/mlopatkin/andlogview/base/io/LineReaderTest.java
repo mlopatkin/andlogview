@@ -63,9 +63,9 @@ class LineReaderTest {
                 """, eol);
 
         assertThat(lines(input)).containsExactly(
-                "First line\n",
-                "Second line\n",
-                "Third line\n"
+                "First line",
+                "Second line",
+                "Third line"
         );
     }
 
@@ -82,8 +82,8 @@ class LineReaderTest {
                 Third line""", eol);
 
         assertThat(lines(input)).containsExactly(
-                "First line\n",
-                "Second line\n",
+                "First line",
+                "Second line",
                 "Third line"
         );
     }
@@ -102,9 +102,9 @@ class LineReaderTest {
                 """, eol);
 
         assertThat(lines(input)).containsExactly(
-                "First line\n",
-                "Second line\n",
-                "\n"
+                "First line",
+                "Second line",
+                ""
         );
     }
 
@@ -122,16 +122,16 @@ class LineReaderTest {
                 """, eol);
 
         assertThat(lines(input)).containsExactly(
-                "\n",
-                "\n",
-                "\n"
+                "",
+                "",
+                ""
         );
     }
 
     @Test
     void canReadMixedEols() throws Exception {
         String input = "\n\r\r\r\n\n\n\r\n";
-        assertThat(lines(input)).allMatch("\n"::equals).hasSize(7);
+        assertThat(lines(input)).allMatch(""::equals).hasSize(7);
     }
 
     private List<String> lines(String source) throws IOException {
@@ -139,7 +139,7 @@ class LineReaderTest {
         try (var reader = createReader(source)) {
             var line = reader.readLine();
             while (line != null) {
-                result.add(line);
+                result.add(line.toString());
                 line = reader.readLine();
             }
         }
@@ -153,7 +153,7 @@ class LineReaderTest {
     }
 
     private String normalizeLine(String line) {
-        return line.replaceAll("\\r\\n?", "\n");
+        return line.replaceAll("[\\r\\n]", "");
     }
 
     private String convertEols(String line, String newEol) {

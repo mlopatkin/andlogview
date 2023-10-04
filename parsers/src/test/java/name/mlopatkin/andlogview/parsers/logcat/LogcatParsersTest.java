@@ -214,7 +214,7 @@ public class LogcatParsersTest {
                     Format.THREADTIME,
                     Format.TIME
             },
-            eolns = {Eoln.NONE, Eoln.LF, Eoln.CRLF}
+            eolns = {Eoln.NONE}
     )
     void compatibilityTest(Format format, List<LogRecord> expectedRecords, Eoln ignoredEoln, List<String> lines) {
         ListCollectingHandler handler = new ListCollectingHandler();

@@ -46,6 +46,8 @@ import java.util.regex.Pattern;
  * </pre>
  * It consists of a header (first line), and the rest of the message. The message is finalized with double EOLN
  * {@code \n\n}.
+ * <p>
+ * Even though the paragraph above talks about EOLNs, this delegate only expects lines without end-of-line characters.
  */
 class DelegateLong extends RegexLogcatParserDelegate {
     private static final Pattern HEADER_PATTERN = Patterns.compileFromParts(
@@ -59,7 +61,7 @@ class DelegateLong extends RegexLogcatParserDelegate {
             // priority and left-aligned tag. Tag has to be trimmed before feeding it upstream.
             PRIORITY_REGEX, "/", TAG_REGEX,
             " ",
-            "\\]\\n?"
+            "\\]"
     );
 
     private @Nullable CurrentMessage currentMessage;
@@ -142,7 +144,7 @@ class DelegateLong extends RegexLogcatParserDelegate {
     }
 
     private static boolean isBlank(CharSequence sequence) {
-        return MyStringUtils.isEmpty(sequence) || MyStringUtils.first(sequence) == '\n';
+        return MyStringUtils.isEmpty(sequence);
     }
 
     @Override
@@ -177,9 +179,6 @@ class DelegateLong extends RegexLogcatParserDelegate {
         }
 
         public void addMessageLine(CharSequence line) {
-            if (!MyStringUtils.isEmpty(line) && MyStringUtils.last(line) == '\n') {
-                line = line.subSequence(0, line.length() - 1);
-            }
             messageLines.add(line);
         }
 

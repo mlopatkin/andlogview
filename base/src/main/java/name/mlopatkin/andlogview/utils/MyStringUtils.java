@@ -118,6 +118,9 @@ public class MyStringUtils {
      * @return the stream of strings
      */
     public static Stream<String> lines(CharSequence sequence) {
-        return EOL_SPLITTER.splitToStream(sequence);
+        if (isEmpty(sequence)) {
+            return Stream.empty();
+        }
+        return EOL_SPLITTER.splitToStream(sequence).map(s -> s.endsWith("\n") ? s.substring(0, s.length() - 1) : s);
     }
 }

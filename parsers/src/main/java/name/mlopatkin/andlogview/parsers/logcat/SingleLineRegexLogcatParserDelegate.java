@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
-import com.google.common.base.CharMatcher;
-
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,10 +41,9 @@ abstract class SingleLineRegexLogcatParserDelegate extends RegexLogcatParserDele
 
     @Override
     public final ParserControl parseLine(CharSequence line) {
-        String trimmed = CharMatcher.whitespace().trimFrom(line);
-        Matcher matcher = pattern.matcher(trimmed);
+        Matcher matcher = pattern.matcher(line);
         if (!matcher.matches()) {
-            return eventsHandler.unparseableLine(trimmed);
+            return eventsHandler.unparseableLine(line);
         }
         try {
             return fromGroups(matcher);

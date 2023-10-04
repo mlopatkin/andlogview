@@ -95,7 +95,7 @@ public class LineReaderPerfTest {
     @Benchmark
     public void parseWithLineReader(Blackhole bh) throws IOException {
         try (var in = new LineReader(input, 8192)) {
-            String line = in.readLine();
+            var line = in.readLine();
             while (line != null) {
                 bh.consume(line);
                 line = in.readLine();

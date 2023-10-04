@@ -21,8 +21,6 @@ import name.mlopatkin.andlogview.parsers.PushParser;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.LineParser.State;
 
-import com.google.common.base.CharMatcher;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -58,7 +56,7 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
             return false;
         }
 
-        lineParser.nextLine(CharMatcher.whitespace().trimFrom(line));
+        lineParser.nextLine(line);
         return !shouldStop;
     }
 

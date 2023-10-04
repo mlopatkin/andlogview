@@ -36,6 +36,38 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class DelegateLongTest {
     @Test
+    void parsesEmptyMessage() {
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
+                [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
+
+
+                """))
+                .hasDate(1, 2)
+                .hasTime(3, 4, 5, 678)
+                .hasPid(1234)
+                .hasTid(4321)
+                .hasPriority(LogRecord.Priority.ERROR)
+                .hasTag("sometag")
+                .hasMessage("");
+    }
+
+    @Test
+    void parsesBlankMessage() {
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
+                [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
+                \s\s\s\t
+
+                """))
+                .hasDate(1, 2)
+                .hasTime(3, 4, 5, 678)
+                .hasPid(1234)
+                .hasTid(4321)
+                .hasPriority(LogRecord.Priority.ERROR)
+                .hasTag("sometag")
+                .hasMessage("\s\s\s\t");
+    }
+
+    @Test
     void parsesSingleLineMessage() {
         assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
                 [ 01-02 03:04:05.678  1234: 4321 E/sometag ]

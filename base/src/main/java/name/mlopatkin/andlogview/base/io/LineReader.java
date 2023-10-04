@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * This class functions similarly to {@link BufferedReader}, but only provides the ability to read whole lines.
- * In addition, it includes line-terminating characters in the read lines, similar to Python's {@code lines} method.
+ * This class functions similarly to {@link BufferedReader}, but only provides the ability to read whole lines. Because
+ * of the limited functionality, it is noticeably faster and sometimes produces less temporary objects.
  */
 public class LineReader implements Closeable {
     // Beware, this class is optimized for performance. All changes to it should be verified with LineReaderPerfTest.
-    // Currently, it beats BufferedReader by about 5% in "\n" case.
+    // Currently, it beats BufferedReader by about 5-15%.
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
     private static final int EXPECTED_LINE_LENGTH = 150;
@@ -94,10 +94,12 @@ public class LineReader implements Closeable {
     }
 
     /**
-     * Returns the next line of the input, or {@code null} if there is no more data in it. Unlike
-     * {@link BufferedReader#readLine()}, this method includes line-terminating character in the result.
-     * Line endings are normalized, so only {@code \n} is used, even if the source reader has {@code \r} or
-     * {@code \r\n}.
+     * Returns the next line of the input, or {@code null} if there is no more data in it. Like
+     * {@link BufferedReader#readLine()}, this method does not include line-terminating character in the result.
+     * This method understands all kinds of line endings: {@code \n}, {@code \r}, or {@code \r\n}.
+     * <p>
+     * Unlike {@link BufferedReader#readLine()}, this method returns a {@link CharSequence} instead of a string. The
+     * returned object is not updated.
      *
      * @return the next line of the input or {@code null} if the input is exhausted.
      * @throws IOException if reading the input fails
@@ -106,46 +108,48 @@ public class LineReader implements Closeable {
     @SuppressWarnings("NullAway")
     // NullAway cannot figure out that (result != null || resultBuffer != null) is the do-while cycle's post-condition.
     // It can be probably fixed with assert, but I don't want to add new bytecodes to this optimized method.
-    public String readLine() throws IOException {
+    public CharSequence readLine() throws IOException {
+        // Initially, this method was written to include EOLN in the result. It turned out to be unnecessary, but I
+        // keep some comments down the line on how to return this behavior.
         consumeLfTailIfNeeded();
         if (!ensureBuffer()) {
             return null;
         }
 
         String result = null;
-        StringBuilder resultBuffer = null;
+        StringBuilder resultBuilder = null;
 
         do {
             int eolnPos = eolnPosInBuffer();
             if (eolnPos >= 0) {
                 if (buffer[eolnPos] == '\r') {
                     shouldConsumeNextLf = true;
-                    // Convert the EOLN, so we can copy it into result.
-                    buffer[eolnPos] = '\n';
+                    // Here we can convert the EOLN if we want to copy it into result.
+                    // buffer[eolnPos] = '\n';
                 }
                 int start = bufStart;
-                int len = eolnPos - start + 1;
-                // Copy the buffer until EOLN, inclusive.
-                if (resultBuffer == null) {
+                int len = eolnPos - start;
+                // Copy the buffer until EOLN, exclusive. If you need to include EOLN, just add 1 to len.
+                if (resultBuilder == null) {
                     result = new String(buffer, start, len);
                 } else {
-                    result = resultBuffer.append(buffer, start, len).toString();
+                    result = resultBuilder.append(buffer, start, len).toString();
                 }
                 // Don't move this up, for whatever reason JIT loves having this update at the end.
                 bufStart = eolnPos + 1;
                 break;
             } else {
                 int len = bufEnd - bufStart;
-                if (resultBuffer == null) {
-                    resultBuffer = new StringBuilder(EXPECTED_LINE_LENGTH);
+                if (resultBuilder == null) {
+                    resultBuilder = new StringBuilder(EXPECTED_LINE_LENGTH);
                 }
                 // No EOLN in the buffer, append the whole buffer, fill it and start again.
-                resultBuffer.append(buffer, bufStart, len);
+                resultBuilder.append(buffer, bufStart, len);
                 // the buffer is now empty.
                 bufStart = bufEnd;
             }
         } while (fillBuffer());
-        return result != null ? result : resultBuffer.toString();
+        return result != null ? result : resultBuilder;
     }
 
     /**

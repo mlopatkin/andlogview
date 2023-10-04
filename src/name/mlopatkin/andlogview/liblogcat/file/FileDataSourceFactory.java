@@ -52,7 +52,7 @@ public class FileDataSourceFactory {
             try (var parser = new ReplayParser<>(
                     MAX_LOOKAHEAD_LINES,
                     new MultiplexParser<>(dumpstateSniffer, logcatSniffer))) {
-                String line;
+                CharSequence line;
                 while ((line = in.readLine()) != null) {
                     boolean parserStopped = !parser.nextLine(line);
                     if (dumpstateSniffer.isFormatDetected()) {
