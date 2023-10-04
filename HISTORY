@@ -1,3 +1,9 @@
+version 0.22
+    [+] Support parsing long logcat format
+    [+] Show warnings when dumpstate cannot be imported properly, but try to still be useful
+
+    [*] Offline and not-fully-connected devices can no longer be selected in the dialog
+
 version 0.21
     [!] The tool is now renamed to AndLogView and the development moved to Github
 
