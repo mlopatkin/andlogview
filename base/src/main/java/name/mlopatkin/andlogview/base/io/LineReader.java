@@ -133,7 +133,8 @@ public class LineReader implements Closeable {
                 if (resultBuilder == null) {
                     result = new String(buffer, start, len);
                 } else {
-                    result = resultBuilder.append(buffer, start, len).toString();
+                    // Here result should be null.
+                    resultBuilder.append(buffer, start, len);
                 }
                 // Don't move this up, for whatever reason JIT loves having this update at the end.
                 bufStart = eolnPos + 1;
