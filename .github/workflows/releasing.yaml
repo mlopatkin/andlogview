@@ -17,8 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build and publish snapshot
-        # gradle-build-action 2.3.3
-        uses: gradle/gradle-build-action@3fbe033aaae657f011f88f29be9e65ed26bd29ef
+        # gradle-build-action 2.9.0
+        uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
         # Do not use Gradle Daemon because we only have a single invocation.
         with:
           arguments: |
@@ -49,8 +49,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build and publish release
-        # gradle-build-action 2.3.3
-        uses: gradle/gradle-build-action@3fbe033aaae657f011f88f29be9e65ed26bd29ef
+        # gradle-build-action 2.9.0
+        uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
         # Do not use Gradle Daemon because we only have a single invocation.
         with:
           arguments: |
