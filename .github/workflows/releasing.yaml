@@ -15,7 +15,7 @@ jobs:
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build and publish snapshot
         # gradle-build-action 2.9.0
         uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
@@ -47,7 +47,7 @@ jobs:
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build and publish release
         # gradle-build-action 2.9.0
         uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
@@ -73,7 +73,7 @@ jobs:
       - build-snapshot
     if: ${{ always() }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: setup git for bitbucket
         run: tools/bitbucket-mirror/setup-bitbucket.sh
         shell: bash
