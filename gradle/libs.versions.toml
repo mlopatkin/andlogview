@@ -4,7 +4,7 @@ checkstyle = "10.12.4"
 dagger = "2.48.1"
 errorpronePlugin = "3.1.0"
 flatlaf = "3.2.1"
-mockito = "4.2.0"
+mockito = "4.11.0"
 compileJdkVersion = "17"  # JDK version used for compilation
 # Language level used for compilation. Java 17 introduces sealed classes that may not be supported in Jabel, so we stick
 # with 16 for now
@@ -27,11 +27,11 @@ gson = "com.google.code.gson:gson:2.10.1"
 guava = "com.google.guava:guava:32.1.2-jre"
 jopt = "net.sf.jopt-simple:jopt-simple:5.0.4"
 log4j = "log4j:log4j:1.2.17"
-test-assertj = "org.assertj:assertj-core:3.22.0"
+test-assertj = "org.assertj:assertj-core:3.24.2"
 test-hamcrest-hamcrest = "org.hamcrest:hamcrest:2.2"
-test-hamcrest-optional = "com.spotify:hamcrest-optional:1.2.0"
+test-hamcrest-optional = "com.spotify:hamcrest-optional:1.3.2"
 test-junit4 = "junit:junit:4.13.2"
-test-junit5-bom = "org.junit:junit-bom:5.8.1"
+test-junit5-bom = "org.junit:junit-bom:5.10.0"
 test-junit5-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 test-junit5-vintageEngine = { module = "org.junit.vintage:junit-vintage-engine" }
 test-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
