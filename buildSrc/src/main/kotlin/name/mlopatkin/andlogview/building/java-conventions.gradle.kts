@@ -50,7 +50,6 @@ dependencies {
     testAnnotationProcessor(buildLibs.build.nullaway)
 
     errorprone(buildLibs.build.errorprone.core)
-    errorproneJavac(buildLibs.build.errorprone.javac)
 }
 
 // Apply NullAway to JMH benchmark sources, if the plugin is available
