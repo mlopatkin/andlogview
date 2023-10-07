@@ -1,7 +1,7 @@
 [versions]
 andlogview = "0.22"
 checkstyle = "10.12.4"
-dagger = "2.40.5"
+dagger = "2.48.1"
 errorpronePlugin = "3.1.0"
 flatlaf = "2.0"
 mockito = "4.2.0"
