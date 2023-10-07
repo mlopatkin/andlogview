@@ -24,7 +24,7 @@ ddmlib = "com.android.tools.ddms:ddmlib:26.1.3"
 flatlaf-core = { module = "com.formdev:flatlaf", version.ref = "flatlaf" }
 flatlaf-extras = { module = "com.formdev:flatlaf-extras", version.ref = "flatlaf" }
 gson = "com.google.code.gson:gson:2.10.1"
-guava = "com.google.guava:guava:31.0.1-jre"
+guava = "com.google.guava:guava:32.1.2-jre"
 jopt = "net.sf.jopt-simple:jopt-simple:5.0.4"
 log4j = "log4j:log4j:1.2.17"
 test-assertj = "org.assertj:assertj-core:3.22.0"
