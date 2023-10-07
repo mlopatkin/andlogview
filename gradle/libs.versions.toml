@@ -12,7 +12,7 @@ sourceJavaVersion = "16"
 runtimeJdkVersion = "8"  # JDK version used at runtime, determines available APIs
 
 [libraries]
-build-errorprone-core = "com.google.errorprone:error_prone_core:2.10.0"
+build-errorprone-core = "com.google.errorprone:error_prone_core:2.22.0"
 build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
 build-jabel = "com.github.bsideup.jabel:jabel-javac-plugin:0.4.1"
 build-javapoet = "com.squareup:javapoet:1.10.0"

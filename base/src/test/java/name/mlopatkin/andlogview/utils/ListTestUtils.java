@@ -21,6 +21,7 @@ import java.util.Arrays;
 /**
  * Generic routines to help testing {@link MyListUtils}.
  */
+@SuppressWarnings("NonApiType")
 class ListTestUtils {
     private ListTestUtils() {}
 

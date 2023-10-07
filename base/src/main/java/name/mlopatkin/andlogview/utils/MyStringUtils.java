@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.utils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
+import java.util.Locale;
 import java.util.stream.Stream;
 
 public class MyStringUtils {
@@ -32,8 +33,8 @@ public class MyStringUtils {
     }
 
     public static int indexOfIgnoreCase(String src, String pattern, int offset) {
-        src = src.toLowerCase();
-        pattern = pattern.toLowerCase();
+        src = src.toLowerCase(Locale.getDefault());
+        pattern = pattern.toLowerCase(Locale.getDefault());
         return src.indexOf(pattern, offset);
     }
 

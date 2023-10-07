@@ -104,7 +104,7 @@ public class OfflineSorter {
         return output;
     }
 
-    private void sortWithTimeTravel(ArrayList<LogRecord> output) {
+    private void sortWithTimeTravel(List<LogRecord> output) {
         // This is a very limited heuristic. It assumes that every time travel is present in every buffer.
         // Each buffer is split at time travel boundaries. Then we take one split from each buffer and merge & sort
         // these splits, until no more splits left.
