@@ -1,6 +1,6 @@
 [versions]
 andlogview = "0.22"
-checkstyle = "8.45.1"
+checkstyle = "10.12.4"
 dagger = "2.40.5"
 errorpronePlugin = "3.1.0"
 flatlaf = "2.0"
