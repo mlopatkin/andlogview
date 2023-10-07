@@ -73,7 +73,7 @@ val runtimeJdk = JdkVersion(buildLibs.versions.runtimeJdkVersion)
 
 java {
     toolchain {
-        languageVersion.set(compileJdk.languageVersion)
+        languageVersion = compileJdk.languageVersion
     }
 }
 
@@ -85,9 +85,9 @@ checkstyle {
 tasks.withType<Test> {
     useJUnitPlatform()
 
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(runtimeJdk.languageVersion)
-    })
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = runtimeJdk.languageVersion
+    }
 }
 
 // Configure compilation warnings
@@ -96,7 +96,7 @@ tasks.withType<JavaCompile>().configureEach {
     javaCompiler.convention(javaToolchains.compilerFor(java.toolchain))
 
     sourceCompatibility = buildLibs.versions.sourceJavaVersion.get() // for the IDE support
-    options.release.set(runtimeJdk.intProvider)
+    options.release = runtimeJdk.intProvider
 
     // Configure javac warnings
     options.compilerArgs.addAll(listOf(

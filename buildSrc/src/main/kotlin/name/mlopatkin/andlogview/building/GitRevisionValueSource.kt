@@ -42,7 +42,7 @@ internal abstract class GitRevisionValueSource : ValueSource<String, GitRevision
         )
         try {
             val gitDescribe = ProcessBuilder(command)
-                .directory(parameters.repoRoot.asFile.get())
+                .directory(parameters.repoRoot.toFile())
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .start()

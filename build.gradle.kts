@@ -19,8 +19,10 @@ import name.mlopatkin.andlogview.building.GenerateBuildMetadata
 import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
+import name.mlopatkin.andlogview.building.theBuildDir
+import name.mlopatkin.andlogview.building.toFile
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import java.util.Locale
+import java.util.*
 
 plugins {
     idea
@@ -76,17 +78,17 @@ version = libs.versions.andlogview.get() + (if (buildEnvironment.isSnapshot) "-S
 
 application {
     applicationName = "andlogview"
-    mainClass.set("name.mlopatkin.andlogview.Main")
+    mainClass = "name.mlopatkin.andlogview.Main"
 }
 
 jmh {
-    humanOutputFile.set(file("$buildDir/reports/jmh/human.txt"))
+    humanOutputFile = theBuildDir.file("reports/jmh/human.txt")
 }
 
 // Configure sources
 // TODO(mlopatkin) make this an output parameter of the BuildMetadata task
 // Like annotationProcessor. Note java/main instead of Gradle's usual main/java.
-val metadataBuildDir = "$buildDir/generated/sources/metadata/java/main"
+val metadataBuildDir = theBuildDir.dir("generated/sources/metadata/java/main")
 
 sourceSets {
     main {
@@ -130,27 +132,27 @@ sourceSets {
 // TODO(mlopatkin) make this a plugin?
 // Configure build metadata generator
 val generateBuildMetadata = tasks.register<GenerateBuildMetadata>("generateBuildMetadata") {
-    revision.set(buildEnvironment.sourceRevision)
-    packageName.set("name.mlopatkin.andlogview")
-    className.set("BuildInfo")
-    version.set(project.version.toString())
-    into.set(file(metadataBuildDir))
+    revision = buildEnvironment.sourceRevision
+    packageName = "name.mlopatkin.andlogview"
+    className = "BuildInfo"
+    version = project.version.toString()
+    into = metadataBuildDir
 }
 
 tasks.named("compileJava") {
     dependsOn(generateBuildMetadata)
 }
 
-idea.module.generatedSourceDirs.add(file(metadataBuildDir))
+idea.module.generatedSourceDirs.add(metadataBuildDir.toFile())
 
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
-    bundledDependencies.set(configurations.runtimeClasspath.flatMap { rtCp ->
+    bundledDependencies = configurations.runtimeClasspath.flatMap { rtCp ->
         rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
             artifacts.map { artifact -> artifact.id.componentIdentifier }
-                .filterIsInstance<ModuleComponentIdentifier>()
+                    .filterIsInstance<ModuleComponentIdentifier>()
         }
-    })
-    libraryNoticesDirectory.set(file("third-party/libs/notices"))
+    }
+    libraryNoticesDirectory = file("third-party/libs/notices")
     sourceFilesNotices.from(
             "base/third-party/observerList/NOTICE",
             "base/third-party/systemUtils/NOTICE",
@@ -167,10 +169,10 @@ distributions {
     main {
         // The application plugin resets main distribution basename to applicationName, but I want to use it for shadow
         // configuration because it is the primary one. These tasks are disabled though.
-        distributionBaseName.set(application.applicationName + "-noshadow")
+        distributionBaseName = application.applicationName + "-noshadow"
     }
     this.shadow {
-        distributionBaseName.set(application.applicationName)
+        distributionBaseName = application.applicationName
     }
 }
 
@@ -246,26 +248,26 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 
 // Configure publishing
 bitbucket {
-    repository.set("android-log-viewer")
-    username.set(
-            providers.environmentVariable("BITBUCKET_USER").orElse(providers.gradleProperty("bitbucket.user")))
-    applicationPassword.set(
-            providers.environmentVariable("BITBUCKET_PASSWORD").orElse(providers.gradleProperty("bitbucket.password")))
+    repository = "android-log-viewer"
+    username =
+            providers.environmentVariable("BITBUCKET_USER").orElse(providers.gradleProperty("bitbucket.user"))
+    applicationPassword =
+            providers.environmentVariable("BITBUCKET_PASSWORD").orElse(providers.gradleProperty("bitbucket.password"))
 }
 
 tasks.register<UploadTask>("bitbucketUpload") {
     val shadowDistZip = tasks.named<AbstractArchiveTask>("shadowDistZip")
-    fileToUpload.set(shadowDistZip.flatMap { it.archiveFile })
+    fileToUpload = shadowDistZip.flatMap { it.archiveFile }
 }
 
 // Configure jpackage distribution
 if (System.getProperty("os.name").lowercase(Locale.US).contains("linux")) {
     val jpackageJdkPath = javaToolchains.compilerFor {
-        languageVersion.set(libs.versions.compileJdkVersion.map(JavaLanguageVersion::of))
+        languageVersion = libs.versions.compileJdkVersion.map(JavaLanguageVersion::of)
     }.get().metadata.installationPath.toString()
 
     runtime {
-        javaHome.set(jpackageJdkPath)
+        javaHome = jpackageJdkPath
         options.addAll(
                 "--strip-debug",
                 "--no-header-files",
