@@ -108,7 +108,8 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
                     codename.get(PROPERTY_TIMEOUT_MS, TimeUnit.MILLISECONDS),
                     fingerprint.get(PROPERTY_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         } catch (ExecutionException e) {
-            throw new DeviceGoneException("Failed to obtain device properties", e.getCause());
+            var cause = e.getCause();
+            throw new DeviceGoneException("Failed to obtain device properties", cause != null ? cause : e);
         } catch (TimeoutException e) {
             throw new DeviceGoneException("Timed out while obtaining device properties", e);
         }

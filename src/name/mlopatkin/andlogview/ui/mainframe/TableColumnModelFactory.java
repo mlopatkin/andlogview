@@ -35,7 +35,7 @@ public class TableColumnModelFactory {
     private final ColumnPrefs columnPrefs;
 
     @Inject
-    public TableColumnModelFactory(ColumnPrefs columnPrefs) {
+    TableColumnModelFactory(ColumnPrefs columnPrefs) {
         this.columnOrder = columnPrefs.getColumnOrder();
         this.columnPrefs = columnPrefs;
     }

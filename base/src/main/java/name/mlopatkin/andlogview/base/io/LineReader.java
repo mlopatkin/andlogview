@@ -105,9 +105,6 @@ public class LineReader implements Closeable {
      * @throws IOException if reading the input fails
      */
     @Nullable
-    @SuppressWarnings("NullAway")
-    // NullAway cannot figure out that (result != null || resultBuffer != null) is the do-while cycle's post-condition.
-    // It can be probably fixed with assert, but I don't want to add new bytecodes to this optimized method.
     public CharSequence readLine() throws IOException {
         // Initially, this method was written to include EOLN in the result. It turned out to be unnecessary, but I
         // keep some comments down the line on how to return this behavior.

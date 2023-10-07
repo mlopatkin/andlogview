@@ -63,11 +63,6 @@ public class LogcatFormatSniffer implements BasePushParser, FormatSniffer<Logcat
     @Override
     public <H extends LogcatParseEventsHandler> LogcatPushParser<H> createParser(H eventsHandler) {
         Preconditions.checkState(detectedFormat != null, "The format is not yet detected");
-        // NullAway cannot infer detectedFormat != null from the checkState
-        // TODO(mlopatkin) remove this assert after updating NullAway to 0.9.8+, see
-        //  https://github.com/uber/NullAway/issues/363
-        // noinspection ConstantConditions
-        assert detectedFormat != null;
         return new LogcatPushParser<>(detectedFormat, eventsHandler);
     }
 
