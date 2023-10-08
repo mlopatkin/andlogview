@@ -39,7 +39,7 @@ test-mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.r
 
 [plugins]
 # Bitbucket plugin allows publishing releases to the Bitbucket project's Downloads page
-bitbucket = "name.mlopatkin.bitbucket:0.5-rc4"
+bitbucket = "name.mlopatkin.bitbucket:0.6"
 # Errorprone plugin allows to configure Errorprone compiler
 errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included
