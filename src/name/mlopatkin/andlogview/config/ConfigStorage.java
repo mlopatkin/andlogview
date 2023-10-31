@@ -56,6 +56,7 @@ public interface ConfigStorage {
 
         public ConfigStorage createForFile(File file) throws IOException {
             if (!file.exists()) {
+                Files.createParentDirs(file);
                 Files.touch(file);
             }
             final ConfigStorageImpl result = new ConfigStorageImpl(
