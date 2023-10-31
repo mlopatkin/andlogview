@@ -337,6 +337,15 @@ public class DelegateLongTest {
                 .hasSize(middleEolnsCount + 2);
     }
 
+    @Test
+    void keepsLeadingWhitespacesInLogLines() {
+        assertParsed("""
+                [ 03-26 07:33:13.907  2113: 3611 D/CCodec   ]
+                  int32_t bitrate = 48000
+
+                """).element(0).satisfies(r -> assertThatRecord(r).hasMessage("  int32_t bitrate = 48000"));
+    }
+
     private static ListAssert<LogRecord> assertParsed(String records) {
         var handler = new ListCollectingHandler();
         try (var parser = LogcatParsers.logcatLong(handler)) {
