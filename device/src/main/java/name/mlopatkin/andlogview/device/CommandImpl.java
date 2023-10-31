@@ -94,22 +94,28 @@ class CommandImpl implements Command {
                             formatCommandLine(),
                             tempStdout.getRedirectString(StdStream.STDOUT),
                             tempStderr.getRedirectString(StdStream.STDERR));
-            MultiLineReceiver outputReceiver = new MultiLineReceiver() {
-                @Override
-                public void processNewLines(String[] lines) {
-                    for (String line : lines) {
-                        receiver.nextLine(line);
-                    }
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return Thread.currentThread().isInterrupted();
-                }
-            };
+            var outputReceiver = decorateReceiver(receiver);
             DeviceUtils.executeShellCommand(device, commandLineWithRedirects, outputReceiver);
             receiver.complete();
         }
+    }
+
+    private static MultiLineReceiver decorateReceiver(LineReceiver receiver) {
+        MultiLineReceiver outputReceiver = new MultiLineReceiver() {
+            @Override
+            public void processNewLines(String[] lines) {
+                for (String line : lines) {
+                    receiver.nextLine(line);
+                }
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return Thread.currentThread().isInterrupted();
+            }
+        };
+        outputReceiver.setTrimLine(false);
+        return outputReceiver;
     }
 
     @Override
