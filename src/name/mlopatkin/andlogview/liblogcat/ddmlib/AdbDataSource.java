@@ -77,8 +77,8 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);
 
     private final Device device;
-
     private final AdbPidToProcessConverter converter;
+    private final Set<AdbBuffer> buffers = new HashSet<>();
     private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
     private final SourceMetadata sourceMetadata;
     private final ScopedObserver deviceChangeObserver;
@@ -91,7 +91,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         assert device != null;
         assert device.isOnline();
         this.device = device;
-        converter = new AdbPidToProcessConverter(this.device);
+        this.converter = new AdbPidToProcessConverter(this.device);
         for (Buffer buffer : Buffer.values()) {
             setUpStream(buffer);
         }
@@ -165,8 +165,6 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         return ImmutableList.of("logcat", "-v", "threadtime", "-b", buffer);
     }
 
-    private Set<AdbBuffer> buffers = new HashSet<>();
-
     private boolean isBufferHere(String bufferName) {
         try {
             // Try to dump buffer contents (-d) while filtering everything out (-s). In an essence, we only get an exit
@@ -190,6 +188,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         String bufferName = Configuration.adb.bufferName(buffer);
         if (bufferName == null) {
             logger.warn("This kind of log isn't supported by adb source: " + buffer);
+            return;
         }
 
         // check buffer for existence first
@@ -198,8 +197,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
         }
         availableBuffers.add(buffer);
         List<String> commandLine = createLogcatCommandLine(bufferName);
-        final AdbBuffer adbBuffer =
-                new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
+        AdbBuffer adbBuffer = new AdbBuffer(this, device, buffer, commandLine, getPidToProcessConverter());
         adbBuffer.start();
         buffers.add(adbBuffer);
     }
