@@ -33,31 +33,49 @@ import java.util.function.Function;
  * Metadata about the supported log formats.
  */
 public enum Format {
-    BRIEF(DelegateBrief::new, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE),
-    LONG(DelegateLong::new, Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE),
-    PROCESS(DelegateProcess::new, Field.PRIORITY, Field.PID, Field.MESSAGE, Field.TAG),
-    RAW(Field.MESSAGE),
-    STUDIO(DelegateStudio::new, Field.TIME, Field.PID, Field.TID, Field.APP_NAME, Field.PRIORITY, Field.TAG,
+    BRIEF("brief", DelegateBrief::new, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE),
+    LONG("long", DelegateLong::new, Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE),
+    PROCESS("process", DelegateProcess::new, Field.PRIORITY, Field.PID, Field.MESSAGE, Field.TAG),
+    RAW("raw", Field.MESSAGE),
+    STUDIO(null, DelegateStudio::new, Field.TIME, Field.PID, Field.TID, Field.APP_NAME, Field.PRIORITY, Field.TAG,
             Field.MESSAGE),
-    TAG(DelegateTag::new, Field.PRIORITY, Field.TAG, Field.MESSAGE),
-    THREAD(Field.PRIORITY, Field.PID, Field.TID, Field.MESSAGE),
-    THREADTIME(DelegateThreadTime::new, Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE),
-    TIME(DelegateTime::new, Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE);
+    TAG("tag", DelegateTag::new, Field.PRIORITY, Field.TAG, Field.MESSAGE),
+    THREAD("thread", Field.PRIORITY, Field.PID, Field.TID, Field.MESSAGE),
+    THREADTIME("threadtime", DelegateThreadTime::new, Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG,
+            Field.MESSAGE),
+    TIME("time", DelegateTime::new, Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE);
 
+    private final @Nullable String formatName;
     @SuppressWarnings("ImmutableEnumChecker")
     private final @Nullable Function<LogcatParseEventsHandler, RegexLogcatParserDelegate> parserFactory;
     private final ImmutableSet<Field> availableFields;
 
-    Format(@Nullable Function<LogcatParseEventsHandler, RegexLogcatParserDelegate> parserFactory,
+    Format(
+            @Nullable String cmdFormatName,
+            @Nullable Function<LogcatParseEventsHandler, RegexLogcatParserDelegate> parserFactory,
             Field... availableFields) {
+        this.formatName = cmdFormatName;
         this.parserFactory = parserFactory;
         EnumSet<Field> fieldSet = EnumSet.noneOf(Field.class);
         fieldSet.addAll(Arrays.asList(availableFields));
         this.availableFields = ImmutableSet.copyOf(fieldSet);
     }
 
-    Format(Field... availableFields) {
-        this(null, availableFields);
+    Format(@Nullable String formatName, Field... availableFields) {
+        this(formatName, null, availableFields);
+    }
+
+    /**
+     * Returns the name of the format to be used in {@code logcat -v ...} command line invocation. May throw if this
+     * format is known to be unsupported by the logcat utility, like {@link #STUDIO}.
+     * @return the name of the format to use in logcat command line
+     * @throws UnsupportedOperationException if the format is not supported by logcat
+     */
+    public String getCmdFormatName() {
+        if (formatName == null) {
+            throw new UnsupportedOperationException("Format " + name() + " is not supported by logcat");
+        }
+        return formatName;
     }
 
     public final Set<Field> getAvailableFields() {

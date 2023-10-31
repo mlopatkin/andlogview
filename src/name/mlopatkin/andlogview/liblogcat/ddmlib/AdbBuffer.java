@@ -15,21 +15,20 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.device.Command;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
+import name.mlopatkin.andlogview.parsers.logcat.Format;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
-import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 import name.mlopatkin.andlogview.utils.Threads;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,21 +42,22 @@ class AdbBuffer {
     }
 
     private static final Logger logger = Logger.getLogger(AdbBuffer.class);
+    private static final Format FORMAT = Format.THREADTIME;
 
     private final BufferReceiver receiver;
     private final LogRecord.Buffer buffer;
     private final Map<Integer, String> pidToProcess;
     private final ExecutorService executorService;
-    private final Command command;
+    private final LogcatCommand command;
 
-    public AdbBuffer(BufferReceiver receiver, Device device, LogRecord.Buffer buffer, List<String> commandLine,
+    public AdbBuffer(BufferReceiver receiver, Device device, LogRecord.Buffer buffer, LogcatCommand command,
             Map<Integer, String> pidToProcess) {
         this.receiver = receiver;
         this.buffer = buffer;
         this.pidToProcess = pidToProcess;
         this.executorService = Executors.newSingleThreadExecutor(
                 Threads.withName(String.format("logcat-%s-%s", buffer, device.getSerialNumber())));
-        this.command = device.command(commandLine);
+        this.command = command;
     }
 
     public void start() {
@@ -82,8 +82,8 @@ class AdbBuffer {
                 return ParserControl.proceed();
             }
         };
-        try (LogcatPushParser<?> parser = LogcatParsers.threadTime(parserEventsHandler)) {
-            command.executeStreaming(parser::nextLine);
+        try (var parser = LogcatParsers.withFormat(FORMAT, parserEventsHandler)) {
+            command.readLogStreaming(FORMAT, parser::nextLine);
             if (Thread.currentThread().isInterrupted()) {
                 logger.debug("cancelled because of interruption, stopping providing new lines");
             } else {
@@ -99,4 +99,16 @@ class AdbBuffer {
             logger.error("Device is gone, closing", e);
         }
     }
+
+    public static Optional<AdbBuffer> tryOpen(BufferReceiver receiver, Device device, LogRecord.Buffer buffer,
+            Map<Integer, String> pidToProcess) {
+        return LogcatCommand.tryPrepare(device, buffer)
+                .filter(LogcatCommand::isBufferPresent)
+                .map(command -> {
+                    AdbBuffer adbBuffer = new AdbBuffer(receiver, device, buffer, command, pidToProcess);
+                    adbBuffer.start();
+                    return adbBuffer;
+                });
+    }
+
 }

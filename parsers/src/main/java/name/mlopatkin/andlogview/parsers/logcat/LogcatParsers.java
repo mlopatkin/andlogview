@@ -118,6 +118,17 @@ public final class LogcatParsers {
     }
 
     /**
+     * Creates a parser for the provided format.
+     *
+     * @param format the format to use when parsing
+     * @param eventsHandler the handler of parse events
+     * @return the push parser that processes logs in time format
+     */
+    public static <H extends LogcatParseEventsHandler> LogcatPushParser<H> withFormat(Format format, H eventsHandler) {
+        return new LogcatPushParser<>(format, eventsHandler);
+    }
+
+    /**
      * Creates a special parser that tries to autodetect the format of logcat logs. When a line in a supported format
      * is encountered, the format is considered detected. The parser then can be used to create a normal parser to
      * recognize the format.
