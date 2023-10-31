@@ -22,3 +22,11 @@ include("logmodel")
 include("parsers")
 include("search")
 include("search:logrecord")
+
+gradle.taskGraph.whenReady {
+    allTasks.forEach { task ->
+        if (task.name.endsWith(".main()") && task is JavaExec) {
+            task.notCompatibleWithConfigurationCache("IDEA-injected JavaExec task uses PipedInputStream")
+        }
+    }
+}
