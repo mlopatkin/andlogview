@@ -20,10 +20,13 @@ import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.utils.Try;
+
+import com.google.common.base.Stopwatch;
 
 import dagger.Lazy;
 
@@ -31,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -47,6 +51,7 @@ public class AdbServicesBridge {
     private static final Logger logger = Logger.getLogger(AdbServicesBridge.class);
 
     private final AdbManager adbManager;
+    private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
     private final Lazy<ErrorDialogs> errorDialogs;
 
@@ -59,9 +64,12 @@ public class AdbServicesBridge {
     // are not recommended and nullable Optionals are a recipe for disaster anyway.
 
     @Inject
-    AdbServicesBridge(AdbManager adbManager, AdbServicesSubcomponent.Factory adbSubcomponentFactory,
+    AdbServicesBridge(AdbManager adbManager,
+            AdbConfigurationPref adbConfigurationPref,
+            AdbServicesSubcomponent.Factory adbSubcomponentFactory,
             Lazy<ErrorDialogs> errorDialogs) {
         this.adbManager = adbManager;
+        this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
         this.errorDialogs = errorDialogs;
     }
@@ -74,16 +82,6 @@ public class AdbServicesBridge {
      */
     public Optional<DumpDevicePresenter> getDumpDevicePresenter() {
         return getAdbServices().map(AdbServices::getDumpDevicePresenter);
-    }
-
-    /**
-     * Tries to create SelectDeviceDialog.Factory, potentially initializing ADB connection if is it is not ready yet.
-     * This may fail and show an error dialog.
-     *
-     * @return a {@link SelectDeviceDialog.Factory} or empty Optional if ADB is not ready
-     */
-    public Optional<SelectDeviceDialog.Factory> getSelectDeviceDialogFactory() {
-        return getAdbServices().map(AdbServices::getSelectDeviceDialogFactory);
     }
 
     /**
@@ -122,13 +120,18 @@ public class AdbServicesBridge {
 
     private AdbServer tryCreateAdbServer() throws AdbException {
         // TODO(mlopatkin) ADB init takes quite some time, we should do this asynchronously.
+        Stopwatch stopwatch = Stopwatch.createStarted();
         try {
+            adbManager.setAdbLocation(adbConfigurationPref);
             return adbManager.startServer();
         } catch (AdbException e) {
             logger.error("Failed to initialize ADB", e);
             // TODO(mlopatkin) should we show dialog from here or should we move this responsibility somewhere else?
             errorDialogs.get().showAdbNotFoundError();
             throw e;
+        } finally {
+            logger.info("Initialized adb server in " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
         }
+
     }
 }

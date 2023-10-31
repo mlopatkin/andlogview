@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
-import name.mlopatkin.andlogview.device.AdbException;
-import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.filters.MainFilterController;
@@ -153,8 +151,6 @@ public class MainFrame implements MainFrameSearchUi {
     @Named(AppExecutors.UI_EXECUTOR)
     Executor uiExecutor;
 
-    @Inject
-    AdbManager adbManager;
     @Inject
     AdbServicesBridge adbServicesBridge;
     @Inject
@@ -537,18 +533,6 @@ public class MainFrame implements MainFrameSearchUi {
         EventQueue.invokeLater(() -> acConnectToDevice.setEnabled(false));
     }
 
-    public boolean tryInitAdbBridge() {
-        try {
-            adbManager.setAdbLocation(adbConfigurationPref);
-            adbManager.startServer();
-            return true;
-        } catch (AdbException e) {
-            logger.warn("Cannot start in ADB mode", e);
-            disableAdbCommandsAsync();
-            errorDialogs.showAdbNotFoundError();
-        }
-        return false;
-    }
 
     private Optional<Device> getFirstOnlineDevice(AdbDeviceList deviceList) {
         return deviceList.getDevices().stream().filter(Device::isOnline).findFirst();

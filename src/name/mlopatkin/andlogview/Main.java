@@ -133,9 +133,7 @@ public class Main {
         if (fileToOpen != null) {
             window.fileOpener.openFileAsDataSource(fileToOpen).thenAccept(window::setSourceAsync);
         } else {
-            if (window.tryInitAdbBridge()) {
-                window.tryToConnectToFirstAvailableDevice();
-            }
+            window.tryToConnectToFirstAvailableDevice();
         }
     }
 
