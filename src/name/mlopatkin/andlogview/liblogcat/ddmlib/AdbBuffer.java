@@ -42,7 +42,7 @@ class AdbBuffer {
     }
 
     private static final Logger logger = Logger.getLogger(AdbBuffer.class);
-    private static final Format FORMAT = Format.THREADTIME;
+    private static final Format FORMAT = Format.LONG;
 
     private final BufferReceiver receiver;
     private final LogRecord.Buffer buffer;
@@ -83,7 +83,10 @@ class AdbBuffer {
             }
         };
         try (var parser = LogcatParsers.withFormat(FORMAT, parserEventsHandler)) {
-            command.readLogStreaming(FORMAT, parser::nextLine);
+            command.readLogStreaming(FORMAT, line -> {
+                logger.debug("Got line: " + line);
+                parser.nextLine(line);
+            });
             if (Thread.currentThread().isInterrupted()) {
                 logger.debug("cancelled because of interruption, stopping providing new lines");
             } else {
