@@ -27,6 +27,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -292,6 +294,32 @@ class WindowsPathResolverTest {
                 withPathElements(tempDir)
         );
         assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath(".\\adb"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "\"%s",
+            "%s\"",
+            "\"\"%s",
+            "\"%s\"",
+    })
+    void canHandleQuotesInPathElements(String pattern) throws IOException {
+        var adbPath = withFileIn(tempDir, "adb.exe");
+        var resolver = resolver(
+                String.format(pattern, tempDir.getAbsolutePath())
+        );
+
+        assertEquals(Optional.of(adbPath), resolver.resolveExecutablePath("adb"));
+    }
+
+    @Test
+    void semicolonsInQuotedElementArePartOfPath() throws IOException {
+        withFileIn(tempDir, "adb.exe");
+        var resolver = resolver(
+                String.format("\"%1$s;%1$s\"", tempDir.getAbsolutePath())
+        );
+
+        assertEquals(Optional.empty(), resolver.resolveExecutablePath("adb"));
     }
 
     private SystemPathResolver resolver(String path) {

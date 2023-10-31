@@ -24,9 +24,14 @@ import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.Streams;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -49,7 +54,8 @@ public abstract class SystemPathResolver {
      * <p>
      * The returned path is absolute and normalized.
      *
-     * @param rawPath the filename or path that can be resolved to the executable file according to the OS' rules
+     * @param rawPath the filename or path that can be resolved to the executable file according to the OS'
+     *         rules
      * @return the Optional with the resolved path to the executable or empty Optional if the executable wasn't found.
      */
     public abstract Optional<File> resolveExecutablePath(String rawPath);
@@ -116,16 +122,65 @@ public abstract class SystemPathResolver {
         private final List<String> pathExts;
 
         private WindowsPathResolver(Path curDir, String pathVar, String pathExtVar) {
-            Splitter splitter = Splitter.on(PATH_SEPARATOR).omitEmptyStrings();
             // Windows always start searching the executable in the current directory, so we prepend it to the PATH
             // contents.
             pathVarElements = Stream.concat(
                     Stream.of(curDir),
-                    splitter.splitToStream(pathVar).map(Paths::get)
+                    splitPathVariable(pathVar)
             ).collect(toList());
 
             // PATHEXT can (in theory) have an empty extension. It is useless though.
             pathExts = Splitter.on(PATH_SEPARATOR).splitToList(pathExtVar);
+        }
+
+        private static Stream<Path> splitPathVariable(String pathVar) {
+            // Windows PATH handling seems to be aware of quote characters, even though it isn't documented anywhere.
+            // Quotes never end up in the resulting variable, but the semicolon doesn't separate elements if it appears
+            // inside quotes. A quote may be unclosed, it is implicitly closed at the end of the variable.
+            var iterator = new AbstractIterator<String>() {
+                private int pos;
+
+                @Nullable
+                @Override
+                protected String computeNext() {
+                    var result = new StringBuilder();
+                    boolean inQuotes = false;
+                    while (pos < pathVar.length()) {
+                        var curCh = pathVar.charAt(pos++);
+
+                        switch (curCh) {
+                            case '"':
+                                inQuotes = !inQuotes;
+                                break;
+                            case PATH_SEPARATOR:
+                                if (!inQuotes) {
+                                    return result.toString();
+                                }
+                                // After a quote a semicolon is just a character, not a path separator.
+                                // fall through
+                            default:
+                                result.append(curCh);
+                                break;
+                        }
+                    }
+                    if (result.length() > 0) {
+                        return result.toString();
+                    }
+                    return endOfData();
+                }
+            };
+
+            return Streams.stream(iterator).map(WindowsPathResolver::safeResolve).flatMap(Streams::stream);
+        }
+
+        private static Optional<Path> safeResolve(String pathStr) {
+            try {
+                return Optional.of(Paths.get(pathStr));
+            } catch (InvalidPathException ex) {
+                // PATH variable can have unsupported characters in it. We've already handled quotes, but everything
+                // else we just skip.
+                return Optional.empty();
+            }
         }
 
         public WindowsPathResolver() {
