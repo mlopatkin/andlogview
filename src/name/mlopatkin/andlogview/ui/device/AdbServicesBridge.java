@@ -16,15 +16,13 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbException;
+import static name.mlopatkin.andlogview.utils.MyFutures.runAsync;
+
+import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbManager;
-import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
-import name.mlopatkin.andlogview.utils.MyFutures;
-import name.mlopatkin.andlogview.utils.Optionals;
-import name.mlopatkin.andlogview.utils.Try;
 
 import com.google.common.base.Stopwatch;
 
@@ -33,11 +31,12 @@ import dagger.Lazy;
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * This class is responsible for managing the ADB-dependent sub-graph of dependencies. It exposes various ADB-related
@@ -55,32 +54,29 @@ public class AdbServicesBridge {
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
     private final Lazy<ErrorDialogs> errorDialogs;
+    private final Executor uiExecutor;
+    private final Executor adbInitExecutor;
 
     // TODO(mlopatkin) My attempt to hide connection replacement logic in the AdbServer failed. What if the connection
     //  update fails? The server would be unusable and we have to discard the whole component.
     @Nullable
-    private Try<AdbServicesSubcomponent> adbSubcomponent;  // This one is three-state. The `null` here means that nobody
-    // attempted to initialize ADB yet. Non-null holds the current subcomponent if it was created successfully or the
-    // initialization error if something failed. I could get away with nullable Optional, I guess, but Optional fields
-    // are not recommended and nullable Optionals are a recipe for disaster anyway.
+    private CompletableFuture<AdbServices> adbSubcomponent; // This one is three-state. The `null` here
+    // means that nobody attempted to initialize ADB yet. Non-null holds the current subcomponent if it was created
+    // successfully or the initialization error if something failed.
 
     @Inject
     AdbServicesBridge(AdbManager adbManager,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
-            Lazy<ErrorDialogs> errorDialogs) {
+            Lazy<ErrorDialogs> errorDialogs,
+            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
+            @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor) {
         this.adbManager = adbManager;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
         this.errorDialogs = errorDialogs;
-    }
-
-    private Optional<AdbServices> getAdbServices() {
-        Try<AdbServicesSubcomponent> result = adbSubcomponent;
-        if (result == null) {
-            result = adbSubcomponent = Try.ofCallable(this::tryCreateAdbServer).map(adbSubcomponentFactory::build);
-        }
-        return Optionals.upcast(result.toOptional());
+        this.uiExecutor = uiExecutor;
+        this.adbInitExecutor = adbInitExecutor;
     }
 
     /**
@@ -90,24 +86,28 @@ public class AdbServicesBridge {
      * @return a completable future that will provide {@link AdbServices} when ready
      */
     public CompletableFuture<AdbServices> getAdbServicesAsync() {
-        return getAdbServices().map(CompletableFuture::completedFuture)
-                .orElseGet(() -> MyFutures.failedFuture(new AdbException("Placeholder")));
+        var result = adbSubcomponent;
+        if (result == null) {
+            result = adbSubcomponent = initAdbAsync();
+        }
+        return result;
     }
 
-    private AdbServer tryCreateAdbServer() throws AdbException {
-        // TODO(mlopatkin) ADB init takes quite some time, we should do this asynchronously.
+    private CompletableFuture<AdbServices> initAdbAsync() {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try {
+        return runAsync(() -> {
             adbManager.setAdbLocation(adbConfigurationPref);
             return adbManager.startServer();
-        } catch (AdbException e) {
-            logger.error("Failed to initialize ADB", e);
-            // TODO(mlopatkin) should we show dialog from here or should we move this responsibility somewhere else?
-            errorDialogs.get().showAdbNotFoundError();
-            throw e;
-        } finally {
-            logger.info("Initialized adb server in " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
-        }
-
+        }, adbInitExecutor)
+                .<AdbServices>thenApplyAsync(adbSubcomponentFactory::build, uiExecutor)
+                .whenCompleteAsync((r, th) -> {
+                    logger.info("Initialized adb server in " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
+                    if (th != null) {
+                        logger.error("Failed to initialize ADB", th);
+                        // TODO(mlopatkin) should we show dialog from here or should we move this responsibility
+                        //  somewhere else?
+                        errorDialogs.get().showAdbNotFoundError();
+                    }
+                }, uiExecutor);
     }
 }
