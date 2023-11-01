@@ -33,6 +33,7 @@ import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
+import name.mlopatkin.andlogview.ui.device.AdbServices;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
 import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
@@ -432,14 +433,14 @@ public class MainFrame implements MainFrameSearchUi {
 
     private void connectToDevice() {
         Optionals.ifPresentOrElse(
-                adbServicesBridge.getAdbDataSourceFactory(),
+                adbServicesBridge.getAdbServices().map(AdbServices::getDataSourceFactory),
                 adbDataSourceFactory -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
                         MainFrame.this::setSourceAsync),
                 MainFrame.this::disableAdbCommandsAsync);
     }
 
     private void selectAndDumpDevice() {
-        Optionals.ifPresentOrElse(adbServicesBridge.getDumpDevicePresenter(),
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices().map(AdbServices::getDumpDevicePresenter),
                 DumpDevicePresenter::selectDeviceAndDump,
                 MainFrame.this::disableAdbCommandsAsync);
     }
@@ -477,7 +478,7 @@ public class MainFrame implements MainFrameSearchUi {
             }
         };
 
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceList(), deviceList -> {
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices().map(AdbServices::getDeviceList), deviceList -> {
             deviceList.asObservable().addObserver(attacher);
             getFirstOnlineDevice(deviceList).ifPresent(this::connectDevicePending);
         }, this::disableAdbCommandsAsync);
@@ -489,7 +490,7 @@ public class MainFrame implements MainFrameSearchUi {
         }
         isWaitingForDevice = false;
         stopWaitingForDevice();
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbDataSourceFactory(),
+        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices().map(AdbServices::getDataSourceFactory),
                 dataSourceFactory -> dataSourceFactory.openDeviceAsDataSource(device, this::setSourceAsync),
                 this::disableAdbCommandsAsync);
     }
@@ -497,9 +498,10 @@ public class MainFrame implements MainFrameSearchUi {
     private void stopWaitingForDevice() {
         DeviceChangeObserver attacher = pendingAttacher;
         if (attacher != null) {
-            Optionals.ifPresentOrElse(adbServicesBridge.getAdbDeviceList(), adbDeviceList -> {
-                adbDeviceList.asObservable().removeObserver(attacher);
-            }, this::disableAdbCommandsAsync);
+            Optionals.ifPresentOrElse(
+                    adbServicesBridge.getAdbServices().map(AdbServices::getDeviceList),
+                    adbDeviceList -> adbDeviceList.asObservable().removeObserver(attacher),
+                    this::disableAdbCommandsAsync);
         }
         pendingAttacher = null;
     }

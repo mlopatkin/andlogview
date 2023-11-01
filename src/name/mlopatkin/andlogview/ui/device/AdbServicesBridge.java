@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
@@ -72,36 +71,6 @@ public class AdbServicesBridge {
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
         this.errorDialogs = errorDialogs;
-    }
-
-    /**
-     * Tries to create DumpDevicePresenter, potentially initializing ADB connection if is it is not ready yet. This may
-     * fail and show a dialog.
-     *
-     * @return a {@link DumpDevicePresenter} or empty Optional if ADB is not ready
-     */
-    public Optional<DumpDevicePresenter> getDumpDevicePresenter() {
-        return getAdbServices().map(AdbServices::getDumpDevicePresenter);
-    }
-
-    /**
-     * Tries to create AdbDeviceList, potentially initializing ADB connection if is it is not ready yet.
-     * This may fail and show an error dialog.
-     *
-     * @return an {@link AdbDeviceList} or empty Optional if ADB is not ready
-     */
-    public Optional<AdbDeviceList> getAdbDeviceList() {
-        return getAdbServices().map(AdbServices::getDeviceList);
-    }
-
-    /**
-     * Tries to create AdbDataSourceFactory, potentially initializing ADB connection if is it is not ready yet.
-     * This may fail and show an error dialog.
-     *
-     * @return an {@link AdbDataSourceFactory} or empty Optional if ADB is not ready
-     */
-    public Optional<AdbDataSourceFactory> getAdbDataSourceFactory() {
-        return getAdbServices().map(AdbServices::getDataSourceFactory);
     }
 
     /**
