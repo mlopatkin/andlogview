@@ -15,6 +15,8 @@
  */
 package name.mlopatkin.andlogview;
 
+import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
+
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
@@ -35,7 +37,6 @@ import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServices;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
-import name.mlopatkin.andlogview.ui.device.DumpDevicePresenter;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.Column;
@@ -57,7 +58,6 @@ import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
 import name.mlopatkin.andlogview.utils.CommonChars;
-import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
@@ -79,6 +79,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -432,27 +433,30 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     private void connectToDevice() {
-        Optionals.ifPresentOrElse(
-                adbServicesBridge.getAdbServices().map(AdbServices::getDataSourceFactory),
-                adbDataSourceFactory -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
-                        MainFrame.this::setSourceAsync),
-                MainFrame.this::disableAdbCommandsAsync);
+        withAdbServices(adbServices -> {
+            var adbDataSourceFactory = adbServices.getDataSourceFactory();
+            adbDataSourceFactory.selectDeviceAndOpenAsDataSource(MainFrame.this::setSourceAsync);
+        });
     }
 
     private void selectAndDumpDevice() {
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices().map(AdbServices::getDumpDevicePresenter),
-                DumpDevicePresenter::selectDeviceAndDump,
-                MainFrame.this::disableAdbCommandsAsync);
+        withAdbServices(adbServices -> adbServices.getDumpDevicePresenter().selectDeviceAndDump());
     }
 
     public void tryToConnectToFirstAvailableDevice() {
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices(),
-                adbServices -> Optionals.ifPresentOrElse(
-                        getFirstOnlineDevice(adbServices.getDeviceList()),
-                        device -> adbServices.getDataSourceFactory().openDeviceAsDataSource(
-                                device, this::setSourceAsync),
-                        this::waitForDevice),
-                this::disableAdbCommandsAsync);
+        waitForDevice();
+    }
+
+    /**
+     * Executes the {@code action} with {@link AdbServices} available, on UI thread, asynchronously. The action may be
+     * delayed by the initialization of the AdbServices. The action may not run at all, if the initialization of the
+     * services fails.
+     * @param action the action to run
+     */
+    private void withAdbServices(Consumer<? super AdbServices> action) {
+        adbServicesBridge.getAdbServicesAsync()
+                .thenAcceptAsync(action, uiExecutor)
+                .exceptionally(exceptionHandler(this::disableAdbCommandsAsync));
     }
 
     /**
@@ -478,10 +482,11 @@ public class MainFrame implements MainFrameSearchUi {
             }
         };
 
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices().map(AdbServices::getDeviceList), deviceList -> {
+        withAdbServices(adbServices -> {
+            var deviceList = adbServices.getDeviceList();
             deviceList.asObservable().addObserver(attacher);
             getFirstOnlineDevice(deviceList).ifPresent(this::connectDevicePending);
-        }, this::disableAdbCommandsAsync);
+        });
     }
 
     private synchronized void connectDevicePending(Device device) {
@@ -490,18 +495,14 @@ public class MainFrame implements MainFrameSearchUi {
         }
         isWaitingForDevice = false;
         stopWaitingForDevice();
-        Optionals.ifPresentOrElse(adbServicesBridge.getAdbServices().map(AdbServices::getDataSourceFactory),
-                dataSourceFactory -> dataSourceFactory.openDeviceAsDataSource(device, this::setSourceAsync),
-                this::disableAdbCommandsAsync);
+        withAdbServices(
+                adbServices -> adbServices.getDataSourceFactory().openDeviceAsDataSource(device, this::setSourceAsync));
     }
 
     private void stopWaitingForDevice() {
         DeviceChangeObserver attacher = pendingAttacher;
         if (attacher != null) {
-            Optionals.ifPresentOrElse(
-                    adbServicesBridge.getAdbServices().map(AdbServices::getDeviceList),
-                    adbDeviceList -> adbDeviceList.asObservable().removeObserver(attacher),
-                    this::disableAdbCommandsAsync);
+            withAdbServices(adbServices -> adbServices.getDeviceList().asObservable().removeObserver(attacher));
         }
         pendingAttacher = null;
     }

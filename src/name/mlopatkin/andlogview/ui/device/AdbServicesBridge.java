@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.utils.Try;
 
@@ -33,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -73,18 +75,23 @@ public class AdbServicesBridge {
         this.errorDialogs = errorDialogs;
     }
 
-    /**
-     * Tries to create AdbServices, potentially initializing ADB connection if is it is not ready yet.
-     * This may fail and show an error dialog.
-     *
-     * @return an {@link AdbServices} or empty Optional if ADB is not ready
-     */
-    public Optional<AdbServices> getAdbServices() {
+    private Optional<AdbServices> getAdbServices() {
         Try<AdbServicesSubcomponent> result = adbSubcomponent;
         if (result == null) {
             result = adbSubcomponent = Try.ofCallable(this::tryCreateAdbServer).map(adbSubcomponentFactory::build);
         }
         return Optionals.upcast(result.toOptional());
+    }
+
+    /**
+     * Tries to create AdbServices, potentially initializing ADB connection if is it is not ready yet.
+     * This may fail and show an error dialog.
+     *
+     * @return a completable future that will provide {@link AdbServices} when ready
+     */
+    public CompletableFuture<AdbServices> getAdbServicesAsync() {
+        return getAdbServices().map(CompletableFuture::completedFuture)
+                .orElseGet(() -> MyFutures.failedFuture(new AdbException("Placeholder")));
     }
 
     private AdbServer tryCreateAdbServer() throws AdbException {

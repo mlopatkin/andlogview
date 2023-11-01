@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
+import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
+
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import com.android.ddmlib.AndroidDebugBridge;
@@ -244,11 +246,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         deviceProvisioner.provisionDevice(device)
                 .thenAccept(
                         provisionedDevice -> finishProvisioning(device, provisionedDevice))
-                .exceptionally(
-                        th -> {
-                            abandonProvisioning(device, th);
-                            return null;
-                        });
+                .exceptionally(exceptionHandler(th -> abandonProvisioning(device, th)));
     }
 
     private void abandonProvisioning(ProvisionalDeviceImpl device, Throwable exception) {

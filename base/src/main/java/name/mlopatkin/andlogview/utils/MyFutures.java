@@ -20,6 +20,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Utilities to work with {@link Future}s.
@@ -71,5 +73,42 @@ public final class MyFutures {
             runnable.run();
             return null;
         }, executor);
+    }
+
+    /**
+     * Backport of the {@code CompletableFuture::failedFuture} for Java 8.
+     *
+     * @param th the failure reason
+     * @param <T> the type of the future
+     * @return the completed completion stage that has failed with the provided failure
+     */
+    public static <T> CompletableFuture<T> failedFuture(Throwable th) {
+        var future = new CompletableFuture<T>();
+        future.completeExceptionally(th);
+        return future;
+    }
+
+    /**
+     * Adapter for void-returning methods to be used in {@link CompletableFuture#exceptionally(Function)}.
+     * @param consumer the consumer of the exception
+     * @return the consumer adapted to a function
+     */
+    public static Function<Throwable, Void> exceptionHandler(Consumer<Throwable> consumer) {
+        return t -> {
+            consumer.accept(t);
+            return null;
+        };
+    }
+
+    /**
+     * Adapter for void-returning methods to be used in {@link CompletableFuture#exceptionally(Function)}.
+     * @param consumer the failure handler
+     * @return the consumer adapted to a function
+     */
+    public static Function<Throwable, Void> exceptionHandler(Runnable consumer) {
+        return t -> {
+            consumer.run();
+            return null;
+        };
     }
 }
