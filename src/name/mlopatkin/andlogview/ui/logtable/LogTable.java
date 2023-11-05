@@ -39,7 +39,7 @@ class LogTable extends DecoratingRendererTable implements LogModelFilter.Observe
         setModel(dataModel);
         sorter = new SortingDisableSorter<>(dataModel);
 
-        RowFilter<LogRecordTableModel, Integer> rowFilter = new RowFilter<LogRecordTableModel, Integer>() {
+        RowFilter<LogRecordTableModel, Integer> rowFilter = new RowFilter<>() {
             @Override
             public boolean include(Entry<? extends LogRecordTableModel, ? extends Integer> entry) {
                 return LogTable.this.filterModel.shouldShowRecord(entry.getModel().getRowData(entry.getIdentifier()));

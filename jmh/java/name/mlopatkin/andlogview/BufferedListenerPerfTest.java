@@ -67,7 +67,7 @@ public abstract class BufferedListenerPerfTest {
     @Setup(Level.Trial)
     public void setUp(Blackhole blackhole) throws Exception {
 
-        consumer = new BatchRecordsReceiver<LogRecord>() {
+        consumer = new BatchRecordsReceiver<>() {
 
             @Override
             public void addRecords(List<LogRecord> records) {
@@ -117,7 +117,7 @@ public abstract class BufferedListenerPerfTest {
     public static class Baseline extends BufferedListenerPerfTest {
         @Override
         protected RecordListener<LogRecord> createListener() {
-            return new RecordListener<LogRecord>() {
+            return new RecordListener<>() {
                 @Override
                 public void addRecord(LogRecord record) {
                     EventQueue.invokeLater(() -> consumer.addRecords(Collections.singletonList(record)));

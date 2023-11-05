@@ -110,11 +110,12 @@ public class ConfigStorageImplTest {
 
         storage.saveConfig(new TestClient(), new TestClientData("123456"));
 
-        assertEquals("{\n"
-                        + "  \"TestClient\": {\n"
-                        + "    \"s\": \"123456\"\n"
-                        + "  }\n"
-                        + "}",
+        assertEquals("""
+                        {
+                          "TestClient": {
+                            "s": "123456"
+                          }
+                        }""",
                 out.getLastWrittenString());
     }
 
@@ -130,7 +131,7 @@ public class ConfigStorageImplTest {
 
     private static class NullCharSink extends CharSink {
         @Override
-        public Writer openStream() throws IOException {
+        public Writer openStream() {
             return CharStreams.nullWriter();
         }
     }
@@ -139,7 +140,7 @@ public class ConfigStorageImplTest {
         private @Nullable StringWriter writer;
 
         @Override
-        public Writer openStream() throws IOException {
+        public Writer openStream() {
             writer = new StringWriter();
             return writer;
         }

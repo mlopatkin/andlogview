@@ -51,7 +51,6 @@ public class ParserPerfTest {
 
     private @MonotonicNonNull ImmutableList<String> lines;
 
-    @SuppressWarnings("UnstableApiUsage")
     @Setup(Level.Trial)
     public void setUp() throws Exception {
         try (Stream<String> lines = BenchmarkResources.loadResource("goldfish_omr1_threadtime.log").lines()) {

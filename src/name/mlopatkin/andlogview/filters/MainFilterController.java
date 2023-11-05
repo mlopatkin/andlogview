@@ -78,13 +78,10 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         this.savedFiltersPref = savedFiltersPref;
         this.filter = logModelFilter;
 
-        indexFilterCollection.asObservable().addObserver(new IndexFilterCollection.Observer() {
-            @Override
-            public void onFilterDisabled(Predicate<LogRecord> filter) {
-                for (BaseToggleFilter<?> registeredFilter : filters) {
-                    if (Objects.equals(registeredFilter.filter, filter)) {
-                        filterPanelModel.setFilterEnabled(registeredFilter, false);
-                    }
+        indexFilterCollection.asObservable().addObserver(disabledFilter -> {
+            for (BaseToggleFilter<?> registeredFilter : filters) {
+                if (Objects.equals(registeredFilter.filter, disabledFilter)) {
+                    filterPanelModel.setFilterEnabled(registeredFilter, false);
                 }
             }
         });
@@ -128,16 +125,11 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     }
 
     private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {
-        switch (filter.getMode()) {
-            case SHOW:
-            case HIDE:
-                return this.filter.filterChain;
-            case HIGHLIGHT:
-                return this.filter.highlighter;
-            case WINDOW:
-                return indexFilterCollection;
-        }
-        throw new IllegalArgumentException("Filter has invalid mode " + filter.getMode());
+        return switch (filter.getMode()) {
+            case SHOW, HIDE -> this.filter.filterChain;
+            case HIGHLIGHT -> this.filter.highlighter;
+            case WINDOW -> indexFilterCollection;
+        };
     }
 
     @Override

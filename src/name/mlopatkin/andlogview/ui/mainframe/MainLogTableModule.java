@@ -31,6 +31,7 @@ import javax.swing.JTable;
 
 @Module
 class MainLogTableModule {
+    @SuppressWarnings("Convert2Lambda")
     @Provides
     PopupMenu.Delegate providePopupMenu(TablePopupMenuPresenter presenter) {
         return new PopupMenu.Delegate() {

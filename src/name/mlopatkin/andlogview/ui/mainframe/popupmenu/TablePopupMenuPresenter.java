@@ -221,32 +221,22 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                         mode, Objects.requireNonNull(Column.PRIORITY.getValue(row.getRowIndex(), row.getRecord())));
             }
             // This enum is intended to be exhaustive
-            switch (mode) {
-                case SHOW:
-                    return "Show only this " + columnName;
-                case HIDE:
-                    return "Hide this " + columnName;
-                case HIGHLIGHT:
-                    return "Highlight this " + columnName;
-                case WINDOW:
-                    return "Show this " + columnName + " in index window";
-            }
-            throw new IllegalArgumentException("Unexpected filtering mode " + mode);
+            return switch (mode) {
+                case SHOW -> "Show only this " + columnName;
+                case HIDE -> "Hide this " + columnName;
+                case HIGHLIGHT -> "Highlight this " + columnName;
+                case WINDOW -> "Show this " + columnName + " in index window";
+            };
         }
 
         private static String getFilterMenuItemTitleForPriority(FilteringMode mode, Object value) {
             // This enum is intended to be exhaustive
-            switch (mode) {
-                case SHOW:
-                    return "Show only priority >=" + value;
-                case HIDE:
-                    return "Hide priority >=" + value;
-                case HIGHLIGHT:
-                    return "Highlight priority >=" + value;
-                case WINDOW:
-                    return "Show priority >=" + value + " in index window";
-            }
-            throw new IllegalArgumentException("Unexpected filtering mode " + mode);
+            return switch (mode) {
+                case SHOW -> "Show only priority >=" + value;
+                case HIDE -> "Hide priority >=" + value;
+                case HIGHLIGHT -> "Highlight priority >=" + value;
+                case WINDOW -> "Show priority >=" + value + " in index window";
+            };
         }
     }
 

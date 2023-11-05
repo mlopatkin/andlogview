@@ -48,7 +48,7 @@ public final class PredicateMatchers {
     }
 
     public static <T> Matcher<? extends Predicate<T>> rejects(T value) {
-        return new TypeSafeMatcher<Predicate<T>>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(Predicate<T> item) {
                 return !item.test(value);

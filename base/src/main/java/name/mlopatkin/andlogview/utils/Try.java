@@ -161,7 +161,7 @@ public abstract class Try<T> {
     public static <T> Try<T> ofValue(T value) {
         Objects.requireNonNull(value);
 
-        return new Try<T>() {
+        return new Try<>() {
             @Override
             public boolean isPresent() {
                 return true;
@@ -189,7 +189,7 @@ public abstract class Try<T> {
     public static <T> Try<T> ofError(Throwable throwable) {
         Objects.requireNonNull(throwable);
 
-        return new Try<T>() {
+        return new Try<>() {
             @Override
             public boolean isPresent() {
                 return false;

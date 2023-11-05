@@ -191,7 +191,7 @@ public class SearcherBuilderTest {
     private static Matcher<Boolean> matchesCase(
             final boolean performsCaseConversion, boolean matchWholeStringOnly, final Case theCase) {
         final boolean performsSubstringMatch = !matchWholeStringOnly;
-        return new BaseMatcher<Boolean>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(Object item) {
                 boolean result = (Boolean) item;

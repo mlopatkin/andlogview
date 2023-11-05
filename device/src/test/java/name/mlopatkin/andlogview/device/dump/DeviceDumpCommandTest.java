@@ -29,10 +29,11 @@ public class DeviceDumpCommandTest {
 
     @Test
     public void deserializationTest() {
-        DeviceDumpCommand command = gson.fromJson("{\n"
-                + "      \"baseOutputName\": \"logcat\",\n"
-                + "      \"commandLine\": [\"logcat\", \"-d\"]\n"
-                + "    }", DeviceDumpCommand.class);
+        DeviceDumpCommand command = gson.fromJson("""
+                {
+                    "baseOutputName": "logcat",
+                    "commandLine": ["logcat", "-d"]
+                }""", DeviceDumpCommand.class);
 
         assertEquals("logcat", command.baseOutputName);
         assertEquals(Arrays.asList("logcat", "-d"), command.commandLine);

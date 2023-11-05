@@ -58,6 +58,7 @@ public class MainFrameModule {
 
     @Provides
     @MainFrameScoped
+    @SuppressWarnings("Convert2Lambda")
     DialogFactory provideDialogFactory(MainFrameUi mainFrameUi) {
         return new DialogFactory() {
             @Override

@@ -41,7 +41,7 @@ public class FilterFromDialog implements ColoringFilter {
     private static final Joiner commaJoiner = Joiner.on(", ");
 
     private static final SearchRequestParser<Predicate<String>> tagParser =
-            new SearchRequestParser<>(new SearchRequestParser.Delegate<Predicate<String>>() {
+            new SearchRequestParser<>(new SearchRequestParser.Delegate<>() {
                 private final SearcherBuilder matchIgnoreCase = new SearcherBuilder().setIgnoreCase(true);
 
                 @Override
@@ -58,7 +58,7 @@ public class FilterFromDialog implements ColoringFilter {
             });
 
     private static final SearchRequestParser<Predicate<String>> messageParser =
-            new SearchRequestParser<>(new SearchRequestParser.Delegate<Predicate<String>>() {
+            new SearchRequestParser<>(new SearchRequestParser.Delegate<>() {
                 private final SearcherBuilder matchSubstring = new SearcherBuilder().setMatchWholeText(false);
 
                 @Override

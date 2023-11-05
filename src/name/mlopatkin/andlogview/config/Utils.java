@@ -38,7 +38,7 @@ public class Utils {
 
     private Utils() {}
 
-    static final Parser<Color> colorParser = new Parser<Color>() {
+    static final Parser<Color> colorParser = new Parser<>() {
         @Override
         public Color read(String value) {
             return Color.decode(value);

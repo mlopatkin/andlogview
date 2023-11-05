@@ -64,14 +64,11 @@ public class LogRecordTableModel extends AbstractTableModel implements LogModel.
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (Column.getByColumnIndex(columnIndex)) {
-            case TIME:
-                return Date.class;
-            case PRIORITY:
-                return Priority.class;
-            default:
-                return super.getColumnClass(columnIndex);
-        }
+        return switch (Column.getByColumnIndex(columnIndex)) {
+            case TIME -> Date.class;
+            case PRIORITY -> Priority.class;
+            default -> super.getColumnClass(columnIndex);
+        };
     }
 
     public TableRow getRow(int row) {
@@ -92,16 +89,10 @@ public class LogRecordTableModel extends AbstractTableModel implements LogModel.
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (Column.getByColumnIndex(columnIndex)) {
-            case MESSAGE:
-            case PID:
-            case TID:
-            case TAG:
-            case APP_NAME:
-                return true;
-            default:
-                return false;
-        }
+        return switch (Column.getByColumnIndex(columnIndex)) {
+            case MESSAGE, PID, TID, TAG, APP_NAME -> true;
+            default -> false;
+        };
     }
 
     @Override

@@ -33,7 +33,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 public class Subject<T> implements Iterable<T> {
     private final ObserverList<T> observers = new ObserverList<>();
 
-    private final Observable<T> observableView = new Observable<T>() {
+    private final Observable<T> observableView = new Observable<>() {
         @Override
         public void addObserver(T observer) {
             observers.addObserver(observer);

@@ -26,13 +26,11 @@ class ColorTypeAdapter extends TypeAdapter<Color> {
     @Nullable
     public Color read(JsonReader in) throws IOException {
         JsonToken nextToken = in.peek();
-        switch (nextToken) {
-            case NULL: return null;
-            case BEGIN_OBJECT:
-                return parseObject(in);
-            default:
-                throw new IOException("Unexpected value: " + nextToken);
-        }
+        return switch (nextToken) {
+            case NULL -> null;
+            case BEGIN_OBJECT -> parseObject(in);
+            default -> throw new IOException("Unexpected value: " + nextToken);
+        };
     }
 
     private Color parseObject(JsonReader in) throws IOException {

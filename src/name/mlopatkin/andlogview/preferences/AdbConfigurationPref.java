@@ -53,7 +53,7 @@ public class AdbConfigurationPref implements AdbLocation {
     }
 
     private static final ConfigStorageClient<AdbConfiguration> STORAGE_CLIENT =
-            new NamedClient<AdbConfiguration>("adb") {
+            new NamedClient<>("adb") {
                 @Override
                 public AdbConfiguration fromJson(Gson gson, JsonElement element) {
                     return gson.fromJson(element, AdbConfiguration.class);

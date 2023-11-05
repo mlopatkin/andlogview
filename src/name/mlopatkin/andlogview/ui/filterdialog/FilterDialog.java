@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
-import static name.mlopatkin.andlogview.ui.filterdialog.FilteringModesPanel.ModeChangedListener;
-
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.FilteringMode;
@@ -58,15 +56,11 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
         cancelButton.addActionListener(cancelAction);
         UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
 
-        ModeChangedListener modeListener = new ModeChangedListener() {
-            @Override
-            public void modeSelected(FilteringMode mode) {
-                colorsList.setVisible(mode == FilteringMode.HIGHLIGHT);
-                colorsList.revalidate();
-                colorsList.repaint();
-            }
-        };
-        modesPanel.setModeChangedListener(modeListener);
+        modesPanel.setModeChangedListener(mode -> {
+            colorsList.setVisible(mode == FilteringMode.HIGHLIGHT);
+            colorsList.revalidate();
+            colorsList.repaint();
+        });
 
         addWindowListener(new WindowAdapter() {
             @Override

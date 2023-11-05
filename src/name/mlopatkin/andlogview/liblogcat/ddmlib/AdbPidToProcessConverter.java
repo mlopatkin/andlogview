@@ -48,7 +48,7 @@ class AdbPidToProcessConverter {
     @GuardedBy("this")
     private @Nullable Future<?> result;
 
-    private final ConcurrentHashMap<Integer, String> processMap = new ConcurrentHashMap<Integer, String>() {
+    private final ConcurrentHashMap<Integer, String> processMap = new ConcurrentHashMap<>() {
         @Override
         public @Nullable String get(Object key) {
             String r = putIfAbsent((Integer) key, NO_INFO);

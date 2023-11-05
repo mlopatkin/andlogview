@@ -41,7 +41,7 @@ import javax.inject.Singleton;
 @Singleton
 public class LastUsedDirPref {
     private static final ConfigStorageClient<Optional<String>> STORAGE_CLIENT =
-            new NamedClient<Optional<String>>("last_used_dir") {
+            new NamedClient<>("last_used_dir") {
                 @Override
                 public Optional<String> fromJson(Gson gson, JsonElement element)
                         throws InvalidJsonContentException {

@@ -67,7 +67,7 @@ public class WindowsPositionsPref {
     private static final Logger logger = Logger.getLogger(WindowsPositionsPref.class);
 
     private static final ConfigStorageClient<Map<Frame, FrameInfo>> STORAGE_CLIENT =
-            new NamedClient<Map<Frame, FrameInfo>>("windows") {
+            new NamedClient<>("windows") {
                 @Override
                 public Map<Frame, FrameInfo> fromJson(Gson gson, JsonElement element)
                         throws InvalidJsonContentException {

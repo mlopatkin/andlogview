@@ -33,7 +33,7 @@ import java.util.function.BiFunction;
  */
 public class FutureMatchers {
     public static <T> Matcher<CompletionStage<T>> notCompleted() {
-        return new TypeSafeMatcher<CompletionStage<T>>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(CompletionStage<T> stage) {
                 return !ExecutionResult.check(stage).isCompleted();
@@ -52,7 +52,7 @@ public class FutureMatchers {
     }
 
     public static <T> Matcher<CompletionStage<T>> completedWithResult(Matcher<? super T> matcher) {
-        return new TypeSafeMatcher<CompletionStage<T>>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(CompletionStage<T> stage) {
                 ExecutionResult<T> result = ExecutionResult.check(stage);

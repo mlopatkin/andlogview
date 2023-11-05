@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.logmodel;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -76,7 +75,7 @@ public class BufferedListener<T> implements RecordListener<T> {
             records = pendingRecords;
             pendingRecords = new ArrayList<>();
         }
-        Collections.sort(records, comparator);
+        records.sort(comparator);
         receiver.addRecords(records);
     }
 }

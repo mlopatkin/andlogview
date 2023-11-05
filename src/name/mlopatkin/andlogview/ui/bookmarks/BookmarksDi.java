@@ -81,6 +81,7 @@ final class BookmarksDi {
 
     @Module
     static class TableDepsModule {
+        @SuppressWarnings("Convert2Lambda")
         @Provides
         static PopupMenu.Delegate createDelegate(BookmarkPopupMenuPresenter presenter) {
             return new PopupMenu.Delegate() {

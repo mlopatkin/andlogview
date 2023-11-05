@@ -105,6 +105,7 @@ public final class IndexFrameDi {
 
     @Module
     static class TableDepsModule {
+        @SuppressWarnings("Convert2Lambda")
         @Provides
         static PopupMenu.Delegate createPopupMenuDelegate(
                 PopupMenuPresenter<PopupMenuPresenter.PopupMenuView> presenter) {

@@ -39,7 +39,7 @@ public final class TableColumnTestUtils {
     }
 
     public static Matcher<TableColumn> isColumnFor(Column column) {
-        return new TypeSafeMatcher<TableColumn>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(Description description) {
                 description.appendText("is a column for ").appendValue(column);

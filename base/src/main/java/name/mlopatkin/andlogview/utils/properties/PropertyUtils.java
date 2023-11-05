@@ -38,12 +38,8 @@ public class PropertyUtils {
         if (resourceStream == null) {
             throw new IllegalArgumentException("Couldn't load resource " + resourceName);
         }
-        try {
-            try {
-                return getPropertiesFromStream(resourceStream);
-            } finally {
-                resourceStream.close();
-            }
+        try (resourceStream) {
+            return getPropertiesFromStream(resourceStream);
         } catch (IOException e) {
             throw new RuntimeException("IO exception while loading resource", e);
         }
