@@ -19,11 +19,17 @@ package name.mlopatkin.andlogview.ui.device;
 import static name.mlopatkin.andlogview.utils.MyFutures.runAsync;
 
 import name.mlopatkin.andlogview.AppExecutors;
+import name.mlopatkin.andlogview.base.MyThrowables;
+import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.Threads;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Stopwatch;
 
 import dagger.Lazy;
@@ -32,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +50,7 @@ import javax.inject.Named;
  * services to the rest of the application.
  */
 @MainFrameScoped
-public class AdbServicesBridge {
+public class AdbServicesBridge implements AdbServicesStatus {
     // Why does this class live in the ui layer? So far everything ADB-related goes through UI layer be it device dump,
     // device selection or the actual logcat retrieval. Moreover, ADB initialization code shows error dialogs if
     // something goes wrong, so it has some UI dependency already. If this becomes problematic then the class may be
@@ -56,11 +63,11 @@ public class AdbServicesBridge {
     private final Lazy<ErrorDialogs> errorDialogs;
     private final Executor uiExecutor;
     private final Executor adbInitExecutor;
+    private final Subject<Observer> statusObservers = new Subject<>();
 
     // TODO(mlopatkin) My attempt to hide connection replacement logic in the AdbServer failed. What if the connection
     //  update fails? The server would be unusable and we have to discard the whole component.
-    @Nullable
-    private CompletableFuture<AdbServices> adbSubcomponent; // This one is three-state. The `null` here
+    private @Nullable CompletableFuture<AdbServices> adbSubcomponent; // This one is three-state. The `null` here
     // means that nobody attempted to initialize ADB yet. Non-null holds the current subcomponent if it was created
     // successfully or the initialization error if something failed.
 
@@ -88,26 +95,75 @@ public class AdbServicesBridge {
     public CompletableFuture<AdbServices> getAdbServicesAsync() {
         var result = adbSubcomponent;
         if (result == null) {
-            result = adbSubcomponent = initAdbAsync();
+            result = initAdbAsync();
         }
         return result;
     }
 
     private CompletableFuture<AdbServices> initAdbAsync() {
+        assert adbSubcomponent == null;
         Stopwatch stopwatch = Stopwatch.createStarted();
-        return runAsync(() -> {
+
+        final var result = adbSubcomponent = runAsync(() -> {
             adbManager.setAdbLocation(adbConfigurationPref);
             return adbManager.startServer();
-        }, adbInitExecutor)
-                .<AdbServices>thenApplyAsync(adbSubcomponentFactory::build, uiExecutor)
-                .whenCompleteAsync((r, th) -> {
-                    logger.info("Initialized adb server in " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
-                    if (th != null) {
-                        logger.error("Failed to initialize ADB", th);
-                        // TODO(mlopatkin) should we show dialog from here or should we move this responsibility
-                        //  somewhere else?
-                        errorDialogs.get().showAdbNotFoundError();
-                    }
-                }, uiExecutor);
+        }, adbInitExecutor).thenApplyAsync(adbSubcomponentFactory::build, uiExecutor);
+
+        if (!result.isDone()) {
+            // This happens always unless direct executors are used.
+            // It is important to have adbSubcomponent initialized here, or getStatus() inside listeners would return
+            // invalid status.
+            notifyStatusChange(getStatus());
+        }
+
+        result.whenCompleteAsync((r, th) -> onAdbInitFinished(th, stopwatch), uiExecutor)
+                .exceptionally(Threads::uncaughtException);
+        return result;
+    }
+
+
+    private void onAdbInitFinished(@Nullable Throwable maybeFailure, Stopwatch timeTracing) {
+        logger.info("Initialized adb server in " + timeTracing.elapsed(TimeUnit.MILLISECONDS) + "ms");
+        if (maybeFailure != null) {
+            logger.error("Failed to initialize ADB", maybeFailure);
+            // TODO(mlopatkin) should we show dialog from here or should we move this responsibility
+            //  somewhere else?
+            errorDialogs.get().showAdbNotFoundError();
+            notifyStatusChange(StatusValue.failed(getAdbFailureString(maybeFailure)));
+        } else {
+            notifyStatusChange(StatusValue.initialized());
+        }
+    }
+
+    @Override
+    public StatusValue getStatus() {
+        var services = adbSubcomponent;
+        if (services == null) {
+            return StatusValue.notInitialized();
+        }
+
+        try {
+            return services.<StatusValue>thenApply(unused -> StatusValue.initialized())
+                    .getNow(StatusValue.initializing());
+        } catch (CompletionException e) {
+            return StatusValue.failed(getAdbFailureString(e));
+        }
+    }
+
+    @Override
+    public Observable<Observer> asObservable() {
+        return statusObservers.asObservable();
+    }
+
+    private void notifyStatusChange(StatusValue newStatus) {
+        for (Observer observer : statusObservers) {
+            observer.onAdbServicesStatusChanged(newStatus);
+        }
+    }
+
+    private static String getAdbFailureString(Throwable th) {
+        return MyThrowables.findCause(th, AdbException.class)
+                .map(Throwable::getMessage)
+                .orElse(MoreObjects.firstNonNull(th.getMessage(), "unknown failure"));
     }
 }

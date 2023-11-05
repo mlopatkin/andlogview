@@ -22,21 +22,18 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayDeque;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.Executor;
 
 /**
  * A test executor that collects all submitted commands but doesn't run them until {@link #flush()} is called.
  */
 public class TestExecutor implements Executor {
-    private final Object lock = new Object();
-
-    @GuardedBy("lock")
+    @GuardedBy("commands")
     private final ArrayDeque<Runnable> commands = new ArrayDeque<>();
 
     @Override
     public void execute(@NonNull Runnable command) {
-        synchronized (lock) {
+        synchronized (commands) {
             commands.add(Objects.requireNonNull(command));
         }
     }
@@ -44,18 +41,26 @@ public class TestExecutor implements Executor {
     /**
      * Synchronously executes submitted runnables until the queue is empty. If the runnables post more work, this work
      * is also executed.
+     *
+     * @return {@code true} if the executor executed some work
      */
-    public void flush() {
-        Optional<Runnable> command;
-        do {
-            command = pop();
-            command.ifPresent(Runnable::run);
-        } while (command.isPresent());
+    public boolean flush() {
+        boolean executed = false;
+        while (popAndRun()) {
+            executed = true;
+        }
+        return executed;
     }
 
-    private Optional<Runnable> pop() {
-        synchronized (lock) {
-            return Optional.ofNullable(commands.pollFirst());
+    private boolean popAndRun() {
+        final Runnable work;
+        synchronized (commands) {
+            work = commands.pollFirst();
         }
+        if (work != null) {
+            work.run();
+            return true;
+        }
+        return false;
     }
 }

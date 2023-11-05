@@ -18,7 +18,9 @@ package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.DataSourceHolder;
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
@@ -35,30 +37,44 @@ import javax.inject.Inject;
 @MainFrameScoped
 public class SourceStatusPresenter {
     private final DataSourceHolder dataSourceHolder;
+    private final AdbServicesStatus adbServicesStatus;
     private final View view;
     private final UiThreadScheduler updateScheduler;
 
     interface View {
-        void showWaitingStatus();
+        void showWaitingStatus(String statusText);
+
         void showSourceStatus(String status);
+
         Observable<Consumer<SourceStatusPopupMenuView>> popupMenuAction();
     }
 
     @Inject
-    SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view,
-            SourcePopupMenuPresenter popupMenuPresenter, UiThreadScheduler updateScheduler) {
+    SourceStatusPresenter(
+            DataSourceHolder dataSourceHolder,
+            AdbServicesStatus adbServicesStatus,
+            View view,
+            SourcePopupMenuPresenter popupMenuPresenter,
+            UiThreadScheduler updateScheduler) {
         this.dataSourceHolder = dataSourceHolder;
+        this.adbServicesStatus = adbServicesStatus;
         this.view = view;
         this.updateScheduler = updateScheduler;
+
         view.popupMenuAction().addObserver(popupMenuPresenter::showPopupMenuIfNeeded);
     }
 
     @Inject
     void init() {
+        adbServicesStatus.asObservable().addObserver(this::onAdbServicesStatusChanged);
         dataSourceHolder.asObservable().addObserver(this::onDataSourceChanged);
         if (dataSourceHolder.getDataSource() != null) {
             scheduleUpdates();
         }
+        updateSourceStatus();
+    }
+
+    private void onAdbServicesStatusChanged(AdbServicesStatus.StatusValue statusValue) {
         updateSourceStatus();
     }
 
@@ -67,8 +83,22 @@ public class SourceStatusPresenter {
         if (dataSource != null) {
             view.showSourceStatus(dataSource.toString());
         } else {
-            view.showWaitingStatus();
+            view.showWaitingStatus(evaluateSourceStatus());
         }
+    }
+
+    private String evaluateSourceStatus() {
+        assert dataSourceHolder.getDataSource() == null;
+
+        var adbStatus = adbServicesStatus.getStatus();
+        if (adbStatus instanceof AdbServicesStatus.NotInitialized
+                || adbStatus instanceof AdbServicesStatus.Initializing) {
+            return "Initializing ADB" + CommonChars.ELLIPSIS;
+        }
+        if (adbStatus instanceof AdbServicesStatus.InitFailed failure) {
+            return "Failed to initialize ADB: " + failure.getFailureMessage();
+        }
+        return "Waiting for a device" + CommonChars.ELLIPSIS;
     }
 
     private void onDataSourceChanged(@Nullable DataSource oldSource, DataSource newSource) {

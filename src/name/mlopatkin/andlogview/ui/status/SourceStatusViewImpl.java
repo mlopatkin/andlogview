@@ -40,8 +40,8 @@ class SourceStatusViewImpl implements SourceStatusPresenter.View {
     }
 
     @Override
-    public void showWaitingStatus() {
-        setLabelText("Waiting for a device" + CommonChars.ELLIPSIS);
+    public void showWaitingStatus(String statusText) {
+        setLabelText(statusText);
     }
 
     @Override

@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import name.mlopatkin.andlogview.base.MyThrowables;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -41,9 +43,16 @@ public final class Threads {
      * @param th the throwable to forward
      * @return {@code null}
      */
-    public static @Nullable Void uncaughtException(Throwable th) {
+    @SuppressWarnings("TypeParameterUnusedInFormals")
+    public static <T> @Nullable T uncaughtException(Throwable th) {
         Thread thread = Thread.currentThread();
-        thread.getUncaughtExceptionHandler().uncaughtException(thread, th);
-        return null;
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, MyThrowables.unwrapUninteresting(th));
+        // Rethrow the exception, so the downstream chain is still unsuccessful.
+        throw sneakyRethrow(th);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> RuntimeException sneakyRethrow(Throwable th) throws E {
+        throw (E) th;
     }
 }

@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbServer;
 
+import dagger.Binds;
 import dagger.BindsInstance;
 import dagger.Module;
 import dagger.Provides;
@@ -63,5 +64,7 @@ public interface AdbServicesSubcomponent extends AdbServices {
 
     @Module(subcomponents = AdbServicesSubcomponent.class)
     abstract class AdbMainModule {
+        @Binds
+        abstract AdbServicesStatus getServicesStatus(AdbServicesBridge bridge);
     }
 }

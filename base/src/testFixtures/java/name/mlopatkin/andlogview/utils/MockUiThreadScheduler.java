@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+
 import java.time.Duration;
 import java.util.PriorityQueue;
 
@@ -76,12 +78,12 @@ public class MockUiThreadScheduler implements UiThreadScheduler {
 
     @Override
     public Cancellable postRepeatableTask(Runnable task, Duration interval) {
-        throw new UnsupportedOperationException("Not supported");
+        return new RepeatingTask(task, interval).start();
     }
 
     private class ScheduledTask implements Cancellable, Comparable<ScheduledTask>, Runnable {
         final long deadlineMs;
-        private final Runnable task;
+        final Runnable task;
 
         private ScheduledTask(Runnable task, long deadlineMs) {
             this.deadlineMs = deadlineMs;
@@ -101,6 +103,32 @@ public class MockUiThreadScheduler implements UiThreadScheduler {
         @Override
         public void run() {
             task.run();
+        }
+    }
+
+    private class RepeatingTask implements Runnable {
+        private final int delayMs;
+        private final Runnable task;
+        private @MonotonicNonNull Cancellable lastScheduledInstance;
+
+        private RepeatingTask(Runnable task, Duration delay) {
+            this.task = task;
+            this.delayMs = (int) delay.toMillis();
+        }
+
+        @Override
+        public void run() {
+            task.run();
+            lastScheduledInstance = postDelayedTask(this, delayMs);
+        }
+
+        public Cancellable start() {
+            assert lastScheduledInstance == null;
+            lastScheduledInstance = postDelayedTask(this, delayMs);
+            return () -> {
+                assert lastScheduledInstance != null;
+                return lastScheduledInstance.cancel();
+            };
         }
     }
 }
