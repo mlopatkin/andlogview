@@ -20,7 +20,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Properties;
 
-class Property<T> {
+public class Property<T> {
     private @Nullable T value;
     private final Class<T> type;
     private final Parser<T> parser;

@@ -62,7 +62,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
 
     @Inject
-    public MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
+    MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
             FilterDialogFactory dialogFactory, ConfigStorage storage, LogModelFilterImpl logModelFilter) {
         this(filterPanelModel, indexFilterCollection, dialogFactory, storage.preference(new FilterListSerializer()),
                 logModelFilter);

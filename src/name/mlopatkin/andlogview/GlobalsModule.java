@@ -30,7 +30,7 @@ import java.io.IOException;
 import javax.inject.Singleton;
 
 @Module
-class GlobalsModule {
+public class GlobalsModule {
     private static final Logger logger = Logger.getLogger(GlobalsModule.class);
 
     private final File appConfigDir;

@@ -53,12 +53,12 @@ public class PopupMenu {
     private final SelectionAdjuster selectionAdjuster;
 
     @Inject
-    public PopupMenu(Delegate delegate, SelectionAdjuster selectionAdjuster) {
+    PopupMenu(Delegate delegate, SelectionAdjuster selectionAdjuster) {
         this.delegate = delegate;
         this.selectionAdjuster = selectionAdjuster;
     }
 
-    public void attachToTable(LogTable table) {
+    void attachToTable(LogTable table) {
         table.addMouseListener(createMouseHandler(table));
     }
 

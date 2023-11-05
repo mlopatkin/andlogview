@@ -29,7 +29,7 @@ public class StatusPanel {
     private final StatusPanelUi statusPanelUi;
 
     @Inject
-    public StatusPanel(
+    StatusPanel(
             StatusPanelUi statusPanelUi,
             @SuppressWarnings("unused") SearchStatusPresenter searchStatusPresenter,
             @SuppressWarnings("unused") SourceStatusPresenter sourceStatusPresenter) {

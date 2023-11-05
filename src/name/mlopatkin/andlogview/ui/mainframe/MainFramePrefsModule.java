@@ -23,7 +23,7 @@ import dagger.Provides;
 public class MainFramePrefsModule {
     @Provides
     @MainFrameScoped
-    public ColumnPrefs getColumnPrefs(ColumnPrefs.Factory factory) {
+    ColumnPrefs getColumnPrefs(ColumnPrefs.Factory factory) {
         return factory.loadFromConfig();
     }
 }

@@ -29,7 +29,7 @@ public class FilterDialogFactory {
     private final Provider<FilterDialog> filterDialogViewFactory;
 
     @Inject
-    public FilterDialogFactory(Provider<FilterDialog> filterDialogViewFactory) {
+    FilterDialogFactory(Provider<FilterDialog> filterDialogViewFactory) {
         this.filterDialogViewFactory = filterDialogViewFactory;
     }
 

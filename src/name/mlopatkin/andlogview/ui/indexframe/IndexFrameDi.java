@@ -97,6 +97,7 @@ public final class IndexFrameDi {
 
         @Component.Factory
         interface Factory {
+            @SuppressWarnings("ClassEscapesDefinedScope")
             IndexLogTableComponent create(@BindsInstance LogRecordTableModel tableModel,
                     @BindsInstance LogModelFilter modelFilter);
         }

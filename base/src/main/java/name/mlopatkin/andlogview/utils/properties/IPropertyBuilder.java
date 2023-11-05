@@ -16,6 +16,6 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
-interface IPropertyBuilder<T> {
+public interface IPropertyBuilder<T> {
     Property<T> build();
 }

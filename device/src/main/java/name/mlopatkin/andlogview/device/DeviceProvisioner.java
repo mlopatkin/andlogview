@@ -18,6 +18,6 @@ package name.mlopatkin.andlogview.device;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface DeviceProvisioner {
+interface DeviceProvisioner {
     CompletableFuture<DeviceImpl> provisionDevice(ProvisionalDeviceImpl provisionalDevice);
 }

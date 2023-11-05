@@ -20,7 +20,8 @@ package name.mlopatkin.andlogview.ui.filterpanel;
  * The instance of this interface represents a filter inside the FilterPanel. It provides information about how to
  * display filter as a button.
  */
-interface PanelFilterView {
+// TODO(mlopatkin) Make it package-private again after addressing scoping issues in FilterPanel.
+public interface PanelFilterView {
     /**
      * Returns a nicely formatted tooltip describing the filter. This tooltip is used for the filter button.
      *

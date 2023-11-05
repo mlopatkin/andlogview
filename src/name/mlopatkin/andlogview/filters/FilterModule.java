@@ -29,5 +29,5 @@ import dagger.Module;
 public abstract class FilterModule {
     @Binds
     @MainFrameScoped
-    public abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
+    abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
 }

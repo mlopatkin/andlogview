@@ -49,6 +49,7 @@ final class BookmarksDi {
         @Component.Builder
         interface Builder extends IndexFrameDi.IndexFrameComponent.Builder {
             @Override
+            @SuppressWarnings("ClassEscapesDefinedScope")
             BookmarksFrameComponent build();
         }
     }
@@ -72,6 +73,7 @@ final class BookmarksDi {
 
         @Component.Factory
         interface Factory {
+            @SuppressWarnings("ClassEscapesDefinedScope")
             BookmarksLogTableComponent create(@BindsInstance LogRecordTableModel tableModel,
                     @BindsInstance LogModelFilter modelFilter, @BindsInstance BookmarkModel bookmarkModel);
         }

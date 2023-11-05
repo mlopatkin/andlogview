@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.parsers.dumpstate;
 import org.assertj.core.api.AbstractAssert;
 
 @SuppressWarnings("UnusedReturnValue")
-public class DumpstateParserControlAssert extends AbstractAssert<DumpstateParserControlAssert, DumpstateParserControl> {
+class DumpstateParserControlAssert extends AbstractAssert<DumpstateParserControlAssert, DumpstateParserControl> {
     protected DumpstateParserControlAssert(DumpstateParserControl actual) {
         super(actual, DumpstateParserControlAssert.class);
     }

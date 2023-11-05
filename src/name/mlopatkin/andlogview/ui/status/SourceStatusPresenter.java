@@ -45,7 +45,7 @@ public class SourceStatusPresenter {
     }
 
     @Inject
-    public SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view,
+    SourceStatusPresenter(DataSourceHolder dataSourceHolder, View view,
             SourcePopupMenuPresenter popupMenuPresenter, UiThreadScheduler updateScheduler) {
         this.dataSourceHolder = dataSourceHolder;
         this.view = view;

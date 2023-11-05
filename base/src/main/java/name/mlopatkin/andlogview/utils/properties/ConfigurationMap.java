@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @SuppressWarnings("TypeParameterUnusedInFormals")
 public class ConfigurationMap implements Configuration {
-    private Map<String, Property<?>> properties = new LinkedHashMap<>();
+    private final Map<String, Property<?>> properties = new LinkedHashMap<>();
 
     public <T> ConfigurationMap property(String key, IPropertyBuilder<T> builder) {
         properties.put(key, builder.build());

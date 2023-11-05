@@ -54,7 +54,7 @@ public class ConfigurationDialogPresenter {
     private final AdbConfigurationPref adbConfigurationPref;
 
     @Inject
-    public ConfigurationDialogPresenter(View view, AdbConfigurationPref adbConfigurationPref) {
+    ConfigurationDialogPresenter(View view, AdbConfigurationPref adbConfigurationPref) {
         this.view = view;
         this.adbConfigurationPref = adbConfigurationPref;
     }

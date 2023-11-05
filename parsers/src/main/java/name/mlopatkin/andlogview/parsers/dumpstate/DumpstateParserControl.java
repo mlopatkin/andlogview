@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.parsers.dumpstate;
 
-public class DumpstateParserControl {
+class DumpstateParserControl {
     private DumpstateParserControl() {}
 
     public boolean shouldSkip() {
