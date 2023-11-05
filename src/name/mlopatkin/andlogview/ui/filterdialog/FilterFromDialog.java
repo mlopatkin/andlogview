@@ -42,7 +42,7 @@ public class FilterFromDialog implements ColoringFilter {
 
     private static final SearchRequestParser<Predicate<String>> tagParser =
             new SearchRequestParser<>(new SearchRequestParser.Delegate<Predicate<String>>() {
-                private SearcherBuilder matchIgnoreCase = new SearcherBuilder().setIgnoreCase(true);
+                private final SearcherBuilder matchIgnoreCase = new SearcherBuilder().setIgnoreCase(true);
 
                 @Override
                 public Predicate<String> createRegexpSearcher(String pattern)

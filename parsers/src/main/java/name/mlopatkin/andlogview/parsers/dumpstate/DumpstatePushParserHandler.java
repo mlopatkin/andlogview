@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.parsers.dumpstate;
 
-import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.ps.PsPushParser;
 
 /**
@@ -47,11 +46,6 @@ class DumpstatePushParserHandler implements BaseDumpstateParseEventsHandler {
                     .orElse(DumpstateParserControl.skipSection());
         }
         return DumpstateParserControl.skipSection();
-    }
-
-    @Override
-    public ParserControl sectionEnded(String sectionName) {
-        return ParserControl.proceed();
     }
 
     @Override

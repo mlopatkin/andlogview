@@ -51,8 +51,8 @@ import java.util.Set;
 public class ColumnPrefsTest {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private ConfigStorage storage = new FakeInMemoryConfigStorage();
-    private ColumnPrefs.Factory factory = new ColumnPrefs.Factory(storage);
+    private final ConfigStorage storage = new FakeInMemoryConfigStorage();
+    private final ColumnPrefs.Factory factory = new ColumnPrefs.Factory(storage);
 
     @Test
     public void savedPrefsAreRestoredCorrectly() throws Exception {

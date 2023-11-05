@@ -87,12 +87,11 @@ class DumpstatePushParserHandlerTest {
     }
 
     private PsParseEventsHandler createPsEventsHandler() {
-        var handler = mock(PsParseEventsHandler.class, invocation -> {
+        return mock(PsParseEventsHandler.class, invocation -> {
             if (invocation.getMethod().getReturnType() != void.class) {
                 return ParserControl.proceed();
             }
             return null;
         });
-        return handler;
     }
 }

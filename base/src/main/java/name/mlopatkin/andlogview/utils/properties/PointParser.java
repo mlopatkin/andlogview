@@ -27,7 +27,7 @@ class PointParser implements Parser<@Nullable Point> {
     private static final String UNDEFINED = "undefined";
 
     // simple comma-separated pair x,y
-    ListParser<Integer> internalListParser = new ListParser<>(Parsers.integerParser);
+    private final ListParser<Integer> internalListParser = new ListParser<>(Parsers.integerParser);
 
     @Override
     @SuppressWarnings("NullAway")  // NullAway cannot handle type annotations on generics

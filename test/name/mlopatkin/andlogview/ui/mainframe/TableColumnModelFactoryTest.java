@@ -41,7 +41,7 @@ import org.mockito.quality.Strictness;
 public class TableColumnModelFactoryTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    private ConfigStorage mockStorage = new FakeDefaultConfigStorage();
+    private final ConfigStorage mockStorage = new FakeDefaultConfigStorage();
     @Mock
     private PidToProcessMapper mockMapper;
 

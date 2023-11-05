@@ -42,7 +42,7 @@ class DeviceTempFile implements AutoCloseable {
 
     public DeviceTempFile(IDevice device, String basePath) {
         this.device = device;
-        this.path = DevicePaths.join(basePath, "tmp" + UUID.randomUUID().toString() + ".tmp");
+        this.path = DevicePaths.join(basePath, "tmp" + UUID.randomUUID() + ".tmp");
     }
 
     @Override

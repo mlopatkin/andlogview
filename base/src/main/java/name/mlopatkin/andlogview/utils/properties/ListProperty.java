@@ -18,18 +18,13 @@ package name.mlopatkin.andlogview.utils.properties;
 
 import java.util.List;
 
-@SuppressWarnings({"unchecked", "rawtypes", "NullAway"})
-class ListProperty<T> extends Property<List> {
+@SuppressWarnings({"unchecked", "rawtypes", "NullAway", "DataFlowIssue"})
+class ListProperty<T> extends Property<List<T>> {
     private final Class<T> elemType;
 
     ListProperty(Class<T> type, Parser<T> parser) {
-        super(List.class, new ListParser(parser));
+        super((Class<List<T>>) (Class<?>) List.class, new ListParser(parser));
         elemType = type;
-    }
-
-    @Override
-    List<T> getValue() {
-        return super.getValue();
     }
 
     @Override

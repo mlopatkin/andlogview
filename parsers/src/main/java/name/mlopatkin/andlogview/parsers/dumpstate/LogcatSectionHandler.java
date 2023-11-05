@@ -60,8 +60,7 @@ class LogcatSectionHandler implements SectionHandler {
                 boolean shouldProceed = eventsHandler.logcatSectionBegin(buffer).map(h -> {
                     logger.debug("Detected format " + formatSniffer.getDetectedFormatDescription() + " for " + buffer);
                     delegate = formatSniffer.createParser(h);
-                    boolean replayResult = replayParser.replayInto(delegate);
-                    return replayResult;
+                    return replayParser.replayInto(delegate);
                 }).orElse(false);
                 replayParser.close();
                 return shouldProceed ? SectionParserControl.proceed() : SectionParserControl.skipSection();

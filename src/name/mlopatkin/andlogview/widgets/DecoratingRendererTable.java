@@ -28,7 +28,7 @@ import javax.swing.table.TableCellRenderer;
 public class DecoratingRendererTable extends JTable {
     private static final long serialVersionUID = 2582491704714327034L;
 
-    private List<DecoratingCellRenderer> decorators = new ArrayList<>();
+    private final List<DecoratingCellRenderer> decorators = new ArrayList<>();
 
     public void addDecorator(DecoratingCellRenderer renderer) {
         decorators.add(renderer);
@@ -44,9 +44,8 @@ public class DecoratingRendererTable extends JTable {
 
     @Override
     public TableCellRenderer getCellRenderer(int row, int column) {
-        TableCellRenderer main = super.getCellRenderer(row, column);
         // wrap main renderer with decorators
-        TableCellRenderer result = main;
+        TableCellRenderer result = super.getCellRenderer(row, column);
         for (DecoratingCellRenderer decorator : decorators) {
             decorator.setInnerRenderer(result);
             result = decorator;

@@ -22,7 +22,7 @@ import java.io.OutputStream;
 
 @SuppressWarnings("TypeParameterUnusedInFormals")
 public class SynchronizedConfiguration implements Configuration {
-    private Configuration cfg;
+    private final Configuration cfg;
 
     public SynchronizedConfiguration(Configuration cfg) {
         this.cfg = cfg;

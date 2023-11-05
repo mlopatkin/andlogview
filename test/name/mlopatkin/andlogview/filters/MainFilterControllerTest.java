@@ -84,11 +84,11 @@ public class MainFilterControllerTest {
     @Captor
     ArgumentCaptor<PanelFilter> panelFilterCaptor;
 
-    LogModelFilterImpl filterImpl = new LogModelFilterImpl();
+    final LogModelFilterImpl filterImpl = new LogModelFilterImpl();
 
     @MonotonicNonNull InOrder order;
 
-    Preference<List<SavedFilterData>> savedFiltersPref = new FakePreference<>(Collections.emptyList());
+    final Preference<List<SavedFilterData>> savedFiltersPref = new FakePreference<>(Collections.emptyList());
 
     @Before
     public void setUp() throws Exception {
@@ -97,7 +97,7 @@ public class MainFilterControllerTest {
 
     @Test
     public void testInitialState() throws Exception {
-        MainFilterController controller = new MainFilterController(
+        new MainFilterController(
                 filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
 
         verify(indexFilterCollectionObservers).addObserver(any(IndexFilterCollection.Observer.class));

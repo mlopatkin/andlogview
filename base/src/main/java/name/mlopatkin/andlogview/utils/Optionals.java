@@ -51,7 +51,7 @@ public final class Optionals {
      * @param <T> the resulting type
      * @return the same optional but with upcasted result type
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "OptionalUsedAsFieldOrParameterType"})
     public static <T> Optional<T> upcast(Optional<? extends T> opt) {
         return (Optional<T>) opt;
     }

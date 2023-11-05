@@ -32,27 +32,26 @@ public class BookmarkController extends AbstractIndexController implements Index
 
     private final IndexFrame indexFrame;
 
-    private final BookmarkModel.Observer bookmarkChangeObserver = new BookmarkModel.Observer() {
-        @Override
-        public void onBookmarkAdded() {
-            if (!indexFrame.isVisible()) {
-                showWindow();
-            }
-            redrawMainTable();
-        }
-
-        @Override
-        public void onBookmarkRemoved() {
-            redrawMainTable();
-        }
-    };
-
     @Inject
     public BookmarkController(MainFrameDependencies mainFrameDependencies, BookmarkModel bookmarksModel,
             BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) JTable mainLogTable) {
         super(mainLogTable);
         this.mainLogTable = mainLogTable;
 
+        BookmarkModel.Observer bookmarkChangeObserver = new BookmarkModel.Observer() {
+            @Override
+            public void onBookmarkAdded() {
+                if (!indexFrame.isVisible()) {
+                    showWindow();
+                }
+                redrawMainTable();
+            }
+
+            @Override
+            public void onBookmarkRemoved() {
+                redrawMainTable();
+            }
+        };
         bookmarksModel.asObservable().addObserver(bookmarkChangeObserver);
 
         BookmarksDi.BookmarksFrameComponent.Builder builder = DaggerBookmarksDi_BookmarksFrameComponent.builder();

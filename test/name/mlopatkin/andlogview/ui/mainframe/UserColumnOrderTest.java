@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+@SuppressWarnings({"EqualsWithItself", "SimplifiableAssertion"})
 public class UserColumnOrderTest {
     @Test
     public void createdOrderIsConsistentWithInitialArray() {

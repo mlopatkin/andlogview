@@ -26,7 +26,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 class ToolTippedPidCellRenderer extends DefaultTableCellRenderer {
-    private @Nullable PidToProcessMapper mapper;
+    private final @Nullable PidToProcessMapper mapper;
 
     public ToolTippedPidCellRenderer(@Nullable PidToProcessMapper mapper) {
         this.mapper = mapper;

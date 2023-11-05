@@ -45,7 +45,8 @@ public class LogRecordBuilder {
     }
 
     public LogRecordBuilder withPriority(String priorityChar) {
-        return withPriority(LogRecord.Priority.fromChar(priorityChar));
+        withPriority(LogRecord.Priority.fromChar(priorityChar));
+        return this;
     }
 
     public LogRecordBuilder withPriority(LogRecord.Priority priority) {

@@ -26,7 +26,7 @@ import java.util.function.Predicate;
  * Performs filtering based on the buffer of the record.
  */
 public class LogBufferFilter implements Predicate<LogRecord> {
-    private EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
+    private final EnumSet<Buffer> buffers = EnumSet.noneOf(Buffer.class);
 
     @Override
     public boolean test(LogRecord record) {

@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 class SearchStatusPresenterTest {
-    MockView mockView = new MockView();
-    MockUiThreadScheduler mockScheduler = new MockUiThreadScheduler();
+    final MockView mockView = new MockView();
+    final MockUiThreadScheduler mockScheduler = new MockUiThreadScheduler();
 
-    SearchStatusPresenter presenter = new SearchStatusPresenter(mockView, mockScheduler);
+    final SearchStatusPresenter presenter = new SearchStatusPresenter(mockView, mockScheduler);
 
     @Test
     void notFoundMessageIsShown() {

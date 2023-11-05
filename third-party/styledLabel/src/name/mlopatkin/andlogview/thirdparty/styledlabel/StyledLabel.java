@@ -52,7 +52,7 @@ public class StyledLabel extends JTextPane {
     }
 
     private static class WrapEditorKit extends StyledEditorKit {
-        ViewFactory defaultFactory = new WrapColumnFactory();
+        private final ViewFactory defaultFactory = new WrapColumnFactory();
 
         @Override
         public ViewFactory getViewFactory() {

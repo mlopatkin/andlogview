@@ -22,7 +22,6 @@ import org.gradle.api.provider.Provider
 /**
  * Helper methods to access environment parameters: is build run by CI server? what revision is checked out?
  */
-@Suppress("UnstableApiUsage")
 abstract class BuildEnvironment(project: Project) {
     /**
      * Is `true` if the current build should use `-SNAPSHOT` version, `false` if not.

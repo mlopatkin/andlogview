@@ -48,7 +48,7 @@ public class SearchStrategyFactory {
         }
 
         @Override
-        public HighlightStrategy createPlainSearcher(String pattern) throws RequestCompilationException {
+        public HighlightStrategy createPlainSearcher(String pattern) {
             return new IgnoreCaseSearcher(pattern);
         }
     }

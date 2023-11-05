@@ -41,10 +41,10 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
 
     private static final Border FOCUSED_BORDER = getFocusedBorder();
 
-    private StyledDocument document = new DefaultStyledDocument();
+    private final StyledDocument document = new DefaultStyledDocument();
     private static final Style BASE_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
-    private Style highlighted;
+    private final Style highlighted;
 
     public HighlightCellRenderer() {
         setBorder(NO_BORDER);

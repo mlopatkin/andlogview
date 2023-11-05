@@ -42,6 +42,7 @@ class LoggingDevice extends DelegatingDevice {
 
     @Override
     @Deprecated
+    @SuppressWarnings("deprecation")
     public void executeShellCommand(String command, IShellOutputReceiver receiver, int maxTimeToOutputResponse)
             throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
         debug(command);

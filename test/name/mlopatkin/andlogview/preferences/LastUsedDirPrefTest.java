@@ -27,7 +27,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 
 class LastUsedDirPrefTest {
-    FakeInMemoryConfigStorage fakeStorage = new FakeInMemoryConfigStorage();
+    final FakeInMemoryConfigStorage fakeStorage = new FakeInMemoryConfigStorage();
 
     @Test
     void nullPrefIsUsedByDefault() {

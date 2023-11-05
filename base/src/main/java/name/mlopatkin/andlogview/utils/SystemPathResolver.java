@@ -170,6 +170,7 @@ public abstract class SystemPathResolver {
                 }
             };
 
+            //noinspection UnstableApiUsage
             return Streams.stream(iterator).map(WindowsPathResolver::safeResolve).flatMap(Streams::stream);
         }
 

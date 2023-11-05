@@ -23,9 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
-public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
-    private Class<T> elemType;
+public class ListPropertyBuilder<T> implements IPropertyBuilder<List<T>> {
+    private final Class<T> elemType;
     private @MonotonicNonNull Parser<T> parser;
     private List<T> defaultVal = Collections.emptyList();
 
@@ -54,7 +53,7 @@ public class ListPropertyBuilder<T> implements IPropertyBuilder<List> {
     }
 
     @Override
-    public Property<List> build() {
+    public Property<List<T>> build() {
         assert parser != null;
         ListProperty<T> p = new ListProperty<>(elemType, parser);
         p.setValue(defaultVal);

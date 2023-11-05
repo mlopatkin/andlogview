@@ -76,13 +76,11 @@ public class UiHelper {
 
     public static String covertToHtml(String value) {
         String escaped = HtmlEscapers.htmlEscaper().escape(value);
-        String result = escaped.replace("\n", "<br>");
-        return result;
+        return escaped.replace("\n", "<br>");
     }
 
     public static String convertToSafe(String value) {
-        String result = value.replace("\n", " ");
-        return result;
+        return value.replace("\n", " ");
     }
 
     /**
@@ -203,7 +201,7 @@ public class UiHelper {
 
     public static void addDoubleClickAction(JComponent component, final Action action) {
         component.addMouseListener(new MouseAdapter() {
-            @SuppressWarnings("deprecation")
+            @SuppressWarnings({"deprecation", "MagicConstant"})
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == DOUBLE_CLICK_COUNT && e.getButton() == MouseEvent.BUTTON1) {
@@ -229,7 +227,7 @@ public class UiHelper {
     public static Action createActionWrapper(
             final JComponent c, final String actionKey, String caption, final String acceleratorKey) {
         final Action baseAction = c.getActionMap().get(actionKey);
-        Action result = new AbstractAction(caption) {
+        return new AbstractAction(caption) {
             {
                 putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(acceleratorKey));
             }
@@ -246,7 +244,6 @@ public class UiHelper {
                 baseAction.setEnabled(newValue);
             }
         };
-        return result;
     }
 
     public static boolean isTextFit(JComponent component, int width, String text) {

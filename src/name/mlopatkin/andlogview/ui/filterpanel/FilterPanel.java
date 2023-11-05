@@ -44,7 +44,6 @@ import javax.swing.JToggleButton;
 public class FilterPanel extends FilterPanelUi implements FilterPanelModel.FilterPanelModelListener {
     private final ThemedWidgetFactory themed;
     private final FilterPanelModel model;
-    private final FilterCreator filterCreator;
     private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
 
     private final ImageIcon filterIcon;
@@ -62,7 +61,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         super((int) theme.getWidgetFactory().scale(36));
         this.themed = theme.getWidgetFactory();
         this.model = model;
-        this.filterCreator = filterCreator;
 
         themed.configureFilterPanel(this, content);
 
@@ -230,13 +228,13 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     }
 
     private class PopupMenuHandler {
-        private JPopupMenu menu = new JPopupMenu();
-        private JMenuItem editItem = new JMenuItem("Edit filter");
-        private JMenuItem removeItem = new JMenuItem("Remove filter");
+        private final JPopupMenu menu = new JPopupMenu();
         private @Nullable FilterButton activeButton;
 
         @SuppressWarnings("NullAway")
         PopupMenuHandler() {
+            JMenuItem editItem = new JMenuItem("Edit filter");
+            JMenuItem removeItem = new JMenuItem("Remove filter");
             // TODO(mlopatkin) This can probably be rewritten to ensure that activeButton is nonnull.
             editItem.addActionListener(e -> model.editFilter(activeButton.getFilter()));
             removeItem.addActionListener(e -> model.removeFilter(activeButton.getFilter()));

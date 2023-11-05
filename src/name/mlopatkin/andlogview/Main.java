@@ -137,7 +137,7 @@ public class Main {
         }
     }
 
-    private static UncaughtExceptionHandler exceptionHandler = (thread, throwable) -> {
+    private static final UncaughtExceptionHandler exceptionHandler = (thread, throwable) -> {
         try {
             logger.error("Uncaught exception in " + thread.getName(), throwable);
             ErrorDialogsHelper.showError(null,

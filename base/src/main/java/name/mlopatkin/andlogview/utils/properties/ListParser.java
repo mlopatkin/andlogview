@@ -26,7 +26,7 @@ import java.util.List;
  * Parses comma-separated list of values. No value should contain comma.
  */
 class ListParser<T> implements Parser<List<T>> {
-    private Parser<T> internal;
+    private final Parser<T> internal;
 
     ListParser(Parser<T> parser) {
         internal = parser;

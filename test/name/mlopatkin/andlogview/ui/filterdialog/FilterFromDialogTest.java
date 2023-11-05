@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class FilterFromDialogTest {
-    private FilterFromDialog filter = new FilterFromDialog();
+    private final FilterFromDialog filter = new FilterFromDialog();
 
     @Before
     public void setUp() throws Exception {

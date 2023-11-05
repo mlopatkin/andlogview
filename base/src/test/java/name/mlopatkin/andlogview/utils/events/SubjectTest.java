@@ -27,7 +27,7 @@ public class SubjectTest {
         void onEvent();
     }
 
-    Subject<TestObserver> subject = new Subject<>();
+    final Subject<TestObserver> subject = new Subject<>();
 
     private void notifyObservers() {
         for (TestObserver o : subject) {

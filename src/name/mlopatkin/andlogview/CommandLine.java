@@ -44,7 +44,7 @@ public class CommandLine {
 
             @SuppressWarnings("unchecked")
             List<String> files = (List<String>) result.nonOptionArguments();
-            if (files.size() == 0) {
+            if (files.isEmpty()) {
                 // ADB mode
                 fileToOpen = null;
             } else if (files.size() == 1) {

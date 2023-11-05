@@ -49,9 +49,9 @@ public class BookmarkPopupMenuPresenterTest {
 
     @Mock
     BookmarkPopupMenuView popupMenuView;
-    BookmarkModel bookmarkModel = new BookmarkModel();
+    final BookmarkModel bookmarkModel = new BookmarkModel();
 
-    Subject<Runnable> bookmarkDeleteAction = new Subject<>();
+    final Subject<Runnable> bookmarkDeleteAction = new Subject<>();
 
     @Before
     public void setUp() throws Exception {

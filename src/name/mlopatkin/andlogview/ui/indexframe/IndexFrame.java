@@ -46,7 +46,7 @@ import javax.swing.border.EmptyBorder;
 public class IndexFrame extends JFrame {
     private final DecoratingRendererTable indexedRecordsTable;
     private final IndexController controller;
-    private Component owner;
+    private final Component owner;
     private boolean isFirstShow = true;
 
     @Inject
@@ -61,6 +61,12 @@ public class IndexFrame extends JFrame {
         indexedRecordsTable.setColumnModel(columnsModel);
         indexedRecordsTable.setTransferHandler(new LogRecordsTransferHandler());
 
+        WindowListener closingListener = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                controller.onWindowClosed();
+            }
+        };
         addWindowListener(closingListener);
     }
 
@@ -92,13 +98,6 @@ public class IndexFrame extends JFrame {
             }
         }
     }
-
-    private WindowListener closingListener = new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent e) {
-            controller.onWindowClosed();
-        }
-    };
 
     private static final String KEY_JUMP_TO_LINE = "ENTER";
     private static final String ACTION_JUMP_TO_LINE = "jump_to_line";

@@ -23,21 +23,17 @@ import javax.swing.table.TableModel;
 class TableScrollController extends AutoScrollController {
     private final JTable table;
 
-    private final TableModelListener modelListener = new TableModelListener() {
-        @Override
-        public void tableChanged(TableModelEvent e) {
+    public TableScrollController(JTable table) {
+        super(table);
+        this.table = table;
+        TableModel model = table.getModel();
+        TableModelListener modelListener = e -> {
             if (e.getType() == TableModelEvent.INSERT) {
                 scrollIfNeeded();
             } else {
                 resetScroll();
             }
-        }
-    };
-
-    public TableScrollController(JTable table) {
-        super(table);
-        this.table = table;
-        TableModel model = table.getModel();
+        };
         model.addTableModelListener(modelListener);
     }
 

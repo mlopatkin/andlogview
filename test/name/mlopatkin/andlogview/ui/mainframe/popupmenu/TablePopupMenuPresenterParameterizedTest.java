@@ -74,7 +74,7 @@ public class TablePopupMenuPresenterParameterizedTest {
             .withMessage("start(4117)");
 
     FakeTablePopupMenuView popupMenuView;
-    BookmarkModel bookmarkModel = new BookmarkModel();
+    final BookmarkModel bookmarkModel = new BookmarkModel();
     @Mock
     MenuFilterCreator filterCreator;
     @Mock

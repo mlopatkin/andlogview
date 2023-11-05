@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.indexframe;
 import javax.swing.JTable;
 
 public abstract class AbstractIndexController implements IndexController {
-    private JTable mainTable;
+    private final JTable mainTable;
 
     public AbstractIndexController(JTable mainTable) {
         this.mainTable = mainTable;

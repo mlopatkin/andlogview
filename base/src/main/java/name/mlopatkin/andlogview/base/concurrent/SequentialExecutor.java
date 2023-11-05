@@ -45,7 +45,6 @@ public interface SequentialExecutor extends Executor {
         return MoreExecutors.directExecutor()::execute;
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     static SequentialExecutor decorate(Executor other) {
         return MoreExecutors.newSequentialExecutor(other)::execute;
     }

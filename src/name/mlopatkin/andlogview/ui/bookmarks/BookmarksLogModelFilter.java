@@ -34,30 +34,23 @@ public class BookmarksLogModelFilter implements LogModelFilter {
     private final BookmarkModel bookmarkModel;
     private final LogModelFilter modelFilter;
 
-    private final Observer mainFilterObserver = new Observer() {
-        @Override
-        public void onModelChange() {
-            notifyObservers();
-        }
-    };
-
-    private final BookmarkModel.Observer bookmarkObserver = new BookmarkModel.Observer() {
-        @Override
-        public void onBookmarkAdded() {
-            notifyObservers();
-        }
-
-        @Override
-        public void onBookmarkRemoved() {
-            notifyObservers();
-        }
-    };
-
     @Inject
     public BookmarksLogModelFilter(BookmarkModel bookmarkModel, LogModelFilter modelFilter) {
         this.bookmarkModel = bookmarkModel;
         this.modelFilter = modelFilter;
+        BookmarkModel.Observer bookmarkObserver = new BookmarkModel.Observer() {
+            @Override
+            public void onBookmarkAdded() {
+                notifyObservers();
+            }
+
+            @Override
+            public void onBookmarkRemoved() {
+                notifyObservers();
+            }
+        };
         bookmarkModel.asObservable().addObserver(bookmarkObserver);
+        Observer mainFilterObserver = this::notifyObservers;
         modelFilter.asObservable().addObserver(mainFilterObserver);
     }
 

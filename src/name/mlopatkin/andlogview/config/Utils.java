@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class Utils {
     private static final Logger logger = Logger.getLogger(Configuration.class);
@@ -51,14 +52,16 @@ public class Utils {
 
     private static final String CONFIG_FILE_NAME = "logview.properties";
 
-    static final void saveConfiguration(name.mlopatkin.andlogview.utils.properties.Configuration cfg) {
-        File cfgDir = Main.getConfigurationDir();
-        if (!cfgDir.exists()) {
-            cfgDir.mkdirs();
-        }
-        File cfgFile = new File(cfgDir, CONFIG_FILE_NAME);
-        try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile))) {
-            cfg.save(output, "Do not modify while Logviewer is running");
+    static void saveConfiguration(name.mlopatkin.andlogview.utils.properties.Configuration cfg) {
+        try {
+            File cfgDir = Main.getConfigurationDir();
+            if (!cfgDir.exists()) {
+                Files.createDirectories(cfgDir.toPath());
+            }
+            File cfgFile = new File(cfgDir, CONFIG_FILE_NAME);
+            try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile))) {
+                cfg.save(output, "Do not modify while Logviewer is running");
+            }
         } catch (IOException e) {
             logger.error("Failed to save configuration file", e);
         }

@@ -34,7 +34,7 @@ public final class BufferFilterMenu {
     private final MainFilterController controller;
 
     private final class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
-        private Buffer buffer;
+        private final Buffer buffer;
 
         public BufferCheckBoxMenuItem(Buffer buffer, boolean selected) {
             super(buffer.getCaption(), selected);
@@ -48,7 +48,7 @@ public final class BufferFilterMenu {
         }
     }
 
-    private EnumMap<Buffer, JMenuItem> items = new EnumMap<>(Buffer.class);
+    private final EnumMap<Buffer, JMenuItem> items = new EnumMap<>(Buffer.class);
 
     public BufferFilterMenu(JMenu parent, MainFilterController controller) {
         this.parent = parent;

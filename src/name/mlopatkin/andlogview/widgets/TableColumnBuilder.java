@@ -23,7 +23,7 @@ import javax.swing.table.TableColumn;
  * Builder class for {@link TableColumn} to allow chaining.
  */
 public class TableColumnBuilder {
-    private TableColumn column;
+    private final TableColumn column;
 
     public TableColumnBuilder(int modelIndex) {
         column = new TableColumn(modelIndex);

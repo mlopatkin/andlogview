@@ -68,8 +68,7 @@ public class ObserverList<E> implements Iterable<E> {
 
         // Structurally modifying the underlying list here. This means we
         // cannot use the underlying list's iterator to iterate over the list.
-        boolean result = mObservers.add(obs);
-        assert result;
+        mObservers.add(obs);
 
         ++mCount;
         return true;

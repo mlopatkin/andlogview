@@ -25,6 +25,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.MultiLineReceiver;
 
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
@@ -51,6 +52,7 @@ class CommandImpl implements Command {
         ForStdout stdout = getRedirectWithDefault(this.configuredStdout, OutputTarget.toDevNull());
         ForStderr stderr = getRedirectWithDefault(this.configuredStderr, OutputTarget.toDevNull());
 
+        assert stdout != null && stderr != null; // IDEA seems to be sure that these can be null.
         try (OutputTarget.OutputHandle tempStdout = stdout.openOutput(device);
                 OutputTarget.OutputHandle tempStderr = stderr.openOutput(device)) {
             // TODO(mlopatkin) Try to implement shell api v2 on top of ddmlib. Shell v2 allows to get stdout and stderr
@@ -135,7 +137,7 @@ class CommandImpl implements Command {
         return String.join(" ", commandLine);
     }
 
-    private <T extends ForStderr> T getRedirectWithDefault(@Nullable T redirect, T defRedirect) {
+    private <@NonNull T extends ForStderr> T getRedirectWithDefault(@Nullable T redirect, T defRedirect) {
         if (redirect != null) {
             return redirect;
         }

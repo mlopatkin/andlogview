@@ -29,8 +29,8 @@ import javax.swing.table.TableCellRenderer;
 
 class RowHighlightRenderer implements DecoratingCellRenderer {
     private @MonotonicNonNull TableCellRenderer inner;
-    private Color backgroundColor = Configuration.ui.backgroundColor();
-    private LogModelFilter colorer;
+    private final Color backgroundColor = Configuration.ui.backgroundColor();
+    private final LogModelFilter colorer;
 
     public RowHighlightRenderer(LogModelFilter colorer) {
         this.colorer = colorer;

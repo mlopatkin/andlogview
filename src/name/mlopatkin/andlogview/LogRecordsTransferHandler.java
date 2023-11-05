@@ -97,7 +97,7 @@ public class LogRecordsTransferHandler extends TransferHandler {
 
     static class LogRecordTransferable implements Transferable {
         private static final DataFlavor[] FLAVORS = {DataFlavor.stringFlavor};
-        private String value;
+        private final String value;
 
         public LogRecordTransferable(String value) {
             this.value = value;

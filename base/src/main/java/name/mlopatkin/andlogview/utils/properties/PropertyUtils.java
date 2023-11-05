@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 public class PropertyUtils {
@@ -61,7 +62,7 @@ public class PropertyUtils {
             String appdata = System.getenv("APPDATA");
             return new File(appdata);
         } else {
-            return new File(SystemUtils.USER_HOME);
+            return new File(Objects.requireNonNull(SystemUtils.USER_HOME, "Can't find user home"));
         }
     }
 

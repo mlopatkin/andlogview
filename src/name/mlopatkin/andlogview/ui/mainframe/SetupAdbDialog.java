@@ -37,8 +37,8 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
     private final Lazy<ConfigurationDialogPresenter> configurationDialogController;
     private final JOptionPane optionPane;
 
-    private final String yesBtnString = "Yes";
-    private final String noBtnString = "No";
+    private static final String YES_BTN_STRING = "Yes";
+    private static final String NO_BTN_STRING = "No";
 
     private final JCheckBox checkBox = new JCheckBox("Never show this dialog again", false);
 
@@ -48,7 +48,7 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 
         Object[] array = {"The ADB executable cannot be found. Would you like to specify it now?", checkBox};
 
-        Object[] options = {yesBtnString, noBtnString};
+        Object[] options = {YES_BTN_STRING, NO_BTN_STRING};
 
         optionPane =
                 new JOptionPane(array, JOptionPane.ERROR_MESSAGE, JOptionPane.YES_NO_OPTION, null, options, options[0]);
@@ -80,7 +80,7 @@ class SetupAdbDialog extends JDialog implements PropertyChangeListener {
 
             optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 
-            if (yesBtnString.equals(value)) {
+            if (YES_BTN_STRING.equals(value)) {
                 SwingUtilities.invokeLater(() -> configurationDialogController.get().openDialog());
             }
             Configuration.adb.showSetupDialog(checkBox.isSelected());

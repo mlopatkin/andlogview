@@ -219,7 +219,7 @@ class WindowsPathResolverTest {
 
     @Test
     void nonNormalizableCurdirReferencesDisablePathLookup() throws IOException {
-        File adbPath = withFileIn(tempDir, "adb.exe");
+        withFileIn(tempDir, "adb.exe");
         SystemPathResolver resolver = resolver(
                 withPathElements(tempDir)
         );

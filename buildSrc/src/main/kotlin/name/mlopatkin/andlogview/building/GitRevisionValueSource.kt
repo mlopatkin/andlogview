@@ -25,7 +25,6 @@ import java.io.IOException
 
 private val logger = LoggerFactory.getLogger("Git")
 
-@Suppress("UnstableApiUsage")
 internal abstract class GitRevisionValueSource : ValueSource<String, GitRevisionValueSource.Params> {
     interface Params : ValueSourceParameters {
         val fallback: Property<String>

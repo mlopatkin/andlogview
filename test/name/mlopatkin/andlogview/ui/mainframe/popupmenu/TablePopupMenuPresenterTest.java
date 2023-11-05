@@ -47,7 +47,7 @@ import java.awt.Color;
 @ExtendWith(MockitoExtension.class)
 public class TablePopupMenuPresenterTest {
     FakeTablePopupMenuView popupMenuView;
-    BookmarkModel bookmarkModel = new BookmarkModel();
+    final BookmarkModel bookmarkModel = new BookmarkModel();
     @Mock
     MenuFilterCreator filterCreator;
     @Mock

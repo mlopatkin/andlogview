@@ -32,16 +32,10 @@ class IndexFilter implements LogModelFilter {
 
     private final Subject<Observer> observers = new Subject<>();
 
-    private final Observer parentObserver = new Observer() {
-        @Override
-        public void onModelChange() {
-            notifyObservers();
-        }
-    };
-
     public IndexFilter(LogModelFilter parent, Predicate<LogRecord> filter) {
         this.parent = parent;
         this.filter = filter;
+        Observer parentObserver = this::notifyObservers;
         parent.asObservable().addObserver(parentObserver);
     }
 

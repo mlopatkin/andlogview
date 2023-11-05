@@ -28,8 +28,8 @@ import java.util.List;
  *
  */
 public class TooltipGenerator implements TextHighlighter {
-    private String text;
-    private List<Range<Integer>> highlightRanges = new ArrayList<>();
+    private final String text;
+    private final List<Range<Integer>> highlightRanges = new ArrayList<>();
 
     public TooltipGenerator(String text) {
         this.text = text;
