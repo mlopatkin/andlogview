@@ -45,8 +45,7 @@ abstract class AutoScrollController {
         int bottom = scrollable.getBounds().height;
         int pHeight = parent.getBounds().height;
         int y = scrollable.getBounds().y;
-        boolean atBottom = (pHeight - y) == bottom;
-        return atBottom;
+        return (pHeight - y) == bottom;
     }
 
     /**

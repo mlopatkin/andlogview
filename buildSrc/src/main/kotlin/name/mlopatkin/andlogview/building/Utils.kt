@@ -19,7 +19,6 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemLocation
-import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.the
