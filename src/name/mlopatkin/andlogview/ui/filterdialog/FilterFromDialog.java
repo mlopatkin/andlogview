@@ -236,10 +236,9 @@ public class FilterFromDialog implements ColoringFilter {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof FilterFromDialog)) {
+        if (!(o instanceof FilterFromDialog that)) {
             return false;
         }
-        FilterFromDialog that = (FilterFromDialog) o;
         return Objects.equals(tags, that.tags)
                 && Objects.equals(pids, that.pids)
                 && Objects.equals(apps, that.apps)

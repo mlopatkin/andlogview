@@ -58,10 +58,9 @@ public final class TableRow {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TableRow)) {
+        if (!(o instanceof TableRow tableRow)) {
             return false;
         }
-        TableRow tableRow = (TableRow) o;
         return rowIndex == tableRow.rowIndex && record.equals(tableRow.record);
     }
 

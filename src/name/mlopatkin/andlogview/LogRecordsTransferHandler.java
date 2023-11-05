@@ -62,10 +62,9 @@ public class LogRecordsTransferHandler extends TransferHandler {
 
     @Override
     protected @Nullable Transferable createTransferable(JComponent c) {
-        if (!(c instanceof JTable)) {
+        if (!(c instanceof JTable table)) {
             return null;
         }
-        JTable table = (JTable) c;
 
         int[] rows = table.getSelectedRows();
         if (rows == null || rows.length == 0) {
