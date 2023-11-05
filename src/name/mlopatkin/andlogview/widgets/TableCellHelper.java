@@ -48,7 +48,7 @@ public class TableCellHelper {
 
             @Override
             public boolean isCellEditable(java.util.EventObject anEvent) {
-                // only allow double-click to toggle cell editing
+                // only allow to double-click to toggle cell editing
                 if (anEvent instanceof MouseEvent) {
                     return super.isCellEditable(anEvent);
                 }

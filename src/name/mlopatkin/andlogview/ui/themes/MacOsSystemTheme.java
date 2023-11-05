@@ -24,7 +24,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
- * System L&amp;F to be used on MacOS X.
+ * System L&amp;F to be used on Mac OS X.
  */
 class MacOsSystemTheme implements Theme {
     private static final Logger logger = Logger.getLogger(Theme.class);

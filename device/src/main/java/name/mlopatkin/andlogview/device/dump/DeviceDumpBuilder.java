@@ -36,7 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * An utility class that invokes a series of commands upon the given device and stores stdout and stderr of these
+ * A utility class that invokes a series of commands upon the given device and stores stdout and stderr of these
  * commands in a ZIP archive along with a metadata file.
  */
 class DeviceDumpBuilder implements Closeable {

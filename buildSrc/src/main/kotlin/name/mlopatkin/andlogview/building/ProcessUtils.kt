@@ -42,7 +42,7 @@ fun closer(vararg closeables: Closeable): Closeable {
 }
 
 /**
- * Executes block for the given process, waits for the process to exit and closes all process streams afterwards.
+ * Executes block for the given process, waits for the process to exit and closes all process streams afterward.
  */
 inline fun Process.use(block: Process.() -> Unit) {
     closer(inputStream, outputStream, errorStream).use {

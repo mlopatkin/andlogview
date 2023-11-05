@@ -28,7 +28,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 /**
- * This is a state of the panel with filter buttons. It only knows what PanelFilter provides so it can remove
+ * This is a state of the panel with filter buttons. It only knows what PanelFilter provides, so it can remove
  * filters, enable or disable them. But it cannot, e.g. persist filters, it is the responsibility of the higher level.
  */
 @MainFrameScoped

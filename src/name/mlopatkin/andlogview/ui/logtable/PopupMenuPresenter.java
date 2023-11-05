@@ -71,7 +71,7 @@ public class PopupMenuPresenter<T extends PopupMenuPresenter.PopupMenuView> {
      * Prepares and shows the context menu.
      * @param view the context menu view
      * @param c the column that was clicked
-     * @param row he row that was clicked or {@code null} if click was outside of row
+     * @param row the row that was clicked or {@code null} if click was outside of row
      */
     public final void showContextMenu(T view, Column c, @Nullable TableRow row) {
         ImmutableList<TableRow> selection = this.selectedRows.getSelectedRows();

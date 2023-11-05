@@ -233,7 +233,7 @@ public class SearcherBuilderTest {
             }
 
             private boolean isMatchExpected() {
-                // If case conversion isn't necessary but we still perform it - match should succeed anyway
+                // If case conversion isn't necessary, but we still perform it - match should succeed anyway
                 // The same is true for substring match
                 boolean willCaseMatchSucceed = !theCase.needCaseConversion || performsCaseConversion;
                 boolean willSubstringMatchSucceed = !theCase.needSubstringMatch || performsSubstringMatch;

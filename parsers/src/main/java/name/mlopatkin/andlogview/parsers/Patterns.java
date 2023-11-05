@@ -22,7 +22,7 @@ public final class Patterns {
     private Patterns() {}
 
     /**
-     * Helper that concatenates all patternParts, wrap them in "^..$" and compiles the result
+     * Helper that concatenates all patternParts, wrap them in {@code "^..$"} and compiles the result
      *
      * @param patternParts the parts of the regular expression
      * @return the compiled Pattern
@@ -32,7 +32,7 @@ public final class Patterns {
     }
 
     /**
-     * Helper that concatenates all patternParts, wrap them in "^..$" and compiles the result
+     * Helper that concatenates all patternParts, wrap them in {@code "^..$"} and compiles the result
      *
      * @param separator the separator to use when joining patternParts, can be a regular expression too.
      * @param patternParts the parts of the regular expression

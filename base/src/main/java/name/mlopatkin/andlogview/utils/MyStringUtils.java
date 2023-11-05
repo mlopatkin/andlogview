@@ -79,7 +79,7 @@ public class MyStringUtils {
         int suffixLength = maxLength - prefixLength - 1; // one symbol for replacement
         assert suffixLength > 0;
         int suffixStart = str.length() - suffixLength;
-        // StringBuilder has less allocations because no substring and IndyConcat is Java 9+ while target is Java 8.
+        // StringBuilder has fewer allocations because no substring and IndyConcat is Java 9+ while target is Java 8.
         @SuppressWarnings("StringBufferReplaceableByString")
         StringBuilder result = new StringBuilder(maxLength);
         result.append(str, 0, prefixLength);

@@ -46,7 +46,7 @@ public class HighlightIcon implements Icon {
         Graphics2D g2d = (Graphics2D) g.create();
 
         g2d.setColor(fillColor);
-        // There is a little overdraw but it is hard to make borders match.
+        // There is a little overdraw, but it is hard to make borders match.
         g2d.fillRect(x, y, SIZE_PX, SIZE_PX);
 
         g2d.setStroke(BORDER_STROKE);

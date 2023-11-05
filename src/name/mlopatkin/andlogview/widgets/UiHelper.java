@@ -121,7 +121,7 @@ public class UiHelper {
 
     /**
      * Binds a key combination to the action listener. The combination is handled only when the window is focused. This
-     * method doesn't handle key modifiers (shift, alt, etc).
+     * method doesn't handle key modifiers (shift, alt, etc.).
      *
      * @param window the window which focus enables the action
      * @param keyCode the key code from {@link KeyEvent}

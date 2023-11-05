@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  * comma symbol in the pattern (this is similar to the escaping of quotes in Windows BAT files and CSV format). This
  * applies to both plain text and regex patterns.
  * <p>
- * Leading and trailing whitespaces in patterns are ignored unless whitespace appears within regex, e. g. in {@code "/
+ * Leading and trailing whitespaces in patterns are ignored unless whitespace appears within regex, e.g. in {@code "/
  * foo  /"}  whitespaces around {@code foo} are part of the pattern. Another exception is the quoted text (see below).
  * In other words: consecutive whitespaces around separating (not escaped) comma symbol and leading and trailing
  * whitespaces are ignored when splitting.
@@ -50,7 +50,7 @@ import java.util.stream.Stream;
  * must be written in the quoting characters, there is no other way. The value that contains commas may be written with
  * escaped commas but quoting is still preferred. It is an error to have unclosed quote though.
  * <p>
- * Currently it is an error to quote regular expressions. It is reserved syntax to provide plaintext patterns that are
+ * Currently, it is an error to quote regular expressions. It is reserved syntax to provide plaintext patterns that are
  * enclosed in {@code /.../}. This isn't supported yet.
  * <p>
  * Whitespace is defined as what {@link CharMatcher#whitespace()} accepts.
@@ -306,7 +306,7 @@ public final class PatternsList {
     }
 
     /**
-     * Wraps the string in regular expression slashes, i. e. converts {@code "foo"} into {@code "/foo/"}. No escaping of
+     * Wraps the string in regular expression slashes, i.e. converts {@code "foo"} into {@code "/foo/"}. No escaping of
      * the given string is performed.
      *
      * @param regexPattern the regular expression string to wrap

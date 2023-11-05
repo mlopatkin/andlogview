@@ -89,7 +89,7 @@ See the complete manual at https://bitbucket.org/mlopatkin/android-log-viewer/wi
 
 ## Contacts
 
-There is a mailing list [android-log-viewer at google groups](https://groups.google.com/forum/#!forum/android-log-viewer)
+There is a mailing list [android-log-viewer at Google Groups](https://groups.google.com/forum/#!forum/android-log-viewer)
 for release announcements and discussions.
 
 Please report bugs to https://github.com/mlopatkin/andlogview/issues

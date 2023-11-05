@@ -31,7 +31,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Provides an access to a persistent storage for filters.
+ * Provides access to a persistent storage for filters.
  */
 @ThreadSafe
 public interface ConfigStorage {

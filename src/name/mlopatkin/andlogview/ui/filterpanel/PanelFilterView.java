@@ -30,7 +30,7 @@ public interface PanelFilterView {
     String getTooltip();
 
     /**
-     * Returns the current state of the filter. The enabled filter is active so it is applied to the log data.
+     * Returns the current state of the filter. The enabled filter is active, so it is applied to the log data.
      *
      * @return {@code true} if the filter is enabled
      */

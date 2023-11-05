@@ -77,7 +77,7 @@ class StreamingOutputReceiver implements IShellOutputReceiver {
     }
 
     /**
-     * Returns pending exception if {@link #hasException()} returns {@code true}. Otherwise throws NullPointerException.
+     * Returns pending exception if {@link #hasException()} returns {@code true}. Otherwise, throws NullPointerException.
      *
      * @return the pending {@link IOException}
      * @throws NullPointerException if there is no pending exception

@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.utils;
 
 /**
- * An handle for the async job that can cancel it.
+ * A handle for the async job that can cancel it.
  */
 public interface Cancellable {
     /**

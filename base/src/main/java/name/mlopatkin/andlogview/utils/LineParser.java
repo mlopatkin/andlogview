@@ -74,7 +74,7 @@ public class LineParser {
 
     /**
      * Pushes a new line into the parser. This invokes {@link State#nextLine(CharSequence)} of the current state and
-     * update the current state according to the result afterwards.
+     * update the current state according to the result afterward.
      *
      * @param line the new line
      */

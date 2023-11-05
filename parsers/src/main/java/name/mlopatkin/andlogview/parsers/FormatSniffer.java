@@ -63,8 +63,8 @@ public interface FormatSniffer<H extends PushParser.ParseEventsHandler> {
     static <H extends PushParser.ParseEventsHandler, V extends PushParser<H>> V createAndReplay(
             ReplayParser<?> r, Function<H, V> factory, H handler) {
         // I didn't find a way to generify FormatSniffer itself to provide some subtype of PushParser, as we cannot have
-        // a generic generic like P<V> where P extends PushParser and V extends H. However, it is easy with functions,
-        // you just invoke this as createAndReplay(r, sniffer::createParser, h).
+        // a parameterized generic like P<V> where P extends PushParser and V extends H. However, it is easy with
+        // functions, you just invoke this as createAndReplay(r, sniffer::createParser, h).
         V parser = factory.apply(handler);
         r.replayInto(parser);
         return parser;

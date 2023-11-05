@@ -16,7 +16,7 @@
 package name.mlopatkin.andlogview.liblogcat.file;
 
 /**
- * Thrown if parsed file doesn't contains logs in supported format.
+ * Thrown if parsed file doesn't contain logs in supported format.
  */
 public class UnrecognizedFormatException extends Exception {
     public UnrecognizedFormatException() {}

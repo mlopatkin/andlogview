@@ -26,7 +26,7 @@ import javax.annotation.concurrent.NotThreadSafe;
  * - The iterator implements NOTIFY_EXISTING_ONLY.
  * - The FOR_EACH_OBSERVER closure is left to the clients to implement in terms of iterator().
  * <p/>
- * This class is not threadsafe. Observers MUST be added, removed and will be notified on the same
+ * This class is not thread-safe. Observers MUST be added, removed and will be notified on the same
  * thread this is created.
  *
  * @param <E> The type of observers that this list should hold.
@@ -56,7 +56,7 @@ public class ObserverList<E> implements Iterable<E> {
      * Add an observer to the list.
      * <p/>
      * An observer should not be added to the same list more than once. If an iteration is already
-     * in progress, this observer will be not be visible during that iteration.
+     * in progress, this observer will not be visible during that iteration.
      *
      * @return true if the observer list changed as a result of the call.
      */

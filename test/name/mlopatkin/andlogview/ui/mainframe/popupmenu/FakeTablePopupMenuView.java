@@ -82,7 +82,7 @@ public class FakeTablePopupMenuView implements TablePopupMenuPresenter.TablePopu
 
     @Override
     public Observable<Runnable> addQuickFilterAction(String title) {
-        // Note that addMenuElement isn't used deliberately because adding multiple actions isn't a error.
+        // Note that addMenuElement isn't used deliberately because adding multiple actions isn't an error.
         menuElements.add(MenuElements.QUICK_FILTER_ACTION);
         Subject<Runnable> action = new Subject<>();
         quickFilterActions.add(action);

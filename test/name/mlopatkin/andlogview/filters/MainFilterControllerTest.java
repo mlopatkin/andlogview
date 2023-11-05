@@ -117,7 +117,7 @@ public class MainFilterControllerTest {
         // The trick here is that for highlight filter the order of filters matters.
         // We are trying to color by the rightmost filter (added last).
         // Now filter editing preserves its place in the model.
-        // However if you change filter's mode from highlight to other and back - it becomes last in the highlight
+        // However, if you change filter's mode from highlight to other and back - it becomes last in the highlight
         // chain. Its button however stays in the same place.
         MainFilterController controller = new MainFilterController(
                 filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);

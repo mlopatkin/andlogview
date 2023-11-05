@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 
 /**
  * Runs a test with the {@link Configuration} instance being reset to the defaults. Restores old configuration object
- * afterwards.
+ * afterward.
  */
 public class DefaultConfigurationExtension implements InvocationInterceptor {
     @Override

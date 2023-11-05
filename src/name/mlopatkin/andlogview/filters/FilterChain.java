@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * Manages a list of filters and composes them based on their type. At first we hide anything that matches any of the
+ * Manages a list of filters and composes them based on their type. At first, we hide anything that matches any of the
  * {@link FilteringMode#HIDE}. Then we hide anything that doesn't match at least one of the {@link
  * FilteringMode#SHOW} (if any).
  * <p/>

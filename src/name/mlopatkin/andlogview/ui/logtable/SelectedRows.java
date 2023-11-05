@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableList;
 public interface SelectedRows {
     /**
      * Returns a possibly empty list of currently selected rows. Note that the row indices may be updated when new
-     * records arrive so it isn't safe to store them for a long time.
+     * records arrive, so it isn't safe to store them for a long time.
      *
      * @return the list of selected rows
      */

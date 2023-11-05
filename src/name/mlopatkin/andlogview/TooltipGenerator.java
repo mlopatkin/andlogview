@@ -53,10 +53,10 @@ public class TooltipGenerator implements TextHighlighter {
     }
 
     /**
-     * Splits the text into several parts: unhighlighted - highlighted -
-     * unhighlighted - ... Each part can be empty.
+     * Splits the text into several parts: non-highlighted - highlighted -
+     * non-highlighted - ... Each part can be empty.
      *
-     * @return parts of the text splitted accorded to highlighting
+     * @return parts of the text split accorded to highlighting
      */
     private String[] splitWithHighlights() {
         String[] result = new String[highlightRanges.size() * 2 + 1];

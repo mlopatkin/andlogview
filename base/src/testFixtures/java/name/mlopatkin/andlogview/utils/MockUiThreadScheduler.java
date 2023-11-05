@@ -45,8 +45,8 @@ public class MockUiThreadScheduler implements UiThreadScheduler {
      */
     public void advance(long delayMs) {
         // We cannot just advance currentTimeMs to newCurrentTime immediately. It is possible for tasks to schedule
-        // other tasks so the currentTimeMs should be consistent with the deadline of the task executed. Otherwise tasks
-        // will be scheduled to much later time than in real life.
+        // other tasks so the currentTimeMs should be consistent with the deadline of the task executed. Otherwise,
+        // tasks will be scheduled to much later time than in real life.
         long newCurrentTime = currentTimeMs + delayMs;
         while (!taskQueue.isEmpty() && taskQueue.peek().deadlineMs <= newCurrentTime) {
             executeSingleTask();
