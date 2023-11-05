@@ -107,7 +107,7 @@ public final class PatternsList {
     /**
      * Joins patterns so the resulting string can be presented in filter dialog and later can be
      * split with {@link #split(String)}.
-     *
+     * <p>
      * It is guaranteed that join applies proper quoting/escaping so the resulting string ca be split without loss of
      * data.
      */

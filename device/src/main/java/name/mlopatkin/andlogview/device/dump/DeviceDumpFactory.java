@@ -36,7 +36,7 @@ import javax.inject.Inject;
 
 /**
  * Factory to prepare a device dump.
- *
+ * <p>
  * The device dump is a collection of logs in various formats, device properties, outputs of some commands that
  * AndLogView uses internally to gather additional information (e.g. output of the {@code ps} command that provides info
  * about process names).

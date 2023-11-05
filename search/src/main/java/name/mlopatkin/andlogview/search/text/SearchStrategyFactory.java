@@ -32,7 +32,6 @@ import java.util.regex.PatternSyntaxException;
  * <li>If the string doesn't fall into any of the categories above then the
  * method returns searcher/highlighter that searches for a verbatim occurence of
  * the pattern (case-insensitive)
- *
  * </ol>
  *
  * @see Pattern

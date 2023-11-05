@@ -30,7 +30,7 @@ import java.util.Objects;
  * stops if the underlying stream throws {@link IOException} during writes. Such situation can be detected with {@link
  * #hasException()} method and pending exception can be retrieved. The instance of the class should not be reused if the
  * exception happens.
- *
+ * <p>
  * Note on threading: it is safe to query exception status on any thread. The underlying stream is accessed on the
  * thread that performs {@link IDevice#executeShellCommand(String, IShellOutputReceiver)}.
  */

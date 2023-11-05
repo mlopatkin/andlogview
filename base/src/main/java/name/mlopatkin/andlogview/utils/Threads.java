@@ -28,8 +28,8 @@ public final class Threads {
     /**
      * Returns a thread factory that constructs threads with a given name. It should be used in singleThreadExecutor
      *
-     * @param name
-     * @return
+     * @param name the name of the created thread
+     * @return the thread factory that creates threads with the given name
      */
     public static ThreadFactory withName(final String name) {
         return r -> new Thread(r, name);

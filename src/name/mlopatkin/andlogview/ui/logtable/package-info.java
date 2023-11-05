@@ -18,8 +18,8 @@
  * The almighty log-displaying table. This table is the core of the application.
  * It is capable of displaying and filtering log entries, autoscrolling and alike.
  * This package groups together all related classes.
- *
- * Clients are expected to have a @{@link org.bitbucket.mlopatkin.android.logviewer.ui.logtable.LogTableScoped} Dagger 2
+ * <p>
+ * Clients are expected to have a @{@link name.mlopatkin.andlogview.ui.logtable.LogTableScoped} Dagger 2
  * {@link dagger.Component} to assemble the table.
  */
 package name.mlopatkin.andlogview.ui.logtable;

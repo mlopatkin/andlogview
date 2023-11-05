@@ -39,7 +39,7 @@ public class ObserverList<E> implements Iterable<E> {
     public interface RewindableIterator<E> extends Iterator<E> {
         /**
          * Rewind the iterator back to the beginning.
-         *
+         * <p>
          * If we need to iterate multiple times, we can avoid iterator object reallocation by using
          * this method.
          */

@@ -43,8 +43,8 @@ public class ConfigurationMap implements Configuration {
     /**
      * Returns the value of the property.
      *
-     * @param key
-     * @return
+     * @param key the name of the property
+     * @return the value of the property or null if there's nothing
      */
     @Override
     @SuppressWarnings("NullAway")  // Properties are too hard. Some are nullable and some aren't.
@@ -56,8 +56,8 @@ public class ConfigurationMap implements Configuration {
     /**
      * Sets the new value to the mutable property.
      *
-     * @param key
-     * @param value
+     * @param key the name of the property
+     * @param value the new value of the property
      */
     @Override
     public <T> void set(String key, T value) {
@@ -77,7 +77,7 @@ public class ConfigurationMap implements Configuration {
     /**
      * Set properties from {@link Properties} object.
      *
-     * @param props
+     * @param props the Properties to set these from
      */
     void assign(Properties props) {
         for (Map.Entry<String, Property<?>> propertyEntry : properties.entrySet()) {
