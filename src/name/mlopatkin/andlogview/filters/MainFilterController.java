@@ -29,7 +29,7 @@ import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
 import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
-import name.mlopatkin.andlogview.utils.Threads;
+import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -100,7 +100,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     public void createFilterWithDialog() {
         dialogFactory.startCreateFilterDialog()
                 .thenAccept(newFilter -> newFilter.ifPresent(this::addNewDialogFilter))
-                .exceptionally(Threads::uncaughtException);
+                .exceptionally(MyFutures::uncaughtException);
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
@@ -141,7 +141,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     public void createFilterWithDialog(FilterFromDialog baseData) {
         dialogFactory.startCreateFilterDialogWithInitialData(baseData)
                 .thenAccept(result -> result.ifPresent(this::addFilter))
-                .exceptionally(Threads::uncaughtException);
+                .exceptionally(MyFutures::uncaughtException);
     }
 
     /**
@@ -235,7 +235,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
                     DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
                     replaceMeWith(newPanelFilter);
                 }
-            }).exceptionally(Threads::uncaughtException);
+            }).exceptionally(MyFutures::uncaughtException);
         }
 
         @Override

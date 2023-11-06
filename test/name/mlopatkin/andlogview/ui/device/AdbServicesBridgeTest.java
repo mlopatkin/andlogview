@@ -29,10 +29,10 @@ import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.test.ThreadTestUtils;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus.StatusValue;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.utils.LazyInstance;
-import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
@@ -46,6 +46,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -87,7 +88,7 @@ class AdbServicesBridgeTest {
         whenServerFailsToStart();
         var bridge = createBridge();
 
-        withEmptyUncaughtExceptionHandler(
+        ThreadTestUtils.withEmptyUncaughtExceptionHandler(
                 () -> assertThat(bridge.getAdbServicesAsync()).isCompletedExceptionally());
     }
 
@@ -96,7 +97,7 @@ class AdbServicesBridgeTest {
         whenServerFailsToStart();
         var bridge = createBridge();
 
-        withEmptyUncaughtExceptionHandler(() -> {
+        ThreadTestUtils.withEmptyUncaughtExceptionHandler(() -> {
             ensureCompleted(bridge.getAdbServicesAsync());
             verify(errorDialogs).showAdbNotFoundError();
         });
@@ -158,7 +159,7 @@ class AdbServicesBridgeTest {
 
         bridge.asObservable().addObserver(observer);
 
-        withUncaughtExceptionHandler(uncaughtHandler, () -> {
+        ThreadTestUtils.withUncaughtExceptionHandler(uncaughtHandler, () -> {
             @SuppressWarnings("unused")
             var unused = bridge.getAdbServicesAsync();
             drainExecutors(testUiExecutor, testAdbExecutor);
@@ -166,7 +167,7 @@ class AdbServicesBridgeTest {
             assertThat(unused).describedAs("Listener failures should not affect ADB initialization").isCompleted();
         });
 
-        verify(uncaughtHandler).uncaughtException(any(), isA(MyException.class));
+        verify(uncaughtHandler).uncaughtException(any(), isA(CompletionException.class));
     }
 
     @Test
@@ -213,20 +214,5 @@ class AdbServicesBridgeTest {
         } catch (TimeoutException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static void withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler handler,
-            MyFutures.ThrowingRunnable r) throws Exception {
-        var prevHandler = Thread.currentThread().getUncaughtExceptionHandler();
-        Thread.currentThread().setUncaughtExceptionHandler(handler);
-        try {
-            r.run();
-        } finally {
-            Thread.currentThread().setUncaughtExceptionHandler(prevHandler);
-        }
-    }
-
-    private static void withEmptyUncaughtExceptionHandler(MyFutures.ThrowingRunnable r) throws Exception {
-        withUncaughtExceptionHandler((t, e) -> {}, r);
     }
 }

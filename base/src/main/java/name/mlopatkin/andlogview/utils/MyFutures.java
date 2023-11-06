@@ -16,10 +16,17 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import name.mlopatkin.andlogview.base.MyThrowables;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -90,6 +97,7 @@ public final class MyFutures {
 
     /**
      * Adapter for void-returning methods to be used in {@link CompletableFuture#exceptionally(Function)}.
+     *
      * @param consumer the consumer of the exception
      * @return the consumer adapted to a function
      */
@@ -102,6 +110,7 @@ public final class MyFutures {
 
     /**
      * Adapter for void-returning methods to be used in {@link CompletableFuture#exceptionally(Function)}.
+     *
      * @param consumer the failure handler
      * @return the consumer adapted to a function
      */
@@ -110,5 +119,75 @@ public final class MyFutures {
             consumer.run();
             return null;
         };
+    }
+
+    /**
+     * Adapter for the {@link CompletableFuture#exceptionally(Function)} that suppresses failures because of cancelled
+     * chain. The downstream chain still executes in this case.
+     *
+     * @return the function that consumes cancellations but rethrows everything else
+     */
+    public static Function<Throwable, Void> skipCancellations() {
+        return th -> {
+            if (MyThrowables.unwrapUninteresting(th) instanceof CancellationException) {
+                return null;
+            }
+            throw sneakyRethrow(th);
+        };
+    }
+
+    /**
+     * Adapter for the {@link CompletableFuture#handle(BiFunction)} that allows using consumers there.
+     *
+     * @param consumer the bi-consumer
+     * @param <T> the type of the value produced by the future
+     * @return the function that adapts the consumer to Void returning type
+     */
+    public static <T> BiFunction<T, @Nullable Throwable, Void> consumingHandler(
+            BiConsumer<? super T, @Nullable ? super Throwable> consumer) {
+        return (r, th) -> {
+            consumer.accept(r, th);
+            return null;
+        };
+    }
+
+    /**
+     * Adapter for the {@link CompletableFuture#handle(BiFunction)} that allows using consumers there.
+     *
+     * @param valueConsumer the consumer for the value
+     * @param errorConsumer the consumer for the value
+     * @param <T> the type of the value produced by the future
+     * @return the function that adapts the consumers to Void returning type
+     */
+    public static <T> BiFunction<T, @Nullable Throwable, Void> consumingHandler(
+            Consumer<? super T> valueConsumer, Consumer<@Nullable ? super Throwable> errorConsumer) {
+        return (r, th) -> {
+            if (th != null) {
+                errorConsumer.accept(th);
+            } else {
+                valueConsumer.accept(r);
+            }
+            return null;
+        };
+    }
+
+    /**
+     * Helper for {@link CompletableFuture#exceptionally(Function)} that forwards exception to thread's default
+     * exception handler. The failure is rethrown, so the downstream chain still fails.
+     *
+     * @param th the throwable to forward
+     * @return {@code null}
+     */
+    @SuppressWarnings("TypeParameterUnusedInFormals")
+    public static <T> @Nullable T uncaughtException(Throwable th) {
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, th);
+        // Rethrow the exception, so the downstream chain is still unsuccessful.
+        throw sneakyRethrow(th);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> RuntimeException sneakyRethrow(Throwable th) throws E {
+        throw (E) th;
     }
 }

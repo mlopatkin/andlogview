@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Mikhail Lopatkin
+ * Copyright 2023 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.utils;
+package name.mlopatkin.andlogview.ui.mainframe.device;
 
-import java.util.concurrent.ThreadFactory;
+import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 
-public final class Threads {
-    private Threads() {}
+import dagger.Binds;
+import dagger.Module;
 
-    /**
-     * Returns a thread factory that constructs threads with a given name. It should be used in singleThreadExecutor
-     *
-     * @param name the name of the created thread
-     * @return the thread factory that creates threads with the given name
-     */
-    public static ThreadFactory withName(final String name) {
-        return r -> new Thread(r, name);
-    }
+@Module
+public abstract class MainFrameAdbModule {
+    @Binds
+    abstract AdbServicesInitializationPresenter.View getAdbInitView(MainFrameAdbInitView view);
 }

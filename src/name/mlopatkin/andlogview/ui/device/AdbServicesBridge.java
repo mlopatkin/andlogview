@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import static name.mlopatkin.andlogview.utils.MyFutures.consumingHandler;
 import static name.mlopatkin.andlogview.utils.MyFutures.runAsync;
 
 import name.mlopatkin.andlogview.AppExecutors;
@@ -25,7 +26,7 @@ import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
-import name.mlopatkin.andlogview.utils.Threads;
+import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
@@ -111,13 +112,17 @@ public class AdbServicesBridge implements AdbServicesStatus {
 
         if (!result.isDone()) {
             // This happens always unless direct executors are used.
-            // It is important to have adbSubcomponent initialized here, or getStatus() inside listeners would return
-            // invalid status.
+            // It is important to have adbSubcomponent initialized before, or getStatus() inside listeners would return
+            // outdated value.
             notifyStatusChange(getStatus());
         }
 
-        result.whenCompleteAsync((r, th) -> onAdbInitFinished(th, stopwatch), uiExecutor)
-                .exceptionally(Threads::uncaughtException);
+        // This is a separate chain, not related to the consumers of getAdbServicesAsync. Therefore, it has a separate
+        // exception sink to handle runtime errors in the handler.
+        result.handleAsync(
+                        consumingHandler((r, th) -> onAdbInitFinished(th, stopwatch)),
+                        uiExecutor)
+                .exceptionally(MyFutures::uncaughtException);
         return result;
     }
 

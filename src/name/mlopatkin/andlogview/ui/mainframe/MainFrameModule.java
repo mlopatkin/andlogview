@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.mainframe.device.MainFrameAdbModule;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchModule;
 import name.mlopatkin.andlogview.ui.preferences.PreferencesUiModule;
@@ -42,6 +43,7 @@ import javax.swing.JTable;
                     MainFramePrefsModule.class,
                     StatusPanelModule.class,
                     PreferencesUiModule.class,
+                    MainFrameAdbModule.class,
                     MainFrameSearchModule.class})
 public class MainFrameModule {
     private final MainFrame mainFrame;

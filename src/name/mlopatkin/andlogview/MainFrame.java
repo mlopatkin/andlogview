@@ -15,8 +15,6 @@
  */
 package name.mlopatkin.andlogview;
 
-import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
-
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
@@ -36,7 +34,7 @@ import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbServices;
-import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
+import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.Column;
@@ -154,7 +152,7 @@ public class MainFrame implements MainFrameSearchUi {
     Executor uiExecutor;
 
     @Inject
-    AdbServicesBridge adbServicesBridge;
+    AdbServicesInitializationPresenter adbInitPresenter;
     @Inject
     FileOpener fileOpener;
     @Inject
@@ -433,14 +431,14 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     private void connectToDevice() {
-        withAdbServices(adbServices -> {
+        withAdbServicesInteractive(adbServices -> {
             var adbDataSourceFactory = adbServices.getDataSourceFactory();
             adbDataSourceFactory.selectDeviceAndOpenAsDataSource(MainFrame.this::setSourceAsync);
         });
     }
 
     private void selectAndDumpDevice() {
-        withAdbServices(adbServices -> adbServices.getDumpDevicePresenter().selectDeviceAndDump());
+        withAdbServicesInteractive(adbServices -> adbServices.getDumpDevicePresenter().selectDeviceAndDump());
     }
 
     public void tryToConnectToFirstAvailableDevice() {
@@ -448,15 +446,17 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     /**
-     * Executes the {@code action} with {@link AdbServices} available, on UI thread, asynchronously. The action may be
-     * delayed by the initialization of the AdbServices. The action may not run at all, if the initialization of the
-     * services fails.
-     * @param action the action to run
+     * @see AdbServicesInitializationPresenter#withAdbServices(Consumer, Consumer)
      */
     private void withAdbServices(Consumer<? super AdbServices> action) {
-        adbServicesBridge.getAdbServicesAsync()
-                .thenAcceptAsync(action, uiExecutor)
-                .exceptionally(exceptionHandler(this::disableAdbCommandsAsync));
+        adbInitPresenter.withAdbServices(action, th -> disableAdbCommandsAsync());
+    }
+
+    /**
+     * @see AdbServicesInitializationPresenter#withAdbServicesInteractive(Consumer, Consumer)
+     */
+    private void withAdbServicesInteractive(Consumer<? super AdbServices> action) {
+        adbInitPresenter.withAdbServicesInteractive(action, th -> disableAdbCommandsAsync());
     }
 
     /**
@@ -533,7 +533,10 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     void disableAdbCommandsAsync() {
-        EventQueue.invokeLater(() -> acConnectToDevice.setEnabled(false));
+        EventQueue.invokeLater(() -> {
+            acConnectToDevice.setEnabled(false);
+            acDumpDevice.setEnabled(false);
+        });
     }
 
 

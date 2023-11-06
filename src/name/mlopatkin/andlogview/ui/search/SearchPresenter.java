@@ -21,8 +21,8 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.search.Search;
 import name.mlopatkin.andlogview.search.SearchModel;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
+import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.Optionals;
-import name.mlopatkin.andlogview.utils.Threads;
 import name.mlopatkin.andlogview.widgets.DialogResult;
 
 import java.util.Optional;
@@ -175,7 +175,7 @@ public class SearchPresenter<T, P, S extends Predicate<? super T>> {
                                         this::onSearchHit,
                                         this::onNoMoreHits),
                         uiThreadExecutor)
-                .exceptionally(Threads::uncaughtException);
+                .exceptionally(MyFutures::uncaughtException);
     }
 
     private void onSearchHit(P foundPosition) {
