@@ -15,14 +15,12 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import name.mlopatkin.andlogview.building.GenerateBuildMetadata
 import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
-import name.mlopatkin.andlogview.building.toFile
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import java.util.*
+import java.util.Locale
 
 plugins {
     idea
@@ -35,6 +33,7 @@ plugins {
 
     id("name.mlopatkin.andlogview.building.build-environment")
     id("name.mlopatkin.andlogview.building.java-conventions")
+    id("name.mlopatkin.andlogview.building.metadata")
 }
 
 dependencies {
@@ -85,17 +84,11 @@ jmh {
     humanOutputFile = theBuildDir.file("reports/jmh/human.txt")
 }
 
-// Configure sources
-// TODO(mlopatkin) make this an output parameter of the BuildMetadata task
-// Like annotationProcessor. Note java/main instead of Gradle's usual main/java.
-val metadataBuildDir = theBuildDir.dir("generated/sources/metadata/java/main")
-
 sourceSets {
     main {
         java {
             srcDirs.clear()
             srcDir("src")
-            srcDir(metadataBuildDir)
             srcDir("third-party/styledLabel/src")
         }
         resources {
@@ -129,21 +122,13 @@ sourceSets {
     }
 }
 
-// TODO(mlopatkin) make this a plugin?
 // Configure build metadata generator
-val generateBuildMetadata = tasks.register<GenerateBuildMetadata>("generateBuildMetadata") {
+buildMetadata {
     revision = buildEnvironment.sourceRevision
     packageName = "name.mlopatkin.andlogview"
     className = "BuildInfo"
     version = project.version.toString()
-    into = metadataBuildDir
 }
-
-tasks.named("compileJava") {
-    dependsOn(generateBuildMetadata)
-}
-
-idea.module.generatedSourceDirs.add(metadataBuildDir.toFile())
 
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     bundledDependencies = configurations.runtimeClasspath.flatMap { rtCp ->
