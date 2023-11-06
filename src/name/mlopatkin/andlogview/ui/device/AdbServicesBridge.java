@@ -24,7 +24,6 @@ import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
-import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.events.Observable;
@@ -32,8 +31,6 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Stopwatch;
-
-import dagger.Lazy;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -61,7 +58,6 @@ public class AdbServicesBridge implements AdbServicesStatus {
     private final AdbManager adbManager;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
-    private final Lazy<ErrorDialogs> errorDialogs;
     private final Executor uiExecutor;
     private final Executor adbInitExecutor;
     private final Subject<Observer> statusObservers = new Subject<>();
@@ -76,13 +72,11 @@ public class AdbServicesBridge implements AdbServicesStatus {
     AdbServicesBridge(AdbManager adbManager,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
-            Lazy<ErrorDialogs> errorDialogs,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor) {
         this.adbManager = adbManager;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
-        this.errorDialogs = errorDialogs;
         this.uiExecutor = uiExecutor;
         this.adbInitExecutor = adbInitExecutor;
     }
@@ -131,9 +125,6 @@ public class AdbServicesBridge implements AdbServicesStatus {
         logger.info("Initialized adb server in " + timeTracing.elapsed(TimeUnit.MILLISECONDS) + "ms");
         if (maybeFailure != null) {
             logger.error("Failed to initialize ADB", maybeFailure);
-            // TODO(mlopatkin) should we show dialog from here or should we move this responsibility
-            //  somewhere else?
-            errorDialogs.get().showAdbNotFoundError();
             notifyStatusChange(StatusValue.failed(getAdbFailureString(maybeFailure)));
         } else {
             notifyStatusChange(StatusValue.initialized());

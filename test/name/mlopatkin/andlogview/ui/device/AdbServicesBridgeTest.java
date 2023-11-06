@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,8 +30,6 @@ import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.test.ThreadTestUtils;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus.StatusValue;
-import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
-import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
@@ -65,22 +62,11 @@ class AdbServicesBridgeTest {
     @Mock
     AdbServicesSubcomponent.Factory adbServicesFactory;
 
-    @Mock
-    ErrorDialogs errorDialogs;
-
     @Test
     void adbServicesCanBeObtained() {
         var bridge = createBridge();
 
         assertThat(bridge.getAdbServicesAsync()).isCompleted();
-    }
-
-    @Test
-    void noErrorDialogShownWhenServerStartsNormally() throws Exception {
-        var bridge = createBridge();
-
-        ensureCompleted(bridge.getAdbServicesAsync());
-        verify(errorDialogs, never()).showAdbNotFoundError();
     }
 
     @Test
@@ -90,17 +76,6 @@ class AdbServicesBridgeTest {
 
         ThreadTestUtils.withEmptyUncaughtExceptionHandler(
                 () -> assertThat(bridge.getAdbServicesAsync()).isCompletedExceptionally());
-    }
-
-    @Test
-    void errorDialogIsShownWhenServerCannotBeCreated() throws Exception {
-        whenServerFailsToStart();
-        var bridge = createBridge();
-
-        ThreadTestUtils.withEmptyUncaughtExceptionHandler(() -> {
-            ensureCompleted(bridge.getAdbServicesAsync());
-            verify(errorDialogs).showAdbNotFoundError();
-        });
     }
 
     @Test
@@ -191,8 +166,7 @@ class AdbServicesBridgeTest {
     }
 
     private AdbServicesBridge createBridge(Executor uiExecutor, Executor adbExecutor) {
-        return new AdbServicesBridge(adbManager, adbConfigurationPref, adbServicesFactory,
-                LazyInstance.lazy(() -> errorDialogs), uiExecutor, adbExecutor);
+        return new AdbServicesBridge(adbManager, adbConfigurationPref, adbServicesFactory, uiExecutor, adbExecutor);
     }
 
     private void drainExecutors(TestExecutor... executor) {

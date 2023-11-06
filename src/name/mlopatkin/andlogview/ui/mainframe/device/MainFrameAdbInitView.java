@@ -17,19 +17,25 @@
 package name.mlopatkin.andlogview.ui.mainframe.device;
 
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
+import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameUi;
 
 import java.awt.Cursor;
 
 import javax.inject.Inject;
 
-public class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
+/**
+ * A view to show ADB initialization in the Main Frame.
+ */
+class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
 
     private final MainFrameUi mainFrameUi;
+    private final ErrorDialogs errorDialogs;
 
     @Inject
-    MainFrameAdbInitView(MainFrameUi mainFrameUi) {
+    MainFrameAdbInitView(MainFrameUi mainFrameUi, ErrorDialogs errorDialogs) {
         this.mainFrameUi = mainFrameUi;
+        this.errorDialogs = errorDialogs;
     }
 
     @Override
@@ -40,5 +46,10 @@ public class MainFrameAdbInitView implements AdbServicesInitializationPresenter.
     @Override
     public void hideAdbLoadingProgress() {
         mainFrameUi.setCursor(Cursor.getDefaultCursor());
+    }
+
+    @Override
+    public void showAdbLoadingError() {
+        errorDialogs.showAdbNotFoundError();
     }
 }

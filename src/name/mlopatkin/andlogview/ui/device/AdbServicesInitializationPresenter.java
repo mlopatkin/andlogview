@@ -34,11 +34,27 @@ import java.util.function.Consumer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+/**
+ * The presenter handles ADB initialization and shows progress and errors to the user.
+ */
 public class AdbServicesInitializationPresenter {
+    /**
+     * View interface to show ADB initialization to the user.
+     */
     public interface View {
+        /**
+         * Show the user that ADB services aren't ready yet, but they are being loading.
+         */
         void showAdbLoadingProgress();
-
+        /**
+         * Show the user that ADB services are now ready.
+         */
         void hideAdbLoadingProgress();
+
+        /**
+         * Show the user that ADB services failed to load. This is only called once per presenter lifetime.
+         */
+        void showAdbLoadingError();
     }
 
     private final View view;
@@ -52,7 +68,7 @@ public class AdbServicesInitializationPresenter {
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.view = view;
         this.uiExecutor = uiExecutor;
-        this.services = LazyInstance.lazy(() -> initServicesAsync(bridge));
+        this.services = LazyInstance.lazy(() -> initServicesAsync(bridge, view, uiExecutor));
     }
 
     /**
@@ -101,7 +117,12 @@ public class AdbServicesInitializationPresenter {
         currentInteractiveRequest = cancellableStep;
     }
 
-    private static CompletableFuture<AdbServices> initServicesAsync(AdbServicesBridge bridge) {
-        return bridge.getAdbServicesAsync();
+    private static CompletableFuture<AdbServices> initServicesAsync(AdbServicesBridge bridge, View view,
+            Executor uiExecutor) {
+        return bridge.getAdbServicesAsync().whenCompleteAsync((r, th) -> {
+            if (th != null) {
+                view.showAdbLoadingError();
+            }
+        }, uiExecutor);
     }
 }

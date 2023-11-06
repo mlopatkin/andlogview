@@ -283,6 +283,30 @@ class AdbServicesInitializationPresenterTest {
         verify(handler, never()).uncaughtException(any(), any());
     }
 
+    @Test
+    void loadingFailureIsShown() {
+        var presenter = createPresenter();
+
+        presenter.withAdbServices(servicesConsumer, errorConsumer);
+
+        whenAdbInitFailed();
+
+        verify(view).showAdbLoadingError();
+    }
+
+    @Test
+    void multipleRequestsCauseNoAdditionalErrorsToShow() {
+        var presenter = createPresenter();
+
+        presenter.withAdbServices(servicesConsumer, errorConsumer);
+        whenAdbInitFailed();
+        reset(view);
+
+        presenter.withAdbServices(servicesConsumer, errorConsumer);
+
+        verify(view, never()).showAdbLoadingError();
+    }
+
     private void whenAdbInitFailed() {
         servicesFuture.completeExceptionally(new AdbException("Failed"));
     }
