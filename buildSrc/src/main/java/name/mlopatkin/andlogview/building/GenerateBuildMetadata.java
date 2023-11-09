@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.building;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -55,6 +56,10 @@ public abstract class GenerateBuildMetadata extends DefaultTask {
         TypeSpec metadataClass = TypeSpec.classBuilder(fullClassName).addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .addField(stringConstant("VERSION", getVersion().get(), "Version of the application."))
                 .addField(stringConstant("REVISION", getRevision().get(), "Source revision of which app is built."))
+                .addAnnotation(
+                        AnnotationSpec.builder(SuppressWarnings.class)
+                                .addMember("value", "$S", "StringOperationCanBeSimplified")
+                                .build())
                 .build();
         JavaFile.builder(fullClassName.packageName(), metadataClass)
                 .indent("    ")
@@ -65,7 +70,8 @@ public abstract class GenerateBuildMetadata extends DefaultTask {
 
     private static FieldSpec stringConstant(String name, String value, String doc) {
         return FieldSpec.builder(String.class, name, Modifier.FINAL, Modifier.PUBLIC, Modifier.STATIC)
-                .initializer("$S", value)
+                // Prevent constant inlining to skip main source set recompilations when the generated file changes.
+                .initializer("$S.toString()", value)
                 .addJavadoc("$L\n", doc)
                 .build();
     }
