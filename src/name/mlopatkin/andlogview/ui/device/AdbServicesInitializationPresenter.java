@@ -46,6 +46,7 @@ public class AdbServicesInitializationPresenter {
          * Show the user that ADB services aren't ready yet, but they are being loading.
          */
         void showAdbLoadingProgress();
+
         /**
          * Show the user that ADB services are now ready.
          */
@@ -61,6 +62,8 @@ public class AdbServicesInitializationPresenter {
     private final Executor uiExecutor;
 
     private final Lazy<CompletableFuture<AdbServices>> services;
+    private boolean hasShownErrorMessage;
+
     private @Nullable CompletableFuture<?> currentInteractiveRequest;
 
     @Inject
@@ -68,7 +71,7 @@ public class AdbServicesInitializationPresenter {
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.view = view;
         this.uiExecutor = uiExecutor;
-        this.services = LazyInstance.lazy(() -> initServicesAsync(bridge, view, uiExecutor));
+        this.services = LazyInstance.lazy(() -> initServicesAsync(bridge));
     }
 
     /**
@@ -79,7 +82,7 @@ public class AdbServicesInitializationPresenter {
      * @param failureHandler the failure handler
      */
     public void withAdbServices(Consumer<? super AdbServices> action, Consumer<? super Throwable> failureHandler) {
-        services.get().handleAsync(
+        getServicesAsync().handleAsync(
                         consumingHandler(action, failureHandler),
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
@@ -101,7 +104,7 @@ public class AdbServicesInitializationPresenter {
             currentInteractiveRequest = null;
         }
 
-        var future = services.get();
+        var future = getServicesAsync();
         if (!future.isDone()) {
             // Only bother with setting cursors if the ADB is not yet initialized.
             view.showAdbLoadingProgress();
@@ -109,6 +112,8 @@ public class AdbServicesInitializationPresenter {
                     (services, th) -> view.hideAdbLoadingProgress(),
                     uiExecutor);
         }
+        // TODO(mlopatkin) Should we always show a failure message if the ADB fails/is failed for the interactive
+        //  request?
         var cancellableStep = future.handleAsync(consumingHandler(action, failureHandler), uiExecutor);
         // Make sure that all runtime errors are not ignored, except cancellations.
         cancellableStep
@@ -117,12 +122,32 @@ public class AdbServicesInitializationPresenter {
         currentInteractiveRequest = cancellableStep;
     }
 
-    private static CompletableFuture<AdbServices> initServicesAsync(AdbServicesBridge bridge, View view,
-            Executor uiExecutor) {
-        return bridge.getAdbServicesAsync().whenCompleteAsync((r, th) -> {
-            if (th != null) {
-                view.showAdbLoadingError();
-            }
-        }, uiExecutor);
+    private CompletableFuture<AdbServices> getServicesAsync() {
+        var servicesFuture = services.get();
+        if (isCompletedSuccessfully(servicesFuture) || hasShownErrorMessage) {
+            return servicesFuture;
+        }
+        servicesFuture = servicesFuture.whenCompleteAsync(this::handleAdbErrorIfNeeded, uiExecutor);
+        return servicesFuture;
+    }
+
+    private void handleAdbErrorIfNeeded(@Nullable AdbServices ignored,
+            @Nullable Throwable maybeFailure) {
+        if (maybeFailure == null) {
+            return;
+        }
+
+        if (!hasShownErrorMessage) {
+            view.showAdbLoadingError();
+            hasShownErrorMessage = true;
+        }
+    }
+
+    private static CompletableFuture<AdbServices> initServicesAsync(AdbServicesBridge bridge) {
+        return bridge.getAdbServicesAsync();
+    }
+
+    private static boolean isCompletedSuccessfully(CompletableFuture<?> future) {
+        return future.isDone() && !future.isCompletedExceptionally();
     }
 }

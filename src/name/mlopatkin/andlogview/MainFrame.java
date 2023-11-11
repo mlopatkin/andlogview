@@ -449,6 +449,9 @@ public class MainFrame implements MainFrameSearchUi {
      * @see AdbServicesInitializationPresenter#withAdbServices(Consumer, Consumer)
      */
     private void withAdbServices(Consumer<? super AdbServices> action) {
+        // TODO(mlopatkin) withAdbServices is only used for the pending attacher. I'm not sure if all its usecases are
+        //  truly equal. E.g. unsubscribing from a device list is probably something that has to be done
+        //  non-interactively, without any error messages.
         adbInitPresenter.withAdbServices(action, th -> disableAdbCommandsAsync());
     }
 
