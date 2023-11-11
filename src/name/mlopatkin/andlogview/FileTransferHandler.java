@@ -15,8 +15,6 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.ui.file.FileOpener;
-
 import org.apache.log4j.Logger;
 
 import java.awt.datatransfer.DataFlavor;
@@ -24,17 +22,16 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.TransferHandler;
 
 public class FileTransferHandler extends TransferHandler {
     private static final Logger logger = Logger.getLogger(FileTransferHandler.class);
     private final MainFrame frame;
-    private final FileOpener fileOpener;
 
-    public FileTransferHandler(MainFrame frame, FileOpener fileOpener) {
+    public FileTransferHandler(MainFrame frame) {
         this.frame = frame;
-        this.fileOpener = fileOpener;
     }
 
     @Override
@@ -51,12 +48,11 @@ public class FileTransferHandler extends TransferHandler {
 
         try {
             @SuppressWarnings("unchecked")
-            java.util.List<File> l = (java.util.List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-
+            List<File> l = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
             File file = l.get(0);
             logger.debug("Start importing " + file);
 
-            fileOpener.openFileAsDataSource(file).thenAccept(frame::setSourceAsync);
+            frame.openFile(file);
         } catch (UnsupportedFlavorException | IOException e) {
             return false;
         }

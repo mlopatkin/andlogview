@@ -79,10 +79,29 @@ class AdbServicesBridgeTest {
     }
 
     @Test
-    void theSameFutureIsAlwaysReturned() {
-        var bridge = createBridge();
+    void returnedFutureCanBeCancelled() {
+        var testUiExecutor = new TestExecutor();
+        var testAdbExecutor = new TestExecutor();
 
-        assertThat(bridge.getAdbServicesAsync()).isSameAs(bridge.getAdbServicesAsync());
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
+
+        var future = bridge.getAdbServicesAsync();
+
+        assertThat(future.cancel(false)).isTrue();
+        assertThat(future).isCancelled();
+    }
+
+    @Test
+    void furtherFuturesAreNotCancelledByCancellingTheFirstOne() {
+        var testUiExecutor = new TestExecutor();
+        var testAdbExecutor = new TestExecutor();
+
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
+
+        var future = bridge.getAdbServicesAsync();
+        future.cancel(false);
+
+        assertThat(bridge.getAdbServicesAsync()).isNotCancelled();
     }
 
     @Test

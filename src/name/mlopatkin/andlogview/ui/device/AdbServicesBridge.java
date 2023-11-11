@@ -39,6 +39,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -92,7 +93,8 @@ public class AdbServicesBridge implements AdbServicesStatus {
         if (result == null) {
             result = initAdbAsync();
         }
-        return result;
+        // Prevent clients from cancelling the whole chain. Java 8-safe version of CompletableFuture.copy.
+        return result.thenApply(Function.identity());
     }
 
     private CompletableFuture<AdbServices> initAdbAsync() {

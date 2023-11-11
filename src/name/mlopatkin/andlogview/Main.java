@@ -131,7 +131,7 @@ public class Main {
         }
         File fileToOpen = commandLine.getFileArgument();
         if (fileToOpen != null) {
-            window.fileOpener.openFileAsDataSource(fileToOpen).thenAccept(window::setSourceAsync);
+            window.openFile(fileToOpen);
         } else {
             window.tryToConnectToFirstAvailableDevice();
         }

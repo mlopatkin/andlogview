@@ -55,6 +55,7 @@ import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
+import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -164,8 +165,8 @@ public class MainFrame implements MainFrameSearchUi {
     @Inject
     FileDialog fileDialog;
 
-    @Nullable
-    private DeviceChangeObserver pendingAttacher;
+    private @Nullable Cancellable pendingAdbOperation;
+    private @Nullable DeviceChangeObserver pendingAttacher;
     private volatile boolean isWaitingForDevice;
 
     private final LogModel.Observer autoscrollObserver = new LogModel.Observer() {
@@ -179,7 +180,7 @@ public class MainFrame implements MainFrameSearchUi {
 
     // File menu
     private final Action acOpenFile =
-            UiHelper.makeAction("Open...", UiHelper.createPlatformKeystroke(KeyEvent.VK_O), this::openFile);
+            UiHelper.makeAction("Open...", UiHelper.createPlatformKeystroke(KeyEvent.VK_O), this::selectAndOpenFile);
     private final Action acSaveToFile =
             UiHelper.makeAction("Save...", UiHelper.createPlatformKeystroke(KeyEvent.VK_S), this::saveToFile);
 
@@ -277,7 +278,7 @@ public class MainFrame implements MainFrameSearchUi {
 
         initLogTable();
 
-        TransferHandler fileHandler = new FileTransferHandler(this, fileOpener);
+        TransferHandler fileHandler = new FileTransferHandler(this);
         mainFrameUi.setTransferHandler(fileHandler);
         logElements.setTransferHandler(new LogRecordsTransferHandler(fileHandler));
 
@@ -423,11 +424,14 @@ public class MainFrame implements MainFrameSearchUi {
         mainFrameUi.setJMenuBar(mainMenu);
     }
 
-    private void openFile() {
-        fileDialog.selectFileToOpen()
-                .ifPresent(file ->
-                        fileOpener.openFileAsDataSource(file)
-                                .thenAccept(MainFrame.this::setSourceAsync));
+    public void openFile(File file) {
+        cancelPendingAdbOperation();
+        fileOpener.openFileAsDataSource(file).thenAccept(MainFrame.this::setSourceAsync);
+    }
+
+    private void selectAndOpenFile() {
+        cancelPendingAdbOperation();
+        fileDialog.selectFileToOpen().ifPresent(this::openFile);
     }
 
     private void connectToDevice() {
@@ -449,17 +453,27 @@ public class MainFrame implements MainFrameSearchUi {
      * @see AdbServicesInitializationPresenter#withAdbServices(Consumer, Consumer)
      */
     private void withAdbServices(Consumer<? super AdbServices> action) {
+        cancelPendingAdbOperation();
         // TODO(mlopatkin) withAdbServices is only used for the pending attacher. I'm not sure if all its usecases are
         //  truly equal. E.g. unsubscribing from a device list is probably something that has to be done
         //  non-interactively, without any error messages.
-        adbInitPresenter.withAdbServices(action, th -> disableAdbCommandsAsync());
+        pendingAdbOperation = adbInitPresenter.withAdbServices(action, th -> disableAdbCommandsAsync());
     }
 
     /**
      * @see AdbServicesInitializationPresenter#withAdbServicesInteractive(Consumer, Consumer)
      */
     private void withAdbServicesInteractive(Consumer<? super AdbServices> action) {
-        adbInitPresenter.withAdbServicesInteractive(action, th -> disableAdbCommandsAsync());
+        cancelPendingAdbOperation();
+        pendingAdbOperation = adbInitPresenter.withAdbServicesInteractive(action, th -> disableAdbCommandsAsync());
+    }
+
+    private void cancelPendingAdbOperation() {
+        var operation = pendingAdbOperation;
+        if (operation != null) {
+            operation.cancel();
+            pendingAdbOperation = null;
+        }
     }
 
     /**

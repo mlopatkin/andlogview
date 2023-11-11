@@ -16,12 +16,9 @@
 
 package name.mlopatkin.andlogview.utils;
 
-import name.mlopatkin.andlogview.base.MyThrowables;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -35,6 +32,17 @@ import java.util.function.Function;
  */
 public final class MyFutures {
     private MyFutures() {}
+
+    /**
+     * Converts the future into the {@link Cancellable}. CompletableFuture cannot be interrupted so the Cancellable
+     * makes no attempts to do so.
+     *
+     * @param future the future to convert
+     * @return the cancellable that forwards cancel to the future
+     */
+    public static Cancellable toCancellable(CompletableFuture<?> future) {
+        return () -> future.cancel(false);
+    }
 
     /**
      * Helper interface for {@code runAsync}.
@@ -118,21 +126,6 @@ public final class MyFutures {
         return t -> {
             consumer.run();
             return null;
-        };
-    }
-
-    /**
-     * Adapter for the {@link CompletableFuture#exceptionally(Function)} that suppresses failures because of cancelled
-     * chain. The downstream chain still executes in this case.
-     *
-     * @return the function that consumes cancellations but rethrows everything else
-     */
-    public static Function<Throwable, Void> skipCancellations() {
-        return th -> {
-            if (MyThrowables.unwrapUninteresting(th) instanceof CancellationException) {
-                return null;
-            }
-            throw sneakyRethrow(th);
         };
     }
 

@@ -17,16 +17,15 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import static name.mlopatkin.andlogview.utils.MyFutures.consumingHandler;
-import static name.mlopatkin.andlogview.utils.MyFutures.skipCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
-import name.mlopatkin.andlogview.utils.LazyInstance;
+import name.mlopatkin.andlogview.base.MyThrowables;
+import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
-import dagger.Lazy;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -42,6 +41,7 @@ public class AdbServicesInitializationPresenter {
      * View interface to show ADB initialization to the user.
      */
     public interface View {
+
         /**
          * Show the user that ADB services aren't ready yet, but they are being loading.
          */
@@ -58,96 +58,107 @@ public class AdbServicesInitializationPresenter {
         void showAdbLoadingError();
     }
 
+    private final AdbServicesBridge bridge;
     private final View view;
     private final Executor uiExecutor;
+    // Maintains set of the current requests to show loading progress. Useful, when new show and old hide requests
+    // overlap because of the delayed execution of hide callback.
+    private final Set<Object> progressTokens = new HashSet<>();
 
-    private final Lazy<CompletableFuture<AdbServices>> services;
     private boolean hasShownErrorMessage;
-
-    private @Nullable CompletableFuture<?> currentInteractiveRequest;
 
     @Inject
     AdbServicesInitializationPresenter(AdbServicesBridge bridge, View view,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
+        this.bridge = bridge;
         this.view = view;
         this.uiExecutor = uiExecutor;
-        this.services = LazyInstance.lazy(() -> initServicesAsync(bridge));
     }
 
     /**
      * Initializes the adb services and executes the action. This method should be used when the user doesn't directly
      * trigger the action, so no progress indication is needed. The actions are executed on the UI executor.
+     * <p>
+     * The initialization may be cancelled by using the returned handle. When cancelled, no callbacks are invoked.
      *
      * @param action the action to execute
      * @param failureHandler the failure handler
+     * @return cancellable handle to abort initialization
      */
-    public void withAdbServices(Consumer<? super AdbServices> action, Consumer<? super Throwable> failureHandler) {
-        getServicesAsync().handleAsync(
-                        consumingHandler(action, failureHandler),
+    public Cancellable withAdbServices(Consumer<? super AdbServices> action,
+            Consumer<? super Throwable> failureHandler) {
+        var result = getServicesAsync();
+        result.handleAsync(
+                        consumingHandler(action, ignoreCancellations(adbErrorHandler().andThen(failureHandler))),
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
+        return MyFutures.toCancellable(result);
     }
 
     /**
      * Initializes the adb services and executes the action. This method should be used when the user triggers the
-     * action so the delay should be indicated somehow. The actions are executed on the UI executor.
+     * action, it takes care of indicating the pause. The actions are executed on the UI executor.
+     * <p>
+     * The initialization may be cancelled by using the returned handle. When cancelled, no callbacks are invoked.
      *
      * @param action the action to execute
      * @param failureHandler the failure handler
+     * @return cancellable handle to abort initialization
      */
-    public void withAdbServicesInteractive(Consumer<? super AdbServices> action,
+    public Cancellable withAdbServicesInteractive(Consumer<? super AdbServices> action,
             Consumer<? super Throwable> failureHandler) {
-        if (currentInteractiveRequest != null) {
-            // Something else tried to open ADB-dependent window before us. We should cancel that action, because the
-            // user changed their mind.
-            currentInteractiveRequest.cancel(false);
-            currentInteractiveRequest = null;
-        }
-
-        var future = getServicesAsync();
+        var result = getServicesAsync();
+        var future = result;
         if (!future.isDone()) {
             // Only bother with setting cursors if the ADB is not yet initialized.
-            view.showAdbLoadingProgress();
+            var token = showProgressWithToken();
             future = future.whenCompleteAsync(
-                    (services, th) -> view.hideAdbLoadingProgress(),
+                    (services, th) -> hideProgressWithToken(token),
                     uiExecutor);
         }
+        future.handleAsync(
+                        consumingHandler(action, ignoreCancellations(adbErrorHandler().andThen(failureHandler))),
+                        uiExecutor)
+                .exceptionally(MyFutures::uncaughtException);
         // TODO(mlopatkin) Should we always show a failure message if the ADB fails/is failed for the interactive
         //  request?
-        var cancellableStep = future.handleAsync(consumingHandler(action, failureHandler), uiExecutor);
-        // Make sure that all runtime errors are not ignored, except cancellations.
-        cancellableStep
-                .exceptionally(skipCancellations())
-                .exceptionally(MyFutures::uncaughtException);
-        currentInteractiveRequest = cancellableStep;
+        return MyFutures.toCancellable(result);
     }
 
     private CompletableFuture<AdbServices> getServicesAsync() {
-        var servicesFuture = services.get();
-        if (isCompletedSuccessfully(servicesFuture) || hasShownErrorMessage) {
-            return servicesFuture;
-        }
-        servicesFuture = servicesFuture.whenCompleteAsync(this::handleAdbErrorIfNeeded, uiExecutor);
-        return servicesFuture;
-    }
-
-    private void handleAdbErrorIfNeeded(@Nullable AdbServices ignored,
-            @Nullable Throwable maybeFailure) {
-        if (maybeFailure == null) {
-            return;
-        }
-
-        if (!hasShownErrorMessage) {
-            view.showAdbLoadingError();
-            hasShownErrorMessage = true;
-        }
-    }
-
-    private static CompletableFuture<AdbServices> initServicesAsync(AdbServicesBridge bridge) {
         return bridge.getAdbServicesAsync();
     }
 
-    private static boolean isCompletedSuccessfully(CompletableFuture<?> future) {
-        return future.isDone() && !future.isCompletedExceptionally();
+    private Object showProgressWithToken() {
+        if (progressTokens.isEmpty()) {
+            view.showAdbLoadingProgress();
+        }
+        var token = new Object();
+        progressTokens.add(token);
+        return token;
+    }
+
+    private void hideProgressWithToken(Object token) {
+        progressTokens.remove(token);
+        if (progressTokens.isEmpty()) {
+            view.hideAdbLoadingProgress();
+        }
+    }
+
+    private Consumer<Throwable> adbErrorHandler() {
+        return ignored -> {
+            if (!hasShownErrorMessage) {
+                view.showAdbLoadingError();
+                hasShownErrorMessage = true;
+            }
+        };
+    }
+
+    private static Consumer<Throwable> ignoreCancellations(Consumer<? super Throwable> failureHandler) {
+        return th -> {
+            if (!(MyThrowables.unwrapUninteresting(th) instanceof CancellationException)) {
+                failureHandler.accept(th);
+            }
+        };
     }
 }
