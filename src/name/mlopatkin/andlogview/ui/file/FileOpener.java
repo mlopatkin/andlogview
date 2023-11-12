@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.file;
 
+import static name.mlopatkin.andlogview.utils.MyFutures.failedFuture;
+
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.ImportProblem;
@@ -145,11 +147,5 @@ public class FileOpener {
                 .limit(problemsToShow)
                 .map(ImportProblem::getMessage)
                 .forEachOrdered(msg -> output.append("<li>").append(msg).append("</li>"));
-    }
-
-    private static CompletableFuture<DataSource> failedFuture(Throwable th) {
-        var future = new CompletableFuture<DataSource>();
-        future.completeExceptionally(th);
-        return future;
     }
 }
