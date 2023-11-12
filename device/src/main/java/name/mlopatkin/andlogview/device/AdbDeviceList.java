@@ -26,10 +26,14 @@ import java.util.concurrent.Executor;
  * list creates a snapshot of currently connected devices. Use {@link AdbServer#getDeviceList(Executor)} to obtain an
  * instance of the list.
  * <p>
+ * The contents of the list can be changed in background, make sure to start observing it before obtaining contents, or
+ * some update notifications may be lost.
+ * <p>
  * This list is not thread-safe and has to be used on the same executor that was used to obtain its instance.
  */
 public interface AdbDeviceList {
-
+    // TODO(mlopatkin) add some consistency between getDevices and observers. Maybe introducing executor-confined
+    //  snapshotting would be enough?
     /**
      * @return the list of currently connected and provisioned devices
      */

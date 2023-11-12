@@ -24,7 +24,7 @@ import name.mlopatkin.andlogview.utils.MyFutures;
 public final class ThreadTestUtils {
     private ThreadTestUtils() {}
 
-    public static void withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler handler,
+    public static Thread.UncaughtExceptionHandler withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler handler,
             MyFutures.ThrowingRunnable r) throws Exception {
         var prevHandler = Thread.currentThread().getUncaughtExceptionHandler();
         Thread.currentThread().setUncaughtExceptionHandler(handler);
@@ -33,6 +33,7 @@ public final class ThreadTestUtils {
         } finally {
             Thread.currentThread().setUncaughtExceptionHandler(prevHandler);
         }
+        return handler;
     }
 
     public static void withEmptyUncaughtExceptionHandler(MyFutures.ThrowingRunnable r) throws Exception {

@@ -25,17 +25,13 @@ import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.ui.PendingDataSource;
-import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -60,15 +56,14 @@ public class AdbOpener {
      * <p>
      * The returned handle must be used on UI thread only.
      *
-     * @param consumer the handler to process resulting data source
-     * @param failureHandler the handler to process adb initialization failure if any
      * @return the cancellable handle to stop initialization
      */
-    public PendingDataSource selectAndOpenDevice(Consumer<? super @Nullable AdbDataSource> consumer,
-            Consumer<? super Throwable> failureHandler) {
-        return PendingDataSource.fromCancellable(presenter.withAdbServicesInteractive(
-                adb -> adb.getDataSourceFactory().selectDeviceAndOpenAsDataSource(consumer),
-                failureHandler));
+    public PendingDataSource<@Nullable AdbDataSource> selectAndOpenDevice() {
+        var result = new PendingDataSource.CompletablePendingDataSource<AdbDataSource>();
+        result.addStage(presenter.withAdbServicesInteractive(
+                adb -> adb.getDataSourceFactory().selectDeviceAndOpenAsDataSource(result::complete),
+                result::fail));
+        return result;
     }
 
     /**
@@ -76,83 +71,58 @@ public class AdbOpener {
      * <p>
      * The returned handle must be used on UI thread only.
      *
-     * @param consumer the handler to process resulting data source
-     * @param failureHandler the handler to process adb initialization failure if any
      * @return the cancellable handle to stop initialization
      */
-    public PendingDataSource awaitDevice(Consumer<? super AdbDataSource> consumer,
-            Consumer<? super Throwable> failureHandler) {
-        var result = new MultiStagePendingDataSource();
+    public PendingDataSource<AdbDataSource> awaitDevice() {
+        var result = new PendingDataSource.CompletablePendingDataSource<AdbDataSource>();
         result.addStage(presenter.withAdbServices(
                 adb -> result.addStage(awaitDevice(adb))
                         .thenAccept(
-                                device -> adb.getDataSourceFactory().openDeviceAsDataSource(device, consumer))
-                        .exceptionally(exceptionHandler(ignoreCancellations(failureHandler))),
-                failureHandler));
+                                device -> adb.getDataSourceFactory().openDeviceAsDataSource(device, result::complete))
+                        .exceptionally(exceptionHandler(ignoreCancellations(result::fail))),
+                result::fail));
         return result;
     }
 
     private CompletableFuture<Device> awaitDevice(AdbServices adbServices) {
         var deviceList = adbServices.getDeviceList();
-        return getFirstOnlineDevice(deviceList).map(CompletableFuture::completedFuture).orElseGet(() -> {
-            var future = new CompletableFuture<Device>();
-            var deviceObserver = new DeviceChangeObserver() {
-                @Override
-                public void onDeviceConnected(Device device) {
-                    tryConnect(device);
-                }
+        var future = new CompletableFuture<Device>();
+        var deviceObserver = new DeviceChangeObserver() {
+            @Override
+            public void onDeviceConnected(Device device) {
+                tryConnect(device);
+            }
 
-                @Override
-                public void onDeviceChanged(Device device) {
-                    tryConnect(device);
-                }
+            @Override
+            public void onDeviceChanged(Device device) {
+                tryConnect(device);
+            }
 
-                private void tryConnect(Device device) {
-                    if (device.isOnline()) {
-                        future.complete(device);
-                    }
+            private void tryConnect(Device device) {
+                if (device.isOnline()) {
+                    future.complete(device);
                 }
-            };
-            deviceList.asObservable().addObserver(deviceObserver);
-            // Spawn a sibling cleanup branch that triggers when the future is completed or cancelled.
-            future.handleAsync(
-                            (r, th) -> {
-                                // An upstream exception may come here as `th`, but it is swallowed. This branch only
-                                // cares about cleaning up.
-                                deviceList.asObservable().removeObserver(deviceObserver);
-                                return null;
-                            },
-                            uiExecutor)
-                    // Exceptions form handleAsync above are forwarded, though.
-                    .exceptionally(MyFutures::uncaughtException);
-            return future;
-        });
+            }
+        };
+        deviceList.asObservable().addObserver(deviceObserver);
+        // Spawn a sibling cleanup branch that triggers when the future is completed or cancelled.
+        future.handleAsync(
+                        (r, th) -> {
+                            // An upstream exception may come here as `th`, but it is swallowed. This branch only
+                            // cares about cleaning up.
+                            deviceList.asObservable().removeObserver(deviceObserver);
+                            return null;
+                        },
+                        uiExecutor)
+                // Exceptions form handleAsync above are forwarded, though.
+                .exceptionally(MyFutures::uncaughtException);
+        // Device list set up is racy, but now we'll receive all updates. To make sure we've considered the state prior
+        // to subscribing, let's seed the future with the current device list, if any.
+        getFirstOnlineDevice(deviceList).ifPresent(future::complete);
+        return future;
     }
 
     private Optional<Device> getFirstOnlineDevice(AdbDeviceList deviceList) {
         return deviceList.getDevices().stream().filter(Device::isOnline).findFirst();
-    }
-
-    private static class MultiStagePendingDataSource implements PendingDataSource {
-        private final List<Cancellable> cancellable = new ArrayList<>();
-
-        public <T extends Cancellable> T addStage(T cancellable) {
-            this.cancellable.add(cancellable);
-            return cancellable;
-        }
-
-        public <T> CompletableFuture<T> addStage(CompletableFuture<T> future) {
-            cancellable.add(MyFutures.toCancellable(future));
-            return future;
-        }
-
-        @Override
-        public boolean cancel() {
-            var result = cancellable.isEmpty();
-            for (Cancellable c : cancellable) {
-                result |= c.cancel();
-            }
-            return result;
-        }
     }
 }

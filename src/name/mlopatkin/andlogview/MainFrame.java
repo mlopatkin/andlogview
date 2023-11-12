@@ -75,6 +75,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -163,7 +164,7 @@ public class MainFrame implements MainFrameSearchUi {
     @Inject
     FileDialog fileDialog;
 
-    private @Nullable PendingDataSource pendingDataSource;
+    private @Nullable PendingDataSource<? extends @Nullable DataSource> pendingDataSource;
 
     private final LogModel.Observer autoscrollObserver = new LogModel.Observer() {
         @Override
@@ -215,18 +216,21 @@ public class MainFrame implements MainFrameSearchUi {
         initialize(commandLine.isDebug());
     }
 
-    private void consumePendingSourceAsync(@Nullable DataSource newSource) {
+    private void consumePendingSourceAsync(PendingDataSource<? extends @Nullable DataSource> origin,
+            @Nullable DataSource newSource) {
         if (EventQueue.isDispatchThread()) {
-            consumePendingSource(newSource);
+            consumePendingSource(origin, newSource);
         } else {
-            EventQueue.invokeLater(() -> consumePendingSource(newSource));
+            EventQueue.invokeLater(() -> consumePendingSource(origin, newSource));
         }
     }
 
-    private void consumePendingSource(@Nullable DataSource newSource) {
+    private void consumePendingSource(PendingDataSource<? extends @Nullable DataSource> origin,
+            @Nullable DataSource newSource) {
         assert EventQueue.isDispatchThread();
         // Clean up current pending operation.
         // TODO(mlopatkin) think about potential race conditions
+        assert pendingDataSource == origin;
         pendingDataSource = null;
         if (newSource != null) {
             setSource(newSource);
@@ -435,16 +439,17 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     public void openFile(File file) {
-        startOpeningDataSource(fileOpener.openFile(file, MainFrame.this::consumePendingSourceAsync));
+        startOpeningDataSource(() -> fileOpener.openFile(file));
     }
 
     private void selectAndOpenFile() {
-        startOpeningDataSource(fileOpener.selectAndOpenFile(MainFrame.this::consumePendingSourceAsync));
+        startOpeningDataSource(fileOpener::selectAndOpenFile);
     }
 
     private void connectToDevice() {
-        startOpeningDataSource(
-                adbOpener.selectAndOpenDevice(this::consumePendingSourceAsync, this::disableAdbCommandsAsync));
+        var source = adbOpener.selectAndOpenDevice();
+        source.whenFailed(this::disableAdbCommandsAsync);
+        startOpeningDataSource(() -> source);
     }
 
     private void selectAndDumpDevice() {
@@ -458,9 +463,18 @@ public class MainFrame implements MainFrameSearchUi {
         waitForDevice();
     }
 
-    private void startOpeningDataSource(PendingDataSource pendingDataSource) {
+    private void startOpeningDataSource(
+            Supplier<? extends PendingDataSource<? extends @Nullable DataSource>> pendingDataSource) {
         cancelPendingOperation();
-        this.pendingDataSource = pendingDataSource;
+        // Cancelling before obtaining is important, because obtaining a pending data source may start a nested event
+        // loop and block.
+        var newPendingDataSource = pendingDataSource.get();
+        assert this.pendingDataSource == null;
+        // it is important to assign pending data source first, because whenAvailable might fire right away and
+        // overwrite data source too.
+        this.pendingDataSource = newPendingDataSource;
+
+        newPendingDataSource.whenAvailable((source) -> consumePendingSourceAsync(newPendingDataSource, source));
     }
 
     private void cancelPendingOperation() {
@@ -476,7 +490,9 @@ public class MainFrame implements MainFrameSearchUi {
      * Wait for device to connect.
      */
     public void waitForDevice() {
-        startOpeningDataSource(adbOpener.awaitDevice(this::consumePendingSourceAsync, this::disableAdbCommandsAsync));
+        var source = adbOpener.awaitDevice();
+        source.whenFailed(this::disableAdbCommandsAsync);
+        startOpeningDataSource(() -> source);
     }
 
     private void saveToFile() {

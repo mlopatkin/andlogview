@@ -156,7 +156,7 @@ public final class MyFutures {
      * @return the function that adapts the consumer to Void returning type
      */
     public static <T> BiFunction<T, @Nullable Throwable, Void> consumingHandler(
-            BiConsumer<? super T, @Nullable ? super Throwable> consumer) {
+            BiConsumer<? super @Nullable T, @Nullable ? super Throwable> consumer) {
         return (r, th) -> {
             consumer.accept(r, th);
             return null;
@@ -167,7 +167,7 @@ public final class MyFutures {
      * Adapter for the {@link CompletableFuture#handle(BiFunction)} that allows using consumers there.
      *
      * @param valueConsumer the consumer for the value
-     * @param errorConsumer the consumer for the value
+     * @param errorConsumer the consumer for the error
      * @param <T> the type of the value produced by the future
      * @return the function that adapts the consumers to Void returning type
      */
@@ -181,6 +181,31 @@ public final class MyFutures {
             }
             return null;
         };
+    }
+
+    /**
+     * Adapter for the {@link CompletableFuture#handle(BiFunction)} that only cares about values and ignores errors.
+     * Unlike {@link CompletableFuture#thenAccept(Consumer)}, the exception from upstream doesn't propagate further.
+     *
+     * @param valueConsumer the consumer for the value
+     * @param <T> the type of the value produced by the future
+     * @return the function that adapts the consumers to Void returning type
+     */
+    public static <T> BiFunction<T, @Nullable Throwable, Void> valueHandler(Consumer<? super T> valueConsumer) {
+        return consumingHandler(valueConsumer, ignored -> {});
+    }
+
+    /**
+     * Adapter for the {@link CompletableFuture#handle(BiFunction)} that only cares about errors and ignores value.
+     * Unlike {@link CompletableFuture#exceptionally(Function)}}, this method changes the outgoing type to
+     * {@code Void}.
+     *
+     * @param errorConsumer the consumer for the error
+     * @param <T> the type of the value produced by the future
+     * @return the function that adapts the consumers to Void returning type
+     */
+    public static <T> BiFunction<T, @Nullable Throwable, Void> errorHandler(Consumer<? super Throwable> errorConsumer) {
+        return consumingHandler(ignored -> {}, errorConsumer);
     }
 
     /**
