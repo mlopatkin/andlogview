@@ -17,15 +17,15 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import static name.mlopatkin.andlogview.utils.MyFutures.consumingHandler;
+import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
-import name.mlopatkin.andlogview.base.MyThrowables;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -36,6 +36,7 @@ import javax.inject.Named;
 /**
  * The presenter handles ADB initialization and shows progress and errors to the user.
  */
+@MainFrameScoped
 public class AdbServicesInitializationPresenter {
     /**
      * View interface to show ADB initialization to the user.
@@ -150,14 +151,6 @@ public class AdbServicesInitializationPresenter {
             if (!hasShownErrorMessage) {
                 view.showAdbLoadingError();
                 hasShownErrorMessage = true;
-            }
-        };
-    }
-
-    private static Consumer<Throwable> ignoreCancellations(Consumer<? super Throwable> failureHandler) {
-        return th -> {
-            if (!(MyThrowables.unwrapUninteresting(th) instanceof CancellationException)) {
-                failureHandler.accept(th);
             }
         };
     }

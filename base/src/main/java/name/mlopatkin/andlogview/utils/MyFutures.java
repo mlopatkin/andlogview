@@ -16,9 +16,12 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import name.mlopatkin.andlogview.base.MyThrowables;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -42,6 +45,22 @@ public final class MyFutures {
      */
     public static Cancellable toCancellable(CompletableFuture<?> future) {
         return () -> future.cancel(false);
+    }
+
+    /**
+     * Wraps failure handler into cancellation-ignoring adapter. The adapter can unwrap cancellation exceptions. It is
+     * intended for {@link #consumingHandler(Consumer, Consumer)} and {@link #exceptionHandler(Consumer)}
+     * implementations.
+     *
+     * @param failureHandler the failure handler to wrap
+     * @return the cancellation-tolerant handler
+     */
+    public static Consumer<Throwable> ignoreCancellations(Consumer<? super Throwable> failureHandler) {
+        return th -> {
+            if (!(MyThrowables.unwrapUninteresting(th) instanceof CancellationException)) {
+                failureHandler.accept(th);
+            }
+        };
     }
 
     /**
@@ -109,7 +128,7 @@ public final class MyFutures {
      * @param consumer the consumer of the exception
      * @return the consumer adapted to a function
      */
-    public static Function<Throwable, Void> exceptionHandler(Consumer<Throwable> consumer) {
+    public static Function<Throwable, Void> exceptionHandler(Consumer<? super Throwable> consumer) {
         return t -> {
             consumer.accept(t);
             return null;

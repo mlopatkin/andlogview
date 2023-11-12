@@ -21,6 +21,8 @@ import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -38,15 +40,17 @@ public class AdbDataSourceFactory {
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
 
-    public void selectDeviceAndOpenAsDataSource(Consumer<AdbDataSource> callback) {
+    public void selectDeviceAndOpenAsDataSource(Consumer<? super @Nullable AdbDataSource> callback) {
         selectDeviceDialogFactory.show((dialog, selectedDevice) -> {
             if (selectedDevice != null) {
                 openDeviceAsDataSource(selectedDevice, callback);
+            } else {
+                callback.accept(null);
             }
         });
     }
 
-    public void openDeviceAsDataSource(Device device, Consumer<AdbDataSource> callback) {
+    public void openDeviceAsDataSource(Device device, Consumer<? super AdbDataSource> callback) {
         AdbDataSource dataSource = new AdbDataSource(device, adbDeviceList);
         deviceDisconnectedHandler.startWatching(dataSource);
         callback.accept(dataSource);

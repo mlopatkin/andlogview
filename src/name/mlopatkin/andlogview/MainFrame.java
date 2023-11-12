@@ -17,9 +17,6 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.device.AdbDeviceList;
-import name.mlopatkin.andlogview.device.Device;
-import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.logmodel.DataSource;
@@ -32,8 +29,9 @@ import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
+import name.mlopatkin.andlogview.ui.PendingDataSource;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
-import name.mlopatkin.andlogview.ui.device.AdbServices;
+import name.mlopatkin.andlogview.ui.device.AdbOpener;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
@@ -55,7 +53,6 @@ import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
-import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
@@ -78,7 +75,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -157,6 +153,8 @@ public class MainFrame implements MainFrameSearchUi {
     @Inject
     FileOpener fileOpener;
     @Inject
+    AdbOpener adbOpener;
+    @Inject
     TableColumnModelFactory columnModelFactory;
     @Inject
     FilterPanel filterPanel;
@@ -165,9 +163,7 @@ public class MainFrame implements MainFrameSearchUi {
     @Inject
     FileDialog fileDialog;
 
-    private @Nullable Cancellable pendingAdbOperation;
-    private @Nullable DeviceChangeObserver pendingAttacher;
-    private volatile boolean isWaitingForDevice;
+    private @Nullable PendingDataSource pendingDataSource;
 
     private final LogModel.Observer autoscrollObserver = new LogModel.Observer() {
         @Override
@@ -219,14 +215,32 @@ public class MainFrame implements MainFrameSearchUi {
         initialize(commandLine.isDebug());
     }
 
-    public void setSource(DataSource newSource) {
+    private void consumePendingSourceAsync(@Nullable DataSource newSource) {
+        if (EventQueue.isDispatchThread()) {
+            consumePendingSource(newSource);
+        } else {
+            EventQueue.invokeLater(() -> consumePendingSource(newSource));
+        }
+    }
+
+    private void consumePendingSource(@Nullable DataSource newSource) {
+        assert EventQueue.isDispatchThread();
+        // Clean up current pending operation.
+        // TODO(mlopatkin) think about potential race conditions
+        pendingDataSource = null;
+        if (newSource != null) {
+            setSource(newSource);
+        }
+    }
+
+    private void setSource(DataSource newSource) {
         assert EventQueue.isDispatchThread();
         DataSource oldSource = sourceHolder.getDataSource();
 
         if (oldSource != null) {
             oldSource.close();
         }
-        stopWaitingForDevice();
+
         sourceHolder.setDataSource(newSource);
         bookmarkModel.clear();
         bufferMenu.setAvailableBuffers(newSource.getAvailableBuffers());
@@ -247,14 +261,6 @@ public class MainFrame implements MainFrameSearchUi {
         logElements.setColumnModel(columns);
         UiHelper.addPopupMenu(
                 logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columns).createMenu());
-    }
-
-    public void setSourceAsync(final DataSource newSource) {
-        if (EventQueue.isDispatchThread()) {
-            setSource(newSource);
-        } else {
-            EventQueue.invokeLater(() -> setSource(newSource));
-        }
     }
 
     private @Nullable String mapPidToProcessName(int pid) {
@@ -425,54 +431,40 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     public void openFile(File file) {
-        cancelPendingAdbOperation();
-        fileOpener.openFileAsDataSource(file).thenAccept(MainFrame.this::setSourceAsync);
+        startOpeningDataSource(fileOpener.openFile(file, MainFrame.this::consumePendingSourceAsync));
     }
 
     private void selectAndOpenFile() {
-        cancelPendingAdbOperation();
-        fileDialog.selectFileToOpen().ifPresent(this::openFile);
+        startOpeningDataSource(fileOpener.selectAndOpenFile(MainFrame.this::consumePendingSourceAsync));
     }
 
     private void connectToDevice() {
-        withAdbServicesInteractive(adbServices -> {
-            var adbDataSourceFactory = adbServices.getDataSourceFactory();
-            adbDataSourceFactory.selectDeviceAndOpenAsDataSource(MainFrame.this::setSourceAsync);
-        });
+        startOpeningDataSource(
+                adbOpener.selectAndOpenDevice(this::consumePendingSourceAsync, this::disableAdbCommandsAsync));
     }
 
     private void selectAndDumpDevice() {
-        withAdbServicesInteractive(adbServices -> adbServices.getDumpDevicePresenter().selectDeviceAndDump());
+        // TODO(mlopatkin) A progress dialog here?
+        adbInitPresenter.withAdbServicesInteractive(
+                adbServices -> adbServices.getDumpDevicePresenter().selectDeviceAndDump(),
+                this::disableAdbCommandsAsync);
     }
 
     public void tryToConnectToFirstAvailableDevice() {
         waitForDevice();
     }
 
-    /**
-     * @see AdbServicesInitializationPresenter#withAdbServices(Consumer, Consumer)
-     */
-    private void withAdbServices(Consumer<? super AdbServices> action) {
-        cancelPendingAdbOperation();
-        // TODO(mlopatkin) withAdbServices is only used for the pending attacher. I'm not sure if all its usecases are
-        //  truly equal. E.g. unsubscribing from a device list is probably something that has to be done
-        //  non-interactively, without any error messages.
-        pendingAdbOperation = adbInitPresenter.withAdbServices(action, th -> disableAdbCommandsAsync());
+    private void startOpeningDataSource(PendingDataSource pendingDataSource) {
+        cancelPendingOperation();
+        this.pendingDataSource = pendingDataSource;
     }
 
-    /**
-     * @see AdbServicesInitializationPresenter#withAdbServicesInteractive(Consumer, Consumer)
-     */
-    private void withAdbServicesInteractive(Consumer<? super AdbServices> action) {
-        cancelPendingAdbOperation();
-        pendingAdbOperation = adbInitPresenter.withAdbServicesInteractive(action, th -> disableAdbCommandsAsync());
-    }
-
-    private void cancelPendingAdbOperation() {
-        var operation = pendingAdbOperation;
+    private void cancelPendingOperation() {
+        assert EventQueue.isDispatchThread();
+        var operation = pendingDataSource;
         if (operation != null) {
             operation.cancel();
-            pendingAdbOperation = null;
+            pendingDataSource = null;
         }
     }
 
@@ -480,48 +472,7 @@ public class MainFrame implements MainFrameSearchUi {
      * Wait for device to connect.
      */
     public void waitForDevice() {
-        synchronized (this) {
-            isWaitingForDevice = true;
-        }
-        DeviceChangeObserver attacher = pendingAttacher = new DeviceChangeObserver() {
-            @Override
-            public void onDeviceConnected(Device device) {
-                if (device.isOnline()) {
-                    connectDevicePending(device);
-                }
-            }
-
-            @Override
-            public void onDeviceChanged(Device device) {
-                if (device.isOnline()) {
-                    connectDevicePending(device);
-                }
-            }
-        };
-
-        withAdbServices(adbServices -> {
-            var deviceList = adbServices.getDeviceList();
-            deviceList.asObservable().addObserver(attacher);
-            getFirstOnlineDevice(deviceList).ifPresent(this::connectDevicePending);
-        });
-    }
-
-    private synchronized void connectDevicePending(Device device) {
-        if (!isWaitingForDevice) {
-            return;
-        }
-        isWaitingForDevice = false;
-        stopWaitingForDevice();
-        withAdbServices(
-                adbServices -> adbServices.getDataSourceFactory().openDeviceAsDataSource(device, this::setSourceAsync));
-    }
-
-    private void stopWaitingForDevice() {
-        DeviceChangeObserver attacher = pendingAttacher;
-        if (attacher != null) {
-            withAdbServices(adbServices -> adbServices.getDeviceList().asObservable().removeObserver(attacher));
-        }
-        pendingAttacher = null;
+        startOpeningDataSource(adbOpener.awaitDevice(this::consumePendingSourceAsync, this::disableAdbCommandsAsync));
     }
 
     private void saveToFile() {
@@ -549,16 +500,11 @@ public class MainFrame implements MainFrameSearchUi {
         }
     }
 
-    void disableAdbCommandsAsync() {
+    private void disableAdbCommandsAsync(Throwable ignored) {
         EventQueue.invokeLater(() -> {
             acConnectToDevice.setEnabled(false);
             acDumpDevice.setEnabled(false);
         });
-    }
-
-
-    private Optional<Device> getFirstOnlineDevice(AdbDeviceList deviceList) {
-        return deviceList.getDevices().stream().filter(Device::isOnline).findFirst();
     }
 
     public static class Factory implements Provider<MainFrame> {

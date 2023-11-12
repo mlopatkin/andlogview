@@ -16,23 +16,31 @@
 
 package name.mlopatkin.andlogview.ui.file;
 
+import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
+import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
+import static name.mlopatkin.andlogview.utils.MyFutures.toCancellable;
+
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.ImportProblem;
 import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
+import name.mlopatkin.andlogview.ui.FileDialog;
+import name.mlopatkin.andlogview.ui.PendingDataSource;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
+import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.TextUtils;
 
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.swing.JOptionPane;
@@ -46,11 +54,13 @@ public class FileOpener {
     private static final int MAX_PROBLEMS_DISPLAYED = 10;
 
     private final DialogFactory dialogFactory;
+    private final FileDialog fileDialog;
     private final LastUsedDirPref lastUsedDirPref;
 
     @Inject
-    FileOpener(DialogFactory dialogFactory, LastUsedDirPref lastUsedDirPref) {
+    FileOpener(DialogFactory dialogFactory, FileDialog fileDialog, LastUsedDirPref lastUsedDirPref) {
         this.dialogFactory = dialogFactory;
+        this.fileDialog = fileDialog;
         this.lastUsedDirPref = lastUsedDirPref;
     }
 
@@ -61,9 +71,32 @@ public class FileOpener {
      * This method must be called on UI thread.
      *
      * @param file the file to open
-     * @return the completion stage to be notified about successful file opening
+     * @param consumer the handler to process resulting data source
+     * @return the cancellable handle to stop initialization
      */
-    public CompletionStage<DataSource> openFileAsDataSource(File file) {
+    public PendingDataSource openFile(File file, Consumer<? super DataSource> consumer) {
+        var future = openFileAsDataSource(file);
+        future.thenAccept(consumer)
+                .exceptionally(exceptionHandler(ignoreCancellations(MyFutures::uncaughtException)));
+        return PendingDataSource.fromCancellable(toCancellable(future));
+    }
+
+    /**
+     * Presents a dialog to the user and tries to open a file as a {@link DataSource}. Handles the whole UI flow,
+     * including showing the error dialogs if things go wrong. Does not update the source in the main frame, though.
+     * <p>
+     * If the user cancels the dialog, then the consumer receives null as the data source.
+     * <p>
+     * This method must be called on UI thread.
+     *
+     * @param consumer the handler to process resulting data source
+     * @return the cancellable handle to stop initialization
+     */
+    public PendingDataSource selectAndOpenFile(Consumer<? super @Nullable DataSource> consumer) {
+        return fileDialog.selectFileToOpen().map(file -> openFile(file, consumer)).orElse(() -> false);
+    }
+
+    private CompletableFuture<DataSource> openFileAsDataSource(File file) {
         try {
             var importResult = FileDataSourceFactory.createDataSource(file);
             var parentFile = file.getAbsoluteFile().getParentFile();
@@ -123,7 +156,7 @@ public class FileOpener {
                 .forEachOrdered(msg -> output.append("<li>").append(msg).append("</li>"));
     }
 
-    private static CompletionStage<DataSource> failedFuture(Throwable th) {
+    private static CompletableFuture<DataSource> failedFuture(Throwable th) {
         var future = new CompletableFuture<DataSource>();
         future.completeExceptionally(th);
         return future;
