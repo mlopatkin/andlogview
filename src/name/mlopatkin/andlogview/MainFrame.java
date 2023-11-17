@@ -29,7 +29,6 @@ import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
-import name.mlopatkin.andlogview.ui.PendingDataSource;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbOpener;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
@@ -54,6 +53,7 @@ import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
 import name.mlopatkin.andlogview.utils.CommonChars;
+import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
@@ -74,7 +74,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
@@ -164,7 +166,7 @@ public class MainFrame implements MainFrameSearchUi {
     @Inject
     FileDialog fileDialog;
 
-    private @Nullable PendingDataSource<? extends @Nullable DataSource> pendingDataSource;
+    private @Nullable CompletableFuture<? extends @Nullable DataSource> pendingDataSource;
 
     private final LogModel.Observer autoscrollObserver = new LogModel.Observer() {
         @Override
@@ -216,7 +218,7 @@ public class MainFrame implements MainFrameSearchUi {
         initialize(commandLine.isDebug());
     }
 
-    private void consumePendingSourceAsync(PendingDataSource<? extends @Nullable DataSource> origin,
+    private void consumePendingSourceAsync(CompletableFuture<? extends @Nullable DataSource> origin,
             @Nullable DataSource newSource) {
         if (EventQueue.isDispatchThread()) {
             consumePendingSource(origin, newSource);
@@ -225,7 +227,7 @@ public class MainFrame implements MainFrameSearchUi {
         }
     }
 
-    private void consumePendingSource(PendingDataSource<? extends @Nullable DataSource> origin,
+    private void consumePendingSource(CompletableFuture<? extends @Nullable DataSource> origin,
             @Nullable DataSource newSource) {
         assert EventQueue.isDispatchThread();
         // Clean up current pending operation.
@@ -448,8 +450,7 @@ public class MainFrame implements MainFrameSearchUi {
 
     private void connectToDevice() {
         var source = adbOpener.selectAndOpenDevice();
-        source.whenFailed(this::disableAdbCommandsAsync);
-        startOpeningDataSource(() -> source);
+        startOpeningDataSource(() -> source, this::disableAdbCommandsAsync);
     }
 
     private void selectAndDumpDevice() {
@@ -464,7 +465,13 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     private void startOpeningDataSource(
-            Supplier<? extends PendingDataSource<? extends @Nullable DataSource>> pendingDataSource) {
+            Supplier<? extends CompletableFuture<? extends @Nullable DataSource>> pendingDataSource) {
+        startOpeningDataSource(pendingDataSource, MyFutures::uncaughtException);
+    }
+
+    private void startOpeningDataSource(
+            Supplier<? extends CompletableFuture<? extends @Nullable DataSource>> pendingDataSource,
+            Consumer<? super Throwable> failureHandler) {
         cancelPendingOperation();
         // Cancelling before obtaining is important, because obtaining a pending data source may start a nested event
         // loop and block.
@@ -474,14 +481,19 @@ public class MainFrame implements MainFrameSearchUi {
         // overwrite data source too.
         this.pendingDataSource = newPendingDataSource;
 
-        newPendingDataSource.whenAvailable((source) -> consumePendingSourceAsync(newPendingDataSource, source));
+        newPendingDataSource.handle(MyFutures.consumingHandler(
+                        source -> consumePendingSourceAsync(newPendingDataSource, source),
+                        MyFutures.ignoreCancellations(failureHandler)))
+                // The failureHandler has consumed all exceptions at this point.
+                // The next stage handles exceptions from the handler itself.
+                .exceptionally(MyFutures::uncaughtException);
     }
 
     private void cancelPendingOperation() {
         assert EventQueue.isDispatchThread();
         var operation = pendingDataSource;
         if (operation != null) {
-            operation.cancel();
+            operation.cancel(false);
             pendingDataSource = null;
         }
     }
@@ -491,8 +503,7 @@ public class MainFrame implements MainFrameSearchUi {
      */
     public void waitForDevice() {
         var source = adbOpener.awaitDevice();
-        source.whenFailed(this::disableAdbCommandsAsync);
-        startOpeningDataSource(() -> source);
+        startOpeningDataSource(() -> source, this::disableAdbCommandsAsync);
     }
 
     private void saveToFile() {

@@ -17,14 +17,12 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
-import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
-import name.mlopatkin.andlogview.ui.PendingDataSource;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -58,11 +56,12 @@ public class AdbOpener {
      *
      * @return the cancellable handle to stop initialization
      */
-    public PendingDataSource<@Nullable AdbDataSource> selectAndOpenDevice() {
-        var result = new PendingDataSource.CompletablePendingDataSource<AdbDataSource>();
-        result.addStage(presenter.withAdbServicesInteractive(
+    public CompletableFuture<@Nullable AdbDataSource> selectAndOpenDevice() {
+        var result = new CompletableFuture<@Nullable AdbDataSource>();
+
+        MyFutures.cancelBy(presenter.withAdbServicesInteractive(
                 adb -> adb.getDataSourceFactory().selectDeviceAndOpenAsDataSource(result::complete),
-                result::fail));
+                result::completeExceptionally), result);
         return result;
     }
 
@@ -73,14 +72,14 @@ public class AdbOpener {
      *
      * @return the cancellable handle to stop initialization
      */
-    public PendingDataSource<AdbDataSource> awaitDevice() {
-        var result = new PendingDataSource.CompletablePendingDataSource<AdbDataSource>();
-        result.addStage(presenter.withAdbServices(
-                adb -> result.addStage(awaitDevice(adb))
+    public CompletableFuture<AdbDataSource> awaitDevice() {
+        var result = new CompletableFuture<AdbDataSource>();
+        MyFutures.cancelBy(presenter.withAdbServices(
+                adb -> MyFutures.cancelBy(awaitDevice(adb), result)
                         .thenAccept(
                                 device -> adb.getDataSourceFactory().openDeviceAsDataSource(device, result::complete))
-                        .exceptionally(exceptionHandler(ignoreCancellations(result::fail))),
-                result::fail));
+                        .exceptionally(exceptionHandler(result::completeExceptionally)),
+                result::completeExceptionally), result);
         return result;
     }
 

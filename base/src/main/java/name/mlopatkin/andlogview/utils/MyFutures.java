@@ -18,11 +18,14 @@ package name.mlopatkin.andlogview.utils;
 
 import name.mlopatkin.andlogview.base.MyThrowables;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
@@ -57,7 +60,7 @@ public final class MyFutures {
      */
     public static Consumer<Throwable> ignoreCancellations(Consumer<? super Throwable> failureHandler) {
         return th -> {
-            if (!(MyThrowables.unwrapUninteresting(th) instanceof CancellationException)) {
+            if (!isCancellation(th)) {
                 failureHandler.accept(th);
             }
         };
@@ -209,6 +212,49 @@ public final class MyFutures {
     }
 
     /**
+     * Arranges the futures in such a way that cancellation of the {@code canceller} cancels the provided
+     * {@code future}. This method returns the given {@code future} to allow for simpler expressions. Cancellations of
+     * canceller's upstream stages also cancel the {@code future}, if they cause the canceller to complete.
+     *
+     * @param future the future to be cancelled
+     * @param canceller the stage, cancellation of which cancels the {@code future}
+     * @param <F> the exact type of the given {@code future}
+     * @return the {@code future}
+     */
+    @CanIgnoreReturnValue
+    public static <F extends CompletableFuture<?>> F cancelBy(F future, CompletionStage<?> canceller) {
+        canceller.exceptionally(th -> {
+            if (isCancellation(th)) {
+                future.cancel(false);
+            }
+            return null;
+        }).exceptionally(MyFutures::uncaughtException);
+        return future;
+    }
+
+    /**
+     * Arranges the futures in such a way that cancellation of the {@code canceller} cancels the provided
+     * {@code cancellable}. This method returns the given {@code cancellable} to allow for simpler expressions.
+     * Cancellations of canceller's upstream stages also cancel the {@code cancellable}, if they cause the canceller to
+     * complete.
+     *
+     * @param cancellable the cancellable to be cancelled
+     * @param canceller the stage, cancellation of which cancels the {@code cancellable}
+     * @param <T> the exact type of the given {@code cancellable}
+     * @return the {@code cancellable}
+     */
+    @CanIgnoreReturnValue
+    public static <T extends Cancellable> T cancelBy(T cancellable, CompletionStage<?> canceller) {
+        canceller.exceptionally(th -> {
+            if (isCancellation(th)) {
+                cancellable.cancel();
+            }
+            return null;
+        }).exceptionally(MyFutures::uncaughtException);
+        return cancellable;
+    }
+
+    /**
      * Helper for {@link CompletableFuture#exceptionally(Function)} that forwards exception to thread's default
      * exception handler. The failure is rethrown, so the downstream chain still fails.
      *
@@ -226,5 +272,9 @@ public final class MyFutures {
     @SuppressWarnings("unchecked")
     private static <E extends Throwable> RuntimeException sneakyRethrow(Throwable th) throws E {
         throw (E) th;
+    }
+
+    private static boolean isCancellation(Throwable th) {
+        return (MyThrowables.unwrapUninteresting(th) instanceof CancellationException);
     }
 }

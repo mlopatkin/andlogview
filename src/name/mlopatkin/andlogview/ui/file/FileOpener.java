@@ -25,7 +25,6 @@ import name.mlopatkin.andlogview.liblogcat.file.UnrecognizedFormatException;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
 import name.mlopatkin.andlogview.ui.FileDialog;
-import name.mlopatkin.andlogview.ui.PendingDataSource;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.TextUtils;
@@ -69,8 +68,8 @@ public class FileOpener {
      * @param file the file to open
      * @return the cancellable handle to stop initialization
      */
-    public PendingDataSource<DataSource> openFile(File file) {
-        return PendingDataSource.fromFuture(openFileAsDataSource(file));
+    public CompletableFuture<DataSource> openFile(File file) {
+        return openFileAsDataSource(file);
     }
 
     /**
@@ -83,10 +82,10 @@ public class FileOpener {
      *
      * @return the cancellable handle to stop initialization
      */
-    public PendingDataSource<@Nullable DataSource> selectAndOpenFile() {
+    public CompletableFuture<@Nullable DataSource> selectAndOpenFile() {
         return fileDialog.selectFileToOpen()
-                .map(this::openFile)
-                .orElse(PendingDataSource.newEmpty());
+                .map(this::openFileAsDataSource)
+                .orElse(CompletableFuture.completedFuture(null));
     }
 
     private CompletableFuture<DataSource> openFileAsDataSource(File file) {
