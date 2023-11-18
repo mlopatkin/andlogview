@@ -26,7 +26,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Optional;
 import java.util.concurrent.Executor;
 
 class AdbManagerImpl implements AdbManager {
@@ -72,11 +71,6 @@ class AdbManagerImpl implements AdbManager {
             }
             return server = createServerLocked();
         }
-    }
-
-    @Override
-    public Optional<AdbServer> getRunningServer() {
-        return Optional.ofNullable(server);
     }
 
     @GuardedBy("lock")

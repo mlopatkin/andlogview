@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.device;
 
 import name.mlopatkin.andlogview.base.AtExitManager;
 
-import java.util.Optional;
 import java.util.concurrent.Executor;
 
 /**
@@ -47,14 +46,6 @@ public interface AdbManager {
      * @throws AdbException if the server cannot be started
      */
     AdbServer startServer() throws AdbException;
-
-    /**
-     * Returns the current running AdbServer if any. Doesn't start the server if it isn't started already. This method
-     * doesn't block.
-     *
-     * @return the current started server or empty Optional if it isn't running
-     */
-    Optional<AdbServer> getRunningServer();
 
     /**
      * Creates an instance of the AdbManager but doesn't initialize the DDMLIB yet.
