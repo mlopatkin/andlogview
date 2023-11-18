@@ -196,7 +196,7 @@ class AdbServicesBridgeTest {
     }
 
     private void whenServerFailsToStart() throws AdbException {
-        when(adbManager.startServer()).thenThrow(new AdbException("Failed to create server"));
+        when(adbManager.startServer(any())).thenThrow(new AdbException("Failed to create server"));
     }
 
     private static void ensureCompleted(Future<?> f) {

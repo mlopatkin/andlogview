@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
-import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -36,29 +35,18 @@ class AdbServerImpl implements AdbServer, AdbFacade {
     // server instance. Currently, this only happens when someone changes the path to the ADB executable.
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
 
-    private final Object lock = new Object();
-
-    @GuardedBy("lock")
-    private AndroidDebugBridge currentBridge;
+    private final AndroidDebugBridge currentBridge;
     private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList;
 
     public AdbServerImpl(AdbLocation adbLocation, Executor ioExecutor) throws AdbException {
         dispatchingDeviceList =
                 lazy(() -> DispatchingDeviceList.create(this, new DeviceProvisionerImpl(this, ioExecutor)));
-        synchronized (lock) {
-            currentBridge = createBridge(adbLocation);
-        }
+        currentBridge = createBridge(adbLocation);
     }
 
     @Override
     public AdbDeviceList getDeviceList(Executor listenerExecutor) {
         return new AdbDeviceListImpl(dispatchingDeviceList.get(), listenerExecutor);
-    }
-
-    public void updateConnection(AdbLocation adbLocation) throws AdbException {
-        synchronized (lock) {
-            currentBridge = createBridge(adbLocation);
-        }
     }
 
     private static AndroidDebugBridge createBridge(AdbLocation adbLocation) throws AdbException {
@@ -88,9 +76,8 @@ class AdbServerImpl implements AdbServer, AdbFacade {
     }
 
     private AndroidDebugBridge getBridge() {
-        synchronized (lock) {
-            return currentBridge;
-        }
+        return currentBridge;
+
     }
 
     @Override
@@ -106,5 +93,9 @@ class AdbServerImpl implements AdbServer, AdbFacade {
     @Override
     public void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
         AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
+    }
+
+    public void stop() {
+        // Do nothing for now.
     }
 }

@@ -40,41 +40,27 @@ class AdbManagerImpl implements AdbManager {
 
     @GuardedBy("lock")
     private boolean initialized;
-    private volatile @Nullable AdbServerImpl server;
-
     @GuardedBy("lock")
-    private AdbLocation adbLocation;
+    private @Nullable AdbServerImpl server;
 
-    AdbManagerImpl(AtExitManager atExitManager, Executor ioExecutor, AdbLocation initialAdbLocation) {
+    AdbManagerImpl(AtExitManager atExitManager, Executor ioExecutor) {
         this.atExitManager = atExitManager;
         this.ioExecutor = ioExecutor;
-        this.adbLocation = initialAdbLocation;
     }
 
     @Override
-    public void setAdbLocation(AdbLocation adbLocation) throws AdbException {
+    public AdbServer startServer(AdbLocation adbLocation) throws AdbException {
         synchronized (lock) {
-            this.adbLocation = adbLocation;
-            AdbServerImpl theServer = server;
+            var theServer = server;
             if (theServer != null) {
-                theServer.updateConnection(adbLocation);
+                theServer.stop();
             }
-        }
-    }
-
-    @Override
-    public AdbServer startServer() throws AdbException {
-        synchronized (lock) {
-            AdbServerImpl theServer = server;
-            if (theServer != null) {
-                return theServer;
-            }
-            return server = createServerLocked();
+            return server = createServerLocked(adbLocation);
         }
     }
 
     @GuardedBy("lock")
-    private AdbServerImpl createServerLocked() throws AdbException {
+    private AdbServerImpl createServerLocked(AdbLocation adbLocation) throws AdbException {
         initIfNeededLocked();
         return new AdbServerImpl(adbLocation, ioExecutor);
     }
@@ -103,6 +89,11 @@ class AdbManagerImpl implements AdbManager {
     private void terminate() {
         synchronized (lock) {
             logger.info("Tear down DDMLIB");
+            var theServer = server;
+            if (theServer != null) {
+                logger.info("Stop ADB server");
+                theServer.stop();
+            }
             AndroidDebugBridge.terminate();
         }
     }

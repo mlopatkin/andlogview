@@ -27,35 +27,25 @@ import java.util.concurrent.Executor;
  * The implementation is thread-safe.
  */
 public interface AdbManager {
-
-    /**
-     * Updates the current location of the ADB executable. If there is an active {@link AdbServer} then it is
-     * restarted. This method may block for a significant period of time.
-     *
-     * @param adbLocation the new location of the ADB executable
-     * @throws AdbException if the server cannot be started in the new location
-     */
-    void setAdbLocation(AdbLocation adbLocation) throws AdbException;
-
     /**
      * Ensures that the ADB server is running and sets up the connection. If the server isn't running then it is
-     * started. If the running server doesn't match the configured executable then it is killed and a new matching one
-     * os started. This method may block for a significant period of time.
+     * started, otherwise the running server is stopped and a new one starts. This method may block for a significant
+     * period of time.
      *
+     * @param adbLocation the ADB location to use when starting server
      * @return the server
      * @throws AdbException if the server cannot be started
      */
-    AdbServer startServer() throws AdbException;
+    AdbServer startServer(AdbLocation adbLocation) throws AdbException;
 
     /**
      * Creates an instance of the AdbManager but doesn't initialize the DDMLIB yet.
      *
      * @param atExitManager the {@link AtExitManager} to register cleanup hooks
      * @param ioExecutor the executor for non-CPU intensive blocking background work
-     * @param initialAdbLocation the ADB location to use when starting server
      * @return the AdbManager
      */
-    static AdbManager create(AtExitManager atExitManager, Executor ioExecutor, AdbLocation initialAdbLocation) {
-        return new AdbManagerImpl(atExitManager, ioExecutor, initialAdbLocation);
+    static AdbManager create(AtExitManager atExitManager, Executor ioExecutor) {
+        return new AdbManagerImpl(atExitManager, ioExecutor);
     }
 }

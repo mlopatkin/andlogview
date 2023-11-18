@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.base.AtExitManager;
 import name.mlopatkin.andlogview.device.AdbManager;
-import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 
 import dagger.Module;
 import dagger.Provides;
@@ -35,8 +34,8 @@ public abstract class DeviceModule {
 
     @Provides
     @Singleton
-    static AdbManager getAdbManager(AtExitManager atExitManager, @Named(AppExecutors.FILE_EXECUTOR) Executor ioExecutor,
-            AdbConfigurationPref adbLocation) {
-        return AdbManager.create(atExitManager, ioExecutor, adbLocation);
+    static AdbManager getAdbManager(AtExitManager atExitManager,
+            @Named(AppExecutors.FILE_EXECUTOR) Executor ioExecutor) {
+        return AdbManager.create(atExitManager, ioExecutor);
     }
 }

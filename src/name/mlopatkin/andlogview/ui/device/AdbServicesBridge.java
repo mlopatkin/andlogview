@@ -101,10 +101,9 @@ public class AdbServicesBridge implements AdbServicesStatus {
         assert adbSubcomponent == null;
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        final var result = adbSubcomponent = runAsync(() -> {
-            adbManager.setAdbLocation(adbConfigurationPref);
-            return adbManager.startServer();
-        }, adbInitExecutor).thenApplyAsync(adbSubcomponentFactory::build, uiExecutor);
+        final var result = adbSubcomponent =
+                runAsync(() -> adbManager.startServer(adbConfigurationPref), adbInitExecutor)
+                        .thenApplyAsync(adbSubcomponentFactory::build, uiExecutor);
 
         if (!result.isDone()) {
             // This happens always unless direct executors are used.
