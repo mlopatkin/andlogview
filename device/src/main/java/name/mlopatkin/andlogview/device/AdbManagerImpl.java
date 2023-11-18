@@ -41,8 +41,7 @@ class AdbManagerImpl implements AdbManager {
 
     @GuardedBy("lock")
     private boolean initialized;
-    @Nullable
-    private volatile AdbServerImpl server;
+    private volatile @Nullable AdbServerImpl server;
 
     @GuardedBy("lock")
     private AdbLocation adbLocation;

@@ -24,8 +24,7 @@ import java.util.function.Predicate;
 
 public class TestActionHandler<T> {
     private final T nullAction;
-    @Nullable
-    private T action;
+    private @Nullable T action;
 
     public TestActionHandler(T nullAction) {
         this.nullAction = nullAction;

@@ -82,8 +82,7 @@ class SearchStatusPresenterTest {
     }
 
     private static class MockView implements SearchStatusPresenter.View {
-        @Nullable
-        private String currentMessage;
+        private @Nullable String currentMessage;
 
         public Optional<String> getDisplayMessage() {
             return Optional.ofNullable(currentMessage);

@@ -23,8 +23,7 @@ class ColorTypeAdapter extends TypeAdapter<Color> {
     }
 
     @Override
-    @Nullable
-    public Color read(JsonReader in) throws IOException {
+    public @Nullable Color read(JsonReader in) throws IOException {
         JsonToken nextToken = in.peek();
         return switch (nextToken) {
             case NULL -> null;

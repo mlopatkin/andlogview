@@ -79,8 +79,7 @@ public class AdbConfigurationPref implements AdbLocation {
     private final SystemPathResolver systemPathResolver;
 
     private String rawAdbLocation;
-    @Nullable
-    private File resolvedExecutable;
+    private @Nullable File resolvedExecutable;
 
     private boolean isAutoReconnectEnabled;
 

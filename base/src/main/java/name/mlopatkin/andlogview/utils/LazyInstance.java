@@ -44,8 +44,7 @@ public abstract class LazyInstance<T> implements Lazy<T> {
      */
     public static <T> LazyInstance<T> lazy(Supplier<? extends T> supplier) {
         return new LazyInstance<>() {
-            @Nullable
-            private volatile T instance;
+            private volatile @Nullable T instance;
 
             @Override
             public T get() {

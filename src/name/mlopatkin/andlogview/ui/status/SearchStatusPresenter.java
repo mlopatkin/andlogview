@@ -43,8 +43,7 @@ public class SearchStatusPresenter {
     private final View view;
     private final UiThreadScheduler timer;
 
-    @Nullable
-    private Cancellable pendingHideJob;
+    private @Nullable Cancellable pendingHideJob;
 
     @Inject
     public SearchStatusPresenter(View view, UiThreadScheduler timer) {

@@ -31,15 +31,11 @@ import javax.swing.JOptionPane;
 
 public class ConfigurationDialogView implements ConfigurationDialogPresenter.View {
     private final DialogFactory dialogFactory;
-    @Nullable
-    private ConfigurationDialogUi dialog;
+    private @Nullable ConfigurationDialogUi dialog;
 
-    @MonotonicNonNull
-    private Runnable onCommit;
-    @MonotonicNonNull
-    private Runnable onDiscard;
-    @MonotonicNonNull
-    private Predicate<String> adbLocationChecker;
+    private @MonotonicNonNull Runnable onCommit;
+    private @MonotonicNonNull Runnable onDiscard;
+    private @MonotonicNonNull Predicate<String> adbLocationChecker;
 
     @Inject
     public ConfigurationDialogView(DialogFactory dialogFactory) {

@@ -104,8 +104,7 @@ public class LineReader implements Closeable {
      * @return the next line of the input or {@code null} if the input is exhausted.
      * @throws IOException if reading the input fails
      */
-    @Nullable
-    public CharSequence readLine() throws IOException {
+    public @Nullable CharSequence readLine() throws IOException {
         // Initially, this method was written to include EOLN in the result. It turned out to be unnecessary, but I
         // keep some comments down the line on how to return this behavior.
         consumeLfTailIfNeeded();

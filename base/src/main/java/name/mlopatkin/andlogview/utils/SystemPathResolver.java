@@ -140,9 +140,8 @@ public abstract class SystemPathResolver {
             var iterator = new AbstractIterator<String>() {
                 private int pos;
 
-                @Nullable
                 @Override
-                protected String computeNext() {
+                protected @Nullable String computeNext() {
                     var result = new StringBuilder();
                     boolean inQuotes = false;
                     while (pos < pathVar.length()) {

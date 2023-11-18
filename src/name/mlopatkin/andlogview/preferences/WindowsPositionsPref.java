@@ -156,8 +156,7 @@ public class WindowsPositionsPref {
 
     @Immutable
     private static class FrameInfo {
-        @Nullable
-        private final FrameLocation location;
+        private final @Nullable FrameLocation location;
         private final FrameDimensions dimensions;
 
         public FrameInfo(@Nullable FrameLocation location, FrameDimensions dimensions) {
@@ -183,10 +182,8 @@ public class WindowsPositionsPref {
 
     // Serialized form of the frame info has no built-in checks
     private static class FrameInfoSerialized {
-        @Nullable
-        private final Integer x;
-        @Nullable
-        private final Integer y;
+        private final @Nullable Integer x;
+        private final @Nullable Integer y;
         private final int width;
         private final int height;
 

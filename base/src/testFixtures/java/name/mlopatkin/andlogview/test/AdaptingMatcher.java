@@ -36,8 +36,7 @@ import java.util.function.Function;
  * @param <R> the type of the method
  */
 public class AdaptingMatcher<T, R> extends TypeSafeMatcher<T> {
-    @Nullable
-    private final String adapterDescription;
+    private final @Nullable String adapterDescription;
 
     private final Function<T, R> adapter;
     private final Matcher<? super R> matcher;

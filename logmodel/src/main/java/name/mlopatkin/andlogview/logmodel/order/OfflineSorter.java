@@ -179,9 +179,8 @@ public class OfflineSorter {
             this.records = records;
         }
 
-        @Nullable
         @Override
-        protected List<LogRecord> computeNext() {
+        protected @Nullable List<LogRecord> computeNext() {
             if (pos == records.size()) {
                 return endOfData();
             }
