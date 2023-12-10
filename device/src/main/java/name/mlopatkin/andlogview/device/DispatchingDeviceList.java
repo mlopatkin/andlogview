@@ -32,6 +32,7 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,13 +40,15 @@ import java.util.List;
 /**
  * This is the primary dispatcher for AdbDeviceList implementations.
  */
-class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
+class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeable {
     private static final Logger logger = Logger.getLogger(DispatchingDeviceList.class);
 
     private final Object deviceLock = new Object();
     private final Object observerLock = new Object();
 
+    private final AdbFacade adb;
     private final DeviceProvisioner deviceProvisioner;
+    private final AdbFacade.AdbBridgeObserver bridgeObserver = this::close;
 
     @GuardedBy("deviceLock")
     private final LinkedHashMap<DeviceKey, ProvisionalDevice> devices = new LinkedHashMap<>();
@@ -129,17 +132,20 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
     }
 
     public static DispatchingDeviceList create(AdbFacade adb, DeviceProvisioner deviceProvisioner) {
-        DispatchingDeviceList result = new DispatchingDeviceList(deviceProvisioner);
-        result.init(adb);
+        DispatchingDeviceList result = new DispatchingDeviceList(adb, deviceProvisioner);
+        result.init();
         return result;
     }
 
-    private DispatchingDeviceList(DeviceProvisioner deviceProvisioner) {
+    private DispatchingDeviceList(AdbFacade adb, DeviceProvisioner deviceProvisioner) {
+        this.adb = adb;
         this.deviceProvisioner = deviceProvisioner;
     }
 
-    private void init(AdbFacade adb) {
+    private void init() {
         adb.addDeviceChangeListener(deviceChangeListener);
+        adb.addBridgeObserver(bridgeObserver);
+
         IDevice[] knownDevices = adb.getDevices();
         ArrayList<ProvisionalDeviceImpl> devicesToProvision = new ArrayList<>(knownDevices.length);
         synchronized (deviceLock) {
@@ -253,18 +259,36 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver> {
         logger.debug(formatDeviceLog(device, "Failed to complete device provisioning"), exception);
         synchronized (deviceLock) {
             devices.remove(device.getDeviceKey(), device);
+            // TODO(mlopatkin) We don't notify clients about the failed provisioning. Is it a problem besides having a
+            //  disabled entry in the device list?
         }
     }
 
     private void finishProvisioning(ProvisionalDeviceImpl provisionalDevice, DeviceImpl provisionedDevice) {
         logger.debug(formatDeviceLog(provisionalDevice, "Completed provisioning"));
+        boolean replaced;
         synchronized (deviceLock) {
-            if (devices.replace(provisionalDevice.getDeviceKey(), provisionalDevice, provisionedDevice)) {
-                notifyDeviceConnected(provisionedDevice);
-            } else {
-                assert false :
-                        "Provisioned device was replaced before, got " + devices.get(provisionedDevice.getDeviceKey());
-            }
+            replaced = devices.replace(provisionalDevice.getDeviceKey(), provisionalDevice, provisionedDevice);
+        }
+        if (replaced) {
+            // The device list might be already closed.
+            notifyDeviceConnected(provisionedDevice);
+        }
+    }
+
+    @Override
+    public void close() {
+        adb.removeDeviceChangeListener(deviceChangeListener);
+        adb.removeBridgeObserver(bridgeObserver);
+
+        ImmutableList<ProvisionalDevice> currentDevices;
+        synchronized (deviceLock) {
+            currentDevices = ImmutableList.copyOf(devices.values());
+            devices.clear();
+        }
+
+        for (ProvisionalDevice device : currentDevices) {
+            notifyDeviceDisconnected(device);
         }
     }
 }

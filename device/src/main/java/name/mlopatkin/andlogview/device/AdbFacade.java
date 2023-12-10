@@ -23,9 +23,17 @@ import com.android.ddmlib.IDevice;
  * A facade for the {@link AndroidDebugBridge}. Main purpose is to facilitate testing.
  */
 interface AdbFacade {
+    interface AdbBridgeObserver {
+        void onAdbBridgeClosed();
+    }
+
     IDevice[] getDevices();
 
     void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener);
 
     void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener);
+
+    void addBridgeObserver(AdbBridgeObserver observer);
+
+    void removeBridgeObserver(AdbBridgeObserver observer);
 }

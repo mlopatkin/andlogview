@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -36,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -87,7 +87,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void notificationAboutConnectedDeviceIsPassedToRegisteredObserver() {
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
         DispatchingDeviceList deviceList = createDeviceList();
 
         deviceList.addObserver(observer);
@@ -101,7 +101,7 @@ class DispatchingDeviceListTest {
     void disconnectingInitiallyConnectedDeviceTriggersNotification() {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         adbFacade.connectDevice(createDevice("DeviceB"));
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
         DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
@@ -113,7 +113,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void disconnectingConnectedDeviceTriggersNotification() {
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
         DispatchingDeviceList deviceList = createDeviceList();
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
@@ -134,7 +134,7 @@ class DispatchingDeviceListTest {
                     IDevice.CHANGE_BUILD_INFO | IDevice.CHANGE_CLIENT_LIST | IDevice.CHANGE_STATE})
     void deviceChangeNotifiesObservers(int changeMask) {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
         DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
@@ -146,7 +146,7 @@ class DispatchingDeviceListTest {
     @Test
     void deviceClientListChangeDoesNotNotifyObservers() {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
         DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
@@ -157,7 +157,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void outOfOrderDisconnectIsTolerated() {
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
         DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
@@ -168,7 +168,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void changeBeforeConnectIsTolerated() {
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
         DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
@@ -180,7 +180,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void outOfOrderChangeAndConnectAreTolerated() {
-        DeviceChangeObserver observer = Mockito.mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
         DispatchingDeviceList deviceList = createDeviceList();
         deviceList.addObserver(observer);
 
@@ -195,6 +195,44 @@ class DispatchingDeviceListTest {
         order.verifyNoMoreInteractions();
     }
 
+    @Test
+    void closingDeviceListUnsubscribesItFromUpdates() {
+        var deviceList = createDeviceList();
+        deviceList.close();
+
+        assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+        assertThat(adbFacade.hasRegisteredBridgeObservers()).isFalse();
+    }
+
+    @Test
+    void closingDeviceListNotifiesAboutDisconnectOfAllDevices() {
+        adbFacade.connectDevice(createDevice("DeviceA"));
+        var deviceList = createDeviceList();
+
+        var observer = mock(DeviceChangeObserver.class);
+        deviceList.addObserver(observer);
+        deviceList.close();
+
+        verify(observer).onDeviceDisconnected(argThat(hasSerial("DeviceA")));
+    }
+
+    @Test
+    void provisionUpdatesDoNotTriggerNotificationsAfterClose() throws Exception {
+        adbFacade.connectDevice(createDevice("DeviceA"));
+        var provisioner = new FakeDeviceProvisioner();
+        var deviceList = createDeviceList(provisioner);
+
+        var observer = mock(DeviceChangeObserver.class);
+        deviceList.addObserver(observer);
+        deviceList.close();
+        var inOrder = inOrder(observer);
+        inOrder.verify(observer).onDeviceDisconnected(argThat(hasSerial("DeviceA")));
+
+        provisioner.completeDeviceProvisioning("DeviceA");
+
+        inOrder.verifyNoMoreInteractions();
+    }
+
     private IDevice createDevice(String serial) {
         IDevice result = StrictMock.strictMock(IDevice.class);
         doReturn(serial).when(result).getSerialNumber();
@@ -203,7 +241,11 @@ class DispatchingDeviceListTest {
     }
 
     private DispatchingDeviceList createDeviceList() {
-        return DispatchingDeviceList.create(adbFacade, createProvisioner());
+        return createDeviceList(createProvisioner());
+    }
+
+    private DispatchingDeviceList createDeviceList(DeviceProvisioner provisioner) {
+        return DispatchingDeviceList.create(adbFacade, provisioner);
     }
 
     @SuppressWarnings("Convert2Lambda")

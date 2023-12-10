@@ -28,6 +28,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
 class AdbServerImpl implements AdbServer, AdbFacade {
@@ -37,11 +39,12 @@ class AdbServerImpl implements AdbServer, AdbFacade {
 
     private final AndroidDebugBridge currentBridge;
     private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList;
+    private final List<AdbBridgeObserver> bridgeObservers = new CopyOnWriteArrayList<>();
 
     public AdbServerImpl(AdbLocation adbLocation, Executor ioExecutor) throws AdbException {
+        currentBridge = createBridge(adbLocation);
         dispatchingDeviceList =
                 lazy(() -> DispatchingDeviceList.create(this, new DeviceProvisionerImpl(this, ioExecutor)));
-        currentBridge = createBridge(adbLocation);
     }
 
     @Override
@@ -95,7 +98,19 @@ class AdbServerImpl implements AdbServer, AdbFacade {
         AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
     }
 
+    @Override
+    public void addBridgeObserver(AdbBridgeObserver observer) {
+        bridgeObservers.add(observer);
+    }
+
+    @Override
+    public void removeBridgeObserver(AdbBridgeObserver observer) {
+        bridgeObservers.remove(observer);
+    }
+
     public void stop() {
-        // Do nothing for now.
+        for (AdbBridgeObserver observer : bridgeObservers) {
+            observer.onAdbBridgeClosed();
+        }
     }
 }
