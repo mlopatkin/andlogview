@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.MyFutures;
@@ -61,6 +62,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
     private final Executor uiExecutor;
     private final Executor adbInitExecutor;
+    private final GlobalAdbDeviceList adbDeviceList;
     private final Subject<Observer> statusObservers = new Subject<>();
 
     // TODO(mlopatkin) My attempt to hide connection replacement logic in the AdbServer failed. What if the connection
@@ -80,6 +82,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
         this.adbSubcomponentFactory = adbSubcomponentFactory;
         this.uiExecutor = uiExecutor;
         this.adbInitExecutor = adbInitExecutor;
+        this.adbDeviceList = new GlobalAdbDeviceList(uiExecutor);
     }
 
     /**
@@ -103,7 +106,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
 
         final var result = adbSubcomponent =
                 runAsync(() -> adbManager.startServer(adbConfigurationPref), adbInitExecutor)
-                        .thenApplyAsync(adbSubcomponentFactory::build, uiExecutor);
+                        .thenApplyAsync(this::buildServices, uiExecutor);
 
         if (!result.isDone()) {
             // This happens always unless direct executors are used.
@@ -121,6 +124,10 @@ public class AdbServicesBridge implements AdbServicesStatus {
         return result;
     }
 
+    private AdbServices buildServices(AdbServer adbServer) {
+        adbDeviceList.setAdbServer(adbServer);
+        return adbSubcomponentFactory.build(adbDeviceList);
+    }
 
     private void onAdbInitFinished(@Nullable Throwable maybeFailure, Stopwatch timeTracing) {
         logger.info("Initialized adb server in " + timeTracing.elapsed(TimeUnit.MILLISECONDS) + "ms");
