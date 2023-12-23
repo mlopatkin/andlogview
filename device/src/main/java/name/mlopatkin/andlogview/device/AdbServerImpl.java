@@ -33,8 +33,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
 class AdbServerImpl implements AdbServer, AdbFacade {
-    // AdbServerImpl wraps the current connection to the adb server. The connection can be replaced within the same
-    // server instance. Currently, this only happens when someone changes the path to the ADB executable.
+    // AdbServerImpl wraps the current connection to the adb server. The connection cannot be replaced within the same
+    // server instance, a new server instance should be created instead.
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
 
     private final AndroidDebugBridge currentBridge;
@@ -80,7 +80,6 @@ class AdbServerImpl implements AdbServer, AdbFacade {
 
     private AndroidDebugBridge getBridge() {
         return currentBridge;
-
     }
 
     @Override
