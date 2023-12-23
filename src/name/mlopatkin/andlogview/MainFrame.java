@@ -32,6 +32,7 @@ import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbOpener;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
+import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.Column;
@@ -76,7 +77,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
@@ -165,6 +165,8 @@ public class MainFrame implements MainFrameSearchUi {
     MainFilterController mainFilterController;
     @Inject
     FileDialog fileDialog;
+    @Inject
+    AdbServicesStatus adbServicesStatus;
 
     private @Nullable CompletableFuture<? extends @Nullable DataSource> pendingDataSource;
 
@@ -438,6 +440,9 @@ public class MainFrame implements MainFrameSearchUi {
         mainMenu.add(mnFilters);
 
         mainFrameUi.setJMenuBar(mainMenu);
+
+        adbServicesStatus.asObservable().addObserver(this::onAdbServicesStatusChanged);
+        onAdbServicesStatusChanged(adbServicesStatus.getStatus());
     }
 
     public void openFile(File file) {
@@ -450,14 +455,15 @@ public class MainFrame implements MainFrameSearchUi {
 
     private void connectToDevice() {
         var source = adbOpener.selectAndOpenDevice();
-        startOpeningDataSource(() -> source, this::disableAdbCommandsAsync);
+        startOpeningDataSource(() -> source);
     }
 
     private void selectAndDumpDevice() {
         // TODO(mlopatkin) A progress dialog here?
         adbInitPresenter.withAdbServicesInteractive(
                 adbServices -> adbServices.getDumpDevicePresenter().selectDeviceAndDump(),
-                this::disableAdbCommandsAsync);
+                // TODO(mlopatkin) see startOpeningDataSource
+                th -> {});
     }
 
     public void tryToConnectToFirstAvailableDevice() {
@@ -466,12 +472,6 @@ public class MainFrame implements MainFrameSearchUi {
 
     private void startOpeningDataSource(
             Supplier<? extends CompletableFuture<? extends @Nullable DataSource>> pendingDataSource) {
-        startOpeningDataSource(pendingDataSource, MyFutures::uncaughtException);
-    }
-
-    private void startOpeningDataSource(
-            Supplier<? extends CompletableFuture<? extends @Nullable DataSource>> pendingDataSource,
-            Consumer<? super Throwable> failureHandler) {
         cancelPendingOperation();
         // Cancelling before obtaining is important, because obtaining a pending data source may start a nested event
         // loop and block.
@@ -483,7 +483,11 @@ public class MainFrame implements MainFrameSearchUi {
 
         newPendingDataSource.handle(MyFutures.consumingHandler(
                         source -> consumePendingSourceAsync(newPendingDataSource, source),
-                        MyFutures.ignoreCancellations(failureHandler)))
+                        th -> {
+                            // TODO(mlopatkin) openers already show error dialogs for failures. However, adb opener
+                            //  also propagates the loading failure here, it probably no longer should? Or how should
+                            //  we communicate loading aborted because of error?
+                        }))
                 // The failureHandler has consumed all exceptions at this point.
                 // The next stage handles exceptions from the handler itself.
                 .exceptionally(MyFutures::uncaughtException);
@@ -503,7 +507,7 @@ public class MainFrame implements MainFrameSearchUi {
      */
     public void waitForDevice() {
         var source = adbOpener.awaitDevice();
-        startOpeningDataSource(() -> source, this::disableAdbCommandsAsync);
+        startOpeningDataSource(() -> source);
     }
 
     private void saveToFile() {
@@ -531,11 +535,10 @@ public class MainFrame implements MainFrameSearchUi {
         }
     }
 
-    private void disableAdbCommandsAsync(Throwable ignored) {
-        EventQueue.invokeLater(() -> {
-            acConnectToDevice.setEnabled(false);
-            acDumpDevice.setEnabled(false);
-        });
+    private void onAdbServicesStatusChanged(AdbServicesStatus.StatusValue newStatus) {
+        boolean adbInitFailed = newStatus instanceof AdbServicesStatus.InitFailed;
+        acConnectToDevice.setEnabled(!adbInitFailed);
+        acDumpDevice.setEnabled(!adbInitFailed);
     }
 
     public static class Factory implements Provider<MainFrame> {
