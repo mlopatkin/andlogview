@@ -51,7 +51,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
     private final AdbFacade.AdbBridgeObserver bridgeObserver = this::close;
 
     @GuardedBy("deviceLock")
-    private final LinkedHashMap<DeviceKey, ProvisionalDevice> devices = new LinkedHashMap<>();
+    private final LinkedHashMap<DeviceKey, ProvisionalDeviceInternal> devices = new LinkedHashMap<>();
 
     @GuardedBy("observerLock")
     private final ArrayList<DeviceChangeObserver> deviceChangeObservers = new ArrayList<>();
@@ -61,7 +61,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
                 @Override
                 public void deviceConnected(IDevice device) {
                     logger.debug(formatDeviceLog(device, "connected"));
-                    ProvisionalDevice prevDevice;
+                    ProvisionalDeviceInternal prevDevice;
                     ProvisionalDeviceImpl newDevice = new ProvisionalDeviceImpl(DeviceKey.of(device), device);
                     synchronized (deviceLock) {
                         prevDevice = devices.putIfAbsent(newDevice.getDeviceKey(), newDevice);
@@ -73,8 +73,8 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
                         logger.debug(formatDeviceLog(device, "device is already known as %s", prevDevice));
                         // We already have this device in our list, maybe some races between listener and initializing
                         // the initial list. The device might be being provisioned, though.
-                        if (prevDevice instanceof Device) {
-                            notifyDeviceChanged((Device) prevDevice);
+                        if (prevDevice instanceof DeviceInternal prevDeviceInternal) {
+                            notifyDeviceChanged(prevDeviceInternal);
                         }
                     }
                 }
@@ -82,7 +82,7 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
                 @Override
                 public void deviceDisconnected(IDevice device) {
                     logger.debug(formatDeviceLog(device, "disconnected"));
-                    ProvisionalDevice adbDevice;
+                    ProvisionalDeviceInternal adbDevice;
                     synchronized (deviceLock) {
                         adbDevice = devices.remove(DeviceKey.of(device));
                     }
@@ -117,8 +117,8 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
                         adbDevice = devices.get(DeviceKey.of(device));
                     }
                     if (adbDevice != null) {
-                        if (adbDevice instanceof Device) {
-                            notifyDeviceChanged((Device) adbDevice);
+                        if (adbDevice instanceof DeviceInternal adbDeviceInternal) {
+                            notifyDeviceChanged(adbDeviceInternal);
                         }
                     } else {
                         // We don't know about this device yet.
@@ -194,32 +194,36 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
         }
     }
 
-    private void notifyProvisionalDeviceConnected(ProvisionalDevice provisionalDevice) {
+    private void notifyProvisionalDeviceConnected(ProvisionalDeviceInternal provisionalDevice) {
         logger.debug(formatDeviceLog(provisionalDevice, "notifyProvisionalDeviceConnected"));
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onProvisionalDeviceConnected(provisionalDevice);
         }
+        provisionalDevice.notifyConnected();
     }
 
-    private void notifyDeviceConnected(Device device) {
+    private void notifyDeviceConnected(DeviceInternal device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceConnected"));
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceConnected(device);
         }
+        device.notifyProvisioned();
     }
 
-    private void notifyDeviceDisconnected(ProvisionalDevice device) {
+    private void notifyDeviceDisconnected(ProvisionalDeviceInternal device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceDisconnected"));
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceDisconnected(device);
         }
+        device.notifyDisconnected();
     }
 
-    private void notifyDeviceChanged(Device device) {
+    private void notifyDeviceChanged(DeviceInternal device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceChanged (online=%s)", device.isOnline()));
         for (DeviceChangeObserver obs : getObservers()) {
             obs.onDeviceChanged(device);
         }
+        device.notifyChanged();
     }
 
     @Override
@@ -281,13 +285,13 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
         adb.removeDeviceChangeListener(deviceChangeListener);
         adb.removeBridgeObserver(bridgeObserver);
 
-        ImmutableList<ProvisionalDevice> currentDevices;
+        ImmutableList<ProvisionalDeviceInternal> currentDevices;
         synchronized (deviceLock) {
             currentDevices = ImmutableList.copyOf(devices.values());
             devices.clear();
         }
 
-        for (ProvisionalDevice device : currentDevices) {
+        for (var device : currentDevices) {
             notifyDeviceDisconnected(device);
         }
     }

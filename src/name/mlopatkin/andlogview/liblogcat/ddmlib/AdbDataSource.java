@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.device.ProvisionalDevice;
@@ -37,6 +36,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 public final class AdbDataSource implements DataSource, BufferReceiver {
     /**
@@ -79,7 +79,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
     private @Nullable RecordListener<LogRecord> listener;
     private boolean closed = false;
 
-    public AdbDataSource(Device device, AdbDeviceList deviceList) {
+    public AdbDataSource(Device device, Executor uiExecutor) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
@@ -88,7 +88,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
             setUpStream(buffer);
         }
         sourceMetadata = new AdbSourceMetadata(device);
-        deviceChangeObserver = deviceList.asObservable().addScopedObserver(new DeviceChangeObserver() {
+        deviceChangeObserver = device.asObservable().addScopedObserver(new DeviceChangeObserver() {
             @Override
             public void onDeviceDisconnected(ProvisionalDevice device) {
                 logger.debug("Device " + device.getSerialNumber() + " was disconnected, closing the source");
@@ -102,7 +102,7 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
                     invalidateAndClose(InvalidationReason.OFFLINE);
                 }
             }
-        }.scopeToSingleDevice(device));
+        }, uiExecutor);
     }
 
     @Override

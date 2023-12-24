@@ -16,28 +16,31 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class AdbDataSourceFactory {
     private final SelectDeviceDialog.Factory selectDeviceDialogFactory;
-    private final AdbDeviceList adbDeviceList;
     private final DeviceDisconnectedHandler deviceDisconnectedHandler;
+    private final Executor uiExecutor;
 
     @Inject
     AdbDataSourceFactory(SelectDeviceDialog.Factory selectDeviceDialogFactory,
-            AdbDeviceList adbDeviceList, DeviceDisconnectedHandler deviceDisconnectedHandler) {
+            DeviceDisconnectedHandler deviceDisconnectedHandler,
+            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.selectDeviceDialogFactory = selectDeviceDialogFactory;
-        this.adbDeviceList = adbDeviceList;
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
+        this.uiExecutor = uiExecutor;
     }
 
     public void selectDeviceAndOpenAsDataSource(Consumer<? super @Nullable AdbDataSource> callback) {
@@ -51,7 +54,7 @@ public class AdbDataSourceFactory {
     }
 
     public void openDeviceAsDataSource(Device device, Consumer<? super AdbDataSource> callback) {
-        AdbDataSource dataSource = new AdbDataSource(device, adbDeviceList);
+        AdbDataSource dataSource = new AdbDataSource(device, uiExecutor);
         deviceDisconnectedHandler.startWatching(dataSource);
         callback.accept(dataSource);
     }

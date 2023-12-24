@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.device;
 
 import com.android.ddmlib.IDevice;
 
-class ProvisionalDeviceImpl implements ProvisionalDevice {
+class ProvisionalDeviceImpl implements ProvisionalDeviceInternal {
     private final DeviceKey deviceKey;
     private final LoggingDevice device;
 
@@ -49,5 +49,15 @@ class ProvisionalDeviceImpl implements ProvisionalDevice {
     @Override
     public boolean isOnline() {
         return device.isOnline();
+    }
+
+    @Override
+    public void notifyConnected() {
+        // do nothing, provisional devices cannot be subscribed to (yet)
+    }
+
+    @Override
+    public void notifyDisconnected() {
+        // do nothing, provisional devices cannot be subscribed to (yet)
     }
 }

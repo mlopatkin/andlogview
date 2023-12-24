@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
+import name.mlopatkin.andlogview.utils.events.ThreadSafeObservable;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,4 +63,10 @@ public interface Device extends ProvisionalDevice {
         return command(Arrays.asList(commandLine));
     }
 
+    /**
+     * Allows to subscribe to changes to this device's status.
+     *
+     * @return the observable
+     */
+    ThreadSafeObservable<DeviceChangeObserver> asObservable();
 }

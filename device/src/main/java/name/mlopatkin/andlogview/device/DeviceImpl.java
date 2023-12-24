@@ -16,12 +16,16 @@
 
 package name.mlopatkin.andlogview.device;
 
+import name.mlopatkin.andlogview.utils.events.ThreadSafeObservable;
+import name.mlopatkin.andlogview.utils.events.ThreadSafeSubject;
+
 import java.util.List;
 
-class DeviceImpl implements Device {
+class DeviceImpl implements DeviceInternal {
     private final DeviceKey deviceKey;
     private final LoggingDevice device;
     private final DeviceProperties deviceProperties;
+    private final ThreadSafeSubject<DeviceChangeObserver> observers = new ThreadSafeSubject<>();
 
     public DeviceImpl(DeviceKey deviceKey, LoggingDevice device, DeviceProperties deviceProperties) {
         this.deviceKey = deviceKey;
@@ -79,5 +83,30 @@ class DeviceImpl implements Device {
     @Override
     public Command command(List<String> commandLine) {
         return new CommandImpl(device, commandLine);
+    }
+
+    @Override
+    public ThreadSafeObservable<DeviceChangeObserver> asObservable() {
+        return observers.asObservable();
+    }
+
+    @Override
+    public void notifyProvisioned() {
+        observers.forEach(obs -> obs.onDeviceConnected(this));
+    }
+
+    @Override
+    public void notifyChanged() {
+        observers.forEach(obs -> obs.onDeviceChanged(this));
+    }
+
+    @Override
+    public void notifyConnected() {
+        observers.forEach(obs -> obs.onProvisionalDeviceConnected(this));
+    }
+
+    @Override
+    public void notifyDisconnected() {
+        observers.forEach(obs -> obs.onDeviceDisconnected(this));
     }
 }
