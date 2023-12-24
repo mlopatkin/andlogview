@@ -34,6 +34,8 @@ import java.util.concurrent.Executor;
 public interface AdbDeviceList {
     // TODO(mlopatkin) add some consistency between getDevices and observers. Maybe introducing executor-confined
     //  snapshotting would be enough?
+    //  This inconsistency causes a race in the DeviceListModel - it can see provisional device when initializing and
+    //  receive provisionalDeviceNotification for this device later.
     /**
      * @return the list of currently connected and provisioned devices
      */
