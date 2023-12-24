@@ -17,10 +17,13 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import static name.mlopatkin.andlogview.utils.MyFutures.consumingHandler;
+import static name.mlopatkin.andlogview.utils.MyFutures.errorHandler;
+import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 import static name.mlopatkin.andlogview.utils.MyFutures.runAsync;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.base.MyThrowables;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
@@ -40,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -137,6 +141,13 @@ public class AdbServicesBridge implements AdbServicesStatus {
         } else {
             notifyStatusChange(StatusValue.initialized());
         }
+    }
+
+    public AdbDeviceList prepareAdbDeviceList(Consumer<? super Throwable> adbInitFailureHandler) {
+        // Kick off ADB initialization if not already
+        getAdbServicesAsync().handle(errorHandler(ignoreCancellations(adbInitFailureHandler)))
+                .exceptionally(MyFutures::uncaughtException);
+        return adbDeviceList;
     }
 
     @Override

@@ -20,6 +20,7 @@ import static name.mlopatkin.andlogview.utils.MyFutures.consumingHandler;
 import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
@@ -77,23 +78,15 @@ public class AdbServicesInitializationPresenter {
     }
 
     /**
-     * Initializes the adb services and executes the action. This method should be used when the user doesn't directly
-     * trigger the action, so no progress indication is needed. The actions are executed on the UI executor.
+     * Kicks off initialization of the adb services and returns the device list, without waiting for the
+     * initialization to complete. This method should be used when the device list is enough for the task.
      * <p>
-     * The initialization may be cancelled by using the returned handle. When cancelled, no callbacks are invoked.
-     *
-     * @param action the action to execute
-     * @param failureHandler the failure handler
-     * @return cancellable handle to abort initialization
+     * There is no indication of the loading progress.
+     * <p>
+     * The initialization of the adb services triggered by this method cannot be cancelled.
      */
-    public Cancellable withAdbServices(Consumer<? super AdbServices> action,
-            Consumer<? super Throwable> failureHandler) {
-        var result = getServicesAsync();
-        result.handleAsync(
-                        consumingHandler(action, ignoreCancellations(adbErrorHandler().andThen(failureHandler))),
-                        uiExecutor)
-                .exceptionally(MyFutures::uncaughtException);
-        return MyFutures.toCancellable(result);
+    public AdbDeviceList withAdbDeviceList() {
+        return bridge.prepareAdbDeviceList(ignoreCancellations(adbErrorHandler()));
     }
 
     /**

@@ -128,7 +128,8 @@ class AdbServicesInitializationPresenterTest {
 
     @Test
     void nonInteractiveRequestShowsAndHidesNoProgress() {
-        whenNonInteractiveRunWithPresenter();
+        // TODO(mlopatkin) rewrite these tests
+        createPresenter().withAdbDeviceList();
 
         thenNoProgressIsShown();
         thenNoProgressIsHidden();
@@ -266,11 +267,11 @@ class AdbServicesInitializationPresenterTest {
 
     @Test
     void multipleRequestsCauseNoAdditionalErrorsToShow() {
-        presenter.withAdbServices(servicesConsumer, errorConsumer);
+        presenter.withAdbDeviceList();
         whenAdbInitFailed();
         reset(view);
 
-        presenter.withAdbServices(servicesConsumer, errorConsumer);
+        presenter.withAdbDeviceList();
 
         verify(view, never()).showAdbLoadingError();
     }
@@ -331,10 +332,6 @@ class AdbServicesInitializationPresenterTest {
         return whenRunWithPresenter(AdbServicesInitializationPresenter::withAdbServicesInteractive);
     }
 
-    private Cancellable whenNonInteractiveRunWithPresenter() {
-        return whenRunWithPresenter(AdbServicesInitializationPresenter::withAdbServices);
-    }
-
     private void givenServiceConsumerThrows() {
         doThrow(RuntimeException.class).when(servicesConsumer).accept(any());
     }
@@ -393,9 +390,6 @@ class AdbServicesInitializationPresenterTest {
 
     static Stream<ServiceRequest> interactiveAndNonInteractive() {
         return Stream.of(
-                testConsumer(
-                        AdbServicesInitializationPresenter::withAdbServices,
-                        "withAdbServices"),
                 testConsumer(AdbServicesInitializationPresenter::withAdbServicesInteractive,
                         "withAdbServicesInteractive")
         );

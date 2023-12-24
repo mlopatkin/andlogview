@@ -30,20 +30,20 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 public class AdbDataSourceFactory {
-    private final SelectDeviceDialog.Factory selectDeviceDialogFactory;
     private final DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final Executor uiExecutor;
 
     @Inject
-    AdbDataSourceFactory(SelectDeviceDialog.Factory selectDeviceDialogFactory,
+    AdbDataSourceFactory(
             DeviceDisconnectedHandler deviceDisconnectedHandler,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
-        this.selectDeviceDialogFactory = selectDeviceDialogFactory;
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
         this.uiExecutor = uiExecutor;
     }
 
-    public void selectDeviceAndOpenAsDataSource(Consumer<? super @Nullable AdbDataSource> callback) {
+    public void selectDeviceAndOpenAsDataSource(
+            SelectDeviceDialog.Factory selectDeviceDialogFactory,
+            Consumer<? super @Nullable AdbDataSource> callback) {
         selectDeviceDialogFactory.show((dialog, selectedDevice) -> {
             if (selectedDevice != null) {
                 openDeviceAsDataSource(selectedDevice, callback);

@@ -39,12 +39,15 @@ import javax.inject.Named;
  */
 public class AdbOpener {
     private final AdbServicesInitializationPresenter presenter;
+    private final AdbDataSourceFactory adbDataSourceFactory;
     private final Executor uiExecutor;
 
     @Inject
     AdbOpener(AdbServicesInitializationPresenter presenter,
+            AdbDataSourceFactory adbDataSourceFactory,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.presenter = presenter;
+        this.adbDataSourceFactory = adbDataSourceFactory;
         this.uiExecutor = uiExecutor;
     }
 
@@ -60,7 +63,9 @@ public class AdbOpener {
         var result = new CompletableFuture<@Nullable AdbDataSource>();
 
         MyFutures.cancelBy(presenter.withAdbServicesInteractive(
-                adb -> adb.getDataSourceFactory().selectDeviceAndOpenAsDataSource(result::complete),
+                adb -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
+                        adb.getSelectDeviceDialogFactory(),
+                        result::complete),
                 result::completeExceptionally), result);
         return result;
     }
@@ -74,17 +79,17 @@ public class AdbOpener {
      */
     public CompletableFuture<AdbDataSource> awaitDevice() {
         var result = new CompletableFuture<AdbDataSource>();
-        MyFutures.cancelBy(presenter.withAdbServices(
-                adb -> MyFutures.cancelBy(awaitDevice(adb), result)
-                        .thenAccept(
-                                device -> adb.getDataSourceFactory().openDeviceAsDataSource(device, result::complete))
-                        .exceptionally(exceptionHandler(result::completeExceptionally)),
-                result::completeExceptionally), result);
+
+        // We don't cancel the wait even if the ADB cannot be loaded, because we want to pick up the device if the
+        // DeviceList recovers eventually.
+        var deviceList = presenter.withAdbDeviceList();
+        MyFutures.cancelBy(awaitDevice(deviceList), result)
+                .thenAccept(device -> adbDataSourceFactory.openDeviceAsDataSource(device, result::complete))
+                .exceptionally(exceptionHandler(result::completeExceptionally));
         return result;
     }
 
-    private CompletableFuture<Device> awaitDevice(AdbServices adbServices) {
-        var deviceList = adbServices.getDeviceList();
+    private CompletableFuture<Device> awaitDevice(AdbDeviceList deviceList) {
         var future = new CompletableFuture<Device>();
         var deviceObserver = new DeviceChangeObserver() {
             @Override

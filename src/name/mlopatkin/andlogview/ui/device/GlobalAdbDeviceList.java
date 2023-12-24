@@ -25,7 +25,7 @@ import name.mlopatkin.andlogview.device.ProvisionalDevice;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -93,19 +93,22 @@ class GlobalAdbDeviceList implements AdbDeviceList {
 
     @Override
     public List<Device> getDevices() {
-        Preconditions.checkState(serverScopedDeviceList != null, "ADB not yet initialized");
+        if (serverScopedDeviceList == null) {
+            return ImmutableList.of();
+        }
         return serverScopedDeviceList.getDevices();
     }
 
     @Override
     public List<ProvisionalDevice> getAllDevices() {
-        Preconditions.checkState(serverScopedDeviceList != null, "ADB not yet initialized");
+        if (serverScopedDeviceList == null) {
+            return ImmutableList.of();
+        }
         return serverScopedDeviceList.getAllDevices();
     }
 
     @Override
     public Observable<DeviceChangeObserver> asObservable() {
-        Preconditions.checkState(serverScopedDeviceList != null, "ADB not yet initialized");
         return deviceChangeObservers.asObservable();
     }
 }

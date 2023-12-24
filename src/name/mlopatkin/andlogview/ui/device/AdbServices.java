@@ -16,17 +16,11 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.device.AdbDeviceList;
-
 /**
  * The services that depend on the running ADB server.
  */
 public interface AdbServices {
     SelectDeviceDialog.Factory getSelectDeviceDialogFactory();
 
-    AdbDeviceList getDeviceList();
-
     DumpDevicePresenter getDumpDevicePresenter();
-
-    AdbDataSourceFactory getDataSourceFactory();
 }
