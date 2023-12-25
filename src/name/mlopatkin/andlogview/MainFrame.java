@@ -536,9 +536,8 @@ public class MainFrame implements MainFrameSearchUi {
     }
 
     private void onAdbServicesStatusChanged(AdbServicesStatus.StatusValue newStatus) {
-        boolean adbInitFailed = newStatus instanceof AdbServicesStatus.InitFailed;
-        acConnectToDevice.setEnabled(!adbInitFailed);
-        acDumpDevice.setEnabled(!adbInitFailed);
+        acConnectToDevice.setEnabled(!newStatus.isFailed());
+        acDumpDevice.setEnabled(!newStatus.isFailed());
     }
 
     public static class Factory implements Provider<MainFrame> {

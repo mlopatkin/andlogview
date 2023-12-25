@@ -21,12 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
+import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,11 +63,15 @@ class ConfigurationDialogPresenterTest {
 
     @Mock
     private AdbServicesInitializationPresenter adbServicesInitPresenter;
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private AdbServicesStatus adbServicesStatus;
 
     @BeforeEach
     void setUp() {
         adbConfiguration.setAutoReconnectEnabled(DEFAULT_AUTO_RECONNECT);
         adbConfiguration.setAdbLocation(DEFAULT_ADB_LOCATION);
+
+        when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.initialized());
     }
 
     @Test
@@ -152,8 +158,22 @@ class ConfigurationDialogPresenterTest {
         assertFalse(fakeView.isInvalidAdbLocationHighlighted());
     }
 
+    @Test
+    void committingRestartsAdbWithoutChangesIfItWasNotRunning() {
+        adbConfiguration.setAdbLocation(VALID_ADB_LOCATION);
+        when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.failed("Not initialized"));
+
+        var presenter = createPresenter();
+
+        presenter.openDialog();
+        fakeView.commit();
+
+        verify(adbServicesInitPresenter).restartAdb();
+    }
+
     private ConfigurationDialogPresenter createPresenter() {
-        return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter);
+        return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter,
+                adbServicesStatus);
     }
 
     static class FakeView implements ConfigurationDialogPresenter.View {

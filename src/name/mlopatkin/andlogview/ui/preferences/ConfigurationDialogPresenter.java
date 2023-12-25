@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
+import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -52,15 +53,18 @@ public class ConfigurationDialogPresenter {
     private final View view;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesInitializationPresenter adbServicesPresenter;
+    private final AdbServicesStatus adbServicesStatus;
 
     @Inject
     ConfigurationDialogPresenter(
             View view,
             AdbConfigurationPref adbConfigurationPref,
-            AdbServicesInitializationPresenter adbServicesPresenter) {
+            AdbServicesInitializationPresenter adbServicesPresenter,
+            AdbServicesStatus adbServicesStatus) {
         this.view = view;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbServicesPresenter = adbServicesPresenter;
+        this.adbServicesStatus = adbServicesStatus;
     }
 
     public void openDialog() {
@@ -85,7 +89,7 @@ public class ConfigurationDialogPresenter {
         adbConfigurationPref.setAutoReconnectEnabled(view.isAutoReconnectEnabled());
         view.hide();
 
-        if (hasLocationChanged) {
+        if (hasLocationChanged || adbServicesStatus.getStatus().isFailed()) {
             adbServicesPresenter.restartAdb();
         }
     }

@@ -50,7 +50,13 @@ public interface AdbServicesStatus {
      * Base class for service status. Poor man's sealed class.
      */
     abstract class StatusValue {
-        private StatusValue() {}
+        private final boolean isInitialized;
+        private final boolean isFailed;
+
+        private StatusValue(boolean isInitialized, boolean isFailed) {
+            this.isInitialized = isInitialized;
+            this.isFailed = isFailed;
+        }
 
         public static NotInitialized notInitialized() {
             return NotInitialized.INSTANCE;
@@ -67,6 +73,14 @@ public interface AdbServicesStatus {
         public static InitFailed failed(String failureMessage) {
             return new InitFailed(failureMessage);
         }
+
+        public final boolean isInitialized() {
+            return isInitialized;
+        }
+
+        public final boolean isFailed() {
+            return isFailed;
+        }
     }
 
     /**
@@ -75,7 +89,9 @@ public interface AdbServicesStatus {
     final class NotInitialized extends StatusValue {
         private static final NotInitialized INSTANCE = new NotInitialized();
 
-        private NotInitialized() {}
+        private NotInitialized() {
+            super(false, false);
+        }
 
         @Override
         public String toString() {
@@ -89,7 +105,9 @@ public interface AdbServicesStatus {
     final class Initializing extends StatusValue {
         private static final Initializing INSTANCE = new Initializing();
 
-        private Initializing() {}
+        private Initializing() {
+            super(false, false);
+        }
 
         @Override
         public String toString() {
@@ -103,7 +121,9 @@ public interface AdbServicesStatus {
     final class Initialized extends StatusValue {
         private static final Initialized INSTANCE = new Initialized();
 
-        private Initialized() {}
+        private Initialized() {
+            super(true, false);
+        }
 
         @Override
         public String toString() {
@@ -118,6 +138,7 @@ public interface AdbServicesStatus {
         private final String failureMessage;
 
         private InitFailed(String failureMessage) {
+            super(false, true);
             this.failureMessage = failureMessage;
         }
 
