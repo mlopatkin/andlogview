@@ -16,11 +16,12 @@
 
 package name.mlopatkin.andlogview.ui.mainframe;
 
-import name.mlopatkin.andlogview.ErrorDialogsHelper;
-import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.ui.device.AdbNotAvailableDialog;
+import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
+
+import dagger.Lazy;
 
 import javax.inject.Inject;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -28,24 +29,19 @@ import javax.swing.JOptionPane;
  */
 public class ErrorDialogs {
     private final DialogFactory dialogFactory;
-    private final SetupAdbDialog.Controller setupAdbDialogController;
+    private final Lazy<ConfigurationDialogPresenter> configurationDialogPresenter;
 
     @Inject
-    ErrorDialogs(DialogFactory dialogFactory, SetupAdbDialog.Controller setupAdbDialogController) {
+    ErrorDialogs(DialogFactory dialogFactory, Lazy<ConfigurationDialogPresenter> configurationDialogPresenter) {
         this.dialogFactory = dialogFactory;
-        this.setupAdbDialogController = setupAdbDialogController;
+        this.configurationDialogPresenter = configurationDialogPresenter;
     }
 
     /**
      * Shows the "The ADB executable was not found" dialog.
      */
     public void showAdbNotFoundError() {
-        JFrame dialogOwner = dialogFactory.getOwner();
-        if (Configuration.adb.showSetupDialog()) {
-            setupAdbDialogController.showSetupAdbDialog(dialogOwner);
-        } else {
-            ErrorDialogsHelper.showError(dialogOwner, "The ADB executable was not found");
-        }
+        AdbNotAvailableDialog.show(dialogFactory, () -> configurationDialogPresenter.get().openDialog());
     }
 
     /**

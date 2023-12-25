@@ -135,7 +135,6 @@ public class Configuration {
 
         private static final String PREFIX = "adb.";
 
-        private static final String SHOW_SETUP_DIALOG_KEY = PREFIX + "show_setup_dialog";
         private static final String EXECUTABLE_KEY = PREFIX + "executable";
         private static final String KMSG_COMMANDLINE_KEY = PREFIX + "kmsg_cmdline";
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
@@ -151,14 +150,6 @@ public class Configuration {
         @Deprecated
         public static String executable() {
             return getConfig().get(EXECUTABLE_KEY);
-        }
-
-        public static Boolean showSetupDialog() {
-            return getConfig().get(SHOW_SETUP_DIALOG_KEY);
-        }
-
-        public static void showSetupDialog(boolean value) {
-            getConfig().set(SHOW_SETUP_DIALOG_KEY, value);
         }
 
         @Deprecated
@@ -236,7 +227,6 @@ public class Configuration {
         cfg.property(adb.BUFFER_NAME_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.EXECUTABLE_KEY, string());
         cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
-        cfg.property(adb.SHOW_SETUP_DIALOG_KEY, bool().defaultVal(true));
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
 
         cfg.property(dump.BUFFER_HEADER_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
