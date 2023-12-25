@@ -15,11 +15,9 @@
  */
 package name.mlopatkin.andlogview.device;
 
-public class AdbException extends Exception {
-    public AdbException() {
-        super();
-    }
+import java.util.Objects;
 
+public class AdbException extends Exception {
     public AdbException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -28,7 +26,8 @@ public class AdbException extends Exception {
         super(message);
     }
 
-    public AdbException(Throwable cause) {
-        super(cause);
+    @Override
+    public String getMessage() {
+        return Objects.requireNonNull(super.getMessage());
     }
 }

@@ -21,6 +21,13 @@ import java.util.Optional;
 
 public interface AdbLocation {
     /**
+     * Returns the current path to the ADB executable as a string, even if it is invalid.
+     *
+     * @return the potentially invalid path to the executable
+     */
+    String getExecutableString();
+
+    /**
      * Returns the absolute path to the ADB executable if it is valid. Otherwise, returns an empty Optional.
      *
      * @return the absolute path to the executable or empty Optional if valid path isn't set

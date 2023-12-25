@@ -26,10 +26,10 @@ public class AdbNotAvailableDialog {
 
     private AdbNotAvailableDialog() {}
 
-    public static void show(DialogFactory dialogFactory, Runnable setUpAction) {
+    public static void show(DialogFactory dialogFactory, String failureMessage, Runnable setUpAction) {
         int result = JOptionPane.showOptionDialog(
                 dialogFactory.getOwner(),
-                "The ADB executable cannot be found",
+                failureMessage,
                 "Error",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.ERROR_MESSAGE,

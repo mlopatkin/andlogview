@@ -49,7 +49,7 @@ class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
     }
 
     @Override
-    public void showAdbLoadingError() {
-        errorDialogs.showAdbNotFoundError();
+    public void showAdbLoadingError(String failureReason) {
+        errorDialogs.showAdbFailedToStartError(failureReason);
     }
 }

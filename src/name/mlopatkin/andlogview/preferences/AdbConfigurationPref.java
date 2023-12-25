@@ -144,6 +144,11 @@ public class AdbConfigurationPref implements AdbLocation {
     }
 
     @Override
+    public String getExecutableString() {
+        return getAdbLocation();
+    }
+
+    @Override
     public Optional<File> getExecutable() {
         return Optional.ofNullable(resolvedExecutable);
     }

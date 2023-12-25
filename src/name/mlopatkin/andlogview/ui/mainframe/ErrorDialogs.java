@@ -40,8 +40,9 @@ public class ErrorDialogs {
     /**
      * Shows the "The ADB executable was not found" dialog.
      */
-    public void showAdbNotFoundError() {
-        AdbNotAvailableDialog.show(dialogFactory, () -> configurationDialogPresenter.get().openDialog());
+    public void showAdbFailedToStartError(String failureMessage) {
+        AdbNotAvailableDialog.show(dialogFactory, failureMessage,
+                () -> configurationDialogPresenter.get().openDialog());
     }
 
     /**

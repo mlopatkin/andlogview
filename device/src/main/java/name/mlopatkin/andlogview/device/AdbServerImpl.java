@@ -22,11 +22,13 @@ import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.google.common.base.MoreObjects;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -54,9 +56,33 @@ class AdbServerImpl implements AdbServer, AdbFacade {
 
     private static AndroidDebugBridge createBridge(AdbLocation adbLocation) throws AdbException {
         logger.info("Starting ADB server");
-        File adbExecutable = adbLocation.getExecutable().orElseThrow(() -> new AdbException("ADB location is invalid"));
+        File adbExecutable = adbLocation.getExecutable()
+                .orElseThrow(
+                        () -> new AdbException("ADB location '" + adbLocation.getExecutableString() + "' is invalid"));
         logger.debug("ADB server executable: " + adbExecutable.getAbsolutePath());
-        @Nullable AndroidDebugBridge bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);
+        final @Nullable AndroidDebugBridge bridge;
+        try {
+            bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);
+        } catch (IllegalArgumentException e) {
+            // Error handling in DDMLIB is a mess.
+            if (e.getCause() instanceof IOException ioException) {
+                throw new AdbException(
+                        String.format(
+                                "Cannot start ADB at '%s':\n%s",
+                                adbExecutable.getAbsolutePath(),
+                                MoreObjects.firstNonNull(ioException.getMessage(), "I/O error")),
+                        ioException
+                );
+            }
+            throw new AdbException(
+                    String.format(
+                            "Failed to initialize ADB at '%s':\n%s",
+                            adbExecutable.getAbsolutePath(),
+                            MoreObjects.firstNonNull(e.getMessage(), "unknown error, see logs")
+                    ),
+                    e
+            );
+        }
         if (bridge == null) {
             throw new AdbException("Failed to create the bridge at " + adbExecutable);
         }

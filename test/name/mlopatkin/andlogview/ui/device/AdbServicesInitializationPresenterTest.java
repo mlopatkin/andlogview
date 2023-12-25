@@ -276,7 +276,7 @@ class AdbServicesInitializationPresenterTest {
 
         presenter.withAdbDeviceList();
 
-        verify(view, never()).showAdbLoadingError();
+        verify(view, never()).showAdbLoadingError(any());
     }
 
     @ParameterizedTest
@@ -381,11 +381,11 @@ class AdbServicesInitializationPresenterTest {
     }
 
     private void thenErrorIsShown() {
-        verify(view).showAdbLoadingError();
+        verify(view).showAdbLoadingError(any());
     }
 
     private void thenNoErrorIsShown() {
-        verify(view, never()).showAdbLoadingError();
+        verify(view, never()).showAdbLoadingError(any());
     }
 
     @FunctionalInterface

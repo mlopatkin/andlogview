@@ -20,7 +20,9 @@ import static name.mlopatkin.andlogview.utils.MyFutures.consumingHandler;
 import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
+import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Cancellable;
@@ -58,7 +60,7 @@ public class AdbServicesInitializationPresenter {
         /**
          * Show the user that ADB services failed to load. This is only called once per presenter lifetime.
          */
-        void showAdbLoadingError();
+        void showAdbLoadingError(String failureReason);
     }
 
     private final AdbServicesBridge bridge;
@@ -146,12 +148,16 @@ public class AdbServicesInitializationPresenter {
     }
 
     private Consumer<Throwable> adbErrorHandler() {
-        return ignored -> {
+        return failure -> {
             if (!hasShownErrorMessage) {
                 hasShownErrorMessage = true;
                 // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
                 // showing the dialog to prevent re-entrance and double dialog.
-                view.showAdbLoadingError();
+                if (MyThrowables.unwrapUninteresting(failure) instanceof AdbException adbException) {
+                    view.showAdbLoadingError(adbException.getMessage());
+                } else {
+                    view.showAdbLoadingError("Failed to initialize ADB");
+                }
             }
         };
     }
