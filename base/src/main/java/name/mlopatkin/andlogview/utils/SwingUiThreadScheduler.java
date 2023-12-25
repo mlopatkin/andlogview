@@ -36,6 +36,7 @@ public class SwingUiThreadScheduler implements UiThreadScheduler {
         int delayMs = Ints.checkedCast(interval.toMillis());
         Timer timer = new Timer(delayMs, event -> task.run());
         timer.setRepeats(true);
+        timer.start();
         return new CancellableTask(timer);
     }
 
