@@ -69,8 +69,6 @@ public class AdbServicesBridge implements AdbServicesStatus {
     private final GlobalAdbDeviceList adbDeviceList;
     private final Subject<Observer> statusObservers = new Subject<>();
 
-    // TODO(mlopatkin) My attempt to hide connection replacement logic in the AdbServer failed. What if the connection
-    //  update fails? The server would be unusable and we have to discard the whole component.
     private @Nullable CompletableFuture<AdbServices> adbSubcomponent; // This one is three-state. The `null` here
     // means that nobody attempted to initialize ADB yet. Non-null holds the current subcomponent if it was created
     // successfully or the initialization error if something failed.
@@ -91,7 +89,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
 
     /**
      * Tries to create AdbServices, potentially initializing ADB connection if is it is not ready yet.
-     * This may fail and show an error dialog.
+     * This may fail, or may be cancelled.
      *
      * @return a completable future that will provide {@link AdbServices} when ready
      */
@@ -122,7 +120,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
         // This is a separate chain, not related to the consumers of getAdbServicesAsync. Therefore, it has a separate
         // exception sink to handle runtime errors in the handler.
         result.handleAsync(
-                        consumingHandler((r, th) -> onAdbInitFinished(th, stopwatch)),
+                        consumingHandler((r, th) -> onAdbInitFinished(result, th, stopwatch)),
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
         return result;
@@ -133,7 +131,12 @@ public class AdbServicesBridge implements AdbServicesStatus {
         return adbSubcomponentFactory.build(adbDeviceList);
     }
 
-    private void onAdbInitFinished(@Nullable Throwable maybeFailure, Stopwatch timeTracing) {
+    private void onAdbInitFinished(CompletableFuture<?> origin, @Nullable Throwable maybeFailure,
+            Stopwatch timeTracing) {
+        if (adbSubcomponent != origin) {
+            // Our initialization was cancelled by this point. We shouldn't propagate notifications further.
+            return;
+        }
         logger.info("Initialized adb server in " + timeTracing.elapsed(TimeUnit.MILLISECONDS) + "ms");
         if (maybeFailure != null) {
             logger.error("Failed to initialize ADB", maybeFailure);
@@ -180,5 +183,17 @@ public class AdbServicesBridge implements AdbServicesStatus {
         return MyThrowables.findCause(th, AdbException.class)
                 .map(Throwable::getMessage)
                 .orElse(MoreObjects.firstNonNull(th.getMessage(), "unknown failure"));
+    }
+
+    /**
+     * Discards the running adb services subcomponent if any. Any ongoing ADB initialization is cancelled.
+     */
+    public void stopAdb() {
+        var currentAdb = adbSubcomponent;
+        if (currentAdb != null) {
+            adbSubcomponent = null;
+            notifyStatusChange(getStatus());
+            currentAdb.cancel(false);
+        }
     }
 }

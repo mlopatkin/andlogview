@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.log4j)
 
+    testFixturesApi(libs.test.assertj)
     testFixturesApi(libs.test.hamcrest.hamcrest)
     testFixturesImplementation(libs.guava)
     testFixturesImplementation(libs.test.mockito.core)

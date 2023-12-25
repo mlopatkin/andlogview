@@ -16,12 +16,16 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import static name.mlopatkin.andlogview.base.concurrent.ExtendedCompletableFutureAssert.assertThatCompletableFuture;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
@@ -178,6 +182,74 @@ class AdbServicesBridgeTest {
 
         assertThat(result).isCompleted();
         assertThat(bridgeStatus.get()).isEqualTo(StatusValue.initialized());
+    }
+
+    @Test
+    void serviceFutureIsCancelledIfAdbStopped() {
+        var testUiExecutor = new TestExecutor();
+        var testAdbExecutor = new TestExecutor();
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
+
+        var serviceFuture = bridge.getAdbServicesAsync();
+        bridge.stopAdb();
+
+        assertThatCompletableFuture(serviceFuture).isCancelledUpstream();
+    }
+
+    @Test
+    void adbIsNotInitializedAfterStopped() {
+        var testUiExecutor = new TestExecutor();
+        var testAdbExecutor = new TestExecutor();
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
+        var observer = mock(AdbServicesStatus.Observer.class);
+
+        var firstInit = bridge.getAdbServicesAsync();
+        bridge.stopAdb();
+        bridge.asObservable().addObserver(observer);
+        drainExecutors(testAdbExecutor, testUiExecutor);
+
+        assertThat(bridge.getStatus()).isInstanceOf(AdbServicesStatus.NotInitialized.class);
+
+        assertThat(firstInit).isCompletedExceptionally();
+        verifyNoInteractions(observer);
+    }
+
+    @Test
+    void completingPreviousAdbInitializationAfterStopDoesNotChangeStatus() {
+        var testUiExecutor = new TestExecutor();
+        var testAdbExecutor = new TestExecutor();
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
+        var observer = mock(AdbServicesStatus.Observer.class);
+
+        var firstInit = bridge.getAdbServicesAsync();
+        testAdbExecutor.flush();
+        bridge.stopAdb();
+        bridge.asObservable().addObserver(observer);
+        drainExecutors(testAdbExecutor, testUiExecutor);
+
+        assertThat(firstInit).isCompletedExceptionally();
+        assertThat(bridge.getStatus()).isInstanceOf(AdbServicesStatus.NotInitialized.class);
+        verifyNoInteractions(observer);
+    }
+
+    @Test
+    void completingNewAdbInitializationAfterStopSendsNoSpuriousNotifications() {
+        var testUiExecutor = new TestExecutor();
+        var testAdbExecutor = new TestExecutor();
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
+        var observer = mock(AdbServicesStatus.Observer.class);
+
+        var firstInit = bridge.getAdbServicesAsync();
+        bridge.stopAdb();
+        var secondInit = bridge.getAdbServicesAsync();
+        bridge.asObservable().addObserver(observer);
+        drainExecutors(testAdbExecutor, testUiExecutor);
+
+        assertThat(firstInit).isCompletedExceptionally();
+        assertThat(secondInit).isCompleted().isNotCancelled();
+
+        verify(observer).onAdbServicesStatusChanged(isA(AdbServicesStatus.Initialized.class));
+        verifyNoMoreInteractions(observer);
     }
 
     private AdbServicesBridge createBridge() {
