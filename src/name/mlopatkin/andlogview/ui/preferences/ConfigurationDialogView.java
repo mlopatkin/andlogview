@@ -27,7 +27,6 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 public class ConfigurationDialogView implements ConfigurationDialogPresenter.View {
     private final DialogFactory dialogFactory;
@@ -80,14 +79,6 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     @Override
     public void showInvalidAdbLocationError() {
         ErrorDialogsHelper.showError(dialogFactory.getOwner(), "%s is not a valid adb file", getAdbLocation());
-    }
-
-    @Override
-    public void showRestartAppWarning() {
-        JOptionPane.showMessageDialog(dialogFactory.getOwner(),
-                "You've changed the path to the ADB executable. Please restart the "
-                        + "application to apply changes.",
-                "Please restart", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override

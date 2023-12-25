@@ -20,16 +20,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.verify;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
+import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
@@ -56,6 +59,9 @@ class ConfigurationDialogPresenterTest {
     private final AdbConfigurationPref adbConfiguration = new AdbConfigurationPref(new FakeInMemoryConfigStorage(),
             new FakePathResolver(VALID_ADB_LOCATION));
 
+    @Mock
+    private AdbServicesInitializationPresenter adbServicesInitPresenter;
+
     @BeforeEach
     void setUp() {
         adbConfiguration.setAutoReconnectEnabled(DEFAULT_AUTO_RECONNECT);
@@ -64,7 +70,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void openDialogShowsViewWithProperLocationSet() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+        var presenter = createPresenter();
 
         presenter.openDialog();
 
@@ -75,7 +81,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void committingWithInvalidLocationShowsError() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+        var presenter = createPresenter();
 
         presenter.openDialog();
         fakeView.selectAdbLocation(INVALID_ADB_LOCATION);
@@ -89,7 +95,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void discardingWithInvalidLocationShowsNoError() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+        var presenter = createPresenter();
 
         presenter.openDialog();
         fakeView.selectAdbLocation(INVALID_ADB_LOCATION);
@@ -102,22 +108,21 @@ class ConfigurationDialogPresenterTest {
     }
 
     @Test
-    void committingWithNewLocationShowsRestartWarning() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+    void committingWithNewLocationRestartsAdb() {
+        var presenter = createPresenter();
 
         presenter.openDialog();
         fakeView.selectAdbLocation(VALID_ADB_LOCATION);
 
-        Expectations.expect("show restart warning dialog", expectation -> {
-            fakeView.onRestartWarningShown.setAction(expectation::fulfill);
-            fakeView.commit();
-        });
+        fakeView.commit();
+
         assertFalse(fakeView.isShown(), "configuration dialog is hidden");
+        verify(adbServicesInitPresenter).restartAdb();
     }
 
     @Test
     void committingAfterChangingAutoReconnectUpdatesPreference() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+        var presenter = createPresenter();
 
         presenter.openDialog();
         fakeView.setAutoReconnectEnabled(CHANGED_AUTO_RECONNECT);
@@ -128,7 +133,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void settingInvalidAdbLocationHighlightError() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+        var presenter = createPresenter();
 
         presenter.openDialog();
         fakeView.selectAdbLocation(INVALID_ADB_LOCATION);
@@ -137,7 +142,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void settingValidAdbLocationClearsError() {
-        ConfigurationDialogPresenter presenter = new ConfigurationDialogPresenter(fakeView, adbConfiguration);
+        var presenter = createPresenter();
 
         presenter.openDialog();
         fakeView.selectAdbLocation(INVALID_ADB_LOCATION);
@@ -147,13 +152,16 @@ class ConfigurationDialogPresenterTest {
         assertFalse(fakeView.isInvalidAdbLocationHighlighted());
     }
 
+    private ConfigurationDialogPresenter createPresenter() {
+        return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter);
+    }
+
     static class FakeView implements ConfigurationDialogPresenter.View {
         private final TestActionHandler<Runnable> onCommit = TestActionHandler.runnableAction();
         private final TestActionHandler<Runnable> onDiscard = TestActionHandler.runnableAction();
         private final TestActionHandler<Predicate<String>> checkAdbLocation = TestActionHandler.predicateAction(true);
 
         final TestActionHandler<Runnable> onAdbLocationWarningShown = TestActionHandler.runnableAction();
-        final TestActionHandler<Runnable> onRestartWarningShown = TestActionHandler.runnableAction();
 
         private String adbLocation = "";
         private boolean isShown;
@@ -231,10 +239,6 @@ class ConfigurationDialogPresenterTest {
             onAdbLocationWarningShown.action().run();
         }
 
-        @Override
-        public void showRestartAppWarning() {
-            onRestartWarningShown.action().run();
-        }
     }
 
     private static class FakePathResolver extends SystemPathResolver {

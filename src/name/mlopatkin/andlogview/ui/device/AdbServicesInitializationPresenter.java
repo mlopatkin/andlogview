@@ -147,4 +147,13 @@ public class AdbServicesInitializationPresenter {
             }
         };
     }
+
+    /**
+     * Restarts ADB services (or starts one if it is not yet running).
+     */
+    public void restartAdb() {
+        bridge.stopAdb();
+        hasShownErrorMessage = false;
+        withAdbServicesInteractive(adb -> {}, failure -> {});
+    }
 }

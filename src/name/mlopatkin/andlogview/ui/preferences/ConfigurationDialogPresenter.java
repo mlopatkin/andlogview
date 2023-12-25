@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -43,8 +44,6 @@ public class ConfigurationDialogPresenter {
 
         void showInvalidAdbLocationError();
 
-        void showRestartAppWarning();
-
         void show();
 
         void hide();
@@ -52,11 +51,16 @@ public class ConfigurationDialogPresenter {
 
     private final View view;
     private final AdbConfigurationPref adbConfigurationPref;
+    private final AdbServicesInitializationPresenter adbServicesPresenter;
 
     @Inject
-    ConfigurationDialogPresenter(View view, AdbConfigurationPref adbConfigurationPref) {
+    ConfigurationDialogPresenter(
+            View view,
+            AdbConfigurationPref adbConfigurationPref,
+            AdbServicesInitializationPresenter adbServicesPresenter) {
         this.view = view;
         this.adbConfigurationPref = adbConfigurationPref;
+        this.adbServicesPresenter = adbServicesPresenter;
     }
 
     public void openDialog() {
@@ -80,8 +84,9 @@ public class ConfigurationDialogPresenter {
 
         adbConfigurationPref.setAutoReconnectEnabled(view.isAutoReconnectEnabled());
         view.hide();
+
         if (hasLocationChanged) {
-            view.showRestartAppWarning();
+            adbServicesPresenter.restartAdb();
         }
     }
 

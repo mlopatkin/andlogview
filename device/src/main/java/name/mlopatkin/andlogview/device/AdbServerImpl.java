@@ -111,5 +111,6 @@ class AdbServerImpl implements AdbServer, AdbFacade {
         for (AdbBridgeObserver observer : bridgeObservers) {
             observer.onAdbBridgeClosed();
         }
+        AndroidDebugBridge.disconnectBridge();
     }
 }
