@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.config.Configuration;
 
 import javax.inject.Inject;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * Factory class to show error dialogs in the Main frame.
@@ -47,4 +48,13 @@ public class ErrorDialogs {
         }
     }
 
+    /**
+     * Shows a modal warning dialog when the observed device become disconnected
+     *
+     * @param disconnectReason the disconnect reason
+     */
+    public void showDeviceDisconnectedWarning(String disconnectReason) {
+        JOptionPane.showMessageDialog(dialogFactory.getOwner(), disconnectReason, "Warning",
+                JOptionPane.WARNING_MESSAGE);
+    }
 }

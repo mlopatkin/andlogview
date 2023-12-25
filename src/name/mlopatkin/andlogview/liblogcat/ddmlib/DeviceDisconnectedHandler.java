@@ -15,31 +15,41 @@
  */
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.MainFrame;
+import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
-import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
-import java.awt.EventQueue;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
-import javax.swing.JOptionPane;
+import javax.inject.Named;
 
 /**
  * This class is responsible for showing notification dialog when device is disconnected.
  */
+@MainFrameScoped
 public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
-    // TODO(mlopatkin) Replace MainFrame with something more specific. DialogFactory covers one use case but the call
-    //  to waitForDevice is still problematic
-    private final MainFrame mainFrame;
-    private final DialogFactory dialogFactory;
+    public interface DeviceAwaiter {
+        void waitForDevice();
+    }
+
+    private final DeviceAwaiter deviceAwaiter;
+    private final ErrorDialogs errorDialogs;
     private final AdbConfigurationPref adbConfigurationPref;
+    private final Executor uiExecutor;
 
     @Inject
-    DeviceDisconnectedHandler(MainFrame mainFrame, DialogFactory dialogFactory,
-            AdbConfigurationPref adbConfigurationPref) {
-        this.mainFrame = mainFrame;
-        this.dialogFactory = dialogFactory;
+    DeviceDisconnectedHandler(
+            DeviceAwaiter deviceAwaiter,
+            ErrorDialogs errorDialogs,
+            AdbConfigurationPref adbConfigurationPref,
+            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor
+    ) {
+        this.deviceAwaiter = deviceAwaiter;
+        this.errorDialogs = errorDialogs;
         this.adbConfigurationPref = adbConfigurationPref;
+        this.uiExecutor = uiExecutor;
     }
 
     @Override
@@ -58,15 +68,15 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
 
     private void onDeviceDisconnected(String message) {
         if (adbConfigurationPref.isAutoReconnectEnabled()) {
-            mainFrame.waitForDevice();
+            deviceAwaiter.waitForDevice();
         } else {
-            EventQueue.invokeLater(() -> showNotificationDialog(message));
+            // The dialog is modal, and must be shown in async manner. Otherwise, we'll block all other listeners.
+            uiExecutor.execute(() -> showNotificationDialog(message));
         }
     }
 
     private void showNotificationDialog(String message) {
-        assert EventQueue.isDispatchThread();
-        JOptionPane.showMessageDialog(dialogFactory.getOwner(), message, "Warning", JOptionPane.WARNING_MESSAGE);
+        errorDialogs.showDeviceDisconnectedWarning(message);
     }
 
     /**

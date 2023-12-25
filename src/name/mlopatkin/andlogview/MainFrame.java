@@ -19,6 +19,7 @@ import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.logmodel.LogModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -94,7 +95,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 
-public class MainFrame implements MainFrameSearchUi {
+public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.DeviceAwaiter {
     private static final Logger logger = Logger.getLogger(MainFrame.class);
 
     private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
@@ -505,6 +506,7 @@ public class MainFrame implements MainFrameSearchUi {
     /**
      * Wait for device to connect.
      */
+    @Override
     public void waitForDevice() {
         var source = adbOpener.awaitDevice();
         startOpeningDataSource(() -> source);

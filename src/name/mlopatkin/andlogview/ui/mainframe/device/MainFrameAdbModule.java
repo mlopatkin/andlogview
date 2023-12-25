@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.mainframe.device;
 
+import name.mlopatkin.andlogview.MainFrame;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 
 import dagger.Binds;
@@ -25,4 +27,7 @@ import dagger.Module;
 public abstract class MainFrameAdbModule {
     @Binds
     abstract AdbServicesInitializationPresenter.View getAdbInitView(MainFrameAdbInitView view);
+
+    @Binds
+    abstract DeviceDisconnectedHandler.DeviceAwaiter getDeviceAwaiter(MainFrame mainFrame);
 }
