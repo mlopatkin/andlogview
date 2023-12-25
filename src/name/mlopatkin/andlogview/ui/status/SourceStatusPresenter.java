@@ -17,16 +17,15 @@
 package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.DataSourceHolder;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.CommonChars;
-import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.time.Duration;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -39,7 +38,12 @@ public class SourceStatusPresenter {
     private final DataSourceHolder dataSourceHolder;
     private final AdbServicesStatus adbServicesStatus;
     private final View view;
-    private final UiThreadScheduler updateScheduler;
+    private final AdbDataSource.StateObserver adbDataSourceObserver = new AdbDataSource.StateObserver() {
+        @Override
+        public void onDataSourceClosed() {
+            updateSourceStatus();
+        }
+    };
 
     interface View {
         void showWaitingStatus(String statusText);
@@ -54,12 +58,10 @@ public class SourceStatusPresenter {
             DataSourceHolder dataSourceHolder,
             AdbServicesStatus adbServicesStatus,
             View view,
-            SourcePopupMenuPresenter popupMenuPresenter,
-            UiThreadScheduler updateScheduler) {
+            SourcePopupMenuPresenter popupMenuPresenter) {
         this.dataSourceHolder = dataSourceHolder;
         this.adbServicesStatus = adbServicesStatus;
         this.view = view;
-        this.updateScheduler = updateScheduler;
 
         view.popupMenuAction().addObserver(popupMenuPresenter::showPopupMenuIfNeeded);
     }
@@ -68,8 +70,8 @@ public class SourceStatusPresenter {
     void init() {
         adbServicesStatus.asObservable().addObserver(this::onAdbServicesStatusChanged);
         dataSourceHolder.asObservable().addObserver(this::onDataSourceChanged);
-        if (dataSourceHolder.getDataSource() != null) {
-            scheduleUpdates();
+        if (dataSourceHolder.getDataSource() instanceof AdbDataSource adbDataSource) {
+            adbDataSource.asStateObservable().addObserver(adbDataSourceObserver);
         }
         updateSourceStatus();
     }
@@ -79,7 +81,7 @@ public class SourceStatusPresenter {
     }
 
     private void updateSourceStatus() {
-        DataSource dataSource = dataSourceHolder.getDataSource();
+        var dataSource = dataSourceHolder.getDataSource();
         if (dataSource != null) {
             view.showSourceStatus(dataSource.toString());
         } else {
@@ -102,13 +104,12 @@ public class SourceStatusPresenter {
     }
 
     private void onDataSourceChanged(@Nullable DataSource oldSource, DataSource newSource) {
-        if (oldSource == null) {
-            scheduleUpdates();
+        if (oldSource instanceof AdbDataSource adbDataSource) {
+            adbDataSource.asStateObservable().removeObserver(adbDataSourceObserver);
+        }
+        if (newSource instanceof AdbDataSource adbDataSource) {
+            adbDataSource.asStateObservable().addObserver(adbDataSourceObserver);
         }
         updateSourceStatus();
-    }
-
-    private void scheduleUpdates() {
-        updateScheduler.postRepeatableTask(this::updateSourceStatus, Duration.ofSeconds(2));
     }
 }

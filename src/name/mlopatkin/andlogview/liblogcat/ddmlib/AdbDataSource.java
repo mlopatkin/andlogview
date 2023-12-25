@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-public final class AdbDataSource implements DataSource, BufferReceiver {
+public class AdbDataSource implements DataSource, BufferReceiver {
     /**
      * The reason for the data source to become invalid.
      */
@@ -57,13 +57,12 @@ public final class AdbDataSource implements DataSource, BufferReceiver {
          *
          * @param reason the reason for invalidation
          */
-        void onDataSourceInvalidated(InvalidationReason reason);
+        default void onDataSourceInvalidated(InvalidationReason reason) {}
 
         /**
          * Called when the data source is closed whether normally or because of invalidation.
          */
-        default void onDataSourceClosed() {
-        }
+        default void onDataSourceClosed() {}
     }
 
     private static final Logger logger = Logger.getLogger(AdbDataSource.class);

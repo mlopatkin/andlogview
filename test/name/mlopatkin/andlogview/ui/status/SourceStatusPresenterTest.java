@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.status;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -24,9 +25,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.DataSourceHolder;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.logmodel.DataSource;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
-import name.mlopatkin.andlogview.utils.MockUiThreadScheduler;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +40,7 @@ import java.util.function.Consumer;
 
 @ExtendWith(MockitoExtension.class)
 class SourceStatusPresenterTest {
-
-    @Mock
-    DataSourceHolder dataSourceHolder;
+    DataSourceHolder dataSourceHolder = new DataSourceHolder();
 
     @Mock
     AdbServicesStatus adbServicesStatus;
@@ -52,16 +51,12 @@ class SourceStatusPresenterTest {
     @Mock
     SourcePopupMenuPresenter popupMenuPresenter;
 
-    final MockUiThreadScheduler uiScheduler = new MockUiThreadScheduler();
-
     final Subject<AdbServicesStatus.Observer> adbServicesStatusObservers = new Subject<>();
-    final Subject<DataSourceHolder.Observer> dataSourceHolderObservers = new Subject<>();
     final Subject<Consumer<SourceStatusPopupMenuView>> viewObservers = new Subject<>();
 
     @BeforeEach
     void setUp() {
         lenient().when(adbServicesStatus.asObservable()).thenReturn(adbServicesStatusObservers.asObservable());
-        lenient().when(dataSourceHolder.asObservable()).thenReturn(dataSourceHolderObservers.asObservable());
         lenient().when(view.popupMenuAction()).thenReturn(viewObservers.asObservable());
 
         lenient().when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.notInitialized());
@@ -172,18 +167,63 @@ class SourceStatusPresenterTest {
         verify(view).showSourceStatus("new DS");
     }
 
-    private void createPresenter() {
-        var presenter =
-                new SourceStatusPresenter(dataSourceHolder, adbServicesStatus, view, popupMenuPresenter, uiScheduler);
-        presenter.init();
+    @Test
+    void closedAdbDataSourceIsNotified() {
+        var observers = withAdbDataSource("adb", "disconnected");
+
+        createPresenter();
+
+        verify(view).showSourceStatus("adb");
+
+        observers.forEach(AdbDataSource.StateObserver::onDataSourceClosed);
+
+        verify(view).showSourceStatus("disconnected");
     }
 
+    @Test
+    void unsubscribesFromAdbDataSource() {
+        var observers = withAdbDataSource("1", "1");
+
+        createPresenter();
+        onDataSourceOpened("other");
+
+        assertThat(observers).isEmpty();
+    }
+
+    @Test
+    void subscribesToOpenedAdbDataSource() {
+        withDataSource("initial");
+
+        createPresenterNotTrackingView();
+        var observers = onAdbDataSourceOpened("adb", "disconnected");
+
+        verify(view).showSourceStatus("adb");
+
+        observers.forEach(AdbDataSource.StateObserver::onDataSourceClosed);
+
+        verify(view).showSourceStatus("disconnected");
+    }
+
+    private void createPresenter() {
+        var presenter =
+                new SourceStatusPresenter(dataSourceHolder, adbServicesStatus, view, popupMenuPresenter);
+        presenter.init();
+    }
 
     private DataSource withDataSource(String name) {
         var dataSource = mock(DataSource.class);
         when(dataSource.toString()).thenReturn(name);
-        when(dataSourceHolder.getDataSource()).thenReturn(dataSource);
+        dataSourceHolder.setDataSource(dataSource);
         return dataSource;
+    }
+
+    private Subject<AdbDataSource.StateObserver> withAdbDataSource(String name, String disconnectedName) {
+        var stateObservers = new Subject<AdbDataSource.StateObserver>();
+        var dataSource = mock(AdbDataSource.class);
+        when(dataSource.toString()).thenReturn(name, disconnectedName);
+        when(dataSource.asStateObservable()).thenReturn(stateObservers.asObservable());
+        dataSourceHolder.setDataSource(dataSource);
+        return stateObservers;
     }
 
     private void withAdbInitializing() {
@@ -213,10 +253,10 @@ class SourceStatusPresenterTest {
     }
 
     private void onDataSourceOpened(String name) {
-        var newDataSource = withDataSource(name);
+        withDataSource(name);
+    }
 
-        for (DataSourceHolder.Observer obs : dataSourceHolderObservers) {
-            obs.onDataSourceChanged(null, newDataSource);
-        }
+    private Subject<AdbDataSource.StateObserver> onAdbDataSourceOpened(String name, String disconnectedName) {
+        return withAdbDataSource(name, disconnectedName);
     }
 }
