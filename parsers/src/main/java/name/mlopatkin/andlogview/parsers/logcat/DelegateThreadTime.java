@@ -28,9 +28,12 @@ import java.util.regex.Pattern;
 
 class DelegateThreadTime extends SingleLineRegexLogcatParserDelegate {
     private static final String TAG = TAG_REGEX + "\\s*:(?: |$)";
+    // https://cs.android.com/android/platform/superproject/main/+/main:system/logging/liblog/logprint.cpp;l=1547;drc=dd7fe3fedd9446067b06d31fdf6c191760405e6d
+    private static final String UID_REGEX = "(?:\\S+ +)?";
     private static final Pattern PATTERN = Patterns.compileFromParts(
             TIMESTAMP_REGEX,
             SEP,
+            UID_REGEX,
             PID_REGEX,
             SEP,
             TID_REGEX,
