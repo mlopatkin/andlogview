@@ -20,6 +20,8 @@ import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -38,6 +40,9 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
     private final ErrorDialogs errorDialogs;
     private final AdbConfigurationPref adbConfigurationPref;
     private final Executor uiExecutor;
+
+    private boolean isSuppressed;
+    private @Nullable String suppressedError;
 
     @Inject
     DeviceDisconnectedHandler(
@@ -69,9 +74,11 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
     private void onDeviceDisconnected(String message) {
         if (adbConfigurationPref.isAutoReconnectEnabled()) {
             deviceAwaiter.waitForDevice();
-        } else {
+        } else if (!isSuppressed) {
             // The dialog is modal, and must be shown in async manner. Otherwise, we'll block all other listeners.
             uiExecutor.execute(() -> showNotificationDialog(message));
+        } else {
+            suppressedError = message;
         }
     }
 
@@ -87,5 +94,26 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
      */
     public void startWatching(AdbDataSource dataSource) {
         dataSource.asStateObservable().addObserver(this);
+    }
+
+    /**
+     * Suppresses error dialogs until {@link #resumeDialogs()} is called.
+     */
+    public void suppressDialogs() {
+        isSuppressed = true;
+    }
+
+    /**
+     * Resumes showing error dialogs. Can show the last suppressed error if any.
+     *
+     */
+    public void resumeDialogs() {
+        isSuppressed = false;
+        var suppressedError = this.suppressedError;
+        this.suppressedError = null;
+
+        if (suppressedError != null) {
+            onDeviceDisconnected(suppressedError);
+        }
     }
 }

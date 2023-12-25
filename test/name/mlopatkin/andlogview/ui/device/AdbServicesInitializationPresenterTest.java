@@ -27,6 +27,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.test.ThreadTestUtils;
@@ -42,10 +43,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -107,7 +110,7 @@ class AdbServicesInitializationPresenterTest {
 
         adbInit.tryInitAdb(this);
 
-        thenRequestNotCompleted();
+        thenRequestCancelled();
         thenNoErrorIsShown();
     }
 
@@ -313,7 +316,7 @@ class AdbServicesInitializationPresenterTest {
         var mockBridge = mock(AdbServicesBridge.class);
         lenient().when(mockBridge.getAdbServicesAsync())
                 .thenAnswer(invocation -> servicesFuture.thenApply(Function.identity()));
-        return new AdbServicesInitializationPresenter(mockBridge, view, uiExecutor);
+        return new AdbServicesInitializationPresenter(view, mockBridge, uiExecutor, mock());
     }
 
     private void whenAdbInitFailed() {
@@ -349,6 +352,12 @@ class AdbServicesInitializationPresenterTest {
     private void thenRequestFailed() {
         verify(servicesConsumer, never()).accept(any());
         verify(errorConsumer).accept(any());
+    }
+
+    private void thenRequestCancelled() {
+        verify(servicesConsumer, never()).accept(any());
+        verify(errorConsumer).accept(ArgumentMatchers.argThat(
+                failure -> MyThrowables.unwrapUninteresting(failure) instanceof CancellationException));
     }
 
     private void thenNoProgressIsShown() {
@@ -427,7 +436,7 @@ class AdbServicesInitializationPresenterTest {
     }
 
     @FunctionalInterface
-    interface AdbInitRef  {
+    interface AdbInitRef {
         void tryInitAdb(AdbServicesInitializationPresenterTest test);
     }
 

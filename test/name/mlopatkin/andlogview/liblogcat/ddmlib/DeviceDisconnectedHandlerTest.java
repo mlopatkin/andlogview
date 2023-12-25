@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -63,6 +64,49 @@ class DeviceDisconnectedHandlerTest {
         handler.onDataSourceInvalidated(reason);
 
         assertWaitForDevice();
+    }
+
+    @ParameterizedTest
+    @EnumSource(AdbDataSource.InvalidationReason.class)
+    void errorMessagesCanBeSuppressed(AdbDataSource.InvalidationReason reason) {
+        when(adbConfigurationPref.isAutoReconnectEnabled()).thenReturn(false);
+
+        var handler = createHandler();
+        handler.suppressDialogs();
+        handler.onDataSourceInvalidated(reason);
+
+        assertNoErrorDialogShown();
+    }
+
+    @ParameterizedTest
+    @EnumSource(AdbDataSource.InvalidationReason.class)
+    void errorMessagesAreShownAfterResuming(AdbDataSource.InvalidationReason reason) {
+        when(adbConfigurationPref.isAutoReconnectEnabled()).thenReturn(false);
+
+        var handler = createHandler();
+        handler.suppressDialogs();
+        handler.resumeDialogs();
+        handler.onDataSourceInvalidated(reason);
+
+        assertErrorDialogShown();
+    }
+
+    @ParameterizedTest
+    @EnumSource(AdbDataSource.InvalidationReason.class)
+    void suppressedErrorMessagesAreShownAfterResuming(AdbDataSource.InvalidationReason reason) {
+        when(adbConfigurationPref.isAutoReconnectEnabled()).thenReturn(false);
+
+        var handler = createHandler();
+        handler.suppressDialogs();
+        handler.onDataSourceInvalidated(reason);
+        handler.resumeDialogs();
+
+        assertErrorDialogShown();
+    }
+
+    private void assertNoErrorDialogShown() {
+        verify(errorDialogs, never()).showDeviceDisconnectedWarning(any());
+        verifyNoInteractions(deviceAwaiter);
     }
 
     private void assertErrorDialogShown() {

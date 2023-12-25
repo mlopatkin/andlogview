@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
@@ -63,6 +64,7 @@ public class AdbServicesInitializationPresenter {
     private final AdbServicesBridge bridge;
     private final View view;
     private final Executor uiExecutor;
+    private final DeviceDisconnectedHandler deviceDisconnectedHandler;
     // Maintains set of the current requests to show loading progress. Useful, when new show and old hide requests
     // overlap because of the delayed execution of hide callback.
     private final Set<Object> progressTokens = new HashSet<>();
@@ -70,11 +72,15 @@ public class AdbServicesInitializationPresenter {
     private boolean hasShownErrorMessage;
 
     @Inject
-    AdbServicesInitializationPresenter(AdbServicesBridge bridge, View view,
-            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
+    AdbServicesInitializationPresenter(
+            View view,
+            AdbServicesBridge bridge,
+            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
+            DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.bridge = bridge;
         this.view = view;
         this.uiExecutor = uiExecutor;
+        this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
 
     /**
@@ -93,7 +99,7 @@ public class AdbServicesInitializationPresenter {
      * Initializes the adb services and executes the action. This method should be used when the user triggers the
      * action, it takes care of indicating the pause. The actions are executed on the UI executor.
      * <p>
-     * The initialization may be cancelled by using the returned handle. When cancelled, no callbacks are invoked.
+     * The initialization may be cancelled by using the returned handle. When cancelled, the failure handler is invoked.
      *
      * @param action the action to execute
      * @param failureHandler the failure handler
@@ -111,7 +117,7 @@ public class AdbServicesInitializationPresenter {
                     uiExecutor);
         }
         future.handleAsync(
-                        consumingHandler(action, ignoreCancellations(adbErrorHandler().andThen(failureHandler))),
+                        consumingHandler(action, ignoreCancellations(adbErrorHandler()).andThen(failureHandler)),
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
         // TODO(mlopatkin) Should we always show a failure message if the ADB fails/is failed for the interactive
@@ -142,8 +148,10 @@ public class AdbServicesInitializationPresenter {
     private Consumer<Throwable> adbErrorHandler() {
         return ignored -> {
             if (!hasShownErrorMessage) {
-                view.showAdbLoadingError();
                 hasShownErrorMessage = true;
+                // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
+                // showing the dialog to prevent re-entrance and double dialog.
+                view.showAdbLoadingError();
             }
         };
     }
@@ -154,6 +162,9 @@ public class AdbServicesInitializationPresenter {
     public void restartAdb() {
         bridge.stopAdb();
         hasShownErrorMessage = false;
-        withAdbServicesInteractive(adb -> {}, failure -> {});
+        deviceDisconnectedHandler.suppressDialogs();
+        withAdbServicesInteractive(
+                adbServices -> deviceDisconnectedHandler.resumeDialogs(),
+                failure -> deviceDisconnectedHandler.resumeDialogs());
     }
 }
