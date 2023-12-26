@@ -129,7 +129,9 @@ class DumpstateElementsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "PROCESSES (ps -P)"
+            "PROCESSES (ps -P)",
+            "PROCESSES",
+            "PROCESSES (ps -P --abi)",
             // TODO(mlopatkin) This need more supported cases
     })
     void canDetermineProcessSection(String sectionName) {
@@ -141,7 +143,6 @@ class DumpstateElementsTest {
             "PROCRANK",
             "PROCESSES AND THREADS (ps -t -p -P)",
             "PROCESSES AND THREADS",
-            "PROCESSES", // TODO(mlopatkin) this should actually be supported
     })
     void canDetermineNotProcessSection(String sectionName) {
         assertThat(DumpstateElements.isProcessSection(sectionName)).isFalse();
@@ -169,6 +170,7 @@ class DumpstateElementsTest {
             "PROCESSES",
             "KERNEL LOG (dmesg)",
             "KERNEL LOG",
+            "EVENT LOG TAGS",
             "BINDER FAILED TRANSACTION LOG (/sys/kernel/debug/binder/failed_transaction_log)",
             "LAST RADIO LOG (parse_radio_log /proc/last_radio_log)"  // TODO(mlopatkin) Can we parse it?
     })

@@ -148,7 +148,9 @@ public final class DumpstateFileDataSource implements DataSource {
 
                         @Override
                         public ParserControl unparseableLine(CharSequence line) {
-                            logger.debug("Failed to parse dumpstate logcat line: " + line);
+                            if (line.length() > 0) {
+                                logger.debug("Failed to parse dumpstate logcat line: " + line);
+                            }
                             return ParserControl.proceed();
                         }
                     });

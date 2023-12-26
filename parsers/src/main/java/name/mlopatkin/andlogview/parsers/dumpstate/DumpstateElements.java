@@ -109,7 +109,7 @@ final class DumpstateElements {
      * @return {@code true} if the section is a process list section
      */
     public static boolean isProcessSection(String sectionName) {
-        return "PROCESSES (ps -P)".equals(sectionName);
+        return "PROCESSES".equals(sectionName) || sectionName.startsWith("PROCESSES (");
     }
 
     /**
@@ -139,7 +139,8 @@ final class DumpstateElements {
     }
 
     private static boolean isLogcatSectionName(String sectionName, String bufferSectionNamePart) {
-        return sectionName.startsWith(bufferSectionNamePart + " LOG");
+        var nameWithBuffer = bufferSectionNamePart + " LOG";
+        return sectionName.equals(nameWithBuffer) || sectionName.startsWith(nameWithBuffer + " (");
     }
 
     /**
