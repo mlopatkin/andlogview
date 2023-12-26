@@ -70,4 +70,18 @@ public interface DumpstateParseEventsHandler extends PushParser.ParseEventsHandl
     default Optional<PsParseEventsHandler> psSectionBegin() {
         return Optional.empty();
     }
+
+    /**
+     * Called when a "PROCESS TIMES" section is detected.
+     * <p>
+     * If the implementor wants to handle the content, the handler should be returned in an {@link Optional}.
+     * The {@link ParserControl} returned by the handler will only affect parsing of the section, so returning
+     * {@link ParserControl#stop()} wouldn't affect parsing of the other sections of the dumpstate file, only the
+     * current section would be skipped.
+     *
+     * @return the handler to process the process lines in this section or empty Optional to skip the section
+     */
+    default Optional<ProcessEventsHandler> processTimesSectionBegin() {
+        return Optional.empty();
+    }
 }

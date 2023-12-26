@@ -141,4 +141,16 @@ final class DumpstateElements {
     private static boolean isLogcatSectionName(String sectionName, String bufferSectionNamePart) {
         return sectionName.startsWith(bufferSectionNamePart + " LOG");
     }
+
+    /**
+     * Checks if the section is a "BLOCKED PROCESS WAIT-CHANNELS" section. Despite the name, it contains information
+     * about all processes.
+     *
+     * @param sectionName the name of the section
+     * @return {@code true} if the section is the blocked process wait channels. section
+     * @see ProcessWaitChannelsParser
+     */
+    public static boolean isProcessWaitChannelsSection(String sectionName) {
+        return sectionName.startsWith("BLOCKED PROCESS WAIT-CHANNELS");
+    }
 }

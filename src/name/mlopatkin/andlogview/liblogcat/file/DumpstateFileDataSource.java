@@ -27,6 +27,7 @@ import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.ParserUtils;
 import name.mlopatkin.andlogview.parsers.PushParser;
 import name.mlopatkin.andlogview.parsers.dumpstate.DumpstateParseEventsHandler;
+import name.mlopatkin.andlogview.parsers.dumpstate.ProcessEventsHandler;
 import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
 import name.mlopatkin.andlogview.parsers.ps.PsParseEventsHandler;
@@ -123,6 +124,11 @@ public final class DumpstateFileDataSource implements DataSource {
         private boolean hasPsSection;
         private boolean psSectionHadUnparseableLines;
 
+        // ProcessWait section is available since about Android 4.0.1 and sometimes provides better insights.
+        // At least, it has less variability between versions.
+        private boolean hasProcessWaitSection;
+        private boolean processWaitSectionHadUnparseableLines;
+
         public Builder(String fileName) {
             this.fileName = fileName;
         }
@@ -168,6 +174,31 @@ public final class DumpstateFileDataSource implements DataSource {
                 }
 
                 @Override
+                public Optional<ProcessEventsHandler> processTimesSectionBegin() {
+                    hasProcessWaitSection = true;
+                    return Optional.of(new ProcessEventsHandler() {
+                        @Override
+                        public ParserControl process(int pid, String processName) {
+                            pidToProcessConverter.putIfAbsent(pid, processName);
+                            return ParserControl.proceed();
+                        }
+
+                        @Override
+                        public ParserControl unknownKernelThread(int tid) {
+                            // PS typically has a better output for kernel threads
+                            pidToProcessConverter.putIfAbsent(tid, "???");
+                            return ParserControl.proceed();
+                        }
+
+                        @Override
+                        public ParserControl unparseableLine(CharSequence line) {
+                            processWaitSectionHadUnparseableLines = true;
+                            return ParserControl.proceed();
+                        }
+                    });
+                }
+
+                @Override
                 public ParserControl unparseableLogcatSection(Buffer buffer) {
                     problems.add(new ImportProblem("Failed to import logcat entries for " + buffer.getCaption()));
                     return ParserControl.stop();
@@ -190,10 +221,11 @@ public final class DumpstateFileDataSource implements DataSource {
                 problems.add(new ImportProblem(
                         "Dumpstate file has time travels. Record ordering across buffers may not be consistent."));
             }
-            if (!hasPsSection) {
+            if (!hasPsSection && !hasProcessWaitSection) {
                 problems.add(
                         new ImportProblem("Failed to find Processes section. Application names are not available."));
-            } else if (psSectionHadUnparseableLines && pidToProcessConverter.isEmpty()) {
+            } else if ((psSectionHadUnparseableLines || processWaitSectionHadUnparseableLines)
+                    && pidToProcessConverter.isEmpty()) {
                 problems.add(
                         new ImportProblem("Failed to parse Processes section. Application names are not available."));
             }

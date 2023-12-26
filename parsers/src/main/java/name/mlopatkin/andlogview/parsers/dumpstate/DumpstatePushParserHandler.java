@@ -45,6 +45,14 @@ class DumpstatePushParserHandler implements BaseDumpstateParseEventsHandler {
                     .map(DumpstateParserControl::handleWith)
                     .orElse(DumpstateParserControl.skipSection());
         }
+
+        if (DumpstateElements.isProcessWaitChannelsSection(sectionName)) {
+            return eventsHandler.processTimesSectionBegin()
+                    .map(ProcessWaitChannelsParser::new)
+                    .map(SectionHandler::withSubParser)
+                    .map(DumpstateParserControl::handleWith)
+                    .orElse(DumpstateParserControl.skipSection());
+        }
         return DumpstateParserControl.skipSection();
     }
 
