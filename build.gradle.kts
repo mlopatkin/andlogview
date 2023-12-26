@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import java.util.Locale
+import java.util.*
 
 plugins {
     idea
@@ -44,7 +44,6 @@ dependencies {
     implementation(project(":search"))
     implementation(project(":search:logrecord"))
     implementation(libs.dagger.runtime)
-    implementation(libs.guava)
     implementation(libs.gson)
     implementation(libs.log4j)
     implementation(libs.jopt)

@@ -23,7 +23,6 @@ dependencies {
     api(project(":search"))
 
     implementation(project(":base"))
-    implementation(libs.guava)
 
     testImplementation(testFixtures(project(":logmodel")))
 }

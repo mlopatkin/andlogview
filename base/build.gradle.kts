@@ -27,12 +27,11 @@ description = "Common utilities that every other model can use"
 dependencies {
     api(libs.dagger.runtime)
 
-    implementation(libs.guava)
     implementation(libs.log4j)
 
-    testFixturesApi(libs.test.assertj)
+    testFixturesApi(platform(libs.test.assertj.bom))
+    testFixturesApi(libs.test.assertj.core)
     testFixturesApi(libs.test.hamcrest.hamcrest)
-    testFixturesImplementation(libs.guava)
     testFixturesImplementation(libs.test.mockito.core)
 }
 

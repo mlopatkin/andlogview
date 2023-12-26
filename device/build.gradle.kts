@@ -26,7 +26,6 @@ dependencies {
     implementation(project(":base"))
     implementation(libs.ddmlib)
     implementation(libs.gson)
-    implementation(libs.guava)
     implementation(libs.log4j)
 
     testFixturesApi(libs.test.hamcrest.hamcrest)

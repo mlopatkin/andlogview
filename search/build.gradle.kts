@@ -22,7 +22,4 @@ plugins {
 
 dependencies {
     implementation(project(":base"))
-    implementation(libs.guava)
-
-    testFixturesImplementation(libs.guava)
 }

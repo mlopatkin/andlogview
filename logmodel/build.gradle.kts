@@ -21,14 +21,13 @@ plugins {
 
 dependencies {
     implementation(project(":base"))
-    implementation(libs.guava)
 
-    testFixturesApi(libs.test.assertj)
+    testFixturesApi(platform(libs.test.assertj.bom))
+    testFixturesApi(libs.test.assertj.core)
     testFixturesApi(libs.test.hamcrest.hamcrest)
     testFixturesImplementation(project(":base"))
     testFixturesImplementation(testFixtures(project(":base")))
     testFixturesImplementation(libs.checkerframeworkAnnotations)
-    testFixturesImplementation(libs.guava)
     testFixturesImplementation(libs.test.junit4)
 
     testImplementation(testFixtures(project(":base")))

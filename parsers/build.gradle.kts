@@ -23,7 +23,6 @@ plugins {
 dependencies {
     api(project(":logmodel"))
     implementation(project(":base"))
-    implementation(libs.guava)
     implementation(libs.log4j)
 
     testFixturesApi(platform(libs.test.junit5.bom))
@@ -32,7 +31,6 @@ dependencies {
     testFixturesImplementation(project(":base"))
     testFixturesImplementation(testFixtures(project(":logmodel")))
     testFixturesImplementation(libs.gson)
-    testFixturesImplementation(libs.guava)
 
     testImplementation(project(":device"))
     testImplementation(testFixtures(project(":logmodel")))
