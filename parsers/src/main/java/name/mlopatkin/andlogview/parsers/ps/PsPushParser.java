@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.parsers.ps;
 
+import name.mlopatkin.andlogview.parsers.AbstractPushParser;
 import name.mlopatkin.andlogview.parsers.Patterns;
-import name.mlopatkin.andlogview.parsers.PushParser;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.LineParser.State;
 
@@ -25,7 +25,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<H> {
+public class PsPushParser<H extends PsParseEventsHandler> extends AbstractPushParser<H> {
     private static final String HEADER_REGEX =
             "^USER\\s+PID\\s+PPID\\s+(VSIZE|VSZ)\\s+RSS\\s+(PCY\\s+)?WCHAN\\s+(PC|ADDR)\\s+(S\\s+)?NAME\\s*$";
 
@@ -68,54 +68,36 @@ public class PsPushParser<H extends PsParseEventsHandler> implements PushParser<
             PROCESS_STATUS_REGEX,
             PROCESS_NAME);
 
-    private final H eventsHandler;
     private final LineParser lineParser;
 
-    private boolean shouldStop;
-
     public PsPushParser(H eventsHandler) {
-        this.eventsHandler = eventsHandler;
+        super(eventsHandler);
         this.lineParser = new LineParser(this::seekHeader);
     }
 
     @Override
-    public H getHandler() {
-        return eventsHandler;
-    }
-
-    @Override
-    public boolean nextLine(CharSequence line) {
-        if (shouldStop) {
-            return false;
-        }
-
+    protected void onNextLine(CharSequence line) {
         lineParser.nextLine(line);
-        return !shouldStop;
-    }
-
-    @Override
-    public void close() {
-        eventsHandler.documentEnded();
     }
 
     private State seekHeader(CharSequence line) {
         if (isProcessListHeader(line)) {
-            shouldStop = !eventsHandler.header().shouldProceed();
-            return shouldStop ? LineParser.sinkState() : this::parseProcessListLine;
+            stopUnless(getHandler().header().shouldProceed());
+            return this::parseProcessListLine;
         } else {
-            shouldStop = !eventsHandler.unparseableLine(line).shouldProceed();
+            stopUnless(getHandler().unparseableLine(line).shouldProceed());
         }
-        return shouldStop ? LineParser.sinkState() : LineParser.currentState();
+        return LineParser.currentState();
     }
 
     private State parseProcessListLine(CharSequence line) {
         Matcher m = PS_LINE_PATTERN.matcher(line);
         if (m.matches()) {
-            shouldStop = !eventsHandler.processLine(getPid(m), getProcessName(m)).shouldProceed();
+            stopUnless(getHandler().processLine(getPid(m), getProcessName(m)).shouldProceed());
         } else {
-            shouldStop = !eventsHandler.unparseableLine(line).shouldProceed();
+            stopUnless(getHandler().unparseableLine(line).shouldProceed());
         }
-        return shouldStop ? LineParser.sinkState() : LineParser.currentState();
+        return LineParser.currentState();
     }
 
     private static int getPid(MatchResult m) {

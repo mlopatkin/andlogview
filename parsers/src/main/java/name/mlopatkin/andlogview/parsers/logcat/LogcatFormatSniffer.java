@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.parsers.logcat;
 
-import name.mlopatkin.andlogview.parsers.BasePushParser;
+import name.mlopatkin.andlogview.parsers.AbstractBasePushParser;
 import name.mlopatkin.andlogview.parsers.FormatSniffer;
 import name.mlopatkin.andlogview.parsers.MultiplexParser;
 import name.mlopatkin.andlogview.parsers.ParserControl;
@@ -31,7 +31,8 @@ import java.util.stream.Collectors;
 /**
  * A special parser that detects format of the logs and can create a {@link LogcatPushParser} to parse this format.
  */
-public class LogcatFormatSniffer implements BasePushParser, FormatSniffer<LogcatParseEventsHandler> {
+public class LogcatFormatSniffer extends AbstractBasePushParser
+        implements FormatSniffer<LogcatParseEventsHandler> {
     private final MultiplexParser<LogcatPushParser<SniffingHandler>> parser;
     private @Nullable Format detectedFormat;
 
@@ -67,12 +68,11 @@ public class LogcatFormatSniffer implements BasePushParser, FormatSniffer<Logcat
     }
 
     @Override
-    public boolean nextLine(CharSequence line) {
-        if (detectedFormat != null) {
-            return false;
-        }
+    protected void onNextLine(CharSequence line) {
+        assert detectedFormat == null;
+
         boolean result = parser.nextLine(line);
-        return detectedFormat == null && result;
+        stopUnless(detectedFormat == null && result);
     }
 
     @Override

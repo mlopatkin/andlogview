@@ -17,38 +17,32 @@
 package name.mlopatkin.andlogview.parsers.logcat;
 
 import name.mlopatkin.andlogview.logmodel.Field;
-import name.mlopatkin.andlogview.parsers.PushParser;
+import name.mlopatkin.andlogview.parsers.AbstractPushParser;
 
 import java.util.Set;
 
 /**
  * The push parser for the logcat log. Use {@link LogcatParsers} to obtain the instance for the desired format.
  */
-public class LogcatPushParser<H extends LogcatParseEventsHandler> implements PushParser<H> {
+public class LogcatPushParser<H extends LogcatParseEventsHandler> extends AbstractPushParser<H> {
     private final Format format;
     private final RegexLogcatParserDelegate parserDelegate;
-    private final H eventsHandler;
 
     LogcatPushParser(Format format, H eventsHandler) {
+        super(eventsHandler);
         this.format = format;
         this.parserDelegate = format.createParser(eventsHandler);
-        this.eventsHandler = eventsHandler;
     }
 
     @Override
-    public H getHandler() {
-        return eventsHandler;
-    }
-
-    @Override
-    public boolean nextLine(CharSequence line) {
-        return parserDelegate.parseLine(line).shouldProceed();
+    protected void onNextLine(CharSequence line) {
+        stopUnless(parserDelegate.parseLine(line).shouldProceed());
     }
 
     @Override
     public void close() {
         parserDelegate.close();
-        eventsHandler.documentEnded();
+        super.close();
     }
 
     public Set<Field> getAvailableFields() {

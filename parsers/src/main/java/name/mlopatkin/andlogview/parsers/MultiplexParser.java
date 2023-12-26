@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @param <T> the common type of the child parsers
  */
-public class MultiplexParser<T extends BasePushParser> implements BasePushParser {
+public class MultiplexParser<T extends BasePushParser> extends AbstractBasePushParser {
     private final ImmutableList<T> children;
     private final List<T> activeChildren;
 
@@ -44,7 +44,7 @@ public class MultiplexParser<T extends BasePushParser> implements BasePushParser
     }
 
     @Override
-    public boolean nextLine(CharSequence line) {
+    protected void onNextLine(CharSequence line) {
         Iterator<T> activeIter = activeChildren.iterator();
         boolean result = false;
         while (activeIter.hasNext()) {
@@ -56,7 +56,7 @@ public class MultiplexParser<T extends BasePushParser> implements BasePushParser
                 result = true;
             }
         }
-        return result;
+        stopUnless(result);
     }
 
     @Override

@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.parsers.dumpstate;
 
-import name.mlopatkin.andlogview.parsers.BasePushParser;
+import name.mlopatkin.andlogview.parsers.AbstractBasePushParser;
 import name.mlopatkin.andlogview.parsers.FormatSniffer;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.PushParser;
@@ -24,12 +24,13 @@ import name.mlopatkin.andlogview.parsers.PushParser;
 /**
  * A special parser to check if the input is actually a dumpstate. Current implementation searches for dumpstate header.
  */
-public class DumpstateFormatSniffer implements BasePushParser, FormatSniffer<DumpstateParseEventsHandler> {
+public class DumpstateFormatSniffer extends AbstractBasePushParser
+        implements FormatSniffer<DumpstateParseEventsHandler> {
     private final BaseDumpstatePushParser<Handler> parser = new BaseDumpstatePushParser<>(new Handler());
 
     @Override
-    public boolean nextLine(CharSequence line) {
-        return parser.nextLine(line);
+    protected void onNextLine(CharSequence line) {
+        stopUnless(parser.nextLine(line));
     }
 
     @Override

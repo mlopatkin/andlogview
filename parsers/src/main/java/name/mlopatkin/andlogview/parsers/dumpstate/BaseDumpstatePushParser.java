@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.parsers.dumpstate;
 
+import name.mlopatkin.andlogview.parsers.AbstractPushParser;
 import name.mlopatkin.andlogview.parsers.ParserControl;
-import name.mlopatkin.andlogview.parsers.PushParser;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.LineParser.State;
 
@@ -29,54 +29,39 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @param <H> type of a handler
  */
-class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> implements PushParser<H> {
+class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> extends AbstractPushParser<H> {
     // Implementation note: functions named "stateXxx" are actual states of the Line Parser. The rest are helpers.
 
-    private final H eventsHandler;
     private final LineParser lineParser;
 
-    private boolean shouldStop;
     private @Nullable String currentSection;
     private @Nullable SectionHandler sectionHandler;
 
     public BaseDumpstatePushParser(H eventsHandler) {
-        this.eventsHandler = eventsHandler;
+        super(eventsHandler);
         State nextState = this::stateSeekDumpstateHeaderTitle;
         this.lineParser = new LineParser(line -> stateSeekDumpstateHeaderBorder(false, nextState, line));
     }
 
     @Override
-    public H getHandler() {
-        return eventsHandler;
-    }
-
-    @Override
-    public boolean nextLine(CharSequence line) {
-        if (shouldStop) {
-            return false;
-        }
-
+    protected void onNextLine(CharSequence line) {
         lineParser.nextLine(line);
-        return !shouldStop;
     }
 
     @Override
     public void close() {
-        if (shouldStop) {
-            return;
-        }
-        if (currentSection != null) {
+        if (!shouldStop() && currentSection != null) {
             endSection();
         }
-        eventsHandler.documentEnded();
+        super.close();
     }
 
     private State stateSeekDumpstateHeaderBorder(boolean endBorder, State nextState, CharSequence line) {
         if (DumpstateElements.isDumpstateHeaderBorder(line)) {
             if (endBorder) {
-                handleControl(eventsHandler.header());
+                handleControl(getHandler().header());
             }
-            return nextOrStop(nextState);
+            return nextState;
         }
         return handleUnparseableLine(line);
     }
@@ -101,9 +86,10 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
     private State handleSectionStart(String sessionName) {
         assert currentSection == null;
         currentSection = sessionName;
-        DumpstateParserControl next = eventsHandler.sectionStarted(currentSection);
+        DumpstateParserControl next = getHandler().sectionStarted(currentSection);
         if (next.shouldStop()) {
-            shouldStop = true;
+            stop();
+            // We've stopped, which means no new lines will be processed, but we need to return at least something.
             return LineParser.sinkState();
         }
         if (next.shouldSkip()) {
@@ -135,16 +121,17 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
         @Nullable String maybeNewSection = DumpstateElements.tryGetSectionName(line);
         if (maybeNewSection != null) {
             endSection();
-            if (!shouldStop) {
+            if (!shouldStop()) {
                 // Manually replay the current line into the next state.
                 return handleSectionStart(maybeNewSection);
             }
+            // We've stopped, which means no new lines will be processed, but we need to return at least something.
             return LineParser.sinkState();
         }
         if (sectionHandler != null && !handleControl(sectionHandler.nextLine(line))) {
             // The section parsing and maybe the whole parsing is aborted.
             popSectionHandler();
-            return nextOrStop(this::stateSkipCurrentSection);
+            return this::stateSkipCurrentSection;
         }
         // Either the sectionHandler consumed the line, and we continue to stay in the section or there is no handler,
         // and we ignore the section content.
@@ -152,8 +139,8 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
     }
 
     private State handleUnparseableLine(CharSequence line) {
-        handleControl(eventsHandler.unparseableLine(line));
-        return currentOrStop();
+        handleControl(getHandler().unparseableLine(line));
+        return LineParser.currentState();
     }
 
     private void popSectionHandler() {
@@ -166,28 +153,20 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> impleme
     private State endSection() {
         assert currentSection != null;
         popSectionHandler();
-        handleControl(eventsHandler.sectionEnded(currentSection));
+        handleControl(getHandler().sectionEnded(currentSection));
         currentSection = null;
-        return nextOrStop(this::stateSeekSectionStart);
-    }
-
-    private State nextOrStop(State nextState) {
-        return shouldStop ? LineParser.sinkState() : nextState;
-    }
-
-    private State currentOrStop() {
-        return nextOrStop(LineParser.currentState());
+        return this::stateSeekSectionStart;
     }
 
     private void handleControl(ParserControl parserControl) {
-        shouldStop |= !parserControl.shouldProceed();
+        stopUnless(parserControl.shouldProceed());
     }
 
     private boolean handleControl(SectionParserControl parserControl) {
         if (parserControl.shouldProceed()) {
             return true;
         }
-        shouldStop |= parserControl.shouldStop();
+        stopIf(parserControl.shouldStop());
         return false;
     }
 
