@@ -213,6 +213,16 @@ public final class DumpstateFileDataSource implements DataSource {
             if (availableBuffers.isEmpty()) {
                 throw new UnrecognizedFormatException("Cannot load dumpstate file, no valid logcat section found");
             }
+            if (!hasPsSection && !hasProcessWaitSection) {
+                problems.add(
+                        new ImportProblem("Failed to find Processes section. Application names are not available."));
+            } else if ((psSectionHadUnparseableLines || processWaitSectionHadUnparseableLines)
+                    && pidToProcessConverter.isEmpty()) {
+                problems.add(
+                        new ImportProblem("Failed to parse Processes section. Application names are not available."));
+            } else {
+                updateProcesses();
+            }
 
             OfflineSorter sorter = new OfflineSorter();
             records.forEach(sorter::add);
@@ -221,19 +231,22 @@ public final class DumpstateFileDataSource implements DataSource {
                 problems.add(new ImportProblem(
                         "Dumpstate file has time travels. Record ordering across buffers may not be consistent."));
             }
-            if (!hasPsSection && !hasProcessWaitSection) {
-                problems.add(
-                        new ImportProblem("Failed to find Processes section. Application names are not available."));
-            } else if ((psSectionHadUnparseableLines || processWaitSectionHadUnparseableLines)
-                    && pidToProcessConverter.isEmpty()) {
-                problems.add(
-                        new ImportProblem("Failed to parse Processes section. Application names are not available."));
-            }
             return new ImportResult(
                     new DumpstateFileDataSource(
                             fileName, sorter.buildTimestampOrdered(), EnumSet.allOf(Field.class), availableBuffers,
                             pidToProcessConverter),
                     problems);
+        }
+
+        private void updateProcesses() {
+            var iterator = records.listIterator();
+            while (iterator.hasNext()) {
+                var record = iterator.next();
+                final String appName;
+                if (!record.hasAppName() && (appName = pidToProcessConverter.get(record.getPid())) != null) {
+                    iterator.set(record.withAppName(appName));
+                }
+            }
         }
     }
 }

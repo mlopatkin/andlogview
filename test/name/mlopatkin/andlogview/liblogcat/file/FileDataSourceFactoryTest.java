@@ -141,6 +141,22 @@ public class FileDataSourceFactoryTest {
         assertThat(FileDataSourceFactory.createDataSource("time-travel.dump", log).getProblems()).isNotEmpty();
     }
 
+    @Test
+    public void openDumpstateWithProcessAfterLogs() throws Exception {
+        CharSource log = openTestData("emulator_api34.minimized.dump");
+
+        var source = FileDataSourceFactory.createDataSource("process-names.dump", log).getDataSource();
+
+        assertThat(source.getPidToProcessConverter()).isNotEmpty();
+
+        assertThat(getRecords(source)).as("have some log records with app names").anyMatch(LogRecord::hasAppName);
+
+        assertThat(getRecords(source))
+                .filteredOn(r -> !r.hasAppName())
+                .as("All records without app names are because the process is not known")
+                .allSatisfy(r -> assertThat(source.getPidToProcessConverter()).doesNotContainKey(r.getPid()));
+    }
+
     private CharSource openTestData(String testDataName) {
         return Resources.asCharSource(Resources.getResource(getClass(), testDataName), StandardCharsets.UTF_8);
     }

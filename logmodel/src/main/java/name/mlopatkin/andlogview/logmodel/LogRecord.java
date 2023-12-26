@@ -17,7 +17,6 @@ package name.mlopatkin.andlogview.logmodel;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -94,7 +93,7 @@ public class LogRecord {
     private final String tag;
     private final String message;
     private final @Nullable Buffer buffer;
-    private final String appName;
+    private final @Nullable String appName;
 
     LogRecord(
             SequenceNumber seqNo,
@@ -110,7 +109,7 @@ public class LogRecord {
         this.time = time;
         this.pid = pid;
         this.tid = tid;
-        this.appName = CharMatcher.whitespace().trimFrom(Strings.nullToEmpty(appName));
+        this.appName = appName != null ? CharMatcher.whitespace().trimFrom(appName) : null;
         this.priority = priority;
         this.tag = tag;
         this.message = message;
@@ -149,8 +148,12 @@ public class LogRecord {
         return buffer;
     }
 
+    public boolean hasAppName() {
+        return appName != null;
+    }
+
     public String getAppName() {
-        return appName;
+        return appName != null ? appName : "";
     }
 
     @Override
