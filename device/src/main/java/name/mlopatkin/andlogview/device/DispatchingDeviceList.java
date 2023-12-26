@@ -48,7 +48,6 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
 
     private final AdbFacade adb;
     private final DeviceProvisioner deviceProvisioner;
-    private final AdbFacade.AdbBridgeObserver bridgeObserver = this::close;
 
     @GuardedBy("deviceLock")
     private final LinkedHashMap<DeviceKey, ProvisionalDeviceInternal> devices = new LinkedHashMap<>();
@@ -144,7 +143,6 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
 
     private void init() {
         adb.addDeviceChangeListener(deviceChangeListener);
-        adb.addBridgeObserver(bridgeObserver);
 
         IDevice[] knownDevices = adb.getDevices();
         ArrayList<ProvisionalDeviceImpl> devicesToProvision = new ArrayList<>(knownDevices.length);
@@ -283,7 +281,6 @@ class DispatchingDeviceList implements Observable<DeviceChangeObserver>, Closeab
     @Override
     public void close() {
         adb.removeDeviceChangeListener(deviceChangeListener);
-        adb.removeBridgeObserver(bridgeObserver);
 
         ImmutableList<ProvisionalDeviceInternal> currentDevices;
         synchronized (deviceLock) {

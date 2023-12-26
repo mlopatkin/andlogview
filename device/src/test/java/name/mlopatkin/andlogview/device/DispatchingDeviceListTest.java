@@ -201,7 +201,6 @@ class DispatchingDeviceListTest {
         deviceList.close();
 
         assertThat(adbFacade.hasRegisteredListeners()).isFalse();
-        assertThat(adbFacade.hasRegisteredBridgeObservers()).isFalse();
     }
 
     @Test

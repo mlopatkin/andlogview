@@ -16,10 +16,6 @@
 
 package name.mlopatkin.andlogview.device;
 
-import static name.mlopatkin.andlogview.utils.LazyInstance.lazy;
-
-import name.mlopatkin.andlogview.utils.LazyInstance;
-
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.google.common.base.MoreObjects;
@@ -30,28 +26,24 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
-class AdbServerImpl implements AdbServer, AdbFacade {
+class AdbServerImpl implements AdbServer {
     // AdbServerImpl wraps the current connection to the adb server. The connection cannot be replaced within the same
     // server instance, a new server instance should be created instead.
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
 
-    private final AndroidDebugBridge currentBridge;
-    private final LazyInstance<DispatchingDeviceList> dispatchingDeviceList;
-    private final List<AdbBridgeObserver> bridgeObservers = new CopyOnWriteArrayList<>();
+    private final DispatchingDeviceList dispatchingDeviceList;
 
     public AdbServerImpl(AdbLocation adbLocation, Executor ioExecutor) throws AdbException {
-        currentBridge = createBridge(adbLocation);
+        var adbFacade = new AdbFacadeImpl(createBridge(adbLocation));
         dispatchingDeviceList =
-                lazy(() -> DispatchingDeviceList.create(this, new DeviceProvisionerImpl(this, ioExecutor)));
+                DispatchingDeviceList.create(adbFacade, new DeviceProvisionerImpl(adbFacade, ioExecutor));
     }
 
     @Override
     public AdbDeviceList getDeviceList(Executor listenerExecutor) {
-        return new AdbDeviceListImpl(dispatchingDeviceList.get(), listenerExecutor);
+        return new AdbDeviceListImpl(dispatchingDeviceList, listenerExecutor);
     }
 
     private static AndroidDebugBridge createBridge(AdbLocation adbLocation) throws AdbException {
@@ -104,39 +96,31 @@ class AdbServerImpl implements AdbServer, AdbFacade {
         }
     }
 
-    private AndroidDebugBridge getBridge() {
-        return currentBridge;
-    }
-
-    @Override
-    public IDevice[] getDevices() {
-        return getBridge().getDevices();
-    }
-
-    @Override
-    public void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
-        AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
-    }
-
-    @Override
-    public void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
-        AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
-    }
-
-    @Override
-    public void addBridgeObserver(AdbBridgeObserver observer) {
-        bridgeObservers.add(observer);
-    }
-
-    @Override
-    public void removeBridgeObserver(AdbBridgeObserver observer) {
-        bridgeObservers.remove(observer);
-    }
-
     public void stop() {
-        for (AdbBridgeObserver observer : bridgeObservers) {
-            observer.onAdbBridgeClosed();
-        }
+        dispatchingDeviceList.close();
         AndroidDebugBridge.disconnectBridge();
+    }
+
+    private static class AdbFacadeImpl implements AdbFacade {
+        private final AndroidDebugBridge bridge;
+
+        private AdbFacadeImpl(AndroidDebugBridge bridge) {
+            this.bridge = bridge;
+        }
+
+        @Override
+        public IDevice[] getDevices() {
+            return bridge.getDevices();
+        }
+
+        @Override
+        public void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
+            AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
+        }
+
+        @Override
+        public void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
+            AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
+        }
     }
 }

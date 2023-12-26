@@ -27,7 +27,6 @@ import java.util.List;
 
 public class FakeAdbFacade implements AdbFacade {
     private final Subject<IDeviceChangeListener> deviceChangeListeners = new Subject<>();
-    private final Subject<AdbBridgeObserver> bridgeObservers = new Subject<>();
 
     private final List<IDevice> connectedDevices = new ArrayList<>();
 
@@ -95,19 +94,5 @@ public class FakeAdbFacade implements AdbFacade {
 
     public boolean hasRegisteredListeners() {
         return !deviceChangeListeners.isEmpty();
-    }
-
-    @Override
-    public void addBridgeObserver(AdbBridgeObserver observer) {
-        bridgeObservers.asObservable().addObserver(observer);
-    }
-
-    @Override
-    public void removeBridgeObserver(AdbBridgeObserver observer) {
-        bridgeObservers.asObservable().removeObserver(observer);
-    }
-
-    public boolean hasRegisteredBridgeObservers() {
-        return !bridgeObservers.isEmpty();
     }
 }
