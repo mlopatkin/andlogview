@@ -1,8 +1,9 @@
 ---
 title: Working with a device or an emulator
+weight: 30
 ---
-Logviewer can display logs directly from an emulator or a device if you have
-the Android SDK installed. Simply run a launching script and the Logviewer
+AndLogView can display logs directly from an emulator or a device if you have
+the Android SDK installed. Simply run a launching script and the AndLogView
 will try to connect to the first available device in the "adb devices" list.
 If there is no available devices the tool will be waiting for a device to
 connect.

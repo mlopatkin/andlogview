@@ -2,13 +2,13 @@
 
 https://github.com/mlopatkin/andlogview
 
-Android log viewer is the tool to simplify analysis of the Android logs.
+Android log viewer is the tool to simplify analysis of the Android logs, both
+live from a device or an emulator, or log and dumpstate files.
 
-![Application window](https://bitbucket.org/mlopatkin/android-log-viewer/wiki/multiple_filters.png)
+![Application window](andlogview.png)
 
-![](/adb_setup_prompt.png)
 
-## Features
+<!--## Features
 
 - Display logs from a device or an emulator
 - Display saved logs and dumpstate files
@@ -95,3 +95,4 @@ There is a mailing list [android-log-viewer at Google Groups](https://groups.goo
 for release announcements and discussions.
 
 Please report bugs to https://github.com/mlopatkin/andlogview/issues
+-->
