@@ -1,0 +1,6 @@
+---
+more:
+  - name: Releases
+    ref: "https://github.com/mlopatkin/andlogview/releases"
+    external: true
+    icon: "gdoc_download"

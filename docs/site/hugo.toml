@@ -1,0 +1,35 @@
+title = "AndLogView"
+theme = "hugo-geekdoc"
+
+pluralizeListTitles = false
+
+# Geekdoc required configuration
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+disablePathToLower = true
+
+# Required if you want to render robots.txt template
+enableRobotsTXT = true
+
+# Needed for mermaid shortcodes
+[markup]
+  [markup.goldmark.renderer]
+    # Needed for mermaid shortcode
+    unsafe = true
+  [markup.tableOfContents]
+    startLevel = 1
+    endLevel = 9
+
+defaultContentLanguage = "en"
+
+[languages.en]
+languageName = "English"
+weight = 10
+
+#[languages.ru]
+#languageName = "Русский"
+#weight = 20
+
+[params]
+geekdocBreadcrumb = false
+geekdocSearch = false
