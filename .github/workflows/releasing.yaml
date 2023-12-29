@@ -6,6 +6,9 @@ on:
       - release/*
     tags-ignore:
       - "*-snapshot"
+    paths-ignore:
+      - 'docs/site/**'
+
 env:
   PYTHON_BINARY: python3
 jobs:
