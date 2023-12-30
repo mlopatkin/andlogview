@@ -8,3 +8,7 @@ more:
     ref: "https://groups.google.com/g/android-log-viewer"
     external: true
     icon: "gdoc_email"
+  - name: License
+    ref: "/license"
+  - name: "Privacy policy"
+    ref: "/privacy_policy"
