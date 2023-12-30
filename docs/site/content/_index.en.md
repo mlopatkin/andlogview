@@ -11,7 +11,7 @@ live from a device or an emulator, or log and dumpstate files.
 
 * [Display logs from a device or an emulator](/adb_mode)
 * Display saved logs and dumpstate files
-* Search in the logs using regex if needed
+* [Search in the logs using regex if needed](/search)
 * Filter log lines by tag, PID, log priority, message content
   * Filtered lines can be hidden, highlighted or shown in a separate window
 * Bookmarks

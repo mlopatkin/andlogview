@@ -1,6 +1,6 @@
 ---
 title: Working with a device or an emulator
-weight: 30
+weight: 20
 ---
 AndLogView can display logs directly from an emulator or a device if you have
 the Android SDK installed. Simply run a launching script and the AndLogView
