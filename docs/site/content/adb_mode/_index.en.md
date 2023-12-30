@@ -13,8 +13,8 @@ to connect to.
 
 ![Device selection window](select_device.png)
 
-"ADB > Reset logs" command clears already retrieved logs, bookmarks
-and processes list.
+"ADB > Reset logs" command or <kbd><kbd>Ctrl</kbd><kbd>R</kbd></kbd> clears already retrieved logs,
+bookmarks and processes list.
 
 ## ADB Configuration
 
