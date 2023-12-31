@@ -1,6 +1,6 @@
 ---
 title: Installing
-weight: 10
+weight: 0
 ---
 
 ## Requirements
