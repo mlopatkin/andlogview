@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.AppExecutors;
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.device.Device;
@@ -30,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,7 +41,7 @@ import javax.inject.Named;
  */
 class GlobalAdbDeviceList implements AdbDeviceList {
     private final Subject<DeviceChangeObserver> deviceChangeObservers = new Subject<>();
-    private final Executor uiExecutor;
+    private final SequentialExecutor uiExecutor;
 
     private final DeviceChangeObserver listScopedObserver = new DeviceChangeObserver() {
         @Override
@@ -76,7 +76,7 @@ class GlobalAdbDeviceList implements AdbDeviceList {
     private @Nullable AdbDeviceList serverScopedDeviceList;
 
     @Inject
-    public GlobalAdbDeviceList(@Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
+    public GlobalAdbDeviceList(@Named(AppExecutors.UI_EXECUTOR) SequentialExecutor uiExecutor) {
         this.uiExecutor = uiExecutor;
     }
 

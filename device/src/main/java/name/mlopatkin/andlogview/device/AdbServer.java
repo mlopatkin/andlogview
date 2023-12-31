@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.device;
 
-import java.util.concurrent.Executor;
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 
 /**
  * The ADB server that this program is connected to. Use {@link AdbManager} to obtain an instance of this.
@@ -29,5 +29,5 @@ public interface AdbServer {
      * @param listenerExecutor the executor to run listeners on
      * @return the AdbDeviceList.
      */
-    AdbDeviceList getDeviceList(Executor listenerExecutor);
+    AdbDeviceList getDeviceList(SequentialExecutor listenerExecutor);
 }

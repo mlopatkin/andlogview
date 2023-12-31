@@ -23,6 +23,7 @@ import static name.mlopatkin.andlogview.utils.MyFutures.runAsync;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.base.MyThrowables;
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
@@ -77,7 +78,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
     AdbServicesBridge(AdbManager adbManager,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
-            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
+            @Named(AppExecutors.UI_EXECUTOR) SequentialExecutor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor) {
         this.adbManager = adbManager;
         this.adbConfigurationPref = adbConfigurationPref;

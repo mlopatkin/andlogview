@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.utils.SwingUiThreadScheduler;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
@@ -25,7 +26,6 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 
-import java.awt.EventQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,12 +50,15 @@ public class AppExecutors {
 
     @Module
     abstract static class ExecutorsModule {
+        @Binds
+        @Named(UI_EXECUTOR)
+        public abstract Executor getUiExecutor(@Named(UI_EXECUTOR) SequentialExecutor uiExecutor);
 
         @Provides
         @Singleton
         @Named(UI_EXECUTOR)
-        public static Executor getUiExecutor() {
-            return EventQueue::invokeLater;
+        public static SequentialExecutor getUiSequentialExecutor() {
+            return SequentialExecutor.edt();
         }
 
         @Binds

@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview;
 import static name.mlopatkin.andlogview.AppExecutors.FILE_EXECUTOR;
 import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.device.AdbManager;
@@ -56,6 +57,9 @@ public interface AppGlobals {
 
     @Named(UI_EXECUTOR)
     Executor getUiExecutor();
+
+    @Named(UI_EXECUTOR)
+    SequentialExecutor getUiSequentialExecutor();
 
     @Named(FILE_EXECUTOR)
     Executor getFileExecutor();

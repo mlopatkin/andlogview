@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
+
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.google.common.base.MoreObjects;
@@ -42,7 +44,7 @@ class AdbServerImpl implements AdbServer {
     }
 
     @Override
-    public AdbDeviceList getDeviceList(Executor listenerExecutor) {
+    public AdbDeviceList getDeviceList(SequentialExecutor listenerExecutor) {
         return new AdbDeviceListImpl(dispatchingDeviceList, listenerExecutor);
     }
 
