@@ -1,10 +1,9 @@
 # AndLogView: Log viewer for Android development
 
-https://github.com/mlopatkin/andlogview
+[AndLogViewer](https://andlogview.mlopatkin.name/) is the tool to simplify analysis
+of the Android logs, both online and offline.
 
-Android log viewer is the tool to simplify analysis of the Android logs.
-
-![Application window](https://bitbucket.org/mlopatkin/android-log-viewer/wiki/multiple_filters.png)
+![Application window](https://andlogview.mlopatkin.name/andlogview.png)
 
 ## Features
 
