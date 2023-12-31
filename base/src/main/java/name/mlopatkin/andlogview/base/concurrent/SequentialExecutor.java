@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.base.concurrent;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
-import java.awt.EventQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -30,22 +29,29 @@ import java.util.concurrent.ThreadFactory;
 public interface SequentialExecutor extends Executor {
 
     static SequentialExecutor edt() {
-        return EventQueue::invokeLater;
+        return new UiExecutor();
     }
 
     static SequentialExecutor singleThread() {
-        return Executors.newSingleThreadExecutor()::execute;
+        return decorate(Executors.newSingleThreadExecutor());
     }
 
     static SequentialExecutor singleThread(ThreadFactory threadFactory) {
-        return Executors.newSingleThreadExecutor(threadFactory)::execute;
+        return decorate(Executors.newSingleThreadExecutor(threadFactory));
     }
 
     static SequentialExecutor direct() {
-        return MoreExecutors.directExecutor()::execute;
+        return decorate(MoreExecutors.directExecutor());
     }
 
     static SequentialExecutor decorate(Executor other) {
-        return MoreExecutors.newSequentialExecutor(other)::execute;
+        return new DelegatingExecutor(other);
     }
+
+    /**
+     * Throws an exception if the call is not on this executor.
+     *
+     * @throws IllegalStateException if the current thread doesn't execute this executor's task.
+     */
+    void checkSequence();
 }
