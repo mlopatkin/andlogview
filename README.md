@@ -84,7 +84,7 @@ treated like normal search pattern.
 - Double-click on tag, message or pid cell opens edit mode where you can
   select and copy a substring of the cell's content
 
-See the complete manual at https://bitbucket.org/mlopatkin/android-log-viewer/wiki
+See the complete manual at https://andlogview.mlopatkin.name/
 
 ## Contacts
 
