@@ -19,6 +19,8 @@ package name.mlopatkin.andlogview.device;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.base.Preconditions;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
@@ -101,5 +103,10 @@ class AdbDeviceListImpl
     @Override
     public Observable<DeviceChangeObserver> asObservable() {
         return this;
+    }
+
+    @Override
+    public void close() {
+        Preconditions.checkState(deviceChangeObservers.isEmpty(), "Listeners must be unregistered");
     }
 }

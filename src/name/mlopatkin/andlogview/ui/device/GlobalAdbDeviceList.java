@@ -81,9 +81,11 @@ class GlobalAdbDeviceList implements AdbDeviceList {
     }
 
     public void setAdbServer(@Nullable AdbServer newServer) {
-        if (serverScopedDeviceList != null) {
-            serverScopedDeviceList.asObservable().removeObserver(listScopedObserver);
-            serverScopedDeviceList = null;
+        var currentList = serverScopedDeviceList;
+        serverScopedDeviceList = null;
+        if (currentList != null) {
+            currentList.asObservable().removeObserver(listScopedObserver);
+            currentList.close();
         }
         if (newServer != null) {
             serverScopedDeviceList = newServer.getDeviceList(uiExecutor);
@@ -110,5 +112,11 @@ class GlobalAdbDeviceList implements AdbDeviceList {
     @Override
     public Observable<DeviceChangeObserver> asObservable() {
         return deviceChangeObservers.asObservable();
+    }
+
+    @Override
+    public void close() {
+        // Nobody calls this yet.
+        setAdbServer(null);
     }
 }

@@ -31,7 +31,7 @@ import java.util.concurrent.Executor;
  * <p>
  * This list is not thread-safe and has to be used on the same executor that was used to obtain its instance.
  */
-public interface AdbDeviceList {
+public interface AdbDeviceList extends AutoCloseable {
     // TODO(mlopatkin) add some consistency between getDevices and observers. Maybe introducing executor-confined
     //  snapshotting would be enough?
     //  This inconsistency causes a race in the DeviceListModel - it can see provisional device when initializing and
@@ -52,4 +52,10 @@ public interface AdbDeviceList {
      * @return the observable to register observers on this list
      */
     Observable<DeviceChangeObserver> asObservable();
+
+    /**
+     * Frees resources of this list.
+     */
+    @Override
+    void close();
 }
