@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.utils.MyFutures.errorHandler;
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
@@ -33,7 +34,6 @@ import com.google.errorprone.annotations.FormatString;
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * This is the primary dispatcher for AdbDeviceList implementations.
  */
-class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObserver>, Closeable {
+class DispatchingDeviceList implements AdbDeviceList {
     private static final Logger logger = Logger.getLogger(DispatchingDeviceList.class);
 
     private final AdbFacade adb;
@@ -49,7 +49,7 @@ class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObs
     private final SequentialExecutor listExecutor;
 
     private final LinkedHashMap<DeviceKey, ProvisionalDeviceInternal> devices = new LinkedHashMap<>();
-    private final ArrayList<DeviceChangeObserver> deviceChangeObservers = new ArrayList<>();
+    private final Subject<DeviceChangeObserver> deviceChangeObservers = new Subject<>();
 
     private final AndroidDebugBridge.IDeviceChangeListener deviceChangeListener =
             new AndroidDebugBridge.IDeviceChangeListener() {
@@ -188,13 +188,9 @@ class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObs
         return ImmutableList.copyOf(Iterables.filter(devices.values(), Device.class));
     }
 
-    private List<DeviceChangeObserver> getObservers() {
-        return deviceChangeObservers;
-    }
-
     private void notifyProvisionalDeviceConnected(ProvisionalDeviceInternal provisionalDevice) {
         logger.debug(formatDeviceLog(provisionalDevice, "notifyProvisionalDeviceConnected"));
-        for (DeviceChangeObserver obs : getObservers()) {
+        for (DeviceChangeObserver obs : deviceChangeObservers) {
             obs.onProvisionalDeviceConnected(provisionalDevice);
         }
         provisionalDevice.notifyConnected();
@@ -202,7 +198,7 @@ class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObs
 
     private void notifyDeviceConnected(DeviceInternal device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceConnected"));
-        for (DeviceChangeObserver obs : getObservers()) {
+        for (DeviceChangeObserver obs : deviceChangeObservers) {
             obs.onDeviceConnected(device);
         }
         device.notifyProvisioned();
@@ -210,7 +206,7 @@ class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObs
 
     private void notifyDeviceDisconnected(ProvisionalDeviceInternal device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceDisconnected"));
-        for (DeviceChangeObserver obs : getObservers()) {
+        for (DeviceChangeObserver obs : deviceChangeObservers) {
             obs.onDeviceDisconnected(device);
         }
         device.notifyDisconnected();
@@ -218,22 +214,10 @@ class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObs
 
     private void notifyDeviceChanged(DeviceInternal device) {
         logger.debug(formatDeviceLog(device, "notifyDeviceChanged (online=%s)", device.isOnline()));
-        for (DeviceChangeObserver obs : getObservers()) {
+        for (DeviceChangeObserver obs : deviceChangeObservers) {
             obs.onDeviceChanged(device);
         }
         device.notifyChanged();
-    }
-
-    @Override
-    public void addObserver(DeviceChangeObserver observer) {
-        listExecutor.checkSequence();
-        deviceChangeObservers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(@Nullable DeviceChangeObserver observer) {
-        listExecutor.checkSequence();
-        deviceChangeObservers.remove(observer);
     }
 
     @FormatMethod
@@ -288,6 +272,7 @@ class DispatchingDeviceList implements AdbDeviceList, Observable<DeviceChangeObs
 
     @Override
     public Observable<DeviceChangeObserver> asObservable() {
-        return this;
+        listExecutor.checkSequence();
+        return deviceChangeObservers.asObservable();
     }
 }

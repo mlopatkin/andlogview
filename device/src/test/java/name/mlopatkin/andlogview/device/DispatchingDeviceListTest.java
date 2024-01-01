@@ -57,7 +57,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void initialListOfDevicesIsEmpty() {
-        DispatchingDeviceList deviceList = createDeviceList();
+        var deviceList = createDeviceList();
 
         assertThat(deviceList.getDevices()).isEmpty();
     }
@@ -67,7 +67,7 @@ class DispatchingDeviceListTest {
         adbFacade.connectDevice(createDevice("DeviceA"));
         adbFacade.connectDevice(createDevice("DeviceB"));
 
-        DispatchingDeviceList deviceList = createDeviceList();
+        var deviceList = createDeviceList();
 
         assertThat(deviceList.getAllDevices())
                 .map(ProvisionalDevice::getSerialNumber)
@@ -77,7 +77,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void connectedDeviceIsInList() {
-        DispatchingDeviceList deviceList = createDeviceList();
+        var deviceList = createDeviceList();
 
         adbFacade.connectDevice(createDevice("DeviceA"));
 
@@ -89,7 +89,7 @@ class DispatchingDeviceListTest {
 
     @Test
     void connectedDeviceIsNotInListAfterDisconnect() {
-        DispatchingDeviceList deviceList = createDeviceList();
+        var deviceList = createDeviceList();
 
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         adbFacade.disconnectDevice(deviceA);
@@ -99,10 +99,10 @@ class DispatchingDeviceListTest {
 
     @Test
     void notificationAboutConnectedDeviceIsPassedToRegisteredObserver() {
-        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = createDeviceList();
+        DeviceChangeObserver observer = mock();
+        var deviceList = createDeviceList();
 
-        deviceList.addObserver(observer);
+        deviceList.asObservable().addObserver(observer);
         adbFacade.connectDevice(createDevice("DeviceA"));
 
         verify(observer).onProvisionalDeviceConnected(argThat(hasSerial("DeviceA")));
@@ -113,10 +113,10 @@ class DispatchingDeviceListTest {
     void disconnectingInitiallyConnectedDeviceTriggersNotification() {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         adbFacade.connectDevice(createDevice("DeviceB"));
-        DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
+        DeviceChangeObserver observer = mock();
 
-        DispatchingDeviceList deviceList = createDeviceList();
-        deviceList.addObserver(observer);
+        var deviceList = createDeviceList();
+        deviceList.asObservable().addObserver(observer);
 
         adbFacade.disconnectDevice(deviceA);
 
@@ -127,9 +127,9 @@ class DispatchingDeviceListTest {
     void disconnectingConnectedDeviceTriggersNotification() {
         DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = createDeviceList();
+        var deviceList = createDeviceList();
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
-        deviceList.addObserver(observer);
+        deviceList.asObservable().addObserver(observer);
 
         adbFacade.disconnectDevice(deviceA);
 
@@ -148,8 +148,8 @@ class DispatchingDeviceListTest {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = createDeviceList();
-        deviceList.addObserver(observer);
+        var deviceList = createDeviceList();
+        deviceList.asObservable().addObserver(observer);
         adbFacade.changeDevice(deviceA, changeMask);
 
         verify(observer, only()).onDeviceChanged(argThat(hasSerial("DeviceA")));
@@ -160,8 +160,8 @@ class DispatchingDeviceListTest {
         IDevice deviceA = adbFacade.connectDevice(createDevice("DeviceA"));
         DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
 
-        DispatchingDeviceList deviceList = createDeviceList();
-        deviceList.addObserver(observer);
+        var deviceList = createDeviceList();
+        deviceList.asObservable().addObserver(observer);
         adbFacade.changeDevice(deviceA, IDevice.CHANGE_CLIENT_LIST);
 
         verify(observer, never()).onDeviceChanged(any());
@@ -170,8 +170,8 @@ class DispatchingDeviceListTest {
     @Test
     void outOfOrderDisconnectIsTolerated() {
         DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = createDeviceList();
-        deviceList.addObserver(observer);
+        var deviceList = createDeviceList();
+        deviceList.asObservable().addObserver(observer);
 
         adbFacade.disconnectUnconnectedDevice(createDevice("DeviceA"));
 
@@ -181,8 +181,8 @@ class DispatchingDeviceListTest {
     @Test
     void changeBeforeConnectIsTolerated() {
         DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = createDeviceList();
-        deviceList.addObserver(observer);
+        var deviceList = createDeviceList();
+        deviceList.asObservable().addObserver(observer);
 
         adbFacade.changeNotConnectedDevice(createDevice("DeviceA"), IDevice.CHANGE_STATE);
 
@@ -193,8 +193,8 @@ class DispatchingDeviceListTest {
     @Test
     void outOfOrderChangeAndConnectAreTolerated() {
         DeviceChangeObserver observer = mock(DeviceChangeObserver.class);
-        DispatchingDeviceList deviceList = createDeviceList();
-        deviceList.addObserver(observer);
+        var deviceList = createDeviceList();
+        deviceList.asObservable().addObserver(observer);
 
         IDevice deviceA = createDevice("DeviceA");
         adbFacade.changeNotConnectedDevice(deviceA, IDevice.CHANGE_STATE);
@@ -221,7 +221,7 @@ class DispatchingDeviceListTest {
         var deviceList = createDeviceList();
 
         var observer = mock(DeviceChangeObserver.class);
-        deviceList.addObserver(observer);
+        deviceList.asObservable().addObserver(observer);
         deviceList.close();
 
         verify(observer).onDeviceDisconnected(argThat(hasSerial("DeviceA")));
@@ -234,7 +234,7 @@ class DispatchingDeviceListTest {
         var deviceList = createDeviceList(provisioner);
 
         var observer = mock(DeviceChangeObserver.class);
-        deviceList.addObserver(observer);
+        deviceList.asObservable().addObserver(observer);
         deviceList.close();
         var inOrder = inOrder(observer);
         inOrder.verify(observer).onDeviceDisconnected(argThat(hasSerial("DeviceA")));
@@ -251,11 +251,11 @@ class DispatchingDeviceListTest {
         return result;
     }
 
-    private DispatchingDeviceList createDeviceList() {
+    private AdbDeviceList createDeviceList() {
         return createDeviceList(createProvisioner());
     }
 
-    private DispatchingDeviceList createDeviceList(DeviceProvisioner provisioner) {
+    private AdbDeviceList createDeviceList(DeviceProvisioner provisioner) {
         return DispatchingDeviceList.create(adbFacade, provisioner, testExecutor);
     }
 
