@@ -17,30 +17,29 @@
 package name.mlopatkin.andlogview.ui.device;
 
 
-import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.test.ThreadTestUtils;
 import name.mlopatkin.andlogview.utils.Cancellable;
+import name.mlopatkin.andlogview.utils.MyFutures;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentMatchers;
@@ -48,19 +47,22 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class AdbServicesInitializationPresenterTest {
-    final CompletableFuture<AdbServices> servicesFuture = new CompletableFuture<>();
+    CompletableFuture<AdbServices> servicesFuture = new CompletableFuture<>();
     @Mock
-    AdbServicesInitializationPresenter.View view;
+    AdbServicesBridge mockBridge;
+
+    FakeView view = new FakeView();
+
     @Mock(answer = Answers.CALLS_REAL_METHODS)
     Consumer<AdbServices> servicesConsumer;
     @Mock(answer = Answers.CALLS_REAL_METHODS)
@@ -73,28 +75,25 @@ class AdbServicesInitializationPresenterTest {
         presenter = createPresenter();
     }
 
-    @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void servicesRequestNotCompleteBeforeAdbLoad(ServiceRequest request) {
-        whenRunWithPresenter(request);
+    @Test
+    void interactiveRequestNotCompleteBeforeAdbLoad() {
+        whenRequestedAdbInteractive();
 
         thenRequestNotCompleted();
     }
 
-    @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void servicesRequestCompletesAfterAdbLoad(ServiceRequest request) {
-        whenRunWithPresenter(request);
+    @Test
+    void interactiveRequestCompletesAfterAdbLoad() {
+        whenRequestedAdbInteractive();
 
         whenAdbInitSucceed();
 
         thenRequestCompletedSuccessfully();
     }
 
-    @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void servicesRequestFailsAfterAdbLoadFailure(ServiceRequest request) {
-        whenRunWithPresenter(request);
+    @Test
+    void interactiveRequestFailsAfterAdbLoadFailure() {
+        whenRequestedAdbInteractive();
 
         whenAdbInitFailed();
 
@@ -102,9 +101,9 @@ class AdbServicesInitializationPresenterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("interactiveNonInteractiveFailedSucceed")
-    void cancelledRequestShowsNoMessagesIfAdbFails(ServiceRequest request, AdbInitRef adbInit) {
-        var result = whenRunWithPresenter(request);
+    @MethodSource("failedSucceeded")
+    void cancelledInteractiveRequestShowsNoMessagesIfAdbFails(AdbInitRef adbInit) {
+        var result = whenRequestedAdbInteractive();
 
         result.cancel();
 
@@ -115,12 +114,11 @@ class AdbServicesInitializationPresenterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("interactiveNonInteractiveFailedSucceed")
-    void cancelledRequestPropagatesNoExceptions(ServiceRequest request, AdbInitRef adbInit) throws Exception {
-        var result = whenRunWithPresenter(request);
+    @MethodSource("failedSucceeded")
+    void cancelledInteractiveRequestPropagatesNoExceptions(AdbInitRef adbInit) throws Exception {
+        var result = whenRequestedAdbInteractive();
 
-        Thread.UncaughtExceptionHandler handler = mock();
-        ThreadTestUtils.withUncaughtExceptionHandler(handler, () -> {
+        var handler = ThreadTestUtils.withUncaughtExceptionHandler(mock(), () -> {
             result.cancel();
 
             adbInit.tryInitAdb(this);
@@ -131,23 +129,24 @@ class AdbServicesInitializationPresenterTest {
 
     @Test
     void nonInteractiveRequestShowsAndHidesNoProgress() {
-        // TODO(mlopatkin) rewrite these tests
-        createPresenter().withAdbDeviceList();
+        whenRequestedAdbDeviceList();
 
         thenNoProgressIsShown();
         thenNoProgressIsHidden();
     }
 
-    @Test
-    void interactiveRequestShowsProgress() {
-        whenInteractiveRunWithPresenter();
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void interactiveRequestShowsProgress(ServiceRequest request) {
+        whenRequestedAdbWith(request);
 
         thenProgressIsShown();
     }
 
-    @Test
-    void failedInteractiveRequestHidesProgress() {
-        whenInteractiveRunWithPresenter();
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void failedInteractiveRequestHidesProgress(ServiceRequest request) {
+        whenRequestedAdbWith(request);
         whenAdbInitFailed();
 
         thenProgressIsHidden();
@@ -155,53 +154,42 @@ class AdbServicesInitializationPresenterTest {
 
     @Test
     void cancelledInteractiveRequestHidesProgress() {
-        var result = whenInteractiveRunWithPresenter();
+        var result = whenRequestedAdbInteractive();
         result.cancel();
 
         thenProgressIsHidden();
     }
 
-    @Test
-    void completedInteractiveRequestHidesProgress() {
-        whenInteractiveRunWithPresenter();
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void completedInteractiveRequestHidesProgress(ServiceRequest request) {
+        whenRequestedAdbWith(request);
         whenAdbInitSucceed();
 
         thenProgressIsHidden();
     }
 
     @Test
-    void consequentInteractiveRequestDoNotAffectFinished() {
-        Consumer<AdbServices> otherServicesConsumer = mockConsumer();
-
-        presenter.withAdbServicesInteractive(otherServicesConsumer, errorConsumer);
+    void requestAfterLoadingCompletes() {
         whenAdbInitSucceed();
-
-        presenter.withAdbServicesInteractive(servicesConsumer, errorConsumer);
-        verify(servicesConsumer).accept(any());
-    }
-
-    @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void requestAfterLoadingCompletes(ServiceRequest request) {
-        whenAdbInitSucceed();
-        whenRunWithPresenter(request);
+        whenRequestedAdbInteractive();
 
         thenRequestCompletedSuccessfully();
     }
 
-    @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void requestAfterLoadingFailureFails(ServiceRequest request) {
+    @Test
+    void requestAfterLoadingFailureFails() {
         whenAdbInitFailed();
-        whenRunWithPresenter(request);
+        whenRequestedAdbInteractive();
 
         thenRequestFailed();
     }
 
-    @Test
-    void noProgressShownForInteractiveRequestsAfterLoading() {
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void noProgressShownForInteractiveRequestsAfterLoading(ServiceRequest request) {
         whenAdbInitSucceed();
-        whenInteractiveRunWithPresenter();
+        whenRequestedAdbWith(request);
 
         thenNoProgressIsShown();
         thenNoProgressIsHidden();
@@ -212,21 +200,19 @@ class AdbServicesInitializationPresenterTest {
         givenServiceConsumerThrows();
 
         ThreadTestUtils.withEmptyUncaughtExceptionHandler(() -> {
-            whenInteractiveRunWithPresenter();
+            whenRequestedAdbInteractive();
             whenAdbInitSucceed();
         });
 
         thenProgressIsHidden();
     }
 
-    @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void consumerExceptionPropagatesToDefaultHandler(ServiceRequest request) throws Exception {
+    @Test
+    void consumerExceptionPropagatesToDefaultHandler() throws Exception {
         givenServiceConsumerThrows();
 
-        Thread.UncaughtExceptionHandler handler = mock();
-        ThreadTestUtils.withUncaughtExceptionHandler(handler, () -> {
-            whenRunWithPresenter(request);
+        var handler = ThreadTestUtils.withUncaughtExceptionHandler(mock(), () -> {
+            whenRequestedAdbInteractive();
             whenAdbInitSucceed();
         });
 
@@ -235,23 +221,17 @@ class AdbServicesInitializationPresenterTest {
 
     @Test
     void cancellationOfInteractiveRequestDoesNotPropagateToExceptionHandler() throws Exception {
-        Thread.UncaughtExceptionHandler handler = mock();
-
-        ThreadTestUtils.withUncaughtExceptionHandler(handler, () -> {
-            presenter.withAdbServicesInteractive(servicesConsumer, errorConsumer);
-            presenter.withAdbServicesInteractive(servicesConsumer, errorConsumer);
-            whenAdbInitSucceed();
-        });
+        var handler = ThreadTestUtils.withUncaughtExceptionHandler(mock(),
+                () -> whenRequestedAdbInteractive().cancel());
 
         verify(handler, never()).uncaughtException(any(), any());
     }
 
     @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
+    @MethodSource("allAdbRequests")
     void loadingFailuresDoNotPropagateToExceptionHandler(ServiceRequest request) throws Exception {
-        Thread.UncaughtExceptionHandler handler = mock();
-        ThreadTestUtils.withUncaughtExceptionHandler(handler, () -> {
-            whenRunWithPresenter(request);
+        var handler = ThreadTestUtils.withUncaughtExceptionHandler(mock(), () -> {
+            whenRequestedAdbWith(request);
             whenAdbInitFailed();
         });
 
@@ -259,50 +239,81 @@ class AdbServicesInitializationPresenterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
+    @MethodSource("allAdbRequests")
     void loadingFailureIsShown(ServiceRequest request) {
-        whenRunWithPresenter(request);
+        whenRequestedAdbWith(request);
 
         whenAdbInitFailed();
 
         thenErrorIsShown();
     }
 
-    @Test
-    void multipleRequestsCauseNoAdditionalErrorsToShow() {
-        presenter.withAdbDeviceList();
-        whenAdbInitFailed();
-        reset(view);
+    @ParameterizedTest
+    @MethodSource("nonRestartRequests")
+    void multipleRequestsCauseNoAdditionalErrorsToShow(ServiceRequest request) {
+        givenInitialState(() -> {
+            whenRequestedAdbWith(request);
+            whenAdbInitFailed();
+        });
 
-        presenter.withAdbDeviceList();
+        whenRequestedAdbWith(request);
 
-        verify(view, never()).showAdbLoadingError(any());
+        thenNoErrorIsShown();
     }
 
     @ParameterizedTest
-    @MethodSource("interactiveAndNonInteractive")
-    void requestAfterCancelledOneSucceed(ServiceRequest request) {
-        whenRunWithPresenter(request).cancel();
-        reset(view, servicesConsumer, errorConsumer);
+    @MethodSource("allAdbRequests")
+    void restartShowsAdditionalError(ServiceRequest initialRequest) {
+        givenInitialState(() -> {
+            whenRequestedAdbWith(initialRequest);
+            whenAdbInitFailed();
+        });
 
-        whenRunWithPresenter(request);
+        whenRequestedAdbWith(restartRequest());
+
+        thenErrorIsShown();
+    }
+
+    @ParameterizedTest
+    @MethodSource("allAdbRequests")
+    void restartShowsNoErrorIfSucceedsAfterInitialFailure(ServiceRequest initialRequest) {
+        givenInitialState(() -> {
+            whenRequestedAdbWith(initialRequest);
+            whenAdbInitFailed();
+        });
+
+        withNewResultAfterReload();
+        whenRequestedAdbWith(restartRequest());
+        whenAdbInitSucceed();
+
+        thenNoErrorIsShown();
+        thenProgressIsHidden();
+    }
+
+    @Test
+    void requestAfterCancelledInteractiveCanSucceed() {
+        whenRequestedAdbInteractive().cancel();
+        Mockito.<Object>reset(servicesConsumer, errorConsumer);
+
+        whenRequestedAdbInteractive();
 
         whenAdbInitSucceed();
 
         thenRequestCompletedSuccessfully();
     }
 
-    @Test
-    void requestAfterCancelledStillShowsProgress() {
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void requestAfterCancelledStillShowsProgress(ServiceRequest request) {
         // Cancellation may hide progress asynchronously, so a proper executor is necessary.
         var testExecutor = new TestExecutor();
         presenter = createPresenter(testExecutor);
 
-        var step1 = whenInteractiveRunWithPresenter();
+        var step1 = whenRequestedAdbInteractive();
         testExecutor.flush();
 
         step1.cancel();
-        whenInteractiveRunWithPresenter();
+        whenRequestedAdbWith(request);
 
         testExecutor.flush();
         thenProgressIsShown();
@@ -313,10 +324,24 @@ class AdbServicesInitializationPresenterTest {
     }
 
     private AdbServicesInitializationPresenter createPresenter(Executor uiExecutor) {
-        var mockBridge = mock(AdbServicesBridge.class);
         lenient().when(mockBridge.getAdbServicesAsync())
                 .thenAnswer(invocation -> servicesFuture.thenApply(Function.identity()));
+        lenient().when(mockBridge.prepareAdbDeviceList(any()))
+                .thenAnswer(invocation -> {
+                    Consumer<? super Throwable> failureHandler = invocation.getArgument(0);
+                    servicesFuture
+                            .handle(MyFutures.errorHandler(failureHandler))
+                            .exceptionally(MyFutures::uncaughtException);
+                    return mock(AdbDeviceList.class);
+                });
         return new AdbServicesInitializationPresenter(view, mockBridge, uiExecutor, mock());
+    }
+
+    private void withNewResultAfterReload() {
+        lenient().doAnswer(invocation -> {
+            servicesFuture = new CompletableFuture<>();
+            return null;
+        }).when(mockBridge).stopAdb();
     }
 
     private void whenAdbInitFailed() {
@@ -327,12 +352,20 @@ class AdbServicesInitializationPresenterTest {
         servicesFuture.complete(mock(AdbServices.class));
     }
 
-    private Cancellable whenRunWithPresenter(ServiceRequest request) {
-        return request.whenRunWithPresenter(presenter, servicesConsumer, errorConsumer);
+    private void whenRequestedAdbWith(ServiceRequest request) {
+        request.whenRunWithPresenter(presenter, servicesConsumer, errorConsumer);
     }
 
-    private Cancellable whenInteractiveRunWithPresenter() {
-        return whenRunWithPresenter(AdbServicesInitializationPresenter::withAdbServicesInteractive);
+    private Cancellable whenRequestedAdbInteractive() {
+        return whenRequestedAdbInteractive(servicesConsumer);
+    }
+
+    private Cancellable whenRequestedAdbInteractive(Consumer<? super AdbServices> servicesConsumer) {
+        return presenter.withAdbServicesInteractive(servicesConsumer, errorConsumer);
+    }
+
+    private void whenRequestedAdbDeviceList() {
+        presenter.withAdbDeviceList();
     }
 
     private void givenServiceConsumerThrows() {
@@ -361,71 +394,77 @@ class AdbServicesInitializationPresenterTest {
     }
 
     private void thenNoProgressIsShown() {
-        verify(view, never()).showAdbLoadingProgress();
+        view.assertNoProgressAppeared();
     }
 
     private void thenNoProgressIsHidden() {
-        verify(view, never()).showAdbLoadingProgress();
+        view.assertNoProgressAppeared();
     }
 
     private void thenProgressIsShown() {
-        var order = inOrder(view);
-        order.verify(view).showAdbLoadingProgress();
-        order.verify(view, never()).hideAdbLoadingProgress();
+        view.assertShowsProgress();
     }
 
     private void thenProgressIsHidden() {
-        var inOrder = inOrder(view);
-        inOrder.verify(view).hideAdbLoadingProgress();
-        inOrder.verify(view, never()).showAdbLoadingProgress();
+        view.assertProgressAppeared();
+        view.assertShowsNoProgress();
     }
 
     private void thenErrorIsShown() {
-        verify(view).showAdbLoadingError(any());
+        view.assertShowsError();
     }
 
     private void thenNoErrorIsShown() {
-        verify(view, never()).showAdbLoadingError(any());
+        view.assertShowsNoError();
     }
 
     @FunctionalInterface
     interface ServiceRequest {
-        Cancellable whenRunWithPresenter(
+        void whenRunWithPresenter(
                 AdbServicesInitializationPresenter presenter,
                 Consumer<? super AdbServices> servicesConsumer,
                 Consumer<? super Throwable> errorConsumer);
     }
 
+    static ServiceRequest interactiveRequest() {
+        return testConsumer(AdbServicesInitializationPresenter::withAdbServicesInteractive,
+                "withAdbServicesInteractive");
+    }
 
-    static Stream<ServiceRequest> interactiveAndNonInteractive() {
+    private static ServiceRequest restartRequest() {
+        return testConsumer((presenter, servicesConsumer, errorConsumer) -> presenter.restartAdb(), "restartAdb");
+    }
+
+    private static ServiceRequest deviceListRequest() {
+        return testConsumer((presenter, servicesConsumer, errorConsumer) -> presenter.withAdbDeviceList(),
+                "withAdbDeviceList");
+    }
+
+    static Stream<ServiceRequest> allInteractiveRequests() {
         return Stream.of(
-                testConsumer(AdbServicesInitializationPresenter::withAdbServicesInteractive,
-                        "withAdbServicesInteractive")
+                interactiveRequest(),
+                restartRequest()
         );
     }
 
-    static Stream<AdbInitRef> failedSucceeded() {
+    static Stream<ServiceRequest> nonRestartRequests() {
         return Stream.of(
-                testConsumer(
-                        AdbServicesInitializationPresenterTest::whenAdbInitSucceed,
-                        "whenAdbInitSucceed"),
-                testConsumer(AdbServicesInitializationPresenterTest::whenAdbInitFailed,
-                        "whenAdbInitFailed")
+                interactiveRequest(),
+                deviceListRequest()
         );
     }
 
-    static Stream<Arguments> interactiveNonInteractiveFailedSucceed() {
-        return Lists.cartesianProduct(
-                interactiveAndNonInteractive().collect(Collectors.toList()),
-                failedSucceeded().collect(Collectors.toList())).stream().map(list -> arguments(list.toArray()));
+    static Stream<ServiceRequest> allAdbRequests() {
+        return Stream.concat(nonRestartRequests(), Stream.of(
+                restartRequest()));
     }
 
     private static ServiceRequest testConsumer(ServiceRequest methodRef, String name) {
         return new ServiceRequest() {
             @Override
-            public Cancellable whenRunWithPresenter(AdbServicesInitializationPresenter presenter,
+            public void whenRunWithPresenter(AdbServicesInitializationPresenter presenter,
                     Consumer<? super AdbServices> servicesConsumer, Consumer<? super Throwable> errorConsumer) {
-                return methodRef.whenRunWithPresenter(presenter, servicesConsumer, errorConsumer);
+                methodRef.whenRunWithPresenter(presenter, servicesConsumer, errorConsumer);
             }
 
             @Override
@@ -438,6 +477,16 @@ class AdbServicesInitializationPresenterTest {
     @FunctionalInterface
     interface AdbInitRef {
         void tryInitAdb(AdbServicesInitializationPresenterTest test);
+    }
+
+    static Stream<AdbInitRef> failedSucceeded() {
+        return Stream.of(
+                testConsumer(
+                        AdbServicesInitializationPresenterTest::whenAdbInitSucceed,
+                        "whenAdbInitSucceed"),
+                testConsumer(AdbServicesInitializationPresenterTest::whenAdbInitFailed,
+                        "whenAdbInitFailed")
+        );
     }
 
     private static AdbInitRef testConsumer(AdbInitRef runnable, String name) {
@@ -455,8 +504,60 @@ class AdbServicesInitializationPresenterTest {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> Consumer<T> mockConsumer() {
-        return Mockito.mock();
+    private static class FakeView implements AdbServicesInitializationPresenter.View {
+        private boolean progressAppeared;
+        private boolean showsProgress;
+        private @Nullable String showsError;
+
+        @Override
+        public void showAdbLoadingProgress() {
+            progressAppeared = true;
+            showsProgress = true;
+        }
+
+        @Override
+        public void hideAdbLoadingProgress() {
+            showsProgress = false;
+        }
+
+        @Override
+        public void showAdbLoadingError(String failureReason) {
+            showsError = Objects.requireNonNull(failureReason);
+        }
+
+        public void assertShowsProgress() {
+            assertThat(showsProgress).as("shows progress").isTrue();
+        }
+
+        public void assertProgressAppeared() {
+            assertThat(progressAppeared).as("progress appeared").isTrue();
+        }
+
+        public void assertNoProgressAppeared() {
+            assertThat(progressAppeared).as("no progress appeared").isFalse();
+        }
+
+        public void assertShowsNoProgress() {
+            assertThat(showsProgress).as("shows no progress").isFalse();
+        }
+
+        public void assertShowsError() {
+            assertThat(showsError).as("shows error").isNotNull();
+        }
+
+        public void assertShowsNoError() {
+            assertThat(showsError).as("shows no error").isNull();
+        }
+
+        public void reset() {
+            showsError = null;
+            showsProgress = false;
+            progressAppeared = false;
+        }
+    }
+
+    private void givenInitialState(Runnable action) {
+        action.run();
+        view.reset();
     }
 }
