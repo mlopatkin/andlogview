@@ -18,8 +18,8 @@ package name.mlopatkin.andlogview.device;
 
 import name.mlopatkin.andlogview.test.StrictMock;
 import name.mlopatkin.andlogview.thirdparty.device.AndroidVersionCodes;
-import name.mlopatkin.andlogview.utils.events.ThreadSafeObservable;
-import name.mlopatkin.andlogview.utils.events.ThreadSafeSubject;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.android.ddmlib.IDevice;
 
@@ -88,9 +88,9 @@ public class FakeDevice implements Device {
     }
 
     @Override
-    public ThreadSafeObservable<DeviceChangeObserver> asObservable() {
+    public Observable<DeviceChangeObserver> asObservable() {
         // TODO(mlopatkin) implement it?
-        return new ThreadSafeSubject<DeviceChangeObserver>().asObservable();
+        return new Subject<DeviceChangeObserver>().asObservable();
     }
 
     protected FakeCommand onCommand(List<String> commandLine) {

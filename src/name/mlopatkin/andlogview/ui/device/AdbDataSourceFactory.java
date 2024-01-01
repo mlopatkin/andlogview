@@ -16,29 +16,22 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
-import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class AdbDataSourceFactory {
     private final DeviceDisconnectedHandler deviceDisconnectedHandler;
-    private final Executor uiExecutor;
 
     @Inject
-    AdbDataSourceFactory(
-            DeviceDisconnectedHandler deviceDisconnectedHandler,
-            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
+    AdbDataSourceFactory(DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
-        this.uiExecutor = uiExecutor;
     }
 
     public void selectDeviceAndOpenAsDataSource(
@@ -54,7 +47,7 @@ public class AdbDataSourceFactory {
     }
 
     public void openDeviceAsDataSource(Device device, Consumer<? super AdbDataSource> callback) {
-        AdbDataSource dataSource = new AdbDataSource(device, uiExecutor);
+        AdbDataSource dataSource = new AdbDataSource(device);
         deviceDisconnectedHandler.startWatching(dataSource);
         callback.accept(dataSource);
     }

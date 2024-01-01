@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.device;
 
-import name.mlopatkin.andlogview.utils.events.ThreadSafeObservable;
-import name.mlopatkin.andlogview.utils.events.ThreadSafeSubject;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ class DeviceImpl implements DeviceInternal {
     private final DeviceKey deviceKey;
     private final LoggingDevice device;
     private final DeviceProperties deviceProperties;
-    private final ThreadSafeSubject<DeviceChangeObserver> observers = new ThreadSafeSubject<>();
+    private final Subject<DeviceChangeObserver> observers = new Subject<>();
 
     public DeviceImpl(DeviceKey deviceKey, LoggingDevice device, DeviceProperties deviceProperties) {
         this.deviceKey = deviceKey;
@@ -86,27 +86,35 @@ class DeviceImpl implements DeviceInternal {
     }
 
     @Override
-    public ThreadSafeObservable<DeviceChangeObserver> asObservable() {
+    public Observable<DeviceChangeObserver> asObservable() {
         return observers.asObservable();
     }
 
     @Override
     public void notifyProvisioned() {
-        observers.forEach(obs -> obs.onDeviceConnected(this));
+        for (var obs : observers) {
+            obs.onDeviceConnected(this);
+        }
     }
 
     @Override
     public void notifyChanged() {
-        observers.forEach(obs -> obs.onDeviceChanged(this));
+        for (var obs : observers) {
+            obs.onDeviceChanged(this);
+        }
     }
 
     @Override
     public void notifyConnected() {
-        observers.forEach(obs -> obs.onProvisionalDeviceConnected(this));
+        for (var obs : observers) {
+            obs.onProvisionalDeviceConnected(this);
+        }
     }
 
     @Override
     public void notifyDisconnected() {
-        observers.forEach(obs -> obs.onDeviceDisconnected(this));
+        for (var obs : observers) {
+            obs.onDeviceDisconnected(this);
+        }
     }
 }

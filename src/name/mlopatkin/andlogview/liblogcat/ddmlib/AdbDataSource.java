@@ -36,7 +36,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executor;
 
 public class AdbDataSource implements DataSource, BufferReceiver {
     /**
@@ -78,7 +77,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     private @Nullable RecordListener<LogRecord> listener;
     private boolean closed = false;
 
-    public AdbDataSource(Device device, Executor uiExecutor) {
+    public AdbDataSource(Device device) {
         assert device != null;
         assert device.isOnline();
         this.device = device;
@@ -101,7 +100,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
                     invalidateAndClose(InvalidationReason.OFFLINE);
                 }
             }
-        }, uiExecutor);
+        });
     }
 
     @Override
