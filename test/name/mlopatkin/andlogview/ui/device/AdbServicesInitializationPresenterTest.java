@@ -322,7 +322,7 @@ class AdbServicesInitializationPresenterTest {
     @ParameterizedTest
     @MethodSource("allInteractiveRequests")
     void interactiveRequestCanSucceedIfViewOpensModalDialog(ServiceRequest request) {
-        view.withModalLoop(() -> {
+        view.withModalLoop(cancellationAction -> {
             whenAdbInitSucceed();
 
             thenProgressIsHidden();
@@ -336,7 +336,7 @@ class AdbServicesInitializationPresenterTest {
     @ParameterizedTest
     @MethodSource("allInteractiveRequests")
     void interactiveRequestCanFailIfViewOpensModalDialog(ServiceRequest request) {
-        view.withModalLoop(() -> {
+        view.withModalLoop(cancellationAction -> {
             whenAdbInitFailed();
 
             thenProgressIsHidden();
@@ -348,15 +348,93 @@ class AdbServicesInitializationPresenterTest {
         thenErrorIsShown();
     }
 
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void interactiveRequestCanBeCancelledByDialog(ServiceRequest request) {
+        view.withModalLoop(cancellationAction -> {
+            cancellationAction.run();
+
+            thenProgressIsHidden();
+        });
+
+        whenRequestedAdbWith(request);
+
+        thenProgressIsHidden();
+        thenNoErrorIsShown();
+    }
+
+    @Test
+    void afterCancellingProgressDialogRequestCancelled() {
+        view.withModalLoop(cancellationAction -> {
+            cancellationAction.run();
+
+            thenProgressIsHidden();
+        });
+
+        whenRequestedAdbInteractive();
+
+        thenRequestCancelled();
+    }
+
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void afterCancellingProgressNoErrorIsShown(ServiceRequest request) {
+        view.withModalLoop(cancellationAction -> {
+            cancellationAction.run();
+
+            whenAdbInitFailed();
+
+            thenProgressIsHidden();
+        });
+
+        whenRequestedAdbWith(request);
+
+        thenProgressIsHidden();
+        thenNoErrorIsShown();
+    }
+
+    @Test
+    void afterCancellingProgressDialogNewRequestCanComplete() {
+        givenInitialState(() -> {
+            view.withModalLoop(cancellationAction -> {
+                cancellationAction.run();
+
+                whenAdbInitSucceed();
+            });
+            whenRequestedAdbInteractive();
+        });
+
+        whenRequestedAdbInteractive();
+
+        thenRequestCompletedSuccessfully();
+    }
+
+    @Test
+    void afterCancellingProgressDialogNewRequestCanFail() {
+        givenInitialState(() -> {
+            view.withModalLoop(cancellationAction -> {
+                cancellationAction.run();
+
+                whenAdbInitFailed();
+            });
+            whenRequestedAdbInteractive();
+        });
+
+        whenRequestedAdbInteractive();
+
+        thenRequestFailed();
+        thenErrorIsShown();
+    }
+
     @Test
     void afterCompletingRestartWithModalDialogNewRestartShowsDialogAgain() {
         givenInitialState(() -> {
-            view.withModalLoop(() -> whenAdbInitSucceed());
+            view.withModalLoop(cancellationAction -> whenAdbInitSucceed());
             whenRequestedAdbWith(restartRequest());
         });
         withNewResultAfterReload();
 
-        view.withModalLoop(() -> whenAdbInitSucceed());
+        view.withModalLoop(cancellationAction -> whenAdbInitSucceed());
         whenRequestedAdbWith(restartRequest());
 
         thenProgressIsHidden();
@@ -551,14 +629,14 @@ class AdbServicesInitializationPresenterTest {
         private boolean progressAppeared;
         private boolean showsProgress;
         private @Nullable String showsError;
-        private Runnable loop = () -> {};
+        private Consumer<? super Runnable> loop = r -> {};
 
         @Override
-        public void showAdbLoadingProgress() {
+        public void showAdbLoadingProgress(Runnable cancellationAction) {
             progressAppeared = true;
             showsProgress = true;
-            loop.run();
-            loop = () -> {};
+            loop.accept(cancellationAction);
+            loop = r -> {};
         }
 
         @Override
@@ -601,7 +679,7 @@ class AdbServicesInitializationPresenterTest {
             progressAppeared = false;
         }
 
-        public void withModalLoop(Runnable action) {
+        public void withModalLoop(Consumer<? super Runnable> action) {
             loop = action;
         }
     }
@@ -609,5 +687,6 @@ class AdbServicesInitializationPresenterTest {
     private void givenInitialState(Runnable action) {
         action.run();
         view.reset();
+        Mockito.<Object>reset(servicesConsumer, errorConsumer);
     }
 }

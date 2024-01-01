@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import static name.mlopatkin.andlogview.utils.MyFutures.cancellationHandler;
 import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
 
 import name.mlopatkin.andlogview.AppExecutors;
@@ -63,10 +64,13 @@ public class AdbOpener {
         var result = new CompletableFuture<@Nullable AdbDataSource>();
 
         MyFutures.cancelBy(presenter.withAdbServicesInteractive(
-                adb -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
-                        adb.getSelectDeviceDialogFactory(),
-                        result::complete),
-                result::completeExceptionally), result);
+                        adb -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(
+                                adb.getSelectDeviceDialogFactory(),
+                                result::complete),
+                        cancellationHandler(
+                                () -> result.complete(null),
+                                result::completeExceptionally)),
+                result);
         return result;
     }
 

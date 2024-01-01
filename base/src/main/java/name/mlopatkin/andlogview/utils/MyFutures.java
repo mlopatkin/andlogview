@@ -59,8 +59,22 @@ public final class MyFutures {
      * @return the cancellation-tolerant handler
      */
     public static Consumer<Throwable> ignoreCancellations(Consumer<? super Throwable> failureHandler) {
+        return cancellationHandler(() -> {}, failureHandler);
+    }
+
+    /**
+     * Builds a failure handler with a special handling of cancellations. It can unwrap cancellation exceptions.
+     *
+     * @param cancellationHandler the cancellation handler
+     * @param failureHandler the failure handler
+     * @return the combined handler
+     */
+    public static Consumer<Throwable> cancellationHandler(Runnable cancellationHandler,
+            Consumer<? super Throwable> failureHandler) {
         return th -> {
-            if (!isCancellation(th)) {
+            if (isCancellation(th)) {
+                cancellationHandler.run();
+            } else {
                 failureHandler.accept(th);
             }
         };

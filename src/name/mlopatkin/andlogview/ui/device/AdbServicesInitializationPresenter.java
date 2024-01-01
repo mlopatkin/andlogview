@@ -50,7 +50,7 @@ public class AdbServicesInitializationPresenter {
         /**
          * Show the user that ADB services aren't ready yet, but they are being loading.
          */
-        void showAdbLoadingProgress();
+        void showAdbLoadingProgress(Runnable cancellationAction);
 
         /**
          * Show the user that ADB services are now ready.
@@ -117,7 +117,7 @@ public class AdbServicesInitializationPresenter {
             future = future.whenCompleteAsync(
                     (services, th) -> hideProgressWithToken(token),
                     uiExecutor);
-            showProgressWithToken(token);
+            showProgressWithToken(token, () -> result.cancel(false));
         }
         future.handleAsync(
                         consumingHandler(action, ignoreCancellations(adbErrorHandler()).andThen(failureHandler)),
@@ -132,11 +132,11 @@ public class AdbServicesInitializationPresenter {
         return bridge.getAdbServicesAsync();
     }
 
-    private void showProgressWithToken(Object token) {
+    private void showProgressWithToken(Object token, Runnable cancellationAction) {
         var isFirstToken = progressTokens.isEmpty();
         progressTokens.add(token);
         if (isFirstToken) {
-            view.showAdbLoadingProgress();
+            view.showAdbLoadingProgress(cancellationAction);
         }
     }
 

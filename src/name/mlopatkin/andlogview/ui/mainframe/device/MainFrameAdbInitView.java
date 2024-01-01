@@ -18,38 +18,47 @@ package name.mlopatkin.andlogview.ui.mainframe.device;
 
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
-import name.mlopatkin.andlogview.ui.mainframe.MainFrameUi;
 
-import java.awt.Cursor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
  * A view to show ADB initialization in the Main Frame.
  */
 class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
 
-    private final MainFrameUi mainFrameUi;
+    private final Provider<AdbInitProgressDialog> progressDialogProvider;
     private final ErrorDialogs errorDialogs;
 
+    private @Nullable AdbInitProgressDialog currentDialog;
+
     @Inject
-    MainFrameAdbInitView(MainFrameUi mainFrameUi, ErrorDialogs errorDialogs) {
-        this.mainFrameUi = mainFrameUi;
+    MainFrameAdbInitView(Provider<AdbInitProgressDialog> progressDialogProvider, ErrorDialogs errorDialogs) {
+        this.progressDialogProvider = progressDialogProvider;
         this.errorDialogs = errorDialogs;
     }
 
     @Override
-    public void showAdbLoadingProgress() {
-        mainFrameUi.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    public void showAdbLoadingProgress(Runnable cancellationAction) {
+        assert currentDialog == null;
+        currentDialog = progressDialogProvider.get();
+        currentDialog.show(cancellationAction);
     }
 
     @Override
     public void hideAdbLoadingProgress() {
-        mainFrameUi.setCursor(Cursor.getDefaultCursor());
+        var currentDialog = this.currentDialog;
+        if (currentDialog != null) {
+            currentDialog.hide();
+            this.currentDialog = null;
+        }
     }
 
     @Override
     public void showAdbLoadingError(String failureReason) {
+        hideAdbLoadingProgress();
         errorDialogs.showAdbFailedToStartError(failureReason);
     }
 }
