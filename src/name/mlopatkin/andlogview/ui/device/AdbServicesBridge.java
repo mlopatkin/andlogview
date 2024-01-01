@@ -29,6 +29,7 @@ import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.ui.mainframe.MainFrameCleaner;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.events.Observable;
@@ -76,7 +77,8 @@ public class AdbServicesBridge implements AdbServicesStatus {
     // successfully or the initialization error if something failed.
 
     @Inject
-    AdbServicesBridge(AdbManager adbManager,
+    AdbServicesBridge(
+            AdbManager adbManager,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
             @Named(AppExecutors.UI_EXECUTOR) SequentialExecutor uiExecutor,
@@ -95,6 +97,11 @@ public class AdbServicesBridge implements AdbServicesStatus {
         this.uiExecutor = uiExecutor;
         this.adbInitExecutor = adbInitExecutor;
         this.adbDeviceList = adbDeviceList;
+    }
+
+    @Inject
+    void registerCleanup(MainFrameCleaner cleaner) {
+        cleaner.addAction(() -> adbDeviceList.setAdbServer(null));
     }
 
     /**
