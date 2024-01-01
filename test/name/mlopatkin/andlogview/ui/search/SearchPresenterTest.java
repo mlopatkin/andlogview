@@ -24,13 +24,14 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
+import name.mlopatkin.andlogview.base.concurrent.TestSequentialExecutor;
 import name.mlopatkin.andlogview.search.ListSearchModel;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.search.SearchModel;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 
 import com.google.common.primitives.Ints;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -294,7 +295,8 @@ class SearchPresenterTest {
 
     private SearchPresenter<Integer, Integer, Predicate<Integer>> createPresenter(
             SearchModel<Integer, Integer, Predicate<Integer>> model) {
-        return new SearchPresenter<>(SequentialExecutor.direct(), model, patternCompiler, searchableView,
+        return new SearchPresenter<>(new TestSequentialExecutor(MoreExecutors.directExecutor()), model, patternCompiler,
+                searchableView,
                 statusPresenter, searchPromptView);
     }
 

@@ -16,14 +16,12 @@
 
 package name.mlopatkin.andlogview.base.concurrent;
 
-import com.google.common.base.Preconditions;
-
 import javax.swing.SwingUtilities;
 
 class UiExecutor implements SequentialExecutor {
     @Override
-    public void checkSequence() {
-        Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Not running on UI thread");
+    public boolean isOnSequence() {
+        return SwingUtilities.isEventDispatchThread();
     }
 
     @Override

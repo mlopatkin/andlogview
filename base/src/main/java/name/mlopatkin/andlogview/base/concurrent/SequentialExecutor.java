@@ -16,42 +16,54 @@
 
 package name.mlopatkin.andlogview.base.concurrent;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * An {@link Executor} that only runs its callbacks sequentially. Swing's EDT and
  * {@link Executors#newSingleThreadExecutor()} are an example of such executors.
+ * <p>
+ * Note that the direct executor is not sequential (tasks submitted by different threads may run concurrently).
+ * Decorating the direct executor may have unwanted side effects of a task running on an unexpected thread or deadlocks.
  */
 public interface SequentialExecutor extends Executor {
 
+    /**
+     * Creates asequential executor that executes work on UI thread. It considers any UI callbacks to be "on sequence"
+     * too.
+     *
+     * @return the UI-thread bound SequentialExecutor.
+     */
     static SequentialExecutor edt() {
         return new UiExecutor();
     }
 
-    static SequentialExecutor singleThread() {
-        return decorate(Executors.newSingleThreadExecutor());
+    /**
+     * Creates new SequentialExecutor that uses the delegate to actually run the tasks.
+     *
+     * @param delegate the delegate to run tasks
+     * @return the SequentialExecutor
+     */
+    static SequentialExecutor decorate(Executor delegate) {
+        return new DelegatingExecutor(MoreExecutors.newSequentialExecutor(delegate));
     }
 
-    static SequentialExecutor singleThread(ThreadFactory threadFactory) {
-        return decorate(Executors.newSingleThreadExecutor(threadFactory));
-    }
-
-    static SequentialExecutor direct() {
-        return decorate(MoreExecutors.directExecutor());
-    }
-
-    static SequentialExecutor decorate(Executor other) {
-        return new DelegatingExecutor(other);
-    }
+    /**
+     * Returns true if the current thread currently runs this executor's callback.
+     *
+     * @return true if we're executing the sequence.
+     */
+    boolean isOnSequence();
 
     /**
      * Throws an exception if the call is not on this executor.
      *
      * @throws IllegalStateException if the current thread doesn't execute this executor's task.
      */
-    void checkSequence();
+    default void checkSequence() {
+        Preconditions.checkState(isOnSequence(), "Not on sequence");
+    }
 }

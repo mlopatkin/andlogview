@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 the Andlogview authors
+ * Copyright 2024 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,36 @@ package name.mlopatkin.andlogview.base.concurrent;
 
 import java.util.concurrent.Executor;
 
-class DelegatingExecutor implements SequentialExecutor {
-    private final ThreadLocal<Boolean> isRunning = ThreadLocal.withInitial(() -> false);
+/**
+ * A sequential executor that always considers the thread on which it was created "on sequence". Typically, used in test
+ * code, where you don't want to wrap sequence-bound code invoked by the test itself with {@code execute(() -> {})}.
+ */
+public class TestSequentialExecutor implements SequentialExecutor {
+    private final ThreadLocal<Boolean> isOnSequence = ThreadLocal.withInitial(() -> false);
     private final Executor delegate;
 
-    public DelegatingExecutor(Executor delegate) {
+    public TestSequentialExecutor(Executor delegate) {
         this.delegate = delegate;
+        isOnSequence.set(true);
     }
 
     @Override
     public boolean isOnSequence() {
-        return isRunning.get();
+        return isOnSequence.get();
     }
 
     @Override
     public void execute(Runnable command) {
         delegate.execute(() -> {
-            var prevValue = isRunning.get();
-            isRunning.set(true);
+            var oldValue = isOnSequence.get();
+            isOnSequence.set(true);
             try {
                 command.run();
             } finally {
-                if (prevValue) {
-                    isRunning.set(true);
+                if (oldValue) {
+                    isOnSequence.set(true);
                 } else {
-                    isRunning.remove();
+                    isOnSequence.remove();
                 }
             }
         });

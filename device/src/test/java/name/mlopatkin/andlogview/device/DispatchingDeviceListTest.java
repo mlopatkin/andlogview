@@ -20,6 +20,7 @@ import static name.mlopatkin.andlogview.device.AdbDeviceMatchers.hasSerial;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -29,31 +30,34 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
+import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
+import name.mlopatkin.andlogview.base.concurrent.TestSequentialExecutor;
 import name.mlopatkin.andlogview.test.StrictMock;
 
 import com.android.ddmlib.IDevice;
+import com.google.common.util.concurrent.MoreExecutors;
 
+import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 class DispatchingDeviceListTest {
     private final FakeAdbFacade adbFacade = new FakeAdbFacade();
 
-    private final SequentialExecutor testExecutor = new SequentialExecutor() {
-        @Override
-        public void checkSequence() {
-        }
+    private TestSequentialExecutor testExecutor;
 
-        @Override
-        public void execute(Runnable command) {
-            command.run();
-        }
-    };
+    @BeforeEach
+    void setUp() {
+        testExecutor = new TestSequentialExecutor(MoreExecutors.directExecutor());
+    }
 
     @Test
     void initialListOfDevicesIsEmpty() {
@@ -69,10 +73,7 @@ class DispatchingDeviceListTest {
 
         var deviceList = createDeviceList();
 
-        assertThat(deviceList.getAllDevices())
-                .map(ProvisionalDevice::getSerialNumber)
-                .as("Check serials of returned devices")
-                .containsExactlyInAnyOrder("DeviceA", "DeviceB");
+        assertThatAllDevices(deviceList).containsExactlyInAnyOrder("DeviceA", "DeviceB");
     }
 
     @Test
@@ -81,10 +82,7 @@ class DispatchingDeviceListTest {
 
         adbFacade.connectDevice(createDevice("DeviceA"));
 
-        assertThat(deviceList.getAllDevices())
-                .map(ProvisionalDevice::getSerialNumber)
-                .as("Check serial of returned device")
-                .containsExactly("DeviceA");
+        assertThatAllDevices(deviceList).containsExactly("DeviceA");
     }
 
     @Test
@@ -244,6 +242,30 @@ class DispatchingDeviceListTest {
         inOrder.verifyNoMoreInteractions();
     }
 
+    @Test
+    void devicesAddedInBackgroundAreNotVisibleInRunningListeners() throws Exception {
+        var testExecutor = new TestExecutor();
+        var deviceList = createDeviceList(testExecutor);
+
+        var observer = mock(DeviceChangeObserver.class);
+        doAnswer(device -> {
+            ProvisionalDevice pd = device.getArgument(0);
+            if ("deviceA".equals(pd.getSerialNumber())) {
+                assertThatAllDevices(deviceList).containsExactlyInAnyOrder("deviceA");
+            } else if ("deviceB".equals(pd.getSerialNumber())) {
+                assertThatAllDevices(deviceList).containsExactlyInAnyOrder("deviceA", "deviceB");
+            }
+            return null;
+        }).when(observer).onProvisionalDeviceConnected(any());
+
+        deviceList.asObservable().addObserver(observer);
+
+        adbFacade.connectDevice(createDevice("deviceA"));
+        adbFacade.connectDevice(createDevice("deviceB"));
+
+        testExecutor.flush();
+    }
+
     private IDevice createDevice(String serial) {
         IDevice result = StrictMock.strictMock(IDevice.class);
         doReturn(serial).when(result).getSerialNumber();
@@ -259,7 +281,10 @@ class DispatchingDeviceListTest {
         return DispatchingDeviceList.create(adbFacade, provisioner, testExecutor);
     }
 
-    @SuppressWarnings("Convert2Lambda")
+    private AdbDeviceList createDeviceList(Executor executor) {
+        return DispatchingDeviceList.create(adbFacade, createProvisioner(), new TestSequentialExecutor(executor));
+    }
+
     private DeviceProvisioner createProvisioner() {
         return new DeviceProvisioner() {
             @Override
@@ -271,5 +296,10 @@ class DispatchingDeviceListTest {
                                 )));
             }
         };
+    }
+
+    private static AbstractListAssert<?, List<? extends String>, String, ObjectAssert<String>> assertThatAllDevices(
+            AdbDeviceList deviceList) {
+        return assertThat(deviceList.getAllDevices()).map(ProvisionalDevice::getSerialNumber);
     }
 }
