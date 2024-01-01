@@ -268,6 +268,8 @@ class DispatchingDeviceList implements AdbDeviceList {
         for (var device : currentDevices) {
             notifyDeviceDisconnected(device);
         }
+
+        deviceChangeObservers.clear();
     }
 
     @Override

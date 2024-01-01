@@ -63,4 +63,8 @@ public class Subject<T> implements Iterable<T> {
     public boolean isEmpty() {
         return observers.isEmpty();
     }
+
+    public void clear() {
+        observers.clear();
+    }
 }

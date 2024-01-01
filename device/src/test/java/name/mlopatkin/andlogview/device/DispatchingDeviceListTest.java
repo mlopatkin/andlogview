@@ -266,6 +266,29 @@ class DispatchingDeviceListTest {
         testExecutor.flush();
     }
 
+    @Test
+    void pendingNotificationsAreNotDeliveredAfterClosingInCallback() {
+        var testExecutor = new TestExecutor();
+        var deviceList = createDeviceList(testExecutor);
+
+        var observerA = mock(DeviceChangeObserver.class);
+
+        var closingObserver = new DeviceChangeObserver() {
+            @Override
+            public void onProvisionalDeviceConnected(ProvisionalDevice device) {
+                deviceList.close();
+            }
+        };
+
+        deviceList.asObservable().addObserver(closingObserver);
+        deviceList.asObservable().addObserver(observerA);
+
+        adbFacade.connectDevice(createDevice("deviceA"));
+        testExecutor.flush();
+
+        verify(observerA, only()).onDeviceDisconnected(argThat(hasSerial("deviceA")));
+    }
+
     private IDevice createDevice(String serial) {
         IDevice result = StrictMock.strictMock(IDevice.class);
         doReturn(serial).when(result).getSerialNumber();

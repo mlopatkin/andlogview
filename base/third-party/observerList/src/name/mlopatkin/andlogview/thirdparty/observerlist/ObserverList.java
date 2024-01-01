@@ -182,8 +182,7 @@ public class ObserverList<E> implements Iterable<E> {
         return mObservers.size();
     }
 
-    private E getObserverAt(int index) {
-        assert mObservers.get(index) != null;
+    private @Nullable E getObserverAt(int index) {
         return mObservers.get(index);
     }
 
@@ -228,7 +227,9 @@ public class ObserverList<E> implements Iterable<E> {
                 mIndex++;
             }
             if (mIndex < mListEndMarker) {
-                return ObserverList.this.getObserverAt(mIndex++);
+                var result = ObserverList.this.getObserverAt(mIndex++);
+                assert result != null;
+                return result;
             }
 
             // We have reached the end of the list, allow for compaction.

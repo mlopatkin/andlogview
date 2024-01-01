@@ -21,7 +21,7 @@ package name.mlopatkin.andlogview.device;
  */
 public interface DeviceChangeObserver {
     /**
-     * Called when the new device is connected, but before it was provisioned
+     * Called when the new device is connected, but before it was provisioned.
      *
      * @param device the connected device
      */
@@ -35,7 +35,8 @@ public interface DeviceChangeObserver {
     default void onDeviceConnected(Device device) {}
 
     /**
-     * Called when the device is disconnected
+     * Called when the device is disconnected. It might be possible that this observer received no
+     * {@link #onProvisionalDeviceConnected(ProvisionalDevice)} for this device.
      *
      * @param device the disconnected device
      */
