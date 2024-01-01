@@ -34,6 +34,7 @@ import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Stopwatch;
 
@@ -80,12 +81,20 @@ public class AdbServicesBridge implements AdbServicesStatus {
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
             @Named(AppExecutors.UI_EXECUTOR) SequentialExecutor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor) {
+        this(adbManager, adbConfigurationPref, adbSubcomponentFactory, uiExecutor, adbInitExecutor,
+                new GlobalAdbDeviceList(uiExecutor));
+    }
+
+    @VisibleForTesting
+    AdbServicesBridge(AdbManager adbManager, AdbConfigurationPref adbConfigurationPref,
+            AdbServicesSubcomponent.Factory adbSubcomponentFactory, Executor uiExecutor, Executor adbInitExecutor,
+            GlobalAdbDeviceList adbDeviceList) {
         this.adbManager = adbManager;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
         this.uiExecutor = uiExecutor;
         this.adbInitExecutor = adbInitExecutor;
-        this.adbDeviceList = new GlobalAdbDeviceList(uiExecutor);
+        this.adbDeviceList = adbDeviceList;
     }
 
     /**
@@ -192,6 +201,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
     public void stopAdb() {
         var currentAdb = adbSubcomponent;
         if (currentAdb != null) {
+            adbDeviceList.setAdbServer(null);
             adbSubcomponent = null;
             notifyStatusChange(getStatus());
             currentAdb.cancel(false);

@@ -16,26 +16,19 @@
 
 package name.mlopatkin.andlogview.device;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 /**
  * Live view of the connected Android devices. Added or removed devices change the contents of the list. Iterating the
- * list creates a snapshot of currently connected devices. Use {@link AdbServer#getDeviceList(Executor)} to obtain an
- * instance of the list.
- * <p>
- * The contents of the list can be changed in background, make sure to start observing it before obtaining contents, or
- * some update notifications may be lost.
+ * list creates a snapshot of currently connected devices. Use {@link AdbServer#getDeviceList(SequentialExecutor)} to
+ * obtain an instance of the list. The returned list must be closed before stopping the server.
  * <p>
  * This list is not thread-safe and has to be used on the same executor that was used to obtain its instance.
  */
 public interface AdbDeviceList extends AutoCloseable {
-    // TODO(mlopatkin) add some consistency between getDevices and observers. Maybe introducing executor-confined
-    //  snapshotting would be enough?
-    //  This inconsistency causes a race in the DeviceListModel - it can see provisional device when initializing and
-    //  receive provisionalDeviceNotification for this device later.
     /**
      * @return the list of currently connected and provisioned devices
      */

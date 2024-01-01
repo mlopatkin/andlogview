@@ -21,7 +21,9 @@ import static name.mlopatkin.andlogview.base.concurrent.ExtendedCompletableFutur
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
+import name.mlopatkin.andlogview.base.concurrent.TestSequentialExecutor;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
@@ -58,7 +61,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @ExtendWith(MockitoExtension.class)
 class AdbServicesBridgeTest {
-
     @Mock
     AdbManager adbManager;
     @Mock
@@ -253,8 +255,30 @@ class AdbServicesBridgeTest {
         verifyNoMoreInteractions(observer);
     }
 
+    @Test
+    void cleansUpGlobalAdbListWhenStoppingAdb() throws Exception {
+        GlobalAdbDeviceList deviceList = mock();
+        var bridge = createBridge(deviceList);
+
+        assertThat(bridge.getAdbServicesAsync()).isCompleted();
+
+        var order = inOrder(deviceList, adbManager);
+        order.verify(adbManager).startServer(any());  // Initial start
+        order.verify(deviceList).setAdbServer(any());
+
+        bridge.stopAdb();
+
+        order.verify(deviceList).setAdbServer(isNull());
+        order.verifyNoMoreInteractions();
+    }
+
     private AdbServicesBridge createBridge() {
         return createBridge(MoreExecutors.directExecutor(), MoreExecutors.directExecutor());
+    }
+
+    private AdbServicesBridge createBridge(GlobalAdbDeviceList deviceList) {
+        return new AdbServicesBridge(adbManager, adbConfigurationPref, adbServicesFactory,
+                new TestSequentialExecutor(MoreExecutors.directExecutor()), MoreExecutors.directExecutor(), deviceList);
     }
 
     private AdbServicesBridge createBridge(Executor uiExecutor, Executor adbExecutor) {

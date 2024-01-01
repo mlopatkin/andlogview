@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class AdbServerImpl implements AdbServer {
     // AdbServerImpl wraps the current connection to the adb server. The connection cannot be replaced within the same
@@ -98,11 +100,13 @@ class AdbServerImpl implements AdbServer {
     }
 
     public void stop() {
+        Preconditions.checkState(!adbFacade.hasRegisteredListeners(), "There are leftover listeners");
         AndroidDebugBridge.disconnectBridge();
     }
 
     private static class AdbFacadeImpl implements AdbFacade {
         private final AndroidDebugBridge bridge;
+        private final AtomicInteger listenerCount = new AtomicInteger();
 
         private AdbFacadeImpl(AndroidDebugBridge bridge) {
             this.bridge = bridge;
@@ -115,12 +119,19 @@ class AdbServerImpl implements AdbServer {
 
         @Override
         public void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
+            listenerCount.incrementAndGet();
             AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
         }
 
         @Override
         public void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
+            listenerCount.decrementAndGet();
             AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
+        }
+
+        @Override
+        public boolean hasRegisteredListeners() {
+            return listenerCount.get() > 0;
         }
     }
 }

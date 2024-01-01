@@ -92,6 +92,7 @@ public class FakeAdbFacade implements AdbFacade {
         deviceChangeListeners.asObservable().removeObserver(deviceChangeListener);
     }
 
+    @Override
     public boolean hasRegisteredListeners() {
         return !deviceChangeListeners.isEmpty();
     }
