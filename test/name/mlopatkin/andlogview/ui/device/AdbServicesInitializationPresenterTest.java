@@ -319,6 +319,49 @@ class AdbServicesInitializationPresenterTest {
         thenProgressIsShown();
     }
 
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void interactiveRequestCanSucceedIfViewOpensModalDialog(ServiceRequest request) {
+        view.withModalLoop(() -> {
+            whenAdbInitSucceed();
+
+            thenProgressIsHidden();
+        });
+
+        whenRequestedAdbWith(request);
+
+        thenProgressIsHidden();
+    }
+
+    @ParameterizedTest
+    @MethodSource("allInteractiveRequests")
+    void interactiveRequestCanFailIfViewOpensModalDialog(ServiceRequest request) {
+        view.withModalLoop(() -> {
+            whenAdbInitFailed();
+
+            thenProgressIsHidden();
+        });
+
+        whenRequestedAdbWith(request);
+
+        thenProgressIsHidden();
+        thenErrorIsShown();
+    }
+
+    @Test
+    void afterCompletingRestartWithModalDialogNewRestartShowsDialogAgain() {
+        givenInitialState(() -> {
+            view.withModalLoop(() -> whenAdbInitSucceed());
+            whenRequestedAdbWith(restartRequest());
+        });
+        withNewResultAfterReload();
+
+        view.withModalLoop(() -> whenAdbInitSucceed());
+        whenRequestedAdbWith(restartRequest());
+
+        thenProgressIsHidden();
+    }
+
     private AdbServicesInitializationPresenter createPresenter() {
         return createPresenter(MoreExecutors.directExecutor());
     }
@@ -508,11 +551,14 @@ class AdbServicesInitializationPresenterTest {
         private boolean progressAppeared;
         private boolean showsProgress;
         private @Nullable String showsError;
+        private Runnable loop = () -> {};
 
         @Override
         public void showAdbLoadingProgress() {
             progressAppeared = true;
             showsProgress = true;
+            loop.run();
+            loop = () -> {};
         }
 
         @Override
@@ -553,6 +599,10 @@ class AdbServicesInitializationPresenterTest {
             showsError = null;
             showsProgress = false;
             progressAppeared = false;
+        }
+
+        public void withModalLoop(Runnable action) {
+            loop = action;
         }
     }
 

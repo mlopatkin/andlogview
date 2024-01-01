@@ -113,10 +113,11 @@ public class AdbServicesInitializationPresenter {
         var future = result;
         if (!future.isDone()) {
             // Only bother with setting cursors if the ADB is not yet initialized.
-            var token = showProgressWithToken();
+            var token = new Object();
             future = future.whenCompleteAsync(
                     (services, th) -> hideProgressWithToken(token),
                     uiExecutor);
+            showProgressWithToken(token);
         }
         future.handleAsync(
                         consumingHandler(action, ignoreCancellations(adbErrorHandler()).andThen(failureHandler)),
@@ -131,13 +132,12 @@ public class AdbServicesInitializationPresenter {
         return bridge.getAdbServicesAsync();
     }
 
-    private Object showProgressWithToken() {
-        if (progressTokens.isEmpty()) {
+    private void showProgressWithToken(Object token) {
+        var isFirstToken = progressTokens.isEmpty();
+        progressTokens.add(token);
+        if (isFirstToken) {
             view.showAdbLoadingProgress();
         }
-        var token = new Object();
-        progressTokens.add(token);
-        return token;
     }
 
     private void hideProgressWithToken(Object token) {
