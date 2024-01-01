@@ -30,7 +30,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
 import name.mlopatkin.andlogview.base.concurrent.TestSequentialExecutor;
 import name.mlopatkin.andlogview.device.AdbException;
@@ -239,7 +238,7 @@ class AdbServicesBridgeTest {
     void completingNewAdbInitializationAfterStopSendsNoSpuriousNotifications() {
         var testUiExecutor = new TestExecutor();
         var testAdbExecutor = new TestExecutor();
-        var bridge = createBridge(SequentialExecutor.decorate(testUiExecutor), testAdbExecutor);
+        var bridge = createBridge(testUiExecutor, testAdbExecutor);
         var observer = mock(AdbServicesStatus.Observer.class);
 
         var firstInit = bridge.getAdbServicesAsync();
@@ -283,7 +282,7 @@ class AdbServicesBridgeTest {
 
     private AdbServicesBridge createBridge(Executor uiExecutor, Executor adbExecutor) {
         return new AdbServicesBridge(adbManager, adbConfigurationPref, adbServicesFactory,
-                SequentialExecutor.decorate(uiExecutor), adbExecutor);
+                new TestSequentialExecutor(uiExecutor), adbExecutor);
     }
 
     private void drainExecutors(TestExecutor... executor) {
