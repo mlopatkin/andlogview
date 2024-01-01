@@ -166,9 +166,10 @@ public class AdbServicesInitializationPresenter {
      * Restarts ADB services (or starts one if it is not yet running).
      */
     public void restartAdb() {
+        // Stopping ADB trigger disconnect dialogs now
+        deviceDisconnectedHandler.suppressDialogs();
         bridge.stopAdb();
         hasShownErrorMessage = false;
-        deviceDisconnectedHandler.suppressDialogs();
         withAdbServicesInteractive(
                 adbServices -> deviceDisconnectedHandler.resumeDialogs(),
                 failure -> deviceDisconnectedHandler.resumeDialogs());

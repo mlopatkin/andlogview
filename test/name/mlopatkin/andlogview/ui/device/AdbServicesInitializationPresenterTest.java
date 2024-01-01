@@ -20,6 +20,7 @@ package name.mlopatkin.andlogview.ui.device;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,6 +30,7 @@ import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
+import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.test.ThreadTestUtils;
 import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
@@ -67,6 +69,9 @@ class AdbServicesInitializationPresenterTest {
     Consumer<AdbServices> servicesConsumer;
     @Mock(answer = Answers.CALLS_REAL_METHODS)
     Consumer<Throwable> errorConsumer;
+
+    @Mock
+    DeviceDisconnectedHandler disconnectedHandler;
 
     private AdbServicesInitializationPresenter presenter;
 
@@ -440,6 +445,16 @@ class AdbServicesInitializationPresenterTest {
         thenProgressIsHidden();
     }
 
+    @Test
+    void stopsBridgeWithDisconnectMessagesSuppressed() {
+        whenRequestedAdbWith(restartRequest());
+
+        var inOrder = inOrder(mockBridge, disconnectedHandler);
+        inOrder.verify(disconnectedHandler).suppressDialogs();
+        inOrder.verify(disconnectedHandler, never()).resumeDialogs();
+        inOrder.verify(mockBridge).stopAdb();
+    }
+
     private AdbServicesInitializationPresenter createPresenter() {
         return createPresenter(MoreExecutors.directExecutor());
     }
@@ -455,7 +470,7 @@ class AdbServicesInitializationPresenterTest {
                             .exceptionally(MyFutures::uncaughtException);
                     return mock(AdbDeviceList.class);
                 });
-        return new AdbServicesInitializationPresenter(view, mockBridge, uiExecutor, mock());
+        return new AdbServicesInitializationPresenter(view, mockBridge, uiExecutor, disconnectedHandler);
     }
 
     private void withNewResultAfterReload() {
