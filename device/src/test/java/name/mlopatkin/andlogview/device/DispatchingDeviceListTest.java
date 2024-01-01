@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.test.StrictMock;
 
 import com.android.ddmlib.IDevice;
@@ -42,6 +43,17 @@ import java.util.concurrent.CompletableFuture;
 
 class DispatchingDeviceListTest {
     private final FakeAdbFacade adbFacade = new FakeAdbFacade();
+
+    private final SequentialExecutor testExecutor = new SequentialExecutor() {
+        @Override
+        public void checkSequence() {
+        }
+
+        @Override
+        public void execute(Runnable command) {
+            command.run();
+        }
+    };
 
     @Test
     void initialListOfDevicesIsEmpty() {
@@ -244,7 +256,7 @@ class DispatchingDeviceListTest {
     }
 
     private DispatchingDeviceList createDeviceList(DeviceProvisioner provisioner) {
-        return DispatchingDeviceList.create(adbFacade, provisioner);
+        return DispatchingDeviceList.create(adbFacade, provisioner, testExecutor);
     }
 
     @SuppressWarnings("Convert2Lambda")

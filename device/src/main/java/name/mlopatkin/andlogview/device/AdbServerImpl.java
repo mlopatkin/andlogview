@@ -34,18 +34,17 @@ class AdbServerImpl implements AdbServer {
     // AdbServerImpl wraps the current connection to the adb server. The connection cannot be replaced within the same
     // server instance, a new server instance should be created instead.
     private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
-
-    private final DispatchingDeviceList dispatchingDeviceList;
+    private final AdbFacade adbFacade;
+    private final DeviceProvisioner deviceProvisioner;
 
     public AdbServerImpl(AdbLocation adbLocation, Executor ioExecutor) throws AdbException {
-        var adbFacade = new AdbFacadeImpl(createBridge(adbLocation));
-        dispatchingDeviceList =
-                DispatchingDeviceList.create(adbFacade, new DeviceProvisionerImpl(adbFacade, ioExecutor));
+        adbFacade = new AdbFacadeImpl(createBridge(adbLocation));
+        deviceProvisioner = new DeviceProvisionerImpl(adbFacade, ioExecutor);
     }
 
     @Override
     public AdbDeviceList getDeviceList(SequentialExecutor listenerExecutor) {
-        return new AdbDeviceListImpl(dispatchingDeviceList, listenerExecutor);
+        return DispatchingDeviceList.create(adbFacade, deviceProvisioner, listenerExecutor);
     }
 
     private static AndroidDebugBridge createBridge(AdbLocation adbLocation) throws AdbException {
@@ -99,7 +98,6 @@ class AdbServerImpl implements AdbServer {
     }
 
     public void stop() {
-        dispatchingDeviceList.close();
         AndroidDebugBridge.disconnectBridge();
     }
 
