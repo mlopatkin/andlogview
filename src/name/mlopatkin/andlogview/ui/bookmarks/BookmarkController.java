@@ -21,6 +21,9 @@ import name.mlopatkin.andlogview.ui.indexframe.IndexController;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.widgets.UiHelper;
+
+import java.awt.event.KeyEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,6 +66,12 @@ public class BookmarkController extends AbstractIndexController implements Index
 
         indexFrame = indexFrameComponent.createFrame();
         indexFrame.setTitle("Bookmarks");
+
+        // TODO(mlopatkin) There should be a better way of wiring together key bindings, menus and actions.
+        UiHelper.bindKeyGlobal(indexFrame,
+                KeyEvent.VK_DELETE,
+                "deleteBookmark",
+                indexFrameComponent.createDeleteBookmarksAction());
     }
 
     private void redrawMainTable() {

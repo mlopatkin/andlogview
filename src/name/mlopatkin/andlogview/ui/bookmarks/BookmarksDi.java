@@ -52,17 +52,31 @@ final class BookmarksDi {
             @SuppressWarnings("ClassEscapesDefinedScope")
             BookmarksFrameComponent build();
         }
+
+        DeleteBookmarksAction createDeleteBookmarksAction();
     }
 
     @Module
     static class TableModule {
         @Provides
-        @Named(FOR_INDEX_FRAME)
-        static JTable createLogTable(LogRecordTableModel tableModel, @Named(FOR_INDEX_FRAME) LogModelFilter filter,
+        @IndexFrameScoped
+        static BookmarksLogTableComponent getLogTableComponent(
+                LogRecordTableModel tableModel,
+                @Named(FOR_INDEX_FRAME) LogModelFilter filter,
                 BookmarkModel bookmarkModel) {
             return DaggerBookmarksDi_BookmarksLogTableComponent.factory()
-                    .create(tableModel, filter, bookmarkModel)
-                    .getLogTable();
+                    .create(tableModel, filter, bookmarkModel);
+        }
+
+        @Provides
+        @Named(FOR_INDEX_FRAME)
+        static JTable createLogTable(BookmarksLogTableComponent logTableComponent) {
+            return logTableComponent.getLogTable();
+        }
+
+        @Provides
+        static DeleteBookmarksAction createDeleteBookmarksAction(BookmarksLogTableComponent logTableComponent) {
+            return logTableComponent.createDeleteBookmarksAction();
         }
     }
 
@@ -70,6 +84,8 @@ final class BookmarksDi {
     @Component(modules = {LogTableModule.class, TableDepsModule.class})
     interface BookmarksLogTableComponent {
         JTable getLogTable();
+
+        DeleteBookmarksAction createDeleteBookmarksAction();
 
         @Component.Factory
         interface Factory {

@@ -31,7 +31,6 @@ import javax.inject.Inject;
 
 public class BookmarkPopupMenuPresenter extends PopupMenuPresenter<BookmarkPopupMenuPresenter.BookmarkPopupMenuView> {
     protected interface BookmarkPopupMenuView extends PopupMenuPresenter.PopupMenuView {
-
         Observable<Runnable> setDeleteBookmarksActionEnabled(boolean enabled);
     }
 
