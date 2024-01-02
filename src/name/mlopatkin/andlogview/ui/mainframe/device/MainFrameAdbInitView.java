@@ -22,29 +22,28 @@ import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /**
  * A view to show ADB initialization in the Main Frame.
  */
 class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
 
-    private final Provider<AdbInitProgressDialog> progressDialogProvider;
+    private final AdbInitProgressDialog.Factory dialogFactory;
     private final ErrorDialogs errorDialogs;
 
     private @Nullable AdbInitProgressDialog currentDialog;
 
     @Inject
-    MainFrameAdbInitView(Provider<AdbInitProgressDialog> progressDialogProvider, ErrorDialogs errorDialogs) {
-        this.progressDialogProvider = progressDialogProvider;
+    MainFrameAdbInitView(AdbInitProgressDialog.Factory dialogFactory, ErrorDialogs errorDialogs) {
+        this.dialogFactory = dialogFactory;
         this.errorDialogs = errorDialogs;
     }
 
     @Override
-    public void showAdbLoadingProgress(Runnable cancellationAction) {
+    public void showAdbLoadingProgress(boolean isCancellable, Runnable userHideAction) {
         assert currentDialog == null;
-        currentDialog = progressDialogProvider.get();
-        currentDialog.show(cancellationAction);
+        currentDialog = dialogFactory.create(isCancellable ? "Cancel" : "Hide");
+        currentDialog.show(userHideAction);
     }
 
     @Override

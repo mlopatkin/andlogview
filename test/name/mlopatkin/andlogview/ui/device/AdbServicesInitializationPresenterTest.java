@@ -354,7 +354,7 @@ class AdbServicesInitializationPresenterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allInteractiveRequests")
+    @MethodSource("allCancellableInteractiveRequests")
     void interactiveRequestCanBeCancelledByDialog(ServiceRequest request) {
         view.withModalLoop(cancellationAction -> {
             cancellationAction.run();
@@ -382,7 +382,7 @@ class AdbServicesInitializationPresenterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allInteractiveRequests")
+    @MethodSource("allCancellableInteractiveRequests")
     void afterCancellingProgressNoErrorIsShown(ServiceRequest request) {
         view.withModalLoop(cancellationAction -> {
             cancellationAction.run();
@@ -453,6 +453,50 @@ class AdbServicesInitializationPresenterTest {
         inOrder.verify(disconnectedHandler).suppressDialogs();
         inOrder.verify(disconnectedHandler, never()).resumeDialogs();
         inOrder.verify(mockBridge).stopAdb();
+    }
+
+    @Test
+    void restartShowsNonCancellableProgress() {
+        whenRequestedAdbWith(restartRequest());
+
+        thenNonCancellableProgressIsShown();
+    }
+
+    @Test
+    void interactiveRequestShowsCancellableProgress() {
+        whenRequestedAdbWith(interactiveRequest());
+
+        thenCancellableProgressIsShown();
+    }
+
+    @Test
+    @SuppressWarnings("Convert2MethodRef")
+    void interactiveRequestAfterHiddenRestartShowsProgressDialogAndCanComplete() {
+        givenInitialState(() -> {
+            view.withModalLoop(userHideAction -> userHideAction.run());
+            whenRequestedAdbWith(restartRequest());
+        });
+
+        whenRequestedAdbWith(interactiveRequest());
+        whenAdbInitSucceed();
+
+        thenCancellableProgressIsShown();
+        thenRequestCompletedSuccessfully();
+    }
+
+    @Test
+    @SuppressWarnings("Convert2MethodRef")
+    void hiddenRestartShowsProgressDialogAndCanComplete() {
+        givenInitialState(() -> {
+            view.withModalLoop(userHideAction -> userHideAction.run());
+            whenRequestedAdbWith(restartRequest());
+        });
+
+        whenRequestedAdbWith(interactiveRequest());
+        whenAdbInitSucceed();
+
+        thenCancellableProgressIsShown();
+        thenRequestCompletedSuccessfully();
     }
 
     private AdbServicesInitializationPresenter createPresenter() {
@@ -541,6 +585,16 @@ class AdbServicesInitializationPresenterTest {
         view.assertShowsProgress();
     }
 
+    private void thenCancellableProgressIsShown() {
+        view.assertProgressAppeared();
+        view.assertProgressIsCancellable();
+    }
+
+    private void thenNonCancellableProgressIsShown() {
+        view.assertProgressAppeared();
+        view.assertProgressIsNotCancellable();
+    }
+
     private void thenProgressIsHidden() {
         view.assertProgressAppeared();
         view.assertShowsNoProgress();
@@ -581,6 +635,10 @@ class AdbServicesInitializationPresenterTest {
                 interactiveRequest(),
                 restartRequest()
         );
+    }
+
+    static Stream<ServiceRequest> allCancellableInteractiveRequests() {
+        return Stream.of(interactiveRequest());
     }
 
     static Stream<ServiceRequest> nonRestartRequests() {
@@ -642,15 +700,17 @@ class AdbServicesInitializationPresenterTest {
 
     private static class FakeView implements AdbServicesInitializationPresenter.View {
         private boolean progressAppeared;
+        private boolean progressCancellable;
         private boolean showsProgress;
         private @Nullable String showsError;
         private Consumer<? super Runnable> loop = r -> {};
 
         @Override
-        public void showAdbLoadingProgress(Runnable cancellationAction) {
+        public void showAdbLoadingProgress(boolean isCancellable, Runnable userHideAction) {
             progressAppeared = true;
             showsProgress = true;
-            loop.accept(cancellationAction);
+            progressCancellable = isCancellable;
+            loop.accept(userHideAction);
             loop = r -> {};
         }
 
@@ -688,10 +748,19 @@ class AdbServicesInitializationPresenterTest {
             assertThat(showsError).as("shows no error").isNull();
         }
 
+        public void assertProgressIsCancellable() {
+            assertThat(progressCancellable).isTrue();
+        }
+
+        public void assertProgressIsNotCancellable() {
+            assertThat(progressCancellable).isFalse();
+        }
+
         public void reset() {
             showsError = null;
             showsProgress = false;
             progressAppeared = false;
+            progressCancellable = false;
         }
 
         public void withModalLoop(Consumer<? super Runnable> action) {

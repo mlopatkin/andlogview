@@ -19,9 +19,12 @@ package name.mlopatkin.andlogview.ui.mainframe.device;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 import java.util.Objects;
 
-import javax.inject.Inject;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -30,14 +33,14 @@ public class AdbInitProgressDialog {
     private final JDialog dialog;
     private final JOptionPane optionPane;
 
-    @Inject
-    public AdbInitProgressDialog(DialogFactory dialogFactory) {
+    @AssistedInject
+    public AdbInitProgressDialog(DialogFactory dialogFactory, @Assisted String defaultOptionTitle) {
         optionPane = new JOptionPane(
                 new Object[] {
                         "Connecting to ADB server" + CommonChars.ELLIPSIS,
                         createProgressBar()
                 }, JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.DEFAULT_OPTION, null, new String[] {"Cancel"});
+                JOptionPane.DEFAULT_OPTION, null, new String[] {defaultOptionTitle});
 
         dialog = optionPane.createDialog(dialogFactory.getOwner(), "Initializing ADB" + CommonChars.ELLIPSIS);
     }
@@ -51,11 +54,17 @@ public class AdbInitProgressDialog {
 
     public void hide() {
         dialog.setVisible(false);
+        dialog.dispose();
     }
 
     private static JProgressBar createProgressBar() {
         var bar = new JProgressBar(JProgressBar.HORIZONTAL);
         bar.setIndeterminate(true);
         return bar;
+    }
+
+    @AssistedFactory
+    interface Factory {
+        AdbInitProgressDialog create(String defaultOptionTitle);
     }
 }

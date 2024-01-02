@@ -48,9 +48,14 @@ public class AdbServicesInitializationPresenter {
     public interface View {
 
         /**
-         * Show the user that ADB services aren't ready yet, but they are being loading.
+         * Show the user that ADB services aren't ready yet, but they are being loading. Depending on the way the
+         * notification is presented, the user may be able to dismiss it. Dismissing the notification may cancel the
+         * action that requested the load, so the UI has to accomodate for that.
+         *
+         * @param isCancellable if the action being run is cancellable
+         * @param userHideAction the callback to run if the user hides the notification
          */
-        void showAdbLoadingProgress(Runnable cancellationAction);
+        void showAdbLoadingProgress(boolean isCancellable, Runnable userHideAction);
 
         /**
          * Show the user that ADB services are now ready.
@@ -109,6 +114,13 @@ public class AdbServicesInitializationPresenter {
      */
     public Cancellable withAdbServicesInteractive(Consumer<? super AdbServices> action,
             Consumer<? super Throwable> failureHandler) {
+        return initAdbServicesInteractive(true /* allowCancellation */, action, failureHandler);
+    }
+
+    private Cancellable initAdbServicesInteractive(
+            boolean allowCancellation,
+            Consumer<? super AdbServices> action,
+            Consumer<? super Throwable> failureHandler) {
         var result = getServicesAsync();
         var future = result;
         if (!future.isDone()) {
@@ -117,7 +129,9 @@ public class AdbServicesInitializationPresenter {
             future = future.whenCompleteAsync(
                     (services, th) -> hideProgressWithToken(token),
                     uiExecutor);
-            showProgressWithToken(token, () -> result.cancel(false));
+            // Cancellation only affects the view. Non-cancellable requests don't actually care about the returned
+            // future, so we can cancel it to hide the progress view.
+            showProgressWithToken(allowCancellation, token, () -> result.cancel(false));
         }
         future.handleAsync(
                         consumingHandler(action, ignoreCancellations(adbErrorHandler()).andThen(failureHandler)),
@@ -132,11 +146,11 @@ public class AdbServicesInitializationPresenter {
         return bridge.getAdbServicesAsync();
     }
 
-    private void showProgressWithToken(Object token, Runnable cancellationAction) {
+    private void showProgressWithToken(boolean allowCancellation, Object token, Runnable userHideAction) {
         var isFirstToken = progressTokens.isEmpty();
         progressTokens.add(token);
         if (isFirstToken) {
-            view.showAdbLoadingProgress(cancellationAction);
+            view.showAdbLoadingProgress(allowCancellation, userHideAction);
         }
     }
 
@@ -170,7 +184,8 @@ public class AdbServicesInitializationPresenter {
         deviceDisconnectedHandler.suppressDialogs();
         bridge.stopAdb();
         hasShownErrorMessage = false;
-        withAdbServicesInteractive(
+        initAdbServicesInteractive(
+                false /* allowCancellation */,
                 adbServices -> deviceDisconnectedHandler.resumeDialogs(),
                 failure -> deviceDisconnectedHandler.resumeDialogs());
     }
