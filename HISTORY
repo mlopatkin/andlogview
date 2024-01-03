@@ -1,3 +1,4 @@
+version 0.23
 version 0.22
     [+] Support parsing long logcat format
     [+] Show warnings when dumpstate cannot be imported properly, but try to still be useful
