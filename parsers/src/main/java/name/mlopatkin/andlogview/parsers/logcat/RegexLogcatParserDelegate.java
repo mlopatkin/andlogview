@@ -34,6 +34,8 @@ abstract class RegexLogcatParserDelegate implements Closeable {
     static final String SEP = "\\s+";
     static final String SEP_OPT = "\\s*";
 
+    static final String CONTROL_LINE_REGEX = "^--------- (beginning of|switch to) .+$";
+
     protected final LogcatParseEventsHandler eventsHandler;
 
     RegexLogcatParserDelegate(LogcatParseEventsHandler eventsHandler) {

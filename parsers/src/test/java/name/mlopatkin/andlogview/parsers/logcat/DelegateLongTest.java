@@ -346,6 +346,101 @@ public class DelegateLongTest {
                 """).element(0).satisfies(r -> assertThatRecord(r).hasMessage("  int32_t bitrate = 48000"));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "--------- beginning of system",
+            "--------- switch to main",
+            "--------- beginning of /dev/log/system"
+    })
+    void handlesControlMessages(String controlMessage) {
+        assertParsed(String.format("""
+                [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
+                First message
+
+                %s
+                [ 02-03 04:05:06.789  5678: 8765 I/othertag     ]
+                Second message
+
+                """, controlMessage))
+                .hasSize(2)
+                .satisfies(r -> assertThatRecord(r).hasDate(1, 2)
+                        .hasTime(3, 4, 5, 678)
+                        .hasPid(1234)
+                        .hasTid(4321)
+                        .hasPriority(LogRecord.Priority.ERROR)
+                        .hasTag("sometag")
+                        .hasMessage("First message"), atIndex(0))
+                .satisfies(r -> assertThatRecord(r).hasDate(2, 3)
+                        .hasTime(4, 5, 6, 789)
+                        .hasPid(5678)
+                        .hasTid(8765)
+                        .hasPriority(LogRecord.Priority.INFO)
+                        .hasTag("othertag")
+                        .hasMessage("Second message"), atIndex(1));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "--------- beginning of system",
+            "--------- switch to main",
+            "--------- beginning of /dev/log/system",
+            "--------- not a log",
+    })
+    void logMessageMayLookLikeControl(String controlLikeText) {
+        assertParsed(String.format("""
+                [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
+                First line
+
+                %s
+                Second line
+
+                """, controlLikeText))
+                .hasSize(4)
+                .allSatisfy(r -> assertThatRecord(r).hasDate(1, 2)
+                        .hasTime(3, 4, 5, 678)
+                        .hasPid(1234)
+                        .hasTid(4321)
+                        .hasPriority(LogRecord.Priority.ERROR)
+                        .hasTag("sometag"))
+                .map(LogRecord::getMessage)
+                .containsExactly(
+                        "First line",
+                        "",
+                        controlLikeText,
+                        "Second line"
+                );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "--------- beginning of system",
+            "--------- switch to main",
+            "--------- beginning of /dev/log/system",
+            "--------- not a log",
+    })
+    void logMessageMayLookLikeControlOnTheLastLine(String controlLikeText) {
+        assertParsed(String.format("""
+                [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
+                First line
+
+                %s
+
+                """, controlLikeText))
+                .hasSize(3)
+                .allSatisfy(r -> assertThatRecord(r).hasDate(1, 2)
+                        .hasTime(3, 4, 5, 678)
+                        .hasPid(1234)
+                        .hasTid(4321)
+                        .hasPriority(LogRecord.Priority.ERROR)
+                        .hasTag("sometag"))
+                .map(LogRecord::getMessage)
+                .containsExactly(
+                        "First line",
+                        "",
+                        controlLikeText
+                );
+    }
+
     private static ListAssert<LogRecord> assertParsed(String records) {
         var handler = new ListCollectingHandler();
         try (var parser = LogcatParsers.logcatLong(handler)) {

@@ -63,6 +63,7 @@ class DelegateLong extends RegexLogcatParserDelegate {
             " ",
             "\\]"
     );
+    private static final Pattern CONTROL_PATTERN = Pattern.compile(CONTROL_LINE_REGEX);
 
     private @Nullable CurrentMessage currentMessage;
 
@@ -90,7 +91,7 @@ class DelegateLong extends RegexLogcatParserDelegate {
         return this::stateProcessNextMessageLine;
     }
 
-    public State stateProcessNextMessageLine(CharSequence line) {
+    private State stateProcessNextMessageLine(CharSequence line) {
         var msg = Objects.requireNonNull(currentMessage);
         if (isBlank(line)) {
             // Our previous message line ended with '\n'. This "line" is a next '\n'. There are two possibilities:
@@ -102,13 +103,14 @@ class DelegateLong extends RegexLogcatParserDelegate {
             return nextLine -> stateMaybeMessageEnded(2, nextLine);
         }
         msg.addMessageLine(line);
-        return LineParser.currentState();
+        // Note: this method is also called from other states, so it isn't safe to return currentState() here.
+        return this::stateProcessNextMessageLine;
     }
 
     public State stateMaybeMessageEnded(int consecutiveEolns, CharSequence line) {
         // Before this call we saw at least two consecutive EOLNs. At this point the current line can be:
-        // 1. Another EOLN. A third in a row could be part of the terminator, if the last non-blank line ended with
-        // '\n'. We don't want to emit an empty log record in this case.
+        // 1. Another EOLN. A third in a row could be part of the terminator, if the last non-blank line had a trailing
+        // '\n', like Log.d("foo\n"). We don't want to emit an empty log record in this case.
         // Fourth is worth printing a single empty line, though.
         // TODO(mlopatkin): Verify how logcat handles d("FOO\n") vs d("FOO")
         var msg = Objects.requireNonNull(currentMessage);
@@ -120,7 +122,13 @@ class DelegateLong extends RegexLogcatParserDelegate {
                 return nextLine -> stateMaybeMessageEnded(consecutiveEolns + 1, nextLine);
             }
         }
+        // 2. A control line, like "--------- beginning of system". It is followed by a header if it is a valid
+        // control line. However, it may be a part of the message, so we need to keep our potential empty lines with us.
+        if (isControlLine(line)) {
+            return nextLine -> afterControlLikeLine(consecutiveEolns, line, nextLine);
+        }
 
+        // 4. A header. This means, a new message begins, and the old one is done.
         var maybeNextMessage = maybeHandleHeader(line);
         if (maybeNextMessage.isPresent()) {
             msg.commit();
@@ -128,6 +136,8 @@ class DelegateLong extends RegexLogcatParserDelegate {
             return this::stateProcessFirstMessageLine;
         }
 
+        // 5. A text line. All EOLNS before are part of the message. Except one, which was the end of a previous
+        // non-empty line.
         for (int i = 0; i < consecutiveEolns - 1; ++i) {
             msg.addMessageLine("");
         }
@@ -141,6 +151,27 @@ class DelegateLong extends RegexLogcatParserDelegate {
             return Optional.of(new CurrentMessage(matcher));
         }
         return Optional.empty();
+    }
+
+    private static boolean isControlLine(CharSequence sequence) {
+        return CONTROL_PATTERN.matcher(sequence).matches();
+    }
+
+    private State afterControlLikeLine(int consecutiveEolns, CharSequence maybeControlLine, CharSequence line) {
+        var msg = Objects.requireNonNull(currentMessage);
+        var maybeNextMessage = maybeHandleHeader(line);
+        if (maybeNextMessage.isPresent()) {
+            msg.commit();
+            currentMessage = maybeNextMessage.get();
+            return this::stateProcessFirstMessageLine;
+        }
+        // control line was actually a message line, preceded by eolns:
+        for (int i = 0; i < consecutiveEolns - 1; ++i) {
+            msg.addMessageLine("");
+        }
+        msg.addMessageLine(maybeControlLine);
+        // We process the current line as a next line too.
+        return stateProcessNextMessageLine(line);
     }
 
     private static boolean isBlank(CharSequence sequence) {
