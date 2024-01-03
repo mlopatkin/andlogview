@@ -56,6 +56,8 @@ class DelegateLong extends RegexLogcatParserDelegate {
             " ",
             SEP_OPT, // TODO(mlopatkin): actually, an uid can be there.
             // pid:tid, e.g. " 1172: 1172" or "12345:12345"
+            // tid can be hexadecimal
+            // see https://android.googlesource.com/platform/system/logging/+/1c3851559e27b532e5c6768cbb79033de24b0d31
             PID_REGEX, ":", SEP_OPT, TID_REGEX,
             " ",
             // priority and left-aligned tag. Tag has to be trimmed before feeding it upstream.
@@ -203,7 +205,7 @@ class DelegateLong extends RegexLogcatParserDelegate {
         public CurrentMessage(Matcher matcher) {
             timestamp = parseTimestamp(matcher.group(1));
             pid = Integer.parseInt(matcher.group(2));
-            tid = Integer.parseInt(matcher.group(3));
+            tid = Integer.decode(matcher.group(3));
             priority = Priority.fromChar(matcher.group(4));
             // TODO(mlopatkin): we probably need to trim tags of other formats.
             tag = CharMatcher.whitespace().trimTrailingFrom(matcher.group(5));

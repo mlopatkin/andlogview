@@ -153,7 +153,6 @@ public class DelegateLongTest {
                 .satisfies(r -> assertThatRecord(r).hasMessage(third), atIndex(2));
     }
 
-
     @ParameterizedTest(name = "parses PID {1} and TID {2} out of `{0}`")
     @CsvSource({
             "' 1234: 4321', 1234, 4321",
@@ -162,6 +161,7 @@ public class DelegateLongTest {
             "'654321:    3', 654321, 3",
             "'    1:654321', 1, 654321",
             "'654321:123456', 654321, 123456",
+            "' 1165:0x48d', 1165, 1165",
     })
     void parsesPidAndTid(String pidTid, int expectedPid, int expectedTid) {
         assertOnlyParsedRecord(LogcatParsers::logcatLong, lines(String.format("""

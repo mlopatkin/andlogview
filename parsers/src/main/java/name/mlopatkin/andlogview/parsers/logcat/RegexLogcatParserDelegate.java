@@ -27,7 +27,7 @@ abstract class RegexLogcatParserDelegate implements Closeable {
     static final String PID_REGEX = ID_REGEX;
     static final String PID_BRACKETS = "\\(\\s*" + PID_REGEX + "\\)";
 
-    static final String TID_REGEX = ID_REGEX;
+    static final String TID_REGEX = "(0x[0-9a-fA-F]+|\\d+)";
     static final String TAG_REGEX = "(.*?)";
     static final String PRIORITY_REGEX = "([AVDIWEF])";
     static final String MESSAGE_REGEX = "(.*)";
