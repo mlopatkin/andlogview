@@ -28,7 +28,6 @@ import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
@@ -46,8 +45,6 @@ import java.util.function.Function;
  * logcat output format used.
  */
 public class LogfileDataSource implements DataSource {
-    private static final Logger logger = Logger.getLogger(LogfileDataSource.class);
-
     private final String fileName;
     private final Set<Field> availableFields;
     private final List<LogRecord> records;
@@ -55,12 +52,12 @@ public class LogfileDataSource implements DataSource {
 
     private @Nullable RecordListener<LogRecord> listener;
 
-    private LogfileDataSource(String fileName, Set<Field> availableFields, List<LogRecord> records) {
-        this.fileName = fileName;
+    private LogfileDataSource(File file, Set<Field> availableFields, List<LogRecord> records) {
+        this.fileName = file.getName();
         this.availableFields = availableFields;
         // records may be huge, do not copy it needlessly
         this.records = Collections.unmodifiableList(records);
-        this.sourceMetadata = new FileSourceMetadata(new File(fileName));
+        this.sourceMetadata = new FileSourceMetadata(file);
     }
 
     @Override
@@ -105,13 +102,13 @@ public class LogfileDataSource implements DataSource {
     }
 
     public static class Builder {
-        private final String fileName;
+        private final File file;
         private final ArrayList<LogRecord> records = new ArrayList<>();
 
         private @Nullable LogcatPushParser<?> pushParser;
 
-        public Builder(String fileName) {
-            this.fileName = fileName;
+        public Builder(File file) {
+            this.file = file;
         }
 
         public Builder setParserFactory(Function<LogcatParseEventsHandler, LogcatPushParser<?>> factory) {
@@ -128,7 +125,7 @@ public class LogfileDataSource implements DataSource {
         public ImportResult readFrom(LineReader in) throws IOException {
             assert pushParser != null;
             ParserUtils.readInto(pushParser, in::readLine);
-            return new ImportResult(new LogfileDataSource(fileName, pushParser.getAvailableFields(), records));
+            return new ImportResult(new LogfileDataSource(file, pushParser.getAvailableFields(), records));
         }
     }
 }

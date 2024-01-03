@@ -5,6 +5,7 @@ version 0.22
 
     [*] Offline and not-fully-connected devices can no longer be selected in the dialog
     [*] Initializing the ADB no longer freezes the UI. This is especially noticeable on Windows.
+    [*] Expose proper absolute path to file in the metadata context menu
 
 version 0.21
     [!] The tool is now renamed to AndLogView and the development moved to Github

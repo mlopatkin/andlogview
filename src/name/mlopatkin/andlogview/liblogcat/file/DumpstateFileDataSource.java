@@ -60,10 +60,10 @@ public final class DumpstateFileDataSource implements DataSource {
 
     private @Nullable RecordListener<LogRecord> logcatListener;
 
-    private DumpstateFileDataSource(String fileName, List<LogRecord> records, Set<Field> availableFields,
+    private DumpstateFileDataSource(File file, List<LogRecord> records, Set<Field> availableFields,
             EnumSet<Buffer> buffers, Map<Integer, String> converter) {
-        this.fileName = fileName;
-        this.sourceMetadata = new FileSourceMetadata(new File(fileName));
+        this.fileName = file.getName();
+        this.sourceMetadata = new FileSourceMetadata(file);
         this.records = records;
         this.availableFields = availableFields;
         this.buffers = buffers;
@@ -113,7 +113,7 @@ public final class DumpstateFileDataSource implements DataSource {
     }
 
     public static class Builder {
-        private final String fileName;
+        private final File file;
         private final EnumSet<Buffer> availableBuffers = EnumSet.noneOf(Buffer.class);
         private final List<LogRecord> records = new ArrayList<>();
         private final Map<Integer, String> pidToProcessConverter = new HashMap<>();
@@ -129,8 +129,8 @@ public final class DumpstateFileDataSource implements DataSource {
         private boolean hasProcessWaitSection;
         private boolean processWaitSectionHadUnparseableLines;
 
-        public Builder(String fileName) {
-            this.fileName = fileName;
+        public Builder(File file) {
+            this.file = file;
         }
 
         public Builder setParserFactory(
@@ -235,7 +235,7 @@ public final class DumpstateFileDataSource implements DataSource {
             }
             return new ImportResult(
                     new DumpstateFileDataSource(
-                            fileName, sorter.buildTimestampOrdered(), EnumSet.allOf(Field.class), availableBuffers,
+                            file, sorter.buildTimestampOrdered(), EnumSet.allOf(Field.class), availableBuffers,
                             pidToProcessConverter),
                     problems);
         }

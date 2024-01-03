@@ -27,13 +27,18 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
 import name.mlopatkin.andlogview.logmodel.RecordListener;
+import name.mlopatkin.andlogview.logmodel.SourceMetadataItem;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,21 +47,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileDataSourceFactoryTest {
+    private static final String TEST_DIR = "test/dir";
+
     @Test(expected = UnrecognizedFormatException.class)
     public void openEmptyFile() throws Exception {
-        FileDataSourceFactory.createDataSource("empty.log", CharSource.empty());
+        importData("empty.log", CharSource.empty());
     }
 
     @Test(expected = UnrecognizedFormatException.class)
     public void openBlankFile() throws Exception {
-        FileDataSourceFactory.createDataSource("blank.log", CharSource.wrap("    \n\n   \n\t\t"));
+        importData("blank.log", CharSource.wrap("    \n\n   \n\t\t"));
     }
 
     @Test
     public void openDumpstate() throws Exception {
         CharSource dumpstateFile = openTestData("galaxy_nexus_jbmr2.minimized.dump");
 
-        DataSource dumpstate = FileDataSourceFactory.createDataSource("dumpstate.log", dumpstateFile).getDataSource();
+        DataSource dumpstate = importData("dumpstate.log", dumpstateFile).getDataSource();
 
         assertThat(dumpstate.getAvailableBuffers(),
                 Matchers.containsInAnyOrder(Buffer.EVENTS, Buffer.RADIO, Buffer.MAIN));
@@ -72,10 +79,28 @@ public class FileDataSourceFactoryTest {
     }
 
     @Test
+    public void dumpstateHasProperMetadata() throws Exception {
+        var contents = openTestData("galaxy_nexus_jbmr2.minimized.dump");
+        var dataSource = importData("dumpstate.log", contents).getDataSource();
+
+        var metadata = dataSource.getMetadata().getMetadataItems();
+        assertThatPath(metadata).isEqualTo(new File(TEST_DIR, "dumpstate.log").getAbsolutePath());
+    }
+
+    @Test
+    public void logfileHasProperMetadata() throws Exception {
+        var contents = openTestData("galaxy_nexus_jbmr2_brief.log");
+        var dataSource = importData("brief.log", contents).getDataSource();
+
+        var metadata = dataSource.getMetadata().getMetadataItems();
+        assertThatPath(metadata).isEqualTo(new File(TEST_DIR, "brief.log").getAbsolutePath());
+    }
+
+    @Test
     public void openBrief() throws Exception {
         CharSource briefLog = openTestData("galaxy_nexus_jbmr2_brief.log");
 
-        DataSource brief = FileDataSourceFactory.createDataSource("brief.log", briefLog).getDataSource();
+        DataSource brief = importData("brief.log", briefLog).getDataSource();
         assertThat(brief.getAvailableFields(),
                 Matchers.containsInAnyOrder(Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
     }
@@ -84,7 +109,7 @@ public class FileDataSourceFactoryTest {
     public void openTime() throws Exception {
         CharSource log = openTestData("galaxy_nexus_jbmr2_time.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("time.log", log).getDataSource();
+        DataSource source = importData("time.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(Field.TIME, Field.PRIORITY, Field.TAG, Field.PID, Field.MESSAGE));
     }
@@ -93,7 +118,7 @@ public class FileDataSourceFactoryTest {
     public void openThreadtime() throws Exception {
         CharSource log = openTestData("galaxy_nexus_jbmr2_threadtime.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("threadtime.log", log).getDataSource();
+        DataSource source = importData("threadtime.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
                         Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE));
@@ -103,7 +128,7 @@ public class FileDataSourceFactoryTest {
     public void openLogFileWithExtraStuffInTheBeginning() throws Exception {
         CharSource extraStuffLog = openTestData("huawei_p10_log_snippet.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("huawei.log", extraStuffLog).getDataSource();
+        DataSource source = importData("huawei.log", extraStuffLog).getDataSource();
         source.close();
     }
 
@@ -111,7 +136,7 @@ public class FileDataSourceFactoryTest {
     public void openAndroidStudioLog() throws Exception {
         CharSource log = openTestData("emulator_cupcake_android_studio.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("androidstudio.log", log).getDataSource();
+        DataSource source = importData("androidstudio.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
                         Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE, Field.APP_NAME));
@@ -121,7 +146,7 @@ public class FileDataSourceFactoryTest {
     public void openLongLog() throws Exception {
         CharSource log = openTestData("emulator_api31_long.log");
 
-        DataSource source = FileDataSourceFactory.createDataSource("long.log", log).getDataSource();
+        DataSource source = importData("long.log", log).getDataSource();
         assertThat(source.getAvailableFields(),
                 Matchers.containsInAnyOrder(
                         Field.TIME, Field.PID, Field.TID, Field.PRIORITY, Field.TAG, Field.MESSAGE));
@@ -131,21 +156,21 @@ public class FileDataSourceFactoryTest {
     public void openDumpstateWithTimeTravel() throws Exception {
         CharSource log = openTestData("emulator_nougat.minimized.with-time-travel.dump");
 
-        var records = getRecords(FileDataSourceFactory.createDataSource("time-travel.dump", log).getDataSource());
+        var records = getRecords(importData("time-travel.dump", log).getDataSource());
 
         var timeComparator = Comparator.comparing(LogRecord::getTime);
         assertThat(getRecordsWithBuffer(records, Buffer.MAIN)).isSortedAccordingTo(timeComparator);
         assertThat(getRecordsWithBuffer(records, Buffer.RADIO)).isSortedAccordingTo(timeComparator);
         assertThat(getRecordsWithBuffer(records, Buffer.EVENTS)).isSortedAccordingTo(timeComparator);
 
-        assertThat(FileDataSourceFactory.createDataSource("time-travel.dump", log).getProblems()).isNotEmpty();
+        assertThat(importData("time-travel.dump", log).getProblems()).isNotEmpty();
     }
 
     @Test
     public void openDumpstateWithProcessAfterLogs() throws Exception {
         CharSource log = openTestData("emulator_api34.minimized.dump");
 
-        var source = FileDataSourceFactory.createDataSource("process-names.dump", log).getDataSource();
+        var source = importData("process-names.dump", log).getDataSource();
 
         assertThat(source.getPidToProcessConverter()).isNotEmpty();
 
@@ -155,6 +180,19 @@ public class FileDataSourceFactoryTest {
                 .filteredOn(r -> !r.hasAppName())
                 .as("All records without app names are because the process is not known")
                 .allSatisfy(r -> assertThat(source.getPidToProcessConverter()).doesNotContainKey(r.getPid()));
+    }
+
+    private static AbstractStringAssert<?> assertThatPath(Collection<SourceMetadataItem> metadata) {
+        return
+        assertThat(metadata)
+                .filteredOn(item -> "path".equals(item.getDisplayName()))
+                .map(SourceMetadataItem::getValue)
+                .singleElement(InstanceOfAssertFactories.STRING);
+    }
+
+    private ImportResult importData(String displayFileName, CharSource log)
+            throws UnrecognizedFormatException, IOException {
+        return FileDataSourceFactory.createDataSource(new File(TEST_DIR, displayFileName), log);
     }
 
     private CharSource openTestData(String testDataName) {

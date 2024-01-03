@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.parsers.dumpstate.DumpstateParsers;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatFormatSniffer;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 
@@ -40,12 +41,13 @@ public class FileDataSourceFactory {
     private FileDataSourceFactory() {}
 
     public static ImportResult createDataSource(File file) throws UnrecognizedFormatException, IOException {
-        return createDataSource(file.getName(), Files.asCharSource(file, StandardCharsets.UTF_8));
+        return createDataSource(file, Files.asCharSource(file, StandardCharsets.UTF_8));
     }
 
-    public static ImportResult createDataSource(String fileName, CharSource file)
+    @VisibleForTesting
+    static ImportResult createDataSource(File file, CharSource data)
             throws UnrecognizedFormatException, IOException {
-        try (LineReader in = new LineReader(file)) {
+        try (LineReader in = new LineReader(data)) {
             DumpstateFormatSniffer dumpstateSniffer = DumpstateParsers.detectFormat();
             LogcatFormatSniffer logcatSniffer = LogcatParsers.detectFormat();
 
@@ -56,32 +58,32 @@ public class FileDataSourceFactory {
                 while ((line = in.readLine()) != null) {
                     boolean parserStopped = !parser.nextLine(line);
                     if (dumpstateSniffer.isFormatDetected()) {
-                        logger.debug("Recognized " + fileName + " as a dumpstate file");
-                        return createDumpstateFileSource(fileName, dumpstateSniffer, parser, in);
+                        logger.debug("Recognized " + file + " as a dumpstate data");
+                        return createDumpstateFileSource(file, dumpstateSniffer, parser, in);
                     } else if (logcatSniffer.isFormatDetected()) {
-                        logger.debug("Recognized " + fileName + " as a logcat file");
-                        return createLogFileSource(fileName, logcatSniffer, parser, in);
+                        logger.debug("Recognized " + file + " as a logcat data");
+                        return createLogFileSource(file, logcatSniffer, parser, in);
                     }
                     if (parserStopped) {
                         break;
                     }
                 }
             }
-            throw new UnrecognizedFormatException("There are no recognizable lines in the file");
+            throw new UnrecognizedFormatException("There are no recognizable lines in the data");
         }
     }
 
-    private static ImportResult createLogFileSource(String fileName, LogcatFormatSniffer formatSniffer,
+    private static ImportResult createLogFileSource(File file, LogcatFormatSniffer formatSniffer,
             ReplayParser<?> replayParser, LineReader in)
             throws IOException {
-        return new LogfileDataSource.Builder(fileName).setParserFactory(
+        return new LogfileDataSource.Builder(file).setParserFactory(
                         handler -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, handler))
                 .readFrom(in);
     }
 
-    private static ImportResult createDumpstateFileSource(String fileName, DumpstateFormatSniffer formatSniffer,
+    private static ImportResult createDumpstateFileSource(File file, DumpstateFormatSniffer formatSniffer,
             ReplayParser<?> replayParser, LineReader in) throws IOException, UnrecognizedFormatException {
-        return new DumpstateFileDataSource.Builder(fileName).setParserFactory(
+        return new DumpstateFileDataSource.Builder(file).setParserFactory(
                 h -> FormatSniffer.createAndReplay(replayParser, formatSniffer::createParser, h)).readFrom(in);
     }
 }
