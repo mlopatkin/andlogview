@@ -75,4 +75,13 @@ public class CommandLine {
     public boolean isShouldShowUsage() {
         return shouldShowUsage;
     }
+
+    public static CommandLine fromArgs(String... args) {
+        try {
+            return new CommandLine(args);
+        } catch (IllegalConfigurationException e) {
+            // Parse error: fall back to the default command line.
+            return new CommandLine();
+        }
+    }
 }

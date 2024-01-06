@@ -19,7 +19,6 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
-import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import org.apache.log4j.Logger;
@@ -49,13 +48,7 @@ public class Main {
         Configuration.init();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
-        CommandLine commandLine;
-        try {
-            commandLine = new CommandLine(args);
-        } catch (IllegalConfigurationException e) {
-            // Parse error: fall back to the default command line.
-            commandLine = new CommandLine();
-        }
+        var commandLine = CommandLine.fromArgs(args);
         boolean isDebugMode = commandLine.isDebug();
 
         Try<?> configurationState = Try.ofCallable(() -> {
