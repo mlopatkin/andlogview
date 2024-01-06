@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Mikhail Lopatkin
+ * Copyright 2024 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * This package contains generic extensions to the Swing widgets unrelated
- * to the logviewer app implementation.
- */
-package name.mlopatkin.andlogview.widgets;
+plugins {
+    id("name.mlopatkin.andlogview.building.java-library-conventions")
+}
+
+description = "General Swing widgets"
+
+dependencies {
+    api(project(":base"))
+    api(libs.flatlaf.core)
+}
