@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2011 Mikhail Lopatkin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
-
-include("base")
-include("device")
-include("filters")
-include("logmodel")
-include("parsers")
-include("search")
-include("search:logrecord")
-include("widgets")
-
-gradle.taskGraph.whenReady {
-    allTasks.forEach { task ->
-        if (task.name.endsWith(".main()") && task is JavaExec) {
-            task.notCompatibleWithConfigurationCache("IDEA-injected JavaExec task uses PipedInputStream")
-        }
-    }
-}
+/**
+ * This package contains generic extensions to the Swing widgets unrelated
+ * to the AndLogView implementation.
+ */
+package name.mlopatkin.andlogview.widgets;
