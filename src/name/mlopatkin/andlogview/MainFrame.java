@@ -17,7 +17,7 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.filters.LogModelFilterImpl;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.logmodel.DataSource;
@@ -163,7 +163,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     @Inject
     FilterPanel filterPanel;
     @Inject
-    MainFilterController mainFilterController;
+    LogModelFilterImpl logModelFilter;
     @Inject
     FileDialog fileDialog;
     @Inject
@@ -437,7 +437,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         mainMenu.add(mnAdb);
 
         JMenu mnFilters = new JMenu("Buffers");
-        bufferMenu = new BufferFilterMenu(mnFilters, mainFilterController);
+        bufferMenu = new BufferFilterMenu(mnFilters, logModelFilter);
         mainMenu.add(mnFilters);
 
         mainFrameUi.setJMenuBar(mainMenu);

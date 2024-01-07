@@ -16,7 +16,7 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.filters.LogModelFilterImpl;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import java.awt.event.ActionEvent;
@@ -31,7 +31,7 @@ import javax.swing.JMenuItem;
 
 public final class BufferFilterMenu {
     private final JMenu parent;
-    private final MainFilterController controller;
+    private final LogModelFilterImpl bufferFilter;
 
     private final class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
         private final Buffer buffer;
@@ -44,15 +44,15 @@ public final class BufferFilterMenu {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            controller.setBufferEnabled(buffer, isSelected());
+            bufferFilter.setBufferEnabled(buffer, isSelected());
         }
     }
 
     private final EnumMap<Buffer, JMenuItem> items = new EnumMap<>(Buffer.class);
 
-    public BufferFilterMenu(JMenu parent, MainFilterController controller) {
+    public BufferFilterMenu(JMenu parent, LogModelFilterImpl bufferFilter) {
         this.parent = parent;
-        this.controller = controller;
+        this.bufferFilter = bufferFilter;
         for (Buffer buffer : Buffer.values()) {
             JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui.bufferEnabled(buffer));
             items.put(buffer, item);
@@ -63,7 +63,7 @@ public final class BufferFilterMenu {
 
     private void resetBuffers() {
         for (Entry<Buffer, JMenuItem> entry : items.entrySet()) {
-            controller.setBufferEnabled(entry.getKey(), false);
+            bufferFilter.setBufferEnabled(entry.getKey(), false);
             entry.getValue().setVisible(false);
         }
         parent.setVisible(false);
@@ -77,7 +77,7 @@ public final class BufferFilterMenu {
             JMenuItem item = items.get(buffer);
             assert item != null;
             item.setVisible(true);
-            controller.setBufferEnabled(buffer, item.isSelected());
+            bufferFilter.setBufferEnabled(buffer, item.isSelected());
         }
         parent.setVisible(anyBufferAvailable);
     }

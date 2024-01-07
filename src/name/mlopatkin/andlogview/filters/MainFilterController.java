@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
-import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
@@ -56,27 +55,25 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
     private final Preference<List<SavedFilterData>> savedFiltersPref;
-    private final LogModelFilterImpl filter;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
     private final FilterModel filterModel;
 
     @Inject
     MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
-            FilterDialogFactory dialogFactory, ConfigStorage storage, LogModelFilterImpl logModelFilter,
+            FilterDialogFactory dialogFactory, ConfigStorage storage,
             FilterModel filterModel) {
         this(filterPanelModel, indexFilterCollection, dialogFactory, storage.preference(new FilterListSerializer()),
-                logModelFilter, filterModel);
+                filterModel);
     }
 
     @VisibleForTesting
     MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
             FilterDialogFactory dialogFactory, Preference<List<SavedFilterData>> savedFiltersPref,
-            LogModelFilterImpl logModelFilter, FilterModel filterModel) {
+            FilterModel filterModel) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.savedFiltersPref = savedFiltersPref;
-        this.filter = logModelFilter;
         this.filterModel = filterModel;
 
         indexFilterCollection.asObservable().addObserver(disabledFilter -> {
@@ -92,11 +89,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         for (SavedFilterData savedFilterData : savedFiltersPref.get()) {
             savedFilterData.appendMe(this);
         }
-    }
-
-    public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
-        filter.bufferFilter.setBufferEnabled(buffer, enabled);
-        notifyFiltersChanged();
     }
 
     @Override
@@ -119,7 +111,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     }
 
     private void notifyFiltersChanged() {
-        filter.notifyObservers();
         ArrayList<SavedFilterData> serializedFilters = new ArrayList<>(filters.size());
         for (BaseToggleFilter<?> filter : filters) {
             serializedFilters.add(filter.getSerializedVersion());

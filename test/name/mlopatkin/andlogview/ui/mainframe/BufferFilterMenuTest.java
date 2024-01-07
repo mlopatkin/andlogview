@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.ui.mainframe;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.filters.LogModelFilterImpl;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.junit.Test;
@@ -31,13 +31,13 @@ import javax.swing.JMenu;
 
 public class BufferFilterMenuTest {
     private final JMenu parentMenu = new JMenu();
-    private final MainFilterController mainFilterController = Mockito.mock(MainFilterController.class);
+    private final LogModelFilterImpl bufferFilter = Mockito.mock();
 
     @Test
     public void menuIsHiddenIfNoBuffersAvailable() {
         parentMenu.setVisible(true);
 
-        BufferFilterMenu menu = new BufferFilterMenu(parentMenu, mainFilterController);
+        BufferFilterMenu menu = new BufferFilterMenu(parentMenu, bufferFilter);
         menu.setAvailableBuffers(EnumSet.noneOf(LogRecord.Buffer.class));
 
         assertFalse(parentMenu.isVisible());
@@ -47,7 +47,7 @@ public class BufferFilterMenuTest {
     public void menuIsShownIfABufferIsVisible() {
         parentMenu.setVisible(false);
 
-        BufferFilterMenu menu = new BufferFilterMenu(parentMenu, mainFilterController);
+        BufferFilterMenu menu = new BufferFilterMenu(parentMenu, bufferFilter);
         menu.setAvailableBuffers(EnumSet.of(LogRecord.Buffer.MAIN));
 
         assertTrue(parentMenu.isVisible());

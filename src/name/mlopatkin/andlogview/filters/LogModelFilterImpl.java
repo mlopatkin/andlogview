@@ -31,10 +31,10 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 @MainFrameScoped
-class LogModelFilterImpl implements LogModelFilter {
-    final FilterChain filterChain = new FilterChain();
-    final LogRecordHighlighter highlighter = new LogRecordHighlighter();
-    final LogBufferFilter bufferFilter = new LogBufferFilter();
+public class LogModelFilterImpl implements LogModelFilter {
+    private final FilterChain filterChain = new FilterChain();
+    private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
+    private final LogBufferFilter bufferFilter = new LogBufferFilter();
 
     private final Subject<Observer> observers = new Subject<>();
 
@@ -42,6 +42,27 @@ class LogModelFilterImpl implements LogModelFilter {
     LogModelFilterImpl(FilterModel model) {
         model.asObservable().addObserver(filterChain.createObserver(Function.identity()));
         model.asObservable().addObserver(highlighter.createObserver(f -> (ColoringFilter) f));
+        model.asObservable().addObserver(new FilterModel.Observer() {
+            @Override
+            public void onFilterAdded(Filter newFilter) {
+                notifyObservers();
+            }
+
+            @Override
+            public void onFilterRemoved(Filter removedFilter) {
+                notifyObservers();
+            }
+
+            @Override
+            public void onFilterReplaced(Filter oldFilter, Filter newFilter) {
+                notifyObservers();
+            }
+        });
+    }
+
+    public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
+        bufferFilter.setBufferEnabled(buffer, enabled);
+        notifyObservers();
     }
 
     @Override
@@ -59,7 +80,7 @@ class LogModelFilterImpl implements LogModelFilter {
         return observers.asObservable();
     }
 
-    public void notifyObservers() {
+    private void notifyObservers() {
         for (Observer o : observers) {
             o.onModelChange();
         }
