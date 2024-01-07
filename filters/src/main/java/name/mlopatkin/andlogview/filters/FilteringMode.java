@@ -15,6 +15,10 @@
  */
 package name.mlopatkin.andlogview.filters;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Function;
+
 public enum FilteringMode {
     /**
      * Show only matching records.
@@ -59,5 +63,9 @@ public enum FilteringMode {
 
     public static FilteringMode getDefaultMode() {
         return HIGHLIGHT;
+    }
+
+    public Function<Filter, @Nullable Filter> filterMode() {
+        return f -> equals(f.getMode()) ? f : null;
     }
 }

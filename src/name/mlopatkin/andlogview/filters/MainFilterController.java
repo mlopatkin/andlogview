@@ -32,7 +32,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -66,12 +65,9 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             }
         });
 
-        filterModel.asObservable().addObserver(indexFilterCollection.createObserver(Function.identity()));
-        for (var filter : filterModel.getFilters()) {
-            if (indexFilterCollection.supportsMode(filter.getMode())) {
-                indexFilterCollection.addFilter(filter);
-            }
+        indexFilterCollection.setModel(filterModel);
 
+        for (var filter : filterModel.getFilters()) {
             if (filter instanceof FilterFromDialog filterFromDialog) {
                 addNewDialogFilter(filterFromDialog);
             }

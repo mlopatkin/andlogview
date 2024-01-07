@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
-import name.mlopatkin.andlogview.filters.ColoringFilter;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.FilterModel;
@@ -33,7 +32,6 @@ import com.google.common.annotations.VisibleForTesting;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -48,16 +46,8 @@ public class LogModelFilterImpl implements LogModelFilter {
     @Inject
     @VisibleForTesting
     public LogModelFilterImpl(FilterModel model) {
-        model.asObservable().addObserver(filterChain.createObserver(Function.identity()));
-        model.asObservable().addObserver(highlighter.createObserver(f -> (ColoringFilter) f));
-        for (Filter filter : model.getFilters()) {
-            if (filterChain.supportsMode(filter.getMode())) {
-                filterChain.addFilter(filter);
-            }
-            if (highlighter.supportsMode(filter.getMode())) {
-                highlighter.addFilter((ColoringFilter) filter);
-            }
-        }
+        filterChain.setModel(model);
+        highlighter.setModel(model);
 
         model.asObservable().addObserver(new FilterModel.Observer() {
             @Override

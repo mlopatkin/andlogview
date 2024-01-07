@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.function.Function;
 
 public interface FilterCollection<T extends Filter> {
@@ -23,42 +25,40 @@ public interface FilterCollection<T extends Filter> {
 
     void removeFilter(T filter);
 
-    boolean supportsMode(FilteringMode mode);
-
     default void replaceFilter(T oldFilter, T newFilter) {
         removeFilter(oldFilter);
         addFilter(newFilter);
     }
 
-    default FilterModel.Observer createObserver(Function<? super Filter, ? extends T> filterMapper) {
-        return new FilterModel.Observer() {
+    Function<? super Filter, ? extends @Nullable T> createObserverTransformer();
+
+    default FilterModel.Observer setModel(FilterModel model) {
+        var transformer = createObserverTransformer();
+        for (var filter : model.getFilters()) {
+            var transformed = transformer.apply(filter);
+            if (transformed != null) {
+                addFilter(transformed);
+            }
+        }
+
+        var observer = new TransformingObserver<T>(transformer) {
             @Override
-            public void onFilterAdded(FilterModel model, Filter newFilter) {
-                if (supportsMode(newFilter.getMode())) {
-                    addFilter(filterMapper.apply(newFilter));
-                }
+            protected void onMyFilterAdded(FilterModel model, T newFilter) {
+                addFilter(newFilter);
             }
 
             @Override
-            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
-                if (supportsMode(removedFilter.getMode())) {
-                    removeFilter(filterMapper.apply(removedFilter));
-                }
+            protected void onMyFilterRemoved(FilterModel model, T removedFilter) {
+                removeFilter(removedFilter);
             }
 
             @Override
-            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-                var hadOldFilter = supportsMode(oldFilter.getMode());
-                var willHaveNewFilter = supportsMode(newFilter.getMode());
-
-                if (hadOldFilter && willHaveNewFilter) {
-                    replaceFilter(filterMapper.apply(oldFilter), filterMapper.apply(newFilter));
-                } else if (hadOldFilter) {
-                    removeFilter(filterMapper.apply(oldFilter));
-                } else if (willHaveNewFilter) {
-                    addFilter(filterMapper.apply(newFilter));
-                }
+            protected void onMyFilterReplaced(FilterModel model, T oldFilter, T newFilter) {
+                replaceFilter(oldFilter, newFilter);
             }
         };
+
+        model.asObservable().addObserver(observer);
+        return observer;
     }
 }

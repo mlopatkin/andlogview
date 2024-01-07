@@ -23,8 +23,11 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -44,8 +47,8 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     }
 
     @Override
-    public boolean supportsMode(FilteringMode mode) {
-        return mode == FilteringMode.WINDOW;
+    public Function<? super Filter, ? extends @Nullable Filter> createObserverTransformer() {
+        return FilteringMode.WINDOW.filterMode();
     }
 
     @Override

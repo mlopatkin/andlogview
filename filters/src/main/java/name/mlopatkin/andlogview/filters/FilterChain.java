@@ -17,9 +17,12 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Function;
 
 /**
  * Manages a list of filters and composes them based on their type. At first, we hide anything that matches any of the
@@ -46,8 +49,18 @@ public class FilterChain implements FilterCollection<Filter> {
     }
 
     @Override
+    public Function<? super Filter, ? extends @Nullable Filter> createObserverTransformer() {
+        return filter -> {
+            var mode = filter.getMode();
+            if (FilteringMode.SHOW.equals(mode) || FilteringMode.HIDE.equals(mode)) {
+                return filter;
+            }
+            return null;
+        };
+    }
+
+    @Override
     public void addFilter(Filter filter) {
-        Preconditions.checkArgument(supportsMode(filter.getMode()));
         if (filter.isEnabled()) {
             filters.put(filter.getMode(), filter);
         }
@@ -62,8 +75,4 @@ public class FilterChain implements FilterCollection<Filter> {
         filters.remove(filter.getMode(), filter);
     }
 
-    @Override
-    public boolean supportsMode(FilteringMode mode) {
-        return mode == FilteringMode.SHOW || mode == FilteringMode.HIDE;
-    }
 }
