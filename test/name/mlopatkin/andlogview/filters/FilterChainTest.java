@@ -15,6 +15,8 @@
  */
 package name.mlopatkin.andlogview.filters;
 
+import static name.mlopatkin.andlogview.filters.FilteringMode.HIDE;
+import static name.mlopatkin.andlogview.filters.FilteringMode.SHOW;
 import static name.mlopatkin.andlogview.test.TestData.MATCH_ALL;
 import static name.mlopatkin.andlogview.test.TestData.MATCH_FIRST;
 import static name.mlopatkin.andlogview.test.TestData.RECORD1;
@@ -47,38 +49,38 @@ public class FilterChainTest {
 
     @Test
     public void testHide() throws Exception {
-        chain.addFilter(FilteringMode.HIDE, filter(MATCH_FIRST));
+        chain.addFilter(hide(MATCH_FIRST));
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testShow() throws Exception {
-        chain.addFilter(FilteringMode.SHOW, filter(MATCH_FIRST));
+        chain.addFilter(show(MATCH_FIRST));
         assertTrue(chain.shouldShow(RECORD1));
         assertFalse(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testHidePrecedesShow() throws Exception {
-        chain.addFilter(FilteringMode.HIDE, filter(MATCH_ALL));
-        chain.addFilter(FilteringMode.SHOW, filter(MATCH_ALL));
+        chain.addFilter(hide(MATCH_ALL));
+        chain.addFilter(show(MATCH_ALL));
         assertFalse(chain.shouldShow(RECORD1));
         assertFalse(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testRemoveFilter() throws Exception {
-        chain.addFilter(FilteringMode.HIDE, filter(MATCH_ALL));
-        chain.removeFilter(FilteringMode.HIDE, filter(MATCH_ALL));
+        chain.addFilter(hide(MATCH_ALL));
+        chain.removeFilter(hide(MATCH_ALL));
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testReplace() throws Exception {
-        chain.addFilter(FilteringMode.HIDE, filter(MATCH_ALL));
-        chain.replaceFilter(FilteringMode.HIDE, filter(MATCH_ALL), filter(MATCH_FIRST));
+        chain.addFilter(hide(MATCH_ALL));
+        chain.replaceFilter(hide(MATCH_ALL), hide(MATCH_FIRST));
 
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
@@ -86,24 +88,31 @@ public class FilterChainTest {
 
     @Test
     public void testSetEnabled() throws Exception {
-        chain.addFilter(FilteringMode.HIDE, filter(MATCH_FIRST));
-        chain.setFilterEnabled(FilteringMode.HIDE, filter(MATCH_FIRST), false);
+        chain.addFilter(hide(MATCH_FIRST));
+        chain.setFilterEnabled(hide(MATCH_FIRST), false);
 
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
-        chain.setFilterEnabled(FilteringMode.HIDE, filter(MATCH_FIRST), true);
+        chain.setFilterEnabled(hide(MATCH_FIRST), true);
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
 
-    private static Filter filter(Predicate<LogRecord> p) {
+    private static Filter show(Predicate<LogRecord> p) {
+        return filter(SHOW, p);
+    }
+
+    private static Filter hide(Predicate<LogRecord> p) {
+        return filter(HIDE, p);
+    }
+
+    private static Filter filter(FilteringMode mode, Predicate<LogRecord> p) {
         class StubFilter implements Filter {
             final Predicate<LogRecord> predicate = p;
 
             @Override
             public FilteringMode getMode() {
-                // TODO(mlopatkin) wut??
-                return FilteringMode.SHOW;
+                return mode;
             }
 
             @Override

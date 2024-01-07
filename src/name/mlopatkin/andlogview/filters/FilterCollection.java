@@ -17,20 +17,20 @@
 package name.mlopatkin.andlogview.filters;
 
 public interface FilterCollection<T extends Filter> {
-    void addFilter(FilteringMode mode, T filter);
+    void addFilter(T filter);
 
-    void removeFilter(FilteringMode mode, T filter);
+    void removeFilter(T filter);
 
-    default void setFilterEnabled(FilteringMode mode, T filter, boolean enabled) {
+    default void setFilterEnabled(T filter, boolean enabled) {
         if (enabled) {
-            addFilter(mode, filter);
+            addFilter(filter);
         } else {
-            removeFilter(mode, filter);
+            removeFilter(filter);
         }
     }
 
-    default void replaceFilter(FilteringMode mode, T oldFilter, T newFilter) {
-        removeFilter(mode, oldFilter);
-        addFilter(mode, newFilter);
+    default void replaceFilter(T oldFilter, T newFilter) {
+        removeFilter(oldFilter);
+        addFilter(newFilter);
     }
 }

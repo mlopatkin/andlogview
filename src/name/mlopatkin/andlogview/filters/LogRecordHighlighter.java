@@ -40,24 +40,24 @@ class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
     private final List<FilterInfo> reversedView = Lists.reverse(filters);
 
     @Override
-    public void addFilter(FilteringMode mode, ColoringFilter filter) {
+    public void addFilter(ColoringFilter filter) {
         filters.add(new FilterInfo(filter, true));
     }
 
     @Override
-    public void removeFilter(FilteringMode mode, ColoringFilter filter) {
+    public void removeFilter(ColoringFilter filter) {
         filters.remove(findInfoForFilter(filter));
     }
 
     @Override
-    public void setFilterEnabled(FilteringMode mode, ColoringFilter filter, boolean enable) {
+    public void setFilterEnabled(ColoringFilter filter, boolean enable) {
         FilterInfo info = findInfoForFilter(filter);
         assert info != null;
         info.isEnabled = enable;
     }
 
     @Override
-    public void replaceFilter(FilteringMode mode, ColoringFilter oldFilter, ColoringFilter newFilter) {
+    public void replaceFilter(ColoringFilter oldFilter, ColoringFilter newFilter) {
         FilterInfo info = findInfoForFilter(oldFilter);
         assert info != null;
         info.filter = newFilter;

@@ -169,14 +169,14 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         public void setEnabled(boolean isEnabled) {
             if (isEnabled != this.isEnabled) {
                 this.isEnabled = isEnabled;
-                collection.setFilterEnabled(mode, filter, isEnabled);
+                collection.setFilterEnabled(filter, isEnabled);
                 notifyFiltersChanged();
             }
         }
 
         @Override
         public void delete() {
-            collection.removeFilter(mode, filter);
+            collection.removeFilter(filter);
             filters.remove(this);
             notifyFiltersChanged();
         }
@@ -196,18 +196,18 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             filters.set(myPos, replacement);
             filterPanelModel.replaceFilter(this, replacement);
             if (collection.equals(replacement.collection) && mode == replacement.mode) {
-                collection.replaceFilter(mode, filter, replacement.filter);
-                collection.setFilterEnabled(mode, replacement.filter, replacement.isEnabled);
+                collection.replaceFilter(filter, replacement.filter);
+                collection.setFilterEnabled(replacement.filter, replacement.isEnabled);
             } else {
-                collection.removeFilter(mode, filter);
+                collection.removeFilter(filter);
                 replacement.addToCollection();
             }
             notifyFiltersChanged();
         }
 
         public BaseToggleFilter<T> addToCollection() {
-            collection.addFilter(mode, filter);
-            collection.setFilterEnabled(mode, filter, isEnabled);
+            collection.addFilter(filter);
+            collection.setFilterEnabled(filter, isEnabled);
             return this;
         }
 

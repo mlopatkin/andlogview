@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
-import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
@@ -44,19 +43,19 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     }
 
     @Override
-    public void addFilter(FilteringMode mode, Filter filter) {
+    public void addFilter(Filter filter) {
         controllerMap.put(filter, controllerFactory.create(this, filter));
     }
 
     @Override
-    public void setFilterEnabled(FilteringMode mode, Filter filter, boolean enabled) {
+    public void setFilterEnabled(Filter filter, boolean enabled) {
         IndexFilterController filterController = controllerMap.get(filter);
         assert filterController != null;
         filterController.setEnabled(enabled);
     }
 
     @Override
-    public void removeFilter(FilteringMode mode, Filter filter) {
+    public void removeFilter(Filter filter) {
         controllerMap.remove(filter).destroy();
     }
 
