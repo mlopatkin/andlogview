@@ -39,6 +39,7 @@ plugins {
 dependencies {
     implementation(project(":base"))
     implementation(project(":device"))
+    implementation(project(":filters"))
     implementation(project(":logmodel"))
     implementation(project(":parsers"))
     implementation(project(":search"))

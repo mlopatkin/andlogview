@@ -16,11 +16,7 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-
-import java.util.function.Predicate;
-
-public interface FilterCollection<T extends Predicate<LogRecord>> {
+public interface FilterCollection<T extends Filter> {
     void addFilter(FilteringMode mode, T filter);
 
     void removeFilter(FilteringMode mode, T filter);

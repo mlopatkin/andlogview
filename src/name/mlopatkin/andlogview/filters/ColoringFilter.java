@@ -16,13 +16,15 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
-import java.util.function.Predicate;
 
-public interface ColoringFilter extends Predicate<LogRecord> {
+public interface ColoringFilter extends Filter {
+    @Override
+    default FilteringMode getMode() {
+        return FilteringMode.HIGHLIGHT;
+    }
+
     @Nullable Color getHighlightColor();
 }

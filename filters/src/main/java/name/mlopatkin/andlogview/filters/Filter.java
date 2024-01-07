@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2024 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-rootProject.name = "andlogview"
+package name.mlopatkin.andlogview.filters;
 
-include("base")
-include("device")
-include("filters")
-include("logmodel")
-include("parsers")
-include("search")
-include("search:logrecord")
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
-gradle.taskGraph.whenReady {
-    allTasks.forEach { task ->
-        if (task.name.endsWith(".main()") && task is JavaExec) {
-            task.notCompatibleWithConfigurationCache("IDEA-injected JavaExec task uses PipedInputStream")
-        }
-    }
+import java.util.function.Predicate;
+
+/**
+ * A filter for the log.
+ */
+public interface Filter extends Predicate<LogRecord> {
+    /**
+     * The filtering mode used by this filter.
+     *
+     * @return the mode
+     */
+    FilteringMode getMode();
 }

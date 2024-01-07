@@ -206,6 +206,7 @@ public class FilterFromDialog implements ColoringFilter {
         return this;
     }
 
+    @Override
     public FilteringMode getMode() {
         assert mode != null;
         return mode;

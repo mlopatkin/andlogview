@@ -21,9 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 
-import java.util.Set;
-import java.util.function.Predicate;
-
 /**
  * Manages a list of filters and composes them based on their type. At first, we hide anything that matches any of the
  * {@link FilteringMode#HIDE}. Then we hide anything that doesn't match at least one of the {@link
@@ -31,16 +28,16 @@ import java.util.function.Predicate;
  * <p/>
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
-public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
-    private final SetMultimap<FilteringMode, Predicate<LogRecord>> filters =
+public class FilterChain implements FilterCollection<Filter> {
+    private final SetMultimap<FilteringMode, Filter> filters =
             MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build();
 
     private boolean include(FilteringMode mode, LogRecord record) {
-        Set<Predicate<LogRecord>> filtersForMode = filters.get(mode);
+        var filtersForMode = filters.get(mode);
         if (filtersForMode.isEmpty()) {
             return mode.getDefaultResult();
         }
-        for (Predicate<LogRecord> filter : filtersForMode) {
+        for (var filter : filtersForMode) {
             if (filter.test(record)) {
                 return true;
             }
@@ -49,8 +46,8 @@ public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
     }
 
     @Override
-    public void addFilter(FilteringMode mode, Predicate<LogRecord> filter) {
-        Preconditions.checkArgument(mode == FilteringMode.SHOW || mode == FilteringMode.HIDE);
+    public void addFilter(FilteringMode mode, Filter filter) {
+        Preconditions.checkArgument(isSupportedMode(mode));
         filters.put(mode, filter);
     }
 
@@ -59,7 +56,11 @@ public class FilterChain implements FilterCollection<Predicate<LogRecord>> {
     }
 
     @Override
-    public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
+    public void removeFilter(FilteringMode mode, Filter filter) {
         filters.remove(mode, filter);
+    }
+
+    private boolean isSupportedMode(FilteringMode mode) {
+        return mode == FilteringMode.SHOW || mode == FilteringMode.HIDE;
     }
 }

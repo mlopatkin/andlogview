@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.indexfilter;
 
+import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -28,7 +29,7 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-public class IndexFilterCollection implements FilterCollection<Predicate<LogRecord>> {
+public class IndexFilterCollection implements FilterCollection<Filter> {
     public interface Observer {
         void onFilterDisabled(Predicate<LogRecord> filter);
     }
@@ -43,19 +44,19 @@ public class IndexFilterCollection implements FilterCollection<Predicate<LogReco
     }
 
     @Override
-    public void addFilter(FilteringMode mode, Predicate<LogRecord> filter) {
+    public void addFilter(FilteringMode mode, Filter filter) {
         controllerMap.put(filter, controllerFactory.create(this, filter));
     }
 
     @Override
-    public void setFilterEnabled(FilteringMode mode, Predicate<LogRecord> filter, boolean enabled) {
+    public void setFilterEnabled(FilteringMode mode, Filter filter, boolean enabled) {
         IndexFilterController filterController = controllerMap.get(filter);
         assert filterController != null;
         filterController.setEnabled(enabled);
     }
 
     @Override
-    public void removeFilter(FilteringMode mode, Predicate<LogRecord> filter) {
+    public void removeFilter(FilteringMode mode, Filter filter) {
         controllerMap.remove(filter).destroy();
     }
 
