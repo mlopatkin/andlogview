@@ -84,7 +84,8 @@ public class MainFilterControllerTest {
     @Captor
     ArgumentCaptor<PanelFilter> panelFilterCaptor;
 
-    final LogModelFilterImpl filterImpl = new LogModelFilterImpl();
+    final FilterModel filterModel = new FilterModelImpl();
+    final LogModelFilterImpl filterImpl = new LogModelFilterImpl(filterModel);
 
     @MonotonicNonNull InOrder order;
 
@@ -98,7 +99,7 @@ public class MainFilterControllerTest {
     @Test
     public void testInitialState() throws Exception {
         new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl, filterModel);
 
         verify(indexFilterCollectionObservers).addObserver(any(IndexFilterCollection.Observer.class));
 
@@ -120,7 +121,7 @@ public class MainFilterControllerTest {
         // However, if you change filter's mode from highlight to other and back - it becomes last in the highlight
         // chain. Its button however stays in the same place.
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl, filterModel);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog colorer1 = createColoringFilter(Color.BLACK, MATCH_ALL);
@@ -141,7 +142,7 @@ public class MainFilterControllerTest {
     @Test
     public void testSavingAndInitializngFromSaved() throws Exception {
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl, filterModel);
 
         order = inOrder(dialogFactory, filterPanelModel);
 
@@ -149,7 +150,8 @@ public class MainFilterControllerTest {
         createFilterWithDialog(controller, colorer);
 
         filterPanelModel = mock(FilterPanelModel.class);
-        new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+        new MainFilterController(filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl,
+                filterModel);
 
         verify(filterPanelModel).addFilter(Mockito.any());
         assertEquals(Color.BLACK, filterImpl.getHighlightColor(RECORD2));
@@ -158,7 +160,7 @@ public class MainFilterControllerTest {
     @Test
     public void editFilterTwiceDoesntCrash() {
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl, filterModel);
 
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog initialFilter = createColoringFilter(Color.BLACK, MATCH_ALL);
@@ -177,7 +179,7 @@ public class MainFilterControllerTest {
     @Test
     public void editDisabledFilterKeepsItDisabled() {
         MainFilterController controller = new MainFilterController(
-                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl, filterModel);
         order = inOrder(dialogFactory, filterPanelModel);
         FilterFromDialog initialFilter = createColoringFilter(Color.BLACK, MATCH_ALL);
         PanelFilter initialPanel = createFilterWithDialog(controller, initialFilter);

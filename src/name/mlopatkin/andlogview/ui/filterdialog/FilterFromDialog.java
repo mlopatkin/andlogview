@@ -265,12 +265,13 @@ public class FilterFromDialog implements ColoringFilter {
                 && Objects.equals(messagePattern, that.messagePattern)
                 && priority == that.priority
                 && mode == that.mode
-                && Objects.equals(highlightColor, that.highlightColor);
+                && Objects.equals(highlightColor, that.highlightColor)
+                && enabled == that.enabled;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor);
+        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor, enabled);
     }
 
     @Override
@@ -283,6 +284,7 @@ public class FilterFromDialog implements ColoringFilter {
                 .add("apps", apps)
                 .add("priority", priority)
                 .add("highlightColor", highlightColor)
+                .add("enabled", enabled)
                 .toString();
     }
 

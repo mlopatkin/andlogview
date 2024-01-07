@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
+import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
@@ -40,6 +41,11 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     @Inject
     public IndexFilterCollection(IndexFilterController.Factory controllerFactory) {
         this.controllerFactory = controllerFactory;
+    }
+
+    @Override
+    public boolean supportsMode(FilteringMode mode) {
+        return mode == FilteringMode.WINDOW;
     }
 
     @Override

@@ -26,6 +26,7 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -38,7 +39,10 @@ class LogModelFilterImpl implements LogModelFilter {
     private final Subject<Observer> observers = new Subject<>();
 
     @Inject
-    LogModelFilterImpl() {}
+    LogModelFilterImpl(FilterModel model) {
+        model.asObservable().addObserver(filterChain.createObserver(Function.identity()));
+        model.asObservable().addObserver(highlighter.createObserver(f -> (ColoringFilter) f));
+    }
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {

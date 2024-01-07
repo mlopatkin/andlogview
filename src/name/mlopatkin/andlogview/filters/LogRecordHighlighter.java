@@ -30,6 +30,11 @@ class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
     private final List<ColoringFilter> reversedView = Lists.reverse(filters);
 
     @Override
+    public boolean supportsMode(FilteringMode mode) {
+        return mode == FilteringMode.HIGHLIGHT;
+    }
+
+    @Override
     public void addFilter(ColoringFilter filter) {
         filters.add(filter);
     }

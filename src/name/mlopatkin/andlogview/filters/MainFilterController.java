@@ -39,6 +39,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -54,28 +55,29 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
-    private final IndexFilterCollection indexFilterCollection;
     private final Preference<List<SavedFilterData>> savedFiltersPref;
     private final LogModelFilterImpl filter;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
+    private final FilterModel filterModel;
 
     @Inject
     MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
-            FilterDialogFactory dialogFactory, ConfigStorage storage, LogModelFilterImpl logModelFilter) {
+            FilterDialogFactory dialogFactory, ConfigStorage storage, LogModelFilterImpl logModelFilter,
+            FilterModel filterModel) {
         this(filterPanelModel, indexFilterCollection, dialogFactory, storage.preference(new FilterListSerializer()),
-                logModelFilter);
+                logModelFilter, filterModel);
     }
 
     @VisibleForTesting
     MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
             FilterDialogFactory dialogFactory, Preference<List<SavedFilterData>> savedFiltersPref,
-            LogModelFilterImpl logModelFilter) {
+            LogModelFilterImpl logModelFilter, FilterModel filterModel) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
-        this.indexFilterCollection = indexFilterCollection;
         this.savedFiltersPref = savedFiltersPref;
         this.filter = logModelFilter;
+        this.filterModel = filterModel;
 
         indexFilterCollection.asObservable().addObserver(disabledFilter -> {
             for (BaseToggleFilter<?> registeredFilter : filters) {
@@ -84,6 +86,8 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
                 }
             }
         });
+
+        filterModel.asObservable().addObserver(indexFilterCollection.createObserver(Function.identity()));
 
         for (SavedFilterData savedFilterData : savedFiltersPref.get()) {
             savedFilterData.appendMe(this);
@@ -103,7 +107,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     }
 
     private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
-        return new DialogPanelFilter(getFilterCollectionForFilter(filter), filter);
+        return new DialogPanelFilter(filter);
     }
 
     private DialogPanelFilter addNewDialogFilter(FilterFromDialog filter) {
@@ -123,14 +127,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         savedFiltersPref.set(serializedFilters);
     }
 
-    private FilterCollection<? super FilterFromDialog> getFilterCollectionForFilter(FilterFromDialog filter) {
-        return switch (filter.getMode()) {
-            case SHOW, HIDE -> this.filter.filterChain;
-            case HIGHLIGHT -> this.filter.highlighter;
-            case WINDOW -> indexFilterCollection;
-        };
-    }
-
     @Override
     public void addFilter(FilterFromDialog filter) {
         addNewDialogFilter(filter);
@@ -147,13 +143,9 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
      * Base class for {@link PanelFilter} wrappers for the DialogFilters and others.
      */
     private abstract class BaseToggleFilter<T extends Filter> implements PanelFilter {
-        protected final FilteringMode mode;
-        protected final FilterCollection<? super T> collection;
         protected final T filter;
 
-        protected BaseToggleFilter(FilterCollection<? super T> collection, FilteringMode mode, T filter) {
-            this.collection = collection;
-            this.mode = mode;
+        protected BaseToggleFilter(T filter) {
             this.filter = filter;
         }
 
@@ -164,7 +156,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
         @Override
         public void delete() {
-            collection.removeFilter(filter);
+            filterModel.removeFilter(filter);
             filters.remove(this);
             notifyFiltersChanged();
         }
@@ -182,17 +174,12 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             }
             filters.set(myPos, replacement);
             filterPanelModel.replaceFilter(this, replacement);
-            if (collection.equals(replacement.collection) && mode == replacement.mode) {
-                collection.replaceFilter(filter, replacement.filter);
-            } else {
-                collection.removeFilter(filter);
-                replacement.addToCollection();
-            }
+            filterModel.replaceFilter(filter, replacement.filter);
             notifyFiltersChanged();
         }
 
         public BaseToggleFilter<T> addToCollection() {
-            collection.addFilter(filter);
+            filterModel.addFilter(filter);
             return this;
         }
 
@@ -202,14 +189,14 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     private class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
         private @Nullable FilterDialogHandle dialogHandle;
 
-        protected DialogPanelFilter(FilterCollection<? super FilterFromDialog> collection, FilterFromDialog filter) {
-            super(collection, filter.getMode(), filter);
+        protected DialogPanelFilter(FilterFromDialog filter) {
+            super(filter);
         }
 
         @Override
         public void setEnabled(boolean enabled) {
             if (filter.isEnabled() != enabled) {
-                replaceMeWith(new DialogPanelFilter(collection, enabled ? filter.enabled() : filter.disabled()));
+                replaceMeWith(new DialogPanelFilter(enabled ? filter.enabled() : filter.disabled()));
             }
         }
 

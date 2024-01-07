@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * Provides LogModelFilter that can be used with MainFilterController.
@@ -30,4 +31,10 @@ public abstract class FilterModule {
     @Binds
     @MainFrameScoped
     abstract LogModelFilter getModelFilter(LogModelFilterImpl impl);
+
+    @Provides
+    @MainFrameScoped
+    static FilterModel getFiltersModel() {
+        return new FilterModelImpl();
+    }
 }

@@ -47,7 +47,7 @@ public class FilterChain implements FilterCollection<Filter> {
 
     @Override
     public void addFilter(Filter filter) {
-        Preconditions.checkArgument(isSupportedMode(filter.getMode()));
+        Preconditions.checkArgument(supportsMode(filter.getMode()));
         if (filter.isEnabled()) {
             filters.put(filter.getMode(), filter);
         }
@@ -62,7 +62,8 @@ public class FilterChain implements FilterCollection<Filter> {
         filters.remove(filter.getMode(), filter);
     }
 
-    private boolean isSupportedMode(FilteringMode mode) {
+    @Override
+    public boolean supportsMode(FilteringMode mode) {
         return mode == FilteringMode.SHOW || mode == FilteringMode.HIDE;
     }
 }
