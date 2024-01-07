@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class FilterModelImpl implements FilterModel {
+class FilterModelImpl implements FilterModel {
     private final Subject<Observer> observers = new Subject<>();
     private final Map<Filter, Integer> filterPositions = new HashMap<>();
     private final List<Filter> filters = new ArrayList<>();

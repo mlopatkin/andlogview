@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.filters;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A complete set of log filters.
@@ -97,7 +96,14 @@ public interface FilterModel {
      *
      * @return the list of currently available filters
      */
-    default Collection<? extends Filter> getFilters() {
-        return Collections.emptyList();
+    Collection<? extends Filter> getFilters();
+
+    /**
+     * Creates a new, empty FilterModel.
+     *
+     * @return the new FilterModel
+     */
+    static FilterModel create() {
+        return new FilterModelImpl();
     }
 }

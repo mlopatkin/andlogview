@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import name.mlopatkin.andlogview.filters.ColoringToggleFilter;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
-import name.mlopatkin.andlogview.filters.FilterModelImpl;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.ToggleFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -110,7 +109,7 @@ class LogModelFilterImplTest {
     }
 
     private FilterModel createModel(Filter... filters) {
-        var model = new FilterModelImpl();
+        var model = FilterModel.create();
         for (var filter : filters) {
             model.addFilter(filter);
         }
