@@ -65,8 +65,7 @@ public class FilterPanelModel {
         }
     }
 
-    // TODO split into public and internal methods
-    public void setFilterEnabled(PanelFilterView filter, boolean enabled) {
+    void setFilterEnabled(PanelFilterView filter, boolean enabled) {
         getPanelFilterForView(filter).setEnabled(enabled);
     }
 

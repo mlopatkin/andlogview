@@ -165,11 +165,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             int myPos = filters.indexOf(this);
             if (myPos == -1) {
                 // Ignore edit result if |this| filter isn't alive anymore. This can happen if the editor was opened
-                // twice for the same filter. If both edits complete successfully then second one won't find 'this'
-                // here, because it was replaced with the result of the first edit. Not so much can be done in this
-                // case. Prior to 0.19 the result of the second edit was added as a new filter, 0.19 just crashes.
-                // TODO(mlopatkin) proper solution is to disallow opening a second editor but this is much more involved
-                //  fix which I don't like to push within 0.20 timeframe.
+                // twice for the same filter or if the filter was deleted while editor was open.
                 return;
             }
             filters.set(myPos, replacement);
