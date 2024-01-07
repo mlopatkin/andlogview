@@ -147,13 +147,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         buttonByFilter.put(newFilter, button);
     }
 
-    @Override
-    public void onFilterEnabled(PanelFilterView filter, boolean enabled) {
-        FilterButton button = buttonByFilter.get(filter);
-        assert button != null;
-        button.setSelected(enabled);
-    }
-
     private void computeButtonIndices() {
         Rectangle viewportRect = contentViewport.getBounds();
         Rectangle contentsRect = content.getBounds();

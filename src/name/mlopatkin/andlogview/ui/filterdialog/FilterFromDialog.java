@@ -27,6 +27,7 @@ import name.mlopatkin.andlogview.utils.MorePredicates;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -85,8 +86,26 @@ public class FilterFromDialog implements ColoringFilter {
 
     private transient @MonotonicNonNull Predicate<LogRecord> compiledPredicate;
     private transient @MonotonicNonNull String tooltipRepresentation;
+    private transient boolean enabled = true;
 
     public FilterFromDialog() {}
+
+    private FilterFromDialog(FilterFromDialog f) {
+        tags = copy(f.tags);
+        pids = copy(f.pids);
+        apps = copy(f.apps);
+        messagePattern = f.messagePattern;
+        priority = f.priority;
+        mode = f.mode;
+        highlightColor = f.highlightColor;
+        compiledPredicate = f.compiledPredicate;
+        tooltipRepresentation = f.tooltipRepresentation;
+        enabled = f.enabled;
+    }
+
+    private static <T> @Nullable List<T> copy(@Nullable List<T> original) {
+        return original != null ? ImmutableList.copyOf(original) : null;
+    }
 
     public void initialize() throws RequestCompilationException {
         assert compiledPredicate == null;
@@ -265,5 +284,25 @@ public class FilterFromDialog implements ColoringFilter {
                 .add("priority", priority)
                 .add("highlightColor", highlightColor)
                 .toString();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public FilterFromDialog setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
+    @Override
+    public FilterFromDialog enabled() {
+        return enabled ? this : new FilterFromDialog(this).setEnabled(true);
+    }
+
+    @Override
+    public FilterFromDialog disabled() {
+        return enabled ? new FilterFromDialog(this).setEnabled(false) : this;
     }
 }

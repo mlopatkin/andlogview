@@ -96,12 +96,10 @@ public class FilterPanelModelTest {
         model.setFilterEnabled(filter, true);
 
         verify(filter).setEnabled(true);
-        verify(listener).onFilterEnabled(filter, true);
 
         model.setFilterEnabled(filter, false);
 
         verify(filter).setEnabled(false);
-        verify(listener).onFilterEnabled(filter, false);
     }
 
     @Test

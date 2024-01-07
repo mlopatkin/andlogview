@@ -27,4 +27,10 @@ public interface ColoringFilter extends Filter {
     }
 
     @Nullable Color getHighlightColor();
+
+    @Override
+    ColoringFilter enabled();
+
+    @Override
+    ColoringFilter disabled();
 }

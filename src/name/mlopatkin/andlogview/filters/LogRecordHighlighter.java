@@ -26,56 +26,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
-    private static class FilterInfo {
-        public ColoringFilter filter;
-        public boolean isEnabled;
-
-        FilterInfo(ColoringFilter filter, boolean isEnabled) {
-            this.filter = filter;
-            this.isEnabled = isEnabled;
-        }
-    }
-
-    private final List<FilterInfo> filters = new ArrayList<>();
-    private final List<FilterInfo> reversedView = Lists.reverse(filters);
+    private final List<ColoringFilter> filters = new ArrayList<>();
+    private final List<ColoringFilter> reversedView = Lists.reverse(filters);
 
     @Override
     public void addFilter(ColoringFilter filter) {
-        filters.add(new FilterInfo(filter, true));
+        filters.add(filter);
     }
 
     @Override
     public void removeFilter(ColoringFilter filter) {
-        filters.remove(findInfoForFilter(filter));
-    }
-
-    @Override
-    public void setFilterEnabled(ColoringFilter filter, boolean enable) {
-        FilterInfo info = findInfoForFilter(filter);
-        assert info != null;
-        info.isEnabled = enable;
+        filters.remove(filter);
     }
 
     @Override
     public void replaceFilter(ColoringFilter oldFilter, ColoringFilter newFilter) {
-        FilterInfo info = findInfoForFilter(oldFilter);
-        assert info != null;
-        info.filter = newFilter;
+        var pos = filters.indexOf(oldFilter);
+        assert pos >= 0;
+        filters.set(pos, newFilter);
     }
 
     public @Nullable Color getColor(LogRecord record) {
-        for (FilterInfo info : reversedView) {
-            if (info.isEnabled && info.filter.test(record)) {
-                return info.filter.getHighlightColor();
-            }
-        }
-        return null;
-    }
-
-    private @Nullable FilterInfo findInfoForFilter(ColoringFilter filter) {
-        for (FilterInfo item : filters) {
-            if (item.filter.equals(filter)) {
-                return item;
+        for (var filter : reversedView) {
+            if (filter.isEnabled() && filter.test(record)) {
+                return filter.getHighlightColor();
             }
         }
         return null;

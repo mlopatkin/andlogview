@@ -54,6 +54,7 @@ dependencies {
     annotationProcessor(buildLibs.dagger.compiler)
 
     testImplementation(testFixtures(project(":base")))
+    testImplementation(testFixtures(project(":filters")))
     testImplementation(testFixtures(project(":logmodel")))
     testImplementation(testFixtures(project(":search")))
 

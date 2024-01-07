@@ -39,8 +39,6 @@ public class FilterPanelModel {
         void onFilterRemoved(PanelFilterView filter);
 
         void onFilterReplaced(PanelFilterView oldFilter, PanelFilterView newFilter);
-
-        void onFilterEnabled(PanelFilterView filter, boolean enabled);
     }
 
     private final Set<FilterPanelModelListener> listeners = new HashSet<>();
@@ -70,10 +68,6 @@ public class FilterPanelModel {
     // TODO split into public and internal methods
     public void setFilterEnabled(PanelFilterView filter, boolean enabled) {
         getPanelFilterForView(filter).setEnabled(enabled);
-
-        for (FilterPanelModelListener listener : listeners) {
-            listener.onFilterEnabled(filter, enabled);
-        }
     }
 
     void removeFilter(PanelFilterView filter) {

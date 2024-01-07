@@ -30,4 +30,27 @@ public interface Filter extends Predicate<LogRecord> {
      * @return the mode
      */
     FilteringMode getMode();
+
+    /**
+     * Returns true if this filter is enabled and therefore must affect the output.
+     *
+     * @return true if the filter is enabled
+     */
+    boolean isEnabled();
+
+    /**
+     * Creates an enabled copy of this filter (or this filter if it is already enabled).
+     *
+     * @return the enabled filter that matches the same lines
+     * @implSpec implementors should override this method with an appropriate return type
+     */
+    Filter enabled();
+
+    /**
+     * Creates a disable copy of this filter (or this filter if it is already disabled).
+     *
+     * @return the disabled filter that matches the same lines
+     * @implSpec implementors should override this method with an appropriate return type
+     */
+    Filter disabled();
 }

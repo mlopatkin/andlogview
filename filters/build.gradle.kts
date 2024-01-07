@@ -16,9 +16,14 @@
 
 plugins {
     id("name.mlopatkin.andlogview.building.java-library-conventions")
+
+    `java-test-fixtures`
 }
 
 dependencies {
+    api(project(":logmodel")) {
+        because("Exposes LogRecord as a generic argument")
+    }
+
     implementation(project(":base"))
-    implementation(project(":logmodel"))
 }

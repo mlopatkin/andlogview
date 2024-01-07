@@ -174,6 +174,29 @@ public class MainFilterControllerTest {
         assertEquals(Color.BLUE, filterImpl.getHighlightColor(RECORD1));
     }
 
+    @Test
+    public void editDisabledFilterKeepsItDisabled() {
+        MainFilterController controller = new MainFilterController(
+                filterPanelModel, indexFilterCollection, dialogFactory, savedFiltersPref, filterImpl);
+        order = inOrder(dialogFactory, filterPanelModel);
+        FilterFromDialog initialFilter = createColoringFilter(Color.BLACK, MATCH_ALL);
+        PanelFilter initialPanel = createFilterWithDialog(controller, initialFilter);
+        PanelFilter disabledPanel = toggle(initialPanel);
+
+        CompletableFuture<Optional<FilterFromDialog>> editor = openFilterDialog(disabledPanel);
+        editor.complete(Optional.of(createColoringFilter(Color.BLUE, MATCH_ALL)));
+
+        assertNull(filterImpl.getHighlightColor(RECORD1));
+    }
+
+    private PanelFilter toggle(PanelFilter toggledFilter) {
+        boolean enabled = !toggledFilter.isEnabled();
+        toggledFilter.setEnabled(enabled);
+
+        order.verify(filterPanelModel).replaceFilter(eq(toggledFilter), panelFilterCaptor.capture());
+        return panelFilterCaptor.getValue();
+    }
+
     private PanelFilter createFilterWithDialog(MainFilterController controller, FilterFromDialog dialogResult) {
         when(dialogFactory.startCreateFilterDialog()).thenReturn(
                 CompletableFuture.completedFuture(Optional.of(dialogResult)));

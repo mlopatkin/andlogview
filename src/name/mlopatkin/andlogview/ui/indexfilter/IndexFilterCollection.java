@@ -44,19 +44,19 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
 
     @Override
     public void addFilter(Filter filter) {
-        controllerMap.put(filter, controllerFactory.create(this, filter));
-    }
-
-    @Override
-    public void setFilterEnabled(Filter filter, boolean enabled) {
-        IndexFilterController filterController = controllerMap.get(filter);
-        assert filterController != null;
-        filterController.setEnabled(enabled);
+        if (!filter.isEnabled()) {
+            return;
+        }
+        var controller = controllerFactory.create(this, filter);
+        controllerMap.put(filter, controller);
+        controller.setEnabled(filter.isEnabled());
     }
 
     @Override
     public void removeFilter(Filter filter) {
-        controllerMap.remove(filter).destroy();
+        if (filter.isEnabled()) {
+            controllerMap.remove(filter).destroy();
+        }
     }
 
     void onFilterDisabledByItself(Predicate<LogRecord> filter) {

@@ -21,14 +21,6 @@ public interface FilterCollection<T extends Filter> {
 
     void removeFilter(T filter);
 
-    default void setFilterEnabled(T filter, boolean enabled) {
-        if (enabled) {
-            addFilter(filter);
-        } else {
-            removeFilter(filter);
-        }
-    }
-
     default void replaceFilter(T oldFilter, T newFilter) {
         removeFilter(oldFilter);
         addFilter(newFilter);

@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNull;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.test.TestData;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -115,10 +114,10 @@ public class LogRecordHighlighterTest {
     @Test
     public void testEnable() throws Exception {
         highlighter.addFilter(MATCH_FIRST_COLOR1);
-        highlighter.setFilterEnabled(MATCH_FIRST_COLOR1, false);
+        highlighter.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR1.disabled());
         assertNull(highlighter.getColor(RECORD1));
 
-        highlighter.setFilterEnabled(MATCH_FIRST_COLOR1, true);
+        highlighter.replaceFilter(MATCH_FIRST_COLOR1.disabled(), MATCH_FIRST_COLOR1.enabled());
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
     }
 
@@ -129,37 +128,13 @@ public class LogRecordHighlighterTest {
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
 
-        highlighter.setFilterEnabled(MATCH_FIRST_COLOR2, false);
-        highlighter.setFilterEnabled(MATCH_FIRST_COLOR2, true);
+        highlighter.replaceFilter(MATCH_FIRST_COLOR2, MATCH_FIRST_COLOR2.disabled());
+        highlighter.replaceFilter(MATCH_FIRST_COLOR2.disabled(), MATCH_FIRST_COLOR2.enabled());
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
     }
 
-    @Test
-    public void testReplaceDoesntEnable() throws Exception {
-        highlighter.addFilter(MATCH_FIRST_COLOR1);
-        highlighter.setFilterEnabled(MATCH_FIRST_COLOR1, false);
-
-        highlighter.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR2);
-
-        assertNull(highlighter.getColor(RECORD1));
-
-        highlighter.setFilterEnabled(MATCH_FIRST_COLOR2, true);
-
-        assertEquals(COLOR2, highlighter.getColor(RECORD1));
-    }
-
-    private static ColoringFilter makeColorFilter(final Predicate<LogRecord> base, final Color color) {
-        return new ColoringFilter() {
-            @Override
-            public Color getHighlightColor() {
-                return color;
-            }
-
-            @Override
-            public boolean test(@Nullable LogRecord input) {
-                return base.test(input);
-            }
-        };
+    private static ColoringFilter makeColorFilter(final Predicate<LogRecord> base, final Color c) {
+        return new ColoringToggleFilter(c, true, base);
     }
 }

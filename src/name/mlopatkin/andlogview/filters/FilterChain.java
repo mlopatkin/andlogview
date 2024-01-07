@@ -48,7 +48,9 @@ public class FilterChain implements FilterCollection<Filter> {
     @Override
     public void addFilter(Filter filter) {
         Preconditions.checkArgument(isSupportedMode(filter.getMode()));
-        filters.put(filter.getMode(), filter);
+        if (filter.isEnabled()) {
+            filters.put(filter.getMode(), filter);
+        }
     }
 
     public boolean shouldShow(LogRecord record) {

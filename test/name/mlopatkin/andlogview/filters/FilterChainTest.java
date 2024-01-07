@@ -89,11 +89,11 @@ public class FilterChainTest {
     @Test
     public void testSetEnabled() throws Exception {
         chain.addFilter(hide(MATCH_FIRST));
-        chain.setFilterEnabled(hide(MATCH_FIRST), false);
+        chain.replaceFilter(hide(MATCH_FIRST), hide(MATCH_FIRST).disabled());
 
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
-        chain.setFilterEnabled(hide(MATCH_FIRST), true);
+        chain.replaceFilter(hide(MATCH_FIRST).disabled(), hide(MATCH_FIRST));
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
@@ -107,33 +107,6 @@ public class FilterChainTest {
     }
 
     private static Filter filter(FilteringMode mode, Predicate<LogRecord> p) {
-        class StubFilter implements Filter {
-            final Predicate<LogRecord> predicate = p;
-
-            @Override
-            public FilteringMode getMode() {
-                return mode;
-            }
-
-            @Override
-            public boolean test(LogRecord logRecord) {
-                return predicate.test(logRecord);
-            }
-
-            @Override
-            public int hashCode() {
-                return predicate.hashCode();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (obj instanceof StubFilter filter) {
-                    return predicate.equals(filter.predicate);
-                }
-                return false;
-            }
-        }
-
-        return new StubFilter();
+        return new ToggleFilter(mode, true, p);
     }
 }

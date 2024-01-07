@@ -39,7 +39,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -81,7 +80,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         indexFilterCollection.asObservable().addObserver(disabledFilter -> {
             for (BaseToggleFilter<?> registeredFilter : filters) {
                 if (Objects.equals(registeredFilter.filter, disabledFilter)) {
-                    filterPanelModel.setFilterEnabled(registeredFilter, false);
+                    registeredFilter.setEnabled(false);
                 }
             }
         });
@@ -147,12 +146,10 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     /**
      * Base class for {@link PanelFilter} wrappers for the DialogFilters and others.
      */
-    private abstract class BaseToggleFilter<T extends Predicate<LogRecord>> implements PanelFilter {
+    private abstract class BaseToggleFilter<T extends Filter> implements PanelFilter {
         protected final FilteringMode mode;
         protected final FilterCollection<? super T> collection;
         protected final T filter;
-
-        private boolean isEnabled = true;
 
         protected BaseToggleFilter(FilterCollection<? super T> collection, FilteringMode mode, T filter) {
             this.collection = collection;
@@ -162,16 +159,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
         @Override
         public boolean isEnabled() {
-            return isEnabled;
-        }
-
-        @Override
-        public void setEnabled(boolean isEnabled) {
-            if (isEnabled != this.isEnabled) {
-                this.isEnabled = isEnabled;
-                collection.setFilterEnabled(filter, isEnabled);
-                notifyFiltersChanged();
-            }
+            return filter.isEnabled();
         }
 
         @Override
@@ -182,7 +170,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         }
 
         protected void replaceMeWith(BaseToggleFilter<T> replacement) {
-            replacement.isEnabled = isEnabled;
             int myPos = filters.indexOf(this);
             if (myPos == -1) {
                 // Ignore edit result if |this| filter isn't alive anymore. This can happen if the editor was opened
@@ -197,7 +184,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             filterPanelModel.replaceFilter(this, replacement);
             if (collection.equals(replacement.collection) && mode == replacement.mode) {
                 collection.replaceFilter(filter, replacement.filter);
-                collection.setFilterEnabled(replacement.filter, replacement.isEnabled);
             } else {
                 collection.removeFilter(filter);
                 replacement.addToCollection();
@@ -207,7 +193,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
         public BaseToggleFilter<T> addToCollection() {
             collection.addFilter(filter);
-            collection.setFilterEnabled(filter, isEnabled);
             return this;
         }
 
@@ -222,6 +207,13 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         }
 
         @Override
+        public void setEnabled(boolean enabled) {
+            if (filter.isEnabled() != enabled) {
+                replaceMeWith(new DialogPanelFilter(collection, enabled ? filter.enabled() : filter.disabled()));
+            }
+        }
+
+        @Override
         public void openFilterEditor() {
             FilterDialogHandle currentDialogHandle = dialogHandle;
             if (currentDialogHandle != null) {
@@ -229,12 +221,14 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
                 return;
             }
             dialogHandle = currentDialogHandle = dialogFactory.startEditFilterDialog(this.filter);
-            currentDialogHandle.getResult().thenAccept(newFilter -> {
+            currentDialogHandle.getResult().thenAccept(newFilterOpt -> {
                 dialogHandle = null;
-                if (newFilter.isPresent()) {
-                    DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter.get());
+                newFilterOpt.ifPresent(newFilter -> {
+                    // Keep enabled status of this filter after editing.
+                    newFilter.setEnabled(filter.isEnabled());
+                    DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter);
                     replaceMeWith(newPanelFilter);
-                }
+                });
             }).exceptionally(MyFutures::uncaughtException);
         }
 
@@ -245,7 +239,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
         @Override
         public SavedFilterData getSerializedVersion() {
-            return new SavedDialogFilterData(filter, isEnabled());
+            return new SavedDialogFilterData(filter);
         }
     }
 
@@ -262,8 +256,8 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     static class SavedDialogFilterData extends SavedFilterData {
         private final FilterFromDialog filterData;
 
-        SavedDialogFilterData(FilterFromDialog filterData, boolean enabled) {
-            super(enabled);
+        SavedDialogFilterData(FilterFromDialog filterData) {
+            super(filterData.isEnabled());
             this.filterData = filterData;
         }
 
@@ -271,8 +265,9 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         void appendMe(MainFilterController filterController) {
             try {
                 filterData.initialize();
+                filterData.setEnabled(enabled);
                 // TODO(mlopatkin) This is somewhat dangerous because filterController is still in its constructor
-                filterController.addNewDialogFilter(filterData).setEnabled(enabled);
+                filterController.addNewDialogFilter(filterData);
             } catch (RequestCompilationException e) {
                 logger.error("Invalid filter data", e);
             }
