@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.filters;
+package name.mlopatkin.andlogview.ui.filters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import name.mlopatkin.andlogview.filters.ColoringToggleFilter;
+import name.mlopatkin.andlogview.filters.Filter;
+import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.FilterModelImpl;
+import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.ToggleFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;

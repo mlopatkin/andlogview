@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.filters;
+package name.mlopatkin.andlogview.ui.filters;
 
+import name.mlopatkin.andlogview.filters.ColoringFilter;
+import name.mlopatkin.andlogview.filters.Filter;
+import name.mlopatkin.andlogview.filters.FilterChain;
+import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.LogRecordHighlighter;
 import name.mlopatkin.andlogview.liblogcat.filters.LogBufferFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -39,7 +46,8 @@ public class LogModelFilterImpl implements LogModelFilter {
     private final Subject<Observer> observers = new Subject<>();
 
     @Inject
-    LogModelFilterImpl(FilterModel model) {
+    @VisibleForTesting
+    public LogModelFilterImpl(FilterModel model) {
         model.asObservable().addObserver(filterChain.createObserver(Function.identity()));
         model.asObservable().addObserver(highlighter.createObserver(f -> (ColoringFilter) f));
         for (Filter filter : model.getFilters()) {

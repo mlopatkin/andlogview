@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.filters.HighlightColors;
+import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;

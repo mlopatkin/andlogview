@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.filters;
+package name.mlopatkin.andlogview.ui.filters;
 
-import name.mlopatkin.andlogview.ui.filters.StoredFilters;
+import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.FilterModelImpl;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 

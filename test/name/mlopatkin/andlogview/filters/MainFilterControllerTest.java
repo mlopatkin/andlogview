@@ -40,6 +40,7 @@ import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
 import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
+import name.mlopatkin.andlogview.ui.filters.LogModelFilterImpl;
 import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
 import name.mlopatkin.andlogview.utils.events.Observable;
 

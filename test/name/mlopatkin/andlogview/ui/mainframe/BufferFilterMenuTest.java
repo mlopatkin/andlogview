@@ -19,8 +19,8 @@ package name.mlopatkin.andlogview.ui.mainframe;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import name.mlopatkin.andlogview.filters.LogModelFilterImpl;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.ui.filters.LogModelFilterImpl;
 
 import org.junit.Test;
 import org.mockito.Mockito;
