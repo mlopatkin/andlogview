@@ -42,19 +42,28 @@ public class LogModelFilterImpl implements LogModelFilter {
     LogModelFilterImpl(FilterModel model) {
         model.asObservable().addObserver(filterChain.createObserver(Function.identity()));
         model.asObservable().addObserver(highlighter.createObserver(f -> (ColoringFilter) f));
+        for (Filter filter : model.getFilters()) {
+            if (filterChain.supportsMode(filter.getMode())) {
+                filterChain.addFilter(filter);
+            }
+            if (highlighter.supportsMode(filter.getMode())) {
+                highlighter.addFilter((ColoringFilter) filter);
+            }
+        }
+
         model.asObservable().addObserver(new FilterModel.Observer() {
             @Override
-            public void onFilterAdded(Filter newFilter) {
+            public void onFilterAdded(FilterModel model, Filter newFilter) {
                 notifyObservers();
             }
 
             @Override
-            public void onFilterRemoved(Filter removedFilter) {
+            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
                 notifyObservers();
             }
 
             @Override
-            public void onFilterReplaced(Filter oldFilter, Filter newFilter) {
+            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
                 notifyObservers();
             }
         });

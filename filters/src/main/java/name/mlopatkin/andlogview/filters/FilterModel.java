@@ -18,6 +18,9 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.utils.events.Observable;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * A complete set of log filters.
  */
@@ -29,28 +32,31 @@ public interface FilterModel {
         /**
          * Called after the new filter is added to the model.
          *
+         * @param model the origin of the notification
          * @param newFilter the new filter
          */
-        void onFilterAdded(Filter newFilter);
+        void onFilterAdded(FilterModel model, Filter newFilter);
 
         /**
          * Called after the filter is removed from the model.
          *
+         * @param model the origin of the notification
          * @param removedFilter the removed filter.
          */
-        void onFilterRemoved(Filter removedFilter);
+        void onFilterRemoved(FilterModel model, Filter removedFilter);
 
         /**
          * Called after the filter was replaced with other filter.
          *
+         * @param model the origin of the notification
          * @param oldFilter the filter that was removed
          * @param newFilter the filter that was added instead of the {@code oldFilter}
-         * @implNote the default implementation just calls {@link #onFilterRemoved(Filter)} and
-         *         {@link #onFilterAdded(Filter)}.
+         * @implNote the default implementation just calls {@link #onFilterRemoved(FilterModel, Filter)} and
+         *         {@link #onFilterAdded(FilterModel, Filter)}.
          */
-        default void onFilterReplaced(Filter oldFilter, Filter newFilter) {
-            onFilterRemoved(oldFilter);
-            onFilterAdded(newFilter);
+        default void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
+            onFilterRemoved(model, oldFilter);
+            onFilterAdded(model, newFilter);
         }
     }
 
@@ -85,4 +91,13 @@ public interface FilterModel {
      * @return Observable to subscribe for
      */
     Observable<Observer> asObservable();
+
+    /**
+     * Returns the list of filters currently available in the model. The filters are listed in the order of adding.
+     *
+     * @return the list of currently available filters
+     */
+    default Collection<? extends Filter> getFilters() {
+        return Collections.emptyList();
+    }
 }

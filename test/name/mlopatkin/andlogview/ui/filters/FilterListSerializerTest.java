@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.filters;
+package name.mlopatkin.andlogview.ui.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -44,7 +44,7 @@ class FilterListSerializerTest {
     @Test
     void deserializeExistingFilter() throws Exception {
         JsonElement filtersJson = loadTestResource("filters_v1.json");
-        List<MainFilterController.SavedFilterData> filters = serializer.fromJson(gson, filtersJson);
+        List<SavedFilterData> filters = serializer.fromJson(gson, filtersJson);
 
         // TODO(mlopatkin) add more thorough checking here when refactoring filter saving.
         assertEquals(1, filters.size());

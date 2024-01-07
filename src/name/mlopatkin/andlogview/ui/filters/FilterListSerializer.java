@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.filters;
+package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.config.NamedClient;
-import name.mlopatkin.andlogview.filters.MainFilterController.SavedDialogFilterData;
-import name.mlopatkin.andlogview.filters.MainFilterController.SavedFilterData;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

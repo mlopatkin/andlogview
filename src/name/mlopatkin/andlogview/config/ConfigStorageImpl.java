@@ -145,6 +145,7 @@ class ConfigStorageImpl implements ConfigStorage {
     public <T> void saveConfig(ConfigStorageClient<T> client, T value) {
         String name = client.getName();
         JsonElement json = client.toJson(gson, value);
+        logger.debug("Client " + name + " changed the config");
         synchronized (serializedConfig) {
             serializedConfig.put(name, json);
             scheduleCommitLocked();

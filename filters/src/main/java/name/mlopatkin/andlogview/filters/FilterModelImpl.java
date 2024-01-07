@@ -20,54 +20,69 @@ import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class FilterModelImpl implements FilterModel {
     private final Subject<Observer> observers = new Subject<>();
-    private final Set<Filter> filters = new LinkedHashSet<>();
+    private final Map<Filter, Integer> filterPositions = new HashMap<>();
+    private final List<Filter> filters = new ArrayList<>();
 
     @Override
     public void addFilter(Filter filter) {
-        if (filters.add(filter)) {
+        var prevPosition = filterPositions.putIfAbsent(filter, filters.size());
+        if (prevPosition == null) {
+            filters.add(filter);
             for (var observer : observers) {
-                observer.onFilterAdded(filter);
+                observer.onFilterAdded(this, filter);
             }
         }
     }
 
     @Override
     public void removeFilter(Filter filter) {
-        if (filters.remove(filter)) {
+        var position = filterPositions.remove(filter);
+        if (position != null) {
+            filters.remove(position.intValue());
             for (var observer : observers) {
-                observer.onFilterRemoved(filter);
+                observer.onFilterRemoved(this, filter);
             }
         }
     }
 
     @Override
     public void replaceFilter(Filter toReplace, Filter newFilter) {
-        Preconditions.checkArgument(filters.contains(toReplace),
+        Preconditions.checkArgument(filterPositions.containsKey(toReplace),
                 String.format("Filter %s is not in the model", toReplace));
         if (Objects.equals(toReplace, newFilter)) {
             // Replacing the filter with itself, do nothing.
             return;
         }
-        var wasRemoved = filters.remove(toReplace);
-        assert wasRemoved : "Holder for " + toReplace + " disappeared";
-
-        if (!filters.add(newFilter)) {
+        var position = filterPositions.get(toReplace);
+        if (filterPositions.putIfAbsent(newFilter, position) != null) {
             throw new IllegalArgumentException(String.format("Filter %s is already in the model", newFilter));
         }
+        filterPositions.remove(toReplace);
+        filters.set(position, newFilter);
+
         for (var observer : observers) {
-            observer.onFilterReplaced(toReplace, newFilter);
+            observer.onFilterReplaced(this, toReplace, newFilter);
         }
     }
 
     @Override
     public Observable<Observer> asObservable() {
         return observers.asObservable();
+    }
+
+    @Override
+    public Collection<? extends Filter> getFilters() {
+        return ImmutableList.copyOf(filters);
     }
 }

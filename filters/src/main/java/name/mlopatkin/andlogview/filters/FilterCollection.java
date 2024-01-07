@@ -33,21 +33,21 @@ public interface FilterCollection<T extends Filter> {
     default FilterModel.Observer createObserver(Function<? super Filter, ? extends T> filterMapper) {
         return new FilterModel.Observer() {
             @Override
-            public void onFilterAdded(Filter newFilter) {
+            public void onFilterAdded(FilterModel model, Filter newFilter) {
                 if (supportsMode(newFilter.getMode())) {
                     addFilter(filterMapper.apply(newFilter));
                 }
             }
 
             @Override
-            public void onFilterRemoved(Filter removedFilter) {
+            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
                 if (supportsMode(removedFilter.getMode())) {
                     removeFilter(filterMapper.apply(removedFilter));
                 }
             }
 
             @Override
-            public void onFilterReplaced(Filter oldFilter, Filter newFilter) {
+            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
                 var hadOldFilter = supportsMode(oldFilter.getMode());
                 var willHaveNewFilter = supportsMode(newFilter.getMode());
 

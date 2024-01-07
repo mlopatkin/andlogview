@@ -16,9 +16,6 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.Preference;
-import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -30,9 +27,6 @@ import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
-import com.google.common.annotations.VisibleForTesting;
-
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
@@ -43,37 +37,25 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 /**
- * The filter controller of the main window. It knows about all existing filters and how they should be persisted,
- * toggled and applied.
+ * The filter controller of the main window.
  */
 @MainFrameScoped
 public class MainFilterController implements FilterCreator, MenuFilterCreator {
-    // TODO separate "A filter for main table" and "bridge between all filters and panel"
-
-    private static final Logger logger = Logger.getLogger(MainFilterController.class);
-
     private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
-    private final Preference<List<SavedFilterData>> savedFiltersPref;
 
     private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
     private final FilterModel filterModel;
 
     @Inject
-    MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
-            FilterDialogFactory dialogFactory, ConfigStorage storage,
-            FilterModel filterModel) {
-        this(filterPanelModel, indexFilterCollection, dialogFactory, storage.preference(new FilterListSerializer()),
-                filterModel);
-    }
-
-    @VisibleForTesting
-    MainFilterController(FilterPanelModel filterPanelModel, IndexFilterCollection indexFilterCollection,
-            FilterDialogFactory dialogFactory, Preference<List<SavedFilterData>> savedFiltersPref,
-            FilterModel filterModel) {
+    MainFilterController(
+            FilterPanelModel filterPanelModel,
+            IndexFilterCollection indexFilterCollection,
+            FilterDialogFactory dialogFactory,
+            FilterModel filterModel
+    ) {
         this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
-        this.savedFiltersPref = savedFiltersPref;
         this.filterModel = filterModel;
 
         indexFilterCollection.asObservable().addObserver(disabledFilter -> {
@@ -85,9 +67,14 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         });
 
         filterModel.asObservable().addObserver(indexFilterCollection.createObserver(Function.identity()));
+        for (var filter : filterModel.getFilters()) {
+            if (indexFilterCollection.supportsMode(filter.getMode())) {
+                indexFilterCollection.addFilter(filter);
+            }
 
-        for (SavedFilterData savedFilterData : savedFiltersPref.get()) {
-            savedFilterData.appendMe(this);
+            if (filter instanceof FilterFromDialog filterFromDialog) {
+                addNewDialogFilter(filterFromDialog);
+            }
         }
     }
 
@@ -106,16 +93,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         DialogPanelFilter dialogPanelFilter = createDialogPanelFilter(filter);
         filters.add(dialogPanelFilter);
         filterPanelModel.addFilter(dialogPanelFilter.addToCollection());
-        notifyFiltersChanged();
         return dialogPanelFilter;
-    }
-
-    private void notifyFiltersChanged() {
-        ArrayList<SavedFilterData> serializedFilters = new ArrayList<>(filters.size());
-        for (BaseToggleFilter<?> filter : filters) {
-            serializedFilters.add(filter.getSerializedVersion());
-        }
-        savedFiltersPref.set(serializedFilters);
     }
 
     @Override
@@ -149,7 +127,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         public void delete() {
             filterModel.removeFilter(filter);
             filters.remove(this);
-            notifyFiltersChanged();
         }
 
         protected void replaceMeWith(BaseToggleFilter<T> replacement) {
@@ -162,15 +139,12 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             filters.set(myPos, replacement);
             filterPanelModel.replaceFilter(this, replacement);
             filterModel.replaceFilter(filter, replacement.filter);
-            notifyFiltersChanged();
         }
 
         public BaseToggleFilter<T> addToCollection() {
             filterModel.addFilter(filter);
             return this;
         }
-
-        public abstract SavedFilterData getSerializedVersion();
     }
 
     private class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
@@ -210,41 +184,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
         public String getTooltip() {
             return filter.getTooltip();
         }
-
-        @Override
-        public SavedFilterData getSerializedVersion() {
-            return new SavedDialogFilterData(filter);
-        }
     }
 
-    abstract static class SavedFilterData {
-        protected final boolean enabled;
-
-        protected SavedFilterData(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        abstract void appendMe(MainFilterController filterController);
-    }
-
-    static class SavedDialogFilterData extends SavedFilterData {
-        private final FilterFromDialog filterData;
-
-        SavedDialogFilterData(FilterFromDialog filterData) {
-            super(filterData.isEnabled());
-            this.filterData = filterData;
-        }
-
-        @Override
-        void appendMe(MainFilterController filterController) {
-            try {
-                filterData.initialize();
-                filterData.setEnabled(enabled);
-                // TODO(mlopatkin) This is somewhat dangerous because filterController is still in its constructor
-                filterController.addNewDialogFilter(filterData);
-            } catch (RequestCompilationException e) {
-                logger.error("Invalid filter data", e);
-            }
-        }
-    }
 }
