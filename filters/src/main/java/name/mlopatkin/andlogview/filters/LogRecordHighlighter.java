@@ -25,7 +25,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
+public class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
     private final List<ColoringFilter> filters = new ArrayList<>();
     private final List<ColoringFilter> reversedView = Lists.reverse(filters);
 
