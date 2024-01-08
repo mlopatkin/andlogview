@@ -32,15 +32,19 @@ import javax.inject.Inject;
  */
 @MainFrameScoped
 public class MainFilterController implements FilterCreator, MenuFilterCreator {
+    // TODO(mlopatkin): Find a new name and place for this class.
+
     private final FilterDialogFactory dialogFactory;
     private final FilterModel filterModel;
 
     @Inject
     MainFilterController(
+            // TODO(mlopatkin): figure out how to bootstrap these ignored folks. Nothing really depends on them, so
+            //  nothing causes them to be created.
             IndexFilterCollection ignoredIndexFilters,
+            FilterPanelModelAdapter ignoredAdapter,
             FilterDialogFactory dialogFactory,
-            FilterModel filterModel,
-            FilterPanelModelAdapter ignoredAdapter
+            FilterModel filterModel
     ) {
         this.dialogFactory = dialogFactory;
         this.filterModel = filterModel;
