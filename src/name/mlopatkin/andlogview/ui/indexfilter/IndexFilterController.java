@@ -16,7 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.indexfilter;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.filters.Filter;
+import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
@@ -25,22 +26,20 @@ import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 
 import java.awt.EventQueue;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.swing.JTable;
 
 public class IndexFilterController extends AbstractIndexController {
+    private final FilterModel filterModel;
+    private final Filter filter;
     private final IndexFrame frame;
-    private final IndexFilterCollection owner;
-    private final Predicate<LogRecord> filter;
 
-    private boolean enabled = true;
-
-    IndexFilterController(IndexFilterCollection owner, MainFrameDependencies dependencies, JTable mainTable,
-            LogModelFilter mainFilter, Predicate<LogRecord> filter) {
+    IndexFilterController(FilterModel filterModel, MainFrameDependencies dependencies, JTable mainTable,
+            LogModelFilter mainFilter, Filter filter) {
         super(mainTable);
-        this.owner = owner;
+        this.filterModel = filterModel;
+
         this.filter = filter;
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .mainFrameDependencies(dependencies)
@@ -50,16 +49,11 @@ public class IndexFilterController extends AbstractIndexController {
         frame = component.createFrame();
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void show() {
         // Postpone actual visibility change for two reasons:
         // 1. Main Frame may not be ready at this point (e.g. when restoring filters at startup).
-        // 2. Client code may want to immediately disable the filter, post-ing avoids flickering.
-        EventQueue.invokeLater(() -> {
-            if (this.enabled != frame.isVisible()) {
-                frame.setVisible(this.enabled);
-            }
-        });
+        // 2. Client code may want to immediately disable the filter (?), post-ing avoids flickering.
+        EventQueue.invokeLater(() -> frame.setVisible(true));
     }
 
     public void destroy() {
@@ -68,26 +62,26 @@ public class IndexFilterController extends AbstractIndexController {
 
     @Override
     public void onWindowClosed() {
-        owner.onFilterDisabledByItself(filter);
+        filterModel.replaceFilter(filter, filter.disabled());
     }
 
     public static class Factory {
         private final MainFrameDependencies dependencies;
+        private final FilterModel filterModel;
 
         @Inject
-        public Factory(MainFrameDependencies dependencies) {
+        public Factory(MainFrameDependencies dependencies, FilterModel filterModel) {
             this.dependencies = dependencies;
+            this.filterModel = filterModel;
         }
 
-        public IndexFilterController create(IndexFilterCollection owner, Predicate<LogRecord> filter) {
+        public IndexFilterController create(IndexFilterCollection owner, Filter filter) {
             // TODO dependency cycle, dangerous
             // MainFilterController -> IndexFilterCollection -> Factory -> MainFrameDependencies -> MainFilterController
             // We probably can break this by factoring Filter out of MainFilterController and making both Factory and
             // MainFilterController to depend on this new Filter
-            IndexFilterController controller = new IndexFilterController(
-                    owner, dependencies, dependencies.getLogTable(), dependencies.getFilter(), filter);
-            controller.setEnabled(true);
-            return controller;
+            return new IndexFilterController(
+                    filterModel, dependencies, dependencies.getLogTable(), dependencies.getFilter(), filter);
         }
     }
 }

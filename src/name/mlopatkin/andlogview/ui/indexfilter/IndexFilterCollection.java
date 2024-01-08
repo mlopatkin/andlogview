@@ -18,32 +18,31 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
+import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.utils.events.Observable;
-import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
 public class IndexFilterCollection implements FilterCollection<Filter> {
-    public interface Observer {
-        void onFilterDisabled(Predicate<LogRecord> filter);
-    }
-
-    private final Map<Predicate<LogRecord>, IndexFilterController> controllerMap = new HashMap<>();
+    private final Map<Filter, IndexFilterController> controllerMap = new HashMap<>();
     private final IndexFilterController.Factory controllerFactory;
-    private final Subject<Observer> observers = new Subject<>();
 
     @Inject
     public IndexFilterCollection(IndexFilterController.Factory controllerFactory) {
         this.controllerFactory = controllerFactory;
+    }
+
+    @Override
+    @Inject
+    public FilterModel.Observer setModel(FilterModel model) {
+        // This is a late call to subscribe to model changes.
+        return FilterCollection.super.setModel(model);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
         }
         var controller = controllerFactory.create(this, filter);
         controllerMap.put(filter, controller);
-        controller.setEnabled(filter.isEnabled());
+        controller.show();
     }
 
     @Override
@@ -66,15 +65,5 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
         if (filter.isEnabled()) {
             controllerMap.remove(filter).destroy();
         }
-    }
-
-    void onFilterDisabledByItself(Predicate<LogRecord> filter) {
-        for (Observer observer : observers) {
-            observer.onFilterDisabled(filter);
-        }
-    }
-
-    public Observable<Observer> asObservable() {
-        return observers.asObservable();
     }
 }

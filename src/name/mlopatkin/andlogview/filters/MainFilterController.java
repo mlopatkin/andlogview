@@ -37,23 +37,13 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Inject
     MainFilterController(
-            IndexFilterCollection indexFilterCollection,
+            IndexFilterCollection ignoredIndexFilters,
             FilterDialogFactory dialogFactory,
             FilterModel filterModel,
-            FilterPanelModelAdapter filterPanelModelAdapter
+            FilterPanelModelAdapter ignoredAdapter
     ) {
         this.dialogFactory = dialogFactory;
         this.filterModel = filterModel;
-
-        indexFilterCollection.asObservable().addObserver(disabledFilter -> {
-            // TODO(mlopatkin) replace this with IFC disabling the filter itself.
-            var panelFilter = filterPanelModelAdapter.createObserverTransformer().apply((Filter) disabledFilter);
-            if (panelFilter != null) {
-                panelFilter.setEnabled(false);
-            }
-        });
-
-        indexFilterCollection.setModel(filterModel);
     }
 
     @Override
