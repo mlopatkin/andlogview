@@ -82,6 +82,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
 
     private final FilterDialogView dialogView;
     private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
+    private final boolean isResultEnabled;
 
     private FilterDialogPresenter(FilterDialogView dialogView) {
         this.dialogView = dialogView;
@@ -91,6 +92,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         dialogView.setPidsAppsText("");
         dialogView.setPriority(null);
         dialogView.setMode(FilteringMode.getDefaultMode());
+        isResultEnabled = true;
     }
 
     private FilterDialogPresenter(FilterDialogView dialogView, FilterFromDialog existingFilter) {
@@ -108,6 +110,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         if (existingFilter.getMode() == FilteringMode.HIGHLIGHT) {
             dialogView.setHighlightColor(existingFilter.getHighlightColor());
         }
+        isResultEnabled = existingFilter.isEnabled();
     }
 
     private FilterDialogPresenter init() {
@@ -202,6 +205,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         dialogView.getPriority().ifPresent(filter::setPriority);
         filter.setMode(dialogView.getMode());
         dialogView.getHighlightColor().ifPresent(filter::setHighlightColor);
+        filter.setEnabled(isResultEnabled);
         filter.initialize();
         return filter;
     }

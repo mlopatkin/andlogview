@@ -47,6 +47,11 @@ public class FilterPanelModel {
     @Inject
     public FilterPanelModel() {}
 
+    /**
+     * Adds the new PanelFilter to this model.
+     *
+     * @param filter the new filter
+     */
     public void addFilter(PanelFilter filter) {
         filters.add(filter);
         for (FilterPanelModelListener listener : listeners) {
@@ -54,6 +59,12 @@ public class FilterPanelModel {
         }
     }
 
+    /**
+     * Replaces one filter with another. The filter's position isn't affected
+     *
+     * @param oldFilter the removed filter
+     * @param newFilter
+     */
     public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
         int oldPos = filters.indexOf(oldFilter);
         assert oldPos >= 0;
@@ -65,24 +76,48 @@ public class FilterPanelModel {
         }
     }
 
+    public void removeFilter(PanelFilter removedFilter) {
+        if (filters.remove(removedFilter)) {
+            for (FilterPanelModelListener listener : listeners) {
+                listener.onFilterRemoved(removedFilter);
+            }
+        }
+    }
+
+    /**
+     * Requests to change enabled state of the filter represented by the view.
+     *
+     * @param filter the filter view
+     * @param enabled the requested status
+     * @implNote this method should only forward the request and wait for
+     *         {@link #replaceFilter(PanelFilter, PanelFilter)} to be called.
+     */
     void setFilterEnabled(PanelFilterView filter, boolean enabled) {
         getPanelFilterForView(filter).setEnabled(enabled);
     }
 
-    void removeFilter(PanelFilterView filter) {
-        PanelFilter panelFilter = getPanelFilterForView(filter);
-        if (filters.remove(panelFilter)) {
-            panelFilter.delete();
-            for (FilterPanelModelListener listener : listeners) {
-                listener.onFilterRemoved(filter);
-            }
-        }
+    /**
+     * Requests to remove the filter represented by the view.
+     *
+     * @param filter the filter view
+     * @implNote this method should only forward the request and wait for
+     *         {@link #removeFilter(PanelFilter)} to be called.
+     */
+    void removeFilterForView(PanelFilterView filter) {
+        getPanelFilterForView(filter).delete();
     }
 
     void addListener(FilterPanelModelListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Requests to edit the filter represented by the view.
+     *
+     * @param filter the filter view
+     * @implNote this method should only forward the request and wait for
+     *         {@link #removeFilter(PanelFilter)} to be called.
+     */
     void editFilter(PanelFilterView filter) {
         getPanelFilterForView(filter).openFilterEditor();
     }

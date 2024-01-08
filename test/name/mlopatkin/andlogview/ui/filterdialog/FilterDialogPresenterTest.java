@@ -23,6 +23,8 @@ import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMode;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPids;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPriority;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasTags;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.isDisabled;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.isEnabled;
 import static name.mlopatkin.andlogview.utils.FutureMatchers.completedWithResult;
 import static name.mlopatkin.andlogview.utils.FutureMatchers.notCompleted;
 
@@ -525,5 +527,46 @@ public class FilterDialogPresenterTest {
         fakeView.commit();
 
         assertThat(promise, completedWithResult(emptyOptional()));
+    }
+
+    @Test
+    public void presenterCreatesEnabledFilter() {
+        var promise = FilterDialogPresenter.create(fakeView).show();
+
+        fakeView.setMode(FilteringMode.HIDE);
+        fakeView.setPriority(LogRecord.Priority.DEBUG);
+        fakeView.commit();
+
+        assertThat(promise, completedWithResult(optionalWithValue(isEnabled())));
+    }
+
+    @Test
+    public void presenterKeepsEnabledStatusOfTheFilter() {
+        var disabledFilter = new FilterFromDialog()
+                .setTags(Collections.singletonList("TAG"))
+                .setMode(FilteringMode.SHOW)
+                .setEnabled(true);
+
+        var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
+
+        fakeView.setMode(FilteringMode.HIDE);
+        fakeView.commit();
+
+        assertThat(promise, completedWithResult(optionalWithValue(isEnabled())));
+    }
+
+    @Test
+    public void presenterKeepsDisabledStatusOfTheFilter() {
+        var disabledFilter = new FilterFromDialog()
+                .setTags(Collections.singletonList("TAG"))
+                .setMode(FilteringMode.SHOW)
+                .setEnabled(false);
+
+        var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
+
+        fakeView.setMode(FilteringMode.HIDE);
+        fakeView.commit();
+
+        assertThat(promise, completedWithResult(optionalWithValue(isDisabled())));
     }
 }

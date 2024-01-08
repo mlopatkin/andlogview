@@ -230,7 +230,7 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
             JMenuItem removeItem = new JMenuItem("Remove filter");
             // TODO(mlopatkin) This can probably be rewritten to ensure that activeButton is nonnull.
             editItem.addActionListener(e -> model.editFilter(activeButton.getFilter()));
-            removeItem.addActionListener(e -> model.removeFilter(activeButton.getFilter()));
+            removeItem.addActionListener(e -> model.removeFilterForView(activeButton.getFilter()));
             menu.add(editItem);
             menu.add(removeItem);
         }

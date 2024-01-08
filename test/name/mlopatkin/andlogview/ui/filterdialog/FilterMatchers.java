@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.test.AdaptingMatcher;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 import java.awt.Color;
 
@@ -51,5 +52,13 @@ public class FilterMatchers {
 
     public static Matcher<FilterFromDialog> hasColor(Matcher<? super Color> colorMatcher) {
         return new AdaptingMatcher<>(FilterFromDialog::getHighlightColor, colorMatcher);
+    }
+
+    public static Matcher<FilterFromDialog> isEnabled() {
+        return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(true));
+    }
+
+    public static Matcher<FilterFromDialog> isDisabled() {
+        return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(false));
     }
 }

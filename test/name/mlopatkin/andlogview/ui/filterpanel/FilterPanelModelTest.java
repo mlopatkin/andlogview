@@ -61,7 +61,6 @@ public class FilterPanelModelTest {
         model.removeFilter(filter);
 
         verify(listener).onFilterRemoved(filter);
-        verify(filter).delete();
     }
 
     @Test
@@ -130,7 +129,7 @@ public class FilterPanelModelTest {
 
         model.addFilter(filter);
         model.addListener(listener);
-        model.removeFilter(filter);
+        model.removeFilterForView(filter);
 
         // notification fires only once and nothing bad happens
         verify(listener).onFilterRemoved(filter);

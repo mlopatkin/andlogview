@@ -17,21 +17,13 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
-import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
+import name.mlopatkin.andlogview.ui.filters.FilterPanelModelAdapter;
 import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 import name.mlopatkin.andlogview.utils.MyFutures;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -40,61 +32,40 @@ import javax.inject.Inject;
  */
 @MainFrameScoped
 public class MainFilterController implements FilterCreator, MenuFilterCreator {
-    private final FilterPanelModel filterPanelModel;
     private final FilterDialogFactory dialogFactory;
-
-    private final List<BaseToggleFilter<?>> filters = new ArrayList<>();
     private final FilterModel filterModel;
 
     @Inject
     MainFilterController(
-            FilterPanelModel filterPanelModel,
             IndexFilterCollection indexFilterCollection,
             FilterDialogFactory dialogFactory,
-            FilterModel filterModel
+            FilterModel filterModel,
+            FilterPanelModelAdapter filterPanelModelAdapter
     ) {
-        this.filterPanelModel = filterPanelModel;
         this.dialogFactory = dialogFactory;
         this.filterModel = filterModel;
 
         indexFilterCollection.asObservable().addObserver(disabledFilter -> {
-            for (BaseToggleFilter<?> registeredFilter : filters) {
-                if (Objects.equals(registeredFilter.filter, disabledFilter)) {
-                    registeredFilter.setEnabled(false);
-                }
+            // TODO(mlopatkin) replace this with IFC disabling the filter itself.
+            var panelFilter = filterPanelModelAdapter.createObserverTransformer().apply((Filter) disabledFilter);
+            if (panelFilter != null) {
+                panelFilter.setEnabled(false);
             }
         });
 
         indexFilterCollection.setModel(filterModel);
-
-        for (var filter : filterModel.getFilters()) {
-            if (filter instanceof FilterFromDialog filterFromDialog) {
-                addNewDialogFilter(filterFromDialog);
-            }
-        }
     }
 
     @Override
     public void createFilterWithDialog() {
         dialogFactory.startCreateFilterDialog()
-                .thenAccept(newFilter -> newFilter.ifPresent(this::addNewDialogFilter))
+                .thenAccept(newFilter -> newFilter.ifPresent(this::addFilter))
                 .exceptionally(MyFutures::uncaughtException);
-    }
-
-    private DialogPanelFilter createDialogPanelFilter(FilterFromDialog filter) {
-        return new DialogPanelFilter(filter);
-    }
-
-    private DialogPanelFilter addNewDialogFilter(FilterFromDialog filter) {
-        DialogPanelFilter dialogPanelFilter = createDialogPanelFilter(filter);
-        filters.add(dialogPanelFilter);
-        filterPanelModel.addFilter(dialogPanelFilter.addToCollection());
-        return dialogPanelFilter;
     }
 
     @Override
     public void addFilter(FilterFromDialog filter) {
-        addNewDialogFilter(filter);
+        filterModel.addFilter(filter);
     }
 
     @Override
@@ -103,83 +74,4 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
                 .thenAccept(result -> result.ifPresent(this::addFilter))
                 .exceptionally(MyFutures::uncaughtException);
     }
-
-    /**
-     * Base class for {@link PanelFilter} wrappers for the DialogFilters and others.
-     */
-    private abstract class BaseToggleFilter<T extends Filter> implements PanelFilter {
-        protected final T filter;
-
-        protected BaseToggleFilter(T filter) {
-            this.filter = filter;
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return filter.isEnabled();
-        }
-
-        @Override
-        public void delete() {
-            filterModel.removeFilter(filter);
-            filters.remove(this);
-        }
-
-        protected void replaceMeWith(BaseToggleFilter<T> replacement) {
-            int myPos = filters.indexOf(this);
-            if (myPos == -1) {
-                // Ignore edit result if |this| filter isn't alive anymore. This can happen if the editor was opened
-                // twice for the same filter or if the filter was deleted while editor was open.
-                return;
-            }
-            filters.set(myPos, replacement);
-            filterPanelModel.replaceFilter(this, replacement);
-            filterModel.replaceFilter(filter, replacement.filter);
-        }
-
-        public BaseToggleFilter<T> addToCollection() {
-            filterModel.addFilter(filter);
-            return this;
-        }
-    }
-
-    private class DialogPanelFilter extends BaseToggleFilter<FilterFromDialog> {
-        private @Nullable FilterDialogHandle dialogHandle;
-
-        protected DialogPanelFilter(FilterFromDialog filter) {
-            super(filter);
-        }
-
-        @Override
-        public void setEnabled(boolean enabled) {
-            if (filter.isEnabled() != enabled) {
-                replaceMeWith(new DialogPanelFilter(enabled ? filter.enabled() : filter.disabled()));
-            }
-        }
-
-        @Override
-        public void openFilterEditor() {
-            FilterDialogHandle currentDialogHandle = dialogHandle;
-            if (currentDialogHandle != null) {
-                currentDialogHandle.bringToFront();
-                return;
-            }
-            dialogHandle = currentDialogHandle = dialogFactory.startEditFilterDialog(this.filter);
-            currentDialogHandle.getResult().thenAccept(newFilterOpt -> {
-                dialogHandle = null;
-                newFilterOpt.ifPresent(newFilter -> {
-                    // Keep enabled status of this filter after editing.
-                    newFilter.setEnabled(filter.isEnabled());
-                    DialogPanelFilter newPanelFilter = createDialogPanelFilter(newFilter);
-                    replaceMeWith(newPanelFilter);
-                });
-            }).exceptionally(MyFutures::uncaughtException);
-        }
-
-        @Override
-        public String getTooltip() {
-            return filter.getTooltip();
-        }
-    }
-
 }

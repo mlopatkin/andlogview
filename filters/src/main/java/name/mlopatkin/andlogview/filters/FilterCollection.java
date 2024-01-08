@@ -20,7 +20,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.function.Function;
 
-public interface FilterCollection<T extends Filter> {
+public interface FilterCollection<T> {
     void addFilter(T filter);
 
     void removeFilter(T filter);
