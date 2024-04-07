@@ -47,6 +47,6 @@ errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included
 jlink = "org.beryx.runtime:1.13.1"
 # JMH plugin allows building and running JMH benchmarks
-jmh = "me.champeau.jmh:0.7.1"
+jmh = "me.champeau.jmh:0.7.2"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool
 shadow = "com.github.johnrengelman.shadow:8.1.1"
