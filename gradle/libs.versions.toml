@@ -45,7 +45,7 @@ bitbucket = "name.mlopatkin.bitbucket:0.6"
 # Errorprone plugin allows to configure Errorprone compiler
 errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included
-jlink = "org.beryx.runtime:1.12.7"
+jlink = "org.beryx.runtime:1.13.1"
 # JMH plugin allows building and running JMH benchmarks
 jmh = "me.champeau.jmh:0.7.1"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool
