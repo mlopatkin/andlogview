@@ -21,6 +21,7 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     java
     checkstyle
+    `jvm-test-suite`
 
     // It is not possible to use a constant from the version catalog there
     id("net.ltgt.errorprone")
@@ -88,11 +89,19 @@ checkstyle {
 }
 
 // Configure testing frameworks
-tasks.withType<Test> {
-    useJUnitPlatform()
+testing {
+    suites {
+        named<JvmTestSuite>("test") {
+            useJUnitJupiter()
 
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = runtimeJdk.languageVersion
+            targets.all {
+                testTask.configure {
+                    javaLauncher = javaToolchains.launcherFor {
+                        languageVersion = runtimeJdk.languageVersion
+                    }
+                }
+            }
+        }
     }
 }
 
