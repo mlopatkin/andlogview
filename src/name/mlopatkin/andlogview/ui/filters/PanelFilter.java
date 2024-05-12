@@ -18,57 +18,21 @@ package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filterpanel.PanelFilterView;
-import name.mlopatkin.andlogview.utils.MyFutures;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-class PanelFilter implements PanelFilterView {
-    private final MutableFilterModel model;
-    private final FilterDialogFactory dialogFactory;
-    private final FilterFromDialog filter;
-
-    private @Nullable FilterDialogHandle editorHandle;
-
+/**
+ * A specialized {@link BaseFilterPresenter} that can be consumed by the {@link FilterPanel}.
+ */
+class PanelFilter extends BaseFilterPresenter implements PanelFilterView {
     @AssistedInject
-    public PanelFilter(MutableFilterModel model, FilterDialogFactory dialogFactory,
-            @Assisted FilterFromDialog filter) {
-        this.model = model;
-        this.dialogFactory = dialogFactory;
-        this.filter = filter;
-    }
-
-    public void setEnabled(boolean enabled) {
-        if (enabled != filter.isEnabled()) {
-            model.replaceFilter(filter, enabled ? filter.enabled() : filter.disabled());
-        }
-    }
-
-    public void openFilterEditor() {
-        var editorHandle = this.editorHandle;
-        if (editorHandle != null) {
-            editorHandle.bringToFront();
-            return;
-        }
-        editorHandle = this.editorHandle = dialogFactory.startEditFilterDialog(filter);
-        editorHandle.getResult().thenAccept(optFilter -> {
-            optFilter.ifPresent(newFilter -> {
-                if (model.getFilters().contains(filter)) {
-                    model.replaceFilter(filter, newFilter);
-                }
-            });
-            this.editorHandle = null;
-        }).exceptionally(MyFutures::uncaughtException);
-    }
-
-    public void delete() {
-        model.removeFilter(filter);
+    public PanelFilter(MutableFilterModel model, FilterDialogFactory dialogFactory, @Assisted FilterFromDialog filter) {
+        super(model, dialogFactory, filter);
     }
 
     @Override

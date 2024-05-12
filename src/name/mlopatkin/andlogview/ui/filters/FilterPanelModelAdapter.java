@@ -16,10 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
-
 import name.mlopatkin.andlogview.filters.Filter;
-import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -28,30 +25,17 @@ import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
-import com.google.common.collect.ImmutableList;
-
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-
 import javax.inject.Inject;
 
 /**
  * Adapts {@link MutableFilterModel} to be used in {@link FilterPanel}.
  */
-class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPanelModel<PanelFilter> {
-    private final Function<? super Filter, ? extends @Nullable PanelFilter> panelFilterFactory;
-    private final Map<Filter, PanelFilter> filters = new HashMap<>();
+class FilterPanelModelAdapter extends BaseFilterModelAdapter<PanelFilter> implements FilterPanelModel<PanelFilter> {
     private final Subject<FilterPanelModel.FilterPanelModelListener<? super PanelFilter>> listeners = new Subject<>();
-    private @MonotonicNonNull FilterModel model;
 
     @Inject
     FilterPanelModelAdapter(PanelFilter.Factory panelFilterFactory) {
-        this((Filter f) -> {
+        super((Filter f) -> {
             if (f instanceof FilterFromDialog filterFromDialog) {
                 return panelFilterFactory.create(filterFromDialog);
             }
@@ -59,15 +43,10 @@ class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPa
         });
     }
 
-    FilterPanelModelAdapter(Function<? super Filter, ? extends @Nullable PanelFilter> panelFilterFactory) {
-        this.panelFilterFactory = panelFilterFactory;
-    }
-
     @Inject
     @Override
     public ScopedObserver setModel(FilterModel model) {
-        this.model = model;
-        return FilterCollection.super.setModel(model);
+        return super.setModel(model);
     }
 
     @Override
@@ -92,15 +71,6 @@ class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPa
     }
 
     @Override
-    public @Nullable PanelFilter transformFilter(Filter filter) {
-        return getOrCreatePanelFilterFor(filter);
-    }
-
-    private @Nullable PanelFilter getOrCreatePanelFilterFor(Filter filter) {
-        return filters.computeIfAbsent(filter, panelFilterFactory);
-    }
-
-    @Override
     public void setFilterEnabled(PanelFilter filter, boolean enabled) {
         filter.setEnabled(enabled);
     }
@@ -118,14 +88,5 @@ class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPa
     @Override
     public void editFilter(PanelFilter filter) {
         filter.openFilterEditor();
-    }
-
-    @Override
-    public ImmutableList<PanelFilter> getFilters() {
-        return model.getFilters()
-                .stream()
-                .map(this::getOrCreatePanelFilterFor)
-                .filter(Objects::nonNull)
-                .collect(toImmutableList());
     }
 }
