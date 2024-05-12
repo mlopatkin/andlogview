@@ -27,7 +27,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -70,8 +69,8 @@ public class FilterPanelModelAdapter implements FilterCollection<PanelFilter> {
     }
 
     @Override
-    public Function<? super Filter, ? extends @Nullable PanelFilter> createObserverTransformer() {
-        return this::getOrCreateFilter;
+    public @Nullable PanelFilter transformFilter(Filter filter) {
+        return getOrCreateFilter(filter);
     }
 
     private @Nullable PanelFilter getOrCreateFilter(Filter filter) {

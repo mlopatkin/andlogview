@@ -25,7 +25,7 @@ import java.util.function.Function;
  *
  * @param <T> the type of the data objects
  */
-public abstract class TransformingObserver<T> implements FilterModel.Observer {
+abstract class TransformingObserver<T> implements FilterModel.Observer {
     private final Function<? super Filter, ? extends @Nullable T> filterFunction;
 
     /**
@@ -92,11 +92,6 @@ public abstract class TransformingObserver<T> implements FilterModel.Observer {
      * @param model the model
      * @param oldFilter the data of the replaced filter
      * @param newFilter the data of the replacement filter
-     * @implNote this implementation calls {@link #onMyFilterRemoved(FilterModel, Object)} and
-     *         {@link #onMyFilterAdded(FilterModel, Object)} in sequence.
      */
-    protected void onMyFilterReplaced(FilterModel model, T oldFilter, T newFilter) {
-        onMyFilterRemoved(model, oldFilter);
-        onMyFilterAdded(model, newFilter);
-    }
+    protected abstract void onMyFilterReplaced(FilterModel model, T oldFilter, T newFilter);
 }

@@ -50,13 +50,8 @@ public interface FilterModel {
          * @param model the origin of the notification
          * @param oldFilter the filter that was removed
          * @param newFilter the filter that was added instead of the {@code oldFilter}
-         * @implNote the default implementation just calls {@link #onFilterRemoved(FilterModel, Filter)} and
-         *         {@link #onFilterAdded(FilterModel, Filter)}.
          */
-        default void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-            onFilterRemoved(model, oldFilter);
-            onFilterAdded(model, newFilter);
-        }
+        void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter);
     }
 
     /**

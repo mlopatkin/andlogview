@@ -25,7 +25,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -46,8 +45,8 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     }
 
     @Override
-    public Function<? super Filter, ? extends @Nullable Filter> createObserverTransformer() {
-        return FilteringMode.WINDOW.filterMode();
+    public @Nullable Filter transformFilter(Filter filter) {
+        return FilteringMode.WINDOW.equals(filter.getMode()) ? filter : null;
     }
 
     @Override

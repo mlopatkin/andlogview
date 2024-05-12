@@ -22,8 +22,6 @@ import com.google.common.collect.SetMultimap;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.function.Function;
-
 /**
  * Manages a list of filters and composes them based on their type. At first, we hide anything that matches any of the
  * {@link FilteringMode#HIDE}. Then we hide anything that doesn't match at least one of the {@link
@@ -49,14 +47,12 @@ public class FilterChain implements FilterCollection<Filter> {
     }
 
     @Override
-    public Function<? super Filter, ? extends @Nullable Filter> createObserverTransformer() {
-        return filter -> {
-            var mode = filter.getMode();
-            if (FilteringMode.SHOW.equals(mode) || FilteringMode.HIDE.equals(mode)) {
-                return filter;
-            }
-            return null;
-        };
+    public @Nullable Filter transformFilter(Filter filter) {
+        var mode = filter.getMode();
+        if (FilteringMode.SHOW.equals(mode) || FilteringMode.HIDE.equals(mode)) {
+            return filter;
+        }
+        return null;
     }
 
     @Override

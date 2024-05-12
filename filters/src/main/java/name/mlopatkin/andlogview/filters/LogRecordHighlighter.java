@@ -24,15 +24,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
     private final List<ColoringFilter> filters = new ArrayList<>();
     private final List<ColoringFilter> reversedView = Lists.reverse(filters);
 
     @Override
-    public Function<? super Filter, ? extends @Nullable ColoringFilter> createObserverTransformer() {
-        return f -> (ColoringFilter) FilteringMode.HIGHLIGHT.filterMode().apply(f);
+    public @Nullable ColoringFilter transformFilter(Filter filter) {
+        return (ColoringFilter) (FilteringMode.HIGHLIGHT.equals(filter.getMode())
+                        ? filter
+                        : null);
     }
 
     @Override
