@@ -128,7 +128,6 @@ tasks.withType<JavaCompile>().configureEach {
                 "-Xep:JavaUtilDate:OFF",
                 "-Xep:UnusedVariable:OFF", // Incompatible with Dagger-generated class
                 "-Xep:EmptyBlockTag:OFF",
-                "-Xep:UnnecessaryLambda:OFF",
         )
         // Configure NullAway
         option("NullAway:AnnotatedPackages", "name.mlopatkin")

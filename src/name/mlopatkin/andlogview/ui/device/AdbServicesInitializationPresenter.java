@@ -99,7 +99,7 @@ public class AdbServicesInitializationPresenter {
      * The initialization of the adb services triggered by this method cannot be cancelled.
      */
     public AdbDeviceList withAdbDeviceList() {
-        return bridge.prepareAdbDeviceList(ignoreCancellations(adbErrorHandler()));
+        return bridge.prepareAdbDeviceList(ignoreCancellations(this::handleAdbError));
     }
 
     /**
@@ -134,7 +134,7 @@ public class AdbServicesInitializationPresenter {
             showProgressWithToken(allowCancellation, token, () -> result.cancel(false));
         }
         future.handleAsync(
-                        consumingHandler(action, ignoreCancellations(adbErrorHandler()).andThen(failureHandler)),
+                        consumingHandler(action, ignoreCancellations(this::handleAdbError).andThen(failureHandler)),
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
         // TODO(mlopatkin) Should we always show a failure message if the ADB fails/is failed for the interactive
@@ -161,19 +161,17 @@ public class AdbServicesInitializationPresenter {
         }
     }
 
-    private Consumer<Throwable> adbErrorHandler() {
-        return failure -> {
-            if (!hasShownErrorMessage) {
-                hasShownErrorMessage = true;
-                // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
-                // showing the dialog to prevent re-entrance and double dialog.
-                if (MyThrowables.unwrapUninteresting(failure) instanceof AdbException adbException) {
-                    view.showAdbLoadingError(adbException.getMessage());
-                } else {
-                    view.showAdbLoadingError("Failed to initialize ADB");
-                }
+    private void handleAdbError(Throwable failure) {
+        if (!hasShownErrorMessage) {
+            hasShownErrorMessage = true;
+            // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
+            // showing the dialog to prevent re-entrance and double dialog.
+            if (MyThrowables.unwrapUninteresting(failure) instanceof AdbException adbException) {
+                view.showAdbLoadingError(adbException.getMessage());
+            } else {
+                view.showAdbLoadingError("Failed to initialize ADB");
             }
-        };
+        }
     }
 
     /**

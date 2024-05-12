@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -46,7 +45,7 @@ public class Main {
 
     public static void main(String[] args) {
         Configuration.init();
-        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+        Thread.setDefaultUncaughtExceptionHandler(Main::uncaughtHandler);
 
         var commandLine = CommandLine.fromArgs(args);
         boolean isDebugMode = commandLine.isDebug();
@@ -130,7 +129,7 @@ public class Main {
         }
     }
 
-    private static final UncaughtExceptionHandler exceptionHandler = (thread, throwable) -> {
+    private static void uncaughtHandler(Thread thread, Throwable throwable) {
         try {
             logger.error("Uncaught exception in " + thread.getName(), throwable);
             ErrorDialogsHelper.showError(null,
@@ -141,5 +140,5 @@ public class Main {
             // bad idea to log something if we already failed with logging
             // logger.error("Exception in exception handler", ex);
         }
-    };
+    }
 }

@@ -27,15 +27,12 @@ import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.utils.Try;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
-
-import java.util.function.IntFunction;
 
 class CollectingHandlerTest {
     private static final Timestamp TIME =
             Try.ofCallable(() -> TimeFormatUtils.getTimeFromString("10-01 10:00:00.000")).get();
-
-    private static final IntFunction<String> PID_LOOKUP = id -> (id == 1) ? "app" : null;
 
     @Test
     void createdRecordsHaveNoBufferAndAppNameByDefault() {
@@ -168,7 +165,7 @@ class CollectingHandlerTest {
 
     @Test
     void pidLookupIsPerformedForKnownPid() {
-        ListCollectingHandler collector = new ListCollectingHandler(PID_LOOKUP);
+        ListCollectingHandler collector = new ListCollectingHandler(this::lookupPid);
 
         collector.logRecord(1, Priority.DEBUG, "TAG", "message");
         collector.logRecord(TIME, 1, 2, Priority.DEBUG, "TAG", "message");
@@ -181,7 +178,7 @@ class CollectingHandlerTest {
 
     @Test
     void pidLookupIsNotPerformedForUnknownPid() {
-        ListCollectingHandler collector = new ListCollectingHandler(PID_LOOKUP);
+        ListCollectingHandler collector = new ListCollectingHandler(this::lookupPid);
 
         collector.logRecord(3, Priority.DEBUG, "TAG", "message");
         collector.logRecord(TIME, 3, 2, Priority.DEBUG, "TAG", "message");
@@ -194,7 +191,7 @@ class CollectingHandlerTest {
 
     @Test
     void explicitAppNameInStudioLogsOverridesPidLookup() {
-        ListCollectingHandler collector = new ListCollectingHandler(PID_LOOKUP);
+        ListCollectingHandler collector = new ListCollectingHandler(this::lookupPid);
         collector.logRecord(TIME, 1, 2, Priority.DEBUG, "TAG", "message", "otherApp");
 
         assertOnlyRecord(collector).hasAppName("otherApp");
@@ -208,5 +205,9 @@ class CollectingHandlerTest {
         collector.logRecord(Priority.DEBUG, "TAG", "message");
         collector.logRecord(1, 2, Priority.DEBUG, "message");
         collector.logRecord(TIME, 1, Priority.DEBUG, "TAG", "message");
+    }
+
+    private @Nullable String lookupPid(int pid) {
+        return (pid == 1) ? "app" : null;
     }
 }
