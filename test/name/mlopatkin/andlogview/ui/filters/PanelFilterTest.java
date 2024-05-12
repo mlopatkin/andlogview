@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @ExtendWith(MockitoExtension.class)
-class PanelFilterImplTest {
+class PanelFilterTest {
     @Mock
     FilterDialogFactory dialogFactory;
 
@@ -56,8 +56,8 @@ class PanelFilterImplTest {
         inOrder.verify(mockHandle).bringToFront();
     }
 
-    PanelFilterImpl createPanelFilter(FilterFromDialog filter) {
-        return new PanelFilterImpl(filterModel, dialogFactory, filter);
+    PanelFilter createPanelFilter(FilterFromDialog filter) {
+        return new PanelFilter(filterModel, dialogFactory, filter);
     }
 
     FilterFromDialog createFilter() {

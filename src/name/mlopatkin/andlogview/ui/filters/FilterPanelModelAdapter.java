@@ -48,7 +48,7 @@ class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPa
     private @MonotonicNonNull FilterModel model;
 
     @Inject
-    FilterPanelModelAdapter(PanelFilterImpl.Factory panelFilterFactory) {
+    FilterPanelModelAdapter(PanelFilter.Factory panelFilterFactory) {
         this((Filter f) -> {
             if (f instanceof FilterFromDialog filterFromDialog) {
                 return panelFilterFactory.create(filterFromDialog);

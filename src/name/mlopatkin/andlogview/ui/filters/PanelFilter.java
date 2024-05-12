@@ -16,26 +16,72 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.PanelFilterView;
+import name.mlopatkin.andlogview.utils.MyFutures;
 
-/**
- * This interface must be implemented by the filter instance that needs to be displayed in filter panel.
- */
-interface PanelFilter extends PanelFilterView {
-    /**
-     * Enables or disables a filter represented by the button (typically by clicking it).
-     *
-     * @param enabled new state of the button
-     */
-    void setEnabled(boolean enabled);
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
-    /**
-     * Opens editor for the button (when user selects the action from the context menu).
-     */
-    void openFilterEditor();
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-    /**
-     * Deletes filter (when user selects the action from the context menu).
-     */
-    void delete();
+class PanelFilter implements PanelFilterView {
+    private final FilterModel model;
+    private final FilterDialogFactory dialogFactory;
+    private final FilterFromDialog filter;
+
+    private @Nullable FilterDialogHandle editorHandle;
+
+    @AssistedInject
+    public PanelFilter(FilterModel model, FilterDialogFactory dialogFactory, @Assisted FilterFromDialog filter) {
+        this.model = model;
+        this.dialogFactory = dialogFactory;
+        this.filter = filter;
+    }
+
+    public void setEnabled(boolean enabled) {
+        if (enabled != filter.isEnabled()) {
+            model.replaceFilter(filter, enabled ? filter.enabled() : filter.disabled());
+        }
+    }
+
+    public void openFilterEditor() {
+        var editorHandle = this.editorHandle;
+        if (editorHandle != null) {
+            editorHandle.bringToFront();
+            return;
+        }
+        editorHandle = this.editorHandle = dialogFactory.startEditFilterDialog(filter);
+        editorHandle.getResult().thenAccept(optFilter -> {
+            optFilter.ifPresent(newFilter -> {
+                if (model.getFilters().contains(filter)) {
+                    model.replaceFilter(filter, newFilter);
+                }
+            });
+            this.editorHandle = null;
+        }).exceptionally(MyFutures::uncaughtException);
+    }
+
+    public void delete() {
+        model.removeFilter(filter);
+    }
+
+    @Override
+    public String getTooltip() {
+        return filter.getTooltip();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return filter.isEnabled();
+    }
+
+    @AssistedFactory
+    interface Factory {
+        PanelFilter create(FilterFromDialog filter);
+    }
 }
