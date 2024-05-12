@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Mikhail Lopatkin
+ * Copyright 2024 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui.filterpanel;
+package name.mlopatkin.andlogview.ui.filters;
+
+import name.mlopatkin.andlogview.ui.filterpanel.PanelFilterView;
 
 /**
  * This interface must be implemented by the filter instance that needs to be displayed in filter panel.
- * <p/>
- * The {@link FilterPanelModelImpl} talks to embedder via this interface.
  */
-public interface PanelFilter extends PanelFilterView {
+interface PanelFilter extends PanelFilterView {
     /**
      * Enables or disables a filter represented by the button (typically by clicking it).
      *

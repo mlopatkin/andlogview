@@ -22,7 +22,7 @@ package name.mlopatkin.andlogview.ui.filterpanel;
  */
 public interface FilterCreator {
     /**
-     * Opens a filter creation dialog. Embedder expected to add {@link PanelFilter} to {@link FilterPanelModel} when
+     * Opens a filter creation dialog. Embedder expected to add {@link PanelFilterView} to {@link FilterPanelModel} when
      * dialog is completed successfully.
      */
     void createFilterWithDialog();

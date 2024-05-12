@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModule;
 import name.mlopatkin.andlogview.ui.filters.FilterModule;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -44,7 +43,6 @@ import javax.swing.JTable;
                     MainFramePrefsModule.class,
                     StatusPanelModule.class,
                     PreferencesUiModule.class,
-                    FilterPanelModule.class,
                     MainFrameAdbModule.class,
                     MainFrameSearchModule.class})
 public class MainFrameModule {

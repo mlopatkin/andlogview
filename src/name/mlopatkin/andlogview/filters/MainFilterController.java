@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.filters;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
-import name.mlopatkin.andlogview.ui.filters.FilterPanelModelAdapter;
 import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
@@ -42,7 +41,6 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             // TODO(mlopatkin): figure out how to bootstrap these ignored folks. Nothing really depends on them, so
             //  nothing causes them to be created.
             IndexFilterCollection ignoredIndexFilters,
-            FilterPanelModelAdapter ignoredAdapter,
             FilterDialogFactory dialogFactory,
             FilterModel filterModel
     ) {

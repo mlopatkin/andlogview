@@ -20,7 +20,6 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
-import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
 import dagger.assisted.Assisted;

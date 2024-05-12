@@ -17,14 +17,7 @@
 /**
  * The bottom panel that can be used to create/delete/toggle filters.
  * <p>
- * Embedder pushes data via an instance of the
- * {@link name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel}.
- * <p>
- * Overall architecture of the panel is quite complicated. FilterPanel holds buttons. Each button corresponds to the
- * instance of the {@link name.mlopatkin.andlogview.ui.filterpanel.PanelFilterView}. Toggling button
- * or selecting context menu action is translated to a call to FilterPanelModel. FilterPanelModel maintains a mapping
- * of PanelFilterViews to {@link name.mlopatkin.andlogview.ui.filterpanel.PanelFilter}s. Each method call translate to
- * call to PanelFilter's method. PanelFilter is provided by the embedder, and it will change internal
- * state of the filter model. Then embedder will then change state of the FilterPanelModel via its public method.
+ * The panel interacts with the filters through {@link name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel}. All
+ * changes are first requested through the model. Then the result is delivered through the usual change notifications.
  */
 package name.mlopatkin.andlogview.ui.filterpanel;

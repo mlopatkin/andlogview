@@ -17,8 +17,11 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 
 import dagger.Binds;
 import dagger.Module;
@@ -41,5 +44,11 @@ public abstract class FilterModule {
         filters.setModel(filterModel);
 
         return filterModel;
+    }
+
+    @Provides
+    @MainFrameScoped
+    static FilterPanel filterPanel(Theme theme, FilterPanelModelAdapter model, FilterCreator filterCreator) {
+        return new FilterPanel(theme, model, filterCreator);
     }
 }

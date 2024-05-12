@@ -16,71 +16,114 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModelImpl;
-import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.collect.ImmutableList;
+
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 /**
- * Binds together the {@link FilterPanelModelImpl} and {@link FilterModel}.
+ * Adapts {@link FilterModel} to be used in {@link FilterPanel}.
  */
-public class FilterPanelModelAdapter implements FilterCollection<PanelFilter> {
-    private final FilterPanelModelImpl filterPanelModel;
-    private final PanelFilterImpl.Factory panelFilterFactory;
-    private final Map<FilterFromDialog, PanelFilter> filters = new HashMap<>();
+class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPanelModel<PanelFilter> {
+    private final Function<? super Filter, ? extends @Nullable PanelFilter> panelFilterFactory;
+    private final Map<Filter, PanelFilter> filters = new HashMap<>();
+    private final Subject<FilterPanelModel.FilterPanelModelListener<? super PanelFilter>> listeners = new Subject<>();
+    private @MonotonicNonNull FilterModel model;
 
     @Inject
-    FilterPanelModelAdapter(
-            FilterPanelModelImpl filterPanelModel,
-            PanelFilterImpl.Factory panelFilterFactory
-    ) {
-        this.filterPanelModel = filterPanelModel;
+    FilterPanelModelAdapter(PanelFilterImpl.Factory panelFilterFactory) {
+        this((Filter f) -> {
+            if (f instanceof FilterFromDialog filterFromDialog) {
+                return panelFilterFactory.create(filterFromDialog);
+            }
+            return null;
+        });
+    }
+
+    FilterPanelModelAdapter(Function<? super Filter, ? extends @Nullable PanelFilter> panelFilterFactory) {
         this.panelFilterFactory = panelFilterFactory;
     }
 
     @Inject
     @Override
     public FilterModel.Observer setModel(FilterModel model) {
+        this.model = model;
         return FilterCollection.super.setModel(model);
     }
 
     @Override
     public void addFilter(PanelFilter filter) {
-        filterPanelModel.addFilter(filter);
+        for (var listener : listeners) {
+            listener.onFilterAdded(filter);
+        }
     }
 
     @Override
     public void removeFilter(PanelFilter filter) {
-        filterPanelModel.removeFilter(filter);
+        for (var listener : listeners) {
+            listener.onFilterRemoved(filter);
+        }
     }
 
     @Override
     public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
-        filterPanelModel.replaceFilter(oldFilter, newFilter);
+        for (var listener : listeners) {
+            listener.onFilterReplaced(oldFilter, newFilter);
+        }
     }
 
     @Override
     public @Nullable PanelFilter transformFilter(Filter filter) {
-        return getOrCreateFilter(filter);
+        return getOrCreatePanelFilterFor(filter);
     }
 
-    private @Nullable PanelFilter getOrCreateFilter(Filter filter) {
-        if (!(filter instanceof FilterFromDialog filterFromDialog)) {
-            return null;
-        }
-        return filters.computeIfAbsent(filterFromDialog, this::buildPanelFilter);
+    private @Nullable PanelFilter getOrCreatePanelFilterFor(Filter filter) {
+        return filters.computeIfAbsent(filter, panelFilterFactory);
     }
 
-    private PanelFilter buildPanelFilter(FilterFromDialog filter) {
-        return panelFilterFactory.create(filter);
+    @Override
+    public void setFilterEnabled(PanelFilter filter, boolean enabled) {
+        filter.setEnabled(enabled);
+    }
+
+    @Override
+    public void removeFilterForView(PanelFilter filter) {
+        filter.delete();
+    }
+
+    @Override
+    public void addListener(FilterPanelModelListener<? super PanelFilter> listener) {
+        listeners.asObservable().addObserver(listener);
+    }
+
+    @Override
+    public void editFilter(PanelFilter filter) {
+        filter.openFilterEditor();
+    }
+
+    @Override
+    public ImmutableList<PanelFilter> getFilters() {
+        return model.getFilters()
+                .stream()
+                .map(this::getOrCreatePanelFilterFor)
+                .filter(Objects::nonNull)
+                .collect(toImmutableList());
     }
 }
