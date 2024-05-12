@@ -31,9 +31,8 @@ import javax.inject.Inject;
  * An implementation of {@link FilterPanelModel}.
  */
 @MainFrameScoped
-public class FilterPanelModelImpl implements FilterPanelModel {
-
-    private final Set<FilterPanelModelListener> listeners = new HashSet<>();
+public class FilterPanelModelImpl implements FilterPanelModel<PanelFilter> {
+    private final Set<FilterPanelModelListener<? super PanelFilter>> listeners = new HashSet<>();
     private final List<PanelFilter> filters = new ArrayList<>();
 
     @Inject
@@ -46,7 +45,7 @@ public class FilterPanelModelImpl implements FilterPanelModel {
      */
     public void addFilter(PanelFilter filter) {
         filters.add(filter);
-        for (FilterPanelModelListener listener : listeners) {
+        for (var listener : listeners) {
             listener.onFilterAdded(filter);
         }
     }
@@ -63,45 +62,41 @@ public class FilterPanelModelImpl implements FilterPanelModel {
 
         filters.set(oldPos, newFilter);
 
-        for (FilterPanelModelListener listener : listeners) {
+        for (var listener : listeners) {
             listener.onFilterReplaced(oldFilter, newFilter);
         }
     }
 
     public void removeFilter(PanelFilter removedFilter) {
         if (filters.remove(removedFilter)) {
-            for (FilterPanelModelListener listener : listeners) {
+            for (var listener : listeners) {
                 listener.onFilterRemoved(removedFilter);
             }
         }
     }
 
     @Override
-    public void setFilterEnabled(PanelFilterView filter, boolean enabled) {
-        getPanelFilterForView(filter).setEnabled(enabled);
+    public void setFilterEnabled(PanelFilter filter, boolean enabled) {
+        filter.setEnabled(enabled);
     }
 
     @Override
-    public void removeFilterForView(PanelFilterView filter) {
-        getPanelFilterForView(filter).delete();
+    public void removeFilterForView(PanelFilter filter) {
+        filter.delete();
     }
 
     @Override
-    public void addListener(FilterPanelModelListener listener) {
+    public void addListener(FilterPanelModelListener<? super PanelFilter> listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void editFilter(PanelFilterView filter) {
-        getPanelFilterForView(filter).openFilterEditor();
+    public void editFilter(PanelFilter filter) {
+        filter.openFilterEditor();
     }
 
     @Override
-    public ImmutableList<PanelFilterView> getFilters() {
+    public ImmutableList<PanelFilter> getFilters() {
         return ImmutableList.copyOf(filters);
-    }
-
-    private PanelFilter getPanelFilterForView(PanelFilterView filterView) {
-        return (PanelFilter) filterView;
     }
 }

@@ -16,11 +16,15 @@
 
 package name.mlopatkin.andlogview.ui.filterpanel;
 
-import dagger.Binds;
+import name.mlopatkin.andlogview.ui.themes.Theme;
+
 import dagger.Module;
+import dagger.Provides;
 
 @Module
 public abstract class FilterPanelModule {
-    @Binds
-    abstract FilterPanelModel filterPanelModel(FilterPanelModelImpl impl);
+    @Provides
+    static FilterPanel filterPanel(Theme theme, FilterPanelModelImpl model, FilterCreator filterCreator) {
+        return new FilterPanel(theme, model, filterCreator);
+    }
 }

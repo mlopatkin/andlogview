@@ -34,18 +34,14 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
-public class FilterPanel extends FilterPanelUi implements FilterPanelModel.FilterPanelModelListener {
+public class FilterPanel extends FilterPanelUi {
     private final ThemedWidgetFactory themed;
-    private final FilterPanelModel model;
-    private final Map<PanelFilterView, FilterButton> buttonByFilter = new HashMap<>();
-
     private final ImageIcon filterIcon;
 
     private final Action acScrollLeft;
@@ -56,11 +52,10 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
     private int leftmostButton = -1;
     private int rightmostButton = -1;
 
-    @Inject
-    public FilterPanel(Theme theme, FilterPanelModel model, FilterCreator filterCreator) {
+    public <V extends PanelFilterView> FilterPanel(Theme theme, FilterPanelModel<V> model,
+            FilterCreator filterCreator) {
         super((int) theme.getWidgetFactory().scale(36));
         this.themed = theme.getWidgetFactory();
-        this.model = model;
 
         themed.configureFilterPanel(this, content);
 
@@ -68,8 +63,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         ImageIcon addIcon = themed.getIcon(Icons.ADD);
         ImageIcon nextIcon = themed.getIcon(Icons.NEXT);
         ImageIcon prevIcon = themed.getIcon(Icons.PREVIOUS);
-
-        model.addListener(this);
 
         ComponentListener resizeListener = new ComponentAdapter() {
             @Override
@@ -94,8 +87,11 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         themed.configureFilterPanelScrollButton(btScrollLeft);
         themed.configureFilterPanelScrollButton(btScrollRight);
 
-        for (PanelFilterView filter : model.getFilters()) {
-            onFilterAdded(filter);
+        var listener = new ModelListenerImpl<>(model);
+        model.addListener(listener);
+
+        for (var filter : model.getFilters()) {
+            listener.onFilterAdded(filter);
         }
     }
 
@@ -111,40 +107,6 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         if (rightmostButton < content.getComponentCount() - 1) {
             scrollTo(rightmostButton + 1);
         }
-    }
-
-    @Override
-    public void onFilterAdded(PanelFilterView newFilter) {
-        FilterButton button = new FilterButton(newFilter);
-        buttonByFilter.put(newFilter, button);
-        content.add(button);
-        menuHandler.addPopup(button);
-        revalidate();
-        repaint();
-    }
-
-    @Override
-    public void onFilterRemoved(PanelFilterView filter) {
-        FilterButton button = buttonByFilter.remove(filter);
-        if (button != null) {
-            content.remove(button);
-            revalidate();
-            repaint();
-        }
-    }
-
-    @Override
-    public void onFilterReplaced(PanelFilterView oldFilter, PanelFilterView newFilter) {
-        assert oldFilter != null;
-        assert newFilter != null;
-
-        FilterButton button = buttonByFilter.remove(oldFilter);
-        assert button != null;
-        assert button.getFilter() == oldFilter;
-        assert buttonByFilter.get(newFilter) == null;
-
-        button.setFilter(newFilter);
-        buttonByFilter.put(newFilter, button);
     }
 
     private void computeButtonIndices() {
@@ -188,22 +150,24 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
         btScrollLeft.setVisible(canScroll);
     }
 
-    private final class FilterButton extends JToggleButton implements ActionListener {
-        private PanelFilterView filter;
+    private final class FilterButton<V extends PanelFilterView> extends JToggleButton implements ActionListener {
+        private final FilterPanelModel<V> panelModel;
+        private V filter;
 
-        public FilterButton(PanelFilterView filter) {
+        public FilterButton(FilterPanelModel<V> model, V filter) {
             super(filterIcon, true);
+            this.panelModel = model;
 
             setFilter(filter);
             addActionListener(this);
             themed.configureFilterPanelButton(this);
         }
 
-        public PanelFilterView getFilter() {
+        public V getFilter() {
             return filter;
         }
 
-        public void setFilter(PanelFilterView newFilter) {
+        public void setFilter(V newFilter) {
             filter = newFilter;
             setSelected(filter.isEnabled());
             setToolTipText(filter.getTooltip());
@@ -211,31 +175,39 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            FilterPanel.this.model.setFilterEnabled(filter, isSelected());
+            panelModel.setFilterEnabled(filter, isSelected());
         }
 
         @Override
         public String toString() {
             return filter.toString() + " " + super.toString();
         }
+
+        public void editFilter() {
+            panelModel.editFilter(filter);
+        }
+
+        public void removeFilter() {
+            panelModel.removeFilterForView(filter);
+        }
     }
 
     private class PopupMenuHandler {
         private final JPopupMenu menu = new JPopupMenu();
-        private @Nullable FilterButton activeButton;
+        private @Nullable FilterButton<?> activeButton;
 
         @SuppressWarnings("NullAway")
         PopupMenuHandler() {
             JMenuItem editItem = new JMenuItem("Edit filter");
             JMenuItem removeItem = new JMenuItem("Remove filter");
             // TODO(mlopatkin) This can probably be rewritten to ensure that activeButton is nonnull.
-            editItem.addActionListener(e -> model.editFilter(activeButton.getFilter()));
-            removeItem.addActionListener(e -> model.removeFilterForView(activeButton.getFilter()));
+            editItem.addActionListener(e -> activeButton.editFilter());
+            removeItem.addActionListener(e -> activeButton.removeFilter());
             menu.add(editItem);
             menu.add(removeItem);
         }
 
-        void addPopup(final FilterButton button) {
+        void addPopup(final FilterButton<?> button) {
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
@@ -256,6 +228,53 @@ public class FilterPanel extends FilterPanelUi implements FilterPanelModel.Filte
                     menu.show(e.getComponent(), e.getX(), e.getY());
                 }
             });
+        }
+    }
+
+    /**
+     * A generified portion of code. It is used to hide {@code V} subtype from the clients of FilterPanel itself.
+     * @param <V> the concrete type of the view
+     */
+    private class ModelListenerImpl<V extends PanelFilterView> implements FilterPanelModel.FilterPanelModelListener<V> {
+        private final FilterPanelModel<V> model;
+        private final Map<V, FilterButton<V>> buttonByFilter = new HashMap<>();
+
+        public ModelListenerImpl(FilterPanelModel<V> model) {
+            this.model = model;
+        }
+
+        @Override
+        public void onFilterAdded(V newFilter) {
+            var button = new FilterButton<>(model, newFilter);
+            buttonByFilter.put(newFilter, button);
+            content.add(button);
+            menuHandler.addPopup(button);
+            revalidate();
+            repaint();
+        }
+
+        @Override
+        public void onFilterRemoved(V filter) {
+            var button = buttonByFilter.remove(filter);
+            if (button != null) {
+                content.remove(button);
+                revalidate();
+                repaint();
+            }
+        }
+
+        @Override
+        public void onFilterReplaced(V oldFilter, V newFilter) {
+            assert oldFilter != null;
+            assert newFilter != null;
+
+            var button = buttonByFilter.remove(oldFilter);
+            assert button != null;
+            assert button.getFilter() == oldFilter;
+            assert buttonByFilter.get(newFilter) == null;
+
+            button.setFilter(newFilter);
+            buttonByFilter.put(newFilter, button);
         }
     }
 }

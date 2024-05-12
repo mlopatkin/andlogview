@@ -23,8 +23,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.collect.ImmutableList;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -37,7 +35,7 @@ public class FilterPanelModelImplTest {
     public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock
-    private FilterPanelModel.FilterPanelModelListener listener;
+    private FilterPanelModel.FilterPanelModelListener<PanelFilter> listener;
 
     @Mock
     private PanelFilter filter;
@@ -139,7 +137,7 @@ public class FilterPanelModelImplTest {
     public void testGetFilters() throws Exception {
         FilterPanelModelImpl model = new FilterPanelModelImpl();
 
-        ImmutableList<PanelFilterView> filters = model.getFilters();
+        var filters = model.getFilters();
         assertTrue(filters.isEmpty());
 
         model.addFilter(filter);

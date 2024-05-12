@@ -19,16 +19,18 @@ package name.mlopatkin.andlogview.ui.filterpanel;
 import com.google.common.collect.ImmutableList;
 
 /**
- * This is a state of the panel with filter buttons. It only knows what PanelFilter provides, so it can remove
- * filters, enable or disable them. But it cannot, e.g. persist filters, it is the responsibility of the higher level.
+ * This is a state of the panel with filter buttons. It provides the panel a way to obtain filter view models, as well
+ * as to manipulate the available filters.
+ *
+ * @param <V> the view model type
  */
-public interface FilterPanelModel {
-    interface FilterPanelModelListener {
-        void onFilterAdded(PanelFilterView newFilter);
+public interface FilterPanelModel<V extends PanelFilterView> {
+    interface FilterPanelModelListener<V extends PanelFilterView> {
+        void onFilterAdded(V newFilter);
 
-        void onFilterRemoved(PanelFilterView filter);
+        void onFilterRemoved(V filter);
 
-        void onFilterReplaced(PanelFilterView oldFilter, PanelFilterView newFilter);
+        void onFilterReplaced(V oldFilter, V newFilter);
     }
 
     /**
@@ -37,23 +39,23 @@ public interface FilterPanelModel {
      * @param filter the filter view
      * @param enabled the requested status
      */
-    void setFilterEnabled(PanelFilterView filter, boolean enabled);
+    void setFilterEnabled(V filter, boolean enabled);
 
     /**
      * Requests to remove the filter represented by the view.
      *
      * @param filter the filter view
      */
-    void removeFilterForView(PanelFilterView filter);
+    void removeFilterForView(V filter);
 
-    void addListener(FilterPanelModelListener listener);
+    void addListener(FilterPanelModelListener<? super V> listener);
 
     /**
      * Requests to edit the filter represented by the view.
      *
      * @param filter the filter view
      */
-    void editFilter(PanelFilterView filter);
+    void editFilter(V filter);
 
-    ImmutableList<PanelFilterView> getFilters();
+    ImmutableList<V> getFilters();
 }
