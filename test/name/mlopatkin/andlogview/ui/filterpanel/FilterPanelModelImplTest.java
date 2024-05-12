@@ -32,7 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-public class FilterPanelModelTest {
+public class FilterPanelModelImplTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -44,7 +44,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testAddFilterNotifies() throws Exception {
-        FilterPanelModel model = new FilterPanelModel();
+        FilterPanelModelImpl model = new FilterPanelModelImpl();
         model.addListener(listener);
 
         model.addFilter(filter);
@@ -54,7 +54,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testRemoveFilterNotifies() throws Exception {
-        FilterPanelModel model = new FilterPanelModel();
+        FilterPanelModelImpl model = new FilterPanelModelImpl();
         model.addFilter(filter);
         model.addListener(listener);
 
@@ -65,7 +65,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testRemoveFilterThatWasntAddedDoesntNotify() throws Exception {
-        FilterPanelModel model = new FilterPanelModel();
+        FilterPanelModelImpl model = new FilterPanelModelImpl();
         model.addListener(listener);
 
         model.removeFilter(filter);
@@ -76,7 +76,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testReplaceFilterNotifies() throws Exception {
-        FilterPanelModel model = new FilterPanelModel();
+        FilterPanelModelImpl model = new FilterPanelModelImpl();
         model.addFilter(filter);
         model.addListener(listener);
 
@@ -88,7 +88,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testEnableFilter() throws Exception {
-        FilterPanelModel model = new FilterPanelModel();
+        FilterPanelModelImpl model = new FilterPanelModelImpl();
         model.addFilter(filter);
         model.addListener(listener);
 
@@ -103,7 +103,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testRemoveFromDeleteIsNoOp() throws Exception {
-        final FilterPanelModel model = new FilterPanelModel();
+        final FilterPanelModelImpl model = new FilterPanelModelImpl();
         PanelFilter filter = new PanelFilter() {
             @Override
             public void setEnabled(boolean enabled) {}
@@ -137,7 +137,7 @@ public class FilterPanelModelTest {
 
     @Test
     public void testGetFilters() throws Exception {
-        FilterPanelModel model = new FilterPanelModel();
+        FilterPanelModelImpl model = new FilterPanelModelImpl();
 
         ImmutableList<PanelFilterView> filters = model.getFilters();
         assertTrue(filters.isEmpty());

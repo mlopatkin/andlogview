@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.ui.filterpanel;
 /**
  * This interface must be implemented by the filter instance that needs to be displayed in filter panel.
  * <p/>
- * The {@link FilterPanelModel} talks to embedder via this interface.
+ * The {@link FilterPanelModelImpl} talks to embedder via this interface.
  */
 public interface PanelFilter extends PanelFilterView {
     /**

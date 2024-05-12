@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
+import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModelImpl;
 import name.mlopatkin.andlogview.ui.filterpanel.PanelFilter;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -31,16 +31,16 @@ import java.util.Map;
 import javax.inject.Inject;
 
 /**
- * Binds together the {@link FilterPanelModel} and {@link FilterModel}.
+ * Binds together the {@link FilterPanelModelImpl} and {@link FilterModel}.
  */
 public class FilterPanelModelAdapter implements FilterCollection<PanelFilter> {
-    private final FilterPanelModel filterPanelModel;
+    private final FilterPanelModelImpl filterPanelModel;
     private final PanelFilterImpl.Factory panelFilterFactory;
     private final Map<FilterFromDialog, PanelFilter> filters = new HashMap<>();
 
     @Inject
     FilterPanelModelAdapter(
-            FilterPanelModel filterPanelModel,
+            FilterPanelModelImpl filterPanelModel,
             PanelFilterImpl.Factory panelFilterFactory
     ) {
         this.filterPanelModel = filterPanelModel;
