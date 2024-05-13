@@ -26,16 +26,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.awt.Color;
 import java.util.function.Predicate;
 
-class IndexFilter implements LogModelFilter {
+class IndexFilter implements LogModelFilter, AutoCloseable {
     private final LogModelFilter parent;
     private final Predicate<LogRecord> filter;
+    private final Observer parentObserver = this::notifyObservers;
 
     private final Subject<Observer> observers = new Subject<>();
 
     public IndexFilter(LogModelFilter parent, Predicate<LogRecord> filter) {
         this.parent = parent;
         this.filter = filter;
-        Observer parentObserver = this::notifyObservers;
         parent.asObservable().addObserver(parentObserver);
     }
 
@@ -58,5 +58,10 @@ class IndexFilter implements LogModelFilter {
         for (Observer observer : observers) {
             observer.onModelChange();
         }
+    }
+
+    @Override
+    public void close() {
+        parent.asObservable().removeObserver(parentObserver);
     }
 }

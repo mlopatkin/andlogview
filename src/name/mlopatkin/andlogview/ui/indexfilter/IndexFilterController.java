@@ -30,10 +30,11 @@ import java.awt.EventQueue;
 import javax.inject.Inject;
 import javax.swing.JTable;
 
-public class IndexFilterController extends AbstractIndexController {
+public class IndexFilterController extends AbstractIndexController implements AutoCloseable {
     private final FilterModel filterModel;
     private final Filter filter;
     private final IndexFrame frame;
+    private final IndexFilter indexLogFilter;
 
     IndexFilterController(FilterModel filterModel, MainFrameDependencies dependencies, JTable mainTable,
             LogModelFilter mainFilter, Filter filter) {
@@ -41,10 +42,11 @@ public class IndexFilterController extends AbstractIndexController {
         this.filterModel = filterModel;
 
         this.filter = filter;
+        indexLogFilter = new IndexFilter(mainFilter, filter);
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .mainFrameDependencies(dependencies)
                 .setIndexController(this)
-                .setIndexFilter(new IndexFilter(mainFilter, filter))
+                .setIndexFilter(indexLogFilter)
                 .build();
         frame = component.createFrame();
     }
@@ -56,8 +58,10 @@ public class IndexFilterController extends AbstractIndexController {
         EventQueue.invokeLater(() -> frame.setVisible(true));
     }
 
-    public void destroy() {
+    @Override
+    public void close() {
         frame.dispose();
+        indexLogFilter.close();
     }
 
     @Override

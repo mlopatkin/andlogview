@@ -62,7 +62,7 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     @Override
     public void removeFilter(Filter filter) {
         if (filter.isEnabled()) {
-            controllerMap.remove(filter).destroy();
+            controllerMap.remove(filter).close();
         }
     }
 }
