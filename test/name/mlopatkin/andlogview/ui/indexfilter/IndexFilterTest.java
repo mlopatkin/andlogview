@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
+import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ class IndexFilterTest {
 
     @Test
     void unsubscribesAfterClose() {
-        var parent = mock(LogModelFilter.class);
-        var subject = new Subject<LogModelFilter.Observer>();
+        FilterModel parent = mock();
+        var subject = new Subject<FilterModel.Observer>();
         when(parent.asObservable()).thenReturn(subject.asObservable());
 
         try (var ignored = new IndexFilter(parent, r -> true)) {

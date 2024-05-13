@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -74,7 +76,7 @@ public interface FilterCollection<T> {
      * @param model the model to connect this collection to
      * @return the observer that is subscribed to the provided model. It can be used to unsubscribe.
      */
-    default FilterModel.Observer setModel(FilterModel model) {
+    default ScopedObserver setModel(FilterModel model) {
         for (var filter : model.getFilters()) {
             var transformed = transformFilter(filter);
             if (transformed != null) {
@@ -99,7 +101,6 @@ public interface FilterCollection<T> {
             }
         };
 
-        model.asObservable().addObserver(observer);
-        return observer;
+        return model.asObservable().addScopedObserver(observer);
     }
 }

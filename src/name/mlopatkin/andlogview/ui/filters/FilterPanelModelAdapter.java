@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.ImmutableList;
@@ -63,7 +64,7 @@ class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPa
 
     @Inject
     @Override
-    public FilterModel.Observer setModel(FilterModel model) {
+    public ScopedObserver setModel(FilterModel model) {
         this.model = model;
         return FilterCollection.super.setModel(model);
     }

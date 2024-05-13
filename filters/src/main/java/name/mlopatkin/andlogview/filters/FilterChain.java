@@ -16,6 +16,8 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
@@ -30,8 +32,20 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
 public class FilterChain implements FilterCollection<Filter> {
+    /**
+     * An observer to be notified when the set of filters in this chain changes.
+     */
+    @FunctionalInterface
+    public interface Observer {
+        /**
+         * Called when the set of filters in the {@link FilterChain} changes
+         */
+        void onFiltersChanged();
+    }
+
     private final SetMultimap<FilteringMode, Filter> filters =
             MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build();
+    private final Subject<Observer> observers = new Subject<>();
 
     private boolean include(FilteringMode mode, LogRecord record) {
         var filtersForMode = filters.get(mode);
@@ -59,6 +73,7 @@ public class FilterChain implements FilterCollection<Filter> {
     public void addFilter(Filter filter) {
         if (filter.isEnabled()) {
             filters.put(filter.getMode(), filter);
+            notifyObservers();
         }
     }
 
@@ -68,7 +83,18 @@ public class FilterChain implements FilterCollection<Filter> {
 
     @Override
     public void removeFilter(Filter filter) {
-        filters.remove(filter.getMode(), filter);
+        if (filters.remove(filter.getMode(), filter)) {
+            notifyObservers();
+        }
     }
 
+    private void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.onFiltersChanged();
+        }
+    }
+
+    public Observable<Observer> asObservable() {
+        return observers.asObservable();
+    }
 }

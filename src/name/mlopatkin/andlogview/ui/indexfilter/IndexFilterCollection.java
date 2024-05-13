@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -39,7 +40,7 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
 
     @Override
     @Inject
-    public FilterModel.Observer setModel(FilterModel model) {
+    public ScopedObserver setModel(FilterModel model) {
         // This is a late call to subscribe to model changes.
         return FilterCollection.super.setModel(model);
     }

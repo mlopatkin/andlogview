@@ -16,9 +16,12 @@
 
 package name.mlopatkin.andlogview.ui.indexfilter;
 
+import name.mlopatkin.andlogview.filters.FilterChain;
+import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -27,21 +30,23 @@ import java.awt.Color;
 import java.util.function.Predicate;
 
 class IndexFilter implements LogModelFilter, AutoCloseable {
-    private final LogModelFilter parent;
+    private final FilterChain parent;
     private final Predicate<LogRecord> filter;
-    private final Observer parentObserver = this::notifyObservers;
+    private final ScopedObserver parentObserver;
 
     private final Subject<Observer> observers = new Subject<>();
 
-    public IndexFilter(LogModelFilter parent, Predicate<LogRecord> filter) {
-        this.parent = parent;
+    public IndexFilter(FilterModel parentFilters, Predicate<LogRecord> filter) {
+        this.parent = new FilterChain();
+        this.parentObserver = this.parent.setModel(parentFilters);
+        this.parent.asObservable().addObserver(this::notifyObservers);
+
         this.filter = filter;
-        parent.asObservable().addObserver(parentObserver);
     }
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return parent.shouldShowRecord(record) && filter.test(record);
+        return parent.shouldShow(record) && filter.test(record);
     }
 
     @Override
@@ -62,6 +67,6 @@ class IndexFilter implements LogModelFilter, AutoCloseable {
 
     @Override
     public void close() {
-        parent.asObservable().removeObserver(parentObserver);
+        parentObserver.close();
     }
 }

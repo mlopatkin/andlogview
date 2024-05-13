@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi;
-import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 
 import java.awt.EventQueue;
@@ -37,12 +36,12 @@ public class IndexFilterController extends AbstractIndexController implements Au
     private final IndexFilter indexLogFilter;
 
     IndexFilterController(FilterModel filterModel, MainFrameDependencies dependencies, JTable mainTable,
-            LogModelFilter mainFilter, Filter filter) {
+            Filter filter) {
         super(mainTable);
         this.filterModel = filterModel;
 
         this.filter = filter;
-        indexLogFilter = new IndexFilter(mainFilter, filter);
+        indexLogFilter = new IndexFilter(filterModel, filter);
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .mainFrameDependencies(dependencies)
                 .setIndexController(this)
@@ -85,7 +84,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
             // We probably can break this by factoring Filter out of MainFilterController and making both Factory and
             // MainFilterController to depend on this new Filter
             return new IndexFilterController(
-                    filterModel, dependencies, dependencies.getLogTable(), dependencies.getFilter(), filter);
+                    filterModel, dependencies, dependencies.getLogTable(), filter);
         }
     }
 }
