@@ -19,6 +19,8 @@ import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.IndexController;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.widgets.UiHelper;
@@ -36,8 +38,12 @@ public class BookmarkController extends AbstractIndexController implements Index
     private final IndexFrame indexFrame;
 
     @Inject
-    public BookmarkController(MainFrameDependencies mainFrameDependencies, BookmarkModel bookmarksModel,
-            BookmarksLogModelFilter logModelFilter, @Named(MainFrameDependencies.FOR_MAIN_FRAME) JTable mainLogTable) {
+    public BookmarkController(
+            BookmarkModel bookmarksModel,
+            LogRecordTableModel logModel,
+            BookmarksLogModelFilter logModelFilter,
+            @Named(MainFrameDependencies.FOR_MAIN_FRAME) JTable mainLogTable,
+            DialogFactory dialogFactory) {
         super(mainLogTable);
         this.mainLogTable = mainLogTable;
 
@@ -57,12 +63,13 @@ public class BookmarkController extends AbstractIndexController implements Index
         };
         bookmarksModel.asObservable().addObserver(bookmarkChangeObserver);
 
-        BookmarksDi.BookmarksFrameComponent.Builder builder = DaggerBookmarksDi_BookmarksFrameComponent.builder();
-        builder.mainFrameDependencies(mainFrameDependencies);
-        builder.setIndexController(this);
-        builder.setIndexFilter(logModelFilter);
-
-        BookmarksDi.BookmarksFrameComponent indexFrameComponent = builder.build();
+        var builder = DaggerBookmarksDi_BookmarksFrameComponent.builder()
+                .bookmarkModel(bookmarksModel)
+                .logRecordTableModel(logModel)
+                .dialogFactory(dialogFactory)
+                .setIndexController(this)
+                .setIndexFilter(logModelFilter);
+        var indexFrameComponent = (BookmarksDi.BookmarksFrameComponent) builder.build();
 
         indexFrame = indexFrameComponent.createFrame();
         indexFrame.setTitle("Bookmarks");

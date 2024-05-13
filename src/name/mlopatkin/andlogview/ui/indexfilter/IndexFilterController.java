@@ -16,17 +16,24 @@
 
 package name.mlopatkin.andlogview.ui.indexfilter;
 
+import static name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies.FOR_MAIN_FRAME;
+
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi;
-import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
+import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import java.awt.EventQueue;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.JTable;
 
 public class IndexFilterController extends AbstractIndexController implements AutoCloseable {
@@ -35,15 +42,21 @@ public class IndexFilterController extends AbstractIndexController implements Au
     private final IndexFrame frame;
     private final IndexFilter indexLogFilter;
 
-    IndexFilterController(FilterModel filterModel, MainFrameDependencies dependencies, JTable mainTable,
-            Filter filter) {
+    @AssistedInject
+    IndexFilterController(
+            LogRecordTableModel logModel,
+            DialogFactory dialogFactory,
+            FilterModel filterModel,
+            @Named(FOR_MAIN_FRAME) JTable mainTable,
+            @Assisted Filter filter) {
         super(mainTable);
         this.filterModel = filterModel;
 
         this.filter = filter;
         indexLogFilter = new IndexFilter(filterModel, filter);
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
-                .mainFrameDependencies(dependencies)
+                .logRecordTableModel(logModel)
+                .dialogFactory(dialogFactory)
                 .setIndexController(this)
                 .setIndexFilter(indexLogFilter)
                 .build();
@@ -68,23 +81,8 @@ public class IndexFilterController extends AbstractIndexController implements Au
         filterModel.replaceFilter(filter, filter.disabled());
     }
 
-    public static class Factory {
-        private final MainFrameDependencies dependencies;
-        private final FilterModel filterModel;
-
-        @Inject
-        public Factory(MainFrameDependencies dependencies, FilterModel filterModel) {
-            this.dependencies = dependencies;
-            this.filterModel = filterModel;
-        }
-
-        public IndexFilterController create(IndexFilterCollection owner, Filter filter) {
-            // TODO dependency cycle, dangerous
-            // MainFilterController -> IndexFilterCollection -> Factory -> MainFrameDependencies -> MainFilterController
-            // We probably can break this by factoring Filter out of MainFilterController and making both Factory and
-            // MainFilterController to depend on this new Filter
-            return new IndexFilterController(
-                    filterModel, dependencies, dependencies.getLogTable(), filter);
-        }
+    @AssistedFactory
+    public interface Factory {
+        IndexFilterController create(Filter filter);
     }
 }

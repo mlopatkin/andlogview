@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.ui.logtable.PopupMenu;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenuViewImpl;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
-import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import com.google.common.collect.ImmutableList;
 
@@ -48,14 +48,18 @@ public final class IndexFrameDi {
 
     private IndexFrameDi() {}
 
-    @Component(dependencies = MainFrameDependencies.class, modules = {TableColumnsModule.class, TableModule.class})
+    @Component(modules = {TableColumnsModule.class, TableModule.class})
     @IndexFrameScoped
     public interface IndexFrameComponent {
         IndexFrame createFrame();
 
         @Component.Builder
         interface Builder {
-            Builder mainFrameDependencies(MainFrameDependencies deps);
+            @BindsInstance
+            Builder dialogFactory(DialogFactory dialogFactory);
+
+            @BindsInstance
+            Builder logRecordTableModel(LogRecordTableModel tableModel);
 
             @BindsInstance
             Builder setIndexController(IndexController indexController);

@@ -28,7 +28,6 @@ import name.mlopatkin.andlogview.ui.logtable.LogTableModule;
 import name.mlopatkin.andlogview.ui.logtable.LogTableScoped;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenu;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
-import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -43,11 +42,14 @@ import javax.swing.JTable;
 
 final class BookmarksDi {
     @IndexFrameScoped
-    @Component(dependencies = MainFrameDependencies.class,
+    @Component(
             modules = {IndexFrameDi.TableColumnsModule.class, TableModule.class})
     interface BookmarksFrameComponent extends IndexFrameDi.IndexFrameComponent {
         @Component.Builder
         interface Builder extends IndexFrameDi.IndexFrameComponent.Builder {
+            @BindsInstance
+            Builder bookmarkModel(BookmarkModel bookmarkModel);
+
             @Override
             @SuppressWarnings("ClassEscapesDefinedScope")
             BookmarksFrameComponent build();

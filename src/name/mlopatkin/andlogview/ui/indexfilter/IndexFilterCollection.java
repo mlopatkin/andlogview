@@ -55,7 +55,7 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
         if (!filter.isEnabled()) {
             return;
         }
-        var controller = controllerFactory.create(this, filter);
+        var controller = controllerFactory.create(filter);
         controllerMap.put(filter, controller);
         controller.show();
     }
