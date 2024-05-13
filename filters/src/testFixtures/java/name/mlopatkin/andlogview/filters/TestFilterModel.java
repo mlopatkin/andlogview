@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-plugins {
-    id("name.mlopatkin.andlogview.building.java-library-conventions")
+package name.mlopatkin.andlogview.filters;
 
-    `java-test-fixtures`
-}
-
-dependencies {
-    api(project(":logmodel")) {
-        because("Exposes LogRecord as a generic argument")
+/**
+ * Test implementation of {@link FilterModel} to verify that all observers are unsubscribed.
+ */
+public class TestFilterModel extends FilterModelImpl {
+    public boolean hasObservers() {
+        return !observers.isEmpty();
     }
-    api(project(":base")) {
-        because("Exposes Observable in API")
-    }
-
-    testFixturesApi(platform(libs.test.assertj.bom))
-    testFixturesApi(libs.test.assertj.core)
 }

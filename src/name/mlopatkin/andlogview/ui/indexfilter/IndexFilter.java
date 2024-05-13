@@ -21,32 +21,26 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.utils.events.Observable;
-import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
-import java.util.function.Predicate;
 
-class IndexFilter implements LogModelFilter, AutoCloseable {
-    private final FilterChain parent;
-    private final Predicate<LogRecord> filter;
-    private final ScopedObserver parentObserver;
+class IndexFilter implements LogModelFilter {
+    private final FilterChain filters;
 
     private final Subject<Observer> observers = new Subject<>();
 
-    public IndexFilter(FilterModel parentFilters, Predicate<LogRecord> filter) {
-        this.parent = new FilterChain();
-        this.parentObserver = this.parent.setModel(parentFilters);
-        this.parent.asObservable().addObserver(this::notifyObservers);
-
-        this.filter = filter;
+    public IndexFilter(FilterModel filters) {
+        this.filters = new FilterChain();
+        this.filters.setModel(filters);
+        this.filters.asObservable().addObserver(this::notifyObservers);
     }
 
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return parent.shouldShow(record) && filter.test(record);
+        return filters.shouldShow(record);
     }
 
     @Override
@@ -63,10 +57,5 @@ class IndexFilter implements LogModelFilter, AutoCloseable {
         for (Observer observer : observers) {
             observer.onModelChange();
         }
-    }
-
-    @Override
-    public void close() {
-        parentObserver.close();
     }
 }

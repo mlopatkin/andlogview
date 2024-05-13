@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.filters;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -30,7 +31,8 @@ import java.util.Map;
 import java.util.Objects;
 
 class FilterModelImpl implements FilterModel {
-    private final Subject<Observer> observers = new Subject<>();
+    @VisibleForTesting
+    protected final Subject<Observer> observers = new Subject<>();
     private final Map<Filter, Integer> filterPositions = new HashMap<>();
     private final List<Filter> filters = new ArrayList<>();
 

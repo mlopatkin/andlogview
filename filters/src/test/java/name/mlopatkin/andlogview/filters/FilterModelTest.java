@@ -16,22 +16,21 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import org.assertj.core.api.AbstractCollectionAssert;
 import org.assertj.core.api.ListAssert;
-import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,11 +63,6 @@ class FilterModelTest {
 
     private ListAssert<Filter> assertThatObserverSawFilters() {
         return assertThat(observedModel);
-    }
-
-    private AbstractCollectionAssert<?, Collection<? extends Filter>, Filter, ObjectAssert<Filter>> assertThatFilters(
-            FilterModel model) {
-        return assertThat(model.getFilters());
     }
 
     @Test
