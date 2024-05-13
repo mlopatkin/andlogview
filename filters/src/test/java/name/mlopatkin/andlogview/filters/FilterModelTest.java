@@ -24,6 +24,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import com.google.common.collect.ImmutableList;
+
 import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -190,6 +192,21 @@ class FilterModelTest {
     }
 
     @Test
+    void canReplaceFilterAfterRemovingFilterInFront() {
+        var model = createModel();
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        model.addFilter(filter1);
+        model.addFilter(filter2);
+
+        var replacement = createFilter("replacement");
+        model.removeFilter(filter1);
+        model.replaceFilter(filter2, replacement);
+
+        assertThatFilters(model).containsExactly(replacement);
+    }
+
+    @Test
     void removingAndAddingFilterMovesItToBack() {
         var model = createModel();
         var filter1 = createFilter("filter1");
@@ -201,6 +218,16 @@ class FilterModelTest {
         model.addFilter(filter1);
 
         assertThatFilters(model).containsExactly(filter2, filter1);
+    }
+
+    @Test
+    void canAddMultipleFiltersAtOnce() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+
+        var model = new FilterModelImpl(ImmutableList.of(filter1, filter2, filter1));
+
+        assertThatFilters(model).containsExactly(filter1, filter2);
     }
 
     FilterModel createModel() {

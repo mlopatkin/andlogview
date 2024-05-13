@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.filters.Filter;
@@ -23,11 +25,13 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -42,19 +46,24 @@ public class StoredFilters {
     private static final Logger logger = Logger.getLogger(StoredFilters.class);
 
     private final Preference<List<SavedFilterData>> preference;
+    private final LazyInstance<FilterModel> model = LazyInstance.lazy(this::createModel);
 
     @Inject
     public StoredFilters(ConfigStorage storage) {
         this.preference = storage.preference(new FilterListSerializer());
     }
 
-    public void setModel(FilterModel model) {
-        for (SavedFilterData data : preference.get()) {
-            var filter = decode(data);
-            if (filter != null) {
-                model.addFilter(filter);
-            }
-        }
+    public FilterModel getStorageBackedModel() {
+        return model.get();
+    }
+
+    private FilterModel createModel() {
+        var model = FilterModel.create(
+                preference.get().stream()
+                        .map(this::decode)
+                        .filter(Objects::nonNull)
+                        .collect(toImmutableSet())
+        );
 
         model.asObservable().addObserver(new FilterModel.Observer() {
             @Override
@@ -72,6 +81,8 @@ public class StoredFilters {
                 saveFilters(model);
             }
         });
+
+        return model;
     }
 
     private @Nullable Filter decode(SavedFilterData serializedForm) {

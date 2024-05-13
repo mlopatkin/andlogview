@@ -39,11 +39,7 @@ public abstract class FilterModule {
     @Provides
     @MainFrameScoped
     static FilterModel getFiltersModel(StoredFilters filters) {
-        var filterModel = FilterModel.create();
-
-        filters.setModel(filterModel);
-
-        return filterModel;
+        return filters.getStorageBackedModel();
     }
 
     @Provides

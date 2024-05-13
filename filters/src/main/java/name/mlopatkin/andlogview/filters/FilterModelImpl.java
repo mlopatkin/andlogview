@@ -22,24 +22,28 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 class FilterModelImpl implements FilterModel {
     @VisibleForTesting
     protected final Subject<Observer> observers = new Subject<>();
-    private final Map<Filter, Integer> filterPositions = new HashMap<>();
+
     private final List<Filter> filters = new ArrayList<>();
+
+    public FilterModelImpl() {}
+
+    public FilterModelImpl(Collection<? extends Filter> filters) {
+        this.filters.addAll(ImmutableSet.copyOf(filters));
+    }
 
     @Override
     public void addFilter(Filter filter) {
-        var prevPosition = filterPositions.putIfAbsent(filter, filters.size());
-        if (prevPosition == null) {
+        if (!filters.contains(filter)) {
             filters.add(filter);
             for (var observer : observers) {
                 observer.onFilterAdded(this, filter);
@@ -49,9 +53,7 @@ class FilterModelImpl implements FilterModel {
 
     @Override
     public void removeFilter(Filter filter) {
-        var position = filterPositions.remove(filter);
-        if (position != null) {
-            filters.remove(position.intValue());
+        if (filters.remove(filter)) {
             for (var observer : observers) {
                 observer.onFilterRemoved(this, filter);
             }
@@ -60,17 +62,16 @@ class FilterModelImpl implements FilterModel {
 
     @Override
     public void replaceFilter(Filter toReplace, Filter newFilter) {
-        Preconditions.checkArgument(filterPositions.containsKey(toReplace),
+        var position = filters.indexOf(toReplace);
+        Preconditions.checkArgument(position >= 0,
                 String.format("Filter %s is not in the model", toReplace));
         if (Objects.equals(toReplace, newFilter)) {
             // Replacing the filter with itself, do nothing.
             return;
         }
-        var position = filterPositions.get(toReplace);
-        if (filterPositions.putIfAbsent(newFilter, position) != null) {
+        if (filters.contains(newFilter)) {
             throw new IllegalArgumentException(String.format("Filter %s is already in the model", newFilter));
         }
-        filterPositions.remove(toReplace);
         filters.set(position, newFilter);
 
         for (var observer : observers) {

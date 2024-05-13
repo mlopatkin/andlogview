@@ -101,4 +101,13 @@ public interface FilterModel {
     static FilterModel create() {
         return new FilterModelImpl();
     }
+
+    /**
+     * Creates a new FilterModel with provided filters as its content.
+     *
+     * @return the new FilterModel
+     */
+    static FilterModel create(Collection<? extends Filter> filters) {
+        return new FilterModelImpl(filters);
+    }
 }
