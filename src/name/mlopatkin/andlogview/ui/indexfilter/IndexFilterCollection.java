@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -29,8 +30,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class IndexFilterCollection implements FilterCollection<Filter> {
-    private final Map<Filter, IndexFilterController> controllerMap = new HashMap<>();
+public class IndexFilterCollection implements FilterCollection<PredicateFilter> {
+    private final Map<PredicateFilter, IndexFilterController> controllerMap = new HashMap<>();
     private final IndexFilterController.Factory controllerFactory;
 
     @Inject
@@ -46,12 +47,12 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     }
 
     @Override
-    public @Nullable Filter transformFilter(Filter filter) {
-        return FilteringMode.WINDOW.equals(filter.getMode()) ? filter : null;
+    public @Nullable PredicateFilter transformFilter(Filter filter) {
+        return FilteringMode.WINDOW.equals(filter.getMode()) ? (PredicateFilter) filter : null;
     }
 
     @Override
-    public void addFilter(Filter filter) {
+    public void addFilter(PredicateFilter filter) {
         if (!filter.isEnabled()) {
             return;
         }
@@ -61,7 +62,7 @@ public class IndexFilterCollection implements FilterCollection<Filter> {
     }
 
     @Override
-    public void removeFilter(Filter filter) {
+    public void removeFilter(PredicateFilter filter) {
         if (filter.isEnabled()) {
             controllerMap.remove(filter).close();
         }

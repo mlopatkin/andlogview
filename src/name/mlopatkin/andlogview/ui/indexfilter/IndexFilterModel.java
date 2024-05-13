@@ -17,9 +17,9 @@
 package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.CompoundFilterModel;
-import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import java.util.Collections;
@@ -42,8 +42,8 @@ final class IndexFilterModel {
      * @param filter the predicate
      * @return the HIDE filter.
      */
-    private static Filter makeOnlyFilter(Predicate<? super LogRecord> filter) {
-        return new Filter() {
+    private static PredicateFilter makeOnlyFilter(Predicate<? super LogRecord> filter) {
+        return new PredicateFilter() {
             @Override
             public FilteringMode getMode() {
                 return FilteringMode.HIDE;
@@ -55,12 +55,12 @@ final class IndexFilterModel {
             }
 
             @Override
-            public Filter enabled() {
+            public PredicateFilter enabled() {
                 return this;
             }
 
             @Override
-            public Filter disabled() {
+            public PredicateFilter disabled() {
                 throw new UnsupportedOperationException("Cannot disable filter through child model");
             }
 

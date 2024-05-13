@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2024 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,17 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
-import java.awt.Color;
+import java.util.function.Predicate;
 
-public interface ColoringFilter extends PredicateFilter {
+/**
+ * Represents a Filter that is also a predicate.
+ */
+public interface PredicateFilter extends Filter, Predicate<LogRecord> {
     @Override
-    default FilteringMode getMode() {
-        return FilteringMode.HIGHLIGHT;
-    }
-
-    @Nullable Color getHighlightColor();
-
-    @Override
-    ColoringFilter enabled();
+    PredicateFilter enabled();
 
     @Override
-    ColoringFilter disabled();
+    PredicateFilter disabled();
 }

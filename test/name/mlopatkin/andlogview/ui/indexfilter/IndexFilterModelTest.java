@@ -19,8 +19,8 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThat;
 import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
 
-import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.filters.TestFilterModel;
 import name.mlopatkin.andlogview.filters.ToggleFilter;
 
@@ -52,7 +52,7 @@ class IndexFilterModelTest {
         assertThat(parent).hasNoObservers();
     }
 
-    private Filter createFilter() {
+    private PredicateFilter createFilter() {
         return new ToggleFilter(FilteringMode.WINDOW, true, r -> true);
     }
 }

@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> implements Filter {
+public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> implements PredicateFilter {
     protected final FilteringMode mode;
     protected final boolean enabled;
     protected final Predicate<? super LogRecord> predicate;

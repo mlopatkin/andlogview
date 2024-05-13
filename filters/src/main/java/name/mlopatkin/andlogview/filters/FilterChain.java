@@ -31,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * <p/>
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
-public class FilterChain implements FilterCollection<Filter> {
+public class FilterChain implements FilterCollection<PredicateFilter> {
     /**
      * An observer to be notified when the set of filters in this chain changes.
      */
@@ -43,7 +43,7 @@ public class FilterChain implements FilterCollection<Filter> {
         void onFiltersChanged();
     }
 
-    private final SetMultimap<FilteringMode, Filter> filters =
+    private final SetMultimap<FilteringMode, PredicateFilter> filters =
             MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build();
     private final Subject<Observer> observers = new Subject<>();
 
@@ -61,16 +61,16 @@ public class FilterChain implements FilterCollection<Filter> {
     }
 
     @Override
-    public @Nullable Filter transformFilter(Filter filter) {
+    public @Nullable PredicateFilter transformFilter(Filter filter) {
         var mode = filter.getMode();
         if (FilteringMode.SHOW.equals(mode) || FilteringMode.HIDE.equals(mode)) {
-            return filter;
+            return (PredicateFilter) filter;
         }
         return null;
     }
 
     @Override
-    public void addFilter(Filter filter) {
+    public void addFilter(PredicateFilter filter) {
         if (filter.isEnabled()) {
             filters.put(filter.getMode(), filter);
             notifyObservers();
@@ -82,7 +82,7 @@ public class FilterChain implements FilterCollection<Filter> {
     }
 
     @Override
-    public void removeFilter(Filter filter) {
+    public void removeFilter(PredicateFilter filter) {
         if (filters.remove(filter.getMode(), filter)) {
             notifyObservers();
         }

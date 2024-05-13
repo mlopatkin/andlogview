@@ -98,15 +98,15 @@ public class FilterChainTest {
         assertTrue(chain.shouldShow(RECORD2));
     }
 
-    private static Filter show(Predicate<LogRecord> p) {
+    private static PredicateFilter show(Predicate<LogRecord> p) {
         return filter(SHOW, p);
     }
 
-    private static Filter hide(Predicate<LogRecord> p) {
+    private static PredicateFilter hide(Predicate<LogRecord> p) {
         return filter(HIDE, p);
     }
 
-    private static Filter filter(FilteringMode mode, Predicate<LogRecord> p) {
+    private static PredicateFilter filter(FilteringMode mode, Predicate<LogRecord> p) {
         return new ToggleFilter(mode, true, p);
     }
 }
