@@ -29,7 +29,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
@@ -83,9 +82,6 @@ public class FilterFromDialogData {
 
     private @Nullable Color highlightColor;
 
-    private transient @MonotonicNonNull Predicate<LogRecord> compiledPredicate;
-    private transient @MonotonicNonNull String tooltipRepresentation;
-
     public FilterFromDialogData() {}
 
     private FilterFromDialogData(FilterFromDialogData f) {
@@ -96,29 +92,13 @@ public class FilterFromDialogData {
         priority = f.priority;
         mode = f.mode;
         highlightColor = f.highlightColor;
-        compiledPredicate = f.compiledPredicate;
-        tooltipRepresentation = f.tooltipRepresentation;
     }
 
     private static <T> @Nullable List<T> copy(@Nullable List<T> original) {
         return original != null ? ImmutableList.copyOf(original) : null;
     }
 
-    private FilterFromDialogData compile() throws RequestCompilationException {
-        assert compiledPredicate == null;
-        assert tooltipRepresentation == null;
-        assert mode != null;
-        compiledPredicate = compilePredicate();
-        tooltipRepresentation = compileTooltip();
-        return this;
-    }
-
-    public boolean test(LogRecord input) {
-        assert compiledPredicate != null;
-        return compiledPredicate.test(input);
-    }
-
-    private Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
+    Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
         List<Predicate<LogRecord>> predicates = Lists.newArrayListWithCapacity(4);
         if (tags != null && !tags.isEmpty()) {
             List<Predicate<String>> tagPredicates = Lists.newArrayListWithCapacity(tags.size());
@@ -152,7 +132,7 @@ public class FilterFromDialogData {
         return MorePredicates.and(predicates);
     }
 
-    private String compileTooltip() {
+    public String getTooltip() {
         StringBuilder builder = new StringBuilder("<html>");
         assert mode != null;
         builder.append(mode.getDescription());
@@ -241,11 +221,6 @@ public class FilterFromDialogData {
         return this;
     }
 
-    public String getTooltip() {
-        assert tooltipRepresentation != null;
-        return tooltipRepresentation;
-    }
-
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) {
@@ -282,7 +257,6 @@ public class FilterFromDialogData {
     }
 
     public FilterFromDialog toFilter(boolean enabled) throws RequestCompilationException {
-        compile();
         return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
     }
 

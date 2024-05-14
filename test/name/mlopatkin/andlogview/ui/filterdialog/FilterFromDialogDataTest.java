@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
@@ -35,8 +34,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
-public class FilterFromDialogImplTest {
+public class FilterFromDialogDataTest {
     private final FilterFromDialogData data = new FilterFromDialogData();
 
     @Before
@@ -283,7 +283,7 @@ public class FilterFromDialogImplTest {
         }
     }
 
-    private PredicateFilter compileFilter() throws RequestCompilationException {
-        return (FilterFromDialogImpl) data.toFilter(true);
+    private Predicate<LogRecord> compileFilter() throws RequestCompilationException {
+        return data.compilePredicate();
     }
 }
