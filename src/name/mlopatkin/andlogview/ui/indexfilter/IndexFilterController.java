@@ -18,8 +18,9 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import static name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies.FOR_MAIN_FRAME;
 
+import name.mlopatkin.andlogview.filters.ChildModelFilter;
+import name.mlopatkin.andlogview.filters.CompoundFilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
-import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
@@ -38,7 +39,7 @@ import javax.swing.JTable;
 
 public class IndexFilterController extends AbstractIndexController implements AutoCloseable {
     private final MutableFilterModel filterModel;
-    private final PredicateFilter filter;
+    private final ChildModelFilter filter;
     private final IndexFrame frame;
     private final IndexFilter logModelFilter;
 
@@ -48,12 +49,12 @@ public class IndexFilterController extends AbstractIndexController implements Au
             DialogFactory dialogFactory,
             MutableFilterModel parentFilterModel,
             @Named(FOR_MAIN_FRAME) JTable mainTable,
-            @Assisted PredicateFilter filter) {
+            @Assisted ChildModelFilter filter) {
         super(mainTable);
         this.filterModel = parentFilterModel;
 
         this.filter = filter;
-        logModelFilter = new IndexFilter(IndexFilterModel.createIndexFilterModel(parentFilterModel, filter));
+        logModelFilter = new IndexFilter(new CompoundFilterModel(parentFilterModel, filter.getFilters()));
 
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .logRecordTableModel(logModel)
@@ -84,6 +85,6 @@ public class IndexFilterController extends AbstractIndexController implements Au
 
     @AssistedFactory
     public interface Factory {
-        IndexFilterController create(PredicateFilter filter);
+        IndexFilterController create(ChildModelFilter filter);
     }
 }

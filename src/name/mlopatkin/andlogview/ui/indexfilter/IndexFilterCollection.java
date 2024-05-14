@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.filters.PredicateFilter;
+import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -30,8 +30,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class IndexFilterCollection implements FilterCollection<PredicateFilter> {
-    private final Map<PredicateFilter, IndexFilterController> controllerMap = new HashMap<>();
+public class IndexFilterCollection implements FilterCollection<IndexWindowFilter> {
+    private final Map<IndexWindowFilter, IndexFilterController> controllerMap = new HashMap<>();
     private final IndexFilterController.Factory controllerFactory;
 
     @Inject
@@ -47,12 +47,12 @@ public class IndexFilterCollection implements FilterCollection<PredicateFilter> 
     }
 
     @Override
-    public @Nullable PredicateFilter transformFilter(Filter filter) {
-        return FilteringMode.WINDOW.equals(filter.getMode()) ? (PredicateFilter) filter : null;
+    public @Nullable IndexWindowFilter transformFilter(Filter filter) {
+        return FilteringMode.WINDOW.equals(filter.getMode()) ? (IndexWindowFilter) filter : null;
     }
 
     @Override
-    public void addFilter(PredicateFilter filter) {
+    public void addFilter(IndexWindowFilter filter) {
         if (!filter.isEnabled()) {
             return;
         }
@@ -62,7 +62,7 @@ public class IndexFilterCollection implements FilterCollection<PredicateFilter> 
     }
 
     @Override
-    public void removeFilter(PredicateFilter filter) {
+    public void removeFilter(IndexWindowFilter filter) {
         if (filter.isEnabled()) {
             controllerMap.remove(filter).close();
         }

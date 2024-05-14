@@ -257,6 +257,9 @@ public class FilterFromDialogData {
     }
 
     public FilterFromDialog toFilter(boolean enabled) throws RequestCompilationException {
+        if (mode == FilteringMode.WINDOW) {
+            return new IndexWindowFilter(enabled, this);
+        }
         return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
     }
 
