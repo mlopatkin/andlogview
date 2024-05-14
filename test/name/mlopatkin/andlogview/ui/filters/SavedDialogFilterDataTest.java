@@ -20,8 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.test.TestData;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 import com.google.gson.Gson;
@@ -46,24 +48,23 @@ class SavedDialogFilterDataTest {
 
         assertThat(deserialized).isEqualTo(original);
         assertThat(deserialized.isEnabled()).isEqualTo(isFilterEnabled);
-        assertThat(deserialized.getTags()).singleElement().isEqualTo(tagPattern);
+        assertThat(deserialized.getData().getTags()).singleElement().isEqualTo(tagPattern);
 
-        assertThat(deserialized.test(TestData.RECORD1)).isEqualTo(expectedMatch);
+        assertThat(((PredicateFilter) deserialized).test(TestData.RECORD1)).isEqualTo(expectedMatch);
     }
 
-    private FilterFromDialogData createFilter(boolean isEnabled, String tagPattern) throws RequestCompilationException {
-        var filter = new FilterFromDialogData();
-        filter.setMode(FilteringMode.getDefaultMode());
-        filter.setTags(Collections.singletonList(tagPattern));
-        filter.setEnabled(isEnabled);
-        filter.compile();
+    private FilterFromDialog createFilter(boolean isEnabled, String tagPattern) throws RequestCompilationException {
+        var filterData = new FilterFromDialogData();
+        filterData.setMode(FilteringMode.getDefaultMode());
+        filterData.setTags(Collections.singletonList(tagPattern));
+        filterData.compile();
 
-        return filter;
+        return filterData.toFilter(isEnabled);
     }
 
-    private FilterFromDialogData roundTrip(FilterFromDialogData original) throws Exception {
+    private FilterFromDialog roundTrip(FilterFromDialog original) throws Exception {
         // TODO(mlopatkin) this is a somewhat meaningless test now.
-        var originalData = new SavedDialogFilterData(original.toFilter(original.isEnabled()));
-        return GSON.fromJson(GSON.toJson(originalData), SavedDialogFilterData.class).fromSerializedForm().getData();
+        var originalData = new SavedDialogFilterData(original);
+        return GSON.fromJson(GSON.toJson(originalData), SavedDialogFilterData.class).fromSerializedForm();
     }
 }

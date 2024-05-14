@@ -85,7 +85,6 @@ public class FilterFromDialogData {
 
     private transient @MonotonicNonNull Predicate<LogRecord> compiledPredicate;
     private transient @MonotonicNonNull String tooltipRepresentation;
-    private transient boolean enabled = true;
 
     public FilterFromDialogData() {}
 
@@ -99,7 +98,6 @@ public class FilterFromDialogData {
         highlightColor = f.highlightColor;
         compiledPredicate = f.compiledPredicate;
         tooltipRepresentation = f.tooltipRepresentation;
-        enabled = f.enabled;
     }
 
     private static <T> @Nullable List<T> copy(@Nullable List<T> original) {
@@ -262,13 +260,12 @@ public class FilterFromDialogData {
                 && Objects.equals(messagePattern, that.messagePattern)
                 && priority == that.priority
                 && mode == that.mode
-                && Objects.equals(highlightColor, that.highlightColor)
-                && enabled == that.enabled;
+                && Objects.equals(highlightColor, that.highlightColor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor, enabled);
+        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor);
     }
 
     @Override
@@ -281,26 +278,15 @@ public class FilterFromDialogData {
                 .add("apps", apps)
                 .add("priority", priority)
                 .add("highlightColor", highlightColor)
-                .add("enabled", enabled)
                 .toString();
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public FilterFromDialogData setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        return this;
     }
 
     public FilterFromDialog toFilter(boolean enabled) {
         assert compiledPredicate != null;
-        return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this).setEnabled(enabled));
+        return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
     }
 
     public FilterFromDialog toFilter() {
-        assert compiledPredicate != null;
-        return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
+        return toFilter(true);
     }
 }

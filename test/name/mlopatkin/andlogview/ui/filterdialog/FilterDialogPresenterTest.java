@@ -549,11 +549,12 @@ public class FilterDialogPresenterTest {
     }
 
     @Test
-    public void presenterKeepsEnabledStatusOfTheFilter() {
+    public void presenterKeepsEnabledStatusOfTheFilter() throws Exception {
         var disabledFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW)
-                .setEnabled(true);
+                .compile()
+                .toFilter(true);
 
         var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
 
@@ -564,11 +565,12 @@ public class FilterDialogPresenterTest {
     }
 
     @Test
-    public void presenterKeepsDisabledStatusOfTheFilter() {
+    public void presenterKeepsDisabledStatusOfTheFilter() throws Exception {
         var disabledFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW)
-                .setEnabled(false);
+                .compile()
+                .toFilter(false);
 
         var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
 

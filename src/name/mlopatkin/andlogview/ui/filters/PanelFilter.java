@@ -56,7 +56,7 @@ class PanelFilter implements PanelFilterView {
             editorHandle.bringToFront();
             return;
         }
-        editorHandle = this.editorHandle = dialogFactory.startEditFilterDialog(filter.getData());
+        editorHandle = this.editorHandle = dialogFactory.startEditFilterDialog(filter);
         editorHandle.getResult().thenAccept(optFilter -> {
             optFilter.ifPresent(newFilter -> {
                 if (model.getFilters().contains(filter)) {

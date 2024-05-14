@@ -46,7 +46,7 @@ public class FilterDialogFactory {
         return FilterDialogPresenter.create(dialogView, filter).show();
     }
 
-    public FilterDialogHandle startEditFilterDialog(FilterFromDialogData filter) {
+    public FilterDialogHandle startEditFilterDialog(FilterFromDialog filter) {
         FilterDialog dialogView = filterDialogViewFactory.get();
         dialogView.setTitle(EDIT_FILTER_DIALOG_TITLE);
         FilterDialogPresenter dialogPresenter = FilterDialogPresenter.create(dialogView, filter);

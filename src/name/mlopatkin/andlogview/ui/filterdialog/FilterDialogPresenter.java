@@ -81,8 +81,8 @@ class FilterDialogPresenter implements FilterDialogHandle {
     }
 
     private final FilterDialogView dialogView;
-    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
     private final boolean isResultEnabled;
+    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
 
     private FilterDialogPresenter(FilterDialogView dialogView) {
         this.dialogView = dialogView;
@@ -95,22 +95,23 @@ class FilterDialogPresenter implements FilterDialogHandle {
         isResultEnabled = true;
     }
 
-    private FilterDialogPresenter(FilterDialogView dialogView, FilterFromDialogData existingFilter) {
+    private FilterDialogPresenter(FilterDialogView dialogView, boolean isResultEnabled,
+            FilterFromDialogData initialFilterData) {
         this.dialogView = dialogView;
+        this.isResultEnabled = isResultEnabled;
 
-        dialogView.setTagsText(PatternsList.join(nullToEmpty(existingFilter.getTags())));
-        dialogView.setMessageText(Strings.nullToEmpty(existingFilter.getMessagePattern()));
+        dialogView.setTagsText(PatternsList.join(nullToEmpty(initialFilterData.getTags())));
+        dialogView.setMessageText(Strings.nullToEmpty(initialFilterData.getMessagePattern()));
         dialogView.setPidsAppsText(PatternsList.join(
                 Stream.concat(
-                        nullToEmpty(existingFilter.getPids()).stream().map(String::valueOf),
-                        nullToEmpty(existingFilter.getApps()).stream())
+                        nullToEmpty(initialFilterData.getPids()).stream().map(String::valueOf),
+                        nullToEmpty(initialFilterData.getApps()).stream())
         ));
-        dialogView.setPriority(existingFilter.getPriority());
-        dialogView.setMode(existingFilter.getMode());
-        if (existingFilter.getMode() == FilteringMode.HIGHLIGHT) {
-            dialogView.setHighlightColor(existingFilter.getHighlightColor());
+        dialogView.setPriority(initialFilterData.getPriority());
+        dialogView.setMode(initialFilterData.getMode());
+        if (initialFilterData.getMode() == FilteringMode.HIGHLIGHT) {
+            dialogView.setHighlightColor(initialFilterData.getHighlightColor());
         }
-        isResultEnabled = existingFilter.isEnabled();
     }
 
     private FilterDialogPresenter init() {
@@ -193,8 +194,12 @@ class FilterDialogPresenter implements FilterDialogHandle {
         return new FilterDialogPresenter(dialogView).init();
     }
 
+    public static FilterDialogPresenter create(FilterDialogView dialogView, FilterFromDialog existingFilter) {
+        return new FilterDialogPresenter(dialogView, existingFilter.isEnabled(), existingFilter.getData()).init();
+    }
+
     public static FilterDialogPresenter create(FilterDialogView dialogView, FilterFromDialogData existingFilter) {
-        return new FilterDialogPresenter(dialogView, existingFilter).init();
+        return new FilterDialogPresenter(dialogView, true, existingFilter).init();
     }
 
     private FilterFromDialog createFilter() throws RequestCompilationException, PatternsList.FormatException {
@@ -205,8 +210,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         dialogView.getPriority().ifPresent(filterData::setPriority);
         filterData.setMode(dialogView.getMode());
         dialogView.getHighlightColor().ifPresent(filterData::setHighlightColor);
-        filterData.setEnabled(isResultEnabled);
-        return filterData.compile().toFilter();
+        return filterData.compile().toFilter(isResultEnabled);
     }
 
     private static <T> List<T> nullToEmpty(@Nullable List<T> nullableList) {

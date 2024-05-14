@@ -48,7 +48,7 @@ class PanelFilterTest {
     void openingEditDialogForTheSecondTimeBringsItToFront() {
         var filter = createFilter();
         var mockHandle = mockHandle();
-        when(dialogFactory.startEditFilterDialog(filter.getData())).thenReturn(mockHandle);
+        when(dialogFactory.startEditFilterDialog(filter)).thenReturn(mockHandle);
 
         var pf = createPanelFilter(filter);
         pf.openFilterEditor();

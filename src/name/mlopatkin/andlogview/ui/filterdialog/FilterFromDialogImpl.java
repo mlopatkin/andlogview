@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
+import java.util.Objects;
 
 public class FilterFromDialogImpl implements FilterFromDialog, ColoringFilter {
     private final boolean enabled;
@@ -67,5 +68,21 @@ public class FilterFromDialogImpl implements FilterFromDialog, ColoringFilter {
     public FilterFromDialogData getData() {
         // TODO(mlopatkin) defensive copy?
         return data;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(enabled, data);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof FilterFromDialogImpl that) {
+            return enabled == that.enabled && Objects.equals(data, that.data);
+        }
+        return false;
     }
 }
