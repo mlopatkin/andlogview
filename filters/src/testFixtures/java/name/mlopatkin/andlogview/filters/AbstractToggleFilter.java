@@ -21,43 +21,14 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> implements PredicateFilter {
-    protected final FilteringMode mode;
-    protected final boolean enabled;
+public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> extends AbstractFilter<T>
+        implements PredicateFilter {
     protected final Predicate<? super LogRecord> predicate;
 
     public AbstractToggleFilter(FilteringMode mode, boolean enabled, Predicate<? super LogRecord> predicate) {
-        this.mode = mode;
-        this.enabled = enabled;
+        super(mode, enabled);
         this.predicate = predicate;
     }
-
-    @Override
-    public FilteringMode getMode() {
-        return mode;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public T enabled() {
-        return enabled ? self() : copy(true);
-    }
-
-    @Override
-    public T disabled() {
-        return enabled ? copy(false) : self();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final T self() {
-        return (T) this;
-    }
-
-    protected abstract T copy(boolean enabled);
 
     @Override
     public boolean test(LogRecord logRecord) {
@@ -73,6 +44,6 @@ public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> im
     public boolean equals(Object obj) {
         return obj == this
                 || (obj instanceof AbstractToggleFilter<?> filter && mode.equals(filter.mode)
-                && enabled == filter.enabled && predicate.equals(filter.predicate));
+                && isEnabled() == filter.isEnabled() && predicate.equals(filter.predicate));
     }
 }
