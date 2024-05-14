@@ -38,7 +38,7 @@ import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
@@ -144,7 +144,7 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     @ParameterizedTest(name = "{0}/{3}")
     @MethodSource("filterActionParams")
-    public void testFilterAction(Column column, Matcher<FilterFromDialog> filterMatcher, int actionIndex,
+    public void testFilterAction(Column column, Matcher<FilterFromDialogData> filterMatcher, int actionIndex,
             FilteringMode mode) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
@@ -156,7 +156,7 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getColumnsWithFilters")
-    public void testHighlightAction(Column column, Matcher<FilterFromDialog> filterMatcher) {
+    public void testHighlightAction(Column column, Matcher<FilterFromDialogData> filterMatcher) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
@@ -169,7 +169,7 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getColumnsWithFilters")
-    public void quickFilterDialogActionOpensDialog(Column column, Matcher<FilterFromDialog> filterMatcher) {
+    public void quickFilterDialogActionOpensDialog(Column column, Matcher<FilterFromDialogData> filterMatcher) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
@@ -204,7 +204,7 @@ public class TablePopupMenuPresenterParameterizedTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRegexishRowArgs")
     public void filterIsSuccessfullyCreatedIfRegexishRowSelected(Column column,
-            Matcher<FilterFromDialog> matchesFilter) {
+            Matcher<FilterFromDialogData> matchesFilter) {
         TablePopupMenuPresenter presenter = createPresenter(makeRegexishRow());
         presenter.showContextMenu(popupMenuView, column, makeRegexishRow());
         popupMenuView.triggerQuickFilterAction(0);
@@ -215,7 +215,7 @@ public class TablePopupMenuPresenterParameterizedTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRegexishRowArgs")
     public void filterDialogIsSuccessfullyOpenedIfRegexishRowSelected(Column column,
-            Matcher<FilterFromDialog> matchesFilter) {
+            Matcher<FilterFromDialogData> matchesFilter) {
         TablePopupMenuPresenter presenter = createPresenter(makeRegexishRow());
         presenter.showContextMenu(popupMenuView, column, makeRegexishRow());
         popupMenuView.triggerQuickDialogAction();

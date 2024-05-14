@@ -81,7 +81,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
     }
 
     private final FilterDialogView dialogView;
-    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
+    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialogData>> editingPromise;
     private final boolean isResultEnabled;
 
     private FilterDialogPresenter(FilterDialogView dialogView) {
@@ -95,7 +95,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         isResultEnabled = true;
     }
 
-    private FilterDialogPresenter(FilterDialogView dialogView, FilterFromDialog existingFilter) {
+    private FilterDialogPresenter(FilterDialogView dialogView, FilterFromDialogData existingFilter) {
         this.dialogView = dialogView;
 
         dialogView.setTagsText(PatternsList.join(nullToEmpty(existingFilter.getTags())));
@@ -126,7 +126,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
             return;
         }
         try {
-            FilterFromDialog filter = createFilter();
+            FilterFromDialogData filter = createFilter();
             dialogView.hide();
             editingPromise.complete(Optional.of(filter));
         } catch (RequestCompilationException e) {
@@ -177,12 +177,12 @@ class FilterDialogPresenter implements FilterDialogHandle {
     }
 
     @Override
-    public CompletionStage<Optional<FilterFromDialog>> getResult() {
+    public CompletionStage<Optional<FilterFromDialogData>> getResult() {
         Preconditions.checkState(editingPromise != null, "Dialog is not shown");
         return editingPromise;
     }
 
-    public CompletionStage<Optional<FilterFromDialog>> show() {
+    public CompletionStage<Optional<FilterFromDialogData>> show() {
         Preconditions.checkState(editingPromise == null, "Dialog is already shown");
         dialogView.show();
         editingPromise = new CompletableFuture<>();
@@ -193,12 +193,12 @@ class FilterDialogPresenter implements FilterDialogHandle {
         return new FilterDialogPresenter(dialogView).init();
     }
 
-    public static FilterDialogPresenter create(FilterDialogView dialogView, FilterFromDialog existingFilter) {
+    public static FilterDialogPresenter create(FilterDialogView dialogView, FilterFromDialogData existingFilter) {
         return new FilterDialogPresenter(dialogView, existingFilter).init();
     }
 
-    private FilterFromDialog createFilter() throws RequestCompilationException, PatternsList.FormatException {
-        FilterFromDialog filter = new FilterFromDialog();
+    private FilterFromDialogData createFilter() throws RequestCompilationException, PatternsList.FormatException {
+        FilterFromDialogData filter = new FilterFromDialogData();
         parseTags(filter);
         filter.setMessagePattern(Strings.emptyToNull(dialogView.getMessageText().trim()));
         parseAppsAndPids(filter);
@@ -218,11 +218,11 @@ class FilterDialogPresenter implements FilterDialogHandle {
         return !list.isEmpty() ? list : null;
     }
 
-    private void parseTags(FilterFromDialog filter) throws PatternsList.FormatException {
+    private void parseTags(FilterFromDialogData filter) throws PatternsList.FormatException {
         filter.setTags(emptyToNull(PatternsList.split(Strings.nullToEmpty(dialogView.getTagsText()))));
     }
 
-    private void parseAppsAndPids(FilterFromDialog filter) throws PatternsList.FormatException {
+    private void parseAppsAndPids(FilterFromDialogData filter) throws PatternsList.FormatException {
         List<String> appNames = new ArrayList<>();
         List<Integer> pids = new ArrayList<>();
         for (String item : PatternsList.split(Strings.nullToEmpty(dialogView.getPidsAppsText()))) {

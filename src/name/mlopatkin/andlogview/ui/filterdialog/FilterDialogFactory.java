@@ -33,19 +33,20 @@ public class FilterDialogFactory {
         this.filterDialogViewFactory = filterDialogViewFactory;
     }
 
-    public CompletionStage<Optional<FilterFromDialog>> startCreateFilterDialog() {
+    public CompletionStage<Optional<FilterFromDialogData>> startCreateFilterDialog() {
         FilterDialog dialogView = filterDialogViewFactory.get();
         dialogView.setTitle(NEW_FILTER_DIALOG_TITLE);
         return FilterDialogPresenter.create(dialogView).show();
     }
 
-    public CompletionStage<Optional<FilterFromDialog>> startCreateFilterDialogWithInitialData(FilterFromDialog filter) {
+    public CompletionStage<Optional<FilterFromDialogData>> startCreateFilterDialogWithInitialData(
+            FilterFromDialogData filter) {
         FilterDialog dialogView = filterDialogViewFactory.get();
         dialogView.setTitle(NEW_FILTER_DIALOG_TITLE);
         return FilterDialogPresenter.create(dialogView, filter).show();
     }
 
-    public FilterDialogHandle startEditFilterDialog(FilterFromDialog filter) {
+    public FilterDialogHandle startEditFilterDialog(FilterFromDialogData filter) {
         FilterDialog dialogView = filterDialogViewFactory.get();
         dialogView.setTitle(EDIT_FILTER_DIALOG_TITLE);
         FilterDialogPresenter dialogPresenter = FilterDialogPresenter.create(dialogView, filter);

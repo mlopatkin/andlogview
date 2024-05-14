@@ -189,7 +189,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterSetsUpActionsIfFilterGiven() {
-        FilterFromDialog showFilter = new FilterFromDialog()
+        FilterFromDialogData showFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW);
 
@@ -201,7 +201,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterSetsUpViewIfShowFilterGiven() {
-        FilterFromDialog showFilter = new FilterFromDialog()
+        FilterFromDialogData showFilter = new FilterFromDialogData()
                 .setTags(Arrays.asList("TAG", "/[Oo]ther/"))
                 .setMessagePattern("/[Ee]xception/")
                 .setApps(Arrays.asList("com.example.app", "/org\\.example\\..+/"))
@@ -221,7 +221,7 @@ public class FilterDialogPresenterTest {
     @Test
     public void presenterSetsUpViewIfHighlightFilterGiven() {
         Color highlightColor = Configuration.ui.highlightColors().get(0);
-        FilterFromDialog highlightFilter = new FilterFromDialog()
+        FilterFromDialogData highlightFilter = new FilterFromDialogData()
                 .setTags(Arrays.asList("TAG", "/[Oo]ther/"))
                 .setHighlightColor(highlightColor)
                 .setMode(FilteringMode.HIGHLIGHT);
@@ -263,7 +263,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsIncompletePromiseWhenShown() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         assertThat("Expected that promise completes only after commit/discard", promise, notCompleted());
     }
@@ -278,7 +278,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presentersPromiseCompletesWithEmptyIfDiscarded() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.discard();
 
@@ -287,7 +287,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsTagsFilter() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setTagsText("Hello");
@@ -301,7 +301,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsMultipleTagsFilter() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.HIDE);
         fakeView.setTagsText("Hello,foo,  /foo,,bar/ , ` BAZ,`");
@@ -315,7 +315,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsMessageFilter() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.WINDOW);
         fakeView.setMessageText("Hello");
@@ -329,7 +329,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsTrimmedMessageFilter() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.WINDOW);
         fakeView.setMessageText("  with   whitespace\t\t ");
@@ -343,7 +343,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsPid() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText(" 12");
@@ -357,7 +357,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsAppName() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText(" a12,  ");
@@ -371,7 +371,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsPidsAndAppNames() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText("com.example, 12 , /[Ff],,oo/  , `10`");
@@ -386,7 +386,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsPriority() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPriority(LogRecord.Priority.ERROR);
@@ -400,7 +400,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsHighlightColor() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         Color highlightColor = Color.CYAN;
 
@@ -418,7 +418,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsDefaultFilter() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
@@ -428,7 +428,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterShowsErrorIfTagsPatternFailsToCompile() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setTagsText("/[unclosed bracket/");
@@ -441,7 +441,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterShowsErrorIfMessagePatternFailsToCompile() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setMessageText("/[unclosed bracket/");
@@ -454,7 +454,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterShowsErrorIfAppPatternFailsToCompile() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText("/[unclosed bracket/");
@@ -467,7 +467,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterCompletesIfErrorIsFixed() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setMessageText("/[unclosed bracket/");
@@ -487,7 +487,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesDoubleCommit() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
@@ -498,7 +498,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesDoubleDiscard() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.discard();
@@ -509,7 +509,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesCommitThenDiscard() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
@@ -520,7 +520,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesDiscardThenCommit() {
-        CompletionStage<Optional<FilterFromDialog>> promise = FilterDialogPresenter.create(fakeView).show();
+        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.discard();
@@ -542,7 +542,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterKeepsEnabledStatusOfTheFilter() {
-        var disabledFilter = new FilterFromDialog()
+        var disabledFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW)
                 .setEnabled(true);
@@ -557,7 +557,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterKeepsDisabledStatusOfTheFilter() {
-        var disabledFilter = new FilterFromDialog()
+        var disabledFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW)
                 .setEnabled(false);

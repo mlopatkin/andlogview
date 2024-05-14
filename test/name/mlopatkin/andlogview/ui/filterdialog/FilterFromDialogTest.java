@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class FilterFromDialogTest {
-    private final FilterFromDialog filter = new FilterFromDialog();
+    private final FilterFromDialogData filter = new FilterFromDialogData();
 
     @Before
     public void setUp() throws Exception {
@@ -257,22 +257,22 @@ public class FilterFromDialogTest {
     @Test
     public void testAppNamesRegexMatchThrowsAppropriateExceptions() throws Exception {
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialog().setApps(Collections.singletonList(" ")), " ");
+                new FilterFromDialogData().setApps(Collections.singletonList(" ")), " ");
 
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialog().setApps(Collections.singletonList("/?/")), "/?/");
+                new FilterFromDialogData().setApps(Collections.singletonList("/?/")), "/?/");
 
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialog().setTags(Collections.singletonList(" ")), " ");
+                new FilterFromDialogData().setTags(Collections.singletonList(" ")), " ");
 
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialog().setTags(Collections.singletonList("/?/")), "/?/");
+                new FilterFromDialogData().setTags(Collections.singletonList("/?/")), "/?/");
 
-        assertInitializeThrowsExceptionWithRequestValue(new FilterFromDialog().setMessagePattern("/?/"), "/?/");
+        assertInitializeThrowsExceptionWithRequestValue(new FilterFromDialogData().setMessagePattern("/?/"), "/?/");
     }
 
     private static void assertInitializeThrowsExceptionWithRequestValue(
-            FilterFromDialog filter, String expectedRequest) {
+            FilterFromDialogData filter, String expectedRequest) {
         try {
             filter.setMode(FilteringMode.HIDE);
             filter.initialize();

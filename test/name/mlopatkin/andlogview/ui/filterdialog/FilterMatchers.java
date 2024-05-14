@@ -26,39 +26,39 @@ import org.hamcrest.Matchers;
 import java.awt.Color;
 
 public class FilterMatchers {
-    public static Matcher<FilterFromDialog> hasTags(Matcher<Iterable<? extends String>> tagsMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getTags, tagsMatcher);
+    public static Matcher<FilterFromDialogData> hasTags(Matcher<Iterable<? extends String>> tagsMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getTags, tagsMatcher);
     }
 
-    public static Matcher<FilterFromDialog> hasPids(Matcher<Iterable<? extends Integer>> pidsMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getPids, pidsMatcher);
+    public static Matcher<FilterFromDialogData> hasPids(Matcher<Iterable<? extends Integer>> pidsMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getPids, pidsMatcher);
     }
 
-    public static Matcher<FilterFromDialog> hasApps(Matcher<Iterable<? extends String>> appsMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getApps, appsMatcher);
+    public static Matcher<FilterFromDialogData> hasApps(Matcher<Iterable<? extends String>> appsMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getApps, appsMatcher);
     }
 
-    public static Matcher<FilterFromDialog> hasMessage(Matcher<? super String> messageMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getMessagePattern, messageMatcher);
+    public static Matcher<FilterFromDialogData> hasMessage(Matcher<? super String> messageMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getMessagePattern, messageMatcher);
     }
 
-    public static Matcher<FilterFromDialog> hasPriority(Matcher<? super LogRecord.Priority> priorityMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getPriority, priorityMatcher);
+    public static Matcher<FilterFromDialogData> hasPriority(Matcher<? super LogRecord.Priority> priorityMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getPriority, priorityMatcher);
     }
 
-    public static Matcher<FilterFromDialog> hasMode(Matcher<? super FilteringMode> modeMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getMode, modeMatcher);
+    public static Matcher<FilterFromDialogData> hasMode(Matcher<? super FilteringMode> modeMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getMode, modeMatcher);
     }
 
-    public static Matcher<FilterFromDialog> hasColor(Matcher<? super Color> colorMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialog::getHighlightColor, colorMatcher);
+    public static Matcher<FilterFromDialogData> hasColor(Matcher<? super Color> colorMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialogData::getHighlightColor, colorMatcher);
     }
 
-    public static Matcher<FilterFromDialog> isEnabled() {
-        return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(true));
+    public static Matcher<FilterFromDialogData> isEnabled() {
+        return new AdaptingMatcher<>(FilterFromDialogData::isEnabled, Matchers.is(true));
     }
 
-    public static Matcher<FilterFromDialog> isDisabled() {
-        return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(false));
+    public static Matcher<FilterFromDialogData> isDisabled() {
+        return new AdaptingMatcher<>(FilterFromDialogData::isEnabled, Matchers.is(false));
     }
 }

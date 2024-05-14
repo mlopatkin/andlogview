@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterdialog.PatternsList;
 import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 import name.mlopatkin.andlogview.ui.logtable.Column;
@@ -140,13 +140,13 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
     }
 
-    private FilterFromDialog buildFilter(FilteringMode mode, Column column, TableRow row) {
-        FilterFromDialog filter = new FilterFromDialog().setMode(mode);
+    private FilterFromDialogData buildFilter(FilteringMode mode, Column column, TableRow row) {
+        FilterFromDialogData filter = new FilterFromDialogData().setMode(mode);
         ColumnData.applyColumnValueToFilter(filter, column, row);
         return filter;
     }
 
-    private void addFilter(FilterFromDialog filter) {
+    private void addFilter(FilterFromDialogData filter) {
         try {
             filter.initialize();
             filterCreator.addFilter(filter);
@@ -182,7 +182,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
             return column.getColumnName();
         }
 
-        public static void applyColumnValueToFilter(FilterFromDialog dialog, Column c, TableRow row) {
+        public static void applyColumnValueToFilter(FilterFromDialogData dialog, Column c, TableRow row) {
             LogRecord record = row.getRecord();
             switch (c) {
                 case INDEX:

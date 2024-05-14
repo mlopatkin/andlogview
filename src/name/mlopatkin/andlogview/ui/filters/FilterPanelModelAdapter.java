@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
@@ -52,7 +52,7 @@ class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPa
     @Inject
     FilterPanelModelAdapter(PanelFilter.Factory panelFilterFactory) {
         this((Filter f) -> {
-            if (f instanceof FilterFromDialog filterFromDialog) {
+            if (f instanceof FilterFromDialogData filterFromDialog) {
                 return panelFilterFactory.create(filterFromDialog);
             }
             return null;

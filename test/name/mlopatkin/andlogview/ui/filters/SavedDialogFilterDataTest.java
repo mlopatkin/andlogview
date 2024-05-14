@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.test.TestData;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 import com.google.gson.Gson;
 
@@ -51,8 +51,8 @@ class SavedDialogFilterDataTest {
         assertThat(deserialized.test(TestData.RECORD1)).isEqualTo(expectedMatch);
     }
 
-    private FilterFromDialog createFilter(boolean isEnabled, String tagPattern) throws RequestCompilationException {
-        var filter = new FilterFromDialog();
+    private FilterFromDialogData createFilter(boolean isEnabled, String tagPattern) throws RequestCompilationException {
+        var filter = new FilterFromDialogData();
         filter.setMode(FilteringMode.getDefaultMode());
         filter.setTags(Collections.singletonList(tagPattern));
         filter.setEnabled(isEnabled);
@@ -61,7 +61,7 @@ class SavedDialogFilterDataTest {
         return filter;
     }
 
-    private FilterFromDialog roundTrip(FilterFromDialog original) throws Exception {
+    private FilterFromDialogData roundTrip(FilterFromDialogData original) throws Exception {
         var originalData = new SavedDialogFilterData(original);
         return GSON.fromJson(GSON.toJson(originalData), SavedDialogFilterData.class).fromSerializedForm();
     }

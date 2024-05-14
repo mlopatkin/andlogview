@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,16 +56,16 @@ class PanelFilterTest {
         inOrder.verify(mockHandle).bringToFront();
     }
 
-    PanelFilter createPanelFilter(FilterFromDialog filter) {
+    PanelFilter createPanelFilter(FilterFromDialogData filter) {
         return new PanelFilter(filterModel, dialogFactory, filter);
     }
 
-    FilterFromDialog createFilter() {
-        return new FilterFromDialog().setMessagePattern("message");
+    FilterFromDialogData createFilter() {
+        return new FilterFromDialogData().setMessagePattern("message");
     }
 
     FilterDialogHandle mockHandle() {
-        var future = new CompletableFuture<Optional<FilterFromDialog>>();
+        var future = new CompletableFuture<Optional<FilterFromDialogData>>();
         FilterDialogHandle handle = mock();
         lenient().when(handle.getResult()).thenReturn(future);
         return handle;

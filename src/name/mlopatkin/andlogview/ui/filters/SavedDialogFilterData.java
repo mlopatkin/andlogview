@@ -17,20 +17,20 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.search.RequestCompilationException;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 class SavedDialogFilterData extends SavedFilterData {
-    private final FilterFromDialog filterData;
+    private final FilterFromDialogData filterData;
     private transient boolean initialized;
 
-    SavedDialogFilterData(FilterFromDialog filterData) {
+    SavedDialogFilterData(FilterFromDialogData filterData) {
         super(filterData.isEnabled());
         this.filterData = filterData;
         this.initialized = true;
     }
 
     @Override
-    public FilterFromDialog fromSerializedForm() throws RequestCompilationException {
+    public FilterFromDialogData fromSerializedForm() throws RequestCompilationException {
         if (!initialized) {
             // Deserialized version bypasses the constructor, and has initialized == false.
             filterData.initialize();

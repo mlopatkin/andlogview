@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class FilterFromDialog implements ColoringFilter {
+public class FilterFromDialogData implements ColoringFilter {
     private static final Joiner commaJoiner = Joiner.on(", ");
 
     private static final SearchRequestParser<Predicate<String>> tagParser =
@@ -88,9 +88,9 @@ public class FilterFromDialog implements ColoringFilter {
     private transient @MonotonicNonNull String tooltipRepresentation;
     private transient boolean enabled = true;
 
-    public FilterFromDialog() {}
+    public FilterFromDialogData() {}
 
-    private FilterFromDialog(FilterFromDialog f) {
+    private FilterFromDialogData(FilterFromDialogData f) {
         tags = copy(f.tags);
         pids = copy(f.pids);
         apps = copy(f.apps);
@@ -184,7 +184,7 @@ public class FilterFromDialog implements ColoringFilter {
         return tags;
     }
 
-    public FilterFromDialog setTags(@Nullable List<String> tags) {
+    public FilterFromDialogData setTags(@Nullable List<String> tags) {
         this.tags = tags;
         return this;
     }
@@ -193,7 +193,7 @@ public class FilterFromDialog implements ColoringFilter {
         return pids;
     }
 
-    public FilterFromDialog setPids(@Nullable List<Integer> pids) {
+    public FilterFromDialogData setPids(@Nullable List<Integer> pids) {
         this.pids = pids;
         return this;
     }
@@ -202,7 +202,7 @@ public class FilterFromDialog implements ColoringFilter {
         return apps;
     }
 
-    public FilterFromDialog setApps(@Nullable List<String> apps) {
+    public FilterFromDialogData setApps(@Nullable List<String> apps) {
         this.apps = apps;
         return this;
     }
@@ -211,7 +211,7 @@ public class FilterFromDialog implements ColoringFilter {
         return messagePattern;
     }
 
-    public FilterFromDialog setMessagePattern(@Nullable String messagePattern) {
+    public FilterFromDialogData setMessagePattern(@Nullable String messagePattern) {
         this.messagePattern = messagePattern;
         return this;
     }
@@ -220,7 +220,7 @@ public class FilterFromDialog implements ColoringFilter {
         return priority;
     }
 
-    public FilterFromDialog setPriority(LogRecord.@Nullable Priority priority) {
+    public FilterFromDialogData setPriority(LogRecord.@Nullable Priority priority) {
         this.priority = priority;
         return this;
     }
@@ -231,7 +231,7 @@ public class FilterFromDialog implements ColoringFilter {
         return mode;
     }
 
-    public FilterFromDialog setMode(FilteringMode mode) {
+    public FilterFromDialogData setMode(FilteringMode mode) {
         this.mode = mode;
         return this;
     }
@@ -241,7 +241,7 @@ public class FilterFromDialog implements ColoringFilter {
         return highlightColor;
     }
 
-    public FilterFromDialog setHighlightColor(@Nullable Color highlightColor) {
+    public FilterFromDialogData setHighlightColor(@Nullable Color highlightColor) {
         this.highlightColor = highlightColor;
         return this;
     }
@@ -256,7 +256,7 @@ public class FilterFromDialog implements ColoringFilter {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof FilterFromDialog that)) {
+        if (!(o instanceof FilterFromDialogData that)) {
             return false;
         }
         return Objects.equals(tags, that.tags)
@@ -293,18 +293,18 @@ public class FilterFromDialog implements ColoringFilter {
         return enabled;
     }
 
-    public FilterFromDialog setEnabled(boolean enabled) {
+    public FilterFromDialogData setEnabled(boolean enabled) {
         this.enabled = enabled;
         return this;
     }
 
     @Override
-    public FilterFromDialog enabled() {
-        return enabled ? this : new FilterFromDialog(this).setEnabled(true);
+    public FilterFromDialogData enabled() {
+        return enabled ? this : new FilterFromDialogData(this).setEnabled(true);
     }
 
     @Override
-    public FilterFromDialog disabled() {
-        return enabled ? new FilterFromDialog(this).setEnabled(false) : this;
+    public FilterFromDialogData disabled() {
+        return enabled ? new FilterFromDialogData(this).setEnabled(false) : this;
     }
 }

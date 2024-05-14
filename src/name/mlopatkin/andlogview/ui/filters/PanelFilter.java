@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.ui.filters;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterpanel.PanelFilterView;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
@@ -32,12 +32,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 class PanelFilter implements PanelFilterView {
     private final MutableFilterModel model;
     private final FilterDialogFactory dialogFactory;
-    private final FilterFromDialog filter;
+    private final FilterFromDialogData filter;
 
     private @Nullable FilterDialogHandle editorHandle;
 
     @AssistedInject
-    public PanelFilter(MutableFilterModel model, FilterDialogFactory dialogFactory, @Assisted FilterFromDialog filter) {
+    public PanelFilter(MutableFilterModel model, FilterDialogFactory dialogFactory,
+            @Assisted FilterFromDialogData filter) {
         this.model = model;
         this.dialogFactory = dialogFactory;
         this.filter = filter;
@@ -82,6 +83,6 @@ class PanelFilter implements PanelFilterView {
 
     @AssistedFactory
     interface Factory {
-        PanelFilter create(FilterFromDialog filter);
+        PanelFilter create(FilterFromDialogData filter);
     }
 }

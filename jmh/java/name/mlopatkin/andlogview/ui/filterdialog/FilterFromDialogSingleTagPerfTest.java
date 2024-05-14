@@ -62,7 +62,7 @@ public class FilterFromDialogSingleTagPerfTest {
 
         simplestPredicate = p -> "ActivityManager".equalsIgnoreCase(p.getTag());
 
-        FilterFromDialog plainTextFilter = new FilterFromDialog().setMode(FilteringMode.SHOW).setTags(
+        FilterFromDialogData plainTextFilter = new FilterFromDialogData().setMode(FilteringMode.SHOW).setTags(
                 Collections.singletonList("ActivityManager"));
         plainTextFilter.initialize();
         compiledPredicatePlainText = plainTextFilter;
