@@ -38,7 +38,7 @@ public class LogcatEntryJsonModel {
     private @Nullable String tag;
     private @Nullable String message;
 
-    public LogRecord buildRecord(Collection<Field> fields) {
+    public LogRecord buildRecord(Collection<Field<?>> fields) {
         assert fields.contains(Field.MESSAGE);
         LogRecordBuilder record = LogRecordUtils.logRecord(Objects.requireNonNull(message));
         if (fields.contains(Field.TIME)) {

@@ -54,13 +54,13 @@ public final class DumpstateFileDataSource implements DataSource {
     private final SourceMetadata sourceMetadata;
 
     private final List<LogRecord> records;
-    private final Set<Field> availableFields;
+    private final Set<Field<?>> availableFields;
     private final EnumSet<Buffer> buffers;
     private final Map<Integer, String> converter;
 
     private @Nullable RecordListener<LogRecord> logcatListener;
 
-    private DumpstateFileDataSource(File file, List<LogRecord> records, Set<Field> availableFields,
+    private DumpstateFileDataSource(File file, List<LogRecord> records, Set<Field<?>> availableFields,
             EnumSet<Buffer> buffers, Map<Integer, String> converter) {
         this.fileName = file.getName();
         this.sourceMetadata = new FileSourceMetadata(file);
@@ -79,7 +79,7 @@ public final class DumpstateFileDataSource implements DataSource {
     }
 
     @Override
-    public Set<Field> getAvailableFields() {
+    public Set<Field<?>> getAvailableFields() {
         return availableFields;
     }
 
@@ -235,7 +235,7 @@ public final class DumpstateFileDataSource implements DataSource {
             }
             return new ImportResult(
                     new DumpstateFileDataSource(
-                            file, sorter.buildTimestampOrdered(), EnumSet.allOf(Field.class), availableBuffers,
+                            file, sorter.buildTimestampOrdered(), Field.values(), availableBuffers,
                             pidToProcessConverter),
                     problems);
         }

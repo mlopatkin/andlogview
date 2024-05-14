@@ -22,10 +22,12 @@ import name.mlopatkin.andlogview.search.text.HighlightStrategy;
 import name.mlopatkin.andlogview.search.text.SearchStrategyFactory;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Grammar:
@@ -79,8 +81,8 @@ public final class RowSearchStrategyFactory {
 
     private static RowSearchStrategy prepareWithoutPrefix(String pattern) throws RequestCompilationException {
         HighlightStrategy strategy = SearchStrategyFactory.createHighlightStrategy(pattern);
-        Field[] searchableFields = {Field.APP_NAME, Field.MESSAGE, Field.TAG};
-        List<ValueSearcher> searches = new ArrayList<>(searchableFields.length);
+        Set<Field<?>> searchableFields = ImmutableSet.of(Field.APP_NAME, Field.MESSAGE, Field.TAG);
+        List<ValueSearcher> searches = new ArrayList<>(searchableFields.size());
         for (var field : searchableFields) {
             searches.add(new ValueSearcher(strategy, field));
         }

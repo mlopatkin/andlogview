@@ -45,7 +45,7 @@ public class LogcatPushParser<H extends LogcatParseEventsHandler> extends Abstra
         super.close();
     }
 
-    public Set<Field> getAvailableFields() {
+    public Set<Field<?>> getAvailableFields() {
         return format.getAvailableFields();
     }
 }

@@ -26,7 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 @CanIgnoreReturnValue
 public class AssertLogRecord {
-    private final Set<Field> checkedFields = EnumSet.noneOf(Field.class);
+    private final Set<Field<?>> checkedFields = new HashSet<>();
     private final LogRecord item;
 
     private AssertLogRecord(LogRecord item) {

@@ -42,7 +42,7 @@ class OrSearcher implements RowSearchStrategy {
     }
 
     @Override
-    public void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter) {
+    public void highlightColumn(LogRecord record, Field<?> field, TextHighlighter columnHighlighter) {
         for (var s : searchers) {
             s.highlightColumn(record, field, columnHighlighter);
         }

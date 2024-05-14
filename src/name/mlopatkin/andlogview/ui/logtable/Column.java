@@ -63,7 +63,7 @@ public enum Column {
     // Message isn't toggleable so the user cannot disable everything.
     MESSAGE(Field.MESSAGE, "message", "Message", false);
 
-    private final @Nullable Field recordField;
+    private final @Nullable Field<?> recordField;
     private final String columnName;
     private final @Nullable String title;
     private final boolean toggleable;
@@ -87,7 +87,7 @@ public enum Column {
      * @param name short name that is used as a key in preferences
      * @param title user-visible title of the column (can be empty)
      */
-    Column(@Nullable Field recordField, String name, @Nullable String title) {
+    Column(@Nullable Field<?> recordField, String name, @Nullable String title) {
         this(recordField, name, title, true);
     }
 
@@ -99,7 +99,7 @@ public enum Column {
      * @param title user-visible title of the column (can be empty or null)
      * @param toggleable whether the visibility of the column can be toggled with popup menu
      */
-    Column(@Nullable Field recordField, String name, @Nullable String title, boolean toggleable) {
+    Column(@Nullable Field<?> recordField, String name, @Nullable String title, boolean toggleable) {
         this.recordField = recordField;
         this.columnName = name;
         this.title = title;
@@ -111,7 +111,7 @@ public enum Column {
      *
      * @return the record field
      */
-    public @Nullable Field getRecordField() {
+    public @Nullable Field<?> getRecordField() {
         return recordField;
     }
 
@@ -164,7 +164,7 @@ public enum Column {
         return columns;
     }
 
-    public static Set<Column> getColumnsForFields(Collection<Field> fields) {
+    public static Set<Column> getColumnsForFields(Collection<Field<?>> fields) {
         Set<Column> columns = EnumSet.noneOf(Column.class);
         for (Column column : Column.values()) {
             if (fields.contains(column.recordField)) {

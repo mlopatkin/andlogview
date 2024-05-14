@@ -22,5 +22,5 @@ import name.mlopatkin.andlogview.search.text.TextHighlighter;
 import java.util.function.Predicate;
 
 public interface RowSearchStrategy extends Predicate<LogRecord> {
-    void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter);
+    void highlightColumn(LogRecord record, Field<?> field, TextHighlighter columnHighlighter);
 }

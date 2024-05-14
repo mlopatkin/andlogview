@@ -16,87 +16,80 @@
 
 package name.mlopatkin.andlogview.logmodel;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.errorprone.annotations.Immutable;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Fields in the log record.
  */
-public enum Field {
+@Immutable
+public final class Field<T extends @Nullable Comparable<T>> {
+    // This is a poor man's enum. Enum cannot be generic and enum constants cannot have different types, so we have to
+    // go back to the old ways here.
+
     /**
      * The timestamp. This is an optional field with {@code null} representing the missing value.
      */
-    TIME {
-        @Override
-        public @Nullable Timestamp getValue(LogRecord record) {
-            return record.getTime();
-        }
-    },
+    public static final Field<@Nullable Timestamp> TIME = new Field<>("TIME", LogRecord::getTime);
+
     /**
      * The PID. This is an optional field with {@link LogRecord#NO_ID} representing the missing value.
      */
-    PID {
-        @Override
-        public Integer getValue(LogRecord record) {
-            return record.getPid();
-        }
-    },
+    public static final Field<Integer> PID = new Field<>("PID", LogRecord::getPid);
+
     /**
      * The TID. This is an optional field with {@link LogRecord#NO_ID} representing the missing value.
      */
-    TID {
-        @Override
-        public Integer getValue(LogRecord record) {
-            return record.getTid();
-        }
-    },
+    public static final Field<Integer> TID = new Field<>("TID", LogRecord::getTid);
+
     /**
      * The priority.
      */
-    PRIORITY {
-        @Override
-        public LogRecord.Priority getValue(LogRecord record) {
-            return record.getPriority();
-        }
-    },
+    public static final Field<LogRecord.Priority> PRIORITY = new Field<>("PRIORITY", LogRecord::getPriority);
+
     /**
      * The tag. This is an optional field with empty string representing the missing value.
      */
-    TAG {
-        @Override
-        public String getValue(LogRecord record) {
-            return record.getTag();
-        }
-    },
+    public static final Field<String> TAG = new Field<>("TAG", LogRecord::getTag);
+
     /**
      * The message.
      */
-    MESSAGE {
-        @Override
-        public String getValue(LogRecord record) {
-            return record.getMessage();
-        }
-    },
+    public static final Field<String> MESSAGE = new Field<>("MESSAGE", LogRecord::getMessage);
+
     /**
      * The buffer. This is an optional field with {@code null} representing the missing value.
      */
-    BUFFER {
-        @Override
-        public LogRecord.@Nullable Buffer getValue(LogRecord record) {
-            return record.getBuffer();
-        }
-    },
+    public static final Field<LogRecord.@Nullable Buffer> BUFFER = new Field<>("BUFFER", LogRecord::getBuffer);
+
     /**
      * The app name. This is an optional field with empty string representing the missing value.
      */
-    APP_NAME {
-        @Override
-        public String getValue(LogRecord record) {
-            return record.getAppName();
-        }
-    };
+    public static final Field<String> APP_NAME = new Field<>("APP_NAME", LogRecord::getAppName);
+
+    private static class ValuesHolder {
+        // A Holder class idiom to prevent initialization order issues with constants.
+        private static ImmutableSet.@Nullable Builder<Field<?>> builder = ImmutableSet.builder();
+    }
+
+    private static final ImmutableSet<Field<?>> VALUES;
+
+    static {
+        // This block must come after all constants are declared.
+        VALUES = Objects.requireNonNull(ValuesHolder.builder).build();
+        // Free memory and prevent accidentally creating extra constants that won't make it into VALUES.
+        ValuesHolder.builder = null;
+    }
+
+    private final String name;
+    @SuppressWarnings("Immutable")
+    private final Function<? super LogRecord, ? extends T> extractor;
 
     /**
      * Extracts the value of this field from the given record.
@@ -104,10 +97,24 @@ public enum Field {
      * @param record the record to get the value from
      * @return the value of the field of the record
      */
-    public abstract @Nullable Comparable<?> getValue(LogRecord record);
-    // Ideally we'd have Field<T extends Comparable<T>> and T getValue(), then each enum constant would be
-    // Field<String>, Field<Integer>, etc. Unfortunately, this is not possible to express with Java enums.
-    // At most, we can restrict constants to be comparables.
+    public T getValue(LogRecord record) {
+        return extractor.apply(record);
+    }
+
+    private Field(String name, Function<? super LogRecord, ? extends T> extractor) {
+        this.name = name;
+        this.extractor = extractor;
+        Objects.requireNonNull(ValuesHolder.builder).add(this);
+    }
+
+    /**
+     * Returns all available values of this "enum".
+     *
+     * @return the immutable set of values
+     */
+    public static ImmutableSet<Field<?>> values() {
+        return VALUES;
+    }
 
     /**
      * Creates a comparator that can be used to compare records by the value of the field. The returned comparator
@@ -117,18 +124,16 @@ public enum Field {
      */
     public Comparator<LogRecord> createComparator() {
         return new Comparator<>() {
-            @SuppressWarnings({"unchecked", "rawtypes"})
             @Override
             public int compare(LogRecord o1, LogRecord o2) {
-                // Enums cannot be generic, so we have to erase the type of comparable here.
-                var value1 = (Comparable) Objects.requireNonNull(getValue(o1));
-                var value2 = (Comparable) Objects.requireNonNull(getValue(o2));
+                var value1 = Objects.requireNonNull(getValue(o1));
+                var value2 = Objects.requireNonNull(getValue(o2));
                 return value1.compareTo(value2);
             }
 
             @Override
             public String toString() {
-                return "Comparator<LogRecord>{" + name() + "}";
+                return "Comparator<LogRecord>{" + name + "}";
             }
         };
     }

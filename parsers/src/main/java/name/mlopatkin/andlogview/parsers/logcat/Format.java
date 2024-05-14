@@ -23,9 +23,7 @@ import com.google.common.collect.ImmutableSet;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -48,20 +46,18 @@ public enum Format {
     private final @Nullable String formatName;
     @SuppressWarnings("ImmutableEnumChecker")
     private final @Nullable Function<LogcatParseEventsHandler, RegexLogcatParserDelegate> parserFactory;
-    private final ImmutableSet<Field> availableFields;
+    private final ImmutableSet<Field<?>> availableFields;
 
     Format(
             @Nullable String cmdFormatName,
             @Nullable Function<LogcatParseEventsHandler, RegexLogcatParserDelegate> parserFactory,
-            Field... availableFields) {
+            Field<?>... availableFields) {
         this.formatName = cmdFormatName;
         this.parserFactory = parserFactory;
-        EnumSet<Field> fieldSet = EnumSet.noneOf(Field.class);
-        fieldSet.addAll(Arrays.asList(availableFields));
-        this.availableFields = ImmutableSet.copyOf(fieldSet);
+        this.availableFields = ImmutableSet.copyOf(availableFields);
     }
 
-    Format(@Nullable String formatName, Field... availableFields) {
+    Format(@Nullable String formatName, Field<?>... availableFields) {
         this(formatName, null, availableFields);
     }
 
@@ -78,7 +74,7 @@ public enum Format {
         return formatName;
     }
 
-    public final Set<Field> getAvailableFields() {
+    public final Set<Field<?>> getAvailableFields() {
         return availableFields;
     }
 

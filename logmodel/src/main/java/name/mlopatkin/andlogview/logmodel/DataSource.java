@@ -57,7 +57,7 @@ public interface DataSource {
     /**
      * @return the set of fields available in LogRecords that are produced by this data source
      */
-    Set<Field> getAvailableFields();
+    Set<Field<?>> getAvailableFields();
 
     /**
      * Resets internal data structures and resends all available records into

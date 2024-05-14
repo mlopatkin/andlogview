@@ -46,13 +46,13 @@ import java.util.function.Function;
  */
 public class LogfileDataSource implements DataSource {
     private final String fileName;
-    private final Set<Field> availableFields;
+    private final Set<Field<?>> availableFields;
     private final List<LogRecord> records;
     private final SourceMetadata sourceMetadata;
 
     private @Nullable RecordListener<LogRecord> listener;
 
-    private LogfileDataSource(File file, Set<Field> availableFields, List<LogRecord> records) {
+    private LogfileDataSource(File file, Set<Field<?>> availableFields, List<LogRecord> records) {
         this.fileName = file.getName();
         this.availableFields = availableFields;
         // records may be huge, do not copy it needlessly
@@ -69,7 +69,7 @@ public class LogfileDataSource implements DataSource {
     }
 
     @Override
-    public Set<Field> getAvailableFields() {
+    public Set<Field<?>> getAvailableFields() {
         return availableFields;
     }
 

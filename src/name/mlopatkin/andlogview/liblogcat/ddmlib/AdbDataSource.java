@@ -164,8 +164,8 @@ public class AdbDataSource implements DataSource, BufferReceiver {
     }
 
     @Override
-    public Set<Field> getAvailableFields() {
-        return EnumSet.allOf(Field.class);
+    public Set<Field<?>> getAvailableFields() {
+        return Field.values();
     }
 
     @Override

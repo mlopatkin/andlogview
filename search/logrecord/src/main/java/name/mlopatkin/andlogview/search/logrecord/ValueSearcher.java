@@ -23,9 +23,9 @@ import name.mlopatkin.andlogview.search.text.TextHighlighter;
 
 class ValueSearcher implements RowSearchStrategy {
     private final HighlightStrategy highlightStrategy;
-    private final Field field;
+    private final Field<?> field;
 
-    public ValueSearcher(HighlightStrategy highlightStrategy, Field field) {
+    public ValueSearcher(HighlightStrategy highlightStrategy, Field<?> field) {
         this.highlightStrategy = highlightStrategy;
         this.field = field;
     }
@@ -40,7 +40,7 @@ class ValueSearcher implements RowSearchStrategy {
     }
 
     @Override
-    public void highlightColumn(LogRecord record, Field field, TextHighlighter columnHighlighter) {
+    public void highlightColumn(LogRecord record, Field<?> field, TextHighlighter columnHighlighter) {
         if (this.field.equals(field)) {
             highlightStrategy.highlightOccurences(getValue(record), columnHighlighter);
         }
