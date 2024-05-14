@@ -296,11 +296,11 @@ public class FilterFromDialogData {
 
     public FilterFromDialog toFilter(boolean enabled) {
         assert compiledPredicate != null;
-        return new FilterFromDialog(enabled, new FilterFromDialogData(this).setEnabled(enabled));
+        return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this).setEnabled(enabled));
     }
 
     public FilterFromDialog toFilter() {
         assert compiledPredicate != null;
-        return new FilterFromDialog(enabled, new FilterFromDialogData(this));
+        return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
     }
 }

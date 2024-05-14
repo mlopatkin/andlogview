@@ -52,6 +52,7 @@ public class FilterFromDialogSingleTagPerfTest {
     private @MonotonicNonNull Predicate<LogRecord> simplestPredicate;
     private @MonotonicNonNull Predicate<LogRecord> compiledPredicatePlainText;
 
+    @SuppressWarnings("unchecked")
     @Setup(Level.Trial)
     public void setUp() throws Exception {
         try (Stream<String> lines = BenchmarkResources.loadResource("goldfish_omr1_threadtime.log").lines();
@@ -65,7 +66,7 @@ public class FilterFromDialogSingleTagPerfTest {
         FilterFromDialogData plainTextFilter = new FilterFromDialogData().setMode(FilteringMode.SHOW).setTags(
                 Collections.singletonList("ActivityManager"));
         plainTextFilter.compile();
-        compiledPredicatePlainText = plainTextFilter.toFilter();
+        compiledPredicatePlainText = (Predicate<LogRecord>) plainTextFilter.toFilter();
     }
 
     @Benchmark

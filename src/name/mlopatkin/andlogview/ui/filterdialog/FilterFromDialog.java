@@ -16,55 +16,17 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
-import name.mlopatkin.andlogview.filters.ColoringFilter;
-import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.filters.Filter;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.awt.Color;
-
-public class FilterFromDialog implements ColoringFilter {
-    private final boolean enabled;
-    private final FilterFromDialogData data;
-
-    FilterFromDialog(boolean enabled, FilterFromDialogData data) {
-        this.enabled = enabled;
-        this.data = data;
-    }
+/**
+ * A filter that can be edited through the filter dialog.
+ */
+public interface FilterFromDialog extends Filter {
+    @Override
+    FilterFromDialog enabled();
 
     @Override
-    public boolean test(LogRecord input) {
-        return data.test(input);
-    }
+    FilterFromDialog disabled();
 
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public FilteringMode getMode() {
-        return data.getMode();
-    }
-
-    @Override
-    public @Nullable Color getHighlightColor() {
-        return data.getHighlightColor();
-    }
-
-    @Override
-    public FilterFromDialog enabled() {
-        return enabled ? this : new FilterFromDialog(true, data);
-    }
-
-    @Override
-    public FilterFromDialog disabled() {
-        return enabled ? new FilterFromDialog(false, data) : this;
-    }
-
-    public FilterFromDialogData getData() {
-        // TODO(mlopatkin) defensive copy?
-        return data;
-    }
+    FilterFromDialogData getData();
 }
