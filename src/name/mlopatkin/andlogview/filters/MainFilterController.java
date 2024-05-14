@@ -57,7 +57,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
 
     @Override
     public void addFilter(FilterFromDialogData filter) {
-        filterModel.addFilter(filter);
+        filterModel.addFilter(filter.toFilter());
     }
 
     @Override

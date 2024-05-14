@@ -24,7 +24,7 @@ import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.LazyInstance;
 
@@ -98,8 +98,8 @@ public class StoredFilters {
 
     private void saveFilters(FilterModel model) {
         preference.set(model.getFilters().stream()
-                .filter(FilterFromDialogData.class::isInstance)
-                .map(FilterFromDialogData.class::cast)
+                .filter(FilterFromDialog.class::isInstance)
+                .map(FilterFromDialog.class::cast)
                 .map(SavedDialogFilterData::new)
                 .collect(Collectors.toList()));
     }

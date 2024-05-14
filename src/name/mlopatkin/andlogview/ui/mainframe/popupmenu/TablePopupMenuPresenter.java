@@ -148,7 +148,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
     private void addFilter(FilterFromDialogData filter) {
         try {
-            filter.initialize();
+            filter.compile();
             filterCreator.addFilter(filter);
         } catch (RequestCompilationException e) {
             logger.error("Failed to add quick filter", e);

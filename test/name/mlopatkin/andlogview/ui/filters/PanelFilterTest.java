@@ -21,9 +21,12 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
+import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 import org.junit.jupiter.api.Test;
@@ -45,7 +48,7 @@ class PanelFilterTest {
     void openingEditDialogForTheSecondTimeBringsItToFront() {
         var filter = createFilter();
         var mockHandle = mockHandle();
-        when(dialogFactory.startEditFilterDialog(filter)).thenReturn(mockHandle);
+        when(dialogFactory.startEditFilterDialog(filter.getData())).thenReturn(mockHandle);
 
         var pf = createPanelFilter(filter);
         pf.openFilterEditor();
@@ -56,12 +59,19 @@ class PanelFilterTest {
         inOrder.verify(mockHandle).bringToFront();
     }
 
-    PanelFilter createPanelFilter(FilterFromDialogData filter) {
+    PanelFilter createPanelFilter(FilterFromDialog filter) {
         return new PanelFilter(filterModel, dialogFactory, filter);
     }
 
-    FilterFromDialogData createFilter() {
-        return new FilterFromDialogData().setMessagePattern("message");
+    FilterFromDialog createFilter() {
+        try {
+            return new FilterFromDialogData().setMode(FilteringMode.SHOW)
+                    .setMessagePattern("message")
+                    .compile()
+                    .toFilter();
+        } catch (RequestCompilationException e) {
+            throw new AssertionError(e);
+        }
     }
 
     FilterDialogHandle mockHandle() {

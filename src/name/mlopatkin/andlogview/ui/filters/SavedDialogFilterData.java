@@ -17,26 +17,29 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.search.RequestCompilationException;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 class SavedDialogFilterData extends SavedFilterData {
     private final FilterFromDialogData filterData;
-    private transient boolean initialized;
+    private transient @Nullable FilterFromDialog filter;
 
-    SavedDialogFilterData(FilterFromDialogData filterData) {
-        super(filterData.isEnabled());
-        this.filterData = filterData;
-        this.initialized = true;
+    SavedDialogFilterData(FilterFromDialog filter) {
+        super(filter.isEnabled());
+        this.filterData = filter.getData();
+        this.filter = filter;
     }
 
     @Override
-    public FilterFromDialogData fromSerializedForm() throws RequestCompilationException {
-        if (!initialized) {
+    public FilterFromDialog fromSerializedForm() throws RequestCompilationException {
+        var filter = this.filter;
+        if (filter == null) {
             // Deserialized version bypasses the constructor, and has initialized == false.
-            filterData.initialize();
-            filterData.setEnabled(enabled);
-            initialized = true;
+            filterData.compile();
+            this.filter = filter = filterData.toFilter(enabled);
         }
-        return filterData;
+        return filter;
     }
 }

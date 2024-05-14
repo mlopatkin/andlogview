@@ -36,11 +36,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class FilterFromDialogTest {
-    private final FilterFromDialogData filter = new FilterFromDialogData();
+    private final FilterFromDialogData data = new FilterFromDialogData();
 
     @Before
     public void setUp() throws Exception {
-        filter.setMode(FilteringMode.HIDE);
+        data.setMode(FilteringMode.HIDE);
     }
 
     @Test
@@ -48,8 +48,8 @@ public class FilterFromDialogTest {
         LogRecord tag1 = LogRecordUtils.forTag("TAG1");
         LogRecord tag2 = LogRecordUtils.forTag("TAG2");
 
-        filter.setTags(Collections.singletonList("TAG1"));
-        filter.initialize();
+        data.setTags(Collections.singletonList("TAG1"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertFalse(filter.test(tag2));
@@ -61,8 +61,8 @@ public class FilterFromDialogTest {
         LogRecord tag2 = LogRecordUtils.forTag("TAG2");
         LogRecord tag3 = LogRecordUtils.forTag("TAG3");
 
-        filter.setTags(Arrays.asList("TAG1", "TAG2"));
-        filter.initialize();
+        data.setTags(Arrays.asList("TAG1", "TAG2"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -75,8 +75,8 @@ public class FilterFromDialogTest {
         LogRecord tag2 = LogRecordUtils.forTag("TaG1");
         LogRecord tag3 = LogRecordUtils.forTag("TAG3");
 
-        filter.setTags(Collections.singletonList("tag1"));
-        filter.initialize();
+        data.setTags(Collections.singletonList("tag1"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -89,8 +89,8 @@ public class FilterFromDialogTest {
                 LogRecordUtils.forTag("Tag Begin"), LogRecordUtils.forTag("End Tag"),
                 LogRecordUtils.forTag("middletagwithoutspaces"), LogRecordUtils.forTag("#tag#"));
 
-        filter.setTags(Collections.singletonList("Tag"));
-        filter.initialize();
+        data.setTags(Collections.singletonList("Tag"));
+        var filter = data.compile().toFilter(true);
 
         for (LogRecord r : tags) {
             assertFalse(filter.test(r));
@@ -103,8 +103,8 @@ public class FilterFromDialogTest {
         LogRecord tag2 = LogRecordUtils.forTag("TAG2");
         LogRecord tag3 = LogRecordUtils.forTag("TAG3");
 
-        filter.setTags(Collections.singletonList("/TAG[12]/"));
-        filter.initialize();
+        data.setTags(Collections.singletonList("/TAG[12]/"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -117,8 +117,8 @@ public class FilterFromDialogTest {
                 LogRecordUtils.forTag("Tag Begin"), LogRecordUtils.forTag("End Tag"),
                 LogRecordUtils.forTag("middletagwithoutspaces"), LogRecordUtils.forTag("#tag#"));
 
-        filter.setTags(Collections.singletonList("/Tag/"));
-        filter.initialize();
+        data.setTags(Collections.singletonList("/Tag/"));
+        var filter = data.compile().toFilter(true);
 
         for (LogRecord r : tags) {
             assertTrue(r.toString(), filter.test(r));
@@ -130,8 +130,8 @@ public class FilterFromDialogTest {
         LogRecord tag1 = LogRecordUtils.forAppName("TAG1");
         LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
 
-        filter.setApps(Collections.singletonList("TAG1"));
-        filter.initialize();
+        data.setApps(Collections.singletonList("TAG1"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertFalse(filter.test(tag2));
@@ -143,8 +143,8 @@ public class FilterFromDialogTest {
         LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
         LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
 
-        filter.setApps(Arrays.asList("TAG1", "TAG2"));
-        filter.initialize();
+        data.setApps(Arrays.asList("TAG1", "TAG2"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -157,8 +157,8 @@ public class FilterFromDialogTest {
         LogRecord tag2 = LogRecordUtils.forAppName("TaG1");
         LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
 
-        filter.setApps(Collections.singletonList("tag1"));
-        filter.initialize();
+        data.setApps(Collections.singletonList("tag1"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -171,8 +171,8 @@ public class FilterFromDialogTest {
                 LogRecordUtils.forAppName("Tag Begin"), LogRecordUtils.forAppName("End Tag"),
                 LogRecordUtils.forAppName("middletagwithoutspaces"), LogRecordUtils.forAppName("#tag#"));
 
-        filter.setApps(Collections.singletonList("Tag"));
-        filter.initialize();
+        data.setApps(Collections.singletonList("Tag"));
+        var filter = data.compile().toFilter(true);
 
         for (LogRecord r : tags) {
             assertFalse(filter.test(r));
@@ -185,8 +185,8 @@ public class FilterFromDialogTest {
         LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
         LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
 
-        filter.setApps(Collections.singletonList("/TAG[12]/"));
-        filter.initialize();
+        data.setApps(Collections.singletonList("/TAG[12]/"));
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -199,8 +199,8 @@ public class FilterFromDialogTest {
                 LogRecordUtils.forAppName("Tag Begin"), LogRecordUtils.forAppName("End Tag"),
                 LogRecordUtils.forAppName("middletagwithoutspaces"), LogRecordUtils.forAppName("#tag#"));
 
-        filter.setApps(Collections.singletonList("/Tag/"));
-        filter.initialize();
+        data.setApps(Collections.singletonList("/Tag/"));
+        var filter = data.compile().toFilter(true);
 
         for (LogRecord r : tags) {
             assertTrue(r.toString(), filter.test(r));
@@ -213,10 +213,10 @@ public class FilterFromDialogTest {
         LogRecord record2 = LogRecordUtils.forPidAndAppName(2, "app2");
         LogRecord record3 = LogRecordUtils.forPidAndAppName(3, "app3");
 
-        filter.setPids(Collections.singletonList(1));
-        filter.setApps(Collections.singletonList("app2"));
+        data.setPids(Collections.singletonList(1));
+        data.setApps(Collections.singletonList("app2"));
 
-        filter.initialize();
+        var filter = data.compile().toFilter(true);
         assertTrue(filter.test(record1));
         assertTrue(filter.test(record2));
         assertFalse(filter.test(record3));
@@ -229,8 +229,8 @@ public class FilterFromDialogTest {
         LogRecord record3 = LogRecordUtils.forMessage("there is no Test but it is");
         LogRecord recordNo = LogRecordUtils.forMessage("there is no T-e-s-t really");
 
-        filter.setMessagePattern("test");
-        filter.initialize();
+        data.setMessagePattern("test");
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(record1));
         assertTrue(filter.test(record2));
@@ -245,8 +245,8 @@ public class FilterFromDialogTest {
         LogRecord record3 = LogRecordUtils.forMessage("there is no Test but it is");
         LogRecord recordNo = LogRecordUtils.forMessage("there is no T-e-s-t really");
 
-        filter.setMessagePattern("/t[e]st/");
-        filter.initialize();
+        data.setMessagePattern("/t[e]st/");
+        var filter = data.compile().toFilter(true);
 
         assertTrue(filter.test(record1));
         assertTrue(filter.test(record2));
@@ -275,7 +275,7 @@ public class FilterFromDialogTest {
             FilterFromDialogData filter, String expectedRequest) {
         try {
             filter.setMode(FilteringMode.HIDE);
-            filter.initialize();
+            filter.compile();
             fail("Exception expected");
         } catch (RequestCompilationException e) {
             assertEquals(expectedRequest, e.getRequestValue());

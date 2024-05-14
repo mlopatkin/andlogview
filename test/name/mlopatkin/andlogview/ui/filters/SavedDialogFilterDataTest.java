@@ -56,13 +56,14 @@ class SavedDialogFilterDataTest {
         filter.setMode(FilteringMode.getDefaultMode());
         filter.setTags(Collections.singletonList(tagPattern));
         filter.setEnabled(isEnabled);
-        filter.initialize();
+        filter.compile();
 
         return filter;
     }
 
     private FilterFromDialogData roundTrip(FilterFromDialogData original) throws Exception {
-        var originalData = new SavedDialogFilterData(original);
-        return GSON.fromJson(GSON.toJson(originalData), SavedDialogFilterData.class).fromSerializedForm();
+        // TODO(mlopatkin) this is a somewhat meaningless test now.
+        var originalData = new SavedDialogFilterData(original.toFilter(original.isEnabled()));
+        return GSON.fromJson(GSON.toJson(originalData), SavedDialogFilterData.class).fromSerializedForm().getData();
     }
 }

@@ -206,7 +206,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         filter.setMode(dialogView.getMode());
         dialogView.getHighlightColor().ifPresent(filter::setHighlightColor);
         filter.setEnabled(isResultEnabled);
-        filter.initialize();
+        filter.compile();
         return filter;
     }
 

@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
-import name.mlopatkin.andlogview.filters.ColoringFilter;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
@@ -38,7 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class FilterFromDialogData implements ColoringFilter {
+public class FilterFromDialogData {
     private static final Joiner commaJoiner = Joiner.on(", ");
 
     private static final SearchRequestParser<Predicate<String>> tagParser =
@@ -107,15 +106,15 @@ public class FilterFromDialogData implements ColoringFilter {
         return original != null ? ImmutableList.copyOf(original) : null;
     }
 
-    public void initialize() throws RequestCompilationException {
+    public FilterFromDialogData compile() throws RequestCompilationException {
         assert compiledPredicate == null;
         assert tooltipRepresentation == null;
         assert mode != null;
         compiledPredicate = compilePredicate();
         tooltipRepresentation = compileTooltip();
+        return this;
     }
 
-    @Override
     public boolean test(LogRecord input) {
         assert compiledPredicate != null;
         return compiledPredicate.test(input);
@@ -225,7 +224,6 @@ public class FilterFromDialogData implements ColoringFilter {
         return this;
     }
 
-    @Override
     public FilteringMode getMode() {
         assert mode != null;
         return mode;
@@ -236,7 +234,6 @@ public class FilterFromDialogData implements ColoringFilter {
         return this;
     }
 
-    @Override
     public @Nullable Color getHighlightColor() {
         return highlightColor;
     }
@@ -288,7 +285,6 @@ public class FilterFromDialogData implements ColoringFilter {
                 .toString();
     }
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
@@ -298,13 +294,13 @@ public class FilterFromDialogData implements ColoringFilter {
         return this;
     }
 
-    @Override
-    public FilterFromDialogData enabled() {
-        return enabled ? this : new FilterFromDialogData(this).setEnabled(true);
+    public FilterFromDialog toFilter(boolean enabled) {
+        assert compiledPredicate != null;
+        return new FilterFromDialog(enabled, new FilterFromDialogData(this).setEnabled(enabled));
     }
 
-    @Override
-    public FilterFromDialogData disabled() {
-        return enabled ? new FilterFromDialogData(this).setEnabled(false) : this;
+    public FilterFromDialog toFilter() {
+        assert compiledPredicate != null;
+        return new FilterFromDialog(enabled, new FilterFromDialogData(this));
     }
 }
