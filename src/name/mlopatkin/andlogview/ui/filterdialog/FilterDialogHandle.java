@@ -22,5 +22,5 @@ import java.util.concurrent.CompletionStage;
 public interface FilterDialogHandle {
     void bringToFront();
 
-    CompletionStage<Optional<FilterFromDialogData>> getResult();
+    CompletionStage<Optional<FilterFromDialog>> getResult();
 }

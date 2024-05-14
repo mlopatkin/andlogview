@@ -141,15 +141,15 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     }
 
     private FilterFromDialogData buildFilter(FilteringMode mode, Column column, TableRow row) {
-        FilterFromDialogData filter = new FilterFromDialogData().setMode(mode);
-        ColumnData.applyColumnValueToFilter(filter, column, row);
-        return filter;
+        FilterFromDialogData filterData = new FilterFromDialogData().setMode(mode);
+        ColumnData.applyColumnValueToFilter(filterData, column, row);
+        return filterData;
     }
 
-    private void addFilter(FilterFromDialogData filter) {
+    private void addFilter(FilterFromDialogData filterData) {
         try {
-            filter.compile();
-            filterCreator.addFilter(filter);
+            filterData.compile();
+            filterCreator.addFilter(filterData.toFilter());
         } catch (RequestCompilationException e) {
             logger.error("Failed to add quick filter", e);
             ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Failed to create filter. %s", e.getMessage());

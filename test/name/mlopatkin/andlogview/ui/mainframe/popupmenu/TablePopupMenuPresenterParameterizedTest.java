@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
 
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasApps;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasColor;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasData;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMessage;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMode;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPids;
@@ -144,27 +145,27 @@ public class TablePopupMenuPresenterParameterizedTest {
 
     @ParameterizedTest(name = "{0}/{3}")
     @MethodSource("filterActionParams")
-    public void testFilterAction(Column column, Matcher<FilterFromDialogData> filterMatcher, int actionIndex,
+    public void testFilterAction(Column column, Matcher<FilterFromDialogData> dataMatcher, int actionIndex,
             FilteringMode mode) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
         popupMenuView.triggerQuickFilterAction(actionIndex);
 
-        verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(mode))).and(filterMatcher)));
+        verify(filterCreator).addFilter(argThat(both(hasMode(equalTo(mode))).and(hasData(dataMatcher))));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getColumnsWithFilters")
-    public void testHighlightAction(Column column, Matcher<FilterFromDialogData> filterMatcher) {
+    public void testHighlightAction(Column column, Matcher<FilterFromDialogData> dataMatcher) {
         TablePopupMenuPresenter presenter = createPresenter(makeRow());
         presenter.showContextMenu(popupMenuView, column, makeRow());
 
         popupMenuView.triggerHighlightAction(1);
 
         verify(filterCreator).addFilter(
-                argThat(both(hasMode(equalTo(FilteringMode.HIGHLIGHT))).and(hasColor(equalTo(Color.BLUE)))
-                        .and(filterMatcher)));
+                argThat(both(hasMode(equalTo(FilteringMode.HIGHLIGHT))).and(hasData(hasColor(equalTo(Color.BLUE))))
+                        .and(hasData(dataMatcher))));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -204,12 +205,12 @@ public class TablePopupMenuPresenterParameterizedTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRegexishRowArgs")
     public void filterIsSuccessfullyCreatedIfRegexishRowSelected(Column column,
-            Matcher<FilterFromDialogData> matchesFilter) {
+            Matcher<FilterFromDialogData> dataMatcher) {
         TablePopupMenuPresenter presenter = createPresenter(makeRegexishRow());
         presenter.showContextMenu(popupMenuView, column, makeRegexishRow());
         popupMenuView.triggerQuickFilterAction(0);
 
-        verify(filterCreator).addFilter(argThat(matchesFilter));
+        verify(filterCreator).addFilter(argThat(hasData(dataMatcher)));
     }
 
     @ParameterizedTest(name = "{0}")

@@ -75,7 +75,7 @@ class PanelFilterTest {
     }
 
     FilterDialogHandle mockHandle() {
-        var future = new CompletableFuture<Optional<FilterFromDialogData>>();
+        var future = new CompletableFuture<Optional<FilterFromDialog>>();
         FilterDialogHandle handle = mock();
         lenient().when(handle.getResult()).thenReturn(future);
         return handle;

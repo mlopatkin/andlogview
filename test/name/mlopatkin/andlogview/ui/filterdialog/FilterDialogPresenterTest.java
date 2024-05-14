@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasApps;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasColor;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasData;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMessage;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMode;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPids;
@@ -55,7 +56,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 
 public class FilterDialogPresenterTest {
 
@@ -66,10 +66,14 @@ public class FilterDialogPresenterTest {
         String pidsAppsText = "";
         LogRecord.@Nullable Priority priority;
         FilteringMode mode = FilteringMode.getDefaultMode();
-        @Nullable Color highlightColor;
-        @MonotonicNonNull Runnable commitAction;
-        @MonotonicNonNull Runnable discardAction;
-        @Nullable String errorText;
+        @Nullable
+        Color highlightColor;
+        @MonotonicNonNull
+        Runnable commitAction;
+        @MonotonicNonNull
+        Runnable discardAction;
+        @Nullable
+        String errorText;
 
         @Override
         public void setTagsText(String text) {
@@ -263,7 +267,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsIncompletePromiseWhenShown() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         assertThat("Expected that promise completes only after commit/discard", promise, notCompleted());
     }
@@ -278,7 +282,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presentersPromiseCompletesWithEmptyIfDiscarded() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.discard();
 
@@ -287,7 +291,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterReturnsTagsFilter() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setTagsText("Hello");
@@ -295,13 +299,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
-                hasTags(contains("Hello"))
+                hasData(hasTags(contains("Hello")))
         ))));
     }
 
     @Test
     public void presenterReturnsMultipleTagsFilter() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.HIDE);
         fakeView.setTagsText("Hello,foo,  /foo,,bar/ , ` BAZ,`");
@@ -309,13 +313,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.HIDE)),
-                hasTags(contains("Hello", "foo", "/foo,bar/", " BAZ,"))
+                hasData(hasTags(contains("Hello", "foo", "/foo,bar/", " BAZ,")))
         ))));
     }
 
     @Test
     public void presenterReturnsMessageFilter() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.WINDOW);
         fakeView.setMessageText("Hello");
@@ -323,13 +327,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.WINDOW)),
-                hasMessage(equalTo("Hello"))
+                hasData(hasMessage(equalTo("Hello")))
         ))));
     }
 
     @Test
     public void presenterReturnsTrimmedMessageFilter() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.WINDOW);
         fakeView.setMessageText("  with   whitespace\t\t ");
@@ -337,13 +341,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.WINDOW)),
-                hasMessage(equalTo("with   whitespace"))
+                hasData(hasMessage(equalTo("with   whitespace")))
         ))));
     }
 
     @Test
     public void presenterReturnsPid() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText(" 12");
@@ -351,13 +355,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
-                hasPids(contains(12))
+                hasData(hasPids(contains(12)))
         ))));
     }
 
     @Test
     public void presenterReturnsAppName() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText(" a12,  ");
@@ -365,13 +369,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
-                hasApps(contains("a12"))
+                hasData(hasApps(contains("a12")))
         ))));
     }
 
     @Test
     public void presenterReturnsPidsAndAppNames() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText("com.example, 12 , /[Ff],,oo/  , `10`");
@@ -379,14 +383,16 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
-                hasPids(contains(12, 10)),
-                hasApps(contains("com.example", "/[Ff],oo/"))
+                hasData(allOf(
+                        hasPids(contains(12, 10)),
+                        hasApps(contains("com.example", "/[Ff],oo/"))
+                ))
         ))));
     }
 
     @Test
     public void presenterReturnsPriority() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPriority(LogRecord.Priority.ERROR);
@@ -394,13 +400,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
-                hasPriority(equalTo(LogRecord.Priority.ERROR))
+                hasData(hasPriority(equalTo(LogRecord.Priority.ERROR)))
         ))));
     }
 
     @Test
     public void presenterReturnsHighlightColor() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         Color highlightColor = Color.CYAN;
 
@@ -411,14 +417,16 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.HIGHLIGHT)),
-                hasColor(equalTo(highlightColor)),
-                hasPriority(equalTo(LogRecord.Priority.ERROR))
+                hasData(allOf(
+                        hasColor(equalTo(highlightColor)),
+                        hasPriority(equalTo(LogRecord.Priority.ERROR))
+                ))
         ))));
     }
 
     @Test
     public void presenterReturnsDefaultFilter() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
@@ -428,7 +436,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterShowsErrorIfTagsPatternFailsToCompile() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setTagsText("/[unclosed bracket/");
@@ -441,7 +449,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterShowsErrorIfMessagePatternFailsToCompile() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setMessageText("/[unclosed bracket/");
@@ -454,7 +462,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterShowsErrorIfAppPatternFailsToCompile() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setPidsAppsText("/[unclosed bracket/");
@@ -467,7 +475,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterCompletesIfErrorIsFixed() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.setMessageText("/[unclosed bracket/");
@@ -481,13 +489,13 @@ public class FilterDialogPresenterTest {
 
         assertThat(promise, completedWithResult(optionalWithValue(allOf(
                 hasMode(equalTo(FilteringMode.SHOW)),
-                hasMessage(equalTo("/[closed bracket]/"))
+                hasData(hasMessage(equalTo("/[closed bracket]/")))
         ))));
     }
 
     @Test
     public void presenterHandlesDoubleCommit() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
@@ -498,7 +506,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesDoubleDiscard() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.discard();
@@ -509,7 +517,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesCommitThenDiscard() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.commit();
@@ -520,7 +528,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterHandlesDiscardThenCommit() {
-        CompletionStage<Optional<FilterFromDialogData>> promise = FilterDialogPresenter.create(fakeView).show();
+        var promise = FilterDialogPresenter.create(fakeView).show();
 
         fakeView.setMode(FilteringMode.SHOW);
         fakeView.discard();

@@ -81,7 +81,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
     }
 
     private final FilterDialogView dialogView;
-    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialogData>> editingPromise;
+    private @MonotonicNonNull CompletableFuture<Optional<FilterFromDialog>> editingPromise;
     private final boolean isResultEnabled;
 
     private FilterDialogPresenter(FilterDialogView dialogView) {
@@ -126,7 +126,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
             return;
         }
         try {
-            FilterFromDialogData filter = createFilter();
+            var filter = createFilter();
             dialogView.hide();
             editingPromise.complete(Optional.of(filter));
         } catch (RequestCompilationException e) {
@@ -177,12 +177,12 @@ class FilterDialogPresenter implements FilterDialogHandle {
     }
 
     @Override
-    public CompletionStage<Optional<FilterFromDialogData>> getResult() {
+    public CompletionStage<Optional<FilterFromDialog>> getResult() {
         Preconditions.checkState(editingPromise != null, "Dialog is not shown");
         return editingPromise;
     }
 
-    public CompletionStage<Optional<FilterFromDialogData>> show() {
+    public CompletionStage<Optional<FilterFromDialog>> show() {
         Preconditions.checkState(editingPromise == null, "Dialog is already shown");
         dialogView.show();
         editingPromise = new CompletableFuture<>();
@@ -197,17 +197,16 @@ class FilterDialogPresenter implements FilterDialogHandle {
         return new FilterDialogPresenter(dialogView, existingFilter).init();
     }
 
-    private FilterFromDialogData createFilter() throws RequestCompilationException, PatternsList.FormatException {
-        FilterFromDialogData filter = new FilterFromDialogData();
-        parseTags(filter);
-        filter.setMessagePattern(Strings.emptyToNull(dialogView.getMessageText().trim()));
-        parseAppsAndPids(filter);
-        dialogView.getPriority().ifPresent(filter::setPriority);
-        filter.setMode(dialogView.getMode());
-        dialogView.getHighlightColor().ifPresent(filter::setHighlightColor);
-        filter.setEnabled(isResultEnabled);
-        filter.compile();
-        return filter;
+    private FilterFromDialog createFilter() throws RequestCompilationException, PatternsList.FormatException {
+        FilterFromDialogData filterData = new FilterFromDialogData();
+        parseTags(filterData);
+        filterData.setMessagePattern(Strings.emptyToNull(dialogView.getMessageText().trim()));
+        parseAppsAndPids(filterData);
+        dialogView.getPriority().ifPresent(filterData::setPriority);
+        filterData.setMode(dialogView.getMode());
+        dialogView.getHighlightColor().ifPresent(filterData::setHighlightColor);
+        filterData.setEnabled(isResultEnabled);
+        return filterData.compile().toFilter();
     }
 
     private static <T> List<T> nullToEmpty(@Nullable List<T> nullableList) {

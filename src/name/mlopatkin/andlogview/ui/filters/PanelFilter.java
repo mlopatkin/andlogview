@@ -60,7 +60,7 @@ class PanelFilter implements PanelFilterView {
         editorHandle.getResult().thenAccept(optFilter -> {
             optFilter.ifPresent(newFilter -> {
                 if (model.getFilters().contains(filter)) {
-                    model.replaceFilter(filter, newFilter.toFilter());
+                    model.replaceFilter(filter, newFilter);
                 }
             });
             this.editorHandle = null;

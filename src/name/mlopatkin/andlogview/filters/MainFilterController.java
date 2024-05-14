@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
@@ -56,8 +57,8 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     }
 
     @Override
-    public void addFilter(FilterFromDialogData filter) {
-        filterModel.addFilter(filter.toFilter());
+    public void addFilter(FilterFromDialog filter) {
+        filterModel.addFilter(filter);
     }
 
     @Override

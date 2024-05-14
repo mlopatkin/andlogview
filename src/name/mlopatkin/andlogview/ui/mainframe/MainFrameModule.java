@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.mainframe;
 import name.mlopatkin.andlogview.MainFrame;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.filters.FilterModule;
@@ -88,7 +89,7 @@ public class MainFrameModule {
                 .create(model, filter, bookmarkModel, new MenuFilterCreator() {
                     // TODO(mlopatkin) break dependency cycle and replace with direct dependency (?)
                     @Override
-                    public void addFilter(FilterFromDialogData filter) {
+                    public void addFilter(FilterFromDialog filter) {
                         filterController.get().addFilter(filter);
                     }
 

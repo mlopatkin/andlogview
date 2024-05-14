@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.mainframe.popupmenu;
 
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 /**
@@ -27,7 +28,7 @@ public interface MenuFilterCreator {
      *
      * @param filter the filter to add
      */
-    void addFilter(FilterFromDialogData filter);
+    void addFilter(FilterFromDialog filter);
 
     /**
      * Opens a filter creation dialog. Dialog fields are pre-filled with data from {@code baseData}.

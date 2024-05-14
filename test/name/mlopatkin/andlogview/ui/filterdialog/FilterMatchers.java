@@ -26,6 +26,14 @@ import org.hamcrest.Matchers;
 import java.awt.Color;
 
 public class FilterMatchers {
+    public static Matcher<FilterFromDialog> hasData(Matcher<? super FilterFromDialogData> dataMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialog::getData, dataMatcher);
+    }
+
+    public static Matcher<FilterFromDialog> hasMode(Matcher<? super FilteringMode> modeMatcher) {
+        return new AdaptingMatcher<>(FilterFromDialog::getMode, modeMatcher);
+    }
+
     public static Matcher<FilterFromDialogData> hasTags(Matcher<Iterable<? extends String>> tagsMatcher) {
         return new AdaptingMatcher<>(FilterFromDialogData::getTags, tagsMatcher);
     }
@@ -46,19 +54,15 @@ public class FilterMatchers {
         return new AdaptingMatcher<>(FilterFromDialogData::getPriority, priorityMatcher);
     }
 
-    public static Matcher<FilterFromDialogData> hasMode(Matcher<? super FilteringMode> modeMatcher) {
-        return new AdaptingMatcher<>(FilterFromDialogData::getMode, modeMatcher);
-    }
-
     public static Matcher<FilterFromDialogData> hasColor(Matcher<? super Color> colorMatcher) {
         return new AdaptingMatcher<>(FilterFromDialogData::getHighlightColor, colorMatcher);
     }
 
-    public static Matcher<FilterFromDialogData> isEnabled() {
-        return new AdaptingMatcher<>(FilterFromDialogData::isEnabled, Matchers.is(true));
+    public static Matcher<FilterFromDialog> isEnabled() {
+        return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(true));
     }
 
-    public static Matcher<FilterFromDialogData> isDisabled() {
-        return new AdaptingMatcher<>(FilterFromDialogData::isEnabled, Matchers.is(false));
+    public static Matcher<FilterFromDialog> isDisabled() {
+        return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(false));
     }
 }
