@@ -16,12 +16,13 @@
 
 package name.mlopatkin.andlogview.ui.indexfilter;
 
+import name.mlopatkin.andlogview.filters.CompoundFilterModel;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
+import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
@@ -31,32 +32,18 @@ final class IndexFilterModel {
     private IndexFilterModel() {}
 
     public static FilterModel createIndexFilterModel(FilterModel parentModel, Predicate<? super LogRecord> filter) {
-        var combinedModel = MutableFilterModel.create(parentModel.getFilters());
-        parentModel.asObservable().addObserver(new FilterModel.Observer() {
-            @Override
-            public void onFilterAdded(FilterModel model, Filter newFilter) {
-                combinedModel.addFilter(newFilter);
-            }
+        return new CompoundFilterModel(
+                parentModel,
+                FilterModel.create(Collections.singleton(makeOnlyFilter(filter))));
+    }
 
-            @Override
-            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
-                // TODO(mlopatkin): this self-caused unsubscribe is not ideal, but it works for now
-                if (removedFilter == filter) {
-                    model.asObservable().removeObserver(this);
-                }
-                combinedModel.removeFilter(removedFilter);
-            }
-
-            @Override
-            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-                if (oldFilter == filter) {
-                    model.asObservable().removeObserver(this);
-                }
-                combinedModel.replaceFilter(oldFilter, newFilter);
-            }
-        });
-
-        combinedModel.addFilter(new Filter() {
+    /**
+     * Creates a filter that HIDEs all records except ones matching the given predicate (aka "only" filter).
+     * @param filter the predicate
+     * @return the HIDE filter.
+     */
+    private static Filter makeOnlyFilter(Predicate<? super LogRecord> filter) {
+        return new Filter() {
             @Override
             public FilteringMode getMode() {
                 return FilteringMode.HIDE;
@@ -81,7 +68,6 @@ final class IndexFilterModel {
             public boolean test(LogRecord logRecord) {
                 return !filter.test(logRecord);
             }
-        });
-        return combinedModel;
+        };
     }
 }

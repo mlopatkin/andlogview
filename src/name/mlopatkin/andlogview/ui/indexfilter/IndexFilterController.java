@@ -40,6 +40,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
     private final MutableFilterModel filterModel;
     private final Filter filter;
     private final IndexFrame frame;
+    private final IndexFilter logModelFilter;
 
     @AssistedInject
     IndexFilterController(
@@ -52,12 +53,13 @@ public class IndexFilterController extends AbstractIndexController implements Au
         this.filterModel = parentFilterModel;
 
         this.filter = filter;
+        logModelFilter = new IndexFilter(IndexFilterModel.createIndexFilterModel(parentFilterModel, filter));
 
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .logRecordTableModel(logModel)
                 .dialogFactory(dialogFactory)
                 .setIndexController(this)
-                .setIndexFilter(new IndexFilter(IndexFilterModel.createIndexFilterModel(parentFilterModel, filter)))
+                .setIndexFilter(logModelFilter)
                 .build();
         frame = component.createFrame();
     }
@@ -72,6 +74,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
     @Override
     public void close() {
         frame.dispose();
+        logModelFilter.close();
     }
 
     @Override

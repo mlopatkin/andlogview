@@ -21,20 +21,22 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 
-class IndexFilter implements LogModelFilter {
+class IndexFilter implements LogModelFilter, AutoCloseable {
     private final FilterChain filters;
+    private final ScopedObserver subscription;
 
     private final Subject<Observer> observers = new Subject<>();
 
     public IndexFilter(FilterModel filters) {
         this.filters = new FilterChain();
-        this.filters.setModel(filters);
+        this.subscription = this.filters.setModel(filters);
         this.filters.asObservable().addObserver(this::notifyObservers);
     }
 
@@ -57,5 +59,10 @@ class IndexFilter implements LogModelFilter {
         for (Observer observer : observers) {
             observer.onModelChange();
         }
+    }
+
+    @Override
+    public void close() {
+        subscription.close();
     }
 }
