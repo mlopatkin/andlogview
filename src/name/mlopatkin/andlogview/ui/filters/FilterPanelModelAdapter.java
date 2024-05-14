@@ -21,6 +21,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
@@ -40,7 +41,7 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 /**
- * Adapts {@link FilterModel} to be used in {@link FilterPanel}.
+ * Adapts {@link MutableFilterModel} to be used in {@link FilterPanel}.
  */
 class FilterPanelModelAdapter implements FilterCollection<PanelFilter>, FilterPanelModel<PanelFilter> {
     private final Function<? super Filter, ? extends @Nullable PanelFilter> panelFilterFactory;

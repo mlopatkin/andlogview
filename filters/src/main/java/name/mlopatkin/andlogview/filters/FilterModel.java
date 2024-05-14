@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.utils.events.Observable;
 import java.util.Collection;
 
 /**
- * A complete set of log filters.
+ * A complete set of log filters. This interface is a read-only view, but it contents may still change.
  */
 public interface FilterModel {
     /**
@@ -55,31 +55,6 @@ public interface FilterModel {
     }
 
     /**
-     * Adds a new filter to the model if it is not there already. Otherwise, does nothing.
-     *
-     * @param filter the filter to add
-     */
-    void addFilter(Filter filter);
-
-    /**
-     * Removes the filter from the model if it is present. Otherwise, does nothing.
-     *
-     * @param filter the filter to remove
-     */
-    void removeFilter(Filter filter);
-
-    /**
-     * Replaces the filter with the new one. This might be more efficient than removing and adding. Throws
-     * {@link IllegalArgumentException} if the filter is not in the model or if the filter to add is already in the
-     * model. Does nothing if the replacement is the same filter.
-     *
-     * @param toReplace the filter to remove
-     * @param newFilter the filter to add instead
-     * @throws IllegalArgumentException if the filter {@code toReplace} is not in the model
-     */
-    void replaceFilter(Filter toReplace, Filter newFilter);
-
-    /**
      * Allows to subscribe to events.
      *
      * @return Observable to subscribe for
@@ -94,18 +69,10 @@ public interface FilterModel {
     Collection<? extends Filter> getFilters();
 
     /**
-     * Creates a new, empty FilterModel.
+     * Creates a filter model with pre-defined filters.
      *
-     * @return the new FilterModel
-     */
-    static FilterModel create() {
-        return new FilterModelImpl();
-    }
-
-    /**
-     * Creates a new FilterModel with provided filters as its content.
-     *
-     * @return the new FilterModel
+     * @param filters the filters to add to the model
+     * @return the model with filters added
      */
     static FilterModel create(Collection<? extends Filter> filters) {
         return new FilterModelImpl(filters);

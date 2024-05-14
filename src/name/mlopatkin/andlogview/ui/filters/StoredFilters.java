@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
@@ -46,19 +47,19 @@ public class StoredFilters {
     private static final Logger logger = Logger.getLogger(StoredFilters.class);
 
     private final Preference<List<SavedFilterData>> preference;
-    private final LazyInstance<FilterModel> model = LazyInstance.lazy(this::createModel);
+    private final LazyInstance<MutableFilterModel> model = LazyInstance.lazy(this::createModel);
 
     @Inject
     public StoredFilters(ConfigStorage storage) {
         this.preference = storage.preference(new FilterListSerializer());
     }
 
-    public FilterModel getStorageBackedModel() {
+    public MutableFilterModel getStorageBackedModel() {
         return model.get();
     }
 
-    private FilterModel createModel() {
-        var model = FilterModel.create(
+    private MutableFilterModel createModel() {
+        var model = MutableFilterModel.create(
                 preference.get().stream()
                         .map(this::decode)
                         .filter(Objects::nonNull)

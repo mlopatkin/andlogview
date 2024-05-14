@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 import static name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies.FOR_MAIN_FRAME;
 
 import name.mlopatkin.andlogview.filters.Filter;
-import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.indexframe.AbstractIndexController;
 import name.mlopatkin.andlogview.ui.indexframe.DaggerIndexFrameDi_IndexFrameComponent;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
@@ -37,7 +37,7 @@ import javax.inject.Named;
 import javax.swing.JTable;
 
 public class IndexFilterController extends AbstractIndexController implements AutoCloseable {
-    private final FilterModel filterModel;
+    private final MutableFilterModel filterModel;
     private final Filter filter;
     private final IndexFrame frame;
 
@@ -45,7 +45,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
     IndexFilterController(
             LogRecordTableModel logModel,
             DialogFactory dialogFactory,
-            FilterModel parentFilterModel,
+            MutableFilterModel parentFilterModel,
             @Named(FOR_MAIN_FRAME) JTable mainTable,
             @Assisted Filter filter) {
         super(mainTable);

@@ -27,14 +27,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface FilterCollection<T> {
     /**
-     * Called when a new filter is added to {@link FilterModel}, which is not filtered out.
+     * Called when a new filter is added to {@link MutableFilterModel}, which is not filtered out.
      *
      * @param filter the transformed filter to be added
      */
     void addFilter(T filter);
 
     /**
-     * Called when a filter was removed from {@link FilterModel}, which was not filtered out before. The supplied
+     * Called when a filter was removed from {@link MutableFilterModel}, which was not filtered out before. The supplied
      * instance may or may not be passed to {@link #addFilter(Object)} or {@link #replaceFilter(Object, Object)}}
      * before.
      *
@@ -43,7 +43,7 @@ public interface FilterCollection<T> {
     void removeFilter(T filter);
 
     /**
-     * Called when a filter is being replaced with another in {@link FilterModel}.
+     * Called when a filter is being replaced with another in {@link MutableFilterModel}.
      *
      * @param oldFilter the transformed filter to be removed
      * @param newFilter the transformed filter to be added instead
@@ -60,17 +60,19 @@ public interface FilterCollection<T> {
      * {@link #addFilter(Object)}, {@link #removeFilter(Object)}, or {@link #replaceFilter(Object, Object)}, unless
      * {@code null} is returned.
      * <p>
-     * If this method filters one but not other argument of {@link FilterModel#replaceFilter(Filter, Filter)}, then only
-     * {@link #addFilter(Object)} or {@link #removeFilter(Object)} methods of this object are going to be called.
+     * If this method filters one but not other argument of {@link MutableFilterModel#replaceFilter(Filter, Filter)},
+     * then only {@link #addFilter(Object)} or {@link #removeFilter(Object)} methods of this object are going to be
+     * called.
      *
-     * @param filter the filter that is being operated by the {@link FilterModel}
+     * @param filter the filter that is being operated by the {@link MutableFilterModel}
      * @return the transformed filter or {@code null} if the implementation is not interested in this particular filter
      */
     @Nullable
     T transformFilter(Filter filter);
 
     /**
-     * Connects this object to the {@link FilterModel}. This method should only be called once. There is no need to
+     * Connects this object to the {@link FilterModel}. This method should only be called once. There is no need
+     * to
      * override the default implementation.
      *
      * @param model the model to connect this collection to

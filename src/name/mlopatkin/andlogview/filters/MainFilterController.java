@@ -34,7 +34,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
     // TODO(mlopatkin): Find a new name and place for this class.
 
     private final FilterDialogFactory dialogFactory;
-    private final FilterModel filterModel;
+    private final MutableFilterModel filterModel;
 
     @Inject
     MainFilterController(
@@ -42,7 +42,7 @@ public class MainFilterController implements FilterCreator, MenuFilterCreator {
             //  nothing causes them to be created.
             IndexFilterCollection ignoredIndexFilters,
             FilterDialogFactory dialogFactory,
-            FilterModel filterModel
+            MutableFilterModel filterModel
     ) {
         this.dialogFactory = dialogFactory;
         this.filterModel = filterModel;

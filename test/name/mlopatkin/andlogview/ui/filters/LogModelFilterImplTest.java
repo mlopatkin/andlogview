@@ -31,6 +31,7 @@ import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.function.Predicate;
 
 class LogModelFilterImplTest {
@@ -109,11 +110,7 @@ class LogModelFilterImplTest {
     }
 
     private FilterModel createModel(Filter... filters) {
-        var model = FilterModel.create();
-        for (var filter : filters) {
-            model.addFilter(filter);
-        }
-        return model;
+        return FilterModel.create(Arrays.asList(filters));
     }
 
     private LogModelFilter create(FilterModel model) {

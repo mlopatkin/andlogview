@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
-import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -30,14 +30,14 @@ import dagger.assisted.AssistedInject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 class PanelFilter implements PanelFilterView {
-    private final FilterModel model;
+    private final MutableFilterModel model;
     private final FilterDialogFactory dialogFactory;
     private final FilterFromDialog filter;
 
     private @Nullable FilterDialogHandle editorHandle;
 
     @AssistedInject
-    public PanelFilter(FilterModel model, FilterDialogFactory dialogFactory, @Assisted FilterFromDialog filter) {
+    public PanelFilter(MutableFilterModel model, FilterDialogFactory dialogFactory, @Assisted FilterFromDialog filter) {
         this.model = model;
         this.dialogFactory = dialogFactory;
         this.filter = filter;

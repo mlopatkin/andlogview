@@ -21,7 +21,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -39,7 +39,7 @@ class PanelFilterTest {
     @Mock
     FilterDialogFactory dialogFactory;
 
-    private final FilterModel filterModel = FilterModel.create();
+    private final MutableFilterModel filterModel = MutableFilterModel.create();
 
     @Test
     void openingEditDialogForTheSecondTimeBringsItToFront() {

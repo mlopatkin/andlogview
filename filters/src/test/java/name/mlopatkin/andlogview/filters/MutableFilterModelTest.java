@@ -36,8 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-class FilterModelTest {
-
+class MutableFilterModelTest {
     @Spy
     FilterModel.Observer observer = new FilterModel.Observer() {
         @Override
@@ -230,7 +229,7 @@ class FilterModelTest {
         assertThatFilters(model).containsExactly(filter1, filter2);
     }
 
-    FilterModel createModel() {
+    MutableFilterModel createModel() {
         return new FilterModelImpl();
     }
 

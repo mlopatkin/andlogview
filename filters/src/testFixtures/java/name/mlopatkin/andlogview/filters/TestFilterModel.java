@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.filters;
 
 /**
- * Test implementation of {@link FilterModel} to verify that all observers are unsubscribed.
+ * Test implementation of {@link MutableFilterModel} to verify that all observers are unsubscribed.
  */
 public class TestFilterModel extends FilterModelImpl {
     public boolean hasObservers() {

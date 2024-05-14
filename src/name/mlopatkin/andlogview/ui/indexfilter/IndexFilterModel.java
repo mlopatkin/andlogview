@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import java.util.function.Predicate;
@@ -30,8 +31,7 @@ final class IndexFilterModel {
     private IndexFilterModel() {}
 
     public static FilterModel createIndexFilterModel(FilterModel parentModel, Predicate<? super LogRecord> filter) {
-        var combinedModel = FilterModel.create();
-        parentModel.getFilters().forEach(combinedModel::addFilter);
+        var combinedModel = MutableFilterModel.create(parentModel.getFilters());
         parentModel.asObservable().addObserver(new FilterModel.Observer() {
             @Override
             public void onFilterAdded(FilterModel model, Filter newFilter) {

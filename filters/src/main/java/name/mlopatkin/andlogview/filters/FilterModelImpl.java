@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-class FilterModelImpl implements FilterModel {
+class FilterModelImpl implements MutableFilterModel {
     @VisibleForTesting
     protected final Subject<Observer> observers = new Subject<>();
 

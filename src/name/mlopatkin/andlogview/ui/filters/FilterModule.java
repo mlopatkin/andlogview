@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
@@ -38,9 +39,12 @@ public abstract class FilterModule {
 
     @Provides
     @MainFrameScoped
-    static FilterModel getFiltersModel(StoredFilters filters) {
+    static MutableFilterModel getFiltersModel(StoredFilters filters) {
         return filters.getStorageBackedModel();
     }
+
+    @Binds
+    abstract FilterModel filterModel(MutableFilterModel model);
 
     @Provides
     @MainFrameScoped
