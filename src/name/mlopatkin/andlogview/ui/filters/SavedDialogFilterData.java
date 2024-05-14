@@ -37,7 +37,6 @@ class SavedDialogFilterData extends SavedFilterData {
         var filter = this.filter;
         if (filter == null) {
             // Deserialized version bypasses the constructor, and has initialized == false.
-            filterData.compile();
             this.filter = filter = filterData.toFilter(enabled);
         }
         return filter;

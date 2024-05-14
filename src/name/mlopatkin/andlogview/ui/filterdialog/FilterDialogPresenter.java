@@ -210,7 +210,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         dialogView.getPriority().ifPresent(filterData::setPriority);
         filterData.setMode(dialogView.getMode());
         dialogView.getHighlightColor().ifPresent(filterData::setHighlightColor);
-        return filterData.compile().toFilter(isResultEnabled);
+        return filterData.toFilter(isResultEnabled);
     }
 
     private static <T> List<T> nullToEmpty(@Nullable List<T> nullableList) {

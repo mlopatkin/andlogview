@@ -553,7 +553,6 @@ public class FilterDialogPresenterTest {
         var disabledFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW)
-                .compile()
                 .toFilter(true);
 
         var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
@@ -569,7 +568,6 @@ public class FilterDialogPresenterTest {
         var disabledFilter = new FilterFromDialogData()
                 .setTags(Collections.singletonList("TAG"))
                 .setMode(FilteringMode.SHOW)
-                .compile()
                 .toFilter(false);
 
         var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();

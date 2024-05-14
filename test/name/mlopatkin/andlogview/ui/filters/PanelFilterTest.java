@@ -67,7 +67,6 @@ class PanelFilterTest {
         try {
             return new FilterFromDialogData().setMode(FilteringMode.SHOW)
                     .setMessagePattern("message")
-                    .compile()
                     .toFilter();
         } catch (RequestCompilationException e) {
             throw new AssertionError(e);

@@ -57,7 +57,6 @@ class SavedDialogFilterDataTest {
         var filterData = new FilterFromDialogData();
         filterData.setMode(FilteringMode.getDefaultMode());
         filterData.setTags(Collections.singletonList(tagPattern));
-        filterData.compile();
 
         return filterData.toFilter(isEnabled);
     }

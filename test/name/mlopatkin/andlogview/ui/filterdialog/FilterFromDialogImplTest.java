@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
@@ -49,7 +50,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag2 = LogRecordUtils.forTag("TAG2");
 
         data.setTags(Collections.singletonList("TAG1"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertFalse(filter.test(tag2));
@@ -62,7 +63,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag3 = LogRecordUtils.forTag("TAG3");
 
         data.setTags(Arrays.asList("TAG1", "TAG2"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -76,7 +77,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag3 = LogRecordUtils.forTag("TAG3");
 
         data.setTags(Collections.singletonList("tag1"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -90,7 +91,7 @@ public class FilterFromDialogImplTest {
                 LogRecordUtils.forTag("middletagwithoutspaces"), LogRecordUtils.forTag("#tag#"));
 
         data.setTags(Collections.singletonList("Tag"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         for (LogRecord r : tags) {
             assertFalse(filter.test(r));
@@ -104,7 +105,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag3 = LogRecordUtils.forTag("TAG3");
 
         data.setTags(Collections.singletonList("/TAG[12]/"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -118,7 +119,7 @@ public class FilterFromDialogImplTest {
                 LogRecordUtils.forTag("middletagwithoutspaces"), LogRecordUtils.forTag("#tag#"));
 
         data.setTags(Collections.singletonList("/Tag/"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         for (LogRecord r : tags) {
             assertTrue(r.toString(), filter.test(r));
@@ -131,7 +132,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag2 = LogRecordUtils.forAppName("TAG2");
 
         data.setApps(Collections.singletonList("TAG1"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertFalse(filter.test(tag2));
@@ -144,7 +145,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
 
         data.setApps(Arrays.asList("TAG1", "TAG2"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -158,7 +159,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
 
         data.setApps(Collections.singletonList("tag1"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -172,7 +173,7 @@ public class FilterFromDialogImplTest {
                 LogRecordUtils.forAppName("middletagwithoutspaces"), LogRecordUtils.forAppName("#tag#"));
 
         data.setApps(Collections.singletonList("Tag"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         for (LogRecord r : tags) {
             assertFalse(filter.test(r));
@@ -186,7 +187,7 @@ public class FilterFromDialogImplTest {
         LogRecord tag3 = LogRecordUtils.forAppName("TAG3");
 
         data.setApps(Collections.singletonList("/TAG[12]/"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(tag1));
         assertTrue(filter.test(tag2));
@@ -200,7 +201,7 @@ public class FilterFromDialogImplTest {
                 LogRecordUtils.forAppName("middletagwithoutspaces"), LogRecordUtils.forAppName("#tag#"));
 
         data.setApps(Collections.singletonList("/Tag/"));
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         for (LogRecord r : tags) {
             assertTrue(r.toString(), filter.test(r));
@@ -216,7 +217,7 @@ public class FilterFromDialogImplTest {
         data.setPids(Collections.singletonList(1));
         data.setApps(Collections.singletonList("app2"));
 
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
         assertTrue(filter.test(record1));
         assertTrue(filter.test(record2));
         assertFalse(filter.test(record3));
@@ -230,7 +231,7 @@ public class FilterFromDialogImplTest {
         LogRecord recordNo = LogRecordUtils.forMessage("there is no T-e-s-t really");
 
         data.setMessagePattern("test");
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(record1));
         assertTrue(filter.test(record2));
@@ -246,7 +247,7 @@ public class FilterFromDialogImplTest {
         LogRecord recordNo = LogRecordUtils.forMessage("there is no T-e-s-t really");
 
         data.setMessagePattern("/t[e]st/");
-        var filter = (FilterFromDialogImpl) data.compile().toFilter(true);
+        var filter = compileFilter();
 
         assertTrue(filter.test(record1));
         assertTrue(filter.test(record2));
@@ -272,13 +273,17 @@ public class FilterFromDialogImplTest {
     }
 
     private static void assertInitializeThrowsExceptionWithRequestValue(
-            FilterFromDialogData filter, String expectedRequest) {
+            FilterFromDialogData filterData, String expectedRequest) {
         try {
-            filter.setMode(FilteringMode.HIDE);
-            filter.compile();
+            filterData.setMode(FilteringMode.HIDE);
+            filterData.toFilter();
             fail("Exception expected");
         } catch (RequestCompilationException e) {
             assertEquals(expectedRequest, e.getRequestValue());
         }
+    }
+
+    private PredicateFilter compileFilter() throws RequestCompilationException {
+        return (FilterFromDialogImpl) data.toFilter(true);
     }
 }

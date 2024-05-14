@@ -104,7 +104,7 @@ public class FilterFromDialogData {
         return original != null ? ImmutableList.copyOf(original) : null;
     }
 
-    public FilterFromDialogData compile() throws RequestCompilationException {
+    private FilterFromDialogData compile() throws RequestCompilationException {
         assert compiledPredicate == null;
         assert tooltipRepresentation == null;
         assert mode != null;
@@ -281,12 +281,12 @@ public class FilterFromDialogData {
                 .toString();
     }
 
-    public FilterFromDialog toFilter(boolean enabled) {
-        assert compiledPredicate != null;
+    public FilterFromDialog toFilter(boolean enabled) throws RequestCompilationException {
+        compile();
         return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
     }
 
-    public FilterFromDialog toFilter() {
+    public FilterFromDialog toFilter() throws RequestCompilationException {
         return toFilter(true);
     }
 }
