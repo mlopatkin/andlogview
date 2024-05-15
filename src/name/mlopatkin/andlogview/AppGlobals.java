@@ -28,6 +28,7 @@ import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
+import name.mlopatkin.andlogview.ui.filters.FilterGlobals;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
@@ -49,6 +50,7 @@ import javax.inject.Singleton;
         DeviceModule.class,
         GlobalsModule.class,
         SwingUiModule.class,
+        FilterGlobals.class,
 })
 public interface AppGlobals {
     Main getMain();

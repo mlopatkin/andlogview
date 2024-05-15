@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.config;
 import name.mlopatkin.andlogview.base.AtExitManager;
 
 import com.google.common.io.Files;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,11 +48,14 @@ public interface ConfigStorage {
     class Factory {
         private final ExecutorService ioThreadPool;
         private final AtExitManager atExitManager;
+        private final Gson gson;
 
         @Inject
-        Factory(@Named(ConfigModule.CONFIG_THREAD_POOL) ExecutorService ioThreadPool, AtExitManager atExitManager) {
+        Factory(@Named(ConfigModule.CONFIG_THREAD_POOL) ExecutorService ioThreadPool, AtExitManager atExitManager,
+                Gson gson) {
             this.ioThreadPool = ioThreadPool;
             this.atExitManager = atExitManager;
+            this.gson = gson;
         }
 
         public ConfigStorage createForFile(File file) throws IOException {
@@ -60,8 +64,11 @@ public interface ConfigStorage {
                 Files.touch(file);
             }
             final ConfigStorageImpl result = new ConfigStorageImpl(
-                    Files.asCharSource(file, StandardCharsets.UTF_8), Files.asCharSink(file, StandardCharsets.UTF_8),
-                    ioThreadPool);
+                    gson,
+                    Files.asCharSource(file, StandardCharsets.UTF_8),
+                    Files.asCharSink(file, StandardCharsets.UTF_8),
+                    ioThreadPool
+            );
             atExitManager.registerExitAction(() -> {
                 try {
                     result.shutdown(true);

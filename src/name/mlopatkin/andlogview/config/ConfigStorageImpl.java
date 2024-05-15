@@ -48,10 +48,10 @@ import javax.annotation.concurrent.ThreadSafe;
 class ConfigStorageImpl implements ConfigStorage {
     private static final Logger logger = Logger.getLogger(ConfigStorageImpl.class);
 
+    private final Gson gson;
     private final CharSource inStorage;
     private final CharSink outStorage;
     private final ExecutorService fileWorker;
-    private final Gson gson = Utils.createConfigurationGson();
 
     @GuardedBy("serializedConfig")
     private final Map<String, JsonElement> serializedConfig = Maps.newHashMap();
@@ -60,11 +60,16 @@ class ConfigStorageImpl implements ConfigStorage {
 
     private final Runnable fileSaver = this::save;
 
-    @VisibleForTesting
-    public ConfigStorageImpl(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
+    public ConfigStorageImpl(Gson gson, CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
+        this.gson = gson;
         this.inStorage = inStorage;
         this.outStorage = outStorage;
         this.fileWorker = fileWorker;
+    }
+
+    @VisibleForTesting
+    ConfigStorageImpl(CharSource inStorage, CharSink outStorage, ExecutorService fileWorker) {
+        this(Utils.createConfigurationGson(), inStorage, outStorage, fileWorker);
     }
 
     void load() {

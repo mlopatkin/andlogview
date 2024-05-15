@@ -82,7 +82,8 @@ class ConfigStorageFactoryTest {
     }
 
     private ConfigStorage.Factory createFactory() {
-        return new ConfigStorage.Factory(MoreExecutors.newDirectExecutorService(), mock(AtExitManager.class));
+        return new ConfigStorage.Factory(MoreExecutors.newDirectExecutorService(), mock(AtExitManager.class),
+                Utils.createConfigurationGson());
     }
 
     private static class StringClient implements ConfigStorageClient<String> {

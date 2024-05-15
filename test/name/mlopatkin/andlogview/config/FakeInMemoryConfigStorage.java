@@ -30,8 +30,16 @@ import java.util.Map;
  * {@link #loadConfig(ConfigStorageClient)}.
  */
 public class FakeInMemoryConfigStorage implements ConfigStorage {
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson;
     private final Map<String, JsonElement> data = new HashMap<>();
+
+    public FakeInMemoryConfigStorage(Gson gson) {
+        this.gson = gson;
+    }
+
+    public FakeInMemoryConfigStorage() {
+        this(new GsonBuilder().setPrettyPrinting().create());
+    }
 
     @Override
     public <T> void saveConfig(ConfigStorageClient<T> client, T value) {

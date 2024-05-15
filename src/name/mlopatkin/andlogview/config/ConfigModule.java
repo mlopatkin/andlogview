@@ -19,10 +19,14 @@ package name.mlopatkin.andlogview.config;
 import name.mlopatkin.andlogview.utils.Threads;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
 
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,5 +45,12 @@ public class ConfigModule {
                 .setThreadFactory(Threads.withName("StorageFileWorker"))
                 .setDaemon(true)
                 .build());
+    }
+
+    @Provides
+    static Gson configGson(Set<TypeAdapterFactory> gsonTypeFactories) {
+        GsonBuilder gsonBuilder = Utils.createConfigurationGson().newBuilder();
+        gsonTypeFactories.forEach(gsonBuilder::registerTypeAdapterFactory);
+        return gsonBuilder.create();
     }
 }

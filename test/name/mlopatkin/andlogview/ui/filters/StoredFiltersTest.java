@@ -16,43 +16,33 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
 
-import name.mlopatkin.andlogview.config.Utils;
+import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.GsonBuilder;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
-class FilterListSerializerTest {
-    private final Gson gson = Utils.createConfigurationGson();
-    private FilterListSerializer serializer;
-
-    @BeforeEach
-    void setUp() {
-        serializer = new FilterListSerializer();
-    }
+class StoredFiltersTest {
+    private final Gson gson = new GsonBuilder().registerTypeAdapterFactory(FilterGlobals.typeAdapterFactory()).create();
 
     @Test
     void deserializeExistingFilter() throws Exception {
-        JsonElement filtersJson = loadTestResource("filters_v1.json");
-        List<SavedFilterData> filters = serializer.fromJson(gson, filtersJson);
+        var storage = new FakeInMemoryConfigStorage(gson);
+        storage.setJsonData("filters", loadTestResource("filters_v1.json"));
+        StoredFilters filters = new StoredFilters(storage);
 
         // TODO(mlopatkin) add more thorough checking here when refactoring filter saving.
-        assertEquals(1, filters.size());
+        assertThatFilters(filters.getStorageBackedModel()).hasSize(1);
     }
 
-
-    private JsonElement loadTestResource(String resourceName) throws IOException {
-        return JsonParser.parseString(
-                Resources.asCharSource(Resources.getResource(getClass(), resourceName), StandardCharsets.UTF_8).read());
+    private String loadTestResource(String resourceName) throws IOException {
+        return Resources.asCharSource(Resources.getResource(getClass(), resourceName), StandardCharsets.UTF_8).read();
     }
 }

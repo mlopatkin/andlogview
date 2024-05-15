@@ -20,6 +20,7 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
+import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
@@ -27,6 +28,9 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.LazyInstance;
+
+import com.google.common.collect.ImmutableList;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -51,7 +55,9 @@ public class StoredFilters {
 
     @Inject
     public StoredFilters(ConfigStorage storage) {
-        this.preference = storage.preference(new FilterListSerializer());
+        // Do not inline the variable, it trips NullAway over.
+        TypeToken<List<SavedFilterData>> typeToken = new TypeToken<>() {};
+        this.preference = storage.preference(new SimpleClient<>("filters", typeToken, ImmutableList::of));
     }
 
     public MutableFilterModel getStorageBackedModel() {
