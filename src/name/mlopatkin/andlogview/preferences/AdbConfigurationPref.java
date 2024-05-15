@@ -19,14 +19,12 @@ package name.mlopatkin.andlogview.preferences;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.config.NamedClient;
 import name.mlopatkin.andlogview.config.Preference;
+import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.device.AdbLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import com.google.common.base.MoreObjects;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -46,6 +44,15 @@ public class AdbConfigurationPref implements AdbLocation {
         final String location;
         final boolean isAutoReconnectEnabled;
 
+        @SuppressWarnings("deprecation")
+        public AdbConfiguration() {
+            // Default configuration values
+            this(MoreObjects.firstNonNull(
+                            Configuration.adb.executable(),
+                            Configuration.adb.DEFAULT_EXECUTABLE),
+                    Configuration.adb.isAutoReconnectEnabled());
+        }
+
         public AdbConfiguration(String location, boolean isAutoReconnectEnabled) {
             this.location = location;
             this.isAutoReconnectEnabled = isAutoReconnectEnabled;
@@ -53,27 +60,7 @@ public class AdbConfigurationPref implements AdbLocation {
     }
 
     private static final ConfigStorageClient<AdbConfiguration> STORAGE_CLIENT =
-            new NamedClient<>("adb") {
-                @Override
-                public AdbConfiguration fromJson(Gson gson, JsonElement element) {
-                    return gson.fromJson(element, AdbConfiguration.class);
-                }
-
-                @Override
-                @SuppressWarnings("deprecation")
-                public AdbConfiguration getDefault() {
-                    return new AdbConfiguration(
-                            MoreObjects.firstNonNull(
-                                    Configuration.adb.executable(),
-                                    Configuration.adb.DEFAULT_EXECUTABLE),
-                            Configuration.adb.isAutoReconnectEnabled());
-                }
-
-                @Override
-                public JsonElement toJson(Gson gson, AdbConfiguration value) {
-                    return gson.toJsonTree(value);
-                }
-            };
+            new SimpleClient<>("adb", AdbConfiguration.class, AdbConfiguration::new);
 
     private final Preference<AdbConfiguration> preference;
     private final SystemPathResolver systemPathResolver;

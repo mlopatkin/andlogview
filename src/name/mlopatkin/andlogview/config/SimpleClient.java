@@ -32,6 +32,10 @@ public final class SimpleClient<T> extends NamedClient<T> {
         this.defaultSupplier = defaultSupplier;
     }
 
+    public SimpleClient(String name, Class<T> type, Supplier<? extends T> defaultSupplier) {
+        this(name, TypeToken.get(type), defaultSupplier);
+    }
+
     @Override
     public T fromJson(Gson gson, JsonElement element) throws InvalidJsonContentException {
         return gson.fromJson(element, type);
