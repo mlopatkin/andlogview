@@ -27,6 +27,7 @@ import dagger.multibindings.IntoSet;
 @Module
 public class FilterGlobals {
     private static final String MIGRATED_TYPE_ID = "filters.SavedDialogFilterData";
+    private static final String INDEX_TYPE_ID = "filters.IndexWindowFilterData";
     private static final String LEGACY_TYPE_ID =
             "org.bitbucket.mlopatkin.android.logviewer.filters.MainFilterController$SavedDialogFilterData";
 
@@ -35,6 +36,7 @@ public class FilterGlobals {
     static TypeAdapterFactory typeAdapterFactory() {
         return new PolymorphicTypeAdapterFactory<>("classname", SavedFilterData.class)
                 .subtype(SavedDialogFilterData.class, MIGRATED_TYPE_ID)
-                .subtype(SavedDialogFilterData.class, LEGACY_TYPE_ID);
+                .subtype(SavedDialogFilterData.class, LEGACY_TYPE_ID)
+                .subtype(IndexWindowFilterData.class, INDEX_TYPE_ID);
     }
 }

@@ -18,24 +18,33 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.AbstractFilter;
 import name.mlopatkin.andlogview.filters.ChildModelFilter;
-import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.filters.PredicateFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> implements FilterFromDialog, ChildModelFilter {
     private final FilterFromDialogData filterData;
-    private final FilterModel model;
+    private final MutableFilterModel model;
 
     public IndexWindowFilter(boolean enabled, FilterFromDialogData filterData) throws RequestCompilationException {
+        this(enabled, filterData, ImmutableSet.of());
+    }
+
+    public IndexWindowFilter(boolean enabled, FilterFromDialogData filterData,
+            Collection<? extends Filter> childFilters) throws RequestCompilationException {
         super(FilteringMode.WINDOW, enabled);
-        this.model = FilterModel.create(ImmutableSet.of(predicateToHideFilter(filterData.compilePredicate())));
+        var hideFilter = predicateToHideFilter(filterData.compilePredicate());
+        this.model =
+                MutableFilterModel.create(ImmutableSet.<Filter>builder().add(hideFilter).addAll(childFilters).build());
         this.filterData = filterData;
     }
 
@@ -77,7 +86,7 @@ public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> impleme
     }
 
     @Override
-    public FilterModel getFilters() {
+    public MutableFilterModel getFilters() {
         return model;
     }
 

@@ -62,7 +62,6 @@ class SavedDialogFilterDataTest {
     }
 
     private FilterFromDialog roundTrip(FilterFromDialog original) throws Exception {
-        // TODO(mlopatkin) this is a somewhat meaningless test now.
         var originalData = new SavedDialogFilterData(original);
         return GSON.fromJson(GSON.toJson(originalData), SavedDialogFilterData.class).fromSerializedForm();
     }

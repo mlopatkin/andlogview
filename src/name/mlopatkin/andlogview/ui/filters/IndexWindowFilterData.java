@@ -17,28 +17,36 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.search.RequestCompilationException;
-import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
+import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-class SavedDialogFilterData extends SavedFilterData {
-    private final FilterFromDialogData filterData;
-    private transient @Nullable FilterFromDialog filter;
+import java.util.List;
 
-    SavedDialogFilterData(FilterFromDialog filter) {
+public class IndexWindowFilterData extends SavedFilterData {
+    private final FilterFromDialogData filterData;
+    private final List<SavedFilterData> childFilters;
+    private transient @Nullable IndexWindowFilter filter;
+
+    public IndexWindowFilterData(IndexWindowFilter filter) {
         super(filter.isEnabled());
-        this.filterData = filter.getData();
         this.filter = filter;
+        this.filterData = filter.getData();
+        this.childFilters = codec().encode(filter.getFilters().getFilters());
     }
 
     @Override
-    public FilterFromDialog fromSerializedForm() throws RequestCompilationException {
+    public IndexWindowFilter fromSerializedForm() throws RequestCompilationException {
         var filter = this.filter;
         if (filter == null) {
-            // This might be non-migrated index window filter, so calling toFilter is justified.
-            this.filter = filter = filterData.toFilter(enabled);
+            this.filter = filter = new IndexWindowFilter(enabled, filterData, codec().decode(childFilters));
         }
+
         return filter;
+    }
+
+    private static FiltersCodec codec() {
+        return new FiltersCodec();
     }
 }
