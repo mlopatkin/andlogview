@@ -15,8 +15,8 @@
  */
 package name.mlopatkin.andlogview.filters;
 
-import static name.mlopatkin.andlogview.filters.FilteringMode.HIDE;
-import static name.mlopatkin.andlogview.filters.FilteringMode.SHOW;
+import static name.mlopatkin.andlogview.filters.ToggleFilter.hide;
+import static name.mlopatkin.andlogview.filters.ToggleFilter.show;
 import static name.mlopatkin.andlogview.test.TestData.MATCH_ALL;
 import static name.mlopatkin.andlogview.test.TestData.MATCH_FIRST;
 import static name.mlopatkin.andlogview.test.TestData.RECORD1;
@@ -25,12 +25,8 @@ import static name.mlopatkin.andlogview.test.TestData.RECORD2;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import name.mlopatkin.andlogview.logmodel.LogRecord;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.function.Predicate;
 
 public class FilterChainTest {
     private FilterChain chain;
@@ -98,15 +94,4 @@ public class FilterChainTest {
         assertTrue(chain.shouldShow(RECORD2));
     }
 
-    private static PredicateFilter show(Predicate<LogRecord> p) {
-        return filter(SHOW, p);
-    }
-
-    private static PredicateFilter hide(Predicate<LogRecord> p) {
-        return filter(HIDE, p);
-    }
-
-    private static PredicateFilter filter(FilteringMode mode, Predicate<LogRecord> p) {
-        return new ToggleFilter(mode, true, p);
-    }
 }

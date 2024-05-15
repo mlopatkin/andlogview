@@ -39,4 +39,16 @@ public class ToggleFilter extends AbstractToggleFilter<ToggleFilter> {
     public boolean equals(Object obj) {
         return super.equals(obj) && obj instanceof ToggleFilter;
     }
+
+    public static ToggleFilter show(Predicate<? super LogRecord> predicate) {
+        return new ToggleFilter(FilteringMode.SHOW, true, predicate);
+    }
+
+    public static ToggleFilter hide(Predicate<? super LogRecord> predicate) {
+        return new ToggleFilter(FilteringMode.HIDE, true, predicate);
+    }
+
+    public static ToggleFilter index(Predicate<? super LogRecord> predicate) {
+        return new ToggleFilter(FilteringMode.WINDOW, true, predicate);
+    }
 }

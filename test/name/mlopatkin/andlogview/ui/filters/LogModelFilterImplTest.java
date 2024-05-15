@@ -16,13 +16,15 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import static name.mlopatkin.andlogview.filters.ToggleFilter.hide;
+import static name.mlopatkin.andlogview.filters.ToggleFilter.index;
+import static name.mlopatkin.andlogview.filters.ToggleFilter.show;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import name.mlopatkin.andlogview.filters.ColoringToggleFilter;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
-import name.mlopatkin.andlogview.filters.FilteringMode;
-import name.mlopatkin.andlogview.filters.ToggleFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordPredicates;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
@@ -93,20 +95,8 @@ class LogModelFilterImplTest {
         assertThat(filter.getHighlightColor(recordWithTag("PackageManager"))).isNull();
     }
 
-    private Filter show(Predicate<? super LogRecord> predicate) {
-        return new ToggleFilter(FilteringMode.SHOW, true, predicate);
-    }
-
-    private Filter hide(Predicate<? super LogRecord> predicate) {
-        return new ToggleFilter(FilteringMode.HIDE, true, predicate);
-    }
-
     private Filter color(Color color, Predicate<? super LogRecord> predicate) {
         return new ColoringToggleFilter(color, true, predicate);
-    }
-
-    private Filter index(Predicate<? super LogRecord> predicate) {
-        return new ToggleFilter(FilteringMode.WINDOW, true, predicate);
     }
 
     private FilterModel createModel(Filter... filters) {

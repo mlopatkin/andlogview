@@ -67,7 +67,7 @@ public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> impleme
 
             @Override
             public boolean test(LogRecord logRecord) {
-                return filterPredicate.test(logRecord);
+                return !filterPredicate.test(logRecord);
             }
         }
 
