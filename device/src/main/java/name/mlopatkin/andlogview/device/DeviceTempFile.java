@@ -46,9 +46,13 @@ class DeviceTempFile implements AutoCloseable {
     }
 
     @Override
-    public void close() throws DeviceGoneException, InterruptedException {
-        DeviceUtils.executeShellCommand(device, String.format("rm %s", getPath()), NullOutputReceiver.getReceiver(), 1,
-                TimeUnit.SECONDS);
+    public void close() throws DeviceGoneException {
+        try {
+            DeviceUtils.executeShellCommand(device, String.format("rm %s", getPath()), NullOutputReceiver.getReceiver(),
+                    1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**

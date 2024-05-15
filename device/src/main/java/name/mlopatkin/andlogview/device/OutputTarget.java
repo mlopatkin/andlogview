@@ -115,7 +115,7 @@ public abstract class OutputTarget {
         String getRedirectString(StdStream redirectFrom);
 
         @Override
-        void close() throws IOException, DeviceGoneException, InterruptedException;
+        void close() throws IOException, DeviceGoneException;
 
     }
 
@@ -164,9 +164,11 @@ public abstract class OutputTarget {
                 }
 
                 @Override
-                public void close() throws DeviceGoneException, InterruptedException, IOException {
+                public void close() throws DeviceGoneException, IOException {
                     try (DeviceTempFile theTempFile = tempFile) {
                         theTempFile.copyContentsTo(stream);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
                 }
             };

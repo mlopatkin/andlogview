@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.utils.properties;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,12 +38,6 @@ public class ListPropertyBuilder<T> implements IPropertyBuilder<List<T>> {
 
     public ListPropertyBuilder<T> defaultVal(List<T> value) {
         this.defaultVal = new ArrayList<>(value);
-        return this;
-    }
-
-    @SafeVarargs
-    public final ListPropertyBuilder<T> defaultVal(T... value) {
-        this.defaultVal = Arrays.asList(value);
         return this;
     }
 

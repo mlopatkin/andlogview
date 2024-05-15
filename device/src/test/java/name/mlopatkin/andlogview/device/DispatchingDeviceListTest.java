@@ -229,7 +229,7 @@ class DispatchingDeviceListTest {
     void provisionUpdatesDoNotTriggerNotificationsAfterClose() throws Exception {
         adbFacade.connectDevice(createDevice("DeviceA"));
         var provisioner = new FakeDeviceProvisioner();
-        var deviceList = createDeviceList(provisioner);
+        var deviceList = createDeviceListWith(provisioner);
 
         var observer = mock(DeviceChangeObserver.class);
         deviceList.asObservable().addObserver(observer);
@@ -245,7 +245,7 @@ class DispatchingDeviceListTest {
     @Test
     void devicesAddedInBackgroundAreNotVisibleInRunningListeners() throws Exception {
         var testExecutor = new TestExecutor();
-        var deviceList = createDeviceList(testExecutor);
+        var deviceList = createDeviceListOn(testExecutor);
 
         var observer = mock(DeviceChangeObserver.class);
         doAnswer(device -> {
@@ -269,7 +269,7 @@ class DispatchingDeviceListTest {
     @Test
     void pendingNotificationsAreNotDeliveredAfterClosingInCallback() {
         var testExecutor = new TestExecutor();
-        var deviceList = createDeviceList(testExecutor);
+        var deviceList = createDeviceListOn(testExecutor);
 
         var observerA = mock(DeviceChangeObserver.class);
 
@@ -297,14 +297,14 @@ class DispatchingDeviceListTest {
     }
 
     private AdbDeviceList createDeviceList() {
-        return createDeviceList(createProvisioner());
+        return createDeviceListWith(createProvisioner());
     }
 
-    private AdbDeviceList createDeviceList(DeviceProvisioner provisioner) {
+    private AdbDeviceList createDeviceListWith(DeviceProvisioner provisioner) {
         return DispatchingDeviceList.create(adbFacade, provisioner, testExecutor);
     }
 
-    private AdbDeviceList createDeviceList(Executor executor) {
+    private AdbDeviceList createDeviceListOn(Executor executor) {
         return DispatchingDeviceList.create(adbFacade, createProvisioner(), new TestSequentialExecutor(executor));
     }
 

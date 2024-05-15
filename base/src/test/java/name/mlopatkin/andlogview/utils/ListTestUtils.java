@@ -26,6 +26,7 @@ class ListTestUtils {
     private ListTestUtils() {}
 
     @SafeVarargs
+    @SuppressWarnings("varargs")
     static <T> ArrayList<T> list(T... args) {
         return new ArrayList<>(Arrays.asList(args));
     }

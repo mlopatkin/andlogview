@@ -141,6 +141,7 @@ public abstract class SystemPathResolver {
                 private int pos;
 
                 @Override
+                @SuppressWarnings("fallthrough")
                 protected @Nullable String computeNext() {
                     var result = new StringBuilder();
                     boolean inQuotes = false;

@@ -23,11 +23,6 @@ import java.util.List;
 public class ListSearchModel<T> implements SearchDataModel<T, Integer> {
     private final List<T> items;
 
-    @SafeVarargs
-    public ListSearchModel(T... items) {
-        this.items = ImmutableList.copyOf(items);
-    }
-
     public ListSearchModel(List<T> items) {
         this.items = ImmutableList.copyOf(items);
     }

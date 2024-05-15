@@ -34,6 +34,7 @@ public class MultiplexParser<T extends BasePushParser> extends AbstractBasePushP
     private final List<T> activeChildren;
 
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public MultiplexParser(T... children) {
         this(ImmutableList.copyOf(children));
     }
