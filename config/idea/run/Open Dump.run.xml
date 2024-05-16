@@ -5,7 +5,7 @@
     <option name="MAIN_CLASS_NAME" value="name.mlopatkin.andlogview.Main" />
     <module name="andlogview.main" />
     <option name="PROGRAM_PARAMETERS" value="-d test_resources/name/mlopatkin/andlogview/liblogcat/file/galaxy_nexus_jbmr2.minimized.dump" />
-    <option name="VM_PARAMETERS" value="-ea" />
+    <option name="VM_PARAMETERS" value="-ea -Dname.mlopatkin.andlogview.features.useFilterTree=true" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="name.mlopatkin.andlogview.*" />

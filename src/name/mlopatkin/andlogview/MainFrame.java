@@ -17,6 +17,8 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
+import name.mlopatkin.andlogview.features.Features;
+import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.logmodel.DataSource;
@@ -36,6 +38,7 @@ import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filters.LogModelFilterImpl;
+import name.mlopatkin.andlogview.ui.filtertree.FilterTreeFactory;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -64,6 +67,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -90,6 +94,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -110,7 +115,14 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
 
     @Inject
+    Features features;
+
+    @Inject
     MainFrameUi mainFrameUi;
+    @Inject
+    FilterModel filterModel;
+    @Inject
+    FilterTreeFactory filterTreeFactory;
 
     @Inject
     DataSourceHolder sourceHolder;
@@ -328,8 +340,17 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         UiHelper.addPopupMenu(
                 logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
 
-        JScrollPane scrollPane = new JScrollPane(logElements);
-        mainFrameUi.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        JScrollPane logTableScrollPane = new JScrollPane(logElements);
+
+        if (!features.useFilterTree.isEnabled()) {
+            mainFrameUi.getContentPane().add(logTableScrollPane, BorderLayout.CENTER);
+            return;
+        }
+
+        var filterPane = new JScrollPane(filterTreeFactory.buildFilterTree());
+        filterPane.setPreferredSize(new Dimension(200, 0));
+        var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filterPane, logTableScrollPane);
+        mainFrameUi.getContentPane().add(splitPane, BorderLayout.CENTER);
     }
 
     private void initControlPanel() {
@@ -557,4 +578,5 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
             return new MainFrame(globals, commandLine);
         }
     }
+
 }

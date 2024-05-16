@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
+import name.mlopatkin.andlogview.ui.filtertree.TreeModelAdapter;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.themes.Theme;
@@ -50,5 +51,11 @@ public abstract class FilterModule {
     @MainFrameScoped
     static FilterPanel filterPanel(Theme theme, FilterPanelModelAdapter model, FilterCreator filterCreator) {
         return new FilterPanel(theme, model, filterCreator);
+    }
+
+    @Provides
+    @MainFrameScoped
+    static TreeModelAdapter treeModelAdapter(FilterTreeModelAdapter modelAdapter) {
+        return new TreeModelAdapter(modelAdapter);
     }
 }

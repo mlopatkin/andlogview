@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
@@ -79,6 +80,8 @@ public interface AppGlobals {
     AdbManager getAdbManager();
 
     Theme getTheme();
+
+    Features getFeatures();
 
     @Component.Factory
     interface Factory {
