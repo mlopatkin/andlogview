@@ -69,6 +69,8 @@ public class TreeModelAdapter implements TreeModel {
 
     @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
+        var action = (EditAction) newValue;
+        action.apply();
     }
 
     @Override

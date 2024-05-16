@@ -34,6 +34,14 @@ public interface FilterTreeModel<V extends FilterNodeViewModel> {
         void onFilterReplaced(V oldFilter, V newFilter);
     }
 
+    /**
+     * Requests to change enabled state of the filter represented by the view.
+     *
+     * @param filter the filter view
+     * @param enabled the requested status
+     */
+    void setFilterEnabled(V filter, boolean enabled);
+
     Observable<ModelObserver<? super V>> asObservable();
 
     ImmutableList<V> getFilters();

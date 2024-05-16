@@ -67,6 +67,11 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
     }
 
     @Override
+    public void setFilterEnabled(TreeNodeFilter filter, boolean enabled) {
+        filter.setEnabled(enabled);
+    }
+
+    @Override
     public Observable<ModelObserver<? super TreeNodeFilter>> asObservable() {
         return observers.asObservable();
     }

@@ -20,6 +20,8 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
+import name.mlopatkin.andlogview.ui.filtertree.FilterNodeViewModel;
+import name.mlopatkin.andlogview.ui.filtertree.FilterTreeModel;
 import name.mlopatkin.andlogview.ui.filtertree.TreeModelAdapter;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
@@ -54,8 +56,22 @@ public abstract class FilterModule {
     }
 
     @Provides
+    static FilterTreeModel<FilterNodeViewModel> filterTreeModel(FilterTreeModelAdapter modelAdapter) {
+        // TODO(mlopatkin) This is actually not type-safe, but the true safety is surprisingly hard to achieve. As long
+        //  as the TreeModelAdapter is created with the FilterTreeModelAdapter, it should work fine.
+        //  The problem is that the filtertree module may pick up nodes from the tree model adapter and feed them into
+        //  FilterTreeModel.
+        @SuppressWarnings("UnnecessaryLocalVariable")
+        FilterTreeModel<?> model = modelAdapter;
+
+        @SuppressWarnings("unchecked")
+        var typedModel = (FilterTreeModel<FilterNodeViewModel>) model;
+        return typedModel;
+    }
+
+    @Provides
     @MainFrameScoped
-    static TreeModelAdapter treeModelAdapter(FilterTreeModelAdapter modelAdapter) {
+    static TreeModelAdapter treeModelAdapter(FilterTreeModel<FilterNodeViewModel> modelAdapter) {
         return new TreeModelAdapter(modelAdapter);
     }
 }

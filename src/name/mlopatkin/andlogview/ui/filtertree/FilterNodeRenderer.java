@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.filtertree;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ItemListener;
 
 import javax.inject.Inject;
 import javax.swing.BoxLayout;
@@ -110,5 +111,13 @@ class FilterNodeRenderer implements TreeCellRenderer  {
             return selectionInactiveBackground;
         }
         return textBackground;
+    }
+
+    public boolean isSelected() {
+        return checkBox.isSelected();
+    }
+
+    public void addCheckboxItemListener(ItemListener listener) {
+        checkBox.addItemListener(listener);
     }
 }
