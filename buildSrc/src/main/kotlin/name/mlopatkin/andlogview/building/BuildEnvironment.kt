@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.building
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.assign
 
 /**
  * Helper methods to access environment parameters: is build run by CI server? what revision is checked out?
@@ -45,8 +46,8 @@ abstract class BuildEnvironment(project: Project) {
 
             val gitRevision = providers.of(GitRevisionValueSource::class.java) {
                 parameters {
-                    repoRoot.set(projectDir)
-                    fallback.set("n/a")
+                    repoRoot = projectDir
+                    fallback = "n/a"
                 }
             }
 
