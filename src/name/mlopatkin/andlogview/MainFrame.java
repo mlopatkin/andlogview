@@ -57,6 +57,7 @@ import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.widgets.UiHelper;
@@ -116,6 +117,8 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
     @Inject
     Features features;
+    @Inject
+    Theme theme;
 
     @Inject
     MainFrameUi mainFrameUi;
@@ -342,7 +345,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         JScrollPane logTableScrollPane = new JScrollPane(logElements);
 
-        if (!features.useFilterTree.isEnabled()) {
+        if (!theme.supportsFilterTreeView() || !features.useFilterTree.isEnabled()) {
             mainFrameUi.getContentPane().add(logTableScrollPane, BorderLayout.CENTER);
             return;
         }

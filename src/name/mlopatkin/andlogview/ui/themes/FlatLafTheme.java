@@ -70,4 +70,9 @@ class FlatLafTheme implements Theme {
     public ThemedWidgetFactory getWidgetFactory() {
         return new FlatLafWidgetFactory();
     }
+
+    @Override
+    public boolean supportsFilterTreeView() {
+        return true;
+    }
 }

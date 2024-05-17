@@ -96,4 +96,14 @@ public interface Theme {
     static Theme getFallback() {
         return new BasicTheme();
     }
+
+    /**
+     * Checks if the theme supports the filter tree view component properly.
+     *
+     * @return true if the theme supports filter tree view
+     */
+    default boolean supportsFilterTreeView() {
+        // FilterTreeView uses FlatTreeUI which is part of the FlatLaF.
+        return false;
+    }
 }

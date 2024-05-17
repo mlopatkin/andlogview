@@ -16,13 +16,16 @@
 
 package name.mlopatkin.andlogview.ui.filtertree;
 
+import name.mlopatkin.andlogview.widgets.checktree.Checkable;
+
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ItemListener;
+import java.awt.Point;
 
 import javax.inject.Inject;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -30,10 +33,12 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-class FilterNodeRenderer implements TreeCellRenderer  {
-    private final JPanel panel = new JPanel();
+class FilterNodeRenderer implements TreeCellRenderer {
+    private final ValueRenderer<FilterNodeViewModel> valueRenderer;
+
     private final JCheckBox checkBox = new JCheckBox();
     private final JLabel text = new JLabel();
+    private final CheckablePanel panel;
     private final TreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 
     private final Color selectionForeground;
@@ -45,6 +50,8 @@ class FilterNodeRenderer implements TreeCellRenderer  {
 
     @Inject
     public FilterNodeRenderer() {
+        this.valueRenderer = new ValueRenderer<>(FilterNodeViewModel.class);
+        panel = new CheckablePanel(checkBox);
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(checkBox);
         panel.add(text);
@@ -68,7 +75,8 @@ class FilterNodeRenderer implements TreeCellRenderer  {
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
             boolean leaf, int row, boolean hasFocus) {
-        if (!(value instanceof FilterNodeViewModel filterNode)) {
+        var filter = valueRenderer.toModel(value);
+        if (filter == null) {
             // Sometimes we're asked for the root node even though it is invisible. Fall back to the default renderer in
             // this case.
             return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
@@ -82,8 +90,8 @@ class FilterNodeRenderer implements TreeCellRenderer  {
         panel.setBackground(bgColor);
         text.setBackground(bgColor);
 
-        checkBox.setSelected(filterNode.isEnabled());
-        text.setText(filterNode.getText());
+        checkBox.setSelected(filter.isEnabled());
+        text.setText(filter.getText());
 
         if (!checkBox.isValid() || !text.isValid()) {
             // When the panel is detached, it doesn't invalidate itself upon child invalidation. This causes stale
@@ -117,7 +125,16 @@ class FilterNodeRenderer implements TreeCellRenderer  {
         return checkBox.isSelected();
     }
 
-    public void addCheckboxItemListener(ItemListener listener) {
-        checkBox.addItemListener(listener);
+    private static class CheckablePanel extends JPanel implements Checkable {
+        private final JComponent checkTarget;
+
+        public CheckablePanel(JComponent checkTarget) {
+            this.checkTarget = checkTarget;
+        }
+
+        @Override
+        public boolean togglesCheckable(Point mouseClickInNode) {
+            return checkTarget.getBounds().contains(mouseClickInNode);
+        }
     }
 }

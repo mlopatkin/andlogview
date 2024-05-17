@@ -19,45 +19,51 @@ package name.mlopatkin.andlogview.ui.filtertree;
 import static name.mlopatkin.andlogview.base.collections.MyArrays.ints;
 import static name.mlopatkin.andlogview.base.collections.MyArrays.objects;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import name.mlopatkin.andlogview.widgets.checktree.CheckableTreeModel;
+
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /**
  * An adapter for the {@link FilterTreeModel} to use it as a Swing's {@link TreeModel}.
  */
-public class TreeModelAdapter implements TreeModel {
-    private final FilterTreeModel<?> filterTreeModel;
-    private final ModelObserverImpl filterModelObserver;
+public class TreeModelAdapter implements CheckableTreeModel {
+    private final ModelObserverImpl filterModelObserver = new ModelObserverImpl();
+    private final FilterTreeModel<FilterNodeViewModel> filterTreeModel;
+    private final MutableTreeNode root;
 
+    @SuppressWarnings("unchecked")
     public <V extends FilterNodeViewModel> TreeModelAdapter(FilterTreeModel<V> filterTreeModel) {
-        this.filterTreeModel = filterTreeModel;
-        this.filterModelObserver = new ModelObserverImpl(filterTreeModel.getFilters());
+        this.filterTreeModel = (FilterTreeModel<FilterNodeViewModel>) filterTreeModel;
         filterTreeModel.asObservable().addObserver(filterModelObserver);
+
+        this.root = new DefaultMutableTreeNode(filterTreeModel);
+        filterTreeModel.getFilters().forEach(f -> appendChild(root, createNodeForFilter(f)));
     }
 
     @Override
-    public FilterTreeModel<?> getRoot() {
-        return filterTreeModel;
+    public TreeNode getRoot() {
+        return root;
     }
 
     @Override
-    public FilterNodeViewModel getChild(Object parent, int index) {
+    public TreeNode getChild(Object parent, int index) {
         assert parent == getRoot();
-        return filterTreeModel.getFilters().get(index);
+        return getRoot().getChildAt(index);
     }
 
     @Override
     public int getChildCount(Object parent) {
         if (parent == getRoot()) {
-            return filterTreeModel.getFilters().size();
+            return getRoot().getChildCount();
         }
         return 0;
     }
@@ -75,8 +81,8 @@ public class TreeModelAdapter implements TreeModel {
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
-        if (parent == getRoot()) {
-            return filterTreeModel.getFilters().indexOf(child);
+        if (parent == getRoot() && child instanceof TreeNode childNode) {
+            return getRoot().getIndex(childNode);
         }
         return -1;
     }
@@ -91,14 +97,61 @@ public class TreeModelAdapter implements TreeModel {
         filterModelObserver.removeChildListener(l);
     }
 
+    @Override
+    public boolean isNodeCheckable(Object node) {
+        return getRoot() != node;
+    }
+
+    @Override
+    public boolean isNodeChecked(Object node) {
+        return getFilterFromNode(node).isEnabled();
+    }
+
+    @Override
+    public void setNodeChecked(Object node, boolean checked) {
+        var filter = getFilterFromNode(node);
+        filterTreeModel.setFilterEnabled(filter, checked);
+    }
+
+    private FilterNodeViewModel getFilterFromNode(Object node) {
+        if (!(node instanceof DefaultMutableTreeNode treeNode)
+                || !(treeNode.getUserObject() instanceof FilterNodeViewModel filter)) {
+            throw new IllegalArgumentException("Provided node `" + node + "` is invalid");
+        }
+        return filter;
+    }
+
+    private MutableTreeNode createNodeForFilter(FilterNodeViewModel filter) {
+        return new DefaultMutableTreeNode(filter, false);
+    }
+
+    private <T extends MutableTreeNode> T appendChild(MutableTreeNode node, T child) {
+        node.insert(child, node.getChildCount());
+        return child;
+    }
+
+    private MutableTreeNode findNodeForFilter(FilterNodeViewModel filter) {
+        var enumeration = root.children();
+        while (enumeration.hasMoreElements()) {
+            var child = enumeration.nextElement();
+            if (filter.equals(getFilterFromNode(child))) {
+                return (MutableTreeNode) child;
+            }
+        }
+        throw new IllegalArgumentException("Cannot find node for " + filter);
+    }
+
+    private void replaceFilter(MutableTreeNode node, FilterNodeViewModel filter) {
+        if (!(node instanceof DefaultMutableTreeNode treeNode)
+                || !(treeNode.getUserObject() instanceof FilterNodeViewModel)) {
+            throw new IllegalArgumentException("Provided node `" + node + "` is invalid");
+        }
+        treeNode.setUserObject(filter);
+    }
+
     private class ModelObserverImpl
             implements FilterTreeModel.ModelObserver<FilterNodeViewModel> {
         private final Set<TreeModelListener> listeners = new CopyOnWriteArraySet<>();
-        private final List<FilterNodeViewModel> filters = new ArrayList<>();
-
-        public ModelObserverImpl(Collection<? extends FilterNodeViewModel> filters) {
-            this.filters.addAll(filters);
-        }
 
         public void addChildListener(TreeModelListener listener) {
             listeners.add(listener);
@@ -110,9 +163,8 @@ public class TreeModelAdapter implements TreeModel {
 
         @Override
         public void onFilterAdded(FilterNodeViewModel newFilter) {
-            filters.add(newFilter);
+            var event = addNodeEvent(getRoot(), appendChild(root, createNodeForFilter(newFilter)));
 
-            var event = addNodeEvent(getRoot(), newFilter);
             for (var listener : listeners) {
                 listener.treeNodesInserted(event);
             }
@@ -120,10 +172,11 @@ public class TreeModelAdapter implements TreeModel {
 
         @Override
         public void onFilterRemoved(FilterNodeViewModel filter) {
-            var removedIndex = filters.indexOf(filter);
-            filters.remove(removedIndex);
-
-            var event = removeNodeEvent(getRoot(), removedIndex, filter);
+            var filterNodeToRemove = findNodeForFilter(filter);
+            var parent = filterNodeToRemove.getParent();
+            var removedIndex = parent.getIndex(filterNodeToRemove);
+            filterNodeToRemove.removeFromParent();
+            var event = removeNodeEvent(parent, removedIndex, filterNodeToRemove);
             for (var listener : listeners) {
                 listener.treeNodesRemoved(event);
             }
@@ -131,10 +184,9 @@ public class TreeModelAdapter implements TreeModel {
 
         @Override
         public void onFilterReplaced(FilterNodeViewModel oldFilter, FilterNodeViewModel newFilter) {
-            var changedIndex = filters.indexOf(oldFilter);
-            filters.set(changedIndex, newFilter);
-
-            var event = changeNodeEvent(getRoot(), newFilter);
+            var changedChild = findNodeForFilter(oldFilter);
+            replaceFilter(changedChild, newFilter);
+            var event = changeNodeEvent(getRoot(), changedChild);
             for (var listener : listeners) {
                 listener.treeNodesChanged(event);
             }

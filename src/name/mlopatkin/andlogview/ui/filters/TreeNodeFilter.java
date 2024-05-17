@@ -47,4 +47,9 @@ public class TreeNodeFilter extends BaseFilterPresenter implements FilterNodeVie
     interface Factory {
         TreeNodeFilter create(FilterFromDialog filter);
     }
+
+    @Override
+    public String toString() {
+        return filter.toString();
+    }
 }

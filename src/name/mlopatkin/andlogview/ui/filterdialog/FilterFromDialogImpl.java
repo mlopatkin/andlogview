@@ -21,6 +21,8 @@ import name.mlopatkin.andlogview.filters.ColoringFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
+import com.google.common.base.MoreObjects;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
@@ -85,5 +87,10 @@ public class FilterFromDialogImpl extends AbstractFilter<FilterFromDialogImpl>
             return isEnabled() == that.isEnabled() && Objects.equals(data, that.data);
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("enabled", isEnabled()).add("data", getData()).toString();
     }
 }
