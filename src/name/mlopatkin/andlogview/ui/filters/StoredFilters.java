@@ -19,8 +19,8 @@ package name.mlopatkin.andlogview.ui.filters;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
-import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.LazyInstance;
@@ -58,22 +58,7 @@ public class StoredFilters {
     private MutableFilterModel createModel() {
         var model = MutableFilterModel.create(codec.decode(preference.get()));
 
-        model.asObservable().addObserver(new FilterModel.Observer() {
-            @Override
-            public void onFilterAdded(FilterModel model, Filter newFilter) {
-                saveFilters(model);
-            }
-
-            @Override
-            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
-                saveFilters(model);
-            }
-
-            @Override
-            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-                saveFilters(model);
-            }
-        });
+        model.asObservable().addObserver(new FiltersChangeObserver(this::saveFilters));
 
         return model;
     }

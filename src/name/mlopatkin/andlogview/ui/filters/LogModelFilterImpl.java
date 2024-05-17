@@ -16,9 +16,9 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
-import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.filters.LogRecordHighlighter;
 import name.mlopatkin.andlogview.liblogcat.filters.LogBufferFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -49,22 +49,7 @@ public class LogModelFilterImpl implements LogModelFilter {
         filterChain.setModel(model);
         highlighter.setModel(model);
 
-        model.asObservable().addObserver(new FilterModel.Observer() {
-            @Override
-            public void onFilterAdded(FilterModel model, Filter newFilter) {
-                notifyObservers();
-            }
-
-            @Override
-            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
-                notifyObservers();
-            }
-
-            @Override
-            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-                notifyObservers();
-            }
-        });
+        model.asObservable().addObserver(new FiltersChangeObserver(source -> notifyObservers()));
     }
 
     public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
