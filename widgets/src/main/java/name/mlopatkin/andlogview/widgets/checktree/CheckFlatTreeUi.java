@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import java.util.Objects;
 
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
@@ -74,6 +75,8 @@ public class CheckFlatTreeUi extends FlatTreeUI {
         private final MouseListener parentMouseListener;
         private final MouseMotionListener parentMouseMotionListener;
 
+        private @Nullable TreePath pressedPath;
+
         public CheckTreeMouseListener(MouseListener parent) {
             this.parentMouseListener = parent;
             this.parentMouseMotionListener = (parent instanceof MouseMotionListener motionListener)
@@ -88,17 +91,33 @@ public class CheckFlatTreeUi extends FlatTreeUI {
 
         @Override
         public void mousePressed(MouseEvent e) {
+            var checkableModel = checkableTreeModel;
+            pressedPath = null;
+            if (checkableModel != null && !shouldIgnore(e)) {
+                var currentPressedPath = tree.getPathForLocation(e.getX(), e.getY());
+                if (currentPressedPath != null) {
+                    var node = currentPressedPath.getLastPathComponent();
+                    if (checkableModel.isNodeCheckable(node) && isInCheckArea(e, currentPressedPath)) {
+                        // Pressed the mouse inside the checkbox area.
+                        pressedPath = currentPressedPath;
+                    }
+                }
+            }
             parentMouseListener.mousePressed(e);
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             var checkableModel = checkableTreeModel;
-            if (checkableModel != null && !shouldIgnore(e)) {
-                var path = tree.getPathForLocation(e.getX(), e.getY());
-                if (path != null) {
-                    var node = path.getLastPathComponent();
-                    if (checkableModel.isNodeCheckable(node) && isClickTogglesChecked(e, path)) {
+            var lastPressedPath = pressedPath;
+            pressedPath = null;
+            if (lastPressedPath != null && checkableModel != null && !shouldIgnore(e)) {
+                // Last pressed the mouse inside the checkbox area.
+                var releasedPath = tree.getPathForLocation(e.getX(), e.getY());
+                if (Objects.equals(lastPressedPath, releasedPath)) {
+                    assert releasedPath != null;
+                    var node = releasedPath.getLastPathComponent();
+                    if (checkableModel.isNodeCheckable(node) && isInCheckArea(e, releasedPath)) {
                         checkableModel.setNodeChecked(node, !checkableModel.isNodeChecked(node));
                     }
                 }
@@ -136,7 +155,7 @@ public class CheckFlatTreeUi extends FlatTreeUI {
             return point;
         }
 
-        private boolean isClickTogglesChecked(MouseEvent event, TreePath path) {
+        private boolean isInCheckArea(MouseEvent event, TreePath path) {
             var rendererComponent = createRendererComponent(path);
             if (rendererComponent instanceof Checkable checkable) {
                 var bounds = getPathBounds(tree, path);
