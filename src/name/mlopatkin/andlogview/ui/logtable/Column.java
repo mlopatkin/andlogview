@@ -138,6 +138,7 @@ public enum Column {
         return String.valueOf(getValue(rowIndex, record));
     }
 
+    @SuppressWarnings("EnumOrdinal")
     private int getIndex() {
         return ordinal();
     }

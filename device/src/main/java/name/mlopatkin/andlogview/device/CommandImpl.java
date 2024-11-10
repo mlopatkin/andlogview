@@ -25,7 +25,6 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.MultiLineReceiver;
 
 import org.apache.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
@@ -137,7 +136,7 @@ class CommandImpl implements Command {
         return String.join(" ", commandLine);
     }
 
-    private <@NonNull T extends ForStderr> T getRedirectWithDefault(@Nullable T redirect, T defRedirect) {
+    private <T extends ForStderr> T getRedirectWithDefault(@Nullable T redirect, T defRedirect) {
         if (redirect != null) {
             return redirect;
         }

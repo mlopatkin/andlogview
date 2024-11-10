@@ -173,7 +173,7 @@ public final class MyFutures {
      * @return the function that adapts the consumer to Void returning type
      */
     public static <T> BiFunction<T, @Nullable Throwable, Void> consumingHandler(
-            BiConsumer<? super @Nullable T, @Nullable ? super Throwable> consumer) {
+            BiConsumer<? super @Nullable T, ? super @Nullable Throwable> consumer) {
         return (r, th) -> {
             consumer.accept(r, th);
             return null;
@@ -189,7 +189,7 @@ public final class MyFutures {
      * @return the function that adapts the consumers to Void returning type
      */
     public static <T> BiFunction<T, @Nullable Throwable, Void> consumingHandler(
-            Consumer<? super T> valueConsumer, Consumer<@Nullable ? super Throwable> errorConsumer) {
+            Consumer<? super T> valueConsumer, Consumer<? super Throwable> errorConsumer) {
         return (r, th) -> {
             if (th != null) {
                 errorConsumer.accept(th);

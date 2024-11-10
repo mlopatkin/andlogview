@@ -21,8 +21,6 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 /**
  * This class parses a single query and determines whether it is a plain text search or regex. Then it extracts query
  * value and asks delegate to create a searcher.
@@ -35,7 +33,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @param <T> the type of the searcher to build
  */
-public class SearchRequestParser<@NonNull T> {
+public class SearchRequestParser<T> {
     /**
      * Delegate that actually creates a searcher.
      *
