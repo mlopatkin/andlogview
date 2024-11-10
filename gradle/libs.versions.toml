@@ -49,4 +49,4 @@ jlink = "org.beryx.runtime:1.13.1"
 # JMH plugin allows building and running JMH benchmarks
 jmh = "me.champeau.jmh:0.7.2"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool
-shadow = "com.github.johnrengelman.shadow:8.1.1"
+shadow = "com.gradleup.shadow:8.3.5"
