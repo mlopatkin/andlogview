@@ -25,6 +25,8 @@ plugins {
 
     // It is not possible to use a constant from the version catalog there
     id("net.ltgt.errorprone")
+
+    id("name.mlopatkin.andlogview.building.reproducible-builds")
 }
 
 repositories {
