@@ -54,7 +54,7 @@ public interface Theme {
      * @return the list of available themes
      */
     static List<Theme> getAvailableThemes() {
-        return Arrays.asList(new MacOsSystemTheme(), new FlatLafTheme(), new BasicTheme());
+        return Arrays.asList(new FlatLafTheme(), new MacOsSystemTheme(), new BasicTheme());
     }
 
     /**
