@@ -21,6 +21,8 @@ import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
+import com.formdev.flatlaf.util.SystemInfo;
+
 import org.apache.log4j.Logger;
 
 import java.awt.EventQueue;
@@ -35,6 +37,8 @@ public class Main {
 
     private static final String THEME_SYSTEM_PROPERTY = "name.mlopatkin.andlogview.theme";
 
+    public static final String APP_NAME = "AndLogView";
+
     private static final String SHORT_APP_NAME = "logview";
     private final Provider<MainFrame> mainFrameProvider;
     private final CommandLine commandLine;
@@ -44,6 +48,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        // Initializing the configuration may init AWT too.
+        initProperties();
+
         Configuration.init();
         Thread.setDefaultUncaughtExceptionHandler(Main::uncaughtHandler);
 
@@ -62,21 +69,24 @@ public class Main {
                 commandLine,
                 theme);
 
-        logger.info("AndLogView " + getVersionString());
+        logger.info(APP_NAME + " " + getVersionString());
         logger.info("Revision " + BuildInfo.REVISION);
 
         EventQueue.invokeLater(() -> globals.getMain().start(configurationState));
     }
 
-    private static Theme initLaf() {
-        if (SystemUtils.IS_OS_MACOS) {
+    private static void initProperties() {
+        if (SystemInfo.isMacOS) {
             // Move JMenuBar to macOS native global Menu bar.
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             // Change App name in menu bar.
-            System.setProperty("apple.awt.application.name", "AndLogView");
+            System.setProperty("apple.awt.application.name", APP_NAME);
             // Force default light style even with global system dark mode to fix black-on-black text in some controls.
             System.setProperty("apple.awt.application.appearance", "NSAppearanceNameAqua");
         }
+    }
+
+    private static Theme initLaf() {
         String configuredThemeName = System.getProperty(THEME_SYSTEM_PROPERTY);
         Theme theme = Theme.findByName(configuredThemeName).orElseGet(Theme::getDefault);
         assert theme.isSupported();

@@ -307,7 +307,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
      * Initialize the contents of the frame.
      */
     private void initialize(boolean isDebug) {
-        mainFrameUi.setTitle("AndLogView " + Main.getVersionString());
+        mainFrameUi.setTitle(Main.APP_NAME + " " + Main.getVersionString());
         mainFrameUi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         initLogTable();
