@@ -85,6 +85,7 @@ public class UiHelper {
 
     /**
      * Binds a key combination to the action listener. The combination is handled when {@code component} is focused.
+     *
      * @param component the component which must be focused wto enable the combination
      * @param key the key combination as expected by {@link KeyStroke#getKeyStroke(String)}
      * @param actionKey the arbitrary action name
@@ -96,6 +97,7 @@ public class UiHelper {
 
     /**
      * Binds a key combination to the action listener. The combination is handled when {@code component} is focused.
+     *
      * @param component the component which must be focused wto enable the combination
      * @param key the fully qualified {@link KeyStroke}
      * @param actionKey the arbitrary action name
@@ -108,6 +110,7 @@ public class UiHelper {
 
     /**
      * Binds a key combination to the action listener. The combination is handled only when the window is focused.
+     *
      * @param window the window which focus enables the action
      * @param key the key combination as expected by {@link KeyStroke#getKeyStroke(String)}
      * @param actionKey the arbitrary action name
@@ -225,11 +228,11 @@ public class UiHelper {
      *         existing action.
      */
     public static Action createActionWrapper(
-            final JComponent c, final String actionKey, String caption, final String acceleratorKey) {
-        final Action baseAction = c.getActionMap().get(actionKey);
+            JComponent c, String actionKey, String caption, KeyStroke acceleratorKey) {
+        Action baseAction = c.getActionMap().get(actionKey);
         return new AbstractAction(caption) {
             {
-                putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(acceleratorKey));
+                putValue(ACCELERATOR_KEY, acceleratorKey);
             }
 
             @Override
@@ -283,6 +286,7 @@ public class UiHelper {
     public static Action makeAction(String actionTitle, Runnable action) {
         return makeAction(action).name(actionTitle).build();
     }
+
     /**
      * Wraps a {@link Runnable} to an {@link Action} with the given title and accelerator key. This method allows using
      * simpler lambdas for callbacks that doesn't care about the {@link ActionEvent}.

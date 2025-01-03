@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
+import java.awt.event.KeyEvent;
+
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -38,7 +40,8 @@ public class PopupMenuViewImpl implements PopupMenuPresenter.PopupMenuView {
         this.x = x;
         this.y = y;
 
-        copyAction = UiHelper.createActionWrapper(owner, "copy", "Copy row", "control C");
+        copyAction = UiHelper.createActionWrapper(owner, "copy", "Copy row",
+                UiHelper.createPlatformKeystroke(KeyEvent.VK_C));
     }
 
     @Override
