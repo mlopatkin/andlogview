@@ -17,25 +17,41 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.filters.Filter;
-import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filtertree.FilterTreeModel;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.inject.Inject;
 
 class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> implements FilterTreeModel<TreeNodeFilter> {
     private final Subject<ModelObserver<? super TreeNodeFilter>> observers = new Subject<>();
+    private final MutableFilterModel model;
 
     @Inject
-    FilterTreeModelAdapter(FilterModel model, TreeNodeFilter.Factory nodeFactory) {
+    FilterTreeModelAdapter(MutableFilterModel model, TreeNodeFilter.Factory nodeFactory) {
         super(model, (Filter f) -> {
             if (f instanceof FilterFromDialog filterFromDialog) {
                 return nodeFactory.create(filterFromDialog);
             }
             return null;
         });
+        this.model = model;
+    }
+
+    @Override
+    public void moveFilter(TreeNodeFilter node, int newPosition) {
+        var filters = ImmutableList.copyOf(model.getFilters());
+        // TODO(mlopatkin) this is bad, because it isn't necessarily the model index.
+        var before = newPosition < filters.size() ? filters.get(newPosition) : null;
+        var movingFilter = node.getFilter();
+        if (before != movingFilter) {
+            model.removeFilter(movingFilter);
+            model.insertFilterBefore(movingFilter, before);
+        }
     }
 
     @Override

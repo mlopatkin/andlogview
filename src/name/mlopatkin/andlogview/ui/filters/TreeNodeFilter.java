@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -30,6 +31,10 @@ public class TreeNodeFilter extends BaseFilterPresenter implements FilterNodeVie
     public TreeNodeFilter(MutableFilterModel model, FilterDialogFactory dialogFactory,
             @Assisted FilterFromDialog filter) {
         super(model, dialogFactory, filter);
+    }
+
+    Filter getFilter() {
+        return filter;
     }
 
     @Override

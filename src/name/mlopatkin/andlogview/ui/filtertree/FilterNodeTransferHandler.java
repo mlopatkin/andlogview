@@ -91,10 +91,7 @@ class FilterNodeTransferHandler extends TransferHandler {
         try {
             var insertedFilter =
                     (FilterNodeViewModel) support.getTransferable().getTransferData(LOCAL_FILTER_FLAVOR);
-            var filters = model.getFilters();
-            var insertBefore = insertBeforePos < filters.size() ? filters.get(insertBeforePos) : null;
-
-            // TODO(mlopatkin) actually modify the model.
+            model.moveFilter(insertedFilter, insertBeforePos);
             return true;
         } catch (UnsupportedFlavorException | IOException e) {
             // This should never happen in practice.

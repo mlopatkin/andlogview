@@ -26,6 +26,8 @@ import com.google.common.collect.ImmutableList;
  * @param <V> the actual type of the filter
  */
 public interface FilterTreeModel<V extends FilterNodeViewModel> {
+    void moveFilter(V movedFilter, int newPosition);
+
     interface ModelObserver<V extends FilterNodeViewModel> {
         void onFilterAdded(V newFilter);
 

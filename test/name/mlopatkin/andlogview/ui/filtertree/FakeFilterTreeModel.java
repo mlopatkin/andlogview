@@ -69,6 +69,11 @@ public class FakeFilterTreeModel implements FilterTreeModel<FakeFilterTreeModel.
     private final List<FakeFilter> filters = new ArrayList<>();
     private final Subject<ModelObserver<? super FakeFilter>> observers = new Subject<>();
 
+    @Override
+    public void moveFilter(FakeFilter movedFilter, int newPosition) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     public FakeFilter addFilter(String title) {
         var newFilter = new FakeFilter(true, title);
         filters.add(newFilter);

@@ -128,9 +128,13 @@ public class TreeModelAdapter implements CheckableTreeModel {
         return new DefaultMutableTreeNode(filter, false);
     }
 
-    private <T extends MutableTreeNode> T appendChild(MutableTreeNode node, T child) {
-        node.insert(child, node.getChildCount());
+    private <T extends MutableTreeNode> T insertChild(MutableTreeNode node, T child, int position) {
+        node.insert(child, position);
         return child;
+    }
+
+    private <T extends MutableTreeNode> T appendChild(MutableTreeNode node, T child) {
+        return insertChild(node, child, node.getChildCount());
     }
 
     private MutableTreeNode findNodeForFilter(FilterNodeViewModel filter) {
@@ -166,7 +170,10 @@ public class TreeModelAdapter implements CheckableTreeModel {
 
         @Override
         public void onFilterAdded(FilterNodeViewModel newFilter) {
-            var event = addNodeEvent(getRoot(), appendChild(root, createNodeForFilter(newFilter)));
+            var filters = getModel().getFilters();
+            int insertPos = filters.indexOf(newFilter);
+            assert insertPos >= 0;
+            var event = addNodeEvent(getRoot(), insertChild(root, createNodeForFilter(newFilter), insertPos));
 
             for (var listener : listeners) {
                 listener.treeNodesInserted(event);
