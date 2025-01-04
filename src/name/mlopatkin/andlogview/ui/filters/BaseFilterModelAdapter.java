@@ -78,6 +78,15 @@ public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
                     removeFilter(oldTransformedFilter);
                 }
             }
+
+            @Override
+            public void onFilterMoved(FilterModel model, Filter movedFilter) {
+                var movedTransformedFilter = transformFilter(movedFilter);
+                if (movedTransformedFilter != null) {
+                    removeFilter(movedTransformedFilter);
+                    addFilter(movedTransformedFilter);
+                }
+            }
         });
     }
 

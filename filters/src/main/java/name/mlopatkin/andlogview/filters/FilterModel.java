@@ -77,6 +77,8 @@ public interface FilterModel {
          * @param filter the child model filter that was removed
          */
         default void onSubModelRemoved(FilterModel parentModel, FilterModel subModel, ChildModelFilter filter) {}
+
+        default void onFilterMoved(FilterModel model, Filter movedFilter) {}
     }
 
     /**

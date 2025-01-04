@@ -46,7 +46,6 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
         var before = newPosition < filters.size() ? filters.get(newPosition).getFilter() : null;
         var movingFilter = node.getFilter();
         if (before != movingFilter) {
-            model.removeFilter(movingFilter);
             model.insertFilterBefore(movingFilter, before);
         }
     }

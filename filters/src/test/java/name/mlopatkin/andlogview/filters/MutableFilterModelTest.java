@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.google.common.collect.ImmutableList;
 
@@ -35,6 +36,8 @@ import org.assertj.core.api.ListAssert;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -633,6 +636,157 @@ class MutableFilterModelTest {
 
         verify(observer).onFilterAdded(submodel, newFilter, null);
         assertThatFilters(submodel).containsExactly(filter1, filter2, newFilter);
+    }
+
+    @ParameterizedTest(name = "Move filter{0} before {1}")
+    @CsvSource({
+            "0, -1, 1,2,0",
+            "0, 1, 0,1,2",
+            "0, 2, 1,0,2",
+            "1, -1, 0,2,1",
+            "1, 0, 1,0,2",
+            "1, 2, 0,1,2",
+            "2, -1, 0,1,2",
+            "2, 0, 2,0,1",
+            "2, 1, 0,2,1"
+    })
+    void canUseInsertToMoveFilters(int srcIndex, int targetIndex, int r0, int r1, int r2) {
+        Filter[] filters = {
+                named("filter0"),
+                named("filter1"),
+                named("filter2")
+        };
+
+        var model = createModel(filters);
+        model.asObservable().addObserver(observer);
+        var src = filters[srcIndex];
+        var dst = targetIndex >= 0 ? filters[targetIndex] : null;
+
+        model.insertFilterBefore(src, dst);
+
+        assertThatFilters(model).containsExactly(filters[r0], filters[r1], filters[r2]);
+        verify(observer).onFilterMoved(model, src);
+    }
+
+    @Test
+    void movingFilterOutOfSubModel() {
+        var filter1 = named("filter1");
+        var children = childModelFilter();
+        var model = createModel(filter1, children);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(filter1, null);
+
+        assertThatFilters(subModel).isEmpty();
+        verify(observer).onFilterRemoved(subModel, filter1);
+    }
+
+    @Test
+    void movingFilterInSubModelBackward() {
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var children = childModelFilter();
+        var model = createModel(filter1, filter2, children);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(filter2, filter1);
+
+        assertThatFilters(subModel).containsExactly(filter2, filter1);
+        verify(observer, never()).onFilterRemoved(eq(subModel), any());
+        verify(observer, never()).onFilterAdded(eq(subModel), any(), any());
+        verify(observer).onFilterMoved(subModel, filter2);
+    }
+
+    @Test
+    void movingFilterInSubModelForward() {
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var children = childModelFilter();
+        var model = createModel(filter1, filter2, children);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(filter1, children);
+
+        assertThatFilters(subModel).containsExactly(filter2, filter1);
+        verify(observer, never()).onFilterRemoved(eq(subModel), any());
+        verify(observer, never()).onFilterAdded(eq(subModel), any(), any());
+        verify(observer).onFilterMoved(subModel, filter1);
+    }
+
+    @Test
+    void movingFilterIntoSubModel() {
+        var filter1 = named("filter1");
+        var children = childModelFilter();
+        var filter2 = named("filter2");
+        var model = createModel(filter1, children, filter2);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(filter2, filter1);
+
+        assertThatFilters(subModel).containsExactly(filter2, filter1);
+        verify(observer).onFilterAdded(subModel, filter2, filter1);
+    }
+
+    @Test
+    void movingFilterLastIntoSubModel() {
+        var filter1 = named("filter1");
+        var children = childModelFilter();
+        var filter2 = named("filter2");
+        var model = createModel(filter1, children, filter2);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(filter2, children);
+
+        assertThatFilters(subModel).containsExactly(filter1, filter2);
+        verify(observer).onFilterAdded(subModel, filter2, null);
+    }
+
+    @Test
+    void movingSubmodelBoundaryForwardAddsFilters() {
+        var filter1 = named("filter1");
+        var children = childModelFilter();
+        var filter2 = named("filter2");
+        var filter3 = named("filter3");
+        var model = createModel(filter1, children, filter2, filter3);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(children, null);
+
+        assertThatFilters(subModel).containsExactly(filter1, filter2, filter3);
+        verify(observer).onFilterAdded(subModel, filter2, null);
+        verify(observer).onFilterAdded(subModel, filter3, null);
+        verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    void movingSubmodelBoundaryBackwardRemovesFilters() {
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var filter3 = named("filter3");
+        var filter4 = named("filter4");
+        var children = childModelFilter();
+        var model = createModel(filter1, filter2, filter3, children, filter4);
+        var subModel = observeSubModelOf(model, children);
+
+        model.insertFilterBefore(children, filter2);
+
+        assertThatFilters(subModel).containsExactly(filter1);
+        verify(observer).onFilterRemoved(subModel, filter2);
+        verify(observer).onFilterRemoved(subModel, filter3);
+        verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    void movingFilterBeforeItselfThrows() {
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var filter3 = named("filter3");
+
+        var model = createModel(filter1, filter2, filter3);
+
+        assertThatThrownBy(
+                () -> model.insertFilterBefore(filter2, filter2)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
     FilterModel observeSubModelOf(MutableFilterModel model, ChildModelFilter filter) {

@@ -154,6 +154,25 @@ public class LogRecordHighlighterTest {
         verify(obs, never()).onFiltersChanged();
     }
 
+    @Test
+    public void movingFilterChangesColor() {
+        var red = makeColorFilter(MATCH_ALL, Color.RED);
+        var blue = makeColorFilter(MATCH_ALL, Color.BLUE);
+
+        model.addFilter(red);
+        model.addFilter(blue);
+
+        assertEquals(Color.BLUE, highlighter.getColor(RECORD1));
+
+        LogRecordHighlighter.Observer obs = mock();
+        highlighter.asObservable().addObserver(obs);
+
+        model.insertFilterBefore(blue, red);
+
+        verify(obs).onFiltersChanged();
+        assertEquals(Color.RED, highlighter.getColor(RECORD1));
+    }
+
     private static ColoringFilter makeColorFilter(final Predicate<LogRecord> base, final Color c) {
         return new ColoringToggleFilter(c, true, base);
     }

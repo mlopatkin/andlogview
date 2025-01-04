@@ -64,4 +64,11 @@ public final class FiltersChangeObserver implements FilterModel.Observer {
             changeObserver.accept(model);
         }
     }
+
+    @Override
+    public void onFilterMoved(FilterModel model, Filter movedFilter) {
+        if (!shouldIgnore(movedFilter)) {
+            changeObserver.accept(model);
+        }
+    }
 }
