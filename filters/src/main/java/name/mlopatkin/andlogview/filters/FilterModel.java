@@ -34,7 +34,7 @@ public interface FilterModel {
          * @param model the origin of the notification
          * @param newFilter the new filter
          */
-        void onFilterAdded(FilterModel model, Filter newFilter);
+        default void onFilterAdded(FilterModel model, Filter newFilter) {}
 
         /**
          * Called after the filter is removed from the model.
@@ -42,7 +42,7 @@ public interface FilterModel {
          * @param model the origin of the notification
          * @param removedFilter the removed filter.
          */
-        void onFilterRemoved(FilterModel model, Filter removedFilter);
+        default void onFilterRemoved(FilterModel model, Filter removedFilter) {}
 
         /**
          * Called after the filter was replaced with other filter.
@@ -51,7 +51,32 @@ public interface FilterModel {
          * @param oldFilter the filter that was removed
          * @param newFilter the filter that was added instead of the {@code oldFilter}
          */
-        void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter);
+        default void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
+            onFilterRemoved(model, oldFilter);
+            onFilterAdded(model, newFilter);
+        }
+
+        /**
+         * Called when a {@link ChildModelFilter} is added to this model. A new sub-model is created that contains
+         * filters from the origin model that are before the added child model filter. Filters from the child model of
+         * the filter are not part of the model. The returned sub model is live and broadcasts change notifications.
+         * The {@code filter} is not part of the sub model
+         *
+         * @param parentModel the origin of the notification
+         * @param subModel the sub model
+         * @param filter the child model filter that caused the sub model to be created
+         */
+        default void onSubModelCreated(FilterModel parentModel, FilterModel subModel, ChildModelFilter filter) {}
+
+        /**
+         * Called when a {@link ChildModelFilter} is removed from this model. The sub model is no longer active, an
+         * attempt to use it will cause an exception.
+         *
+         * @param parentModel the origin of the notification
+         * @param subModel the sub model
+         * @param filter the child model filter that was removed
+         */
+        default void onSubModelRemoved(FilterModel parentModel, FilterModel subModel, ChildModelFilter filter) {}
     }
 
     /**

@@ -27,20 +27,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.collect.ImmutableList;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collection;
+import java.util.Objects;
 
 @ExtendWith(MockitoExtension.class)
 class CompoundFilterModelTest {
     private final MutableFilterModel parent = MutableFilterModel.create();
-    private final TestFilter testFilter = filter();
+    private final TestChildModelFilter testFilter = filter();
 
     @Mock
     FilterModel.Observer observer;
@@ -104,7 +101,6 @@ class CompoundFilterModelTest {
     }
 
     @Test
-    @Disabled
     void filtersAddedAfterIndexDoNotTriggerNotifications() {
         var model = createModel();
         model.asObservable().addObserver(observer);
@@ -116,7 +112,6 @@ class CompoundFilterModelTest {
     }
 
     @Test
-    @Disabled
     void filtersRemovedAfterIndexDoNotTriggerNotifications() {
         var hideFilter = hide(alwaysFalse());
         var model = createModel();
@@ -129,7 +124,6 @@ class CompoundFilterModelTest {
     }
 
     @Test
-    @Disabled
     void filtersReplacedAfterIndexDoNotTriggerNotifications() {
         var model = createModel();
         var hideFilter = hide(alwaysFalse());
@@ -172,33 +166,10 @@ class CompoundFilterModelTest {
 
     private CompoundFilterModel createModel() {
         parent.addFilter(testFilter);
-        return new CompoundFilterModel(parent, testFilter);
+        return new CompoundFilterModel(Objects.requireNonNull(parent.findSubModel(testFilter)), testFilter);
     }
 
-    private static TestFilter filter() {
-        return new TestFilter();
-    }
-
-    private static class TestFilter extends AbstractFilter<TestFilter> implements ChildModelFilter {
-        private final MutableFilterModel children = MutableFilterModel.create();
-
-        public TestFilter() {
-            this(ImmutableList.of(), true);
-        }
-
-        protected TestFilter(Collection<? extends Filter> children, boolean enabled) {
-            super(FilteringMode.WINDOW, enabled);
-            children.forEach(this.children::addFilter);
-        }
-
-        @Override
-        public MutableFilterModel getChildren() {
-            return children;
-        }
-
-        @Override
-        protected TestFilter copy(boolean enabled) {
-            return new TestFilter(children.getFilters(), enabled);
-        }
+    private static TestChildModelFilter filter() {
+        return Filters.childModelFilter();
     }
 }

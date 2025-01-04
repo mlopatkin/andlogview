@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.filters;
 
-import name.mlopatkin.andlogview.base.collections.MyIterables;
 import name.mlopatkin.andlogview.utils.events.LazySubject;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
@@ -82,7 +81,7 @@ public class CompoundFilterModel implements FilterModel {
     @Override
     public Collection<? extends Filter> getFilters() {
         return ImmutableList.<Filter>builder()
-                .addAll(MyIterables.takeWhile(parent.getFilters().iterator(), f -> !filter.equals(f)))
+                .addAll(parent.getFilters())
                 .addAll(filter.getChildren().getFilters())
                 .build();
     }

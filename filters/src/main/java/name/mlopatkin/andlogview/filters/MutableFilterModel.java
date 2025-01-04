@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Collection;
 
 /**
@@ -46,6 +48,14 @@ public interface MutableFilterModel extends FilterModel {
      * @throws IllegalArgumentException if the filter {@code toReplace} is not in the model
      */
     void replaceFilter(Filter toReplace, Filter newFilter);
+
+    /**
+     * Returns a sub-model for a give child model filter or {@code null} if the {@code filter} isn't part of this model.
+     * @param filter the filter to find a sub model for
+     * @return the sub model for the filter or null.
+     */
+    @Nullable
+    FilterModel findSubModel(ChildModelFilter filter);
 
     /**
      * Creates a new, empty FilterModel.

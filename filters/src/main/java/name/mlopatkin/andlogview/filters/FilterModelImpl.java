@@ -16,17 +16,21 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import name.mlopatkin.andlogview.base.collections.MyIterables;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 class FilterModelImpl implements MutableFilterModel {
@@ -34,29 +38,64 @@ class FilterModelImpl implements MutableFilterModel {
     protected final Subject<Observer> observers = new Subject<>();
 
     private final List<Filter> filters = new ArrayList<>();
+    private final Map<ChildModelFilter, SubModel> subModels = new HashMap<>();
 
     public FilterModelImpl() {}
 
     public FilterModelImpl(Collection<? extends Filter> filters) {
-        this.filters.addAll(ImmutableSet.copyOf(filters));
+        filters.forEach(this::addFilter);
     }
 
     @Override
     public void addFilter(Filter filter) {
         if (!filters.contains(filter)) {
             filters.add(filter);
+            if (filter instanceof ChildModelFilter childModelFilter) {
+                addChildModelFilter(childModelFilter);
+            }
             for (var observer : observers) {
                 observer.onFilterAdded(this, filter);
             }
         }
     }
 
+    private void addChildModelFilter(ChildModelFilter filter) {
+        var subModel = new SubModel(filter);
+        subModels.put(filter, subModel);
+        for (var observer : observers) {
+            observer.onSubModelCreated(this, subModel, filter);
+        }
+    }
+
     @Override
     public void removeFilter(Filter filter) {
-        if (filters.remove(filter)) {
+        int position = filters.indexOf(filter);
+        if (position >= 0) {
+            filters.remove(position);
+
+            if (filter instanceof ChildModelFilter childModelFilter) {
+                removeChildModelFilter(childModelFilter);
+            }
+
             for (var observer : observers) {
                 observer.onFilterRemoved(this, filter);
             }
+
+            for (int i = position; i < filters.size(); ++i) {
+                @SuppressWarnings("SuspiciousMethodCalls")
+                var subModel = subModels.get(filters.get(i));
+                if (subModel != null) {
+                    subModel.notifyFilterRemoved(filter);
+                }
+            }
+        }
+    }
+
+    private void removeChildModelFilter(ChildModelFilter filter) {
+        var subModel = subModels.remove(filter);
+        assert subModel != null;
+        for (var observer : observers) {
+            observer.onSubModelRemoved(this, subModel, filter);
         }
     }
 
@@ -74,8 +113,23 @@ class FilterModelImpl implements MutableFilterModel {
         }
         filters.set(position, newFilter);
 
+        if (toReplace instanceof ChildModelFilter removedChildModelFilter) {
+            removeChildModelFilter(removedChildModelFilter);
+        }
+        if (newFilter instanceof ChildModelFilter addedChildModelFilter) {
+            addChildModelFilter(addedChildModelFilter);
+        }
+
         for (var observer : observers) {
             observer.onFilterReplaced(this, toReplace, newFilter);
+        }
+
+        for (int i = position + 1; i < filters.size(); ++i) {
+            @SuppressWarnings("SuspiciousMethodCalls")
+            var subModel = subModels.get(filters.get(i));
+            if (subModel != null) {
+                subModel.notifyFilterReplaced(toReplace, newFilter);
+            }
         }
     }
 
@@ -87,5 +141,41 @@ class FilterModelImpl implements MutableFilterModel {
     @Override
     public Collection<? extends Filter> getFilters() {
         return ImmutableList.copyOf(filters);
+    }
+
+    @Override
+    public @Nullable FilterModel findSubModel(ChildModelFilter filter) {
+        return subModels.get(filter);
+    }
+
+    private class SubModel implements FilterModel {
+        private final ChildModelFilter filter;
+        private final Subject<Observer> observers = new Subject<>();
+
+        public SubModel(ChildModelFilter filter) {
+            this.filter = filter;
+        }
+
+        @Override
+        public Observable<Observer> asObservable() {
+            return observers.asObservable();
+        }
+
+        @Override
+        public Collection<? extends Filter> getFilters() {
+            return ImmutableList.copyOf(MyIterables.takeWhile(filters.iterator(), f -> f != filter));
+        }
+
+        public void notifyFilterRemoved(Filter removed) {
+            for (var observer : observers) {
+                observer.onFilterRemoved(this, removed);
+            }
+        }
+
+        public void notifyFilterReplaced(Filter toReplace, Filter newFilter) {
+            for (var observer : observers) {
+                observer.onFilterReplaced(this, toReplace, newFilter);
+            }
+        }
     }
 }

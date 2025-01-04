@@ -33,6 +33,7 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 import java.awt.EventQueue;
+import java.util.Objects;
 
 import javax.inject.Named;
 import javax.swing.JTable;
@@ -54,7 +55,8 @@ public class IndexFilterController extends AbstractIndexController implements Au
         this.filterModel = parentFilterModel;
 
         this.filter = filter;
-        logModelFilter = new IndexFilter(new CompoundFilterModel(parentFilterModel, filter));
+        logModelFilter = new IndexFilter(
+                new CompoundFilterModel(Objects.requireNonNull(parentFilterModel.findSubModel(filter)), filter));
 
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .logRecordTableModel(logModel)
