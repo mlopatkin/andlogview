@@ -47,13 +47,13 @@ class IndexWindowFilterDataTest {
     void canSerializeAndDeserializeFilterWithChild() throws Exception {
         var filter = createFilter("ActivityManager", "PackageManager");
         var childFilter = createFilter("ActivityManager");
-        filter.getFilters().addFilter(childFilter);
+        filter.getChildren().addFilter(childFilter);
 
         var data = new IndexWindowFilterData(filter);
 
         var restoredFilter = roundTrip(data);
 
-        assertThatFilters(restoredFilter.getFilters()).contains(childFilter);
+        assertThatFilters(restoredFilter.getChildren()).contains(childFilter);
     }
 
     private static IndexWindowFilter createFilter(String... tags) throws RequestCompilationException {

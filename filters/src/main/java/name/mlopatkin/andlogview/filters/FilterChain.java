@@ -60,11 +60,9 @@ public class FilterChain implements AutoCloseable {
                 () -> MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build()
         ));
 
-        // TODO(mlopatkin) the model supplied to the observer is invalid when change comes from the top-level filter
-        //  list
         subscription =
                 model.asObservable().addScopedObserver(new FiltersChangeObserver(
-                                ignored -> onFiltersChanged(model),
+                                this::onFiltersChanged,
                                 f -> transformFilter(f) == null
                         )
                 );

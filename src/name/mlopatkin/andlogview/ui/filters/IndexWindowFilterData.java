@@ -33,7 +33,7 @@ public class IndexWindowFilterData extends SavedFilterData {
         super(filter.isEnabled());
         this.filter = filter;
         this.filterData = filter.getData();
-        this.childFilters = codec().encode(filter.getFilters().getFilters());
+        this.childFilters = codec().encode(filter.getChildren().getFilters());
     }
 
     @Override

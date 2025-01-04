@@ -23,11 +23,11 @@ public interface ChildModelFilter extends Filter {
     // TODO {@link FilterModel} should know about these filters and may provide a "parent" model for it.
 
     /**
-     * Returns the child model of this filter.
+     * Returns the child model of this filter. It doesn't include the filters of the parent model.
      *
      * @return the model of this filter
      */
-    FilterModel getFilters();
+    FilterModel getChildren();
     // TODO(mlopatkin) FilterModel can subscribe to child model upon adding a filter and unsubscribe afterwards.
     //  This way, the notifications can still be sent from the main model, so clients do not have to care about watching
     //  for children and subscribing themselves.

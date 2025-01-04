@@ -44,7 +44,7 @@ class IndexWindowFilterTest {
     @Test
     void nonMatchingRecordsCannotReappearBecauseOfChildFilters() {
         var filter = createFilterForTags("ActivityManager");
-        filter.getFilters()
+        filter.getChildren()
                 .addFilter(show(r -> true));
         assertThat(asPredicate(filter))
                 .accepts(forTag("ActivityManager"))
@@ -61,7 +61,7 @@ class IndexWindowFilterTest {
     }
 
     private Predicate<LogRecord> asPredicate(IndexWindowFilter filter) {
-        var filterChain = new FilterChain(filter.getFilters());
+        var filterChain = new FilterChain(filter.getChildren());
         return filterChain::shouldShow;
     }
 }

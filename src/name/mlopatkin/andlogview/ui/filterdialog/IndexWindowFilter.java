@@ -86,7 +86,7 @@ public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> impleme
     }
 
     @Override
-    public MutableFilterModel getFilters() {
+    public MutableFilterModel getChildren() {
         return model;
     }
 

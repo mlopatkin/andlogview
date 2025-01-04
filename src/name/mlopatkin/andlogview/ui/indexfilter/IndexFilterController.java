@@ -54,7 +54,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
         this.filterModel = parentFilterModel;
 
         this.filter = filter;
-        logModelFilter = new IndexFilter(new CompoundFilterModel(parentFilterModel, filter.getFilters()));
+        logModelFilter = new IndexFilter(new CompoundFilterModel(parentFilterModel, filter));
 
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
                 .logRecordTableModel(logModel)
