@@ -47,16 +47,41 @@ class FilterModelImpl implements MutableFilterModel {
     }
 
     @Override
-    public void addFilter(Filter filter) {
-        if (!filters.contains(filter)) {
-            filters.add(filter);
-            if (filter instanceof ChildModelFilter childModelFilter) {
-                addChildModelFilter(childModelFilter);
-            }
-            for (var observer : observers) {
-                observer.onFilterAdded(this, filter);
+    public void insertFilterBefore(Filter newFilter, @Nullable Filter before) {
+        int insertPos = before != null ? filters.indexOf(before) : filters.size();
+
+        Preconditions.checkArgument(insertPos >= 0, "Filter %s is not in the model", before);
+
+        if (filters.contains(newFilter)) {
+            // TODO(mlopatkin) this might require reordering?
+            return;
+        }
+
+        filters.add(insertPos, newFilter);
+
+        if (newFilter instanceof ChildModelFilter childModelFilter) {
+            addChildModelFilter(childModelFilter);
+        }
+
+        for (var observer : observers) {
+            observer.onFilterAdded(this, newFilter, before);
+        }
+
+        for (int i = insertPos + 1; i < filters.size(); ++i) {
+            // If we were adding to the end then we have no tail of models to notify.
+            assert before != null;
+
+            @SuppressWarnings("SuspiciousMethodCalls")
+            var submodel = subModels.get(filters.get(i));
+            if (submodel != null) {
+                submodel.notifyFilterInserted(newFilter, before);
             }
         }
+    }
+
+    @Override
+    public void addFilter(Filter filter) {
+        insertFilterBefore(filter, null);
     }
 
     private void addChildModelFilter(ChildModelFilter filter) {
@@ -164,6 +189,13 @@ class FilterModelImpl implements MutableFilterModel {
         @Override
         public Collection<? extends Filter> getFilters() {
             return ImmutableList.copyOf(MyIterables.takeWhile(filters.iterator(), f -> f != filter));
+        }
+
+        public void notifyFilterInserted(Filter newFilter, Filter before) {
+            var adjustedBefore = before != filter ? before : null;
+            for (var observer : observers) {
+                observer.onFilterAdded(this, newFilter, adjustedBefore);
+            }
         }
 
         public void notifyFilterRemoved(Filter removed) {

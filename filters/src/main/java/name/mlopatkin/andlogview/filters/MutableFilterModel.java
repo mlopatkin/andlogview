@@ -32,6 +32,16 @@ public interface MutableFilterModel extends FilterModel {
     void addFilter(Filter filter);
 
     /**
+     * Inserts a new filter to the model before the {@code before} filter. If the specified neighbour is {@code null},
+     * then the filter is added last. If the new filter is already in the model, it is moved into position. Throws an
+     * exception if {@code newFilter == before} or if {@code before} filter isn't part of the model.
+     *
+     * @param newFilter the filter to insert
+     * @param before the neighboring filter before which a new filter is inserted or null if the new filter becomes last
+     */
+    void insertFilterBefore(Filter newFilter, @Nullable Filter before);
+
+    /**
      * Removes the filter from the model if it is present. Otherwise, does nothing.
      *
      * @param filter the filter to remove

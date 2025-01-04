@@ -70,7 +70,7 @@ class CompoundFilterModelTest {
         var hideFilter = hide(alwaysFalse());
         testFilter.getChildren().addFilter(hideFilter);
 
-        verify(observer).onFilterAdded(model, hideFilter);
+        verify(observer).onFilterAdded(model, hideFilter, null);
     }
 
     @Test
@@ -108,7 +108,7 @@ class CompoundFilterModelTest {
         var hideFilter = hide(alwaysFalse());
         parent.addFilter(hideFilter);
 
-        verify(observer, never()).onFilterAdded(any(), any());
+        verify(observer, never()).onFilterAdded(any(), any(), any());
     }
 
     @Test
@@ -162,6 +162,51 @@ class CompoundFilterModelTest {
         parent.replaceFilter(hideFilter, showFilter);
 
         verify(observer).onFilterReplaced(model, hideFilter, showFilter);
+    }
+
+    @Test
+    void insertingFirstFilterIntoParentTriggerNotifications() {
+        var hideFilter = hide(alwaysFalse());
+        parent.addFilter(hideFilter);
+        var model = createModel();
+        model.asObservable().addObserver(observer);
+
+        var showFilter = show(alwaysTrue());
+        parent.insertFilterBefore(showFilter, hideFilter);
+
+        verify(observer).onFilterAdded(model, showFilter, hideFilter);
+        assertThatFilters(model).containsExactly(showFilter, hideFilter);
+    }
+
+    @Test
+    void insertingLastFilterIntoParentTriggerNotifications() {
+        var hideFilter = hide(alwaysFalse());
+        parent.addFilter(hideFilter);
+        var model = createModel();
+        model.asObservable().addObserver(observer);
+
+        var showFilter = show(alwaysTrue());
+        parent.insertFilterBefore(showFilter, testFilter);
+
+        verify(observer).onFilterAdded(model, showFilter, null);
+        assertThatFilters(model).containsExactly(hideFilter, showFilter);
+    }
+
+    @Test
+    void insertingLastFilterIntoParentTriggerNotificationsWhenChildFiltersAlsoPresent() {
+        var hideFilter = hide(alwaysFalse());
+        parent.addFilter(hideFilter);
+        var hideFilter2 = hide(alwaysTrue());
+        testFilter.getChildren().addFilter(hideFilter2);
+
+        var model = createModel();
+        model.asObservable().addObserver(observer);
+
+        var showFilter = show(alwaysTrue());
+        parent.insertFilterBefore(showFilter, testFilter);
+
+        assertThatFilters(model).containsExactly(hideFilter, showFilter, hideFilter2);
+        verify(observer).onFilterAdded(model, showFilter, hideFilter2);
     }
 
     private CompoundFilterModel createModel() {

@@ -47,7 +47,7 @@ public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
 
         model.asObservable().addObserver(new FilterModel.Observer() {
             @Override
-            public void onFilterAdded(FilterModel model, Filter newFilter) {
+            public void onFilterAdded(FilterModel model, Filter newFilter, @Nullable Filter before) {
                 var newTransformedFilter = transformFilter(newFilter);
                 if (newTransformedFilter != null) {
                     addFilter(newTransformedFilter);

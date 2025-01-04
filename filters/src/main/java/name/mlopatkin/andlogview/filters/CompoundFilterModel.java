@@ -20,6 +20,9 @@ import name.mlopatkin.andlogview.utils.events.LazySubject;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 
@@ -32,9 +35,14 @@ public class CompoundFilterModel implements FilterModel {
 
     private final Observer modelObserver = new Observer() {
         @Override
-        public void onFilterAdded(FilterModel model, Filter newFilter) {
+        public void onFilterAdded(FilterModel model, Filter newFilter, @Nullable Filter before) {
+            var adjustedBefore = before;
+            if (model == parent && before == null) {
+                adjustedBefore = Iterables.getFirst(filter.getChildren().getFilters(), null);
+            }
+
             for (var obs : observers) {
-                obs.onFilterAdded(CompoundFilterModel.this, newFilter);
+                obs.onFilterAdded(CompoundFilterModel.this, newFilter, adjustedBefore);
             }
         }
 

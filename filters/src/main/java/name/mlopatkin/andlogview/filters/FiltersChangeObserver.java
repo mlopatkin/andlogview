@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.filters;
 
 import com.google.common.base.Predicates;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,7 +45,7 @@ public final class FiltersChangeObserver implements FilterModel.Observer {
     }
 
     @Override
-    public void onFilterAdded(FilterModel model, Filter newFilter) {
+    public void onFilterAdded(FilterModel model, Filter newFilter, @Nullable Filter before) {
         if (!shouldIgnore(newFilter)) {
             changeObserver.accept(model);
         }

@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.utils.events.Observable;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Collection;
 
 /**
@@ -33,8 +35,9 @@ public interface FilterModel {
          *
          * @param model the origin of the notification
          * @param newFilter the new filter
+         * @param before the filter before which the new one is added or null if the filter is added as a last element
          */
-        default void onFilterAdded(FilterModel model, Filter newFilter) {}
+        default void onFilterAdded(FilterModel model, Filter newFilter, @Nullable Filter before) {}
 
         /**
          * Called after the filter is removed from the model.
@@ -51,10 +54,7 @@ public interface FilterModel {
          * @param oldFilter the filter that was removed
          * @param newFilter the filter that was added instead of the {@code oldFilter}
          */
-        default void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-            onFilterRemoved(model, oldFilter);
-            onFilterAdded(model, newFilter);
-        }
+        default void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {}
 
         /**
          * Called when a {@link ChildModelFilter} is added to this model. A new sub-model is created that contains

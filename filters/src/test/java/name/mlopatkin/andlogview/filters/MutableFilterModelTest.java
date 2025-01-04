@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.google.common.collect.ImmutableList;
 
 import org.assertj.core.api.ListAssert;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -47,7 +48,7 @@ class MutableFilterModelTest {
     @Spy
     FilterModel.Observer observer = new FilterModel.Observer() {
         @Override
-        public void onFilterAdded(FilterModel model, Filter newFilter) {
+        public void onFilterAdded(FilterModel model, Filter newFilter, @Nullable Filter before) {
             captureFiltersFrom(model);
         }
 
@@ -81,7 +82,7 @@ class MutableFilterModelTest {
         model.asObservable().addObserver(observer);
         model.addFilter(filter);
 
-        verify(observer).onFilterAdded(model, filter);
+        verify(observer).onFilterAdded(model, filter, null);
         assertThatObserverSawFilters().containsExactly(filter);
         assertThatFilters(model).containsExactly(filter);
     }
@@ -95,7 +96,7 @@ class MutableFilterModelTest {
         model.asObservable().addObserver(observer);
         model.addFilter(filter);
 
-        verify(observer, never()).onFilterAdded(model, filter);
+        verify(observer, never()).onFilterAdded(model, filter, null);
         assertThatFilters(model).containsExactly(filter);
     }
 
@@ -244,7 +245,7 @@ class MutableFilterModelTest {
         var childrenFilter = childModelFilter();
         model.addFilter(childrenFilter);
 
-        verify(observer).onFilterAdded(model, childrenFilter);
+        verify(observer).onFilterAdded(model, childrenFilter, null);
         verify(observer).onSubModelCreated(eq(model), any(), eq(childrenFilter));
     }
 
@@ -388,7 +389,7 @@ class MutableFilterModelTest {
 
         model.addFilter(createFilter("filter1"));
 
-        verify(observer, never()).onFilterAdded(any(), any());
+        verify(observer, never()).onFilterAdded(any(), any(), any());
     }
 
     @Test
@@ -461,7 +462,7 @@ class MutableFilterModelTest {
         var childrenFilter = childModelFilter();
         model.asObservable().addObserver(new FilterModel.Observer() {
             @Override
-            public void onFilterAdded(FilterModel src, Filter newFilter) {
+            public void onFilterAdded(FilterModel src, Filter newFilter, @Nullable Filter before) {
                 assertThat(model.findSubModel(childrenFilter)).isNotNull();
             }
 
@@ -493,6 +494,144 @@ class MutableFilterModelTest {
         });
 
         model.replaceFilter(filter1, childrenFilter);
+    }
+
+    @Test
+    void canInsertFilterBeforeFirst() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var model = createModel(filter1, filter2);
+        model.asObservable().addObserver(observer);
+
+        var newFilter = createFilter("new");
+
+        model.insertFilterBefore(newFilter, filter1);
+
+        verify(observer).onFilterAdded(model, newFilter, filter1);
+        assertThatFilters(model).containsExactly(newFilter, filter1, filter2);
+        assertThatObserverSawFilters().containsExactly(newFilter, filter1, filter2);
+    }
+
+    @Test
+    void canInsertFilterBeforeSecond() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var model = createModel(filter1, filter2);
+        model.asObservable().addObserver(observer);
+
+        var newFilter = createFilter("new");
+
+        model.insertFilterBefore(newFilter, filter2);
+
+        verify(observer).onFilterAdded(model, newFilter, filter2);
+        assertThatFilters(model).containsExactly(filter1, newFilter, filter2);
+        assertThatObserverSawFilters().containsExactly(filter1, newFilter, filter2);
+    }
+
+    @Test
+    void canInsertFilterBeforeEnd() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var model = createModel(filter1, filter2);
+        model.asObservable().addObserver(observer);
+
+        var newFilter = createFilter("new");
+
+        model.insertFilterBefore(newFilter, null);
+
+        verify(observer).onFilterAdded(model, newFilter, null);
+        assertThatFilters(model).containsExactly(filter1, filter2, newFilter);
+        assertThatObserverSawFilters().containsExactly(filter1, filter2, newFilter);
+    }
+
+    @Test
+    void canInsertChildModelBeforeFirst() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var model = createModel(filter1, filter2);
+        model.asObservable().addObserver(observer);
+
+        var newFilter = childModelFilter();
+        model.insertFilterBefore(newFilter, filter1);
+
+        var subModel = ArgumentCaptor.forClass(FilterModel.class);
+        verify(observer).onSubModelCreated(eq(model), subModel.capture(), eq(newFilter));
+        assertThatFilters(subModel.getValue()).isEmpty();
+    }
+
+    @Test
+    void canInsertChildModelBeforeSecond() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var model = createModel(filter1, filter2);
+        model.asObservable().addObserver(observer);
+
+        var newFilter = childModelFilter();
+        model.insertFilterBefore(newFilter, filter2);
+
+        var subModel = ArgumentCaptor.forClass(FilterModel.class);
+        verify(observer).onSubModelCreated(eq(model), subModel.capture(), eq(newFilter));
+        assertThatFilters(subModel.getValue()).containsExactly(filter1);
+    }
+
+    @Test
+    void canInsertChildModelBeforeEnd() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var model = createModel(filter1, filter2);
+        model.asObservable().addObserver(observer);
+
+        var newFilter = childModelFilter();
+        model.insertFilterBefore(newFilter, null);
+
+        var subModel = ArgumentCaptor.forClass(FilterModel.class);
+        verify(observer).onSubModelCreated(eq(model), subModel.capture(), eq(newFilter));
+        assertThatFilters(subModel.getValue()).containsExactly(filter1, filter2);
+    }
+
+    @Test
+    void insertBeforeFirstNotifiesChildModel() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var children = childModelFilter();
+        var model = createModel(filter1, filter2, children);
+        var submodel = observeSubModelOf(model, children);
+
+        var newFilter = createFilter("new");
+        model.insertFilterBefore(newFilter, filter1);
+
+        verify(observer).onFilterAdded(submodel, newFilter, filter1);
+        assertThatFilters(submodel).containsExactly(newFilter, filter1, filter2);
+    }
+
+    @Test
+    void insertBeforeLastNotifiesChildModel() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var children = childModelFilter();
+        var model = createModel(filter1, filter2, children);
+        var submodel = observeSubModelOf(model, children);
+
+        var newFilter = createFilter("new");
+        model.insertFilterBefore(newFilter, filter2);
+
+        verify(observer).onFilterAdded(submodel, newFilter, filter2);
+        assertThatFilters(submodel).containsExactly(filter1, newFilter, filter2);
+    }
+
+    @Test
+    void insertBeforeEndNotifiesChildModel() {
+        var filter1 = createFilter("filter1");
+        var filter2 = createFilter("filter2");
+        var children = childModelFilter();
+        var model = createModel(filter1, filter2, children);
+        var submodel = observeSubModelOf(model, children);
+
+        var newFilter = createFilter("new");
+        model.insertFilterBefore(newFilter, children);
+
+        verify(observer).onFilterAdded(submodel, newFilter, null);
+        assertThatFilters(submodel).containsExactly(filter1, filter2, newFilter);
     }
 
     FilterModel observeSubModelOf(MutableFilterModel model, ChildModelFilter filter) {
