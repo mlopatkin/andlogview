@@ -17,11 +17,7 @@
 package name.mlopatkin.andlogview.filters;
 
 import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
-import static name.mlopatkin.andlogview.filters.ToggleFilter.hide;
-import static name.mlopatkin.andlogview.filters.ToggleFilter.show;
-
-import static com.google.common.base.Predicates.alwaysFalse;
-import static com.google.common.base.Predicates.alwaysTrue;
+import static name.mlopatkin.andlogview.filters.Filters.named;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -44,174 +40,160 @@ class CompoundFilterModelTest {
 
     @Test
     void filtersAddedAfterIndexDoNotShowInTheModel() {
-        var model = createModel();
-        var hideFilter = hide(alwaysFalse());
+        var filter1 = named("filter1");
+        var model = createModel(children(), filter1);
 
-        parent.addFilter(hideFilter);
-
-        assertThatFilters(model).doesNotContain(hideFilter);
+        assertThatFilters(model).doesNotContain(filter1);
+        verify(observer, never()).onFilterAdded(any(), any(), any());
     }
 
     @Test
-    void filtersAddedToChildrenShowInTheModel() {
-        var model = createModel();
-        var hideFilter = hide(alwaysFalse());
+    void filtersOfToChildrenAreInTheModel() {
+        var filter1 = named("filter1");
+        var model = createModel(children(filter1));
 
-        testFilter.getChildren().addFilter(hideFilter);
-
-        assertThatFilters(model).containsExactly(hideFilter);
+        assertThatFilters(model).containsExactly(filter1);
     }
 
     @Test
     void filtersAddedToChildrenTriggerNotification() {
-        var model = createModel();
-        model.asObservable().addObserver(observer);
+        var model = createModel(children());
 
-        var hideFilter = hide(alwaysFalse());
-        testFilter.getChildren().addFilter(hideFilter);
+        var newFilter = named("new");
+        testFilter.getChildren().addFilter(newFilter);
 
-        verify(observer).onFilterAdded(model, hideFilter, null);
+        verify(observer).onFilterAdded(model, newFilter, null);
+        assertThatFilters(model).containsExactly(newFilter);
     }
 
     @Test
     void filtersRemovedFromChildrenTriggerNotification() {
-        var model = createModel();
-        var hideFilter = hide(alwaysFalse());
-        testFilter.getChildren().addFilter(hideFilter);
-        model.asObservable().addObserver(observer);
+        var filter1 = named("filter1");
+        var model = createModel(children(filter1));
 
-        testFilter.getChildren().removeFilter(hideFilter);
+        testFilter.getChildren().removeFilter(filter1);
 
-
-        verify(observer).onFilterRemoved(model, hideFilter);
+        verify(observer).onFilterRemoved(model, filter1);
     }
 
     @Test
     void filtersReplacedInChildrenTriggerNotification() {
-        var model = createModel();
-        var hideFilter = hide(alwaysFalse());
-        testFilter.getChildren().addFilter(hideFilter);
-        model.asObservable().addObserver(observer);
+        var oldFilter = named("old");
+        var model = createModel(children(oldFilter));
 
-        var showFilter = show(alwaysTrue());
-        testFilter.getChildren().replaceFilter(hideFilter, showFilter);
+        var newFilter = named("new");
+        testFilter.getChildren().replaceFilter(oldFilter, newFilter);
 
-
-        verify(observer).onFilterReplaced(model, hideFilter, showFilter);
+        verify(observer).onFilterReplaced(model, oldFilter, newFilter);
     }
 
     @Test
     void filtersAddedAfterIndexDoNotTriggerNotifications() {
-        var model = createModel();
-        model.asObservable().addObserver(observer);
+        createModel(children());
 
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
+        var newFilter = named("new");
+        parent.addFilter(newFilter);
 
         verify(observer, never()).onFilterAdded(any(), any(), any());
     }
 
     @Test
     void filtersRemovedAfterIndexDoNotTriggerNotifications() {
-        var hideFilter = hide(alwaysFalse());
-        var model = createModel();
-        parent.addFilter(hideFilter);
+        var filter1 = named("filter1");
+        createModel(children(), filter1);
 
-        model.asObservable().addObserver(observer);
-        parent.removeFilter(hideFilter);
+        parent.removeFilter(filter1);
 
         verify(observer, never()).onFilterRemoved(any(), any());
     }
 
     @Test
     void filtersReplacedAfterIndexDoNotTriggerNotifications() {
-        var model = createModel();
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
+        var oldFilter = named("old");
+        createModel(children(), oldFilter);
 
-        model.asObservable().addObserver(observer);
-
-        parent.replaceFilter(hideFilter, show(alwaysTrue()));
+        parent.replaceFilter(oldFilter, named("new"));
 
         verify(observer, never()).onFilterReplaced(any(), any(), any());
     }
 
     @Test
     void filtersRemovedBeforeIndexTriggerNotifications() {
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
-        var model = createModel();
+        var filter1 = named("filter1");
+        var model = createModel(filter1, children());
 
-        model.asObservable().addObserver(observer);
+        parent.removeFilter(filter1);
 
-        parent.removeFilter(hideFilter);
-
-        verify(observer).onFilterRemoved(model, hideFilter);
+        verify(observer).onFilterRemoved(model, filter1);
     }
 
     @Test
     void filtersReplacedBeforeIndexTriggerNotifications() {
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
+        var oldFilter = named("old");
+        var model = createModel(oldFilter, children());
 
-        var model = createModel();
+        var newFilter = named("new");
+        parent.replaceFilter(oldFilter, newFilter);
 
-        model.asObservable().addObserver(observer);
-
-        var showFilter = show(alwaysTrue());
-        parent.replaceFilter(hideFilter, showFilter);
-
-        verify(observer).onFilterReplaced(model, hideFilter, showFilter);
+        verify(observer).onFilterReplaced(model, oldFilter, newFilter);
     }
 
     @Test
     void insertingFirstFilterIntoParentTriggerNotifications() {
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
-        var model = createModel();
-        model.asObservable().addObserver(observer);
+        var filter1 = named("filter1");
+        var model = createModel(filter1, children());
 
-        var showFilter = show(alwaysTrue());
-        parent.insertFilterBefore(showFilter, hideFilter);
+        var filter0 = named("filter0");
+        parent.insertFilterBefore(filter0, filter1);
 
-        verify(observer).onFilterAdded(model, showFilter, hideFilter);
-        assertThatFilters(model).containsExactly(showFilter, hideFilter);
+        verify(observer).onFilterAdded(model, filter0, filter1);
+        assertThatFilters(model).containsExactly(filter0, filter1);
     }
 
     @Test
     void insertingLastFilterIntoParentTriggerNotifications() {
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
-        var model = createModel();
-        model.asObservable().addObserver(observer);
+        var filter1 = named("filter1");
+        var model = createModel(filter1, children());
 
-        var showFilter = show(alwaysTrue());
-        parent.insertFilterBefore(showFilter, testFilter);
+        var filter2 = named("filter2");
+        parent.insertFilterBefore(filter2, children());
 
-        verify(observer).onFilterAdded(model, showFilter, null);
-        assertThatFilters(model).containsExactly(hideFilter, showFilter);
+        verify(observer).onFilterAdded(model, filter2, null);
+        assertThatFilters(model).containsExactly(filter1, filter2);
     }
 
     @Test
     void insertingLastFilterIntoParentTriggerNotificationsWhenChildFiltersAlsoPresent() {
-        var hideFilter = hide(alwaysFalse());
-        parent.addFilter(hideFilter);
-        var hideFilter2 = hide(alwaysTrue());
-        testFilter.getChildren().addFilter(hideFilter2);
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var model = createModel(filter1, children(filter2));
 
-        var model = createModel();
-        model.asObservable().addObserver(observer);
+        var newFilter = named("new");
+        parent.insertFilterBefore(newFilter, children());
 
-        var showFilter = show(alwaysTrue());
-        parent.insertFilterBefore(showFilter, testFilter);
-
-        assertThatFilters(model).containsExactly(hideFilter, showFilter, hideFilter2);
-        verify(observer).onFilterAdded(model, showFilter, hideFilter2);
+        assertThatFilters(model).containsExactly(filter1, newFilter, filter2);
+        verify(observer).onFilterAdded(model, newFilter, filter2);
     }
 
-    private CompoundFilterModel createModel() {
-        parent.addFilter(testFilter);
-        return new CompoundFilterModel(Objects.requireNonNull(parent.findSubModel(testFilter)), testFilter);
+    private ChildModelFilter children(Filter... children) {
+        for (var f : children) {
+            testFilter.getChildren().addFilter(f);
+        }
+        return testFilter;
+    }
+
+    private CompoundFilterModel createModel(Filter f1, Filter... filters) {
+        parent.addFilter(f1);
+
+        for (var f : filters) {
+            parent.addFilter(f);
+        }
+        return observe(new CompoundFilterModel(Objects.requireNonNull(parent.findSubModel(testFilter)), testFilter));
+    }
+
+    private CompoundFilterModel observe(CompoundFilterModel model) {
+        model.asObservable().addObserver(observer);
+        return model;
     }
 
     private static TestChildModelFilter filter() {

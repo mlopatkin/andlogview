@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.filters;
 
 import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
 import static name.mlopatkin.andlogview.filters.Filters.childModelFilter;
+import static name.mlopatkin.andlogview.filters.Filters.named;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -77,7 +78,7 @@ class MutableFilterModelTest {
     @Test
     void addingFilterNotifiesObservers() {
         var model = createModel();
-        var filter = createFilter("filter");
+        var filter = named("filter");
 
         model.asObservable().addObserver(observer);
         model.addFilter(filter);
@@ -90,7 +91,7 @@ class MutableFilterModelTest {
     @Test
     void addingFilterTheSecondTimeDoesNotNotifyObservers() {
         var model = createModel();
-        var filter = createFilter("filter");
+        var filter = named("filter");
         model.addFilter(filter);
 
         model.asObservable().addObserver(observer);
@@ -103,7 +104,7 @@ class MutableFilterModelTest {
     @Test
     void removingFilterNotifiesObservers() {
         var model = createModel();
-        var filter = createFilter("filter");
+        var filter = named("filter");
         model.addFilter(filter);
 
         model.asObservable().addObserver(observer);
@@ -117,7 +118,7 @@ class MutableFilterModelTest {
     @Test
     void removingNonAddedFilterDoesNotNotifyObservers() {
         var model = createModel();
-        var filter = createFilter("filter");
+        var filter = named("filter");
 
         model.asObservable().addObserver(observer);
         model.removeFilter(filter);
@@ -129,8 +130,8 @@ class MutableFilterModelTest {
     @Test
     void replacingFilterNotifiesObserver() {
         var model = createModel();
-        var filter = createFilter("filter");
-        var newFilter = createFilter("newFilter");
+        var filter = named("filter");
+        var newFilter = named("newFilter");
         model.addFilter(filter);
 
         model.asObservable().addObserver(observer);
@@ -144,7 +145,7 @@ class MutableFilterModelTest {
     @Test
     void replacingFilterWithItselfDoesNothingAndDoesNotNotify() {
         var model = createModel();
-        var filter = createFilter("filter");
+        var filter = named("filter");
         model.addFilter(filter);
 
         model.asObservable().addObserver(observer);
@@ -157,8 +158,8 @@ class MutableFilterModelTest {
     @Test
     void replacingFilterWithExistingThrows() {
         var model = createModel();
-        var filter = createFilter("filter");
-        var otherFilter = createFilter("otherFilter");
+        var filter = named("filter");
+        var otherFilter = named("otherFilter");
         model.addFilter(filter);
         model.addFilter(otherFilter);
 
@@ -169,9 +170,9 @@ class MutableFilterModelTest {
     @Test
     void filtersAreListedInTheOrderTheyAdded() {
         var model = createModel();
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
-        var filter3 = createFilter("filter3");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var filter3 = named("filter3");
         model.addFilter(filter1);
         model.addFilter(filter2);
         model.addFilter(filter3);
@@ -182,15 +183,15 @@ class MutableFilterModelTest {
     @Test
     void replacementFilterKeepsPositionOfReplaced() {
         var model = createModel();
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
-        var filter3 = createFilter("filter3");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
+        var filter3 = named("filter3");
         model.addFilter(filter1);
         model.addFilter(filter2);
         model.addFilter(filter3);
         model.asObservable().addObserver(observer);
 
-        var filter2Replacement = createFilter("filter2Replacement");
+        var filter2Replacement = named("filter2Replacement");
         model.replaceFilter(filter2, filter2Replacement);
 
         verify(observer).onFilterReplaced(model, filter2, filter2Replacement);
@@ -201,12 +202,12 @@ class MutableFilterModelTest {
     @Test
     void canReplaceFilterAfterRemovingFilterInFront() {
         var model = createModel();
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         model.addFilter(filter1);
         model.addFilter(filter2);
 
-        var replacement = createFilter("replacement");
+        var replacement = named("replacement");
         model.removeFilter(filter1);
         model.replaceFilter(filter2, replacement);
 
@@ -216,8 +217,8 @@ class MutableFilterModelTest {
     @Test
     void removingAndAddingFilterMovesItToBack() {
         var model = createModel();
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         model.addFilter(filter1);
         model.addFilter(filter2);
 
@@ -229,8 +230,8 @@ class MutableFilterModelTest {
 
     @Test
     void canAddMultipleFiltersAtOnce() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
 
         var model = new FilterModelImpl(ImmutableList.of(filter1, filter2, filter1));
 
@@ -281,7 +282,7 @@ class MutableFilterModelTest {
         var model = createModel(childrenFilter1);
         model.asObservable().addObserver(observer);
 
-        var filter2 = createFilter("filter2");
+        var filter2 = named("filter2");
         model.replaceFilter(childrenFilter1, filter2);
 
         verify(observer).onFilterReplaced(model, childrenFilter1, filter2);
@@ -290,7 +291,7 @@ class MutableFilterModelTest {
 
     @Test
     void replacingFilterWithChildModelFilterNotifiesObservers() {
-        var filter1 = createFilter("filter1");
+        var filter1 = named("filter1");
         var model = createModel(filter1);
         model.asObservable().addObserver(observer);
 
@@ -318,7 +319,7 @@ class MutableFilterModelTest {
 
     @Test
     void submodelHasFilters() {
-        var filter1 = createFilter("filter1");
+        var filter1 = named("filter1");
         var model = createModel(filter1);
         model.asObservable().addObserver(observer);
         var subModel = ArgumentCaptor.forClass(FilterModel.class);
@@ -333,7 +334,7 @@ class MutableFilterModelTest {
 
     @Test
     void canHaveMultipleSubmodels() {
-        var filter1 = createFilter("filter1");
+        var filter1 = named("filter1");
         var model = createModel(filter1);
         model.asObservable().addObserver(observer);
         var subModel = ArgumentCaptor.forClass(FilterModel.class);
@@ -345,7 +346,7 @@ class MutableFilterModelTest {
         verify(observer).onSubModelCreated(eq(model), subModel.capture(), eq(childrenFilter1));
         var subModel1 = subModel.getValue();
 
-        var filter2 = createFilter("filter2");
+        var filter2 = named("filter2");
         var childrenFilter2 = childModelFilter();
         model.addFilter(filter2);
         model.addFilter(childrenFilter2);
@@ -387,7 +388,7 @@ class MutableFilterModelTest {
 
         Objects.requireNonNull(model.findSubModel(childrenFilter)).asObservable().addObserver(observer);
 
-        model.addFilter(createFilter("filter1"));
+        model.addFilter(named("filter1"));
 
         verify(observer, never()).onFilterAdded(any(), any(), any());
     }
@@ -395,7 +396,7 @@ class MutableFilterModelTest {
     @Test
     void removingFiltersDoNotNotifyUnrelatedSubmodels() {
         var childrenFilter = childModelFilter();
-        var filter1 = createFilter("filter1");
+        var filter1 = named("filter1");
         var model = createModel(childrenFilter, filter1);
 
         Objects.requireNonNull(model.findSubModel(childrenFilter)).asObservable().addObserver(observer);
@@ -408,12 +409,12 @@ class MutableFilterModelTest {
     @Test
     void replacingFiltersDoNotNotifyUnrelatedSubmodels() {
         var childrenFilter = childModelFilter();
-        var filter1 = createFilter("filter1");
+        var filter1 = named("filter1");
         var model = createModel(childrenFilter, filter1);
 
         observeSubModelOf(model, childrenFilter);
 
-        model.replaceFilter(filter1, createFilter("filter2"));
+        model.replaceFilter(filter1, named("filter2"));
 
         verify(observer, never()).onFilterReplaced(any(), any(), any());
     }
@@ -421,7 +422,7 @@ class MutableFilterModelTest {
     @Test
     void removingFiltersNotifyRelatedSubmodelsOnly() {
         var childrenFilter1 = childModelFilter();
-        var filter = createFilter("filter");
+        var filter = named("filter");
         var childrenFilter2 = childModelFilter();
 
         var model = createModel(childrenFilter1, filter, childrenFilter2);
@@ -439,14 +440,14 @@ class MutableFilterModelTest {
     @Test
     void replacingFiltersNotifyRelatedSubmodelsOnly() {
         var childrenFilter1 = childModelFilter();
-        var filter = createFilter("filter");
+        var filter = named("filter");
         var childrenFilter2 = childModelFilter();
 
         var model = createModel(childrenFilter1, filter, childrenFilter2);
         var subModel1 = observeSubModelOf(model, childrenFilter1);
         var subModel2 = observeSubModelOf(model, childrenFilter2);
 
-        var otherFilter = createFilter("other");
+        var otherFilter = named("other");
         model.replaceFilter(filter, otherFilter);
 
         verify(observer, never()).onFilterReplaced(subModel1, filter, otherFilter);
@@ -477,7 +478,7 @@ class MutableFilterModelTest {
 
     @Test
     void canRetrieveSubModelWhenReplacing() {
-        var filter1 = createFilter("filter1");
+        var filter1 = named("filter1");
         var model = createModel(filter1);
         var childrenFilter = childModelFilter();
         model.asObservable().addObserver(new FilterModel.Observer() {
@@ -498,12 +499,12 @@ class MutableFilterModelTest {
 
     @Test
     void canInsertFilterBeforeFirst() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var model = createModel(filter1, filter2);
         model.asObservable().addObserver(observer);
 
-        var newFilter = createFilter("new");
+        var newFilter = named("new");
 
         model.insertFilterBefore(newFilter, filter1);
 
@@ -514,12 +515,12 @@ class MutableFilterModelTest {
 
     @Test
     void canInsertFilterBeforeSecond() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var model = createModel(filter1, filter2);
         model.asObservable().addObserver(observer);
 
-        var newFilter = createFilter("new");
+        var newFilter = named("new");
 
         model.insertFilterBefore(newFilter, filter2);
 
@@ -530,12 +531,12 @@ class MutableFilterModelTest {
 
     @Test
     void canInsertFilterBeforeEnd() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var model = createModel(filter1, filter2);
         model.asObservable().addObserver(observer);
 
-        var newFilter = createFilter("new");
+        var newFilter = named("new");
 
         model.insertFilterBefore(newFilter, null);
 
@@ -546,8 +547,8 @@ class MutableFilterModelTest {
 
     @Test
     void canInsertChildModelBeforeFirst() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var model = createModel(filter1, filter2);
         model.asObservable().addObserver(observer);
 
@@ -561,8 +562,8 @@ class MutableFilterModelTest {
 
     @Test
     void canInsertChildModelBeforeSecond() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var model = createModel(filter1, filter2);
         model.asObservable().addObserver(observer);
 
@@ -576,8 +577,8 @@ class MutableFilterModelTest {
 
     @Test
     void canInsertChildModelBeforeEnd() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var model = createModel(filter1, filter2);
         model.asObservable().addObserver(observer);
 
@@ -591,13 +592,13 @@ class MutableFilterModelTest {
 
     @Test
     void insertBeforeFirstNotifiesChildModel() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var children = childModelFilter();
         var model = createModel(filter1, filter2, children);
         var submodel = observeSubModelOf(model, children);
 
-        var newFilter = createFilter("new");
+        var newFilter = named("new");
         model.insertFilterBefore(newFilter, filter1);
 
         verify(observer).onFilterAdded(submodel, newFilter, filter1);
@@ -606,13 +607,13 @@ class MutableFilterModelTest {
 
     @Test
     void insertBeforeLastNotifiesChildModel() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var children = childModelFilter();
         var model = createModel(filter1, filter2, children);
         var submodel = observeSubModelOf(model, children);
 
-        var newFilter = createFilter("new");
+        var newFilter = named("new");
         model.insertFilterBefore(newFilter, filter2);
 
         verify(observer).onFilterAdded(submodel, newFilter, filter2);
@@ -621,13 +622,13 @@ class MutableFilterModelTest {
 
     @Test
     void insertBeforeEndNotifiesChildModel() {
-        var filter1 = createFilter("filter1");
-        var filter2 = createFilter("filter2");
+        var filter1 = named("filter1");
+        var filter2 = named("filter2");
         var children = childModelFilter();
         var model = createModel(filter1, filter2, children);
         var submodel = observeSubModelOf(model, children);
 
-        var newFilter = createFilter("new");
+        var newFilter = named("new");
         model.insertFilterBefore(newFilter, children);
 
         verify(observer).onFilterAdded(submodel, newFilter, null);
@@ -646,19 +647,5 @@ class MutableFilterModelTest {
 
     MutableFilterModel createModel(Filter... filters) {
         return new FilterModelImpl(Arrays.asList(filters));
-    }
-
-    Filter createFilter(String name) {
-        return new ToggleFilter(FilteringMode.getDefaultMode(), true, logRecord -> true) {
-            @Override
-            public boolean equals(Object obj) {
-                return this == obj;
-            }
-
-            @Override
-            public String toString() {
-                return name;
-            }
-        };
     }
 }
