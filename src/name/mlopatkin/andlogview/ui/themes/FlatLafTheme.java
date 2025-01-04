@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.themes;
 import name.mlopatkin.andlogview.widgets.ConfigurableFlatBorder;
 
 import com.formdev.flatlaf.IntelliJTheme;
+import com.formdev.flatlaf.util.ColorFunctions;
 import com.google.common.io.Resources;
 
 import org.apache.log4j.Logger;
@@ -56,6 +57,11 @@ class FlatLafTheme implements Theme {
             tableBorder.innerFocusWidthProp.setDefault(0f);
             tableBorder.focusedBorderColorProp.setDefault(UIManager.getColor("Component.borderColor"));
             UIManager.put("Table.scrollPaneBorder", tableBorder);
+
+            var selectionBackground = UIManager.getColor("Tree.selectionBackground");
+            var dropBackground = ColorFunctions.lighten(selectionBackground, 0.1f);
+            UIManager.put("Tree.dropCellBackground", dropBackground);
+            UIManager.put("Tree.dropLineColor", dropBackground);
 
         } catch (IOException e) {
             logger.error(

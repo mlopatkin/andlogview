@@ -19,8 +19,10 @@ package name.mlopatkin.andlogview.ui.filtertree;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
 import javax.inject.Inject;
+import javax.swing.DropMode;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  * Constructs {@link JTree} that shows the available filters.
@@ -46,7 +48,15 @@ public class FilterTreeFactory {
         filterTree.setShowsRootHandles(false);
         filterTree.setCellRenderer(nodeRenderer);
         filterTree.setSelectionModel(new DefaultTreeSelectionModel());
+        filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        filterTree.setDragEnabled(true);
+        // TODO(mlopatkin): so far we only support reordering the filters.
+        filterTree.setDropMode(DropMode.INSERT);
+
+        filterTree.setTransferHandler(new FilterNodeTransferHandler(treeModel.getModel()));
 
         return filterTree;
     }
+
 }

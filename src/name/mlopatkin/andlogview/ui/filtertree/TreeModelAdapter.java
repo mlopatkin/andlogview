@@ -49,6 +49,10 @@ public class TreeModelAdapter implements CheckableTreeModel {
         filterTreeModel.getFilters().forEach(f -> appendChild(root, createNodeForFilter(f)));
     }
 
+    public FilterTreeModel<FilterNodeViewModel> getModel() {
+        return filterTreeModel;
+    }
+
     @Override
     public TreeNode getRoot() {
         return root;

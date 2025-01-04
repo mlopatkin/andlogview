@@ -69,7 +69,7 @@ class FilterNodeRenderer implements TreeCellRenderer {
         selectionForeground = UIManager.getColor("Tree.selectionForeground");
         selectionBackground = UIManager.getColor("Tree.selectionBackground");
         textForeground = UIManager.getColor("Tree.textForeground");
-        textBackground = UIManager.getColor("Tree.textBackground");
+        textBackground = UIManager.getColor("Tree.background");
     }
 
     @Override
@@ -83,12 +83,17 @@ class FilterNodeRenderer implements TreeCellRenderer {
         }
 
         var fgColor = getForegroundColor(selected, hasFocus);
-        panel.setForeground(fgColor);
         text.setForeground(fgColor);
 
         var bgColor = getBackgroundColor(selected, hasFocus);
         panel.setBackground(bgColor);
-        text.setBackground(bgColor);
+
+        var dropLocation = tree.getDropLocation();
+        if (dropLocation != null && dropLocation.getChildIndex() == -1
+                && tree.getRowForPath(dropLocation.getPath()) == row) {
+            panel.setBackground(UIManager.getColor("Tree.dropCellBackground"));
+            text.setForeground(UIManager.getColor("Tree.dropCellForeground"));
+        }
 
         checkBox.setSelected(filter.isEnabled());
         text.setText(filter.getText());
