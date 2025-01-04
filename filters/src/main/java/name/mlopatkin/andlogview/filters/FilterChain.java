@@ -16,13 +16,16 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.utils.events.Observable;
-import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Manages a list of filters and composes them based on their type. At first, we hide anything that matches any of the
@@ -31,21 +34,26 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * <p/>
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
-public class FilterChain implements FilterCollection<PredicateFilter> {
-    /**
-     * An observer to be notified when the set of filters in this chain changes.
-     */
-    @FunctionalInterface
-    public interface Observer {
-        /**
-         * Called when the set of filters in the {@link FilterChain} changes
-         */
-        void onFiltersChanged();
+public class FilterChain {
+    private final SetMultimap<FilteringMode, PredicateFilter> filters;
+
+    public FilterChain(FilterModel model) {
+        filters = fetchFilters(model).collect(Multimaps.toMultimap(
+                Filter::getMode,
+                Function.identity(),
+                () -> MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build()
+        ));
+
+        // TODO(mlopatkin) We leak the observer
+        // TODO(mlopatkin) the model supplied to the observer is invalid when change comes from the top-level filter
+        //  list
+        model.asObservable().addObserver(new FiltersChangeObserver(ignored -> onFiltersChanged(model)));
     }
 
-    private final SetMultimap<FilteringMode, PredicateFilter> filters =
-            MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build();
-    private final Subject<Observer> observers = new Subject<>();
+    private void onFiltersChanged(FilterModel model) {
+        filters.clear();
+        fetchFilters(model).forEach(filter -> filters.put(filter.getMode(), filter));
+    }
 
     private boolean include(FilteringMode mode, LogRecord record) {
         var filtersForMode = filters.get(mode);
@@ -60,8 +68,15 @@ public class FilterChain implements FilterCollection<PredicateFilter> {
         return false;
     }
 
-    @Override
-    public @Nullable PredicateFilter transformFilter(Filter filter) {
+    private static Stream<PredicateFilter> fetchFilters(FilterModel model) {
+        return model.getFilters()
+                .stream()
+                .filter(Filter::isEnabled)
+                .map(FilterChain::transformFilter)
+                .filter(Objects::nonNull);
+    }
+
+    private static @Nullable PredicateFilter transformFilter(Filter filter) {
         var mode = filter.getMode();
         if (FilteringMode.SHOW.equals(mode) || FilteringMode.HIDE.equals(mode)) {
             return (PredicateFilter) filter;
@@ -69,32 +84,7 @@ public class FilterChain implements FilterCollection<PredicateFilter> {
         return null;
     }
 
-    @Override
-    public void addFilter(PredicateFilter filter) {
-        if (filter.isEnabled()) {
-            filters.put(filter.getMode(), filter);
-            notifyObservers();
-        }
-    }
-
     public boolean shouldShow(LogRecord record) {
         return !include(FilteringMode.HIDE, record) && include(FilteringMode.SHOW, record);
-    }
-
-    @Override
-    public void removeFilter(PredicateFilter filter) {
-        if (filters.remove(filter.getMode(), filter)) {
-            notifyObservers();
-        }
-    }
-
-    private void notifyObservers() {
-        for (Observer observer : observers) {
-            observer.onFiltersChanged();
-        }
-    }
-
-    public Observable<Observer> asObservable() {
-        return observers.asObservable();
     }
 }

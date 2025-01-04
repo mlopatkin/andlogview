@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel;
-import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import javax.inject.Inject;
@@ -34,8 +33,8 @@ class FilterPanelModelAdapter extends BaseFilterModelAdapter<PanelFilter> implem
     private final Subject<FilterPanelModel.FilterPanelModelListener<? super PanelFilter>> listeners = new Subject<>();
 
     @Inject
-    FilterPanelModelAdapter(PanelFilter.Factory panelFilterFactory) {
-        super((Filter f) -> {
+    FilterPanelModelAdapter(FilterModel model, PanelFilter.Factory panelFilterFactory) {
+        super(model, (Filter f) -> {
             if (f instanceof FilterFromDialog filterFromDialog) {
                 return panelFilterFactory.create(filterFromDialog);
             }
@@ -43,28 +42,22 @@ class FilterPanelModelAdapter extends BaseFilterModelAdapter<PanelFilter> implem
         });
     }
 
-    @Inject
     @Override
-    public ScopedObserver setModel(FilterModel model) {
-        return super.setModel(model);
-    }
-
-    @Override
-    public void addFilter(PanelFilter filter) {
+    protected void addFilter(PanelFilter filter) {
         for (var listener : listeners) {
             listener.onFilterAdded(filter);
         }
     }
 
     @Override
-    public void removeFilter(PanelFilter filter) {
+    protected void removeFilter(PanelFilter filter) {
         for (var listener : listeners) {
             listener.onFilterRemoved(filter);
         }
     }
 
     @Override
-    public void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
+    protected void replaceFilter(PanelFilter oldFilter, PanelFilter newFilter) {
         for (var listener : listeners) {
             listener.onFilterReplaced(oldFilter, newFilter);
         }

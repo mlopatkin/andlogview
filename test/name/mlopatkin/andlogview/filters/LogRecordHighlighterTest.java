@@ -25,14 +25,14 @@ import static org.junit.Assert.assertNull;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.test.TestData;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.Color;
 import java.util.function.Predicate;
 
 public class LogRecordHighlighterTest {
-    private LogRecordHighlighter highlighter;
+    private final MutableFilterModel model = MutableFilterModel.create();
+    private final LogRecordHighlighter highlighter = new LogRecordHighlighter(model);
 
     private static final Color COLOR1 = Color.RED;
     private static final Color COLOR2 = Color.BLUE;
@@ -43,11 +43,6 @@ public class LogRecordHighlighterTest {
     private static final ColoringFilter MATCH_FIRST_COLOR3 = makeColorFilter(TestData.MATCH_FIRST, COLOR3);
     private static final ColoringFilter MATCH_ALL_COLOR1 = makeColorFilter(TestData.MATCH_ALL, COLOR1);
 
-    @Before
-    public void setUp() throws Exception {
-        highlighter = new LogRecordHighlighter();
-    }
-
     @Test
     public void testDefault() throws Exception {
         assertNull(highlighter.getColor(RECORD1));
@@ -56,80 +51,80 @@ public class LogRecordHighlighterTest {
 
     @Test
     public void testSimpleColor() throws Exception {
-        highlighter.addFilter(MATCH_FIRST_COLOR1);
+        model.addFilter(MATCH_FIRST_COLOR1);
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
         assertNull(highlighter.getColor(RECORD2));
     }
 
     @Test
     public void testOrderMatters() throws Exception {
-        highlighter.addFilter(MATCH_ALL_COLOR1);
-        highlighter.addFilter(MATCH_FIRST_COLOR2);
+        model.addFilter(MATCH_ALL_COLOR1);
+        model.addFilter(MATCH_FIRST_COLOR2);
         assertEquals(COLOR2, highlighter.getColor(RECORD1));
         assertEquals(COLOR1, highlighter.getColor(RECORD2));
     }
 
     @Test
     public void testRemove() throws Exception {
-        highlighter.addFilter(MATCH_ALL_COLOR1);
-        highlighter.addFilter(MATCH_FIRST_COLOR2);
+        model.addFilter(MATCH_ALL_COLOR1);
+        model.addFilter(MATCH_FIRST_COLOR2);
 
-        highlighter.removeFilter(MATCH_FIRST_COLOR2);
+        model.removeFilter(MATCH_FIRST_COLOR2);
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
         assertEquals(COLOR1, highlighter.getColor(RECORD2));
 
-        highlighter.removeFilter(MATCH_ALL_COLOR1);
+        model.removeFilter(MATCH_ALL_COLOR1);
         assertNull(highlighter.getColor(RECORD1));
         assertNull(highlighter.getColor(RECORD2));
     }
 
     @Test
     public void testReplace() throws Exception {
-        highlighter.addFilter(MATCH_FIRST_COLOR1);
+        model.addFilter(MATCH_FIRST_COLOR1);
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
 
-        highlighter.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR2);
+        model.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR2);
 
         assertEquals(COLOR2, highlighter.getColor(RECORD1));
     }
 
     @Test
     public void testReplaceDoesntBringToBack() throws Exception {
-        highlighter.addFilter(MATCH_FIRST_COLOR2);
-        highlighter.addFilter(MATCH_ALL_COLOR1);
+        model.addFilter(MATCH_FIRST_COLOR2);
+        model.addFilter(MATCH_ALL_COLOR1);
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
         assertEquals(COLOR1, highlighter.getColor(RECORD2));
 
-        highlighter.replaceFilter(MATCH_FIRST_COLOR2, MATCH_FIRST_COLOR3);
+        model.replaceFilter(MATCH_FIRST_COLOR2, MATCH_FIRST_COLOR3);
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
 
         // sanity check
-        highlighter.removeFilter(MATCH_ALL_COLOR1);
+        model.removeFilter(MATCH_ALL_COLOR1);
         assertEquals(COLOR3, highlighter.getColor(RECORD1));
     }
 
     @Test
     public void testEnable() throws Exception {
-        highlighter.addFilter(MATCH_FIRST_COLOR1);
-        highlighter.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR1.disabled());
+        model.addFilter(MATCH_FIRST_COLOR1);
+        model.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR1.disabled());
         assertNull(highlighter.getColor(RECORD1));
 
-        highlighter.replaceFilter(MATCH_FIRST_COLOR1.disabled(), MATCH_FIRST_COLOR1.enabled());
+        model.replaceFilter(MATCH_FIRST_COLOR1.disabled(), MATCH_FIRST_COLOR1.enabled());
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
     }
 
     @Test
     public void testEnableDoesntBringToBack() throws Exception {
-        highlighter.addFilter(MATCH_FIRST_COLOR2);
-        highlighter.addFilter(MATCH_ALL_COLOR1);
+        model.addFilter(MATCH_FIRST_COLOR2);
+        model.addFilter(MATCH_ALL_COLOR1);
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
 
-        highlighter.replaceFilter(MATCH_FIRST_COLOR2, MATCH_FIRST_COLOR2.disabled());
-        highlighter.replaceFilter(MATCH_FIRST_COLOR2.disabled(), MATCH_FIRST_COLOR2.enabled());
+        model.replaceFilter(MATCH_FIRST_COLOR2, MATCH_FIRST_COLOR2.disabled());
+        model.replaceFilter(MATCH_FIRST_COLOR2.disabled(), MATCH_FIRST_COLOR2.enabled());
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
     }

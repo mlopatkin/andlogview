@@ -25,16 +25,11 @@ import static name.mlopatkin.andlogview.test.TestData.RECORD2;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class FilterChainTest {
-    private FilterChain chain;
-
-    @Before
-    public void setUp() throws Exception {
-        chain = new FilterChain();
-    }
+    private final MutableFilterModel model = MutableFilterModel.create();
+    private final FilterChain chain = new FilterChain(model);
 
     @Test
     public void testDefaultModeAcceptsAll() throws Exception {
@@ -45,38 +40,38 @@ public class FilterChainTest {
 
     @Test
     public void testHide() throws Exception {
-        chain.addFilter(hide(MATCH_FIRST));
+        model.addFilter(hide(MATCH_FIRST));
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testShow() throws Exception {
-        chain.addFilter(show(MATCH_FIRST));
+        model.addFilter(show(MATCH_FIRST));
         assertTrue(chain.shouldShow(RECORD1));
         assertFalse(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testHidePrecedesShow() throws Exception {
-        chain.addFilter(hide(MATCH_ALL));
-        chain.addFilter(show(MATCH_ALL));
+        model.addFilter(hide(MATCH_ALL));
+        model.addFilter(show(MATCH_ALL));
         assertFalse(chain.shouldShow(RECORD1));
         assertFalse(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testRemoveFilter() throws Exception {
-        chain.addFilter(hide(MATCH_ALL));
-        chain.removeFilter(hide(MATCH_ALL));
+        model.addFilter(hide(MATCH_ALL));
+        model.removeFilter(hide(MATCH_ALL));
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testReplace() throws Exception {
-        chain.addFilter(hide(MATCH_ALL));
-        chain.replaceFilter(hide(MATCH_ALL), hide(MATCH_FIRST));
+        model.addFilter(hide(MATCH_ALL));
+        model.replaceFilter(hide(MATCH_ALL), hide(MATCH_FIRST));
 
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
@@ -84,12 +79,12 @@ public class FilterChainTest {
 
     @Test
     public void testSetEnabled() throws Exception {
-        chain.addFilter(hide(MATCH_FIRST));
-        chain.replaceFilter(hide(MATCH_FIRST), hide(MATCH_FIRST).disabled());
+        model.addFilter(hide(MATCH_FIRST));
+        model.replaceFilter(hide(MATCH_FIRST), hide(MATCH_FIRST).disabled());
 
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
-        chain.replaceFilter(hide(MATCH_FIRST).disabled(), hide(MATCH_FIRST));
+        model.replaceFilter(hide(MATCH_FIRST).disabled(), hide(MATCH_FIRST));
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }

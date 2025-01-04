@@ -61,8 +61,7 @@ class IndexWindowFilterTest {
     }
 
     private Predicate<LogRecord> asPredicate(IndexWindowFilter filter) {
-        var filterChain = new FilterChain();
-        filterChain.setModel(filter.getFilters());
+        var filterChain = new FilterChain(filter.getFilters());
         return filterChain::shouldShow;
     }
 }

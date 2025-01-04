@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.FilterModel;
+import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.utils.events.Observable;
@@ -34,10 +35,9 @@ class IndexFilter implements LogModelFilter, AutoCloseable {
 
     private final Subject<Observer> observers = new Subject<>();
 
-    public IndexFilter(FilterModel filters) {
-        this.filters = new FilterChain();
-        this.subscription = this.filters.setModel(filters);
-        this.filters.asObservable().addObserver(this::notifyObservers);
+    public IndexFilter(FilterModel model) {
+        this.filters = new FilterChain(model);
+        subscription = model.asObservable().addScopedObserver(new FiltersChangeObserver(m -> notifyObservers()));
     }
 
     @Override

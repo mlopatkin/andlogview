@@ -37,8 +37,8 @@ import javax.inject.Inject;
 
 @MainFrameScoped
 public class LogModelFilterImpl implements LogModelFilter {
-    private final FilterChain filterChain = new FilterChain();
-    private final LogRecordHighlighter highlighter = new LogRecordHighlighter();
+    private final FilterChain filterChain;
+    private final LogRecordHighlighter highlighter;
     private final LogBufferFilter bufferFilter = new LogBufferFilter();
 
     private final Subject<Observer> observers = new Subject<>();
@@ -46,9 +46,10 @@ public class LogModelFilterImpl implements LogModelFilter {
     @Inject
     @VisibleForTesting
     public LogModelFilterImpl(FilterModel model) {
-        filterChain.setModel(model);
-        highlighter.setModel(model);
+        filterChain = new FilterChain(model);
+        highlighter = new LogRecordHighlighter(model);
 
+        // TODO(mlopatkin) this leaks observers.
         model.asObservable().addObserver(new FiltersChangeObserver(source -> notifyObservers()));
     }
 

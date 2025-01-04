@@ -19,13 +19,10 @@ package name.mlopatkin.andlogview.ui.filters;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 import name.mlopatkin.andlogview.filters.Filter;
-import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
-import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
@@ -36,23 +33,61 @@ import java.util.function.Function;
 /**
  * A base class that implements the common logic of adapting the {@link FilterModel} to filter views.
  */
-public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> implements FilterCollection<P> {
+public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
     private final Function<? super Filter, ? extends @Nullable P> presenterFactory;
     private final Map<Filter, P> filters = new HashMap<>();
-    private @MonotonicNonNull FilterModel model;
+    private final FilterModel model;
 
-    protected BaseFilterModelAdapter(Function<? super Filter, ? extends @Nullable P> presenterFactory) {
+    protected BaseFilterModelAdapter(
+            FilterModel model,
+            Function<? super Filter, ? extends @Nullable P> presenterFactory
+    ) {
         this.presenterFactory = presenterFactory;
-    }
-
-    @Override
-    public ScopedObserver setModel(FilterModel model) {
         this.model = model;
-        return FilterCollection.super.setModel(model);
+
+        model.asObservable().addObserver(new FilterModel.Observer() {
+            @Override
+            public void onFilterAdded(FilterModel model, Filter newFilter) {
+                var newTransformedFilter = transformFilter(newFilter);
+                if (newTransformedFilter != null) {
+                    addFilter(newTransformedFilter);
+                }
+            }
+
+            @Override
+            public void onFilterRemoved(FilterModel model, Filter removedFilter) {
+                var removedTransformedFilter = filters.remove(removedFilter);
+                if (removedTransformedFilter != null) {
+                    removeFilter(removedTransformedFilter);
+                }
+            }
+
+            @Override
+            public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
+                var newTransformedFilter = transformFilter(newFilter);
+                var oldTransformedFilter = filters.remove(oldFilter);
+
+                if (newTransformedFilter != null && oldTransformedFilter != null) {
+                    replaceFilter(oldTransformedFilter, newTransformedFilter);
+                } else if (newTransformedFilter != null) {
+                    assert oldTransformedFilter == null;
+                    addFilter(newTransformedFilter);
+                } else {
+                    assert newTransformedFilter == null;
+                    assert oldTransformedFilter != null;
+                    removeFilter(oldTransformedFilter);
+                }
+            }
+        });
     }
 
-    @Override
-    public @Nullable P transformFilter(Filter filter) {
+    protected abstract void addFilter(P filter);
+
+    protected abstract void removeFilter(P filter);
+
+    protected abstract void replaceFilter(P oldFilter, P newFilter);
+
+    private @Nullable P transformFilter(Filter filter) {
         return filters.computeIfAbsent(filter, presenterFactory);
     }
 

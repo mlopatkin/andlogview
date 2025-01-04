@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filtertree.FilterTreeModel;
 import name.mlopatkin.andlogview.utils.events.Observable;
-import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import javax.inject.Inject;
@@ -30,8 +29,8 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
     private final Subject<ModelObserver<? super TreeNodeFilter>> observers = new Subject<>();
 
     @Inject
-    FilterTreeModelAdapter(TreeNodeFilter.Factory nodeFactory) {
-        super((Filter f) -> {
+    FilterTreeModelAdapter(FilterModel model, TreeNodeFilter.Factory nodeFactory) {
+        super(model, (Filter f) -> {
             if (f instanceof FilterFromDialog filterFromDialog) {
                 return nodeFactory.create(filterFromDialog);
             }
@@ -40,30 +39,24 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
     }
 
     @Override
-    public void addFilter(TreeNodeFilter filter) {
+    protected void addFilter(TreeNodeFilter filter) {
         for (var observer : observers) {
             observer.onFilterAdded(filter);
         }
     }
 
     @Override
-    public void removeFilter(TreeNodeFilter filter) {
+    protected void removeFilter(TreeNodeFilter filter) {
         for (var observer : observers) {
             observer.onFilterRemoved(filter);
         }
     }
 
     @Override
-    public void replaceFilter(TreeNodeFilter oldFilter, TreeNodeFilter newFilter) {
+    protected void replaceFilter(TreeNodeFilter oldFilter, TreeNodeFilter newFilter) {
         for (var observer : observers) {
             observer.onFilterReplaced(oldFilter, newFilter);
         }
-    }
-
-    @Inject
-    @Override
-    public ScopedObserver setModel(FilterModel model) {
-        return super.setModel(model);
     }
 
     @Override

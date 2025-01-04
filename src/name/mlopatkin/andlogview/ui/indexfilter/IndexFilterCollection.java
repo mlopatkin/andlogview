@@ -17,54 +17,61 @@
 package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.Filter;
-import name.mlopatkin.andlogview.filters.FilterCollection;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.FilteringMode;
+import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
-import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-public class IndexFilterCollection implements FilterCollection<IndexWindowFilter> {
+public class IndexFilterCollection {
     private final Map<IndexWindowFilter, IndexFilterController> controllerMap = new HashMap<>();
     private final IndexFilterController.Factory controllerFactory;
 
     @Inject
-    public IndexFilterCollection(IndexFilterController.Factory controllerFactory) {
+    public IndexFilterCollection(IndexFilterController.Factory controllerFactory, FilterModel model) {
         this.controllerFactory = controllerFactory;
+
+        fetchFilters(model).forEach(filter -> controllerMap.computeIfAbsent(filter, controllerFactory::create).show());
+
+        model.asObservable().addObserver(new FiltersChangeObserver(this::onFiltersChanged));
     }
 
-    @Override
-    @Inject
-    public ScopedObserver setModel(FilterModel model) {
-        // This is a late call to subscribe to model changes.
-        return FilterCollection.super.setModel(model);
+    private void onFiltersChanged(FilterModel model) {
+        var updatedControllers = fetchFilters(model).collect(Collectors.toSet());
+
+        for (var iterator = controllerMap.entrySet().iterator(); iterator.hasNext(); ) {
+            var entry = iterator.next();
+            if (!updatedControllers.contains(entry.getKey())) {
+                entry.getValue().close();
+                iterator.remove();
+            }
+        }
+
+        updatedControllers.stream().filter(filter -> !controllerMap.containsKey(filter)).forEach(filter -> {
+            var controller = controllerFactory.create(filter);
+            controllerMap.put(filter, controller);
+            controller.show();
+        });
     }
 
-    @Override
-    public @Nullable IndexWindowFilter transformFilter(Filter filter) {
+    private static Stream<IndexWindowFilter> fetchFilters(FilterModel model) {
+        return model.getFilters()
+                .stream()
+                .filter(Filter::isEnabled)
+                .map(IndexFilterCollection::transformFilter)
+                .filter(Objects::nonNull);
+    }
+
+    private static @Nullable IndexWindowFilter transformFilter(Filter filter) {
         return FilteringMode.WINDOW.equals(filter.getMode()) ? (IndexWindowFilter) filter : null;
-    }
-
-    @Override
-    public void addFilter(IndexWindowFilter filter) {
-        if (!filter.isEnabled()) {
-            return;
-        }
-        var controller = controllerFactory.create(filter);
-        controllerMap.put(filter, controller);
-        controller.show();
-    }
-
-    @Override
-    public void removeFilter(IndexWindowFilter filter) {
-        if (filter.isEnabled()) {
-            controllerMap.remove(filter).close();
-        }
     }
 }

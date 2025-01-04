@@ -24,33 +24,38 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class LogRecordHighlighter implements FilterCollection<ColoringFilter> {
-    private final List<ColoringFilter> filters = new ArrayList<>();
-    private final List<ColoringFilter> reversedView = Lists.reverse(filters);
+public class LogRecordHighlighter {
+    private final List<ColoringFilter> filters;
+    private final List<ColoringFilter> reversedView;
 
-    @Override
-    public @Nullable ColoringFilter transformFilter(Filter filter) {
+    public LogRecordHighlighter(FilterModel model) {
+        filters = fetchFilters(model).collect(Collectors.toCollection(ArrayList::new));
+
+        // TODO(mlopatkin) We're leaking the observer
+        model.asObservable().addObserver(new FiltersChangeObserver(this::onFiltersChanged));
+        reversedView = Lists.reverse(filters);
+    }
+
+    private static Stream<ColoringFilter> fetchFilters(FilterModel model) {
+        return model.getFilters()
+                .stream()
+                .map(LogRecordHighlighter::transformFilter)
+                .filter(Objects::nonNull);
+    }
+
+    private void onFiltersChanged(FilterModel model) {
+        filters.clear();
+        fetchFilters(model).forEach(filters::add);
+    }
+
+    private static @Nullable ColoringFilter transformFilter(Filter filter) {
         return (ColoringFilter) (FilteringMode.HIGHLIGHT.equals(filter.getMode())
-                        ? filter
-                        : null);
-    }
-
-    @Override
-    public void addFilter(ColoringFilter filter) {
-        filters.add(filter);
-    }
-
-    @Override
-    public void removeFilter(ColoringFilter filter) {
-        filters.remove(filter);
-    }
-
-    @Override
-    public void replaceFilter(ColoringFilter oldFilter, ColoringFilter newFilter) {
-        var pos = filters.indexOf(oldFilter);
-        assert pos >= 0;
-        filters.set(pos, newFilter);
+                ? filter
+                : null);
     }
 
     public @Nullable Color getColor(LogRecord record) {
