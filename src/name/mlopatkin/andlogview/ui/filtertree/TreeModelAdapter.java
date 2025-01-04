@@ -75,8 +75,7 @@ public class TreeModelAdapter implements CheckableTreeModel {
 
     @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
-        var action = (EditAction) newValue;
-        action.apply();
+        throw new UnsupportedOperationException("The tree is not editable");
     }
 
     @Override
