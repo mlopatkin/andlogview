@@ -23,8 +23,6 @@ import name.mlopatkin.andlogview.ui.filtertree.FilterTreeModel;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.inject.Inject;
 
 class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> implements FilterTreeModel<TreeNodeFilter> {
@@ -44,9 +42,8 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
 
     @Override
     public void moveFilter(TreeNodeFilter node, int newPosition) {
-        var filters = ImmutableList.copyOf(model.getFilters());
-        // TODO(mlopatkin) this is bad, because it isn't necessarily the model index.
-        var before = newPosition < filters.size() ? filters.get(newPosition) : null;
+        var filters = getFilters();
+        var before = newPosition < filters.size() ? filters.get(newPosition).getFilter() : null;
         var movingFilter = node.getFilter();
         if (before != movingFilter) {
             model.removeFilter(movingFilter);
