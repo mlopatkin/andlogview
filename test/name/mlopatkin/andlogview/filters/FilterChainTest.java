@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview.filters;
 
 import static name.mlopatkin.andlogview.filters.ToggleFilter.hide;
+import static name.mlopatkin.andlogview.filters.ToggleFilter.index;
 import static name.mlopatkin.andlogview.filters.ToggleFilter.show;
 import static name.mlopatkin.andlogview.test.TestData.MATCH_ALL;
 import static name.mlopatkin.andlogview.test.TestData.MATCH_FIRST;
@@ -24,6 +25,9 @@ import static name.mlopatkin.andlogview.test.TestData.RECORD2;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
@@ -89,4 +93,30 @@ public class FilterChainTest {
         assertTrue(chain.shouldShow(RECORD2));
     }
 
+    @Test
+    public void doesNotifyWhenShowFilterAdded() {
+        FilterChain.Observer obs = mock();
+        chain.asObservable().addObserver(obs);
+        model.addFilter(show(MATCH_FIRST));
+
+        verify(obs).onFiltersChanged();
+    }
+
+    @Test
+    public void doesNotifyWhenHideFilterAdded() {
+        FilterChain.Observer obs = mock();
+        chain.asObservable().addObserver(obs);
+        model.addFilter(hide(MATCH_FIRST));
+
+        verify(obs).onFiltersChanged();
+    }
+
+    @Test
+    public void doesNotNotifyWhenUnrelatedFilterChanges() {
+        FilterChain.Observer obs = mock();
+        chain.asObservable().addObserver(obs);
+        model.addFilter(index(MATCH_FIRST));
+
+        verify(obs, never()).onFiltersChanged();
+    }
 }

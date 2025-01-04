@@ -16,11 +16,16 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import static name.mlopatkin.andlogview.filters.ToggleFilter.hide;
+import static name.mlopatkin.andlogview.test.TestData.MATCH_ALL;
 import static name.mlopatkin.andlogview.test.TestData.RECORD1;
 import static name.mlopatkin.andlogview.test.TestData.RECORD2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.test.TestData;
@@ -127,6 +132,26 @@ public class LogRecordHighlighterTest {
         model.replaceFilter(MATCH_FIRST_COLOR2.disabled(), MATCH_FIRST_COLOR2.enabled());
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
+    }
+
+    @Test
+    public void addingColorFilterNotifiesObserver() {
+        LogRecordHighlighter.Observer obs = mock();
+
+        highlighter.asObservable().addObserver(obs);
+        model.addFilter(MATCH_ALL_COLOR1);
+
+        verify(obs).onFiltersChanged();
+    }
+
+    @Test
+    public void addingNonColorFilterDoesNotNotifyObserver() {
+        LogRecordHighlighter.Observer obs = mock();
+
+        highlighter.asObservable().addObserver(obs);
+        model.addFilter(hide(MATCH_ALL));
+
+        verify(obs, never()).onFiltersChanged();
     }
 
     private static ColoringFilter makeColorFilter(final Predicate<LogRecord> base, final Color c) {

@@ -16,7 +16,10 @@
 
 package name.mlopatkin.andlogview.filters;
 
+import com.google.common.base.Predicates;
+
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * An implementation of {@link FilterModel.Observer} for uses where only a generic change event is of interest rather
@@ -24,23 +27,39 @@ import java.util.function.Consumer;
  */
 public final class FiltersChangeObserver implements FilterModel.Observer {
     private final Consumer<? super FilterModel> changeObserver;
+    private final Predicate<? super Filter> shouldIgnore;
 
     public FiltersChangeObserver(Consumer<? super FilterModel> changeObserver) {
+        this(changeObserver, Predicates.alwaysFalse());
+    }
+
+    public FiltersChangeObserver(Consumer<? super FilterModel> changeObserver, Predicate<? super Filter> shouldIgnore) {
         this.changeObserver = changeObserver;
+        this.shouldIgnore = shouldIgnore;
+    }
+
+    private boolean shouldIgnore(Filter changedFilter) {
+        return shouldIgnore.test(changedFilter);
     }
 
     @Override
     public void onFilterAdded(FilterModel model, Filter newFilter) {
-        changeObserver.accept(model);
+        if (!shouldIgnore(newFilter)) {
+            changeObserver.accept(model);
+        }
     }
 
     @Override
     public void onFilterRemoved(FilterModel model, Filter removedFilter) {
-        changeObserver.accept(model);
+        if (!shouldIgnore(removedFilter)) {
+            changeObserver.accept(model);
+        }
     }
 
     @Override
     public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-        changeObserver.accept(model);
+        if (!shouldIgnore(oldFilter) || !shouldIgnore(newFilter)) {
+            changeObserver.accept(model);
+        }
     }
 }

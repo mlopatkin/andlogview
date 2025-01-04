@@ -18,11 +18,9 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.FilterModel;
-import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.utils.events.Observable;
-import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -31,13 +29,12 @@ import java.awt.Color;
 
 class IndexFilter implements LogModelFilter, AutoCloseable {
     private final FilterChain filters;
-    private final ScopedObserver subscription;
 
     private final Subject<Observer> observers = new Subject<>();
 
     public IndexFilter(FilterModel model) {
-        this.filters = new FilterChain(model);
-        subscription = model.asObservable().addScopedObserver(new FiltersChangeObserver(m -> notifyObservers()));
+        filters = new FilterChain(model);
+        filters.asObservable().addObserver(this::notifyObservers);
     }
 
     @Override
@@ -63,6 +60,6 @@ class IndexFilter implements LogModelFilter, AutoCloseable {
 
     @Override
     public void close() {
-        subscription.close();
+        filters.close();
     }
 }

@@ -16,6 +16,9 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.Lists;
 
@@ -28,16 +31,34 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogRecordHighlighter {
+public class LogRecordHighlighter implements AutoCloseable {
+    /**
+     * An observer to be notified when the set of filters in this chain changes.
+     */
+    @FunctionalInterface
+    public interface Observer {
+        /**
+         * Called when the set of filters in the {@link LogRecordHighlighter} changes
+         */
+        void onFiltersChanged();
+    }
+
     private final List<ColoringFilter> filters;
     private final List<ColoringFilter> reversedView;
+    private final ScopedObserver subscription;
+
+    private final Subject<Observer> observers = new Subject<>();
 
     public LogRecordHighlighter(FilterModel model) {
         filters = fetchFilters(model).collect(Collectors.toCollection(ArrayList::new));
-
-        // TODO(mlopatkin) We're leaking the observer
-        model.asObservable().addObserver(new FiltersChangeObserver(this::onFiltersChanged));
         reversedView = Lists.reverse(filters);
+
+        subscription = model.asObservable()
+                .addScopedObserver(new FiltersChangeObserver(
+                                LogRecordHighlighter.this::onFiltersChanged,
+                                f -> transformFilter(f) == null
+                        )
+                );
     }
 
     private static Stream<ColoringFilter> fetchFilters(FilterModel model) {
@@ -50,6 +71,10 @@ public class LogRecordHighlighter {
     private void onFiltersChanged(FilterModel model) {
         filters.clear();
         fetchFilters(model).forEach(filters::add);
+
+        for (var observer : observers) {
+            observer.onFiltersChanged();
+        }
     }
 
     private static @Nullable ColoringFilter transformFilter(Filter filter) {
@@ -65,5 +90,14 @@ public class LogRecordHighlighter {
             }
         }
         return null;
+    }
+
+    public Observable<Observer> asObservable() {
+        return observers.asObservable();
+    }
+
+    @Override
+    public void close() {
+        subscription.close();
     }
 }

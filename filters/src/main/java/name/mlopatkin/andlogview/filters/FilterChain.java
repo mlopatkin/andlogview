@@ -16,6 +16,9 @@
 package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.utils.events.Observable;
+import name.mlopatkin.andlogview.utils.events.ScopedObserver;
+import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Multimaps;
@@ -34,8 +37,21 @@ import java.util.stream.Stream;
  * <p/>
  * The order in which filters are added to/removed from FilterChain doesn't matter.
  */
-public class FilterChain {
+public class FilterChain implements AutoCloseable {
+    /**
+     * An observer to be notified when the set of filters in this chain changes.
+     */
+    @FunctionalInterface
+    public interface Observer {
+        /**
+         * Called when the set of filters in the {@link FilterChain} changes
+         */
+        void onFiltersChanged();
+    }
+
     private final SetMultimap<FilteringMode, PredicateFilter> filters;
+    private final ScopedObserver subscription;
+    private final Subject<Observer> observers = new Subject<>();
 
     public FilterChain(FilterModel model) {
         filters = fetchFilters(model).collect(Multimaps.toMultimap(
@@ -44,15 +60,23 @@ public class FilterChain {
                 () -> MultimapBuilder.enumKeys(FilteringMode.class).hashSetValues().build()
         ));
 
-        // TODO(mlopatkin) We leak the observer
         // TODO(mlopatkin) the model supplied to the observer is invalid when change comes from the top-level filter
         //  list
-        model.asObservable().addObserver(new FiltersChangeObserver(ignored -> onFiltersChanged(model)));
+        subscription =
+                model.asObservable().addScopedObserver(new FiltersChangeObserver(
+                                ignored -> onFiltersChanged(model),
+                                f -> transformFilter(f) == null
+                        )
+                );
     }
 
     private void onFiltersChanged(FilterModel model) {
         filters.clear();
         fetchFilters(model).forEach(filter -> filters.put(filter.getMode(), filter));
+
+        for (var observer : observers) {
+            observer.onFiltersChanged();
+        }
     }
 
     private boolean include(FilteringMode mode, LogRecord record) {
@@ -86,5 +110,14 @@ public class FilterChain {
 
     public boolean shouldShow(LogRecord record) {
         return !include(FilteringMode.HIDE, record) && include(FilteringMode.SHOW, record);
+    }
+
+    public Observable<Observer> asObservable() {
+        return observers.asObservable();
+    }
+
+    @Override
+    public void close() {
+        subscription.close();
     }
 }

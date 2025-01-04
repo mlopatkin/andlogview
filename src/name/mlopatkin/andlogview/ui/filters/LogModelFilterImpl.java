@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.ui.filters;
 
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.FilterModel;
-import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.filters.LogRecordHighlighter;
 import name.mlopatkin.andlogview.liblogcat.filters.LogBufferFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -46,11 +45,12 @@ public class LogModelFilterImpl implements LogModelFilter {
     @Inject
     @VisibleForTesting
     public LogModelFilterImpl(FilterModel model) {
+        // TODO(mlopatkin) Ideally, we should clean up these.
         filterChain = new FilterChain(model);
         highlighter = new LogRecordHighlighter(model);
 
-        // TODO(mlopatkin) this leaks observers.
-        model.asObservable().addObserver(new FiltersChangeObserver(source -> notifyObservers()));
+        filterChain.asObservable().addObserver(this::notifyObservers);
+        highlighter.asObservable().addObserver(this::notifyObservers);
     }
 
     public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
