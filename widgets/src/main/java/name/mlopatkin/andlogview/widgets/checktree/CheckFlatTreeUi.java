@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.widgets.checktree;
 
-import com.formdev.flatlaf.ui.FlatTreeUI;
+import name.mlopatkin.andlogview.widgets.FixedTreeUi;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -36,7 +36,7 @@ import javax.swing.tree.TreePath;
 /**
  * A FlatLaF-based Tree UI that can handle checkable nodes.
  */
-public class CheckFlatTreeUi extends FlatTreeUI {
+public class CheckFlatTreeUi extends FixedTreeUi {
     private @Nullable CheckableTreeModel checkableTreeModel;
 
     @Override
