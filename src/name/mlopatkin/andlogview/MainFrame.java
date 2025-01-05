@@ -68,6 +68,7 @@ import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.InputEvent;
@@ -89,6 +90,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -98,6 +100,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 
@@ -350,10 +353,33 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
             return;
         }
 
-        var filterPane = new JScrollPane(filterTreeFactory.buildFilterTree());
-        filterPane.setPreferredSize(new Dimension(200, 0));
-        var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filterPane, logTableScrollPane);
+        var filterToolbar = new JToolBar();
+        var filterTreePane = new JScrollPane(filterTreeFactory.buildFilterTree(filterToolbar));
+        filterTreePane.setPreferredSize(new Dimension(200, 0));
+
+        // A combined filter tree and the filter toolbar
+        var filterControls = new JPanel(new BorderLayout());
+        filterControls.add(filterToolbar, BorderLayout.NORTH);
+        filterControls.add(filterTreePane, BorderLayout.CENTER);
+
+        // Add a small separator line on top of the filter toolbar to visually glue toolbar and the tree together.
+        filterControls.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
+
+        var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filterControls, logTableScrollPane);
+        // Some paddings around the table and the filters to avoid them overlapping the other stuff, like the toolbar.
+        splitPane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         mainFrameUi.getContentPane().add(splitPane, BorderLayout.CENTER);
+
+        // Make the toolbar and the table header of the same height. This is fishy, but seems to work so far.
+        alignPreferredHeights(logElements.getTableHeader(), filterToolbar);
+    }
+
+    private static void alignPreferredHeights(Component component1, Component component2) {
+        var size1 = component1.getPreferredSize();
+        var size2 = component2.getPreferredSize();
+        size2.height = size1.height = Math.max(size1.height, size2.height);
+        component1.setPreferredSize(size1);
+        component2.setPreferredSize(size2);
     }
 
     private void initControlPanel() {
@@ -363,7 +389,10 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         initInstantSearch();
 
-        controlsPanel.add(filterPanel);
+        if (!theme.supportsFilterTreeView() || !features.useFilterTree.isEnabled()) {
+            controlsPanel.add(filterPanel);
+        }
+
         controlsPanel.add(statusPanel.getPanel());
     }
 

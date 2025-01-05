@@ -22,24 +22,37 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 class FlatLafWidgetFactory implements ThemedWidgetFactory {
     @Override
     public ImageIcon getIcon(Icons iconId) {
-        FlatSVGIcon icon = new FlatSVGIcon(iconId.resolveModernPath(), getIconWidth(iconId), getIconHeight(iconId));
+        return createIcon(iconId, getIconWidth(iconId), getIconHeight(iconId));
+    }
+
+    private @NonNull FlatSVGIcon createIcon(Icons iconId, int iconWidth, int iconHeight) {
+        FlatSVGIcon icon = new FlatSVGIcon(iconId.resolveModernPath(), iconWidth, iconHeight);
         FlatSVGIcon.ColorFilter colorFilter = new FlatSVGIcon.ColorFilter();
         colorFilter.add(Color.BLACK, UIManager.getColor("ToggleButton.foreground"));
         icon.setColorFilter(colorFilter);
         return icon;
+    }
+
+    @Override
+    public ImageIcon getToolbarIcon(Icons iconId) {
+        return createIcon(iconId, getToolbarIconSize(), getToolbarIconSize());
     }
 
     @Override
@@ -54,6 +67,10 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
         button.setMargin(UIScale.scale(new Insets(4, 2, 4, 2)));
         button.putClientProperty(FlatClientProperties.BUTTON_TYPE,
                 FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
+    }
+
+    private int getToolbarIconSize() {
+        return UIScale.scale(10);
     }
 
     private int getIconHeight(Icons iconId) {
@@ -76,5 +93,16 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
     @Override
     public float scale(float value) {
         return UIScale.scale(value);
+    }
+
+    @Override
+    public Border createTopSeparatorBorder() {
+        // see https://www.formdev.com/flatlaf/components/separator/
+        // I've considered using the full separator drawing routine, with indents and such, but it doesn't appeal
+        // visually.
+        var foreground = UIManager.getColor("Separator.foreground");
+        var stripeThickness = UIManager.getInt("Separator.stripeWidth");  // This is thickness
+
+        return BorderFactory.createMatteBorder(stripeThickness, 0, 0, 0, foreground);
     }
 }

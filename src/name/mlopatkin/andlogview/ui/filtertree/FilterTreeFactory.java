@@ -16,13 +16,17 @@
 
 package name.mlopatkin.andlogview.ui.filtertree;
 
+import name.mlopatkin.andlogview.ui.Icons;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
 import javax.inject.Inject;
 import javax.swing.DropMode;
 import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -30,21 +34,24 @@ import javax.swing.tree.TreeSelectionModel;
  * Constructs {@link JTree} that shows the available filters.
  */
 public class FilterTreeFactory {
+    private final Theme theme;
     private final FilterNodeRenderer nodeRenderer;
     private final TreeModelAdapter treeModel;
     private final TreeActions.Factory treeActionsFactory;
 
     @Inject
     FilterTreeFactory(
+            Theme theme,
             FilterNodeRenderer nodeRenderer,
             TreeModelAdapter treeModel,
             TreeActions.Factory treeActionsFactory) {
+        this.theme = theme;
         this.nodeRenderer = nodeRenderer;
         this.treeModel = treeModel;
         this.treeActionsFactory = treeActionsFactory;
     }
 
-    public JTree buildFilterTree() {
+    public JTree buildFilterTree(JToolBar filterToolbar) {
         var filterTree = new JTree(treeModel);
 
         filterTree.setUI(new CheckFlatTreeUi());
@@ -65,6 +72,7 @@ public class FilterTreeFactory {
 
         configurePopupMenu(filterTree, treeActions);
         configureKeyMap(filterTree, treeActions);
+        configureToolBar(filterToolbar, treeActions);
 
         return filterTree;
     }
@@ -100,5 +108,13 @@ public class FilterTreeFactory {
         UiHelper.bindKeyFocused(tree, "ENTER", treeActions.editSelectedFilter);
         UiHelper.bindKeyFocused(tree, "SPACE", treeActions.toggleSelectedFilter);
         UiHelper.bindKeyFocused(tree, "DELETE", treeActions.deleteSelectedFilter);
+    }
+
+    private void configureToolBar(JToolBar toolBar, TreeActions treeActions) {
+        var createFilterBtn = toolBar.add(treeActions.createFilter);
+
+        createFilterBtn.setIcon(theme.getWidgetFactory().getToolbarIcon(Icons.ADD));
+        createFilterBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
+        createFilterBtn.setVerticalTextPosition(SwingConstants.CENTER);
     }
 }

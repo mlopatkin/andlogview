@@ -21,8 +21,13 @@ import name.mlopatkin.andlogview.ui.Icons;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 public interface ThemedWidgetFactory {
+    default ImageIcon getToolbarIcon(Icons iconId) {
+        return getIcon(iconId);
+    }
+
     ImageIcon getIcon(Icons iconId);
 
     void configureFilterPanelButton(AbstractButton button);
@@ -32,4 +37,11 @@ public interface ThemedWidgetFactory {
     void configureFilterPanel(JPanel filterPanel, JPanel filterButtonsPanel);
 
     float scale(float value);
+
+    /**
+     * Creates a border that is only drawn on top and can serve as a separator.
+     *
+     * @return the border
+     */
+    Border createTopSeparatorBorder();
 }

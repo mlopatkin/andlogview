@@ -22,8 +22,11 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 import java.awt.FlowLayout;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 class BasicWidgetFactory implements ThemedWidgetFactory {
     private static final int SCROLL_BUTTON_WIDTH = 26;
@@ -50,5 +53,15 @@ class BasicWidgetFactory implements ThemedWidgetFactory {
     @Override
     public float scale(float value) {
         return value;
+    }
+
+    @Override
+    public Border createTopSeparatorBorder() {
+        var foreground = UIManager.getColor("Separator.foreground");
+        var background = UIManager.getColor("Separator.background");
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, foreground),
+                BorderFactory.createMatteBorder(1, 0, 0, 0, background)
+        );
     }
 }
