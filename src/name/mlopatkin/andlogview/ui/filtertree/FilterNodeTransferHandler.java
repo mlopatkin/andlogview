@@ -50,7 +50,7 @@ class FilterNodeTransferHandler extends TransferHandler {
 
     @Override
     public int getSourceActions(JComponent c) {
-        return COPY_OR_MOVE;
+        return MOVE;
     }
 
     @Override
