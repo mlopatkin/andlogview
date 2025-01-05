@@ -57,12 +57,13 @@ class FlatLafTheme implements Theme {
             tableBorder.innerFocusWidthProp.setDefault(0f);
             tableBorder.focusedBorderColorProp.setDefault(UIManager.getColor("Component.borderColor"));
             UIManager.put("Table.scrollPaneBorder", tableBorder);
+            // Disable the focus border for other scroll panes too.
+            UIManager.put("ScrollPane.border", tableBorder);
 
             var selectionBackground = UIManager.getColor("Tree.selectionBackground");
             var dropBackground = ColorFunctions.lighten(selectionBackground, 0.1f);
             UIManager.put("Tree.dropCellBackground", dropBackground);
             UIManager.put("Tree.dropLineColor", dropBackground);
-
         } catch (IOException e) {
             logger.error(
                     String.format("Failed to load %s theme", FlatLafThemes.LIGHTFLAT.name().toLowerCase(Locale.ROOT)),
