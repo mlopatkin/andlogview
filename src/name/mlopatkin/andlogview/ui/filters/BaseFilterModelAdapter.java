@@ -72,9 +72,8 @@ public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
                 } else if (newTransformedFilter != null) {
                     assert oldTransformedFilter == null;
                     addFilter(newTransformedFilter);
-                } else {
+                } else if (oldTransformedFilter != null) {
                     assert newTransformedFilter == null;
-                    assert oldTransformedFilter != null;
                     removeFilter(oldTransformedFilter);
                 }
             }
