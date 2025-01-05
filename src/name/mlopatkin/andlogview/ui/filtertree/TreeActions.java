@@ -46,8 +46,9 @@ class TreeActions {
             FilterTreeModel<FilterNodeViewModel> model,
             @Assisted JTree tree
     ) {
-        this.createFilter = UiHelper.makeAction("Create filter", filterCreator::createFilterWithDialog);
-        this.editSelectedFilter = UiHelper.makeAction("Edit filter", () -> withSelectedFilter(tree, model::editFilter));
+        this.createFilter = UiHelper.makeAction("Create filter…", filterCreator::createFilterWithDialog);
+        this.editSelectedFilter =
+                UiHelper.makeAction("Edit filter…", () -> withSelectedFilter(tree, model::editFilter));
         this.deleteSelectedFilter =
                 UiHelper.makeAction("Delete filter", () -> withSelectedFilter(tree, model::removeFilterForView));
         this.toggleSelectedFilter = UiHelper.makeAction("Toggle filter",
