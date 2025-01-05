@@ -111,4 +111,14 @@ public class FakeFilterTreeModel implements FilterTreeModel<FakeFilterTreeModel.
     public ImmutableList<FakeFilter> getFilters() {
         return ImmutableList.copyOf(filters);
     }
+
+    @Override
+    public void removeFilterForView(FakeFilter filter) {
+        removeFilter(filter);
+    }
+
+    @Override
+    public void editFilter(FakeFilter filter) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

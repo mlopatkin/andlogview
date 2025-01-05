@@ -80,4 +80,14 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
     public Observable<ModelObserver<? super TreeNodeFilter>> asObservable() {
         return observers.asObservable();
     }
+
+    @Override
+    public void removeFilterForView(TreeNodeFilter filter) {
+        model.removeFilter(filter.getFilter());
+    }
+
+    @Override
+    public void editFilter(TreeNodeFilter filter) {
+        filter.openFilterEditor();
+    }
 }

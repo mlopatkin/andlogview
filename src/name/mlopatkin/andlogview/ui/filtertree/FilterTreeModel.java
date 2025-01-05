@@ -44,6 +44,20 @@ public interface FilterTreeModel<V extends FilterNodeViewModel> {
      */
     void setFilterEnabled(V filter, boolean enabled);
 
+    /**
+     * Requests to remove the filter represented by the view.
+     *
+     * @param filter the filter view
+     */
+    void removeFilterForView(V filter);
+
+    /**
+     * Requests to edit the filter represented by the view.
+     *
+     * @param filter the filter view
+     */
+    void editFilter(V filter);
+
     Observable<ModelObserver<? super V>> asObservable();
 
     ImmutableList<V> getFilters();

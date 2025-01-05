@@ -30,13 +30,16 @@ import javax.swing.tree.TreeSelectionModel;
 public class FilterTreeFactory {
     private final FilterNodeRenderer nodeRenderer;
     private final TreeModelAdapter treeModel;
+    private final PopupMenu popupMenu;
 
     @Inject
     FilterTreeFactory(
             FilterNodeRenderer nodeRenderer,
-            TreeModelAdapter treeModel) {
+            TreeModelAdapter treeModel,
+            PopupMenu popupMenu) {
         this.nodeRenderer = nodeRenderer;
         this.treeModel = treeModel;
+        this.popupMenu = popupMenu;
     }
 
     public JTree buildFilterTree() {
@@ -55,6 +58,7 @@ public class FilterTreeFactory {
         filterTree.setDropMode(DropMode.INSERT);
 
         filterTree.setTransferHandler(new FilterNodeTransferHandler(treeModel.getModel()));
+        popupMenu.configurePopupMenu(filterTree);
 
         return filterTree;
     }

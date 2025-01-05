@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
 import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
 import name.mlopatkin.andlogview.ui.filters.FilterModule;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
@@ -72,7 +71,14 @@ public class MainFrameModule {
     }
 
     @Provides
-    FilterCreator provideFilterCreator(MainFilterController mainFilterController) {
+    name.mlopatkin.andlogview.ui.filterpanel.FilterCreator provideFilterCreator(
+            MainFilterController mainFilterController) {
+        return mainFilterController;
+    }
+
+    @Provides
+    name.mlopatkin.andlogview.ui.filtertree.FilterCreator provideTreeFilterCreator(
+            MainFilterController mainFilterController) {
         return mainFilterController;
     }
 
