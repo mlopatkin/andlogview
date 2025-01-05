@@ -16,10 +16,12 @@
 
 package name.mlopatkin.andlogview.ui.filtertree;
 
+import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
 import javax.inject.Inject;
 import javax.swing.DropMode;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -30,16 +32,16 @@ import javax.swing.tree.TreeSelectionModel;
 public class FilterTreeFactory {
     private final FilterNodeRenderer nodeRenderer;
     private final TreeModelAdapter treeModel;
-    private final PopupMenu popupMenu;
+    private final TreeActions.Factory treeActionsFactory;
 
     @Inject
     FilterTreeFactory(
             FilterNodeRenderer nodeRenderer,
             TreeModelAdapter treeModel,
-            PopupMenu popupMenu) {
+            TreeActions.Factory treeActionsFactory) {
         this.nodeRenderer = nodeRenderer;
         this.treeModel = treeModel;
-        this.popupMenu = popupMenu;
+        this.treeActionsFactory = treeActionsFactory;
     }
 
     public JTree buildFilterTree() {
@@ -58,9 +60,45 @@ public class FilterTreeFactory {
         filterTree.setDropMode(DropMode.INSERT);
 
         filterTree.setTransferHandler(new FilterNodeTransferHandler(treeModel.getModel()));
-        popupMenu.configurePopupMenu(filterTree);
+
+        var treeActions = treeActionsFactory.create(filterTree);
+
+        configurePopupMenu(filterTree, treeActions);
+        configureKeyMap(filterTree, treeActions);
 
         return filterTree;
     }
 
+    /**
+     * Installs the popup menu to the filter tree.
+     *
+     * @param tree the filter tree to install menu to
+     */
+    private void configurePopupMenu(JTree tree, TreeActions treeActions) {
+        var filterPopupMenu = new JPopupMenu();
+        filterPopupMenu.add(treeActions.editSelectedFilter);
+        filterPopupMenu.add(treeActions.deleteSelectedFilter);
+
+        var treePopupMenu = new JPopupMenu();
+        treePopupMenu.add(treeActions.createFilter);
+
+        UiHelper.PopupMenuDelegate<JTree> menuHandler = (component, x, y) -> {
+            assert component == tree;
+            var path = tree.getPathForLocation(x, y);
+            if (path == null) {
+                treePopupMenu.show(tree, x, y);
+            } else {
+                tree.setSelectionPath(path);
+                filterPopupMenu.show(tree, x, y);
+            }
+        };
+
+        UiHelper.addPopupMenu(tree, menuHandler);
+    }
+
+    private void configureKeyMap(JTree tree, TreeActions treeActions) {
+        UiHelper.bindKeyFocused(tree, "ENTER", treeActions.editSelectedFilter);
+        UiHelper.bindKeyFocused(tree, "SPACE", treeActions.toggleSelectedFilter);
+        UiHelper.bindKeyFocused(tree, "DELETE", treeActions.deleteSelectedFilter);
+    }
 }

@@ -96,6 +96,19 @@ public class UiHelper {
     }
 
     /**
+     * Binds a key combination to the action. The combination is handled when {@code component} is focused.
+     *
+     * @param component the component which must be focused wto enable the combination
+     * @param key the key combination as expected by {@link KeyStroke#getKeyStroke(String)}
+     * @param action the action to perform when key combination is pressed
+     */
+    public static void bindKeyFocused(JComponent component, String key, Action action) {
+        var actionName = action.getValue(Action.NAME);
+        component.getInputMap().put(KeyStroke.getKeyStroke(key), actionName);
+        component.getActionMap().put(actionName, action);
+    }
+
+    /**
      * Binds a key combination to the action listener. The combination is handled when {@code component} is focused.
      *
      * @param component the component which must be focused wto enable the combination
