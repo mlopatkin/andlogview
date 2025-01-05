@@ -159,6 +159,7 @@ public class LogRecord {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+        b.append("[").append(buffer != null ? buffer.name() : "?").append("] ");
         if (time != null) {
             b.append(TimeFormatUtils.convertTimeToString(time)).append('\t');
         }

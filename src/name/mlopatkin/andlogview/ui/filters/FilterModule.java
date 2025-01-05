@@ -42,8 +42,14 @@ public abstract class FilterModule {
 
     @Provides
     @MainFrameScoped
-    static MutableFilterModel getFiltersModel(StoredFilters filters) {
-        return filters.getStorageBackedModel();
+    static BufferFilterModel bufferFilterModel() {
+        return new BufferFilterModel(MutableFilterModel.create());
+    }
+
+    @Provides
+    @MainFrameScoped
+    static MutableFilterModel getFiltersModel(StoredFilters storedFilters) {
+        return storedFilters.getStorageBackedModel();
     }
 
     @Binds

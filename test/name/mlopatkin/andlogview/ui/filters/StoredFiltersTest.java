@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.filters;
 import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.filters.MutableFilterModel;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -36,7 +37,7 @@ class StoredFiltersTest {
     void deserializeExistingFilter() throws Exception {
         var storage = new FakeInMemoryConfigStorage(gson);
         storage.setJsonData("filters", loadTestResource("filters_v1.json"));
-        StoredFilters filters = new StoredFilters(storage);
+        StoredFilters filters = new StoredFilters(storage, MutableFilterModel.create());
 
         // TODO(mlopatkin) add more thorough checking here when refactoring filter saving.
         assertThatFilters(filters.getStorageBackedModel()).hasSize(1);

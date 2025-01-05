@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.ui.filters;
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.LogRecordHighlighter;
-import name.mlopatkin.andlogview.liblogcat.filters.LogBufferFilter;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
@@ -38,7 +37,6 @@ import javax.inject.Inject;
 public class LogModelFilterImpl implements LogModelFilter {
     private final FilterChain filterChain;
     private final LogRecordHighlighter highlighter;
-    private final LogBufferFilter bufferFilter = new LogBufferFilter();
 
     private final Subject<Observer> observers = new Subject<>();
 
@@ -53,14 +51,9 @@ public class LogModelFilterImpl implements LogModelFilter {
         highlighter.asObservable().addObserver(this::notifyObservers);
     }
 
-    public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
-        bufferFilter.setBufferEnabled(buffer, enabled);
-        notifyObservers();
-    }
-
     @Override
     public boolean shouldShowRecord(LogRecord record) {
-        return bufferFilter.test(record) && filterChain.shouldShow(record);
+        return filterChain.shouldShow(record);
     }
 
     @Override

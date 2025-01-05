@@ -30,4 +30,7 @@ dependencies {
 
     testFixturesApi(platform(libs.test.assertj.bom))
     testFixturesApi(libs.test.assertj.core)
+
+    testImplementation(testFixtures(project(":logmodel")))
+    testImplementation(libs.test.guavaTestlib)
 }

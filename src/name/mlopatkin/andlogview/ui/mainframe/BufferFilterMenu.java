@@ -15,70 +15,50 @@
  */
 package name.mlopatkin.andlogview.ui.mainframe;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
-import name.mlopatkin.andlogview.ui.filters.LogModelFilterImpl;
+import name.mlopatkin.andlogview.ui.filters.BufferFilterModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.Map.Entry;
 
+import javax.inject.Inject;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 public final class BufferFilterMenu {
-    private final JMenu parent;
-    private final LogModelFilterImpl bufferFilter;
-
-    private final class BufferCheckBoxMenuItem extends JCheckBoxMenuItem implements ActionListener {
-        private final Buffer buffer;
-
-        public BufferCheckBoxMenuItem(Buffer buffer, boolean selected) {
-            super(buffer.getCaption(), selected);
-            this.buffer = buffer;
-            addActionListener(this);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            bufferFilter.setBufferEnabled(buffer, isSelected());
-        }
-    }
-
+    private final BufferFilterModel bufferModel;
+    private final JMenu parent = new JMenu("Buffers");
     private final EnumMap<Buffer, JMenuItem> items = new EnumMap<>(Buffer.class);
 
-    public BufferFilterMenu(JMenu parent, LogModelFilterImpl bufferFilter) {
-        this.parent = parent;
-        this.bufferFilter = bufferFilter;
+    @Inject
+    public BufferFilterMenu(BufferFilterModel bufferModel) {
+        this.bufferModel = bufferModel;
+
         for (Buffer buffer : Buffer.values()) {
-            JMenuItem item = new BufferCheckBoxMenuItem(buffer, Configuration.ui.bufferEnabled(buffer));
+            JMenuItem item = new JCheckBoxMenuItem(buffer.getCaption(), bufferModel.isBufferEnabled(buffer));
+            item.addActionListener(e -> bufferModel.setBufferEnabled(buffer, item.isSelected()));
             items.put(buffer, item);
             parent.add(item);
         }
-        resetBuffers();
-    }
 
-    private void resetBuffers() {
-        for (Entry<Buffer, JMenuItem> entry : items.entrySet()) {
-            bufferFilter.setBufferEnabled(entry.getKey(), false);
-            entry.getValue().setVisible(false);
-        }
         parent.setVisible(false);
     }
 
+    public JMenu getBuffersMenu() {
+        return parent;
+    }
+
     public void setAvailableBuffers(EnumSet<Buffer> availableBuffers) {
-        resetBuffers();
-        boolean anyBufferAvailable = false;
-        for (Buffer buffer : availableBuffers) {
-            anyBufferAvailable = true;
-            JMenuItem item = items.get(buffer);
-            assert item != null;
-            item.setVisible(true);
-            bufferFilter.setBufferEnabled(buffer, item.isSelected());
+        if (availableBuffers.isEmpty()) {
+            parent.setVisible(false);
+            bufferModel.setBufferFilteringEnabled(false);
+            return;
         }
-        parent.setVisible(anyBufferAvailable);
+
+        parent.setVisible(true);
+        bufferModel.setBufferFilteringEnabled(true);
+
+        items.forEach((buffer, menuItem) -> menuItem.setVisible(availableBuffers.contains(buffer)));
     }
 }

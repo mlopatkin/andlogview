@@ -139,7 +139,9 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     BookmarkController bookmarkController;
     @Inject
     BookmarkModel bookmarkModel;
-    private BufferFilterMenu bufferMenu;
+    @Inject
+    BufferFilterMenu bufferMenu;
+
     private JPanel controlsPanel;
     private JTextField instantSearchTextField;
 
@@ -489,9 +491,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         }
         mainMenu.add(mnAdb);
 
-        JMenu mnFilters = new JMenu("Buffers");
-        bufferMenu = new BufferFilterMenu(mnFilters, logModelFilter);
-        mainMenu.add(mnFilters);
+        mainMenu.add(bufferMenu.getBuffersMenu());
 
         mainFrameUi.setJMenuBar(mainMenu);
 
