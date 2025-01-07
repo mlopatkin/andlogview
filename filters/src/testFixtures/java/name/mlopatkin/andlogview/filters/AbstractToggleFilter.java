@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.filters;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> extends AbstractFilter<T>
@@ -33,17 +32,5 @@ public abstract class AbstractToggleFilter<T extends AbstractToggleFilter<T>> ex
     @Override
     public boolean test(LogRecord logRecord) {
         return predicate.test(logRecord);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mode, predicate);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj == this
-                || (obj instanceof AbstractToggleFilter<?> filter && mode.equals(filter.mode)
-                && isEnabled() == filter.isEnabled() && predicate.equals(filter.predicate));
     }
 }

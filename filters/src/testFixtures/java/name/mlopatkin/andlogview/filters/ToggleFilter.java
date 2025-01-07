@@ -30,16 +30,6 @@ public class ToggleFilter extends AbstractToggleFilter<ToggleFilter> {
         return new ToggleFilter(mode, enabled, predicate);
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj) && obj instanceof ToggleFilter;
-    }
-
     public static ToggleFilter show(Predicate<? super LogRecord> predicate) {
         return new ToggleFilter(FilteringMode.SHOW, true, predicate);
     }

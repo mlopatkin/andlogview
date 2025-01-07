@@ -28,7 +28,6 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> implements FilterFromDialog, ChildModelFilter {
@@ -88,21 +87,5 @@ public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> impleme
     @Override
     public MutableFilterModel getChildren() {
         return model;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(isEnabled(), filterData);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof IndexWindowFilter that) {
-            return that.isEnabled() == isEnabled() && Objects.equals(that.filterData, filterData);
-        }
-        return false;
     }
 }

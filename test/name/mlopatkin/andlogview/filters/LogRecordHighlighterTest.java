@@ -114,10 +114,11 @@ public class LogRecordHighlighterTest {
     @Test
     public void testEnable() throws Exception {
         model.addFilter(MATCH_FIRST_COLOR1);
-        model.replaceFilter(MATCH_FIRST_COLOR1, MATCH_FIRST_COLOR1.disabled());
+        var disabled = MATCH_FIRST_COLOR1.disabled();
+        model.replaceFilter(MATCH_FIRST_COLOR1, disabled);
         assertNull(highlighter.getColor(RECORD1));
 
-        model.replaceFilter(MATCH_FIRST_COLOR1.disabled(), MATCH_FIRST_COLOR1.enabled());
+        model.replaceFilter(disabled, MATCH_FIRST_COLOR1.enabled());
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
     }
 
@@ -128,8 +129,9 @@ public class LogRecordHighlighterTest {
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
 
-        model.replaceFilter(MATCH_FIRST_COLOR2, MATCH_FIRST_COLOR2.disabled());
-        model.replaceFilter(MATCH_FIRST_COLOR2.disabled(), MATCH_FIRST_COLOR2.enabled());
+        var disabled = MATCH_FIRST_COLOR2.disabled();
+        model.replaceFilter(MATCH_FIRST_COLOR2, disabled);
+        model.replaceFilter(disabled, MATCH_FIRST_COLOR2.enabled());
 
         assertEquals(COLOR1, highlighter.getColor(RECORD1));
     }

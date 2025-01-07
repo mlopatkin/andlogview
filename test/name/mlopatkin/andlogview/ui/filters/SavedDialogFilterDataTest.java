@@ -46,9 +46,8 @@ class SavedDialogFilterDataTest {
 
         var deserialized = roundTrip(original);
 
-        assertThat(deserialized).isEqualTo(original);
         assertThat(deserialized.isEnabled()).isEqualTo(isFilterEnabled);
-        assertThat(deserialized.getData().getTags()).singleElement().isEqualTo(tagPattern);
+        assertThat(deserialized.getData()).isEqualTo(original.getData());
 
         assertThat(((PredicateFilter) deserialized).test(TestData.RECORD1)).isEqualTo(expectedMatch);
     }

@@ -23,7 +23,6 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -68,19 +67,6 @@ public final class BufferFilter extends AbstractFilter<BufferFilter> implements 
 
         return new BufferFilter(allowedBuffers.stream().filter(b -> !b.equals(buffer)).collect(toImmutableSet()),
                 isEnabled());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (
-                o instanceof BufferFilter that
-                        && Objects.equals(allowedBuffers, that.allowedBuffers)
-                        && isEnabled() == that.isEnabled());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(allowedBuffers, isEnabled());
     }
 
     public Set<LogRecord.Buffer> getAllowedBuffers() {

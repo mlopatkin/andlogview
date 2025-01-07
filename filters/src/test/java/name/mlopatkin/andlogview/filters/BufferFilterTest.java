@@ -27,7 +27,6 @@ import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.testing.EqualsTester;
 
 import org.junit.jupiter.api.Test;
 
@@ -91,21 +90,6 @@ class BufferFilterTest {
 
         assertThat(filter.getAllowedBuffers()).containsOnly(Buffer.EVENTS);
         assertThat(filter.isEnabled()).isTrue();
-    }
-
-    @Test
-    void testEquality() {
-        new EqualsTester()
-                .addEqualityGroup(createFilter(), createFilter().disabled().enabled(),
-                        createFilter(Buffer.EVENTS).disallowBuffer(Buffer.EVENTS))
-                .addEqualityGroup(createFilter().disabled())
-                .addEqualityGroup(createFilter(Buffer.EVENTS), createFilter().allowBuffer(Buffer.EVENTS))
-                .addEqualityGroup(createFilter(Buffer.EVENTS).disabled(),
-                        createFilter().allowBuffer(Buffer.EVENTS).disabled())
-                .addEqualityGroup(createFilter(Buffer.MAIN), createFilter().allowBuffer(Buffer.MAIN))
-                .addEqualityGroup(createFilter(Buffer.MAIN, Buffer.EVENTS).disabled(),
-                        createFilter().allowBuffer(Buffer.MAIN).allowBuffer(Buffer.EVENTS).disabled())
-                .testEquals();
     }
 
     private BufferFilter createFilter(Buffer... buffers) {

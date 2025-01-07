@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class ColoringToggleFilter extends AbstractToggleFilter<ColoringToggleFilter> implements ColoringFilter {
@@ -40,15 +39,5 @@ public class ColoringToggleFilter extends AbstractToggleFilter<ColoringToggleFil
     @Override
     protected ColoringToggleFilter copy(boolean enabled) {
         return new ColoringToggleFilter(color, enabled, predicate);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() * 37 + Objects.hashCode(color);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj) && (obj instanceof ColoringToggleFilter filter && Objects.equals(color, filter.color));
     }
 }

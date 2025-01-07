@@ -74,22 +74,6 @@ public class FilterFromDialogImpl extends AbstractFilter<FilterFromDialogImpl>
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(isEnabled(), data);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof FilterFromDialogImpl that) {
-            return isEnabled() == that.isEnabled() && Objects.equals(data, that.data);
-        }
-        return false;
-    }
-
-    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).add("enabled", isEnabled()).add("data", getData()).toString();
     }

@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
+import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
 
@@ -30,6 +31,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.Objects;
 
 class IndexWindowFilterDataTest {
     @Test
@@ -53,7 +56,15 @@ class IndexWindowFilterDataTest {
 
         var restoredFilter = roundTrip(data);
 
-        assertThatFilters(restoredFilter.getChildren()).contains(childFilter);
+        // A first element of a child filter is always
+        assertThatFilters(restoredFilter.getChildren()).satisfiesExactly(
+                first -> assertThat(first.getMode()).isEqualTo(FilteringMode.HIDE),
+                second -> assertThat(second).matches(restoredChild ->
+                        (restoredChild instanceof FilterFromDialog ffd)
+                                && ffd.isEnabled() == childFilter.isEnabled()
+                                && Objects.equals(ffd.getData(), childFilter.getData())
+                )
+        );
     }
 
     private static IndexWindowFilter createFilter(String... tags) throws RequestCompilationException {

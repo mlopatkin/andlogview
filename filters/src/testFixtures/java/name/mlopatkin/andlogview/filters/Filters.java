@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview.filters;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.Objects;
-
 /**
  * Helpers to create filters in tests.
  */
@@ -35,8 +33,8 @@ public final class Filters {
     }
 
     /**
-     * Creates an enabled filter with a nice {@code toString} representation based on {@code name}. Name is also used
-     * for equality checks, alongside enabled status. The returned filter doesn't implement any other interfaces.
+     * Creates an enabled filter with a nice {@code toString} representation based on {@code name}.
+     * The returned filter doesn't implement any other interfaces.
      *
      * @param name the name of the filter
      * @return the named filter
@@ -61,17 +59,6 @@ public final class Filters {
         @Override
         public String toString() {
             return name;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj == this || (obj instanceof NamedFilter named && (named.isEnabled() == isEnabled())
-                    && Objects.equals(name, named.name));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(isEnabled(), name);
         }
     }
 }

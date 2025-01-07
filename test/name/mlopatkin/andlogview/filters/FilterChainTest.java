@@ -66,16 +66,18 @@ public class FilterChainTest {
 
     @Test
     public void testRemoveFilter() throws Exception {
-        model.addFilter(hide(MATCH_ALL));
-        model.removeFilter(hide(MATCH_ALL));
+        var filter = hide(MATCH_ALL);
+        model.addFilter(filter);
+        model.removeFilter(filter);
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
 
     @Test
     public void testReplace() throws Exception {
-        model.addFilter(hide(MATCH_ALL));
-        model.replaceFilter(hide(MATCH_ALL), hide(MATCH_FIRST));
+        var filter1 = hide(MATCH_ALL);
+        model.addFilter(filter1);
+        model.replaceFilter(filter1, hide(MATCH_FIRST));
 
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
@@ -83,12 +85,14 @@ public class FilterChainTest {
 
     @Test
     public void testSetEnabled() throws Exception {
-        model.addFilter(hide(MATCH_FIRST));
-        model.replaceFilter(hide(MATCH_FIRST), hide(MATCH_FIRST).disabled());
+        var filter1 = hide(MATCH_FIRST);
+        var filter2 = filter1.disabled();
+        model.addFilter(filter1);
+        model.replaceFilter(filter1, filter2);
 
         assertTrue(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
-        model.replaceFilter(hide(MATCH_FIRST).disabled(), hide(MATCH_FIRST));
+        model.replaceFilter(filter2, filter1);
         assertFalse(chain.shouldShow(RECORD1));
         assertTrue(chain.shouldShow(RECORD2));
     }
