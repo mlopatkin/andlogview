@@ -31,7 +31,6 @@ public class StatusPanel {
     @Inject
     StatusPanel(
             StatusPanelUi statusPanelUi,
-            @SuppressWarnings("unused") SearchStatusPresenter searchStatusPresenter,
             @SuppressWarnings("unused") SourceStatusPresenter sourceStatusPresenter) {
         // Unused parameters are to bootstrap presenters as otherwise there's nobody to create them.
         this.statusPanelUi = statusPanelUi;
