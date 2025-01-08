@@ -5,3 +5,7 @@ kbd > kbd {
     border: 1px solid black;
     font-size: 95%;
 }
+
+.gdoc-footer__trademark {
+    font-size: smaller;
+}

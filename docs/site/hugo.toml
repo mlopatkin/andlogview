@@ -33,3 +33,4 @@ weight = 10
 [params]
 geekdocBreadcrumb = false
 geekdocSearch = false
+geekdocTrademarkNotices = true

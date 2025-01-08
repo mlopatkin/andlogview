@@ -1,4 +1,4 @@
-# AndLogView: Log viewer for Android development
+# AndLogView: Log viewer for Android™ development
 
 [AndLogViewer](https://andlogview.mlopatkin.name/) is the tool to simplify analysis
 of the Android logs, both online and offline.
@@ -21,7 +21,7 @@ of the Android logs, both online and offline.
 
 Requirements:
 
- - JRE 8+
+ - JRE or JDK 8+
  - Android SDK (to work with a device or an emulator)
 
 Unpack a zip archive to any folder.
@@ -29,7 +29,7 @@ Unpack a zip archive to any folder.
 Use the OS-specific script to launch AndLogView:
 
  - `bin/andlogview.bat` (Windows)
- - `bin/andlogview` (Linux)
+ - `bin/andlogview` (Linux, MacOS)
 
 Both scripts expect the javaw/java to be on your PATH.
 
@@ -92,3 +92,6 @@ There is a mailing list [android-log-viewer at Google Groups](https://groups.goo
 for release announcements and discussions.
 
 Please report bugs to https://github.com/mlopatkin/andlogview/issues
+
+---
+<small>Android is a trademark of Google LLC.</small>

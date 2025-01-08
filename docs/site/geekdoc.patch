@@ -1,0 +1,18 @@
+diff --git a/docs/site/themes/hugo-geekdoc/layouts/partials/site-footer.html b/docs/site/themes/hugo-geekdoc/layouts/partials/site-footer.html
+index 31ae8e1b..9c173a52 100644
+--- a/docs/site/themes/hugo-geekdoc/layouts/partials/site-footer.html
++++ b/docs/site/themes/hugo-geekdoc/layouts/partials/site-footer.html
+@@ -28,6 +28,13 @@
+           </span>
+         </section>
+       {{ end }}
++      {{ with .Site.Params.geekdocTrademarkNotices }}
++      <section class="flex flex-wrap align-center">
++          <span class="gdoc-footer__item gdoc-footer__trademark">
++            {{ i18n "footer_trademark_notices" }}
++          </span>
++      </section>
++      {{ end }}
+     </div>
+     {{ if (default true .Site.Params.geekdocBackToTop) }}
+       <div class="flex flex-25 justify-end">

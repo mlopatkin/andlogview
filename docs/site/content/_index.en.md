@@ -1,4 +1,4 @@
-# AndLogView: Log viewer for Android development
+# AndLogView: Log viewer for Android™ development
 
 https://github.com/mlopatkin/andlogview
 
