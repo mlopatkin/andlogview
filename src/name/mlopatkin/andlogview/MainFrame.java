@@ -365,7 +365,12 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         filterControls.add(filterTreePane, BorderLayout.CENTER);
 
         // Add a small separator line on top of the filter toolbar to visually glue toolbar and the tree together.
-        filterControls.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
+        // This isn't needed on macOS, because the top menu is detached, and there is a line between the window header
+        // and the content. An extra separator results in double line. This may be reconsidered if I decide to merge
+        // top bar with the panel.
+        if (!SystemUtils.IS_OS_MACOS) {
+            filterControls.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
+        }
 
         var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filterControls, logTableScrollPane);
         // Some paddings around the table and the filters to avoid them overlapping the other stuff, like the toolbar.
