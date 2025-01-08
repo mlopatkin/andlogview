@@ -44,18 +44,24 @@ class StatusPanelUi {
         statusPanel.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
 
+        // Add left padding.
+        statusPanel.add(createHorizontalPadding());
+
         searchStatusLabel = new JLabel();
         searchStatusLabel.setHorizontalAlignment(SwingConstants.LEFT);
         statusPanel.add(searchStatusLabel);
 
-        Component horizontalGlue = Box.createHorizontalGlue();
-        statusPanel.add(horizontalGlue);
+        statusPanel.add(Box.createHorizontalGlue());
 
         sourceStatusLabel = new JLabel();
         statusPanel.add(sourceStatusLabel);
 
-        Component rigidArea = Box.createRigidArea(new Dimension(TRAILING_PADDING, MIN_PANEL_HEIGHT));
-        statusPanel.add(rigidArea);
+        // Add right padding.
+        statusPanel.add(createHorizontalPadding());
+    }
+
+    private Component createHorizontalPadding() {
+        return Box.createRigidArea(new Dimension(TRAILING_PADDING, MIN_PANEL_HEIGHT));
     }
 
     public JPanel getPanel() {
