@@ -31,7 +31,7 @@ import javax.swing.SwingConstants;
 
 @MainFrameScoped
 class StatusPanelUi {
-    private static final int MIN_PANEL_HEIGHT = 48;
+    private static final int MIN_PANEL_HEIGHT = 24;
     private static final int TRAILING_PADDING = 5;
 
     protected final JPanel statusPanel;
