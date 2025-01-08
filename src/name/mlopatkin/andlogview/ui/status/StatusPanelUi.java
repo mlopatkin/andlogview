@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -27,18 +28,20 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
 
 @MainFrameScoped
 class StatusPanelUi {
+    private static final int MIN_PANEL_HEIGHT = 48;
+    private static final int TRAILING_PADDING = 5;
+
     protected final JPanel statusPanel;
     protected final JLabel searchStatusLabel;
     protected final JLabel sourceStatusLabel;
 
     @Inject
-    public StatusPanelUi() {
+    public StatusPanelUi(Theme theme) {
         statusPanel = new JPanel();
-        statusPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        statusPanel.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
 
         searchStatusLabel = new JLabel();
@@ -51,7 +54,7 @@ class StatusPanelUi {
         sourceStatusLabel = new JLabel();
         statusPanel.add(sourceStatusLabel);
 
-        Component rigidArea = Box.createRigidArea(new Dimension(5, 16));
+        Component rigidArea = Box.createRigidArea(new Dimension(TRAILING_PADDING, MIN_PANEL_HEIGHT));
         statusPanel.add(rigidArea);
     }
 
