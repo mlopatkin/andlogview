@@ -53,6 +53,16 @@ public class ActionBuilder {
         return this;
     }
 
+    public ActionBuilder largeIcon(Icon icon) {
+        action.putValue(Action.LARGE_ICON_KEY, icon);
+        return this;
+    }
+
+    public ActionBuilder shortDescription(String text) {
+        action.putValue(Action.SHORT_DESCRIPTION, text);
+        return this;
+    }
+
     public ActionBuilder disabled() {
         action.setEnabled(false);
         return this;

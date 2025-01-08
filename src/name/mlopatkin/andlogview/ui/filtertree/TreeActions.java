@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.filtertree;
 
+import name.mlopatkin.andlogview.ui.Icons;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import dagger.assisted.Assisted;
@@ -44,9 +46,14 @@ class TreeActions {
     public TreeActions(
             FilterCreator filterCreator,
             FilterTreeModel<FilterNodeViewModel> model,
+            Theme theme,
             @Assisted JTree tree
     ) {
-        this.createFilter = UiHelper.makeAction("Create filter…", filterCreator::createFilterWithDialog);
+        this.createFilter = UiHelper.makeAction(filterCreator::createFilterWithDialog)
+                .name("Create filter…")
+                .largeIcon(theme.getWidgetFactory().getToolbarIcon(Icons.ADD))
+                .shortDescription("Create a new filter with dialog editor")
+                .build();
         this.editSelectedFilter =
                 UiHelper.makeAction("Edit filter…", () -> withSelectedFilter(tree, model::editFilter));
         this.deleteSelectedFilter =

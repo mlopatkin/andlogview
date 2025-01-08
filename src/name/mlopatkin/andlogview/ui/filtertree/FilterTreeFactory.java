@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.filtertree;
 
-import name.mlopatkin.andlogview.ui.Icons;
-import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
@@ -34,18 +32,15 @@ import javax.swing.tree.TreeSelectionModel;
  * Constructs {@link JTree} that shows the available filters.
  */
 public class FilterTreeFactory {
-    private final Theme theme;
     private final FilterNodeRenderer nodeRenderer;
     private final TreeModelAdapter treeModel;
     private final TreeActions.Factory treeActionsFactory;
 
     @Inject
     FilterTreeFactory(
-            Theme theme,
             FilterNodeRenderer nodeRenderer,
             TreeModelAdapter treeModel,
             TreeActions.Factory treeActionsFactory) {
-        this.theme = theme;
         this.nodeRenderer = nodeRenderer;
         this.treeModel = treeModel;
         this.treeActionsFactory = treeActionsFactory;
@@ -88,7 +83,7 @@ public class FilterTreeFactory {
         filterPopupMenu.add(treeActions.deleteSelectedFilter);
 
         var treePopupMenu = new JPopupMenu();
-        treePopupMenu.add(treeActions.createFilter);
+        treePopupMenu.add(treeActions.createFilter).setToolTipText(null);
 
         UiHelper.PopupMenuDelegate<JTree> menuHandler = (component, x, y) -> {
             assert component == tree;
@@ -112,8 +107,8 @@ public class FilterTreeFactory {
 
     private void configureToolBar(JToolBar toolBar, TreeActions treeActions) {
         var createFilterBtn = toolBar.add(treeActions.createFilter);
+        createFilterBtn.setHideActionText(false);
 
-        createFilterBtn.setIcon(theme.getWidgetFactory().getToolbarIcon(Icons.ADD));
         createFilterBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
         createFilterBtn.setVerticalTextPosition(SwingConstants.CENTER);
     }
