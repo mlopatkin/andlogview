@@ -28,6 +28,8 @@ gson = "com.google.code.gson:gson:2.10.1"
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jopt = "net.sf.jopt-simple:jopt-simple:5.0.4"
 log4j = "log4j:log4j:1.2.17"
+# MigLayout 11.x requires Java 11, so we stick with 5.x for now.
+miglayout = "com.miglayout:miglayout-swing:5.3"
 test-assertj-bom = "org.assertj:assertj-bom:3.24.2"
 test-assertj-core = { module = "org.assertj:assertj-core" }
 test-assertj-guava = { module = "org.assertj:assertj-guava" }

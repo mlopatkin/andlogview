@@ -23,4 +23,5 @@ description = "General Swing widgets"
 dependencies {
     api(project(":base"))
     api(libs.flatlaf.core)
+    api(libs.miglayout)
 }

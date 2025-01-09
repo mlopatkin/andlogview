@@ -45,12 +45,14 @@ dependencies {
     implementation(project(":search"))
     implementation(project(":search:logrecord"))
     implementation(project(":widgets"))
+
     implementation(libs.dagger.runtime)
-    implementation(libs.gson)
-    implementation(libs.log4j)
-    implementation(libs.jopt)
     implementation(libs.flatlaf.core)
     implementation(libs.flatlaf.extras)
+    implementation(libs.gson)
+    implementation(libs.jopt)
+    implementation(libs.log4j)
+    implementation(libs.miglayout)
 
     annotationProcessor(buildLibs.dagger.compiler)
 

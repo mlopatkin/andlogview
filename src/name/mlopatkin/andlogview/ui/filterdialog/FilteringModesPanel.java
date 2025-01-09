@@ -19,19 +19,19 @@ import name.mlopatkin.andlogview.filters.FilteringMode;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-class FilteringModesPanel extends JPanel implements ChangeListener {
+class FilteringModesPanel implements ChangeListener {
     private final ButtonGroup buttonGroup = new ButtonGroup();
-    private final EnumMap<FilteringMode, JRadioButton> buttons = new EnumMap<>(FilteringMode.class);
+    private final Map<FilteringMode, JRadioButton> buttons = new EnumMap<>(FilteringMode.class);
 
     interface ModeChangedListener {
         void modeSelected(FilteringMode mode);
@@ -40,8 +40,6 @@ class FilteringModesPanel extends JPanel implements ChangeListener {
     private @Nullable ModeChangedListener listener;
 
     public FilteringModesPanel() {
-        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
         for (FilteringMode mode : FilteringMode.values()) {
             addRadioButton(mode);
         }
@@ -49,10 +47,13 @@ class FilteringModesPanel extends JPanel implements ChangeListener {
         setSelectedMode(FilteringMode.getDefaultMode());
     }
 
+    public Map<FilteringMode, JRadioButton> getButtons() {
+        return Collections.unmodifiableMap(buttons);
+    }
+
     private void addRadioButton(FilteringMode mode) {
         JRadioButton button = new JRadioButton(mode.getDescription());
         buttonGroup.add(button);
-        add(button);
         buttons.put(mode, button);
         button.addChangeListener(this);
     }

@@ -16,28 +16,30 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
+import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
+import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
+
+import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
+import net.miginfocom.swing.MigLayout;
+
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Container;
 import java.awt.Frame;
 
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.border.EmptyBorder;
 
 /**
- * Base Filter Dialog UI class. Edit with WindowBuilder.
+ * Base Filter Dialog UI class.
  */
 class BaseFilterDialogUi extends JDialog {
-    protected final JPanel contentPanel = new JPanel();
-
     protected final JTextField tagTextField;
     protected final JTextField messageTextField;
     protected final JTextField pidTextField;
@@ -55,114 +57,46 @@ class BaseFilterDialogUi extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
-        {
-            tagTextField = new JTextField();
-            tagTextField.setColumns(10);
-        }
+        var content = new JPanel(new MigLayout(
+                LC().wrapAfter(1).fillX().insets("8lp").width("400lp"))
+        );
+        getContentPane().add(content, BorderLayout.CENTER);
 
-        JLabel lblNewLabel = new JLabel("Tags to filter");
+        tagTextField = addEntry(content, "Tags to filter", new JTextField());
+        messageTextField = addEntry(content, "Message text to filter", new JTextField());
+        pidTextField = addEntry(content, "PIDs or app names to filter", new JTextField());
+        logLevelList = addEntry(content, "Log level", new JComboBox<>(new PriorityComboBoxModel()));
 
-        JLabel lblMessageTextTo = new JLabel("Message text to filter");
-
-        messageTextField = new JTextField();
-        messageTextField.setColumns(10);
-
-        JLabel lblPidsToFilter = new JLabel("PIDs or app names to filter");
-
-        pidTextField = new JTextField();
-        pidTextField.setColumns(10);
-
-        JLabel lblLogLevel = new JLabel("Log level");
-
-        logLevelList = new JComboBox<>(new PriorityComboBoxModel());
-
-        JPanel modesWithDataPanel = new JPanel();
-
+        modesPanel = new FilteringModesPanel();
         colorsList = new JComboBox<>(new ColorsComboBoxModel());
         colorsList.setSelectedIndex(0);
 
-        GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-        gl_contentPanel.setHorizontalGroup(
-                gl_contentPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(gl_contentPanel.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(gl_contentPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(tagTextField, GroupLayout.DEFAULT_SIZE, 477,
-                                                Short.MAX_VALUE)
-                                        .addComponent(lblNewLabel)
-                                        .addComponent(lblMessageTextTo)
-                                        .addComponent(messageTextField, GroupLayout.DEFAULT_SIZE,
-                                                477, Short.MAX_VALUE)
-                                        .addComponent(lblPidsToFilter)
-                                        .addComponent(pidTextField, GroupLayout.DEFAULT_SIZE, 477,
-                                                Short.MAX_VALUE)
-                                        .addComponent(lblLogLevel)
-                                        .addComponent(logLevelList, 0, 477, Short.MAX_VALUE)
-                                        .addGroup(gl_contentPanel.createSequentialGroup()
-                                                .addComponent(modesWithDataPanel,
-                                                        GroupLayout.PREFERRED_SIZE,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18)
-                                                .addComponent(colorsList,
-                                                        GroupLayout.PREFERRED_SIZE, 132,
-                                                        GroupLayout.PREFERRED_SIZE)))
-                                .addContainerGap()));
-        gl_contentPanel.setVerticalGroup(
-                gl_contentPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(
-                                gl_contentPanel.createSequentialGroup()
-                                        .addComponent(lblNewLabel)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(tagTextField, GroupLayout.PREFERRED_SIZE,
-                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblMessageTextTo)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(messageTextField, GroupLayout.PREFERRED_SIZE,
-                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lblPidsToFilter)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(pidTextField, GroupLayout.PREFERRED_SIZE,
-                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lblLogLevel)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(logLevelList, GroupLayout.PREFERRED_SIZE,
-                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
-                                        .addGroup(gl_contentPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                .addComponent(modesWithDataPanel,
-                                                        GroupLayout.Alignment.TRAILING,
-                                                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                                        GroupLayout.PREFERRED_SIZE)
-                                                .addGroup(GroupLayout.Alignment.TRAILING,
-                                                        gl_contentPanel.createSequentialGroup()
-                                                                .addComponent(colorsList,
-                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                        GroupLayout.PREFERRED_SIZE)
-                                                                .addGap(31)))));
+        modesPanel.getButtons().forEach((mode, button) -> {
+            var isHighlight = FilteringMode.HIGHLIGHT.equals(mode);
+            if (isHighlight) {
+                content.add(button, CC().split());
+                content.add(colorsList, CC().alignX("left").alignY("baseline").wrap("0"));
+            } else {
+                content.add(button, CC().wrap("0"));
+            }
+        });
 
-        modesPanel = new FilteringModesPanel();
-        modesWithDataPanel.add(modesPanel);
-        contentPanel.setLayout(gl_contentPanel);
-        {
-            JPanel buttonPane = new JPanel();
-            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+        var buttonPanel = new JPanel(new MigLayout(LC().alignX("right").insets("8lp")));
+        okButton = new JButton("OK");
+        buttonPanel.add(okButton, CC().tag("ok").cell(0, 0));
+        cancelButton = new JButton("Cancel");
+        buttonPanel.add(cancelButton, CC().tag("cancel").cell(0, 0));
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        getRootPane().setDefaultButton(okButton);
 
-            okButton = new JButton("OK");
-            buttonPane.add(okButton);
-            getRootPane().setDefaultButton(okButton);
-
-            cancelButton = new JButton("Cancel");
-            buttonPane.add(cancelButton);
-        }
         pack();
+        setMinimumSize(getSize());
         setLocationRelativeTo(getParent());
+    }
+
+    private <T extends JComponent> T addEntry(Container container, String label, T entry) {
+        container.add(new JLabel(label));
+        container.add(entry, CC().growX());
+        return entry;
     }
 }
