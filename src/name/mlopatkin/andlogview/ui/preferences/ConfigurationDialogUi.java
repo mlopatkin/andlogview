@@ -16,28 +16,29 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
+import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
+
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
+import net.miginfocom.swing.MigLayout;
+
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 
 import javax.swing.Action;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.border.EmptyBorder;
 
 abstract class ConfigurationDialogUi extends JDialog {
-    protected final JTextField adbExecutableText = new JTextField(10);
+    protected final JTextField adbExecutableText = new JTextField(25);
     protected final JButton browseAdbBtn = new JButton(String.valueOf(CommonChars.ELLIPSIS));
     protected final JCheckBox autoReconnectCheckbox = new JCheckBox("Reconnect to device automatically");
     protected final Action okAction = UiHelper.makeAction("OK", this::onPositiveResult);
@@ -51,55 +52,34 @@ abstract class ConfigurationDialogUi extends JDialog {
         setTitle("Configuration");
         getContentPane().setLayout(new BorderLayout());
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
+
+        var content = new JPanel(new MigLayout(
+                LC().fillX().wrapAfter(2).insets("8lp")
+        ));
 
         JLabel adbExecutableTextLabel = new JLabel("ADB executable location");
         adbExecutableTextLabel.setLabelFor(adbExecutableText);
 
-        GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
-        contentPanelLayout.setHorizontalGroup(
-                contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(
-                                contentPanelLayout.createSequentialGroup()
-                                        .addComponent(adbExecutableTextLabel)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(adbExecutableText, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(browseAdbBtn, GroupLayout.PREFERRED_SIZE, 33,
-                                                GroupLayout.PREFERRED_SIZE))
-                        .addGroup(contentPanelLayout.createSequentialGroup()
-                                .addComponent(autoReconnectCheckbox)
-                                .addContainerGap()));
-        contentPanelLayout.setVerticalGroup(
-                contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(contentPanelLayout.createSequentialGroup()
-                                .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(adbExecutableTextLabel)
-                                        .addGroup(contentPanelLayout
-                                                .createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                .addComponent(adbExecutableText,
-                                                        GroupLayout.PREFERRED_SIZE,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(browseAdbBtn)))
-                                .addGap(18)
-                                .addComponent(autoReconnectCheckbox)
-                                .addContainerGap(57, Short.MAX_VALUE)));
-        contentPanel.setLayout(contentPanelLayout);
+        content.add(adbExecutableTextLabel, CC().alignX("label"));
+        content.add(adbExecutableText, CC().split().growX().pushX());
+        content.add(browseAdbBtn, CC().wrap());
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        content.add(autoReconnectCheckbox, CC().spanX(2));
+
+        getContentPane().add(content, BorderLayout.CENTER);
+
+        var buttonPanel = new JPanel(new MigLayout(LC().alignX("right").insets("8lp")));
         JButton okButton = new JButton(okAction);
         buttonPanel.add(okButton);
-        getRootPane().setDefaultButton(okButton);
         JButton cancelButton = new JButton(cancelAction);
         buttonPanel.add(cancelButton);
 
+        getRootPane().setDefaultButton(okButton);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
         pack();
         setLocationRelativeTo(owner);
+        setMinimumSize(getSize());
 
         UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
     }
