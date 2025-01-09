@@ -31,7 +31,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 /**
- * FilterPanel implementation. Generated class from WindowBuilder editor.
+ * FilterPanel implementation.
  */
 class FilterPanelUi extends JPanel {
     private static final int SEPARATOR_WIDTH = 5;

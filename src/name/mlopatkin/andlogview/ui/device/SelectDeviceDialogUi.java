@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 /**
- * UI base for SelectDeviceDialog. Should be edited with WindowBuilder.
+ * UI base for SelectDeviceDialog.
  */
 class SelectDeviceDialogUi extends JDialog {
     protected final JList<ProvisionalDevice> deviceList;
