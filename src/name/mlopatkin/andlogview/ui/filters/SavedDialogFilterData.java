@@ -70,6 +70,7 @@ class SavedDialogFilterData extends SavedFilterData {
         public FilterData(FilterFromDialogData fromDialog) {
             mode = fromDialog.getMode();
             name = fromDialog.getName();
+            // We replace empty lists with nulls to skip them from the serialized form.
             tags = emptyToNull(fromDialog.getTags());
             pids = emptyToNull(fromDialog.getPids());
             apps = emptyToNull(fromDialog.getApps());
