@@ -22,8 +22,6 @@ import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filtertree.FilterNodeViewModel;
 
-import com.google.common.base.MoreObjects;
-
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
@@ -46,8 +44,20 @@ public class TreeNodeFilter extends BaseFilterPresenter implements FilterNodeVie
 
     @Override
     public String getText() {
-        // TODO(mlopatkin): tooltip value doesn't look great as a fallback.
-        return MoreObjects.firstNonNull(filter.getName(), filter.getData().getTooltip());
+        var name = filter.getName();
+        if (name != null) {
+            return name;
+        }
+
+        var data = filter.getData();
+        return new FilterDescriptionBuilder()
+                .addMode(data.getMode())
+                .addList("Tags", data.getTags())
+                .addList("PIDs", data.getPids())
+                .addList("App names like", data.getApps())
+                .addPattern("Message text like", data.getMessagePattern())
+                .addPriorityBound("Priority>=", data.getPriority())
+                .build();
     }
 
     @AssistedFactory

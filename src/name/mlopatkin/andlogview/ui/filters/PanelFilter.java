@@ -37,8 +37,17 @@ class PanelFilter extends BaseFilterPresenter implements PanelFilterView {
 
     @Override
     public String getTooltip() {
-        // TODO(mlopatkin) this should be a direct call
-        return filter.getData().getTooltip();
+        var data = filter.getData();
+
+        return new FilterDescriptionBuilder()
+                .addName(data.getName())
+                .addMode(data.getMode())
+                .addList("Tags", data.getTags())
+                .addList("PIDs", data.getPids())
+                .addList("App names like", data.getApps())
+                .addPattern("Message text like", data.getMessagePattern())
+                .addPriorityBound("Priority>=", data.getPriority())
+                .build();
     }
 
     @Override

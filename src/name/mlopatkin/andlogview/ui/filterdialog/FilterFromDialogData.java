@@ -24,7 +24,6 @@ import name.mlopatkin.andlogview.search.text.SearchRequestParser;
 import name.mlopatkin.andlogview.search.text.SearcherBuilder;
 import name.mlopatkin.andlogview.utils.MorePredicates;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -37,7 +36,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class FilterFromDialogData {
-    private static final Joiner commaJoiner = Joiner.on(", ");
 
     private static final SearchRequestParser<Predicate<String>> tagParser =
             new SearchRequestParser<>(new SearchRequestParser.Delegate<>() {
@@ -128,34 +126,6 @@ public class FilterFromDialogData {
             predicates.add(LogRecordPredicates.moreSevereThan(priority));
         }
         return MorePredicates.and(predicates);
-    }
-
-    public String getTooltip() {
-        StringBuilder builder = new StringBuilder("<html>");
-        if (name != null) {
-            builder.append(name).append("<br>");
-        }
-        assert mode != null;
-        builder.append(mode.getDescription());
-        if (tags != null && !tags.isEmpty()) {
-            builder.append("<br>Tags: ");
-            commaJoiner.appendTo(builder, tags);
-        }
-        if (pids != null && !pids.isEmpty()) {
-            builder.append("<br>PIDs: ");
-            commaJoiner.appendTo(builder, pids);
-        }
-        if (apps != null && !apps.isEmpty()) {
-            builder.append("<br>App names like: ");
-            commaJoiner.appendTo(builder, apps);
-        }
-        if (messagePattern != null && !messagePattern.isEmpty()) {
-            builder.append("<br>Message text like: ").append(messagePattern);
-        }
-        if (priority != null && priority != LogRecord.Priority.LOWEST) {
-            builder.append("<br>Priority>=").append(priority);
-        }
-        return builder.append("</html>").toString();
     }
 
     public List<String> getTags() {
