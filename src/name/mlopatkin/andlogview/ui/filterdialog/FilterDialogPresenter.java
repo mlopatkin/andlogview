@@ -216,7 +216,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         parseAppsAndPids(filterData);
         dialogView.getPriority().ifPresent(filterData::setPriority);
         dialogView.getHighlightColor().ifPresent(filterData::setHighlightColor);
-        filterData.setName(Strings.emptyToNull(dialogView.getNameText()));
+        filterData.setName(Strings.emptyToNull(dialogView.getNameText().trim()));
         return filterData.toFilter(isResultEnabled);
     }
 
