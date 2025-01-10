@@ -98,7 +98,7 @@ public class FilterFromDialogData {
 
     Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
         List<Predicate<LogRecord>> predicates = Lists.newArrayListWithCapacity(4);
-        if (tags != null && !tags.isEmpty()) {
+        if (!tags.isEmpty()) {
             List<Predicate<String>> tagPredicates = Lists.newArrayListWithCapacity(tags.size());
             for (String tagPattern : tags) {
                 tagPredicates.add(tagParser.parse(tagPattern));
@@ -106,10 +106,10 @@ public class FilterFromDialogData {
             predicates.add(LogRecordPredicates.matchTag(MorePredicates.or(tagPredicates)));
         }
         Predicate<LogRecord> appsAndPidsPredicate = null;
-        if (pids != null && !pids.isEmpty()) {
+        if (!pids.isEmpty()) {
             appsAndPidsPredicate = LogRecordPredicates.withAnyOfPids(pids);
         }
-        if (apps != null && !apps.isEmpty()) {
+        if (!apps.isEmpty()) {
             List<Predicate<String>> appsPredicates = Lists.newArrayListWithCapacity(apps.size());
             for (String appPattern : apps) {
                 appsPredicates.add(tagParser.parse(appPattern));
