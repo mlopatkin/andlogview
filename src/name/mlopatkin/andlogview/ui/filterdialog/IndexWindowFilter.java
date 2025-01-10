@@ -27,6 +27,8 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -87,5 +89,10 @@ public class IndexWindowFilter extends AbstractFilter<IndexWindowFilter> impleme
     @Override
     public MutableFilterModel getChildren() {
         return model;
+    }
+
+    @Override
+    public @Nullable String getName() {
+        return filterData.getName();
     }
 }

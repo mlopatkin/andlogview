@@ -74,6 +74,11 @@ public class FilterFromDialogImpl extends AbstractFilter<FilterFromDialogImpl>
     }
 
     @Override
+    public @Nullable String getName() {
+        return data.getName();
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).add("enabled", isEnabled()).add("data", getData()).toString();
     }

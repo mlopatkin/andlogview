@@ -18,6 +18,8 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.filters.Filter;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * A filter that can be edited through the filter dialog.
  */
@@ -29,4 +31,7 @@ public interface FilterFromDialog extends Filter {
     FilterFromDialog disabled();
 
     FilterFromDialogData getData();
+
+    @Nullable
+    String getName();
 }

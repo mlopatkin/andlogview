@@ -82,9 +82,11 @@ public class FilterFromDialogData {
 
     private @Nullable Color highlightColor;
 
+    private @Nullable String name;
+
     public FilterFromDialogData() {}
 
-    private FilterFromDialogData(FilterFromDialogData f) {
+    public FilterFromDialogData(FilterFromDialogData f) {
         tags = copy(f.tags);
         pids = copy(f.pids);
         apps = copy(f.apps);
@@ -92,6 +94,7 @@ public class FilterFromDialogData {
         priority = f.priority;
         mode = f.mode;
         highlightColor = f.highlightColor;
+        name = f.name;
     }
 
     private static <T> @Nullable List<T> copy(@Nullable List<T> original) {
@@ -134,6 +137,9 @@ public class FilterFromDialogData {
 
     public String getTooltip() {
         StringBuilder builder = new StringBuilder("<html>");
+        if (name != null) {
+            builder.append(name).append("<br>");
+        }
         assert mode != null;
         builder.append(mode.getDescription());
         if (tags != null && !tags.isEmpty()) {
@@ -235,17 +241,19 @@ public class FilterFromDialogData {
                 && Objects.equals(messagePattern, that.messagePattern)
                 && priority == that.priority
                 && mode == that.mode
-                && Objects.equals(highlightColor, that.highlightColor);
+                && Objects.equals(highlightColor, that.highlightColor)
+                && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor);
+        return Objects.hash(tags, pids, apps, messagePattern, priority, mode, highlightColor, name);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("name", name)
                 .add("mode", mode)
                 .add("tags", tags)
                 .add("messagePattern", messagePattern)
@@ -258,12 +266,21 @@ public class FilterFromDialogData {
 
     public FilterFromDialog toFilter(boolean enabled) throws RequestCompilationException {
         if (mode == FilteringMode.WINDOW) {
-            return new IndexWindowFilter(enabled, this);
+            return new IndexWindowFilter(enabled, new FilterFromDialogData(this));
         }
         return new FilterFromDialogImpl(enabled, new FilterFromDialogData(this));
     }
 
     public FilterFromDialog toFilter() throws RequestCompilationException {
         return toFilter(true);
+    }
+
+    public FilterFromDialogData setName(@Nullable String name) {
+        this.name = name;
+        return this;
+    }
+
+    public @Nullable String getName() {
+        return name;
     }
 }
