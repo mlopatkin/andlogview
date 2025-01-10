@@ -81,6 +81,16 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
     }
 
     @Override
+    public void setNameText(String name) {
+        nameTextField.setText(name);
+    }
+
+    @Override
+    public String getNameText() {
+        return nameTextField.getText();
+    }
+
+    @Override
     public void setTagsText(String text) {
         tagTextField.setText(text);
     }

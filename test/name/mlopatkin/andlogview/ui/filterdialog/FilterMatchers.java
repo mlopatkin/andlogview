@@ -65,4 +65,12 @@ public class FilterMatchers {
     public static Matcher<FilterFromDialog> isDisabled() {
         return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(false));
     }
+
+    public static Matcher<FilterFromDialog> hasNoName() {
+        return new AdaptingMatcher<>(FilterFromDialog::getName, Matchers.nullValue());
+    }
+
+    public static Matcher<FilterFromDialog> hasName(String name) {
+        return new AdaptingMatcher<>(FilterFromDialog::getName, Matchers.is(name));
+    }
 }

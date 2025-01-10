@@ -43,6 +43,10 @@ class FilterDialogPresenter implements FilterDialogHandle {
      * Presenter talks to view through this interface.
      */
     public interface FilterDialogView {
+        void setNameText(String name);
+
+        String getNameText();
+
         void setTagsText(String text);
 
         String getTagsText();
@@ -87,6 +91,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
     private FilterDialogPresenter(FilterDialogView dialogView) {
         this.dialogView = dialogView;
 
+        dialogView.setNameText("");
         dialogView.setTagsText("");
         dialogView.setMessageText("");
         dialogView.setPidsAppsText("");
@@ -100,6 +105,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         this.dialogView = dialogView;
         this.isResultEnabled = isResultEnabled;
 
+        dialogView.setNameText(Strings.nullToEmpty(initialFilterData.getName()));
         dialogView.setTagsText(PatternsList.join(nullToEmpty(initialFilterData.getTags())));
         dialogView.setMessageText(Strings.nullToEmpty(initialFilterData.getMessagePattern()));
         dialogView.setPidsAppsText(PatternsList.join(
@@ -210,6 +216,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
         dialogView.getPriority().ifPresent(filterData::setPriority);
         filterData.setMode(dialogView.getMode());
         dialogView.getHighlightColor().ifPresent(filterData::setHighlightColor);
+        filterData.setName(Strings.emptyToNull(dialogView.getNameText()));
         return filterData.toFilter(isResultEnabled);
     }
 

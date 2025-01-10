@@ -40,6 +40,7 @@ import javax.swing.JTextField;
  * Base Filter Dialog UI class.
  */
 class BaseFilterDialogUi extends JDialog {
+    protected final JTextField nameTextField;
     protected final JTextField tagTextField;
     protected final JTextField messageTextField;
     protected final JTextField pidTextField;
@@ -62,6 +63,7 @@ class BaseFilterDialogUi extends JDialog {
         );
         getContentPane().add(content, BorderLayout.CENTER);
 
+        nameTextField = addEntry(content, "Name", new JTextField());
         tagTextField = addEntry(content, "Tags to filter", new JTextField());
         messageTextField = addEntry(content, "Message text to filter", new JTextField());
         pidTextField = addEntry(content, "PIDs or app names to filter", new JTextField());

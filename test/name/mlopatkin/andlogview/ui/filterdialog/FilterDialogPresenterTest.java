@@ -21,6 +21,8 @@ import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasColor;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasData;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMessage;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasMode;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasName;
+import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasNoName;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPids;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasPriority;
 import static name.mlopatkin.andlogview.ui.filterdialog.FilterMatchers.hasTags;
@@ -61,6 +63,7 @@ public class FilterDialogPresenterTest {
 
     private static class FakeDialogView implements FilterDialogPresenter.FilterDialogView {
         boolean isShown = false;
+        String nameText = "";
         String tagsText = "";
         String messageText = "";
         String pidsAppsText = "";
@@ -74,6 +77,16 @@ public class FilterDialogPresenterTest {
         Runnable discardAction;
         @Nullable
         String errorText;
+
+        @Override
+        public void setNameText(String name) {
+            nameText = Objects.requireNonNull(name);
+        }
+
+        @Override
+        public String getNameText() {
+            return Objects.requireNonNull(nameText);
+        }
 
         @Override
         public void setTagsText(String text) {
@@ -576,5 +589,74 @@ public class FilterDialogPresenterTest {
         fakeView.commit();
 
         assertThat(promise, completedWithResult(optionalWithValue(isDisabled())));
+    }
+
+    @Test
+    public void unnamedFilterCanBeUsedInView() throws Exception {
+        var unnamedFilter = new FilterFromDialogData()
+                .setName(null)
+                .setMode(FilteringMode.SHOW)
+                .toFilter();
+
+        FilterDialogPresenter.create(fakeView, unnamedFilter).show();
+
+        assertThat(fakeView.nameText, equalTo(""));
+    }
+
+    @Test
+    public void namedFilterCanBeUsedInView() throws Exception {
+        var namedFilter = new FilterFromDialogData()
+                .setName("name")
+                .setMode(FilteringMode.SHOW)
+                .toFilter();
+
+        FilterDialogPresenter.create(fakeView, namedFilter).show();
+
+        assertThat(fakeView.nameText, equalTo("name"));
+    }
+
+    @Test
+    public void namedFilterCanBeRenamed() throws Exception {
+        var namedFilter = new FilterFromDialogData()
+                .setName("some name")
+                .setMode(FilteringMode.SHOW)
+                .toFilter();
+
+        var promise = FilterDialogPresenter.create(fakeView, namedFilter).show();
+
+        fakeView.setNameText("other name");
+        fakeView.commit();
+
+        assertThat(promise, completedWithResult(optionalWithValue(hasName("other name"))));
+    }
+
+    @Test
+    public void namedFilterCanBeRenamedToUnnamed() throws Exception {
+        var namedFilter = new FilterFromDialogData()
+                .setName("some name")
+                .setMode(FilteringMode.SHOW)
+                .toFilter();
+
+        var promise = FilterDialogPresenter.create(fakeView, namedFilter).show();
+
+        fakeView.setNameText("");
+        fakeView.commit();
+
+        assertThat(promise, completedWithResult(optionalWithValue(hasNoName())));
+    }
+
+    @Test
+    public void unnamedFilterCanBeRenamedToUnnamed() throws Exception {
+        var namedFilter = new FilterFromDialogData()
+                .setName(null)
+                .setMode(FilteringMode.SHOW)
+                .toFilter();
+
+        var promise = FilterDialogPresenter.create(fakeView, namedFilter).show();
+
+        fakeView.setNameText("some name");
+        fakeView.commit();
+
+        assertThat(promise, completedWithResult(optionalWithValue(hasName("some name"))));
     }
 }
