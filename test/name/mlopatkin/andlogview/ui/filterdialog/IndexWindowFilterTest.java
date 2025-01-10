@@ -54,8 +54,7 @@ class IndexWindowFilterTest {
     private IndexWindowFilter createFilterForTags(String... tags) {
         return Try.ofCallable(
                         () -> new IndexWindowFilter(true,
-                                new FilterFromDialogData()
-                                        .setMode(FilteringMode.WINDOW)
+                                new FilterFromDialogData(FilteringMode.WINDOW)
                                         .setTags(ImmutableList.copyOf(tags))))
                 .get();
     }

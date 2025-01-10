@@ -141,7 +141,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
     }
 
     private FilterFromDialogData buildFilter(FilteringMode mode, Column column, TableRow row) {
-        FilterFromDialogData filterData = new FilterFromDialogData().setMode(mode);
+        FilterFromDialogData filterData = new FilterFromDialogData(mode);
         ColumnData.applyColumnValueToFilter(filterData, column, row);
         return filterData;
     }

@@ -71,34 +71,29 @@ public class FilterFromDialogData {
                 }
             });
 
-    private @Nullable List<String> tags;
-    private @Nullable List<Integer> pids;
-    private @Nullable List<String> apps;
-    private @Nullable String messagePattern;
-
-    private LogRecord.@Nullable Priority priority;
-    // TODO(mlopatkin) Really it shouldn't be
-    private @Nullable FilteringMode mode;
-
-    private @Nullable Color highlightColor;
+    private final FilteringMode mode;
 
     private @Nullable String name;
+    private List<String> tags = ImmutableList.of();
+    private List<Integer> pids = ImmutableList.of();
+    private List<String> apps = ImmutableList.of();
+    private @Nullable String messagePattern;
+    private LogRecord.@Nullable Priority priority;
+    private @Nullable Color highlightColor;
 
-    public FilterFromDialogData() {}
-
-    public FilterFromDialogData(FilterFromDialogData f) {
-        tags = copy(f.tags);
-        pids = copy(f.pids);
-        apps = copy(f.apps);
-        messagePattern = f.messagePattern;
-        priority = f.priority;
-        mode = f.mode;
-        highlightColor = f.highlightColor;
-        name = f.name;
+    public FilterFromDialogData(FilteringMode mode) {
+        this.mode = mode;
     }
 
-    private static <T> @Nullable List<T> copy(@Nullable List<T> original) {
-        return original != null ? ImmutableList.copyOf(original) : null;
+    public FilterFromDialogData(FilterFromDialogData f) {
+        mode = f.mode;
+        tags = ImmutableList.copyOf(f.tags);
+        pids = ImmutableList.copyOf(f.pids);
+        apps = ImmutableList.copyOf(f.apps);
+        messagePattern = f.messagePattern;
+        priority = f.priority;
+        highlightColor = f.highlightColor;
+        name = f.name;
     }
 
     Predicate<LogRecord> compilePredicate() throws RequestCompilationException {
@@ -163,29 +158,29 @@ public class FilterFromDialogData {
         return builder.append("</html>").toString();
     }
 
-    public @Nullable List<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public FilterFromDialogData setTags(@Nullable List<String> tags) {
+    public FilterFromDialogData setTags(List<String> tags) {
         this.tags = tags;
         return this;
     }
 
-    public @Nullable List<Integer> getPids() {
+    public List<Integer> getPids() {
         return pids;
     }
 
-    public FilterFromDialogData setPids(@Nullable List<Integer> pids) {
+    public FilterFromDialogData setPids(List<Integer> pids) {
         this.pids = pids;
         return this;
     }
 
-    public @Nullable List<String> getApps() {
+    public List<String> getApps() {
         return apps;
     }
 
-    public FilterFromDialogData setApps(@Nullable List<String> apps) {
+    public FilterFromDialogData setApps(List<String> apps) {
         this.apps = apps;
         return this;
     }
@@ -209,13 +204,7 @@ public class FilterFromDialogData {
     }
 
     public FilteringMode getMode() {
-        assert mode != null;
         return mode;
-    }
-
-    public FilterFromDialogData setMode(FilteringMode mode) {
-        this.mode = mode;
-        return this;
     }
 
     public @Nullable Color getHighlightColor() {
@@ -236,13 +225,13 @@ public class FilterFromDialogData {
             return false;
         }
         return Objects.equals(tags, that.tags)
-                && Objects.equals(pids, that.pids)
-                && Objects.equals(apps, that.apps)
-                && Objects.equals(messagePattern, that.messagePattern)
-                && priority == that.priority
-                && mode == that.mode
-                && Objects.equals(highlightColor, that.highlightColor)
-                && Objects.equals(name, that.name);
+               && Objects.equals(pids, that.pids)
+               && Objects.equals(apps, that.apps)
+               && Objects.equals(messagePattern, that.messagePattern)
+               && priority == that.priority
+               && mode == that.mode
+               && Objects.equals(highlightColor, that.highlightColor)
+               && Objects.equals(name, that.name);
     }
 
     @Override

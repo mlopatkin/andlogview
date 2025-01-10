@@ -206,9 +206,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterSetsUpActionsIfFilterGiven() {
-        FilterFromDialogData showFilter = new FilterFromDialogData()
-                .setTags(Collections.singletonList("TAG"))
-                .setMode(FilteringMode.SHOW);
+        FilterFromDialogData showFilter = new FilterFromDialogData(FilteringMode.SHOW)
+                .setTags(Collections.singletonList("TAG"));
 
         FilterDialogPresenter.create(fakeView, showFilter);
 
@@ -218,13 +217,12 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterSetsUpViewIfShowFilterGiven() {
-        FilterFromDialogData showFilter = new FilterFromDialogData()
+        FilterFromDialogData showFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setTags(Arrays.asList("TAG", "/[Oo]ther/"))
                 .setMessagePattern("/[Ee]xception/")
                 .setApps(Arrays.asList("com.example.app", "/org\\.example\\..+/"))
                 .setPids(Arrays.asList(1, 2, 100500))
-                .setPriority(LogRecord.Priority.ERROR)
-                .setMode(FilteringMode.SHOW);
+                .setPriority(LogRecord.Priority.ERROR);
 
         FilterDialogPresenter.create(fakeView, showFilter);
 
@@ -238,10 +236,9 @@ public class FilterDialogPresenterTest {
     @Test
     public void presenterSetsUpViewIfHighlightFilterGiven() {
         Color highlightColor = Configuration.ui.highlightColors().get(0);
-        FilterFromDialogData highlightFilter = new FilterFromDialogData()
+        FilterFromDialogData highlightFilter = new FilterFromDialogData(FilteringMode.HIGHLIGHT)
                 .setTags(Arrays.asList("TAG", "/[Oo]ther/"))
-                .setHighlightColor(highlightColor)
-                .setMode(FilteringMode.HIGHLIGHT);
+                .setHighlightColor(highlightColor);
 
         FilterDialogPresenter.create(fakeView, highlightFilter);
 
@@ -563,9 +560,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterKeepsEnabledStatusOfTheFilter() throws Exception {
-        var disabledFilter = new FilterFromDialogData()
+        var disabledFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setTags(Collections.singletonList("TAG"))
-                .setMode(FilteringMode.SHOW)
                 .toFilter(true);
 
         var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
@@ -578,9 +574,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterKeepsDisabledStatusOfTheFilter() throws Exception {
-        var disabledFilter = new FilterFromDialogData()
+        var disabledFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setTags(Collections.singletonList("TAG"))
-                .setMode(FilteringMode.SHOW)
                 .toFilter(false);
 
         var promise = FilterDialogPresenter.create(fakeView, disabledFilter).show();
@@ -593,9 +588,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void unnamedFilterCanBeUsedInView() throws Exception {
-        var unnamedFilter = new FilterFromDialogData()
+        var unnamedFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setName(null)
-                .setMode(FilteringMode.SHOW)
                 .toFilter();
 
         FilterDialogPresenter.create(fakeView, unnamedFilter).show();
@@ -605,9 +599,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void namedFilterCanBeUsedInView() throws Exception {
-        var namedFilter = new FilterFromDialogData()
+        var namedFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setName("name")
-                .setMode(FilteringMode.SHOW)
                 .toFilter();
 
         FilterDialogPresenter.create(fakeView, namedFilter).show();
@@ -617,9 +610,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void namedFilterCanBeRenamed() throws Exception {
-        var namedFilter = new FilterFromDialogData()
+        var namedFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setName("some name")
-                .setMode(FilteringMode.SHOW)
                 .toFilter();
 
         var promise = FilterDialogPresenter.create(fakeView, namedFilter).show();
@@ -632,9 +624,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void namedFilterCanBeRenamedToUnnamed() throws Exception {
-        var namedFilter = new FilterFromDialogData()
+        var namedFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setName("some name")
-                .setMode(FilteringMode.SHOW)
                 .toFilter();
 
         var promise = FilterDialogPresenter.create(fakeView, namedFilter).show();
@@ -647,9 +638,8 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void unnamedFilterCanBeRenamedToUnnamed() throws Exception {
-        var namedFilter = new FilterFromDialogData()
+        var namedFilter = new FilterFromDialogData(FilteringMode.SHOW)
                 .setName(null)
-                .setMode(FilteringMode.SHOW)
                 .toFilter();
 
         var promise = FilterDialogPresenter.create(fakeView, namedFilter).show();

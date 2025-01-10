@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
@@ -26,5 +27,5 @@ abstract class SavedFilterData {
         this.enabled = enabled;
     }
 
-    public abstract Filter fromSerializedForm() throws RequestCompilationException;
+    public abstract Filter fromSerializedForm() throws RequestCompilationException, InvalidJsonContentException;
 }

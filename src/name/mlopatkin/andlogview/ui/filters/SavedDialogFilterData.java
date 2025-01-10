@@ -16,29 +16,88 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import static name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
+
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
+import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
+import com.google.common.collect.ImmutableList;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.awt.Color;
+import java.util.List;
+
 class SavedDialogFilterData extends SavedFilterData {
-    private final FilterFromDialogData filterData;
+    private final FilterData filterData;
     private transient @Nullable FilterFromDialog filter;
 
     SavedDialogFilterData(FilterFromDialog filter) {
         super(filter.isEnabled());
-        this.filterData = filter.getData();
+        this.filterData = new FilterData(filter.getData());
         this.filter = filter;
     }
 
     @Override
-    public FilterFromDialog fromSerializedForm() throws RequestCompilationException {
+    public FilterFromDialog fromSerializedForm() throws RequestCompilationException, InvalidJsonContentException {
         var filter = this.filter;
         if (filter == null) {
             // This might be non-migrated index window filter, so calling toFilter is justified.
-            this.filter = filter = filterData.toFilter(enabled);
+            this.filter = filter = filterData.toFilterData().toFilter(enabled);
         }
         return filter;
+    }
+
+    private static class FilterData {
+        private @Nullable FilteringMode mode;
+
+        private @Nullable String name;
+        private @Nullable List<String> tags;
+        private @Nullable List<Integer> pids;
+        private @Nullable List<String> apps;
+        private @Nullable String messagePattern;
+        private @Nullable Priority priority;
+        private @Nullable Color highlightColor;
+
+        @SuppressWarnings("unused")
+        public FilterData() {
+            // Used by JSON reader.
+        }
+
+        public FilterData(FilterFromDialogData fromDialog) {
+            mode = fromDialog.getMode();
+            name = fromDialog.getName();
+            tags = emptyToNull(fromDialog.getTags());
+            pids = emptyToNull(fromDialog.getPids());
+            apps = emptyToNull(fromDialog.getApps());
+            messagePattern = fromDialog.getMessagePattern();
+            priority = fromDialog.getPriority();
+            highlightColor = fromDialog.getHighlightColor();
+        }
+
+        public FilterFromDialogData toFilterData() throws InvalidJsonContentException {
+            if (mode == null) {
+                throw new InvalidJsonContentException("Required mode field is missing in JSON filter data");
+            }
+            return new FilterFromDialogData(mode)
+                    .setName(name)
+                    .setTags(nullToEmpty(tags))
+                    .setPids(nullToEmpty(pids))
+                    .setApps(nullToEmpty(apps))
+                    .setMessagePattern(messagePattern)
+                    .setPriority(priority)
+                    .setHighlightColor(highlightColor);
+        }
+
+        private static <T> @Nullable List<T> emptyToNull(List<T> list) {
+            return list.isEmpty() ? null : list;
+        }
+
+        private static <T> List<T> nullToEmpty(@Nullable List<T> list) {
+            return list == null ? ImmutableList.of() : ImmutableList.copyOf(list);
+        }
     }
 }

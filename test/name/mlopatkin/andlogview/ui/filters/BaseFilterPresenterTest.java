@@ -65,7 +65,7 @@ class BaseFilterPresenterTest {
 
     FilterFromDialog createFilter() {
         try {
-            return new FilterFromDialogData().setMode(FilteringMode.SHOW)
+            return new FilterFromDialogData(FilteringMode.SHOW)
                     .setMessagePattern("message")
                     .toFilter();
         } catch (RequestCompilationException e) {

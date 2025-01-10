@@ -28,7 +28,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -106,13 +105,15 @@ class FilterDialogPresenter implements FilterDialogHandle {
         this.isResultEnabled = isResultEnabled;
 
         dialogView.setNameText(Strings.nullToEmpty(initialFilterData.getName()));
-        dialogView.setTagsText(PatternsList.join(nullToEmpty(initialFilterData.getTags())));
+        dialogView.setTagsText(PatternsList.join(initialFilterData.getTags()));
         dialogView.setMessageText(Strings.nullToEmpty(initialFilterData.getMessagePattern()));
-        dialogView.setPidsAppsText(PatternsList.join(
-                Stream.concat(
-                        nullToEmpty(initialFilterData.getPids()).stream().map(String::valueOf),
-                        nullToEmpty(initialFilterData.getApps()).stream())
-        ));
+        dialogView.setPidsAppsText(
+                PatternsList.join(
+                        Stream.concat(
+                                initialFilterData.getPids().stream().map(String::valueOf),
+                                initialFilterData.getApps().stream()
+                        )
+                ));
         dialogView.setPriority(initialFilterData.getPriority());
         dialogView.setMode(initialFilterData.getMode());
         if (initialFilterData.getMode() == FilteringMode.HIGHLIGHT) {
@@ -209,27 +210,18 @@ class FilterDialogPresenter implements FilterDialogHandle {
     }
 
     private FilterFromDialog createFilter() throws RequestCompilationException, PatternsList.FormatException {
-        FilterFromDialogData filterData = new FilterFromDialogData();
+        FilterFromDialogData filterData = new FilterFromDialogData(dialogView.getMode());
         parseTags(filterData);
         filterData.setMessagePattern(Strings.emptyToNull(dialogView.getMessageText().trim()));
         parseAppsAndPids(filterData);
         dialogView.getPriority().ifPresent(filterData::setPriority);
-        filterData.setMode(dialogView.getMode());
         dialogView.getHighlightColor().ifPresent(filterData::setHighlightColor);
         filterData.setName(Strings.emptyToNull(dialogView.getNameText()));
         return filterData.toFilter(isResultEnabled);
     }
 
-    private static <T> List<T> nullToEmpty(@Nullable List<T> nullableList) {
-        return nullableList != null ? nullableList : Collections.emptyList();
-    }
-
-    private static <T> @Nullable List<T> emptyToNull(List<T> list) {
-        return !list.isEmpty() ? list : null;
-    }
-
     private void parseTags(FilterFromDialogData filter) throws PatternsList.FormatException {
-        filter.setTags(emptyToNull(PatternsList.split(Strings.nullToEmpty(dialogView.getTagsText()))));
+        filter.setTags(PatternsList.split(Strings.nullToEmpty(dialogView.getTagsText())));
     }
 
     private void parseAppsAndPids(FilterFromDialogData filter) throws PatternsList.FormatException {
@@ -244,7 +236,7 @@ class FilterDialogPresenter implements FilterDialogHandle {
                 appNames.add(item);
             }
         }
-        filter.setApps(emptyToNull(appNames));
-        filter.setPids(emptyToNull(pids));
+        filter.setApps(appNames);
+        filter.setPids(pids);
     }
 }

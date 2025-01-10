@@ -28,7 +28,6 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -37,12 +36,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class FilterFromDialogDataTest {
-    private final FilterFromDialogData data = new FilterFromDialogData();
-
-    @Before
-    public void setUp() throws Exception {
-        data.setMode(FilteringMode.HIDE);
-    }
+    private final FilterFromDialogData data = new FilterFromDialogData(FilteringMode.HIDE);
 
     @Test
     public void testTag_Single() throws Exception {
@@ -258,24 +252,23 @@ public class FilterFromDialogDataTest {
     @Test
     public void testAppNamesRegexMatchThrowsAppropriateExceptions() throws Exception {
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialogData().setApps(Collections.singletonList(" ")), " ");
+                createFilter().setApps(Collections.singletonList(" ")), " ");
 
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialogData().setApps(Collections.singletonList("/?/")), "/?/");
+                createFilter().setApps(Collections.singletonList("/?/")), "/?/");
 
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialogData().setTags(Collections.singletonList(" ")), " ");
+                createFilter().setTags(Collections.singletonList(" ")), " ");
 
         assertInitializeThrowsExceptionWithRequestValue(
-                new FilterFromDialogData().setTags(Collections.singletonList("/?/")), "/?/");
+                createFilter().setTags(Collections.singletonList("/?/")), "/?/");
 
-        assertInitializeThrowsExceptionWithRequestValue(new FilterFromDialogData().setMessagePattern("/?/"), "/?/");
+        assertInitializeThrowsExceptionWithRequestValue(createFilter().setMessagePattern("/?/"), "/?/");
     }
 
     private static void assertInitializeThrowsExceptionWithRequestValue(
             FilterFromDialogData filterData, String expectedRequest) {
         try {
-            filterData.setMode(FilteringMode.HIDE);
             filterData.toFilter();
             fail("Exception expected");
         } catch (RequestCompilationException e) {
@@ -285,5 +278,9 @@ public class FilterFromDialogDataTest {
 
     private Predicate<LogRecord> compileFilter() throws RequestCompilationException {
         return data.compilePredicate();
+    }
+
+    private FilterFromDialogData createFilter() {
+        return new FilterFromDialogData(FilteringMode.HIDE);
     }
 }

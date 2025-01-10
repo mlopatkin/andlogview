@@ -68,7 +68,7 @@ class IndexWindowFilterDataTest {
     }
 
     private static IndexWindowFilter createFilter(String... tags) throws RequestCompilationException {
-        return (IndexWindowFilter) new FilterFromDialogData().setMode(FilteringMode.WINDOW)
+        return (IndexWindowFilter) new FilterFromDialogData(FilteringMode.WINDOW)
                 .setTags(ImmutableList.copyOf(tags))
                 .toFilter();
     }

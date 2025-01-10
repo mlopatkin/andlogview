@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.filters;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -53,7 +54,7 @@ class FiltersCodec {
     private Stream<Filter> decodeFilter(SavedFilterData data) {
         try {
             return Stream.of(data.fromSerializedForm());
-        } catch (RequestCompilationException e) {
+        } catch (RequestCompilationException | InvalidJsonContentException e) {
             logger.error("Failed to load filter", e);
             return Stream.empty();
         }

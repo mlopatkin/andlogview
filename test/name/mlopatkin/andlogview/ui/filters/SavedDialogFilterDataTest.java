@@ -17,7 +17,9 @@
 package name.mlopatkin.andlogview.ui.filters;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.PredicateFilter;
@@ -28,10 +30,12 @@ import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 import com.google.gson.Gson;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Collections;
+import java.util.Objects;
 
 class SavedDialogFilterDataTest {
     private static final Gson GSON = Utils.createConfigurationGson();
@@ -52,9 +56,42 @@ class SavedDialogFilterDataTest {
         assertThat(((PredicateFilter) deserialized).test(TestData.RECORD1)).isEqualTo(expectedMatch);
     }
 
+    @Test
+    void canDetectBrokenFilter() throws Exception {
+        var filterJsonWithoutMode = """
+                {
+                  "filterData": {
+                    "priority": "INFO",
+                    "highlightColor": {
+                      "value": -3084096
+                    }
+                  },
+                  "enabled": true,
+                  "classname": "filters.SavedDialogFilterData"
+                 }
+                """;
+        assertThatThrownBy(() ->
+                GSON.fromJson(filterJsonWithoutMode, SavedDialogFilterData.class).fromSerializedForm()
+        ).isInstanceOf(InvalidJsonContentException.class);
+    }
+
+    @Test
+    void ignoresEmptyFields() throws Exception {
+        var original = new FilterFromDialogData(FilteringMode.SHOW).setName("name");
+
+        var json = GSON.toJsonTree(new SavedDialogFilterData(original.toFilter()));
+
+        var filterData = Objects.requireNonNull(json.getAsJsonObject().asMap().get("filterData"));
+        assertThat(filterData.getAsJsonObject().asMap())
+                .doesNotContainKey("apps")
+                .doesNotContainKey("pids")
+                .doesNotContainKey("tags")
+                .doesNotContainKey("message")
+                .doesNotContainKey("highlightColor");
+    }
+
     private FilterFromDialog createFilter(boolean isEnabled, String tagPattern) throws RequestCompilationException {
-        var filterData = new FilterFromDialogData();
-        filterData.setMode(FilteringMode.getDefaultMode());
+        var filterData = new FilterFromDialogData(FilteringMode.getDefaultMode());
         filterData.setTags(Collections.singletonList(tagPattern));
 
         return filterData.toFilter(isEnabled);
