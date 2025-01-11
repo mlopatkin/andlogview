@@ -24,8 +24,6 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 
@@ -34,7 +32,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 abstract class ConfigurationDialogUi extends JDialog {
@@ -45,16 +42,14 @@ abstract class ConfigurationDialogUi extends JDialog {
     protected final Action cancelAction = UiHelper.makeAction("Cancel", this::onNegativeResult);
 
     public ConfigurationDialogUi(Frame owner) {
-        super(owner);
+        super(owner, true);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         setTitle("Configuration");
-        getContentPane().setLayout(new BorderLayout());
 
-
-        var content = new JPanel(new MigLayout(
-                LC().fillX().wrapAfter(2).insets("8lp")
+        var content = getContentPane();
+        content.setLayout(new MigLayout(
+                LC().fillX().wrapAfter(2)
         ));
 
         JLabel adbExecutableTextLabel = new JLabel("ADB executable location");
@@ -64,18 +59,13 @@ abstract class ConfigurationDialogUi extends JDialog {
         content.add(adbExecutableText, CC().split().growX().pushX());
         content.add(browseAdbBtn, CC().wrap());
 
-        content.add(autoReconnectCheckbox, CC().spanX(2));
+        content.add(autoReconnectCheckbox, CC().spanX(2).wrap("0 push"));
 
-        getContentPane().add(content, BorderLayout.CENTER);
-
-        var buttonPanel = new JPanel(new MigLayout(LC().alignX("right").insets("8lp")));
         JButton okButton = new JButton(okAction);
-        buttonPanel.add(okButton);
-        JButton cancelButton = new JButton(cancelAction);
-        buttonPanel.add(cancelButton);
-
+        content.add(okButton, CC().spanX(2).split().alignX("right"));
         getRootPane().setDefaultButton(okButton);
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+        content.add(new JButton(cancelAction));
 
         pack();
         setLocationRelativeTo(owner);

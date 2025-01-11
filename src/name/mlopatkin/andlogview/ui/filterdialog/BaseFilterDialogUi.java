@@ -28,12 +28,12 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Frame;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
@@ -58,10 +58,10 @@ class BaseFilterDialogUi extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         getContentPane().setLayout(new BorderLayout());
-        var content = new JPanel(new MigLayout(
-                LC().wrapAfter(1).fillX().insets("8lp").width("400lp"))
+        var content = getContentPane();
+        content.setLayout(new MigLayout(
+                LC().insets("dialog").wrapAfter(1).fillX().width("400lp"))
         );
-        getContentPane().add(content, BorderLayout.CENTER);
 
         nameTextField = addEntry(content, "Name", new JTextField());
         tagTextField = addEntry(content, "Tags to filter", new JTextField());
@@ -83,13 +83,14 @@ class BaseFilterDialogUi extends JDialog {
             }
         });
 
-        var buttonPanel = new JPanel(new MigLayout(LC().alignX("right").insets("8lp")));
+        content.add(Box.createVerticalGlue(), CC().wrap("0 push"));
+
         okButton = new JButton("OK");
-        buttonPanel.add(okButton, CC().tag("ok").cell(0, 0));
-        cancelButton = new JButton("Cancel");
-        buttonPanel.add(cancelButton, CC().tag("cancel").cell(0, 0));
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        content.add(okButton, CC().split().alignX("right"));
         getRootPane().setDefaultButton(okButton);
+
+        cancelButton = new JButton("Cancel");
+        content.add(cancelButton);
 
         pack();
         setMinimumSize(getSize());

@@ -16,18 +16,19 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
+import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
+
 import name.mlopatkin.andlogview.device.ProvisionalDevice;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import net.miginfocom.swing.MigLayout;
+
 import java.awt.Frame;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JScrollPane;
 
 /**
  * UI base for SelectDeviceDialog.
@@ -39,26 +40,26 @@ class SelectDeviceDialogUi extends JDialog {
 
     public SelectDeviceDialogUi(Frame owner) {
         super(owner, true);
-        setPreferredSize(new Dimension(450, 300));
         setTitle("Select device");
-        getContentPane().setLayout(new BorderLayout());
-        JPanel contentPanel = new JPanel();
-        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
-        contentPanel.setLayout(new BorderLayout(0, 0));
+
+        var content = getContentPane();
+        content.setLayout(new MigLayout(
+                LC().wrapAfter(1).fill()
+        ));
+
         deviceList = new JList<>();
-        contentPanel.add(deviceList);
-        JPanel buttonPane = new JPanel();
-        buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        getContentPane().add(buttonPane, BorderLayout.SOUTH);
+        content.add(new JScrollPane(deviceList), CC().minWidth("300lp").minHeight("200lp").grow().push().wrap());
+
         okButton = new JButton("OK");
 
-        buttonPane.add(okButton);
+        content.add(okButton, CC().split().alignX("right"));
         getRootPane().setDefaultButton(okButton);
 
         cancelButton = new JButton("Cancel");
-        buttonPane.add(cancelButton);
+        content.add(cancelButton);
+
         pack();
+        setMinimumSize(getPreferredSize());
         setLocationRelativeTo(owner);
     }
 }
