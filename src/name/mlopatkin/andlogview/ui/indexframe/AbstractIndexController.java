@@ -27,6 +27,10 @@ public abstract class AbstractIndexController implements IndexController {
     @Override
     public void activateRow(int row) {
         int rowTable = mainTable.convertRowIndexToView(row);
+        if (rowTable < 0) {
+            // We're trying to activate a row that is hidden in the main table. Do nothing.
+            return;
+        }
         mainTable.getSelectionModel().setSelectionInterval(rowTable, rowTable);
         mainTable.scrollRectToVisible(mainTable.getCellRect(rowTable, mainTable.getSelectedColumn(), false));
     }
