@@ -30,7 +30,8 @@ public class Feature {
         return enabled;
     }
 
-    public static Feature create(String systemPropertyName) {
-        return new Feature(Boolean.getBoolean(systemPropertyName));
+    public static Feature create(String systemPropertyName, boolean enabledByDefault) {
+        return new Feature(
+                Boolean.parseBoolean(System.getProperty(systemPropertyName, Boolean.toString(enabledByDefault))));
     }
 }

@@ -28,6 +28,6 @@ public class Features {
 
     @Inject
     Features() {
-        useFilterTree = Feature.create("name.mlopatkin.andlogview.features.useFilterTree");
+        useFilterTree = Feature.create("name.mlopatkin.andlogview.features.useFilterTree", true);
     }
 }
