@@ -29,8 +29,6 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 
 class FilterNodeTransferHandler extends TransferHandler {
-    private static final ValueRenderer<FilterNodeViewModel> nodeConverter =
-            new ValueRenderer<>(FilterNodeViewModel.class);
     private static final DataFlavor LOCAL_FILTER_FLAVOR;
 
     static {
@@ -59,7 +57,8 @@ class FilterNodeTransferHandler extends TransferHandler {
         var selectionPath = tree.getSelectionPath();
         if (selectionPath != null) {
             return new FilterNodeTransferable(
-                    Objects.requireNonNull(nodeConverter.toModel(selectionPath.getLastPathComponent())));
+                    Objects.requireNonNull(
+                            FilterTreeFactory.nodeRenderer.toModel(selectionPath.getLastPathComponent())));
         }
         return null;
     }

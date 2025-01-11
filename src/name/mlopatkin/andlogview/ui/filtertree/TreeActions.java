@@ -34,9 +34,6 @@ import javax.swing.JTree;
  * shortcuts.
  */
 class TreeActions {
-    private static final ValueRenderer<FilterNodeViewModel> nodeConverter =
-            new ValueRenderer<>(FilterNodeViewModel.class);
-
     public final Action createFilter;
     public final Action editSelectedFilter;
     public final Action deleteSelectedFilter;
@@ -65,7 +62,7 @@ class TreeActions {
     private static void withSelectedFilter(JTree tree, Consumer<? super FilterNodeViewModel> filterConsumer) {
         var path = tree.getSelectionPath();
         if (path != null) {
-            var filter = nodeConverter.toModel(path.getLastPathComponent());
+            var filter = FilterTreeFactory.nodeRenderer.toModel(path.getLastPathComponent());
             if (filter != null) {
                 filterConsumer.accept(filter);
             }

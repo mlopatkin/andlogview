@@ -60,13 +60,27 @@ public class TreeNodeFilter extends BaseFilterPresenter implements FilterNodeVie
                 .build();
     }
 
-    @AssistedFactory
-    interface Factory {
-        TreeNodeFilter create(FilterFromDialog filter);
+    @Override
+    public String getTooltip() {
+        var data = filter.getData();
+        return new FilterDescriptionBuilder()
+                .addName(filter.getName())
+                .addMode(data.getMode())
+                .addList("Tags", data.getTags())
+                .addList("PIDs", data.getPids())
+                .addList("App names like", data.getApps())
+                .addPattern("Message text like", data.getMessagePattern())
+                .addPriorityBound("Priority>=", data.getPriority())
+                .build();
     }
 
     @Override
     public String toString() {
         return filter.toString();
+    }
+
+    @AssistedFactory
+    interface Factory {
+        TreeNodeFilter create(FilterFromDialog filter);
     }
 }

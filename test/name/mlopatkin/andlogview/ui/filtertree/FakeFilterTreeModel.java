@@ -45,6 +45,11 @@ public class FakeFilterTreeModel implements FilterTreeModel<FakeFilterTreeModel.
             return title;
         }
 
+        @Override
+        public String getTooltip() {
+            return title;
+        }
+
         public FakeFilter enabled(boolean enabled) {
             return new FakeFilter(enabled, title);
         }

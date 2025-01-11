@@ -33,4 +33,11 @@ public interface FilterNodeViewModel {
      * @return the text representation of the filter
      */
     String getText();
+
+    /**
+     * Returns the text of the tree node tooltip.
+     *
+     * @return the tree node tooltip
+     */
+    String getTooltip();
 }

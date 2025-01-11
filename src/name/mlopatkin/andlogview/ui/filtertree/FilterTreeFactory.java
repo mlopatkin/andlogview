@@ -19,12 +19,17 @@ package name.mlopatkin.andlogview.ui.filtertree;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.awt.event.MouseEvent;
+
 import javax.inject.Inject;
 import javax.swing.DropMode;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -32,28 +37,51 @@ import javax.swing.tree.TreeSelectionModel;
  * Constructs {@link JTree} that shows the available filters.
  */
 public class FilterTreeFactory {
-    private final FilterNodeRenderer nodeRenderer;
+    static final ValueRenderer<FilterNodeViewModel> nodeRenderer =
+            new ValueRenderer<>(FilterNodeViewModel.class);
+
+    private final FilterNodeRenderer renderer;
     private final TreeModelAdapter treeModel;
     private final TreeActions.Factory treeActionsFactory;
 
     @Inject
     FilterTreeFactory(
-            FilterNodeRenderer nodeRenderer,
+            FilterNodeRenderer renderer,
             TreeModelAdapter treeModel,
             TreeActions.Factory treeActionsFactory) {
-        this.nodeRenderer = nodeRenderer;
+        this.renderer = renderer;
         this.treeModel = treeModel;
         this.treeActionsFactory = treeActionsFactory;
     }
 
     public JTree buildFilterTree(JToolBar filterToolbar) {
-        var filterTree = new JTree(treeModel);
+        var filterTree = new JTree(treeModel) {
+            @Override
+            public @Nullable String getToolTipText(MouseEvent event) {
+                var hoveredPath = getClosestPathForLocation(event.getX(), event.getY());
+                if (hoveredPath == null) {
+                    return null;
+                }
+                var bounds = getPathBounds(hoveredPath);
+                if (bounds == null || !bounds.contains(bounds.x, event.getY())) {
+                    return null;
+                }
+                var value = nodeRenderer.toModel(hoveredPath.getLastPathComponent());
+                if (value == null) {
+                    return null;
+                }
+
+                return value.getTooltip();
+            }
+        };
+
+        ToolTipManager.sharedInstance().registerComponent(filterTree);
 
         filterTree.setUI(new CheckFlatTreeUi());
 
         filterTree.setRootVisible(false);
         filterTree.setShowsRootHandles(false);
-        filterTree.setCellRenderer(nodeRenderer);
+        filterTree.setCellRenderer(renderer);
         filterTree.setSelectionModel(new DefaultTreeSelectionModel());
         filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 

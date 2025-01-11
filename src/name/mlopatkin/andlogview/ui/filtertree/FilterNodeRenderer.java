@@ -34,8 +34,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 class FilterNodeRenderer implements TreeCellRenderer {
-    private final ValueRenderer<FilterNodeViewModel> valueRenderer;
-
     private final JCheckBox checkBox = new JCheckBox();
     private final JLabel text = new JLabel();
     private final CheckablePanel panel;
@@ -50,7 +48,6 @@ class FilterNodeRenderer implements TreeCellRenderer {
 
     @Inject
     public FilterNodeRenderer() {
-        this.valueRenderer = new ValueRenderer<>(FilterNodeViewModel.class);
         panel = new CheckablePanel(checkBox);
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(checkBox);
@@ -75,7 +72,7 @@ class FilterNodeRenderer implements TreeCellRenderer {
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
             boolean leaf, int row, boolean hasFocus) {
-        var filter = valueRenderer.toModel(value);
+        var filter = FilterTreeFactory.nodeRenderer.toModel(value);
         if (filter == null) {
             // Sometimes we're asked for the root node even though it is invisible. Fall back to the default renderer in
             // this case.
