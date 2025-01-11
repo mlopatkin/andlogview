@@ -65,7 +65,7 @@ public class MyStringUtils {
      *         {@code maxLength < prefixLength + 2} (length of prefix, length of
      *         replacement, and length of shortest possible suffix).
      */
-    public static String abbreviateMiddle(String str, char replacement, int maxLength, int prefixLength) {
+    public static String abbreviateMiddle(CharSequence str, char replacement, int maxLength, int prefixLength) {
         Preconditions.checkNotNull(str, "str is null");
         Preconditions.checkArgument(maxLength > 0, "maxLength=%s <= 0", maxLength);
         Preconditions.checkArgument(prefixLength > 0, "prefixLength=%s <= 0", prefixLength);
@@ -73,14 +73,13 @@ public class MyStringUtils {
                 "maxLength=%s is too small for prefixLength=%s + replacement + 1-char suffix", maxLength, prefixLength);
 
         if (str.length() <= maxLength) {
-            return str;
+            return str.toString();
         }
 
         int suffixLength = maxLength - prefixLength - 1; // one symbol for replacement
         assert suffixLength > 0;
         int suffixStart = str.length() - suffixLength;
         // StringBuilder has fewer allocations because no substring and IndyConcat is Java 9+ while target is Java 8.
-        @SuppressWarnings("StringBufferReplaceableByString")
         StringBuilder result = new StringBuilder(maxLength);
         result.append(str, 0, prefixLength);
         result.append(replacement);

@@ -88,4 +88,9 @@ public class BookmarkController extends AbstractIndexController implements Index
     public void showWindow() {
         indexFrame.setVisible(true);
     }
+
+    @Override
+    public String getTitle() {
+        return "Bookmarks";
+    }
 }

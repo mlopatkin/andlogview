@@ -52,6 +52,7 @@ public class IndexFrame extends JFrame {
     @Inject
     public IndexFrame(DialogFactory dialogFactory, LogRecordTableColumnModel columnsModel,
             @Named(FOR_INDEX_FRAME) JTable logTable, IndexController controller) {
+        super(controller.getTitle());
         // TODO rethink this dependency
         this.owner = dialogFactory.getOwner();
         this.controller = controller;

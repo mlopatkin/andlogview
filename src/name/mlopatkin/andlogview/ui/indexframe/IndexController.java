@@ -20,6 +20,13 @@ package name.mlopatkin.andlogview.ui.indexframe;
  */
 public interface IndexController {
     /**
+     * A title of the index window
+     *
+     * @return the title of the index window
+     */
+    String getTitle();
+
+    /**
      * Called when a row in the table must be activated (scrolled to and selected).
      *
      * @param row the model index of the row
