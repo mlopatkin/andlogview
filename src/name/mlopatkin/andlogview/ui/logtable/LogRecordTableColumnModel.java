@@ -113,7 +113,7 @@ public final class LogRecordTableColumnModel extends DefaultTableColumnModel imp
     }
 
     private TableColumnBuilder makeBuilder(Column column) {
-        Preconditions.checkArgument(!columnsCache.containsKey(column), "Column %s already addded", column.name());
+        Preconditions.checkArgument(!columnsCache.containsKey(column), "Column %s already added", column.name());
         TableColumnBuilder builder = column.makeColumnBuilder();
         columnsCache.put(column, builder.get());
         return builder.setEditor(readOnlyCellEditor);
@@ -136,7 +136,7 @@ public final class LogRecordTableColumnModel extends DefaultTableColumnModel imp
     }
 
     private void showColumnFor(Column column) {
-        Preconditions.checkArgument(!isColumnShown(column), "Column %s already addded", column.name());
+        Preconditions.checkArgument(!isColumnShown(column), "Column %s already added", column.name());
         int desiredPosition = findPositionForColumn(column);
         addColumn(columnsCache.get(column));
         int actualPosition = getColumnCount() - 1;
