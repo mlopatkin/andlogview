@@ -31,8 +31,9 @@ import com.google.common.collect.Iterables;
 import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -42,7 +43,7 @@ import java.util.List;
  * This is the primary dispatcher for AdbDeviceList implementations.
  */
 class DispatchingDeviceList implements AdbDeviceList {
-    private static final Logger logger = Logger.getLogger(DispatchingDeviceList.class);
+    private static final Logger logger = LoggerFactory.getLogger(DispatchingDeviceList.class);
 
     private final AdbFacade adb;
     private final DeviceProvisioner deviceProvisioner;

@@ -27,7 +27,7 @@ description = "Common utilities that every other model can use"
 dependencies {
     api(libs.dagger.runtime)
 
-    implementation(libs.log4j)
+    implementation(libs.slf4j.api)
 
     testFixturesApi(platform(libs.test.assertj.bom))
     testFixturesApi(libs.test.assertj.core)

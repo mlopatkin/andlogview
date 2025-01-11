@@ -22,7 +22,8 @@ import com.formdev.flatlaf.IntelliJTheme;
 import com.formdev.flatlaf.util.ColorFunctions;
 import com.google.common.io.Resources;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -33,7 +34,8 @@ import javax.swing.UIManager;
  * FlatLaf L&amp;F with Light Flat IDEA theme.
  */
 class FlatLafTheme implements Theme {
-    private static final Logger logger = Logger.getLogger(Theme.class);
+    @SuppressWarnings("LoggerInitializedWithForeignClass")
+    private static final Logger logger = LoggerFactory.getLogger(Theme.class);
 
     @Override
     public String getName() {
@@ -65,9 +67,7 @@ class FlatLafTheme implements Theme {
             UIManager.put("Tree.dropCellBackground", dropBackground);
             UIManager.put("Tree.dropLineColor", dropBackground);
         } catch (IOException e) {
-            logger.error(
-                    String.format("Failed to load %s theme", FlatLafThemes.LIGHTFLAT.name().toLowerCase(Locale.ROOT)),
-                    e);
+            logger.error("Failed to load {} theme", FlatLafThemes.LIGHTFLAT.name().toLowerCase(Locale.ROOT), e);
             return false;
         }
         return true;

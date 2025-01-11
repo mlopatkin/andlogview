@@ -22,7 +22,8 @@ import name.mlopatkin.andlogview.utils.properties.Parser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
@@ -34,7 +35,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class Utils {
-    private static final Logger logger = Logger.getLogger(Configuration.class);
+    @SuppressWarnings("LoggerInitializedWithForeignClass")
+    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private Utils() {}
 

@@ -24,14 +24,15 @@ import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.MultiLineReceiver;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
 class CommandImpl implements Command {
-    private static final Logger logger = Logger.getLogger(CommandImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommandImpl.class);
 
     private final IDevice device;
     private final List<String> commandLine;
@@ -66,7 +67,7 @@ class CommandImpl implements Command {
             CollectingOutputReceiver exitCodeReceiver = new CollectingOutputReceiver();
             DeviceUtils.executeShellCommand(device, commandLineWithRedirects, exitCodeReceiver);
             String exitCode = exitCodeReceiver.getOutput().trim();
-            logger.debug("exit code output=" + exitCode);
+            logger.debug("exit code output={}", exitCode);
 
             return new Result(exitCode);
         }

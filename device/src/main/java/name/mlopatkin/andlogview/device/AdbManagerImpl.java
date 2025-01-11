@@ -23,15 +23,16 @@ import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
 
 class AdbManagerImpl implements AdbManager {
     // AdbManagerImpl is responsible for the state of the DDMLIB as a whole. The manager lazily initializes the library
     // when the AdbServer is first requested.
-    private static final Logger logger = Logger.getLogger(AdbManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdbManagerImpl.class);
 
     private final AtExitManager atExitManager;
     private final Executor ioExecutor;

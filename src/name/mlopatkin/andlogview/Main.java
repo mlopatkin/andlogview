@@ -23,7 +23,8 @@ import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 
 import com.formdev.flatlaf.util.SystemInfo;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -33,7 +34,7 @@ import javax.inject.Provider;
 import javax.swing.JOptionPane;
 
 public class Main {
-    private static final Logger logger = Logger.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static final String THEME_SYSTEM_PROPERTY = "name.mlopatkin.andlogview.theme";
 
@@ -69,8 +70,8 @@ public class Main {
                 commandLine,
                 theme);
 
-        logger.info(APP_NAME + " " + getVersionString());
-        logger.info("Revision " + BuildInfo.REVISION);
+        logger.info("{} {}", APP_NAME, getVersionString());
+        logger.info("Revision {}", BuildInfo.REVISION);
 
         EventQueue.invokeLater(() -> globals.getMain().start(configurationState));
     }
@@ -141,7 +142,7 @@ public class Main {
 
     private static void uncaughtHandler(Thread thread, Throwable throwable) {
         try {
-            logger.error("Uncaught exception in " + thread.getName(), throwable);
+            logger.error("Uncaught exception in {}", thread.getName(), throwable);
             ErrorDialogsHelper.showError(null,
                     "<html>Unhandled exception occured. Please collect log file at<br>"
                             + new File(SystemUtils.getJavaIoTmpDir(), "logview.log").getAbsolutePath()

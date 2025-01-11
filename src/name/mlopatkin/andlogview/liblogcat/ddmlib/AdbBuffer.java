@@ -24,7 +24,8 @@ import name.mlopatkin.andlogview.parsers.logcat.Format;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 import name.mlopatkin.andlogview.utils.Threads;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,7 +42,7 @@ class AdbBuffer {
         void pushRecord(LogRecord record);
     }
 
-    private static final Logger logger = Logger.getLogger(AdbBuffer.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdbBuffer.class);
     private static final Format FORMAT = Format.LONG;
 
     private final BufferReceiver receiver;
@@ -78,7 +79,7 @@ class AdbBuffer {
 
             @Override
             public ParserControl unparseableLine(CharSequence line) {
-                logger.debug("Non-parsed line: " + line);
+                logger.debug("Non-parsed line: {}", line);
                 return ParserControl.proceed();
             }
         };

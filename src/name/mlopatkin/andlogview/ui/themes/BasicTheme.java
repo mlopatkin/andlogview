@@ -16,7 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -25,7 +26,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  * Default Java L&amp;F (Metal).
  */
 class BasicTheme implements Theme {
-    private static final Logger logger = Logger.getLogger(BasicTheme.class);
+    @SuppressWarnings("LoggerInitializedWithForeignClass")
+    private static final Logger logger = LoggerFactory.getLogger(Theme.class);
 
     @Override
     public String getName() {

@@ -25,8 +25,9 @@ import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import com.google.common.io.Files;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.concurrent.Executor;
@@ -39,7 +40,7 @@ import javax.swing.JOptionPane;
  * This presenter handles "Dump Device..." menu command.
  */
 public class DumpDevicePresenter {
-    private static final Logger logger = Logger.getLogger(DumpDevicePresenter.class);
+    private static final Logger logger = LoggerFactory.getLogger(DumpDevicePresenter.class);
 
     private final DialogFactory dialogFactory;
     private final DeviceDumpFactory dumpFactory;

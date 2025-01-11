@@ -37,8 +37,9 @@ import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -168,7 +169,7 @@ public class Configuration {
         }
     }
 
-    private static final Logger logger = Logger.getLogger(Configuration.class);
+    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private Configuration() {}
 

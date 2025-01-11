@@ -32,8 +32,9 @@ import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         Observable<Consumer<Color>> addHighlightFilterAction(String title, List<Color> highlightColors);
     }
 
-    private static final Logger logger = Logger.getLogger(TablePopupMenuPresenter.class);
+    private static final Logger logger = LoggerFactory.getLogger(TablePopupMenuPresenter.class);
 
     private final BookmarkModel bookmarkModel;
     private final MenuFilterCreator filterCreator;

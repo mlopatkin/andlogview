@@ -39,8 +39,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Stopwatch;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -62,7 +63,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
     // device selection or the actual logcat retrieval. Moreover, ADB initialization code shows error dialogs if
     // something goes wrong, so it has some UI dependency already. If this becomes problematic then the class may be
     // split into two in the future.
-    private static final Logger logger = Logger.getLogger(AdbServicesBridge.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdbServicesBridge.class);
 
     private final AdbManager adbManager;
     private final AdbConfigurationPref adbConfigurationPref;
@@ -154,7 +155,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
             // Our initialization was cancelled by this point. We shouldn't propagate notifications further.
             return;
         }
-        logger.info("Initialized adb server in " + timeTracing.elapsed(TimeUnit.MILLISECONDS) + "ms");
+        logger.info("Initialized adb server in {}ms", timeTracing.elapsed(TimeUnit.MILLISECONDS));
         if (maybeFailure != null) {
             logger.error("Failed to initialize ADB", maybeFailure);
             notifyStatusChange(StatusValue.failed(getAdbFailureString(maybeFailure)));

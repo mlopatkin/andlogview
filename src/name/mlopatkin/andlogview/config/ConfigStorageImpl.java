@@ -29,7 +29,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonWriter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -46,7 +47,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 class ConfigStorageImpl implements ConfigStorage {
-    private static final Logger logger = Logger.getLogger(ConfigStorageImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigStorageImpl.class);
 
     private final Gson gson;
     private final CharSource inStorage;
@@ -150,7 +151,7 @@ class ConfigStorageImpl implements ConfigStorage {
     public <T> void saveConfig(ConfigStorageClient<T> client, T value) {
         String name = client.getName();
         JsonElement json = client.toJson(gson, value);
-        logger.debug("Client " + name + " changed the config");
+        logger.debug("Client {} changed the config", name);
         synchronized (serializedConfig) {
             serializedConfig.put(name, json);
             scheduleCommitLocked();
@@ -177,7 +178,7 @@ class ConfigStorageImpl implements ConfigStorage {
                     scheduleCommitLocked();
                 }
             }
-            logger.error("Failed to parse config data of " + client.getName(), e);
+            logger.error("Failed to parse config data of {}", client.getName(), e);
         }
         // failed to load/parse, provide fallback
         return client.getDefault();

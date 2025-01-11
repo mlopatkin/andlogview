@@ -22,7 +22,8 @@ import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Delegating IDevice wrapper that logs essential commands.
  */
 class LoggingDevice extends DelegatingDevice {
-    private static final Logger logger = Logger.getLogger(LoggingDevice.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggingDevice.class);
 
     private final String logPrefix;
 
@@ -73,6 +74,6 @@ class LoggingDevice extends DelegatingDevice {
     }
 
     private void debug(String message) {
-        logger.debug(logPrefix + message);
+        logger.debug("{}{}", logPrefix, message);
     }
 }

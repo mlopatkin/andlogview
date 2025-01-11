@@ -29,8 +29,9 @@ import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.ScopedObserver;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -64,7 +65,7 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         default void onDataSourceClosed() {}
     }
 
-    private static final Logger logger = Logger.getLogger(AdbDataSource.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdbDataSource.class);
 
     private final Device device;
     private final AdbPidToProcessConverter converter;
@@ -89,14 +90,14 @@ public class AdbDataSource implements DataSource, BufferReceiver {
         deviceChangeObserver = device.asObservable().addScopedObserver(new DeviceChangeObserver() {
             @Override
             public void onDeviceDisconnected(ProvisionalDevice device) {
-                logger.debug("Device " + device.getSerialNumber() + " was disconnected, closing the source");
+                logger.debug("Device {} was disconnected, closing the source", device.getSerialNumber());
                 invalidateAndClose(InvalidationReason.DISCONNECT);
             }
 
             @Override
             public void onDeviceChanged(Device device) {
                 if (!device.isOnline()) {
-                    logger.debug("Device " + device.getSerialNumber() + " is offline, closing the source");
+                    logger.debug("Device {} is offline, closing the source", device.getSerialNumber());
                     invalidateAndClose(InvalidationReason.OFFLINE);
                 }
             }

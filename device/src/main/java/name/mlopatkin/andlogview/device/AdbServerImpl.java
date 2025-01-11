@@ -23,8 +23,9 @@ import com.android.ddmlib.IDevice;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 class AdbServerImpl implements AdbServer {
     // AdbServerImpl wraps the current connection to the adb server. The connection cannot be replaced within the same
     // server instance, a new server instance should be created instead.
-    private static final Logger logger = Logger.getLogger(AdbServerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdbServerImpl.class);
     private final AdbFacade adbFacade;
     private final DeviceProvisioner deviceProvisioner;
 
@@ -54,7 +55,7 @@ class AdbServerImpl implements AdbServer {
         File adbExecutable = adbLocation.getExecutable()
                 .orElseThrow(
                         () -> new AdbException("ADB location '" + adbLocation.getExecutableString() + "' is invalid"));
-        logger.debug("ADB server executable: " + adbExecutable.getAbsolutePath());
+        logger.debug("ADB server executable: {}", adbExecutable.getAbsolutePath());
         final @Nullable AndroidDebugBridge bridge;
         try {
             bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);

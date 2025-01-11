@@ -64,8 +64,9 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -105,7 +106,7 @@ import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 
 public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.DeviceAwaiter {
-    private static final Logger logger = Logger.getLogger(MainFrame.class);
+    private static final Logger logger = LoggerFactory.getLogger(MainFrame.class);
 
     private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     private static final KeyStroke KEY_SHOW_SEARCH_FIELD = UiHelper.createPlatformKeystroke(KeyEvent.VK_F);

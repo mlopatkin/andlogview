@@ -32,8 +32,9 @@ import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
 import name.mlopatkin.andlogview.parsers.ps.PsParseEventsHandler;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public final class DumpstateFileDataSource implements DataSource {
-    private static final Logger logger = Logger.getLogger(DumpstateFileDataSource.class);
+    private static final Logger logger = LoggerFactory.getLogger(DumpstateFileDataSource.class);
 
     private final String fileName;
     private final SourceMetadata sourceMetadata;
@@ -149,7 +150,7 @@ public final class DumpstateFileDataSource implements DataSource {
                         @Override
                         public ParserControl unparseableLine(CharSequence line) {
                             if (line.length() > 0) {
-                                logger.debug("Failed to parse dumpstate logcat line: " + line);
+                                logger.debug("Failed to parse dumpstate logcat line: {}", line);
                             }
                             return ParserControl.proceed();
                         }
@@ -169,7 +170,7 @@ public final class DumpstateFileDataSource implements DataSource {
                         @Override
                         public ParserControl unparseableLine(CharSequence line) {
                             psSectionHadUnparseableLines = true;
-                            logger.debug("Failed to parse ps output line: " + line);
+                            logger.debug("Failed to parse ps output line: {}", line);
                             return ParserControl.proceed();
                         }
                     });

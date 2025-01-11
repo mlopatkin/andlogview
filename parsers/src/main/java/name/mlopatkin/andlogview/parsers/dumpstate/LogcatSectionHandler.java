@@ -23,11 +23,13 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatFormatSniffer;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class LogcatSectionHandler implements SectionHandler {
-    private static final Logger logger = Logger.getLogger(LogcatSectionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogcatSectionHandler.class);
+
     private static final int MAX_LOOKAHEAD_LINES = 128;
 
     private final ReplayParser<LogcatFormatSniffer> replayParser;
@@ -58,7 +60,7 @@ class LogcatSectionHandler implements SectionHandler {
             LogcatFormatSniffer formatSniffer = replayParser.getDelegate();
             if (formatSniffer.isFormatDetected()) {
                 boolean shouldProceed = eventsHandler.logcatSectionBegin(buffer).map(h -> {
-                    logger.debug("Detected format " + formatSniffer.getDetectedFormatDescription() + " for " + buffer);
+                    logger.debug("Detected format {} for {}", formatSniffer.getDetectedFormatDescription(), buffer);
                     delegate = formatSniffer.createParser(h);
                     return replayParser.replayInto(delegate);
                 }).orElse(false);

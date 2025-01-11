@@ -25,8 +25,9 @@ import name.mlopatkin.andlogview.utils.Threads;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 class AdbPidToProcessConverter {
-    private static final Logger logger = Logger.getLogger(AdbPidToProcessConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdbPidToProcessConverter.class);
 
     private static final String[] PS_COMMAND_LINE = {"ps"};
     private static final String[] PS_COMMAND_LINE_API_26 = {"ps", "-A"};
@@ -90,7 +91,7 @@ class AdbPidToProcessConverter {
 
             @Override
             public ParserControl unparseableLine(CharSequence line) {
-                logger.debug("Failed to parse line: " + line);
+                logger.debug("Failed to parse line: {}", line);
                 return ParserControl.proceed();
             }
         };

@@ -24,7 +24,8 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.stream.Stream;
  * Converts filters to and from serialized forms.
  */
 class FiltersCodec {
-    private static final Logger logger = Logger.getLogger(FiltersCodec.class);
+    private static final Logger logger = LoggerFactory.getLogger(FiltersCodec.class);
 
     private Stream<SavedFilterData> encodeFilter(Filter filter) {
         if (filter instanceof IndexWindowFilter indexWindowFilter) {

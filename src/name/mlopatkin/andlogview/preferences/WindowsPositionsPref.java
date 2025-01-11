@@ -31,8 +31,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -64,7 +65,7 @@ public class WindowsPositionsPref {
         }
     }
 
-    private static final Logger logger = Logger.getLogger(WindowsPositionsPref.class);
+    private static final Logger logger = LoggerFactory.getLogger(WindowsPositionsPref.class);
 
     private static final ConfigStorageClient<Map<Frame, FrameInfo>> STORAGE_CLIENT =
             new NamedClient<>("windows") {
@@ -85,7 +86,7 @@ public class WindowsPositionsPref {
                                         gson.fromJson(frameData, FrameInfoSerialized.class);
                                 result.put(frame, frameInfoSerialized.tryDeserialize());
                             } catch (JsonSyntaxException | InvalidJsonContentException e) {
-                                logger.error("Incorrect entry for frame " + frame, e);
+                                logger.error("Incorrect entry for frame {}", frame, e);
                             }
                         }
                     }

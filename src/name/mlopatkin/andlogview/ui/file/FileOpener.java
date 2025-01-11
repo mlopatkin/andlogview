@@ -29,8 +29,9 @@ import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.TextUtils;
 
-import org.apache.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +46,7 @@ import javax.swing.JOptionPane;
  * properly.
  */
 public class FileOpener {
-    private static final Logger logger = Logger.getLogger(FileOpener.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileOpener.class);
     private static final int MAX_PROBLEMS_DISPLAYED = 10;
 
     private final DialogFactory dialogFactory;
@@ -100,11 +101,11 @@ public class FileOpener {
             showImportProblemsIfNeeded(importResult.getProblems());
             return CompletableFuture.completedFuture(importResult.getDataSource());
         } catch (UnrecognizedFormatException e) {
-            logger.error("Unrecognized file format for " + file, e);
+            logger.error("Unrecognized file format for {}", file, e);
             ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Unrecognized file format for " + file);
             return failedFuture(e);
         } catch (IOException e) {
-            logger.error("Cannot open " + file, e);
+            logger.error("Cannot open {}", file, e);
             ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Cannot read " + file);
             return failedFuture(e);
         }

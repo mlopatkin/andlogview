@@ -28,14 +28,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class FileDataSourceFactory {
-    private static final Logger logger = Logger.getLogger(FileDataSourceFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileDataSourceFactory.class);
     private static final int MAX_LOOKAHEAD_LINES = 100;
 
     private FileDataSourceFactory() {}
@@ -58,10 +59,10 @@ public class FileDataSourceFactory {
                 while ((line = in.readLine()) != null) {
                     boolean parserStopped = !parser.nextLine(line);
                     if (dumpstateSniffer.isFormatDetected()) {
-                        logger.debug("Recognized " + file + " as a dumpstate data");
+                        logger.debug("Recognized {} as a dumpstate data", file);
                         return createDumpstateFileSource(file, dumpstateSniffer, parser, in);
                     } else if (logcatSniffer.isFormatDetected()) {
-                        logger.debug("Recognized " + file + " as a logcat data");
+                        logger.debug("Recognized {} as a logcat data", file);
                         return createLogFileSource(file, logcatSniffer, parser, in);
                     }
                     if (parserStopped) {

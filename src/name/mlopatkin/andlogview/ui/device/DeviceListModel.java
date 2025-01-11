@@ -23,7 +23,8 @@ import name.mlopatkin.andlogview.device.ProvisionalDevice;
 
 import com.google.common.collect.Iterables;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.Objects;
 import javax.swing.AbstractListModel;
 
 class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements DeviceChangeObserver {
-    private static final Logger logger = Logger.getLogger(DeviceListModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeviceListModel.class);
 
     private final AdbDeviceList adbDeviceList;
     private final List<ProvisionalDevice> devices;
@@ -54,7 +55,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
 
     @Override
     public void onProvisionalDeviceConnected(ProvisionalDevice device) {
-        logger.debug("provisional device added " + device);
+        logger.debug("provisional device added {}", device);
         assert findIndexOfDevice(device) < 0;
         devices.add(device);
         fireIntervalAdded(this, devices.size() - 1, devices.size() - 1);
@@ -62,7 +63,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
 
     @Override
     public void onDeviceConnected(Device device) {
-        logger.debug("device provisioned " + device);
+        logger.debug("device provisioned {}", device);
         int index = findIndexOfDevice(device);
         if (index >= 0) {
             devices.set(index, device);
@@ -75,7 +76,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
 
     @Override
     public void onDeviceDisconnected(ProvisionalDevice device) {
-        logger.debug("device removed " + device);
+        logger.debug("device removed {}", device);
         int index = findIndexOfDevice(device);
         if (index >= 0) {
             devices.remove(index);
@@ -85,7 +86,7 @@ class DeviceListModel extends AbstractListModel<ProvisionalDevice> implements De
 
     @Override
     public void onDeviceChanged(Device device) {
-        logger.debug("Device changed: " + device);
+        logger.debug("Device changed: {}", device);
         int index = findIndexOfDevice(device);
         assert index >= 0;
         fireContentsChanged(DeviceListModel.this, index, index);

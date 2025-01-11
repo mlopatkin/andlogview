@@ -51,8 +51,11 @@ dependencies {
     implementation(libs.flatlaf.extras)
     implementation(libs.gson)
     implementation(libs.jopt)
+    implementation(libs.slf4j.api)
     implementation(libs.log4j)
     implementation(libs.miglayout)
+
+    runtimeOnly(libs.slf4j.reload4j)
 
     annotationProcessor(buildLibs.dagger.compiler)
 

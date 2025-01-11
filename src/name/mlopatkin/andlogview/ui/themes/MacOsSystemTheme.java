@@ -18,7 +18,8 @@ package name.mlopatkin.andlogview.ui.themes;
 
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -27,7 +28,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  * System L&amp;F to be used on Mac OS X.
  */
 class MacOsSystemTheme implements Theme {
-    private static final Logger logger = Logger.getLogger(Theme.class);
+    @SuppressWarnings("LoggerInitializedWithForeignClass")
+    private static final Logger logger = LoggerFactory.getLogger(Theme.class);
 
     @Override
     public String getName() {

@@ -24,7 +24,8 @@ import name.mlopatkin.andlogview.device.OutputTarget;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.parsers.logcat.Format;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -34,7 +35,7 @@ import java.util.function.Consumer;
  * Represents various flavors of {@code adb logcat -b buffer} command.
  */
 class LogcatCommand {
-    private static final Logger logger = Logger.getLogger(LogcatCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogcatCommand.class);
 
     private final Device device;
     private final String bufferName;

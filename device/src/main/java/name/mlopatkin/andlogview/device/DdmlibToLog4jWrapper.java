@@ -18,10 +18,11 @@ package name.mlopatkin.andlogview.device;
 import com.android.ddmlib.Log.ILogOutput;
 import com.android.ddmlib.Log.LogLevel;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DdmlibToLog4jWrapper implements ILogOutput {
-    private static final Logger logger = Logger.getLogger("DDMLIB");
+    private static final Logger logger = LoggerFactory.getLogger("DDMLIB");
 
     @Override
     public void printLog(LogLevel logLevel, String tag, String message) {

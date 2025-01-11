@@ -22,7 +22,8 @@ import name.mlopatkin.andlogview.utils.SystemPathResolver;
 import dagger.Module;
 import dagger.Provides;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import javax.inject.Singleton;
 
 @Module
 public class GlobalsModule {
-    private static final Logger logger = Logger.getLogger(GlobalsModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalsModule.class);
 
     private final File appConfigDir;
 
@@ -45,7 +46,7 @@ public class GlobalsModule {
         try {
             return factory.createForFile(new File(appConfigDir, "logview.json"));
         } catch (IOException e) {
-            logger.fatal("Cannot start at all", e);
+            logger.error("Cannot start at all", e);
             System.exit(-1);
             // Dummy return that won't happen because of System.exit
             throw new AssertionError("System.exit not working");

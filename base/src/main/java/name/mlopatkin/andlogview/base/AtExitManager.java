@@ -16,7 +16,8 @@
 
 package name.mlopatkin.andlogview.base;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class AtExitManager {
-    private static final Logger logger = Logger.getLogger(AtExitManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(AtExitManager.class);
 
     private final List<Runnable> actions = new ArrayList<>();
     private final Thread atExitWorker = new Thread(this::onExit, "AtExitWorker");
