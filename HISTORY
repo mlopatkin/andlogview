@@ -1,4 +1,13 @@
 version 0.23
+    [+] Filter list view replaces the button panel.
+    [+] Filters can be named.
+    [+] Index windows apply only filters that are before them in the list view.
+    [+] Filters can be reordered. This affects coloring and index window filters.
+    [+] Modernized look&feel on MacOS.
+
+    [*] The outdated Log4J 1.2 dependency is no longer used. The security risk was low, but security scanners may have
+        alerted because of its presence.
+
 version 0.22
     [+] Support parsing long logcat format
     [+] Show warnings when dumpstate cannot be imported properly, but try to still be useful
