@@ -31,6 +31,7 @@ import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 /**
@@ -58,12 +59,8 @@ public class FilterTreeFactory {
         var filterTree = new JTree(treeModel) {
             @Override
             public @Nullable String getToolTipText(MouseEvent event) {
-                var hoveredPath = getClosestPathForLocation(event.getX(), event.getY());
+                var hoveredPath = getPathConsideringWideSelection(this, event.getX(), event.getY());
                 if (hoveredPath == null) {
-                    return null;
-                }
-                var bounds = getPathBounds(hoveredPath);
-                if (bounds == null || !bounds.contains(bounds.x, event.getY())) {
                     return null;
                 }
                 var value = nodeRenderer.toModel(hoveredPath.getLastPathComponent());
@@ -115,7 +112,7 @@ public class FilterTreeFactory {
 
         UiHelper.PopupMenuDelegate<JTree> menuHandler = (component, x, y) -> {
             assert component == tree;
-            var path = tree.getPathForLocation(x, y);
+            var path = getPathConsideringWideSelection(tree, x, y);
             if (path == null) {
                 treePopupMenu.show(tree, x, y);
             } else {
@@ -139,5 +136,19 @@ public class FilterTreeFactory {
 
         createFilterBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
         createFilterBtn.setVerticalTextPosition(SwingConstants.CENTER);
+    }
+
+    private static @Nullable TreePath getPathConsideringWideSelection(JTree tree, int x, int y) {
+        var path = tree.getClosestPathForLocation(x, y);
+        if (path == null) {
+            return null;
+        }
+        var bounds = tree.getPathBounds(path);
+        // Only check the vertical coordinate.
+        if (bounds == null || !bounds.contains(bounds.x, y)) {
+            return null;
+        }
+        return path;
+
     }
 }
