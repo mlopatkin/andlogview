@@ -292,8 +292,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         Collection<Column> availableColumns = Column.getColumnsForFields(newSource.getAvailableFields());
         LogRecordTableColumnModel columns = columnModelFactory.create(mapper, availableColumns);
         logElements.setColumnModel(columns);
-        UiHelper.addPopupMenu(
-                logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columns).createMenu());
+        logElements.getTableHeader().setComponentPopupMenu(new LogTableHeaderPopupMenuController(columns).createMenu());
     }
 
     private @Nullable String mapPidToProcessName(int pid) {
@@ -345,8 +344,8 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         LogRecordTableColumnModel columnModel = columnModelFactory.create(mapper, Column.getSelectedColumns());
         logElements.setColumnModel(columnModel);
-        UiHelper.addPopupMenu(
-                logElements.getTableHeader(), new LogTableHeaderPopupMenuController(columnModel).createMenu());
+        logElements.getTableHeader()
+                .setComponentPopupMenu(new LogTableHeaderPopupMenuController(columnModel).createMenu());
 
         JScrollPane logTableScrollPane = new JScrollPane(logElements);
 
