@@ -17,42 +17,38 @@ package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.TooltipGenerator;
 import name.mlopatkin.andlogview.search.text.TextHighlighter;
-import name.mlopatkin.andlogview.thirdparty.styledlabel.StyledLabel;
 import name.mlopatkin.andlogview.widgets.UiHelper;
+
+import com.formdev.flatlaf.ui.FlatLabelUI;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Range;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Rectangle;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
 
-public class HighlightCellRenderer extends StyledLabel implements TableCellRenderer, TextHighlighter {
+public class HighlightCellRenderer extends DefaultTableCellRenderer implements TableCellRenderer, TextHighlighter {
     private static final Border NO_BORDER = new EmptyBorder(1, 1, 1, 1);
-
     private static final Border FOCUSED_BORDER = getFocusedBorder();
 
-    private final StyledDocument document = new DefaultStyledDocument();
-    private static final Style BASE_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
+    private static final Color HIGHLIGHT_BACKGROUND = Color.YELLOW;
+    private static final Color HIGHLIGHT_FOREGROUND = Color.RED;
 
-    private final Style highlighted;
+    private final List<Range<Integer>> highlights = new ArrayList<>();
 
     public HighlightCellRenderer() {
-        setBorder(NO_BORDER);
-        setDocument(document);
-
-        highlighted = document.addStyle(null, null);
-        StyleConstants.setBackground(highlighted, Color.YELLOW);
-        StyleConstants.setForeground(highlighted, Color.RED);
+        setUI(new HighlightUI());
     }
 
     @Override
@@ -86,24 +82,6 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
         return this;
     }
 
-    @Override
-    public void invalidate() {}
-
-    @Override
-    public void validate() {}
-
-    @Override
-    public void revalidate() {}
-
-    @Override
-    public void repaint(long tm, int x, int y, int width, int height) {}
-
-    @Override
-    public void repaint(Rectangle r) {}
-
-    @Override
-    public void repaint() {}
-
     /**
      * Hack to get a consistent focused border from
      * {@link DefaultTableCellRenderer}.
@@ -119,10 +97,112 @@ public class HighlightCellRenderer extends StyledLabel implements TableCellRende
 
     @Override
     public void highlightText(int from, int to) {
-        document.setCharacterAttributes(from, to - from, highlighted, true);
+        highlights.add(Range.closedOpen(from, to));
     }
 
     private void clearHighlight() {
-        document.setCharacterAttributes(0, document.getLength(), BASE_STYLE, true);
+        highlights.clear();
+    }
+
+    private static final class HighlightUI extends FlatLabelUI {
+        private final HighlightPainter painter = new HighlightPainter() {
+            private void paintTextBackground(JLabel l, Graphics g, int textX, int textWidth) {
+                g.setColor(HIGHLIGHT_BACKGROUND);
+                g.fillRect(textX, 0, textWidth, l.getHeight());
+            }
+
+            @Override
+            protected void paintHighlightedText(JLabel l, Graphics g, String s, int textX, int textY, int width) {
+                paintTextBackground(l, g, textX, width);
+                var fg = l.getForeground();
+                l.setForeground(HIGHLIGHT_FOREGROUND);
+                try {
+                    paintText(l, g, s, textX, textY);
+                } finally {
+                    l.setForeground(fg);
+                }
+            }
+
+            @Override
+            protected void paintText(JLabel l, Graphics g, String s, int textX, int textY) {
+                HighlightUI.super.paintEnabledText(l, g, s, textX, textY);
+            }
+        };
+
+        HighlightUI() {
+            super(false);
+        }
+
+        @Override
+        protected void paintEnabledText(JLabel l, Graphics g, String s, int textX, int textY) {
+            if (l instanceof HighlightCellRenderer hcr && !hcr.highlights.isEmpty()) {
+                painter.paintText(hcr, g, s, textX, textY, hcr.highlights);
+            } else {
+                super.paintEnabledText(l, g, s, textX, textY);
+            }
+        }
+
+        @Override
+        protected void paintDisabledText(JLabel l, Graphics g, String s, int textX, int textY) {
+            // Disabled text isn't used by this renderer.
+            super.paintDisabledText(l, g, s, textX, textY);
+        }
+    }
+
+    /**
+     * This class exists only to test the highlight logic in isolation.
+     */
+    @VisibleForTesting
+    abstract static class HighlightPainter {
+        private static final int CLIP_ELLIPSIS_LENGTH = "...".length();
+
+        public void paintText(JLabel l, Graphics g, String s, int textX, int textY,
+                Collection<Range<Integer>> highlights) {
+            var fm = l.getFontMetrics(l.getFont());
+            var isTruncated = !s.equals(l.getText());
+            // Text length that doesn't include the truncation mark (...).
+            var textLength = isTruncated ? s.length() - CLIP_ELLIPSIS_LENGTH : s.length();
+
+            int lastDrawnPos = 0;
+            for (var iter = highlights.iterator(); iter.hasNext() && lastDrawnPos < s.length(); ) {
+                var range = iter.next();
+                int firstPlain = lastDrawnPos;
+                // If the range starts after the truncation, we highlight the mark too.
+                int firstHighlighted = Math.min(range.lowerEndpoint(), textLength);
+
+                if (firstPlain < firstHighlighted) {
+                    // We don't get there if there are two consecutive highlighted ranges.
+                    var plainStr = s.substring(firstPlain, firstHighlighted);
+                    paintText(l, g, plainStr, textX, textY);
+                    textX += fm.stringWidth(plainStr);
+                }
+
+                int highlightedEnd = range.upperEndpoint();
+                if (highlightedEnd > textLength) {
+                    // If the highlight ends after the truncation point (we check the non-truncated length for that)
+                    // then we want to highlight the mark too (so we set the highlight end to include the mark).
+                    highlightedEnd = s.length();
+                }
+
+                if (firstHighlighted < highlightedEnd) {
+                    var highlightedStr = s.substring(firstHighlighted, highlightedEnd);
+                    var width = fm.stringWidth(highlightedStr);
+
+                    paintHighlightedText(l, g, highlightedStr, textX, textY, width);
+
+                    textX += width;
+                }
+
+                lastDrawnPos = highlightedEnd;
+            }
+
+            if (lastDrawnPos < s.length()) {
+                paintText(l, g, s.substring(lastDrawnPos), textX, textY);
+            }
+        }
+
+        protected abstract void paintHighlightedText(JLabel l, Graphics g, String s, int textX, int textY, int width);
+
+        protected abstract void paintText(JLabel l, Graphics g, String s, int textX, int textY);
     }
 }
