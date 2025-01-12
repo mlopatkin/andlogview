@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.device;
 
 import static name.mlopatkin.andlogview.utils.MyFutures.cancellationHandler;
 import static name.mlopatkin.andlogview.utils.MyFutures.exceptionHandler;
+import static name.mlopatkin.andlogview.utils.MyFutures.ignoreCancellations;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
@@ -55,10 +56,8 @@ public class AdbOpener {
     /**
      * Initializes ADB if necessary, opens device selection dialog and builds the ADB data source out of the
      * user-selected device. If the user decides to cancel the dialog, then consumer receives {@code null}.
-     * <p>
-     * The returned handle must be used on UI thread only.
      *
-     * @return the cancellable handle to stop initialization
+     * @return the pending AdbDataSource reference
      */
     public CompletableFuture<@Nullable AdbDataSource> selectAndOpenDevice() {
         var result = new CompletableFuture<@Nullable AdbDataSource>();
@@ -77,16 +76,21 @@ public class AdbOpener {
     /**
      * Initializes ADB if necessary, waits for a first device to come online and builds the ADB data source out of it.
      * <p>
-     * The returned handle must be used on UI thread only.
+     * The returned future doesn't complete exceptionally if the ADB fails to initialize. Instead, it waits until a
+     * valid ADB connection is established. Of course, after completion, the returned AdbDataSource will be invalidated
+     * if the ADB connection with the device breaks for any reason.
      *
-     * @return the cancellable handle to stop initialization
+     * @return the pending AdbDataSource reference
      */
     public CompletableFuture<AdbDataSource> awaitDevice() {
         var result = new CompletableFuture<AdbDataSource>();
 
         // We don't cancel the wait even if the ADB cannot be loaded, because we want to pick up the device if the
         // DeviceList recovers eventually.
-        var deviceList = presenter.withAdbDeviceList();
+        var adbDeviceListFailureHandler = MyFutures.cancelBy(new CompletableFuture<Void>(), result);
+        adbDeviceListFailureHandler.exceptionally(exceptionHandler(ignoreCancellations(presenter::handleAdbError)));
+
+        var deviceList = presenter.withAdbDeviceList(adbDeviceListFailureHandler::completeExceptionally);
         MyFutures.cancelBy(awaitDevice(deviceList), result)
                 .thenAccept(device -> adbDataSourceFactory.openDeviceAsDataSource(device, result::complete))
                 .exceptionally(exceptionHandler(result::completeExceptionally));

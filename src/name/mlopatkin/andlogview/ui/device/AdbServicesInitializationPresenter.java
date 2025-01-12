@@ -50,7 +50,7 @@ public class AdbServicesInitializationPresenter {
         /**
          * Show the user that ADB services aren't ready yet, but they are being loading. Depending on the way the
          * notification is presented, the user may be able to dismiss it. Dismissing the notification may cancel the
-         * action that requested the load, so the UI has to accomodate for that.
+         * action that requested the load, so the UI has to accommodate for that.
          *
          * @param isCancellable if the action being run is cancellable
          * @param userHideAction the callback to run if the user hides the notification
@@ -93,18 +93,20 @@ public class AdbServicesInitializationPresenter {
     /**
      * Kicks off initialization of the adb services and returns the device list, without waiting for the
      * initialization to complete. This method should be used when the device list is enough for the task.
-     * <p>
-     * There is no indication of the loading progress.
+     * There is no indication of the loading progress, but ADB initialization
      * <p>
      * The initialization of the adb services triggered by this method cannot be cancelled.
+     *
+     * @param failureHandler the failure handler to be called if the ADB failed to initialize
      */
-    public AdbDeviceList withAdbDeviceList() {
-        return bridge.prepareAdbDeviceList(ignoreCancellations(this::handleAdbError));
+    public AdbDeviceList withAdbDeviceList(Consumer<? super Throwable> failureHandler) {
+        return bridge.prepareAdbDeviceList(ignoreCancellations(failureHandler));
     }
 
     /**
      * Initializes the adb services and executes the action. This method should be used when the user triggers the
-     * action, it takes care of indicating the pause. The actions are executed on the UI executor.
+     * action, it takes care of indicating the pause. The actions are executed on the UI executor. If the initialization
+     * fails, the error dialog may be shown and
      * <p>
      * The initialization may be cancelled by using the returned handle. When cancelled, the failure handler is invoked.
      *
@@ -130,7 +132,9 @@ public class AdbServicesInitializationPresenter {
                     (services, th) -> hideProgressWithToken(token),
                     uiExecutor);
             // Cancellation only affects the view. Non-cancellable requests don't actually care about the returned
-            // future, so we can cancel it to hide the progress view.
+            // future, so we can cancel it to hide the progress view. Hiding will also prevent the error dialog from
+            // appearing if the ADB initialization eventually fails.
+            // TODO(mlopatkin) Should there be a non-invasive UI to show the ADB loading status?
             showProgressWithToken(allowCancellation, token, () -> result.cancel(false));
         }
         future.handleAsync(
@@ -161,7 +165,12 @@ public class AdbServicesInitializationPresenter {
         }
     }
 
-    private void handleAdbError(Throwable failure) {
+    /**
+     * TBD
+     *
+     * @param failure
+     */
+    public void handleAdbError(Throwable failure) {
         if (!hasShownErrorMessage) {
             hasShownErrorMessage = true;
             // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
@@ -175,7 +184,9 @@ public class AdbServicesInitializationPresenter {
     }
 
     /**
-     * Restarts ADB services (or starts one if it is not yet running).
+     * Restarts ADB services (or starts one if it is not yet running) asynchronously.
+     * <p>
+     * Shows the progress indication while ADB is initialized. Upon failure, shows the error dialog.
      */
     public void restartAdb() {
         // Stopping ADB trigger disconnect dialogs now

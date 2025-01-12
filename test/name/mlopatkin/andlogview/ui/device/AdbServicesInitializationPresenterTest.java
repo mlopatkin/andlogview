@@ -545,7 +545,7 @@ class AdbServicesInitializationPresenterTest {
     }
 
     private void whenRequestedAdbDeviceList() {
-        presenter.withAdbDeviceList();
+        presenter.withAdbDeviceList(presenter::handleAdbError);
     }
 
     private void givenServiceConsumerThrows() {
@@ -626,7 +626,8 @@ class AdbServicesInitializationPresenterTest {
     }
 
     private static ServiceRequest deviceListRequest() {
-        return testConsumer((presenter, servicesConsumer, errorConsumer) -> presenter.withAdbDeviceList(),
+        return testConsumer(
+                (presenter, servicesConsumer, errorConsumer) -> presenter.withAdbDeviceList(presenter::handleAdbError),
                 "withAdbDeviceList");
     }
 

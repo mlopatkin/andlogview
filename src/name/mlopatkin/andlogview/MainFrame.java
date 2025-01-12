@@ -263,7 +263,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         } else if (sourceHolder.getDataSource() == null) {
             // Don't have an open data source at the moment and nothing was selected - fall back to trying to open first
             // connected device.
-            waitForDevice();
+            tryToConnectToFirstAvailableDevice();
         }
     }
 
