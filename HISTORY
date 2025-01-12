@@ -8,6 +8,8 @@ version 0.23
 
     [*] The outdated Log4J 1.2 dependency is no longer used. The security risk was low, but security scanners may have
         alerted because of its presence.
+    [*] "ADB failed to initialize" dialog on startup is now suppressible. It may show again if ADB fails again after
+        initializing successfully.
 
 version 0.22
     [+] Support parsing long logcat format
