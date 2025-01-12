@@ -72,7 +72,6 @@ public class BookmarkController extends AbstractIndexController implements Index
         var indexFrameComponent = (BookmarksDi.BookmarksFrameComponent) builder.build();
 
         indexFrame = indexFrameComponent.createFrame();
-        indexFrame.setTitle("Bookmarks");
 
         // TODO(mlopatkin) There should be a better way of wiring together key bindings, menus and actions.
         UiHelper.bindKeyGlobal(indexFrame,

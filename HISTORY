@@ -8,7 +8,6 @@ version 0.23
 
     [*] The outdated Log4J 1.2 dependency is no longer used. The security risk was low, but security scanners may have
         alerted because of its presence.
-    [*] The bookmarks window now have a proper title.
 
 version 0.22
     [+] Support parsing long logcat format
