@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
@@ -65,11 +66,12 @@ public class AdbServicesInitializationPresenter {
         /**
          * Show the user that ADB services failed to load. This is only called once per presenter lifetime.
          */
-        void showAdbLoadingError(String failureReason);
+        void showAdbLoadingError(String failureReason, boolean isAutoStart);
     }
 
     private final AdbServicesBridge bridge;
     private final View view;
+    private final AdbConfigurationPref adbConfigurationPref;
     private final Executor uiExecutor;
     private final DeviceDisconnectedHandler deviceDisconnectedHandler;
     // Maintains set of the current requests to show loading progress. Useful, when new show and old hide requests
@@ -82,10 +84,12 @@ public class AdbServicesInitializationPresenter {
     AdbServicesInitializationPresenter(
             View view,
             AdbServicesBridge bridge,
+            AdbConfigurationPref adbConfigurationPref,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
             DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.bridge = bridge;
         this.view = view;
+        this.adbConfigurationPref = adbConfigurationPref;
         this.uiExecutor = uiExecutor;
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
@@ -166,19 +170,32 @@ public class AdbServicesInitializationPresenter {
     }
 
     /**
-     * TBD
+     * Shows the ADB failure to the user if appropriate. Consecutive errors are typically not shown.
      *
-     * @param failure
+     * @param failure the failure
      */
     public void handleAdbError(Throwable failure) {
-        if (!hasShownErrorMessage) {
+        handleAdbError(failure, false);
+    }
+
+    /**
+     * Shows the ADB failure to the user if appropriate. Consecutive errors are typically not shown.
+     * <p>
+     * The error may also be suppressed if it is a result of an automatic connection that happened without explicit
+     * ADB service request, e.g. when the user starts the app without a log file provided.
+     *
+     * @param failure the failure
+     * @param isAutoStart if the error is triggered by the automatic connection setup
+     */
+    public void handleAdbError(Throwable failure, boolean isAutoStart) {
+        if (!hasShownErrorMessage && (!isAutoStart || adbConfigurationPref.shouldShowAutostartFailures())) {
             hasShownErrorMessage = true;
             // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
             // showing the dialog to prevent re-entrance and double dialog.
             if (MyThrowables.unwrapUninteresting(failure) instanceof AdbException adbException) {
-                view.showAdbLoadingError(adbException.getMessage());
+                view.showAdbLoadingError(adbException.getMessage(), isAutoStart);
             } else {
-                view.showAdbLoadingError("Failed to initialize ADB");
+                view.showAdbLoadingError("Failed to initialize ADB", isAutoStart);
             }
         }
     }

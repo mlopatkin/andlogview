@@ -514,7 +514,7 @@ class AdbServicesInitializationPresenterTest {
                             .exceptionally(MyFutures::uncaughtException);
                     return mock(AdbDeviceList.class);
                 });
-        return new AdbServicesInitializationPresenter(view, mockBridge, uiExecutor, disconnectedHandler);
+        return new AdbServicesInitializationPresenter(view, mockBridge, mock(), uiExecutor, disconnectedHandler);
     }
 
     private void withNewResultAfterReload() {
@@ -721,7 +721,7 @@ class AdbServicesInitializationPresenterTest {
         }
 
         @Override
-        public void showAdbLoadingError(String failureReason) {
+        public void showAdbLoadingError(String failureReason, boolean isAutoStart) {
             showsError = Objects.requireNonNull(failureReason);
         }
 

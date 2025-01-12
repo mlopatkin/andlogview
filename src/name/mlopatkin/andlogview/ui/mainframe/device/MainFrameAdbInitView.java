@@ -56,8 +56,8 @@ class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
     }
 
     @Override
-    public void showAdbLoadingError(String failureReason) {
+    public void showAdbLoadingError(String failureReason, boolean isAutoStart) {
         hideAdbLoadingProgress();
-        errorDialogs.showAdbFailedToStartError(failureReason);
+        errorDialogs.showAdbFailedToStartError(failureReason, isAutoStart);
     }
 }

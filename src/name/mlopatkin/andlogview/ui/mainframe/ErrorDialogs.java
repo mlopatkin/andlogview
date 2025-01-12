@@ -17,11 +17,9 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.ui.device.AdbNotAvailableDialog;
-import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
-
-import dagger.Lazy;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.swing.JOptionPane;
 
 /**
@@ -29,20 +27,22 @@ import javax.swing.JOptionPane;
  */
 public class ErrorDialogs {
     private final DialogFactory dialogFactory;
-    private final Lazy<ConfigurationDialogPresenter> configurationDialogPresenter;
+    private final Provider<AdbNotAvailableDialog> adbDialogFactory;
 
     @Inject
-    ErrorDialogs(DialogFactory dialogFactory, Lazy<ConfigurationDialogPresenter> configurationDialogPresenter) {
+    ErrorDialogs(DialogFactory dialogFactory, Provider<AdbNotAvailableDialog> adbDialogFactory) {
         this.dialogFactory = dialogFactory;
-        this.configurationDialogPresenter = configurationDialogPresenter;
+        this.adbDialogFactory = adbDialogFactory;
     }
 
     /**
      * Shows the "The ADB executable was not found" dialog.
+     *
+     * @param failureMessage the description of the ADB failure
+     * @param isAutoStart if the start attempt was automatic
      */
-    public void showAdbFailedToStartError(String failureMessage) {
-        AdbNotAvailableDialog.show(dialogFactory, failureMessage,
-                () -> configurationDialogPresenter.get().openDialog());
+    public void showAdbFailedToStartError(String failureMessage, boolean isAutoStart) {
+        adbDialogFactory.get().show(failureMessage, isAutoStart);
     }
 
     /**

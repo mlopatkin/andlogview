@@ -88,7 +88,13 @@ public class AdbOpener {
         // We don't cancel the wait even if the ADB cannot be loaded, because we want to pick up the device if the
         // DeviceList recovers eventually.
         var adbDeviceListFailureHandler = MyFutures.cancelBy(new CompletableFuture<Void>(), result);
-        adbDeviceListFailureHandler.exceptionally(exceptionHandler(ignoreCancellations(presenter::handleAdbError)));
+        adbDeviceListFailureHandler.exceptionally(
+                exceptionHandler(
+                        ignoreCancellations(
+                                failure -> presenter.handleAdbError(failure, true)
+                        )
+                )
+        );
 
         var deviceList = presenter.withAdbDeviceList(adbDeviceListFailureHandler::completeExceptionally);
         MyFutures.cancelBy(awaitDevice(deviceList), result)

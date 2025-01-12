@@ -16,20 +16,55 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
 
+import dagger.Lazy;
+
+import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+
+import javax.inject.Inject;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 public class AdbNotAvailableDialog {
     private static final String SETUP_ADB_OPTION = "Set up ADB";
     private static final String IGNORE_OPTION = "Proceed without ADB";
 
-    private AdbNotAvailableDialog() {}
+    private final DialogFactory dialogFactory;
+    private final AdbConfigurationPref adbConfigurationPref;
+    private final Lazy<ConfigurationDialogPresenter> configurationDialogPresenter;
 
-    public static void show(DialogFactory dialogFactory, String failureMessage, Runnable setUpAction) {
+    @Inject
+    public AdbNotAvailableDialog(
+            DialogFactory dialogFactory,
+            AdbConfigurationPref adbConfigurationPref,
+            Lazy<ConfigurationDialogPresenter> configurationDialogPresenter
+    ) {
+        this.dialogFactory = dialogFactory;
+        this.adbConfigurationPref = adbConfigurationPref;
+        this.configurationDialogPresenter = configurationDialogPresenter;
+    }
+
+    public void show(String failureMessage, boolean isAutoStart) {
+        var messageComponents = new ArrayList<>();
+        messageComponents.add(failureMessage);
+
+        if (isAutoStart) {
+            var doNotStartCheckbox = new JCheckBox("Do not show again");
+            messageComponents.add(doNotStartCheckbox);
+
+            doNotStartCheckbox.addItemListener(e -> {
+                var isSelected = e.getStateChange() == ItemEvent.SELECTED;
+                adbConfigurationPref.setShowAdbAutostartFailures(!isSelected);
+            });
+        }
+
         int result = JOptionPane.showOptionDialog(
                 dialogFactory.getOwner(),
-                failureMessage,
+                messageComponents.toArray(),
                 "Error",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.ERROR_MESSAGE,
@@ -37,8 +72,9 @@ public class AdbNotAvailableDialog {
                 new String[] {SETUP_ADB_OPTION, IGNORE_OPTION},
                 SETUP_ADB_OPTION
         );
+
         if (result == JOptionPane.YES_OPTION) {
-            setUpAction.run();
+            configurationDialogPresenter.get().openDialog();
         }
     }
 }

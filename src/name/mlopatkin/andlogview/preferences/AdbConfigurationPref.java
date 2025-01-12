@@ -43,6 +43,7 @@ public class AdbConfigurationPref implements AdbLocation {
     private static class AdbConfiguration {
         final String location;
         final boolean isAutoReconnectEnabled;
+        final boolean shouldShowAutostartFailures;
 
         @SuppressWarnings("deprecation")
         public AdbConfiguration() {
@@ -50,12 +51,14 @@ public class AdbConfigurationPref implements AdbLocation {
             this(MoreObjects.firstNonNull(
                             Configuration.adb.executable(),
                             Configuration.adb.DEFAULT_EXECUTABLE),
-                    Configuration.adb.isAutoReconnectEnabled());
+                    Configuration.adb.isAutoReconnectEnabled(),
+                    true);
         }
 
-        public AdbConfiguration(String location, boolean isAutoReconnectEnabled) {
+        public AdbConfiguration(String location, boolean isAutoReconnectEnabled, boolean shouldShowAutostartFailures) {
             this.location = location;
             this.isAutoReconnectEnabled = isAutoReconnectEnabled;
+            this.shouldShowAutostartFailures = shouldShowAutostartFailures;
         }
     }
 
@@ -69,18 +72,21 @@ public class AdbConfigurationPref implements AdbLocation {
     private @Nullable File resolvedExecutable;
 
     private boolean isAutoReconnectEnabled;
+    private boolean shouldShowAutostartFailures;
 
     @Inject
     public AdbConfigurationPref(ConfigStorage configStorage, SystemPathResolver systemPathResolver) {
         this.preference = configStorage.preference(STORAGE_CLIENT);
         this.systemPathResolver = systemPathResolver;
         AdbConfiguration stored = preference.get();
-        setRawAdbLocation(stored.location, null);
         isAutoReconnectEnabled = stored.isAutoReconnectEnabled;
+        shouldShowAutostartFailures = stored.shouldShowAutostartFailures;
+        // This should be called last, because it saves.
+        setRawAdbLocation(stored.location, null);
     }
 
     private void save() {
-        preference.set(new AdbConfiguration(rawAdbLocation, isAutoReconnectEnabled));
+        preference.set(new AdbConfiguration(rawAdbLocation, isAutoReconnectEnabled, shouldShowAutostartFailures));
     }
 
     /** @return the location of the ADB executable as set up by the user */
@@ -146,6 +152,15 @@ public class AdbConfigurationPref implements AdbLocation {
 
     public void setAutoReconnectEnabled(boolean enabled) {
         isAutoReconnectEnabled = enabled;
+        save();
+    }
+
+    public boolean shouldShowAutostartFailures() {
+        return shouldShowAutostartFailures;
+    }
+
+    public void setShowAdbAutostartFailures(boolean enabled) {
+        shouldShowAutostartFailures = enabled;
         save();
     }
 }
