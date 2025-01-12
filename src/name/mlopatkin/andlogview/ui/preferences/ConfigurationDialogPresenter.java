@@ -20,6 +20,8 @@ import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 
+import com.google.common.base.CharMatcher;
+
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -43,7 +45,7 @@ public class ConfigurationDialogPresenter {
 
         void setAdbLocationChecker(Predicate<String> locationChecker);
 
-        void showInvalidAdbLocationError();
+        void showInvalidAdbLocationError(String newLocation);
 
         void show();
 
@@ -70,19 +72,24 @@ public class ConfigurationDialogPresenter {
     public void openDialog() {
         view.setCommitAction(this::tryCommit);
         view.setDiscardAction(this::discard);
-        view.setAdbLocationChecker(adbConfigurationPref::checkAdbLocation);
+        view.setAdbLocationChecker(path -> adbConfigurationPref.checkAdbLocation(sanitizeAdbLocation(path)));
 
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());
         view.show();
     }
 
+    private String sanitizeAdbLocation(String location) {
+        return CharMatcher.whitespace().trimFrom(location);
+    }
+
     private void tryCommit() {
         String prevLocation = adbConfigurationPref.getAdbLocation();
-        boolean hasLocationChanged = !Objects.equals(prevLocation, view.getAdbLocation());
+        var newLocation = sanitizeAdbLocation(view.getAdbLocation());
+        boolean hasLocationChanged = !Objects.equals(prevLocation, newLocation);
 
-        if (hasLocationChanged && !adbConfigurationPref.trySetAdbLocation(view.getAdbLocation())) {
-            view.showInvalidAdbLocationError();
+        if (hasLocationChanged && !adbConfigurationPref.trySetAdbLocation(newLocation)) {
+            view.showInvalidAdbLocationError(newLocation);
             return;
         }
 

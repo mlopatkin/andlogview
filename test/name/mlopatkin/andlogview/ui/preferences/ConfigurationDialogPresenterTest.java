@@ -255,7 +255,7 @@ class ConfigurationDialogPresenterTest {
         }
 
         @Override
-        public void showInvalidAdbLocationError() {
+        public void showInvalidAdbLocationError(String newLocation) {
             onAdbLocationWarningShown.action().run();
         }
 

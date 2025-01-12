@@ -29,6 +29,7 @@ import com.google.common.base.MoreObjects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -100,7 +101,7 @@ public class AdbConfigurationPref implements AdbLocation {
      * @return {@code true} if the ADB location is valid
      */
     public boolean checkAdbLocation(String rawAdbLocation) {
-        return systemPathResolver.resolveExecutablePath(rawAdbLocation).isPresent();
+        return resolveAdbLocation(rawAdbLocation).isPresent();
     }
 
     /**
@@ -111,14 +112,22 @@ public class AdbConfigurationPref implements AdbLocation {
      * @return {@code true} if the update was successful or {@code false} if the new location is invalid.
      */
     public boolean trySetAdbLocation(String rawAdbLocation) {
-        Optional<File> maybeResolved = systemPathResolver.resolveExecutablePath(rawAdbLocation);
+        Optional<File> maybeResolved = resolveAdbLocation(rawAdbLocation);
         maybeResolved.ifPresent(resolvedExecutable -> setResolvedAdbLocation(rawAdbLocation, resolvedExecutable));
         return maybeResolved.isPresent();
     }
 
+    private Optional<File> resolveAdbLocation(String rawAdbLocation) {
+        try {
+            return systemPathResolver.resolveExecutablePath(rawAdbLocation);
+        } catch (InvalidPathException ex) {
+            return Optional.empty();
+        }
+    }
+
     private void setRawAdbLocation(String rawAdbLocation) {
         this.rawAdbLocation = rawAdbLocation;
-        this.resolvedExecutable = systemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
+        this.resolvedExecutable = resolveAdbLocation(rawAdbLocation).orElse(null);
     }
 
     private void setResolvedAdbLocation(String rawAdbLocation, File resolvedExecutable) {

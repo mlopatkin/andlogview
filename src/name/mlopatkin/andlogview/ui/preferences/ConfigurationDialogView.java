@@ -77,8 +77,8 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     }
 
     @Override
-    public void showInvalidAdbLocationError() {
-        ErrorDialogsHelper.showError(dialogFactory.getOwner(), "%s is not a valid adb file", getAdbLocation());
+    public void showInvalidAdbLocationError(String newLocation) {
+        ErrorDialogsHelper.showError(dialogFactory.getOwner(), "%s is not a valid adb file", newLocation);
     }
 
     @Override
