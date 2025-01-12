@@ -53,7 +53,7 @@ public class AdbNotAvailableDialog {
         messageComponents.add(failureMessage);
 
         if (isAutoStart) {
-            var doNotStartCheckbox = new JCheckBox("Do not show again");
+            var doNotStartCheckbox = new JCheckBox("Do not show again on startup");
             messageComponents.add(doNotStartCheckbox);
 
             doNotStartCheckbox.addItemListener(e -> {
