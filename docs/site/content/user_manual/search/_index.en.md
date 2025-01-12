@@ -17,7 +17,7 @@ All occurences of the pattern are highlighted (and in the tooltip too)
 
 Use <kbd><kbd>F3</kbd></kbd> and <kbd><kbd>Shift</kbd><kbd>F3</kbd></kbd> to navigate between search result forward and backward.
 
-If there is no more occurences of the pattern in the given direction from the
+If there is no more occurrences of the pattern in the given direction from the
 selected line then the message appears in the status bar.
 
 ![Search showing "Text not found"](search_not_found.png)

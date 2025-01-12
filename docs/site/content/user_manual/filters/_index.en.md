@@ -11,25 +11,28 @@ highlighted with a background color, hidden, or displayed in a separate window.
 
 ## Creating a filter
 
-Use "Add new filter" button to create a new filter:
+Use "Create filter…" button to create a new filter:
 
-![Add new filter button](add_filter.png)
+![Create filter button](add_filter.png)
 
 A filter creation dialog appears:
 
 !["Create new filter" dialog](create_filter.png)
 
-You can then specify filter criteria here:
+You can then specify the name of the filter and filtering criteria here:
+- "Name" -- the optional display name used, e.g. in the filter list. Without a
+   name the visual representation of the filter is derived from the criteria it
+   has.
 - "Tags to filter" -- the comma-separated list of tags to match
-- "Message text to filter" - the message substring to match
-- "<abbr title="Process IDentifier">PIDs</abbr> or app names to filter" -
+- "Message text to filter" -- the message substring to match
+- "<abbr title="Process IDentifier">PIDs</abbr> or app names to filter" --
   the comma-separated list of integer PIDs or app names.
-- "Log level" - the minimal log level to match.
+- "Log level" -- the minimal log level to match.
 
-If you specify multiple tags, then line need to match any of them to match. The
-same applies to PIDs and app names.
+If you specify multiple tags, then a line need to match any of them to match the
+filter. The same applies to PIDs and app names.
 
-The filter matches the log line only if all criterias are fulfilled. For
+The filter matches the log line only if all criteria are fulfilled. For
 example, if the filter specifies `tag=Foo` and `PID=143, 144` then lines with
 the tag `Foo` from PID 441 wouldn't match.
 
@@ -42,10 +45,15 @@ The radio buttons determine the filter's action. The matched lines can be:
 ## Index window
 
 An index window is a separate window that only shows lines matching the filter.
-You can double-click on line numbers in the index window to scroll the main
+You can double-click line numbers in the index window to scroll the main
 window to them.
 
 ![Index window](index_window.png)
+
+{{< hint type=note >}}
+The lines visible in the filter are affected by the "show" and "hide" filters,
+and the relative order of filters in the list.
+{{< /hint >}}
 
 ## Filter criteria
 ### Tags
@@ -101,7 +109,7 @@ to match the whole string only.
 It is safe to use the slash symbol `/` in the regular expression. However,
 commas in tag and app name patterns must be escaped by doubling it. For example,
 to use the pattern `/foo, bar/` as a tag pattern you must enter it as
-`/foo,, bar/`. Otherwise it is going to be interpreted as two simple patterns
+`/foo,, bar/`. Otherwise, it is going to be interpreted as two simple patterns
 `/foo` and `bar/`.
 
 [java_pattern]: http://download.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
@@ -116,45 +124,44 @@ If you have created multiple filters the following rules apply:
 4. If there is a highlighting filter and the log line isn't hidden by the rules
    above, it is highlighted with the corresponding color
 5. If the line was added to bookmarks and isn't hidden it is highlighted
-6. Lines that are hidden in the main window, are not visible in index windows.
+6. Index window applies all show and hide filters of the main window that
+   precede its filter in the filter list.
 
-Only lines in the main window are highlighted.
+Only lines in the main window are highlighted. The highlight color is determined
+by the last highlighting filter.
 
-## Filter panel
+## Filter list
 
-The filter panel is located to the right of the "Add new filter" button. Each
-filter has a corresponding button on the filter panel.
+The filter list is located on the right side of the main window. Each
+filter has a corresponding entry in the filter list. The entry shows either the
+name of the filter if it has one, or a summary of the filter's action and
+criteria.
 
-![Filter panel](filter_panel.png)
+![Filter list](filter_tree.png)
 
-{{< hint type=tip >}}
-Double-clicking the empty space of the filter panes opens the filter creation
-dialog too.
-{{< /hint >}}
-
-The filter button can be in two states: pressed, when the filter is active, and
-not pressed, when the filter is temporary disabled.
+The filter can be in two states: enabled (with checkbox checked), when the
+filter is active, and disabled (with checkbox unchecked), when the filter is
+temporarily skipped. You can toggle between these states by clicking on the
+checkbox or by selecting a filter and pressing <kbd><kbd>Space</kbd></kbd>
 
 If the filter's action is "Show in index window", then toggling the filter
 toggles visibility of the corresponding index window. Closing the index window
-unpresses the button.
+unchecks the checkbox.
 
-A tooltip of the filter button shows a summary of the filter:
+A tooltip of the filter item shows a summary of the filter:
 
-![Filter button tooltip](filter_tooltip.png)
-
-When you have too many filters to fit in the panel, scroll buttons appear on the
-left and the right sides.
-
-![Scroll buttons of the filter panel](filter_panel_scroll.png)
+![Filter item tooltip](filter_tooltip.png)
 
 ## Edit or remove a filter
 
-Use a filter button's context menu to edit or remove the filter.
+Use the filter item's context menu to edit or remove the filter.
 
 ![Context menu to edit or remove filter](filter_context_menu.png)
 
-Edited filter moves to the end of the filter panel.
+## Reorder filter
+
+Drag and drop filters to change their order. Highlighting filters and index
+window filters are sensitive to the order.
 
 ## Quick filters
 
