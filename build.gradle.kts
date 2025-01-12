@@ -96,7 +96,6 @@ sourceSets {
         java {
             srcDirs.clear()
             srcDir("src")
-            srcDir("third-party/styledLabel/src")
         }
         resources {
             srcDirs.clear()
@@ -150,7 +149,6 @@ val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
             "base/third-party/systemUtils/NOTICE",
             "device/third-party/versionCodes/NOTICE",
             "third-party/fontawesomeIcons/NOTICE",
-            "third-party/styledLabel/NOTICE",
             "third-party/tangoIcons/NOTICE",
             "third-party/themes/NOTICE",
     )
