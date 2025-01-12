@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -269,6 +270,26 @@ class AdbServicesBridgeTest {
 
         order.verify(deviceList).setAdbServer(isNull());
         order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void enablesErrorDialogsUponSuccessfulAdbInit() {
+        var bridge = createBridge();
+
+        assertThat(bridge.getAdbServicesAsync()).isCompleted();
+
+        verify(adbConfigurationPref).setShowAdbAutostartFailures(true);
+    }
+
+    @Test
+    void doesNotEnableErrorDialogsUponSuccessfulAdbInit() throws Exception {
+        whenServerFailsToStart();
+
+        var bridge = createBridge();
+
+        assertThat(bridge.getAdbServicesAsync()).isCompletedExceptionally();
+
+        verify(adbConfigurationPref, never()).setShowAdbAutostartFailures(true);
     }
 
     private AdbServicesBridge createBridge() {

@@ -160,6 +160,8 @@ public class AdbServicesBridge implements AdbServicesStatus {
             logger.error("Failed to initialize ADB", maybeFailure);
             notifyStatusChange(StatusValue.failed(getAdbFailureString(maybeFailure)));
         } else {
+            // We've
+            adbConfigurationPref.setShowAdbAutostartFailures(true);
             notifyStatusChange(StatusValue.initialized());
         }
     }
