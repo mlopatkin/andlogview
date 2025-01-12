@@ -22,6 +22,8 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
+import com.formdev.flatlaf.FlatClientProperties;
+
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.BorderLayout;
@@ -63,11 +65,13 @@ class BaseFilterDialogUi extends JDialog {
                 LC().insets("dialog").wrapAfter(1).fillX().width("400lp"))
         );
 
-        nameTextField = addEntry(content, "Name", new JTextField());
-        tagTextField = addEntry(content, "Tags to filter", new JTextField());
-        messageTextField = addEntry(content, "Message text to filter", new JTextField());
-        pidTextField = addEntry(content, "PIDs or app names to filter", new JTextField());
-        logLevelList = addEntry(content, "Log level", new JComboBox<>(new PriorityComboBoxModel()));
+        nameTextField = addEntry(content, "Name", new JTextField(), "optional, e.g. MyFilter");
+        tagTextField = addEntry(content, "Tags to filter", new JTextField(), "optional, e.g. ActivityManager, /^cr_/");
+        messageTextField = addEntry(content, "Message text to filter", new JTextField(),
+                "optional, e.g. foo or /www\\.\\w+\\.com/");
+        pidTextField = addEntry(content, "PIDs or app names to filter", new JTextField(),
+                "optional, e.g. 1337, com.example.app, /:sandboxed_process\\d+/");
+        logLevelList = addEntry(content, "Log level", new JComboBox<>(new PriorityComboBoxModel()), "optional");
 
         modesPanel = new FilteringModesPanel();
         colorsList = new JComboBox<>(new ColorsComboBoxModel());
@@ -97,9 +101,10 @@ class BaseFilterDialogUi extends JDialog {
         setLocationRelativeTo(getParent());
     }
 
-    private <T extends JComponent> T addEntry(Container container, String label, T entry) {
+    private <T extends JComponent> T addEntry(Container container, String label, T entry, String placeholder) {
         container.add(new JLabel(label));
         container.add(entry, CC().growX());
+        entry.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, placeholder);
         return entry;
     }
 }
