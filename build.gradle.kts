@@ -217,7 +217,8 @@ tasks.named<ShadowJar>("shadowJar") {
         // FlatLaf doesn't survive minimization
         exclude(dependency("com.formdev:flatlaf:.*"))
         // log4j appenders are referenced by name only
-        exclude(dependency("log4j:log4j:1.2.17"))
+        exclude(dependency(libs.log4j.get()))
+        exclude(dependency(libs.slf4j.reload4j.get()))
     }
 }
 
