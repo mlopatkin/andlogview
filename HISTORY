@@ -3,10 +3,12 @@ version 0.23
     [+] Filters can be named.
     [+] Index windows apply only filters that are before them in the list view.
     [+] Filters can be reordered. This affects coloring and index window filters.
+    [+] Index windows now have titles derived from filter content.
     [+] Modernized look&feel on MacOS.
 
     [*] The outdated Log4J 1.2 dependency is no longer used. The security risk was low, but security scanners may have
         alerted because of its presence.
+    [*] The bookmarks window now have a proper title.
 
 version 0.22
     [+] Support parsing long logcat format
