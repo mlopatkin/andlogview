@@ -81,8 +81,7 @@ public class AdbConfigurationPref implements AdbLocation {
         AdbConfiguration stored = preference.get();
         isAutoReconnectEnabled = stored.isAutoReconnectEnabled;
         shouldShowAutostartFailures = stored.shouldShowAutostartFailures;
-        // This should be called last, because it saves.
-        setRawAdbLocation(stored.location, null);
+        setRawAdbLocation(stored.location);
     }
 
     private void save() {
@@ -92,15 +91,6 @@ public class AdbConfigurationPref implements AdbLocation {
     /** @return the location of the ADB executable as set up by the user */
     public String getAdbLocation() {
         return rawAdbLocation;
-    }
-
-    /**
-     * Stores the ADB location as selected by the user. The specified location might be invalid.
-     *
-     * @param rawAdbLocation the path to ADB or naked executable name
-     */
-    public void setAdbLocation(String rawAdbLocation) {
-        setRawAdbLocation(rawAdbLocation, null);
     }
 
     /**
@@ -122,18 +112,19 @@ public class AdbConfigurationPref implements AdbLocation {
      */
     public boolean trySetAdbLocation(String rawAdbLocation) {
         Optional<File> maybeResolved = systemPathResolver.resolveExecutablePath(rawAdbLocation);
-        maybeResolved.ifPresent(resolvedExecutable -> setRawAdbLocation(rawAdbLocation, resolvedExecutable));
+        maybeResolved.ifPresent(resolvedExecutable -> setResolvedAdbLocation(rawAdbLocation, resolvedExecutable));
         return maybeResolved.isPresent();
     }
 
-    private void setRawAdbLocation(String rawAdbLocation, @Nullable File resolvedExecutable) {
+    private void setRawAdbLocation(String rawAdbLocation) {
         this.rawAdbLocation = rawAdbLocation;
+        this.resolvedExecutable = systemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
+    }
+
+    private void setResolvedAdbLocation(String rawAdbLocation, File resolvedExecutable) {
+        this.rawAdbLocation = rawAdbLocation;
+        this.resolvedExecutable = resolvedExecutable;
         save();
-        if (resolvedExecutable != null) {
-            this.resolvedExecutable = resolvedExecutable;
-        } else {
-            this.resolvedExecutable = systemPathResolver.resolveExecutablePath(rawAdbLocation).orElse(null);
-        }
     }
 
     @Override

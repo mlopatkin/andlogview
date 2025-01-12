@@ -59,7 +59,7 @@ class ConfigurationDialogPresenterTest {
     private final FakeView fakeView = new FakeView();
 
     private final AdbConfigurationPref adbConfiguration = new AdbConfigurationPref(new FakeInMemoryConfigStorage(),
-            new FakePathResolver(VALID_ADB_LOCATION));
+            new FakePathResolver(VALID_ADB_LOCATION, DEFAULT_ADB_LOCATION));
 
     @Mock
     private AdbServicesInitializationPresenter adbServicesInitPresenter;
@@ -69,7 +69,7 @@ class ConfigurationDialogPresenterTest {
     @BeforeEach
     void setUp() {
         adbConfiguration.setAutoReconnectEnabled(DEFAULT_AUTO_RECONNECT);
-        adbConfiguration.setAdbLocation(DEFAULT_ADB_LOCATION);
+        adbConfiguration.trySetAdbLocation(DEFAULT_ADB_LOCATION);
 
         when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.initialized());
     }
@@ -160,7 +160,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void committingRestartsAdbWithoutChangesIfItWasNotRunning() {
-        adbConfiguration.setAdbLocation(VALID_ADB_LOCATION);
+        adbConfiguration.trySetAdbLocation(VALID_ADB_LOCATION);
         when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.failed("Not initialized"));
 
         var presenter = createPresenter();
