@@ -6,6 +6,7 @@ base/src/jmh/resources/*
 # Binary files
 *.png
 *.jar
+*.ico
 
 # Nobody cares
 *.svg

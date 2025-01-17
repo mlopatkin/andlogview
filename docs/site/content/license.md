@@ -217,6 +217,17 @@ The AndLogView tool is distributed under Apache License 2.0.
 The AndLogView includes a number of third-party dependencies. The full list can
 be found in the `NOTICE` file in the distribution archive.
 
+### AndLogView logo
+
+The Android robot is reproduced or modified from work created and shared by
+Google and used according to terms described in the [Creative Commons 3.0
+Attribution License](https://creativecommons.org/licenses/by/3.0/).
+
+The AndLogView logo is modified from work [Activity Log
+icon](https://www.iconfinder.com/icons/9034591/activity_log_icon) created and
+shared by Radix Icons and used according to terms described in the [Creative
+Commons 4.0 Attribution License](https://creativecommons.org/licenses/by/4.0/).
+
 ## This site
 
 All materials of this site are licensed under

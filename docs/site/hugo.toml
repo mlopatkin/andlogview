@@ -34,3 +34,4 @@ weight = 10
 geekdocBreadcrumb = false
 geekdocSearch = false
 geekdocTrademarkNotices = true
+geekdocLogo = "logo-192.png"
