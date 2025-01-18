@@ -30,9 +30,9 @@ plugins {
     alias(libs.plugins.jmh)
 
     id("name.mlopatkin.andlogview.building.build-environment")
+    id("name.mlopatkin.andlogview.building.installers")
     id("name.mlopatkin.andlogview.building.java-conventions")
     id("name.mlopatkin.andlogview.building.metadata")
-    id("name.mlopatkin.andlogview.building.installers")
 }
 
 dependencies {
@@ -139,18 +139,18 @@ val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     bundledDependencies = configurations.runtimeClasspath.flatMap { rtCp ->
         rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
             artifacts.map { artifact -> artifact.id.componentIdentifier }
-                    .filterIsInstance<ModuleComponentIdentifier>()
+                .filterIsInstance<ModuleComponentIdentifier>()
         }
     }
     libraryNoticesDirectory = file("third-party/libs/notices")
     sourceFilesNotices.from(
-            "assets/NOTICE",
-            "base/third-party/observerList/NOTICE",
-            "base/third-party/systemUtils/NOTICE",
-            "device/third-party/versionCodes/NOTICE",
-            "third-party/fontawesomeIcons/NOTICE",
-            "third-party/tangoIcons/NOTICE",
-            "third-party/themes/NOTICE",
+        "assets/NOTICE",
+        "base/third-party/observerList/NOTICE",
+        "base/third-party/systemUtils/NOTICE",
+        "device/third-party/versionCodes/NOTICE",
+        "third-party/fontawesomeIcons/NOTICE",
+        "third-party/tangoIcons/NOTICE",
+        "third-party/themes/NOTICE",
     )
 }
 
@@ -179,11 +179,11 @@ distributions.all { contents.with(additionalFiles) }
 
 // Disable tasks from application plugin
 disableTasks(
-        ApplicationPlugin.TASK_DIST_ZIP_NAME,
-        ApplicationPlugin.TASK_DIST_TAR_NAME,
-        ApplicationPlugin.TASK_START_SCRIPTS_NAME,
-        "assembleDist",
-        "installDist",
+    ApplicationPlugin.TASK_DIST_ZIP_NAME,
+    ApplicationPlugin.TASK_DIST_TAR_NAME,
+    ApplicationPlugin.TASK_START_SCRIPTS_NAME,
+    "assembleDist",
+    "installDist",
 )
 
 // TARs aren't shipped, so disable it
@@ -194,7 +194,8 @@ disableTasks("shadowDistTar")
 // and http://mrhaki.blogspot.ru/2015/04/gradle-goodness-alter-start-scripts.html
 tasks.named<CreateStartScripts>("startShadowScripts") {
     doLast {
-        windowsScript.writeBytes(windowsScript
+        windowsScript.writeBytes(
+            windowsScript
                 .readLines().joinToString(separator = "\r\n") { line ->
                     when {
                         line.contains("java.exe") -> line.replace("java.exe", "javaw.exe")
@@ -238,21 +239,8 @@ tasks.register<UploadTask>("bitbucketUpload") {
 
 // Configure jpackage distribution
 if (buildEnvironment.isLinux) {
-    val jpackageJdkPath = javaToolchains.compilerFor {
-        languageVersion = libs.versions.compileJdkVersion.map(JavaLanguageVersion::of)
-    }.get().metadata.installationPath.toString()
-
     runtime {
-        javaHome = jpackageJdkPath
-        options.addAll(
-                "--strip-debug",
-                "--no-header-files",
-                "--no-man-pages",
-                "--strip-native-commands",
-                "--ignore-signing-information",
-        )
         jpackage {
-            jpackageHome = jpackageJdkPath
             installerType = "deb"
             installerOptions = listOf("--linux-shortcut")
             resourceDir = file("install/debian")

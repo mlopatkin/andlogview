@@ -34,3 +34,44 @@ unsupportedCcTaskTypes.forEach {
         notCompatibleWithConfigurationCache("JLink plugin is not yet CC-compatible")
     }
 }
+
+val jdkForJpackage: Provider<String> =
+    javaToolchains.compilerFor(java.toolchain).map { it.metadata.installationPath.asFile.path }
+
+runtime {
+    javaHome = jdkForJpackage
+
+    options.addAll(
+        "--strip-debug",
+        "--no-header-files",
+        "--no-man-pages",
+        "--strip-native-commands",
+        "--ignore-signing-information",
+        "--compress", "1"
+    )
+
+    jpackage {
+        // There is no lazy API to set jpackageHome.
+        afterEvaluate {
+            jpackageHome = jdkForJpackage.get()
+        }
+    }
+}
+
+val buildEnvironment = extensions.getByType<BuildEnvironment>()
+
+val linuxInstaller = tasks.register("linuxInstallers") {
+    dependsOn(":jpackage")
+    val isLinux = buildEnvironment.isLinux
+    onlyIf("Can only run when running on Linux") { isLinux }
+
+    group = "distribution"
+    description = "Builds Linux installers with bundled Java runtime (only on Linux)"
+}
+
+tasks.register("installers") {
+    dependsOn(linuxInstaller)
+
+    group = "distribution"
+    description = "Builds all installers for the current platform"
+}
