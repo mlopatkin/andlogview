@@ -127,6 +127,14 @@ sourceSets {
     }
 }
 
+tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
+    // There is no better way of including a subset of files from a directory as resources.
+    from(file("assets")) {
+        include("andlogview_icon.svg")
+        into("name/mlopatkin/andlogview/")
+    }
+}
+
 // Configure build metadata generator
 buildMetadata {
     revision = buildEnvironment.sourceRevision
@@ -227,9 +235,9 @@ tasks.named<ShadowJar>("shadowJar") {
 bitbucket {
     repository = "android-log-viewer"
     username =
-            providers.environmentVariable("BITBUCKET_USER").orElse(providers.gradleProperty("bitbucket.user"))
+        providers.environmentVariable("BITBUCKET_USER").orElse(providers.gradleProperty("bitbucket.user"))
     applicationPassword =
-            providers.environmentVariable("BITBUCKET_PASSWORD").orElse(providers.gradleProperty("bitbucket.password"))
+        providers.environmentVariable("BITBUCKET_PASSWORD").orElse(providers.gradleProperty("bitbucket.password"))
 }
 
 tasks.register<UploadTask>("bitbucketUpload") {
