@@ -21,3 +21,16 @@ plugins {
 
     id("org.beryx.runtime")
 }
+
+
+val unsupportedCcTaskTypes = listOf(
+    org.beryx.runtime.JPackageImageTask::class,
+    org.beryx.runtime.JPackageTask::class,
+    org.beryx.runtime.JreTask::class,
+)
+
+unsupportedCcTaskTypes.forEach {
+    tasks.withType(it).configureEach {
+        notCompatibleWithConfigurationCache("JLink plugin is not yet CC-compatible")
+    }
+}
