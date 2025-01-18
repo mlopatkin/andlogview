@@ -19,11 +19,18 @@ package name.mlopatkin.andlogview.building
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
+import org.gradle.platform.BuildPlatform
+import org.gradle.platform.OperatingSystem
+import javax.inject.Inject
 
 /**
  * Helper methods to access environment parameters: is build run by CI server? what revision is checked out?
  */
 abstract class BuildEnvironment(project: Project) {
+
+    @get:Inject
+    abstract val platform: BuildPlatform
+
     /**
      * Is `true` if the current build should use `-SNAPSHOT` version, `false` if not.
      */
@@ -60,4 +67,10 @@ abstract class BuildEnvironment(project: Project) {
             }.orElse(gitRevision)
         }
     }
+
+    /**
+     * Is `true` if building on Linux
+     */
+    val isLinux
+        get() = platform.operatingSystem == OperatingSystem.LINUX
 }

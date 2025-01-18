@@ -20,7 +20,6 @@ import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
 import name.mlopatkin.bitbucket.gradle.UploadTask
-import java.util.*
 
 plugins {
     idea
@@ -29,11 +28,11 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.bitbucket)
     alias(libs.plugins.jmh)
-    alias(libs.plugins.jlink)
 
     id("name.mlopatkin.andlogview.building.build-environment")
     id("name.mlopatkin.andlogview.building.java-conventions")
     id("name.mlopatkin.andlogview.building.metadata")
+    id("name.mlopatkin.andlogview.building.installers")
 }
 
 dependencies {
@@ -238,7 +237,7 @@ tasks.register<UploadTask>("bitbucketUpload") {
 }
 
 // Configure jpackage distribution
-if (System.getProperty("os.name").lowercase(Locale.US).contains("linux")) {
+if (buildEnvironment.isLinux) {
     val jpackageJdkPath = javaToolchains.compilerFor {
         languageVersion = libs.versions.compileJdkVersion.map(JavaLanguageVersion::of)
     }.get().metadata.installationPath.toString()

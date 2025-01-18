@@ -14,7 +14,10 @@ runtimeJdkVersion = "8"  # JDK version used at runtime, determines available API
 
 [libraries]
 build-errorprone-core = "com.google.errorprone:error_prone_core:2.35.1"
+# Errorprone plugin allows to configure Errorprone compiler
 build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
+# Runtime plugin allows preparing runtime images with JDK included
+build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:1.13.1"
 build-jabel = "com.github.bsideup.jabel:jabel-javac-plugin:1.0.0"
 build-javapoet = "com.squareup:javapoet:1.13.0"
 build-nullaway = "com.uber.nullaway:nullaway:0.12.1"
@@ -49,10 +52,6 @@ test-mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.r
 [plugins]
 # Bitbucket plugin allows publishing releases to the Bitbucket project's Downloads page
 bitbucket = "name.mlopatkin.bitbucket:0.6"
-# Errorprone plugin allows to configure Errorprone compiler
-errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
-# Runtime plugin allows preparing runtime images with JDK included
-jlink = "org.beryx.runtime:1.13.1"
 # JMH plugin allows building and running JMH benchmarks
 jmh = "me.champeau.jmh:0.7.2"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool
