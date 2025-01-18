@@ -18,6 +18,9 @@ package name.mlopatkin.andlogview.device;
 
 import java.util.concurrent.CompletableFuture;
 
-interface DeviceProvisioner {
+interface DeviceProvisioner extends AutoCloseable {
     CompletableFuture<DeviceImpl> provisionDevice(ProvisionalDeviceImpl provisionalDevice);
+
+    @Override
+    void close();
 }

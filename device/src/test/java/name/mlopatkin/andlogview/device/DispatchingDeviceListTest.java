@@ -318,6 +318,9 @@ class DispatchingDeviceListTest {
                                         "product", "30", null, "fingerprint"
                                 )));
             }
+
+            @Override
+            public void close() {}
         };
     }
 

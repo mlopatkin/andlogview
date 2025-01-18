@@ -20,7 +20,11 @@ import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.google.common.collect.ImmutableList;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -40,6 +44,8 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
 
     private final AdbFacade adb;
     private final Executor provisionalWorker;
+    @GuardedBy("itself")
+    private final Set<CompletableFuture<?>> pendingProvisions = new HashSet<>();
 
     public DeviceProvisionerImpl(AdbFacade adb, Executor provisionalWorker) {
         this.adb = adb;
@@ -62,7 +68,7 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
         // The device key corresponds to the IDevice from the DDMLIB, we should use it to check if the update is for
         // our device.
         DeviceKey deviceKey = provisionalDevice.getDeviceKey();
-        CompletableFuture<LoggingDevice> onlineDevice = new CompletableFuture<>();
+        CompletableFuture<LoggingDevice> onlineDevice = createDeviceFuture();
         AndroidDebugBridge.IDeviceChangeListener listener = new AndroidDebugBridge.IDeviceChangeListener() {
             @Override
             public void deviceConnected(IDevice device) {
@@ -94,6 +100,20 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
         return onlineDevice.whenComplete((d, th) -> adb.removeDeviceChangeListener(listener));
     }
 
+    private CompletableFuture<LoggingDevice> createDeviceFuture() {
+        CompletableFuture<LoggingDevice> deviceFuture = new CompletableFuture<>();
+
+        synchronized (pendingProvisions) {
+            pendingProvisions.add(deviceFuture);
+        }
+
+        return deviceFuture.whenComplete((d, th) -> {
+            synchronized (pendingProvisions) {
+                pendingProvisions.remove(deviceFuture);
+            }
+        });
+    }
+
     private DeviceProperties getRequiredProperties(IDevice ddmlibDevice)
             throws InterruptedException, DeviceGoneException {
         Future<String> product = ddmlibDevice.getSystemProperty(DeviceProperties.PROP_BUILD_PRODUCT);
@@ -113,5 +133,16 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
         } catch (TimeoutException e) {
             throw new DeviceGoneException("Timed out while obtaining device properties", e);
         }
+    }
+
+    @Override
+    public void close() {
+        ImmutableList<CompletableFuture<?>> notYetProvisioned;
+        synchronized (pendingProvisions) {
+            notYetProvisioned = ImmutableList.copyOf(pendingProvisions);
+            pendingProvisions.clear();
+        }
+        notYetProvisioned.forEach(
+                future -> future.completeExceptionally(new DeviceGoneException("Provisioner has been closed")));
     }
 }

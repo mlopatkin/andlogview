@@ -54,4 +54,11 @@ class FakeDeviceProvisioner implements DeviceProvisioner {
                                 "product", "30", null, "fingerprint"))
         );
     }
+
+    @Override
+    public void close() {
+        provisioningDevices.forEach(
+                (s, completableFuture) -> completableFuture.completeExceptionally(
+                        new DeviceGoneException("Provisioner abandoned")));
+    }
 }

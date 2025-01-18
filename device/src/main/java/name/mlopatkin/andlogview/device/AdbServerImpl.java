@@ -30,8 +30,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicInteger;
 
 class AdbServerImpl implements AdbServer {
     // AdbServerImpl wraps the current connection to the adb server. The connection cannot be replaced within the same
@@ -101,13 +102,14 @@ class AdbServerImpl implements AdbServer {
     }
 
     public void stop() {
+        deviceProvisioner.close();
         Preconditions.checkState(!adbFacade.hasRegisteredListeners(), "There are leftover listeners");
         AndroidDebugBridge.disconnectBridge();
     }
 
     private static class AdbFacadeImpl implements AdbFacade {
         private final AndroidDebugBridge bridge;
-        private final AtomicInteger listenerCount = new AtomicInteger();
+        private final Set<AndroidDebugBridge.IDeviceChangeListener> listeners = new CopyOnWriteArraySet<>();
 
         private AdbFacadeImpl(AndroidDebugBridge bridge) {
             this.bridge = bridge;
@@ -120,19 +122,19 @@ class AdbServerImpl implements AdbServer {
 
         @Override
         public void addDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
-            listenerCount.incrementAndGet();
+            listeners.add(deviceChangeListener);
             AndroidDebugBridge.addDeviceChangeListener(deviceChangeListener);
         }
 
         @Override
         public void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener) {
-            listenerCount.decrementAndGet();
+            listeners.remove(deviceChangeListener);
             AndroidDebugBridge.removeDeviceChangeListener(deviceChangeListener);
         }
 
         @Override
         public boolean hasRegisteredListeners() {
-            return listenerCount.get() > 0;
+            return !listeners.isEmpty();
         }
     }
 }

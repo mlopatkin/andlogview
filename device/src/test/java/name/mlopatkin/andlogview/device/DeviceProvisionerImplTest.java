@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.device;
 import static com.google.common.util.concurrent.Futures.immediateFailedFuture;
 import static com.google.common.util.concurrent.Futures.immediateFuture;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.doReturn;
 
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -46,11 +48,30 @@ class DeviceProvisionerImplTest {
                 mockDevice("serial", false, immediateFuture("product"), immediateFuture("30"), immediateFuture(null),
                         immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
-        assertThat(result).isNotDone();
+            assertThat(result).isNotDone();
+        }
+    }
+
+    @Test
+    void provisioningIsAbortedIfProvisionerClosed() throws Exception {
+        IDevice device = adbFacade.connectDevice(
+                mockDevice("serial", false, immediateFuture("product"), immediateFuture("30"), immediateFuture(null),
+                        immediateFuture("fingerprint")));
+
+        final CompletableFuture<DeviceImpl> result;
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            result = provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+        }
+
+        assertThat(adbFacade.hasRegisteredListeners()).as("has no leaked listeners").isFalse();
+
+        assertThat(result).isCompletedExceptionally();
+        assertThatThrownBy(result::get).isInstanceOf(ExecutionException.class)
+                .hasCauseInstanceOf(DeviceGoneException.class);
     }
 
     @Test
@@ -59,17 +80,18 @@ class DeviceProvisionerImplTest {
                 mockDevice("serial", false, immediateFuture("product"), immediateFuture("30"), immediateFuture(null),
                         immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
-        setOnline(device);
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+            setOnline(device);
 
-        assertThat(result).isCompleted();
-        assertThat(result.get().getProduct()).isEqualTo("product");
-        assertThat(result.get().getApiString()).isEqualTo("30");
-        assertThat(result.get().getBuildFingerprint()).isEqualTo("fingerprint");
+            assertThat(result).isCompleted();
+            assertThat(result.get().getProduct()).isEqualTo("product");
+            assertThat(result.get().getApiString()).isEqualTo("30");
+            assertThat(result.get().getBuildFingerprint()).isEqualTo("fingerprint");
 
-        assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+            assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+        }
     }
 
     @Test
@@ -78,16 +100,17 @@ class DeviceProvisionerImplTest {
                 mockDevice("serial", true, immediateFuture("product"), immediateFuture("30"), immediateFuture(null),
                         immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
-        assertThat(result).isCompleted();
-        assertThat(result.get().getProduct()).isEqualTo("product");
-        assertThat(result.get().getApiString()).isEqualTo("30");
-        assertThat(result.get().getBuildFingerprint()).isEqualTo("fingerprint");
+            assertThat(result).isCompleted();
+            assertThat(result.get().getProduct()).isEqualTo("product");
+            assertThat(result.get().getApiString()).isEqualTo("30");
+            assertThat(result.get().getBuildFingerprint()).isEqualTo("fingerprint");
 
-        assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+            assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+        }
     }
 
     @Test
@@ -98,27 +121,29 @@ class DeviceProvisionerImplTest {
                         immediateFuture("fingerprint")));
         ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, backgroundExecutor);
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, backgroundExecutor)) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
-        assertThat(result).isNotDone();
+            assertThat(result).isNotDone();
 
-        productFuture.set("product");
+            productFuture.set("product");
 
-        CountDownLatch waitForCompletion = new CountDownLatch(1);
-        backgroundExecutor.execute(waitForCompletion::countDown);
-        waitForCompletion.await();
+            CountDownLatch waitForCompletion = new CountDownLatch(1);
+            backgroundExecutor.execute(waitForCompletion::countDown);
+            waitForCompletion.await();
 
-        assertThat(backgroundExecutor.shutdownNow()).as("There should be no pending work").isEmpty();
-        assertThat(backgroundExecutor.isTerminated()).as("Background work should be completed at this point").isTrue();
+            assertThat(backgroundExecutor.shutdownNow()).as("There should be no pending work").isEmpty();
+            assertThat(backgroundExecutor.isTerminated()).as("Background work should be completed at this point")
+                    .isTrue();
 
-        assertThat(result).isCompleted();
-        assertThat(result.get().getProduct()).isEqualTo("product");
-        assertThat(result.get().getApiString()).isEqualTo("30");
-        assertThat(result.get().getBuildFingerprint()).isEqualTo("fingerprint");
+            assertThat(result).isCompleted();
+            assertThat(result.get().getProduct()).isEqualTo("product");
+            assertThat(result.get().getApiString()).isEqualTo("30");
+            assertThat(result.get().getBuildFingerprint()).isEqualTo("fingerprint");
 
-        assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+            assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+        }
     }
 
     @Test
@@ -127,15 +152,16 @@ class DeviceProvisionerImplTest {
                 mockDevice("serial", false, immediateFuture("product"), immediateFuture("30"), immediateFuture(null),
                         immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
-        adbFacade.disconnectDevice(device);
+            adbFacade.disconnectDevice(device);
 
-        assertThat(result).isCompletedExceptionally();
+            assertThat(result).isCompletedExceptionally();
 
-        assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+            assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+        }
     }
 
     @Test
@@ -144,13 +170,14 @@ class DeviceProvisionerImplTest {
                 mockDevice("serial", true, immediateFailedFuture(new TimeoutException("Failed to retrieve product")),
                         immediateFuture("30"), immediateFuture(null), immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
 
-        assertThat(result).isCompletedExceptionally();
+            assertThat(result).isCompletedExceptionally();
 
-        assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+            assertThat(adbFacade.hasRegisteredListeners()).isFalse();
+        }
     }
 
     @Test
@@ -164,12 +191,13 @@ class DeviceProvisionerImplTest {
                 immediateFuture(null),
                 immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
-        setOnline(otherDevice);
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+            setOnline(otherDevice);
 
-        assertThat(result).isNotDone();
+            assertThat(result).isNotDone();
+        }
     }
 
     @Test
@@ -178,12 +206,13 @@ class DeviceProvisionerImplTest {
                 mockDevice("serial", false, immediateFuture("product"), immediateFuture("30"), immediateFuture(null),
                         immediateFuture("fingerprint")));
 
-        DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor());
-        CompletableFuture<DeviceImpl> result =
-                provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
-        adbFacade.changeDevice(device, IDevice.CHANGE_STATE);
+        try (DeviceProvisioner provisioner = new DeviceProvisionerImpl(adbFacade, MoreExecutors.directExecutor())) {
+            CompletableFuture<DeviceImpl> result =
+                    provisioner.provisionDevice(new ProvisionalDeviceImpl(DeviceKey.of(device), device));
+            adbFacade.changeDevice(device, IDevice.CHANGE_STATE);
 
-        assertThat(result).isNotDone();
+            assertThat(result).isNotDone();
+        }
     }
 
     private IDevice mockDevice(String serial, boolean isOnline, Future<String> deviceProduct,
