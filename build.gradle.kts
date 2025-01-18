@@ -145,6 +145,7 @@ val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
     }
     libraryNoticesDirectory = file("third-party/libs/notices")
     sourceFilesNotices.from(
+            "assets/NOTICE",
             "base/third-party/observerList/NOTICE",
             "base/third-party/systemUtils/NOTICE",
             "device/third-party/versionCodes/NOTICE",

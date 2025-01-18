@@ -19,6 +19,8 @@ package name.mlopatkin.andlogview.base;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
 
+import java.net.URL;
+
 /**
  * Accessor for application resources.
  */
@@ -33,7 +35,16 @@ public final class AppResources {
      * @throws IllegalArgumentException if the resource isn't available
      */
     public static ByteSource getResource(String resourcePath) {
-        return Resources.asByteSource(
-                Resources.getResource(AppResources.class, "/name/mlopatkin/andlogview/" + resourcePath));
+        return Resources.asByteSource(getUrl(resourcePath));
+    }
+
+    /**
+     * Builds a URL for the resource in {@code name.mlopatkin.andlogview} package.
+     * @param resourcePath relative path to the resource
+     * @return the URL
+     * @throws IllegalArgumentException if the resource isn't available
+     */
+    public static URL getUrl(String resourcePath) {
+        return Resources.getResource(AppResources.class, "/name/mlopatkin/andlogview/" + resourcePath);
     }
 }

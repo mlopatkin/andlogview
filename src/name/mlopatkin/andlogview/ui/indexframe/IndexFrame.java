@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.indexframe;
 import static name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi.FOR_INDEX_FRAME;
 
 import name.mlopatkin.andlogview.LogRecordsTransferHandler;
+import name.mlopatkin.andlogview.ui.AppFrame;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableColumnModel;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
@@ -43,7 +44,7 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 @IndexFrameScoped
-public class IndexFrame extends JFrame {
+public class IndexFrame extends AppFrame {
     private final DecoratingRendererTable indexedRecordsTable;
     private final IndexController controller;
     private final Component owner;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 the Andlogview authors
+ * Copyright 2025 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui.mainframe;
+package name.mlopatkin.andlogview.ui;
 
-import name.mlopatkin.andlogview.ui.AppFrame;
+import name.mlopatkin.andlogview.base.AppResources;
 
-import javax.inject.Inject;
+import com.formdev.flatlaf.extras.FlatSVGUtils;
 
-@MainFrameScoped
-public class MainFrameUi extends AppFrame {
-    @Inject
-    public MainFrameUi() {}
+import javax.swing.JFrame;
+
+public class AppFrame extends JFrame {
+    public AppFrame() {
+        initialize();
+    }
+
+    public AppFrame(String title) {
+        super(title);
+
+        initialize();
+    }
+
+    private void initialize() {
+        setIconImages(FlatSVGUtils.createWindowIconImages(AppResources.getUrl("andlogview_icon.svg")));
+    }
 }
