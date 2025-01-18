@@ -22,6 +22,19 @@ plugins {
     id("org.beryx.runtime")
 }
 
+interface PackageExtension {
+    val resourceDir: DirectoryProperty
+    val installerOptions: ListProperty<String>
+}
+
+abstract class InstallerExtension @Inject constructor(objects: ObjectFactory) {
+    val linux: PackageExtension = objects.newInstance<PackageExtension>()
+
+    @Suppress("unused")
+    fun linux(configure: PackageExtension.() -> Unit) = configure(linux)
+}
+
+val installersExtension = extensions.create<InstallerExtension>("installers")
 
 val unsupportedCcTaskTypes = listOf(
     org.beryx.runtime.JPackageImageTask::class,
@@ -37,6 +50,9 @@ unsupportedCcTaskTypes.forEach {
 
 val jdkForJpackage: Provider<String> =
     javaToolchains.compilerFor(java.toolchain).map { it.metadata.installationPath.asFile.path }
+
+// Gradle doesn't generate accessors for sibling plugins.
+val buildEnvironment = extensions.getByType<BuildEnvironment>()
 
 runtime {
     javaHome = jdkForJpackage
@@ -54,11 +70,18 @@ runtime {
         // There is no lazy API to set jpackageHome.
         afterEvaluate {
             jpackageHome = jdkForJpackage.get()
+
+            // Platform-specific configuration of jpackage
+            if (buildEnvironment.isLinux) {
+                installerType = "deb"
+                with(installersExtension) {
+                    installerOptions = linux.installerOptions.get()
+                    resourceDir = linux.resourceDir.get().asFile
+                }
+            }
         }
     }
 }
-
-val buildEnvironment = extensions.getByType<BuildEnvironment>()
 
 val linuxInstaller = tasks.register("linuxInstallers") {
     dependsOn(":jpackage")

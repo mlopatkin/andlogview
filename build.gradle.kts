@@ -237,13 +237,9 @@ tasks.register<UploadTask>("bitbucketUpload") {
     fileToUpload = shadowDistZip.flatMap { it.archiveFile }
 }
 
-// Configure jpackage distribution
-if (buildEnvironment.isLinux) {
-    runtime {
-        jpackage {
-            installerType = "deb"
-            installerOptions = listOf("--linux-shortcut")
-            resourceDir = file("install/debian")
-        }
+installers {
+    linux {
+        resourceDir = file("install/debian")
+        installerOptions = listOf("--linux-shortcut")
     }
 }
