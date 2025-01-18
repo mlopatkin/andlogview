@@ -78,6 +78,7 @@ runtime {
                     installerOptions = linux.installerOptions.get()
                     resourceDir = linux.resourceDir.get().asFile
                 }
+                installerOutputDir = layout.buildDirectory.dir("distributions").get().asFile
             }
         }
     }
