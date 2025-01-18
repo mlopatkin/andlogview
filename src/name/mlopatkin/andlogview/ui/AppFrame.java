@@ -34,6 +34,6 @@ public class AppFrame extends JFrame {
     }
 
     private void initialize() {
-        setIconImages(FlatSVGUtils.createWindowIconImages(AppResources.getUrl("andlogview_icon.svg")));
+        setIconImages(FlatSVGUtils.createWindowIconImages(AppResources.getUrl("andlogview.svg")));
     }
 }

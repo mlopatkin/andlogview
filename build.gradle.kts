@@ -130,7 +130,7 @@ sourceSets {
 tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
     // There is no better way of including a subset of files from a directory as resources.
     from(file("assets")) {
-        include("andlogview_icon.svg")
+        include("andlogview.svg")
         into("name/mlopatkin/andlogview/")
     }
 }
