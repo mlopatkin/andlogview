@@ -239,7 +239,12 @@ tasks.register<UploadTask>("bitbucketUpload") {
 
 installers {
     linux {
-        resourceDir = file("install/debian")
         installerOptions = listOf("--linux-shortcut")
+        resourceDir = file("install/debian")
+
+        extraContent {
+            with(additionalFiles)
+            into("extra")
+        }
     }
 }
