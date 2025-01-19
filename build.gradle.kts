@@ -190,17 +190,19 @@ disableTasks(
     ApplicationPlugin.TASK_DIST_ZIP_NAME,
     ApplicationPlugin.TASK_DIST_TAR_NAME,
     ApplicationPlugin.TASK_START_SCRIPTS_NAME,
-    "assembleDist",
-    "installDist",
+)
+disableTasks(
+    tasks.assembleDist,
+    tasks.installDist
 )
 
 // TARs aren't shipped, so disable it
-disableTasks("shadowDistTar")
+disableTasks(tasks.shadowDistTar)
 
 // Tweak windows start script, so it won't create console window.
 // Based on https://stackoverflow.com/a/27472895/200754
 // and http://mrhaki.blogspot.ru/2015/04/gradle-goodness-alter-start-scripts.html
-tasks.named<CreateStartScripts>("startShadowScripts") {
+tasks.startShadowScripts {
     doLast {
         windowsScript.writeBytes(
             windowsScript
@@ -241,8 +243,7 @@ bitbucket {
 }
 
 tasks.register<UploadTask>("bitbucketUpload") {
-    val shadowDistZip = tasks.named<AbstractArchiveTask>("shadowDistZip")
-    fileToUpload = shadowDistZip.flatMap { it.archiveFile }
+    fileToUpload = tasks.shadowDistZip.flatMap { it.archiveFile }
 }
 
 installers {

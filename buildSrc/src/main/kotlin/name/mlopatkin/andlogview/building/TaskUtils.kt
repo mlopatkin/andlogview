@@ -17,10 +17,19 @@
 package name.mlopatkin.andlogview.building
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 
 fun Project.disableTasks(vararg taskNames: String) {
     taskNames.forEach {
         tasks.named(it).configure {
+            enabled = false
+        }
+    }
+}
+
+fun disableTasks(vararg tasks: TaskProvider<*>) {
+    tasks.forEach {
+        it.configure {
             enabled = false
         }
     }
