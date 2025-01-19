@@ -247,8 +247,22 @@ tasks.register<UploadTask>("bitbucketUpload") {
 
 installers {
     linux {
-        imageOptions = listOf("--icon", file("assets/andlogview.32.png").path)
-        installerOptions = listOf("--linux-shortcut")
+        imageOptions = listOf(
+            "--icon", file("assets/andlogview.32.png").path,
+        )
+        installerOptions = listOf(
+            "--description", "Visual Log Viewer for Android logcat\n  " +
+                    "AndLogView displays logs from a file or live from a connected device. " +
+                    "Advanced filtering and search capabilities to navigate long and noisy logs.",
+            "--vendor", "Mikhail Lopatkin",
+            "--about-url", "https://andlogview.mlopatkin.name",
+            "--license-file", file("LICENSE").path,
+            "--copyright", "Copyright 2011-2025 AndLogView authors",
+            "--linux-deb-maintainer", "me@mlopatkin.name",
+            "--linux-app-category", "devel",
+            "--linux-shortcut",
+            "--verbose"
+        )
         resourceDir = file("install/debian")
 
         extraContent {

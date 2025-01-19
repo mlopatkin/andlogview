@@ -135,7 +135,7 @@ val copyResources = tasks.register<Sync>("copyJpackageResources") {
  */
 val JPackageImageTask.contentOutput: Provider<File>
     // TODO(mlopatkin) The extra content location is platform-dependent. See
-    //  https://github.com/openjdk/jdk/blob/master/test/jdk/tools/jpackage/helpers/jdk/jpackage/test/ApplicationLayout.java
+    //  https://github.com/openjdk/jdk/blob/master/src/jdk.jpackage/share/classes/jdk/jpackage/internal/ApplicationLayout.java#L146
     get() = provider { File(jpackageData.imageOutputDirOrDefault, "${jpackageData.imageNameOrDefault}/lib/") }
 
 
