@@ -30,7 +30,7 @@ jobs:
             -Porg.gradle.java.installations.auto-detect=false
             --no-daemon
             --stacktrace
-            check bitbucketUpload
+            check installers bitbucketUpload
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
@@ -62,7 +62,7 @@ jobs:
             -Porg.gradle.java.installations.auto-detect=false
             --no-daemon
             --stacktrace
-            check bitbucketUpload
+            check installers bitbucketUpload
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
