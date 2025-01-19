@@ -14,6 +14,7 @@ RUN apt-get update && \
       git \
       python3 \
       fakeroot \
+      rpm \
     && \
     apt-get purge -y --auto-remove && \
     rm -rf /var/lib/apt/lists/* && \
