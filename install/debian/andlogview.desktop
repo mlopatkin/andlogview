@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AndLogView
+Comment=AndLogView
+Exec=/opt/andlogview/bin/andlogview
+Icon=name.mlopatkin-andlogview
+Terminal=false
+Type=Application
+Categories=Development
+MimeType=

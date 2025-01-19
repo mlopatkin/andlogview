@@ -247,12 +247,22 @@ tasks.register<UploadTask>("bitbucketUpload") {
 
 installers {
     linux {
+        imageOptions = listOf("--icon", file("assets/andlogview.32.png").path)
         installerOptions = listOf("--linux-shortcut")
         resourceDir = file("install/debian")
 
         extraContent {
             with(additionalFiles)
             into("extra")
+        }
+
+        extraContent {
+            from(fileTree("assets") {
+                include("andlogview.*.png")
+                include("andlogview.svg")
+                exclude("andlogview.32.png") // This one is added by the JPackage as "andlogview.png".
+                // See imageOptions above.
+            })
         }
     }
 }
