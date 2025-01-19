@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.building
 
+import name.mlopatkin.andlogview.building.Installers_gradle.PackageExtension
 import org.beryx.runtime.JPackageImageTask
 import org.gradle.kotlin.dsl.support.serviceOf
 
@@ -68,6 +69,8 @@ abstract class PackageExtension @Inject constructor(
  * Installer configuration. Available through `installers {}` block.
  */
 abstract class InstallerExtension @Inject constructor(objects: ObjectFactory) {
+    abstract val noJreDistribution: RegularFileProperty
+
     /**
      * Linux distribution configuration.
      */
@@ -113,7 +116,6 @@ runtime {
                     imageOptions = linux.imageOptions.get()
                     resourceDir = linux.resourceDir.locationOnly.toFile()
                 }
-                installerOutputDir = layout.buildDirectory.dir("distributions").toFile()
             }
         }
     }
@@ -154,18 +156,32 @@ tasks.named<JPackageImageTask>(RuntimePluginExt.TASK_NAME_JPACKAGE_IMAGE) {
 }
 
 // Register entry points for distributions.
-val linuxInstaller = tasks.register("linuxInstallers") {
+val linuxInstaller = tasks.register<Copy>("linuxInstallers") {
     dependsOn(":jpackage")
     val isLinux = buildEnvironment.isLinux
     onlyIf("Can only run when running on Linux") { isLinux }
 
     group = "distribution"
     description = "Builds Linux installers with bundled Java runtime (only on Linux)"
+
+
+    from(theBuildDir.dir("jpackage")) {
+        include("*.deb")
+        include("*.rpm")
+    }
+
+    into(theBuildDir.dir("distributions"))
+}
+
+val noJreInstaller = tasks.register("noJreInstaller") {
+    dependsOn(installersExtension.noJreDistribution)
+
+    group = "distribution"
+    description = "Builds a universal installer without Java runtime. Can run on any platform"
 }
 
 tasks.register("installers") {
-    // TODO(mlopatkin) this should also build the JAR distribution (aka noJre).
-    dependsOn(linuxInstaller)
+    dependsOn(linuxInstaller, noJreInstaller)
 
     group = "distribution"
     description = "Builds all installers for the current platform"

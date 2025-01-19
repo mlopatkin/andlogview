@@ -174,6 +174,10 @@ distributions {
     }
 }
 
+tasks.shadowDistZip.configure {
+    this.archiveClassifier = "noJRE"
+}
+
 // Using CopySpec.with(CopySpec) is the only way to add files into the distribution. Other approaches are:
 // - old way of shadow.applicationDistribution no longer works after 2.0.0. The applicationDistribution from application
 //   plugin still works though.
@@ -247,6 +251,8 @@ tasks.register<UploadTask>("bitbucketUpload") {
 }
 
 installers {
+    noJreDistribution = tasks.shadowDistZip.flatMap { it.archiveFile }
+
     linux {
         imageOptions = listOf(
             "--icon", file("assets/andlogview.32.png").path,
