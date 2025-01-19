@@ -63,8 +63,13 @@ must be downloaded from repositories.
 
 Run `./gradlew check` to run tests.
 
-Run `./gradlew shadowDistZip` to prepare distributive package. The output is placed into `build/distributions`.
-You can specify JDK to use with JAVA_HOME environment variable.
+Run `./gradlew noJreInstaller` to prepare distributive package without the bundled Java runtime. The output is placed
+into `build/distributions`.
+
+Run `./gradlew installers` to build all installers for the current platform (e.g. a DEB package on Linux). It may
+require extra tooling to be installed, and can take some time. The build uses
+[JPackage](https://docs.oracle.com/en/java/javase/17/jpackage/index.html) to build the installers. This target includes
+the noJRE installer too. All installers are placed into `build/distributions`.
 
 ## Importing into IDE
 #### IDEA
