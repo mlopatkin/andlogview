@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.building
 
-import name.mlopatkin.andlogview.building.Installers_gradle.PackageExtension
 import org.beryx.runtime.JPackageImageTask
 import org.gradle.kotlin.dsl.support.serviceOf
 
@@ -155,8 +154,38 @@ tasks.named<JPackageImageTask>(RuntimePluginExt.TASK_NAME_JPACKAGE_IMAGE) {
     }
 }
 
+/**
+ * An ad-hoc replacement for Copy that only marks the copied files as the output.
+ */
+abstract class CopyInstallers : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
+    abstract val installers: ConfigurableFileCollection
+
+    @get:Internal
+    abstract val outputDirectory: DirectoryProperty
+
+    @get:OutputFiles
+    @Suppress("LeakingThis")
+    val copiedInstallers: FileCollection = project.files(installers.elements.zip(outputDirectory) { files, dst ->
+        files.map { dst.file(it.asFile.name) }.toList()
+    })
+
+    @get:Inject
+    abstract val fsOps: FileSystemOperations
+
+    @TaskAction
+    fun copyInstallers() {
+        fsOps.copy {
+            from(installers)
+            into(outputDirectory)
+        }
+    }
+}
+
 // Register entry points for distributions.
-val linuxInstaller = tasks.register<Copy>("linuxInstallers") {
+val linuxInstaller = tasks.register<CopyInstallers>("linuxInstallers") {
+    // We have to copy the output, because jpackage cleans up its destination dir if it doesn't contain the image.
     dependsOn(":jpackage")
     val isLinux = buildEnvironment.isLinux
     onlyIf("Can only run when running on Linux") { isLinux }
@@ -164,13 +193,12 @@ val linuxInstaller = tasks.register<Copy>("linuxInstallers") {
     group = "distribution"
     description = "Builds Linux installers with bundled Java runtime (only on Linux)"
 
+    outputDirectory = theBuildDir.dir("distributions")
 
-    from(theBuildDir.dir("jpackage")) {
+    installers.from(fileTree(theBuildDir.dir("jpackage")) {
         include("*.deb")
         include("*.rpm")
-    }
-
-    into(theBuildDir.dir("distributions"))
+    })
 }
 
 val noJreInstaller = tasks.register("noJreInstaller") {
