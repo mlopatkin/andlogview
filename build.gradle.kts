@@ -19,6 +19,7 @@ import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
+import name.mlopatkin.andlogview.building.toFile
 import name.mlopatkin.bitbucket.gradle.UploadTask
 
 plugins {
@@ -167,7 +168,7 @@ distributions {
     main {
         // The application plugin resets main distribution basename to applicationName, but I want to use it for shadow
         // configuration because it is the primary one. These tasks are disabled though.
-        distributionBaseName = application.applicationName + "-noshadow"
+        distributionBaseName = application.applicationName.map { it + "-noshadow" }
     }
     this.shadow {
         distributionBaseName = application.applicationName
@@ -208,8 +209,8 @@ disableTasks(tasks.shadowDistTar)
 // and http://mrhaki.blogspot.ru/2015/04/gradle-goodness-alter-start-scripts.html
 tasks.startShadowScripts {
     doLast {
-        windowsScript.writeBytes(
-            windowsScript
+        windowsScript.toFile().writeBytes(
+            windowsScript.toFile()
                 .readLines().joinToString(separator = "\r\n") { line ->
                     when {
                         line.contains("java.exe") -> line.replace("java.exe", "javaw.exe")
