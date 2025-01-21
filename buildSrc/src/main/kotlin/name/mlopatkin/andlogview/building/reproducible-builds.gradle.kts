@@ -18,8 +18,8 @@ package name.mlopatkin.andlogview.building
 
 // Make distribution archives reproducible
 tasks.withType<AbstractArchiveTask>().configureEach {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 
     // Set up consistent permissions on files. This is consistent with the permissions on Windows machines and the
     // Docker image.
