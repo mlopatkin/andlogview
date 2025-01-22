@@ -18,6 +18,10 @@ package name.mlopatkin.andlogview.building
 
 import org.beryx.runtime.JPackageImageTask
 import org.gradle.kotlin.dsl.support.serviceOf
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 plugins {
     id("name.mlopatkin.andlogview.building.build-environment")
@@ -53,7 +57,8 @@ abstract class PackageExtension @Inject constructor(
 
     /**
      * Extra application content to be packaged into the distribution. The exact location is platform-dependent. On
-     * Linux, it will be installed into `/opt/andlogview/lib/`, alongside the icon and launcher.
+     * Linux, it will be installed into `/opt/andlogview/lib/`, alongside the icon and launcher. On Windows it is
+     * installed into the root of the app installation directory.
      *
      * Can carry task dependencies.
      *
@@ -67,7 +72,10 @@ abstract class PackageExtension @Inject constructor(
 /**
  * Installer configuration. Available through `installers {}` block.
  */
-abstract class InstallerExtension @Inject constructor(objects: ObjectFactory) {
+abstract class InstallerExtension @Inject constructor(
+    objects: ObjectFactory,
+    private val buildEnvironment: BuildEnvironment
+) {
     abstract val noJreDistribution: RegularFileProperty
 
     /**
@@ -80,15 +88,32 @@ abstract class InstallerExtension @Inject constructor(objects: ObjectFactory) {
      */
     @Suppress("unused")
     fun linux(configure: PackageExtension.() -> Unit) = configure(linux)
+
+    /**
+     * Windows distribution configuration.
+     */
+    val windows: PackageExtension = objects.newInstance<PackageExtension>()
+
+    /**
+     * Configures Windows distribution.
+     */
+    @Suppress("unused")
+    fun windows(configure: PackageExtension.() -> Unit) = configure(windows)
+
+    internal val current: PackageExtension
+        get() = when {
+            buildEnvironment.isLinux -> linux
+            buildEnvironment.isWindows -> windows
+            else -> throw IllegalArgumentException("Unsupported Build Platform")
+        }
 }
-
-val installersExtension = extensions.create<InstallerExtension>("installers")
-
-val jdkForJpackage: Provider<String> =
-    javaToolchains.compilerFor(java.toolchain).map { it.metadata.installationPath.asFile.path }
 
 // Gradle doesn't generate accessors for sibling plugins.
 val buildEnvironment = extensions.getByType<BuildEnvironment>()
+val installersExtension = extensions.create<InstallerExtension>("installers", buildEnvironment)
+
+val jdkForJpackage: Provider<String> =
+    javaToolchains.compilerFor(java.toolchain).map { it.metadata.installationPath.asFile.path }
 
 runtime {
     javaHome = jdkForJpackage
@@ -108,12 +133,27 @@ runtime {
             jpackageHome = jdkForJpackage.get()
 
             // Platform-specific configuration of jpackage
-            if (buildEnvironment.isLinux) {
-                installerType = "deb"
-                with(installersExtension) {
-                    installerOptions = linux.installerOptions.get()
-                    imageOptions = linux.imageOptions.get()
-                    resourceDir = linux.resourceDir.locationOnly.toFile()
+            when {
+                buildEnvironment.isLinux -> {
+                    installerType = "deb"
+                    with(installersExtension) {
+                        installerOptions = linux.installerOptions.get()
+                        imageOptions = linux.imageOptions.get()
+                        resourceDir = linux.resourceDir.locationOnly.toFile()
+                    }
+                }
+
+                buildEnvironment.isWindows -> {
+                    installerType = "exe"
+                    installerName = "AndLogView"
+                    with(installersExtension) {
+                        installerOptions = windows.installerOptions.get()
+                        imageOptions = windows.imageOptions.get()
+                        if (windows.resourceDir.locationOnly.isPresent) {
+                            resourceDir = windows.resourceDir.locationOnly.toFile()
+                        }
+                    }
+                    appVersion = project.version.toString().replace("-SNAPSHOT", "")
                 }
             }
         }
@@ -126,7 +166,7 @@ runtime {
 val copyResources = tasks.register<Sync>("copyJpackageResources") {
     // This is an intermediate task to collect all extra resources. We don't need to copy them, strictly speaking,
     // but I don't see how I can convert a copy spec into inputs of an arbitrary task.
-    with(installersExtension.linux.contentResources)
+    with(installersExtension.current.contentResources)
 
     into(layout.buildDirectory.dir("tmp/$name"))
 }
@@ -137,7 +177,14 @@ val copyResources = tasks.register<Sync>("copyJpackageResources") {
 val JPackageImageTask.contentOutput: Provider<File>
     // TODO(mlopatkin) The extra content location is platform-dependent. See
     //  https://github.com/openjdk/jdk/blob/master/src/jdk.jpackage/share/classes/jdk/jpackage/internal/ApplicationLayout.java#L146
-    get() = provider { File(jpackageData.imageOutputDirOrDefault, "${jpackageData.imageNameOrDefault}/lib/") }
+    get() = provider {
+        val imageDir = File(jpackageData.imageOutputDirOrDefault, jpackageData.imageNameOrDefault)
+        when {
+            buildEnvironment.isLinux -> File(imageDir, "lib/")
+            buildEnvironment.isWindows -> imageDir
+            else -> throw IllegalArgumentException("Unsupported platform")
+        }
+    }
 
 
 tasks.named<JPackageImageTask>(RuntimePluginExt.TASK_NAME_JPACKAGE_IMAGE) {
@@ -157,6 +204,7 @@ tasks.named<JPackageImageTask>(RuntimePluginExt.TASK_NAME_JPACKAGE_IMAGE) {
 /**
  * An ad-hoc replacement for Copy that only marks the copied files as the output.
  */
+@Suppress("LeakingThis")
 abstract class CopyInstallers : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)
@@ -165,20 +213,40 @@ abstract class CopyInstallers : DefaultTask() {
     @get:Internal
     abstract val outputDirectory: DirectoryProperty
 
+    @get:Input
+    abstract val snapshot: Property<Boolean>
+
     @get:OutputFiles
-    @Suppress("LeakingThis")
     val copiedInstallers: FileCollection = project.files(installers.elements.zip(outputDirectory) { files, dst ->
-        files.map { dst.file(it.asFile.name) }.toList()
+        files.map { dst.file(decorateInstallerName(it.asFile)) }.toList()
     })
 
     @get:Inject
     abstract val fsOps: FileSystemOperations
+
+    init {
+        snapshot.convention(project.provider { project.version.toString().endsWith("-SNAPSHOT") })
+    }
 
     @TaskAction
     fun copyInstallers() {
         fsOps.copy {
             from(installers)
             into(outputDirectory)
+
+            eachFile {
+                name = decorateInstallerName(file)
+            }
+        }
+    }
+
+    private fun decorateInstallerName(originalName: File): String {
+        return if (snapshot.get() && (originalName.extension == "exe" || originalName.extension == "msi")) {
+            // Due to technical limitations, Windows Installers have versions without the snapshot suffix. We re-append
+            // the suffix to the distribution image names, so the users have a clue what they are downloading.
+            originalName.nameWithoutExtension.lowercase(Locale.ENGLISH) + "-SNAPSHOT." + originalName.extension
+        } else {
+            originalName.name
         }
     }
 }
@@ -193,11 +261,30 @@ val linuxInstaller = tasks.register<CopyInstallers>("linuxInstallers") {
     group = "distribution"
     description = "Builds Linux installers with bundled Java runtime (only on Linux)"
 
+    snapshot = buildEnvironment.isSnapshot
     outputDirectory = theBuildDir.dir("distributions")
 
     installers.from(fileTree(theBuildDir.dir("jpackage")) {
         include("*.deb")
         include("*.rpm")
+    })
+}
+
+val windowsInstaller = tasks.register<CopyInstallers>("windowsInstallers") {
+    // We have to copy the output, because jpackage cleans up its destination dir if it doesn't contain the image.
+    dependsOn(":jpackage")
+    val isWindows = buildEnvironment.isWindows
+    onlyIf("Can only run when running on Windows") { isWindows }
+
+    group = "distribution"
+    description = "Builds Windows installers with bundled Java runtime (only on Windows)"
+
+    snapshot = buildEnvironment.isSnapshot
+    outputDirectory = theBuildDir.dir("distributions")
+
+    installers.from(fileTree(theBuildDir.dir("jpackage")) {
+        include("*.msi")
+        include("*.exe")
     })
 }
 
@@ -209,7 +296,7 @@ val noJreInstaller = tasks.register("noJreInstaller") {
 }
 
 tasks.register("installers") {
-    dependsOn(linuxInstaller, noJreInstaller)
+    dependsOn(linuxInstaller, noJreInstaller, windowsInstaller)
 
     group = "distribution"
     description = "Builds all installers for the current platform"

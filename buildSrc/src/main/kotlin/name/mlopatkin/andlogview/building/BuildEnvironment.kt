@@ -21,6 +21,9 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
 import org.gradle.platform.BuildPlatform
 import org.gradle.platform.OperatingSystem
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -73,4 +76,10 @@ abstract class BuildEnvironment(project: Project) {
      */
     val isLinux
         get() = platform.operatingSystem == OperatingSystem.LINUX
+
+    /**
+     * Is `true` if building on Windows
+     */
+    val isWindows
+        get() = platform.operatingSystem == OperatingSystem.WINDOWS
 }

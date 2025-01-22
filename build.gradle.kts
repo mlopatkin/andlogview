@@ -286,4 +286,32 @@ installers {
             })
         }
     }
+
+    windows {
+        imageOptions = listOf(
+            "--icon", file("assets/andlogview.ico").path,
+            "--name", "AndLogView"
+        )
+        installerOptions = listOf(
+            "--description", "Visual Log Viewer for Android logcat\n  " +
+                    "AndLogView displays logs from a file or live from a connected device. " +
+                    "Advanced filtering and search capabilities to navigate long and noisy logs.",
+            "--vendor", "Mikhail Lopatkin",
+            "--about-url", "https://andlogview.mlopatkin.name",
+            "--license-file", file("LICENSE").path,
+            "--copyright", "Copyright 2011-2025 AndLogView authors",
+            "--win-dir-chooser",
+            "--win-shortcut",
+            "--win-shortcut-prompt",
+            "--win-menu",
+            "--win-menu-group", "AndLogView",
+            "--win-per-user-install",
+            "--verbose"
+        )
+
+        extraContent {
+            with(additionalFiles)
+            into(".")
+        }
+    }
 }
