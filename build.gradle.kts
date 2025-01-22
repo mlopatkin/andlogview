@@ -253,18 +253,18 @@ tasks.register<UploadTask>("bitbucketUpload") {
 installers {
     noJreDistribution = tasks.shadowDistZip.flatMap { it.archiveFile }
 
+    vendor = "Mikhail Lopatkin"
+    licenseFile = file("LICENSE")
+    copyright = "Copyright 2011-2025 AndLogView authors"
+
     linux {
-        imageOptions = listOf(
-            "--icon", file("assets/andlogview.32.png").path,
-        )
+        icon = file("assets/andlogview.32.png")
+
         installerOptions = listOf(
             "--description", "Visual Log Viewer for Android logcat\n  " +
                     "AndLogView displays logs from a file or live from a connected device. " +
                     "Advanced filtering and search capabilities to navigate long and noisy logs.",
-            "--vendor", "Mikhail Lopatkin",
             "--about-url", "https://andlogview.mlopatkin.name",
-            "--license-file", file("LICENSE").path,
-            "--copyright", "Copyright 2011-2025 AndLogView authors",
             "--linux-deb-maintainer", "me@mlopatkin.name",
             "--linux-app-category", "devel",
             "--linux-shortcut",
@@ -288,18 +288,14 @@ installers {
     }
 
     windows {
-        imageOptions = listOf(
-            "--icon", file("assets/andlogview.ico").path,
-            "--name", "AndLogView"
-        )
+        displayAppName = "AndLogView"
+        icon = file("assets/andlogview.ico")
+
         installerOptions = listOf(
             "--description", "Visual Log Viewer for Android logcat\n  " +
                     "AndLogView displays logs from a file or live from a connected device. " +
                     "Advanced filtering and search capabilities to navigate long and noisy logs.",
-            "--vendor", "Mikhail Lopatkin",
             "--about-url", "https://andlogview.mlopatkin.name",
-            "--license-file", file("LICENSE").path,
-            "--copyright", "Copyright 2011-2025 AndLogView authors",
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-shortcut-prompt",

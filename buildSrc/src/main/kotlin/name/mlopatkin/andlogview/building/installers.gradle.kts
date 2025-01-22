@@ -18,10 +18,7 @@ package name.mlopatkin.andlogview.building
 
 import org.beryx.runtime.JPackageImageTask
 import org.gradle.kotlin.dsl.support.serviceOf
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
 
 plugins {
     id("name.mlopatkin.andlogview.building.build-environment")
@@ -37,6 +34,17 @@ abstract class PackageExtension @Inject constructor(
     private val fsOps: FileSystemOperations,
 ) {
     internal val contentResources = fsOps.copySpec()
+
+    /**
+     * The primary App icon. Cannot carry task dependencies.
+     */
+    abstract val icon: RegularFileProperty
+
+    /**
+     * A name of the application, visible to the user. It is used as base for the launcher name, menu and desktop
+     * entries.
+     */
+    abstract val displayAppName: Property<String>
 
     /**
      * Options to build the runtime image. Cannot carry task dependencies.
@@ -72,11 +80,30 @@ abstract class PackageExtension @Inject constructor(
 /**
  * Installer configuration. Available through `installers {}` block.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class InstallerExtension @Inject constructor(
     objects: ObjectFactory,
     private val buildEnvironment: BuildEnvironment
 ) {
+    /**
+     * Path to the vintage distribution that doesn't contain Java runtime.
+     */
     abstract val noJreDistribution: RegularFileProperty
+
+    /**
+     * Application vendor. Shown in the package and application metadata.
+     */
+    abstract val vendor: Property<String>
+
+    /**
+     * Path to the license file. Embedded into packages or shown as an EULA in the installer.
+     */
+    abstract val licenseFile: RegularFileProperty
+
+    /**
+     * A copyright string. Shown in the package and application metadata.
+     */
+    abstract val copyright: Property<String>
 
     /**
      * Linux distribution configuration.
@@ -100,17 +127,25 @@ abstract class InstallerExtension @Inject constructor(
     @Suppress("unused")
     fun windows(configure: PackageExtension.() -> Unit) = configure(windows)
 
-    internal val current: PackageExtension
+    internal val forCurrentPlatform: PackageExtension
         get() = when {
             buildEnvironment.isLinux -> linux
             buildEnvironment.isWindows -> windows
             else -> throw IllegalArgumentException("Unsupported Build Platform")
         }
+
+    internal val platforms: List<PackageExtension> = listOf(linux, windows)
 }
 
 // Gradle doesn't generate accessors for sibling plugins.
 val buildEnvironment = extensions.getByType<BuildEnvironment>()
-val installersExtension = extensions.create<InstallerExtension>("installers", buildEnvironment)
+
+val installersExtension = extensions.create<InstallerExtension>("installers", buildEnvironment).apply {
+    val nameProvider = provider { project.name }
+    platforms.forEach {
+        it.displayAppName.convention(nameProvider)
+    }
+}
 
 val jdkForJpackage: Provider<String> =
     javaToolchains.compilerFor(java.toolchain).map { it.metadata.installationPath.asFile.path }
@@ -132,31 +167,62 @@ runtime {
         afterEvaluate {
             jpackageHome = jdkForJpackage.get()
 
-            // Platform-specific configuration of jpackage
-            when {
-                buildEnvironment.isLinux -> {
-                    installerType = "deb"
-                    with(installersExtension) {
-                        installerOptions = linux.installerOptions.get()
-                        imageOptions = linux.imageOptions.get()
-                        resourceDir = linux.resourceDir.locationOnly.toFile()
-                    }
+            with(installersExtension) {
+                imageName = forCurrentPlatform.displayAppName.get()
+                installerName = forCurrentPlatform.displayAppName.get()
+
+                imageOptions = buildList {
+                    withOptionalSwitch("--icon", forCurrentPlatform.icon.asPath)
+
+                    addAll(forCurrentPlatform.imageOptions.get())
                 }
 
-                buildEnvironment.isWindows -> {
-                    installerType = "exe"
-                    installerName = "AndLogView"
-                    with(installersExtension) {
-                        installerOptions = windows.installerOptions.get()
-                        imageOptions = windows.imageOptions.get()
-                        if (windows.resourceDir.locationOnly.isPresent) {
-                            resourceDir = windows.resourceDir.locationOnly.toFile()
-                        }
+                installerOptions = buildList {
+                    withOptionalSwitch("--vendor", vendor)
+                    withOptionalSwitch("--license-file", licenseFile.asPath)
+                    withOptionalSwitch("--copyright", copyright)
+
+                    addAll(forCurrentPlatform.installerOptions.get())
+                }
+
+                forCurrentPlatform.resourceDir.ifPresent {
+                    resourceDir = it.asFile
+                }
+
+                // Platform-specific configuration of jpackage
+                when {
+                    buildEnvironment.isLinux -> {
+                        installerType = "deb"
                     }
-                    appVersion = project.version.toString().replace("-SNAPSHOT", "")
+
+                    buildEnvironment.isWindows -> {
+                        installerType = "exe"
+                        appVersion = project.version.toString().replace("-SNAPSHOT", "")
+                    }
                 }
             }
         }
+    }
+}
+
+
+val Provider<out FileSystemLocation>.asPath: Provider<String>
+    get() = map { it.asFile.path }
+
+
+fun optionalSwitch(switch: String, value: Provider<out String>): List<String> {
+    return value.map { listOf(switch, it) }.orElse(listOf()).get()
+}
+
+
+fun MutableList<String>.withOptionalSwitch(switch: String, value: Provider<out String>) {
+    addAll(optionalSwitch(switch, value))
+}
+
+
+inline fun <T> Provider<out T>.ifPresent(block: (T) -> Unit) {
+    if (isPresent) {
+        block(get())
     }
 }
 
@@ -166,7 +232,7 @@ runtime {
 val copyResources = tasks.register<Sync>("copyJpackageResources") {
     // This is an intermediate task to collect all extra resources. We don't need to copy them, strictly speaking,
     // but I don't see how I can convert a copy spec into inputs of an arbitrary task.
-    with(installersExtension.current.contentResources)
+    with(installersExtension.forCurrentPlatform.contentResources)
 
     into(layout.buildDirectory.dir("tmp/$name"))
 }
