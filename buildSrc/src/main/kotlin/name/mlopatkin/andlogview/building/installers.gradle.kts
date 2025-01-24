@@ -106,6 +106,11 @@ abstract class InstallerExtension @Inject constructor(
     abstract val copyright: Property<String>
 
     /**
+     * An "about" URL. Used somewhere in installer metadata.
+     */
+    abstract val aboutUrl: Property<String>
+
+    /**
      * Linux distribution configuration.
      */
     val linux: PackageExtension = objects.newInstance<PackageExtension>()
@@ -181,6 +186,7 @@ runtime {
                     withOptionalSwitch("--vendor", vendor)
                     withOptionalSwitch("--license-file", licenseFile.asPath)
                     withOptionalSwitch("--copyright", copyright)
+                    withOptionalSwitch("--about-url", aboutUrl)
 
                     addAll(forCurrentPlatform.installerOptions.get())
                 }
@@ -197,6 +203,7 @@ runtime {
 
                     buildEnvironment.isWindows -> {
                         installerType = "exe"
+                        // Windows Version must be at most three dot-separated numbers. We cannot fit SNAPSHOT there.
                         appVersion = project.version.toString().replace("-SNAPSHOT", "")
                     }
                 }

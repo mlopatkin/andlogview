@@ -256,6 +256,7 @@ installers {
     vendor = "Mikhail Lopatkin"
     licenseFile = file("LICENSE")
     copyright = "Copyright 2011-2025 AndLogView authors"
+    aboutUrl = "https://andlogview.mlopatkin.name"
 
     linux {
         icon = file("assets/andlogview.32.png")
@@ -264,11 +265,9 @@ installers {
             "--description", "Visual Log Viewer for Android logcat\n  " +
                     "AndLogView displays logs from a file or live from a connected device. " +
                     "Advanced filtering and search capabilities to navigate long and noisy logs.",
-            "--about-url", "https://andlogview.mlopatkin.name",
             "--linux-deb-maintainer", "me@mlopatkin.name",
             "--linux-app-category", "devel",
             "--linux-shortcut",
-            "--verbose"
         )
         resourceDir = file("install/debian")
 
@@ -295,14 +294,12 @@ installers {
             "--description", "Visual Log Viewer for Android logcat\n  " +
                     "AndLogView displays logs from a file or live from a connected device. " +
                     "Advanced filtering and search capabilities to navigate long and noisy logs.",
-            "--about-url", "https://andlogview.mlopatkin.name",
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-shortcut-prompt",
             "--win-menu",
             "--win-menu-group", "AndLogView",
             "--win-per-user-install",
-            "--verbose"
         )
 
         extraContent {
