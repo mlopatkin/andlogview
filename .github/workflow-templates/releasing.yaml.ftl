@@ -14,7 +14,7 @@ env:
 jobs:
   build-snapshot:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:5d34e961a07019b09599025c5de65f3e7d6a44b80072f92114e35bde212e41b8
+    container: ghcr.io/mlopatkin/andlogview-build-environment@[=ANDLOGVIEW_ENV_VERSION]
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
     steps:
@@ -96,7 +96,7 @@ jobs:
 
   build-release:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:5d34e961a07019b09599025c5de65f3e7d6a44b80072f92114e35bde212e41b8
+    container: ghcr.io/mlopatkin/andlogview-build-environment@[=ANDLOGVIEW_ENV_VERSION]
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
     steps:

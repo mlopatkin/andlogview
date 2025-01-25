@@ -1,4 +1,6 @@
 import name.mlopatkin.gradleplugins.freemarker.FreeMarkerTask
+import java.io.StringReader
+import java.util.Properties
 
 /*
  * Copyright 2025 the Andlogview authors
@@ -27,6 +29,15 @@ val buildWorkflows = tasks.register<FreeMarkerTask>("buildWorkflows") {
         include("*.ftl")
     }
     outputDirectory = layout.buildDirectory.dir("generated/$name")
+
+    val fileContents = providers.fileContents(layout.projectDirectory.file("versions.properties")).asText.map {
+        val props = Properties()
+        props.load(StringReader(it))
+
+        return@map props.entries.associate { (k, v) -> k.toString() to v.toString() }.toSortedMap()
+    }
+
+    definitions = fileContents
 }
 
 
