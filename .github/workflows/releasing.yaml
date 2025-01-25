@@ -50,6 +50,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: build/distributions/*
+          bodyFile: assets/release_0.24.md # This is a temporary location
           makeLatest: false
           prerelease: true
           removeArtifacts: true
