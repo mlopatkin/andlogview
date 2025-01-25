@@ -89,8 +89,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Build Windows Installers
+        shell: cmd
         run: >
-            .\gradlew.bat
+            gradlew.bat
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false

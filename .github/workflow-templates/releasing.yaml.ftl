@@ -62,7 +62,8 @@ jobs:
           java-version: '17.0.13'
       - <@gradle.setupGradle />
       - name: Build Windows Installers
-        <@gradle.runGradle "windowsInstallers" ".\\gradlew.bat"/>
+        shell: cmd
+        <@gradle.runGradle "windowsInstallers" "gradlew.bat"/>
       - name: Add Windows Installers to release
         <@releases.publishArtifacts "latest-snapshot"/>
 
