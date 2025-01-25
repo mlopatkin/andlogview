@@ -47,7 +47,6 @@ jobs:
         with:
           allowUpdates: true
           artifacts: build/distributions/*
-          generateReleaseNotes: true
           makeLatest: false
           prerelease: true
           removeArtifacts: true
