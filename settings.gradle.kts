@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
+pluginManagement {
+    includeBuild("gradle/plugins/freemarker")
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        google()
+    }
+}
+
 rootProject.name = "andlogview"
+
+include(":github") {
+    projectDir = file(".github")
+}
 
 include("base")
 include("device")
@@ -24,3 +39,9 @@ include("parsers")
 include("search")
 include("search:logrecord")
 include("widgets")
+
+
+fun include(projectPath: String, configure: ProjectDescriptor.() -> Unit) {
+    include(projectPath)
+    project(projectPath).configure()
+}
