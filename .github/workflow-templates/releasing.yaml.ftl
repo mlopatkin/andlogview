@@ -1,4 +1,5 @@
 <#import "gradle.ftlh" as gradle>
+<#import "releases.ftlh" as releases>
 name: Run releasing action (snapshot or release)
 on:
   push:
@@ -33,26 +34,17 @@ jobs:
         run: |
           git tag --force "latest-snapshot" $GITHUB_SHA && \
           git push --force origin "latest-snapshot"
-      - name: Clean up old release
+      - name: Remove old release
         if: ${{ success() }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           tools/remove-release.sh "latest-snapshot" "$GITHUB_REPOSITORY"
-      - name: Publish Github release
-        uses: ncipollo/release-action@[=RELEASE_ACTION_VERSION]
-        if: ${{ success() }}
-        with:
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          artifacts: build/distributions/*
-          bodyFile: docs/releases/release_0.24.md # This is a temporary location
-          makeLatest: false
-          prerelease: true
-          removeArtifacts: true
-          tag: latest-snapshot
-          updateOnlyUnreleased: true
+      - name: Create new release
+        <@releases.createRelease "latest-snapshot"/>
+      - name: Publish Linux and cross-platform installers
+        <@releases.publishArtifacts "latest-snapshot"/>
 
   build-snapshot-win:
     runs-on: windows-latest
@@ -72,18 +64,18 @@ jobs:
       - name: Build Windows Installers
         <@gradle.runGradle "windowsInstallers" ".\\gradlew.bat"/>
       - name: Add Windows Installers to release
-        uses: ncipollo/release-action@[=RELEASE_ACTION_VERSION]
-        if: ${{ success() }}
-        with:
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          artifacts: build/distributions/*
-          omitBody: true
-          omitName: true
-          removeArtifacts: false
-          replacesArtifacts: false
-          tag: latest-snapshot
-          updateOnlyUnreleased: true
+        <@releases.publishArtifacts "latest-snapshot"/>
+
+  publish-snapshot-release:
+    runs-on: ubuntu-latest
+    needs:
+      - build-snapshot  # We need all the artifacts to be published
+      - build-snapshot-win
+    # Only build snapshots on master
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Publish draft release as pre-release
+        <@releases.publishRelease "latest-snapshot"/>
 
   build-release:
     runs-on: ubuntu-latest
