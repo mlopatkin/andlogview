@@ -14,19 +14,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
 
       - name: Log in to the Container registry
-        # v3.0
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
+        uses: docker/login-action@[=DOCKER_LOGIN_ACTION_VERSION]
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        # v5.0
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
+        uses: docker/build-push-action@[=DOCKER_BUILD_PUSH_ACTION_VERSION]
         with:
           context: tools/build-environment
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

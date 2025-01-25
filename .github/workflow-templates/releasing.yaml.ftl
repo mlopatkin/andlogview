@@ -18,10 +18,9 @@ jobs:
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: Build and publish snapshot
-        # gradle-build-action 2.9.0
-        uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
+        uses: gradle/gradle-build-action@[=GRADLE_BUILD_ACTION_VERSION]
         # Do not use Gradle Daemon because we only have a single invocation.
         with:
           arguments: |
@@ -49,7 +48,7 @@ jobs:
         run: |
           tools/remove-release.sh "latest-snapshot" "$GITHUB_REPOSITORY"
       - name: Publish Github release
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        uses: ncipollo/release-action@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
         with:
           allowUpdates: true
@@ -70,9 +69,9 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: Set up Eclipse Temurin JDK 17
-        uses: actions/setup-java@v4.6.0
+        uses: actions/setup-java@[=SETUP_JAVA_ACTION_VERSION]
         with:
           distribution: 'temurin'
           java-version: '17.0.13'
@@ -81,7 +80,7 @@ jobs:
       - name: Run Gradle Task 'windowsInstallers'
         run: .\gradlew.bat windowsInstallers --stacktrace
       - name: Add Windows Installers to release
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        uses: ncipollo/release-action@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
         with:
           allowUpdates: true
@@ -100,10 +99,9 @@ jobs:
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: Build and publish release
-        # gradle-build-action 2.9.0
-        uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
+        uses: gradle/gradle-build-action@[=GRADLE_BUILD_ACTION_VERSION]
         # Do not use Gradle Daemon because we only have a single invocation.
         with:
           arguments: |
@@ -127,7 +125,7 @@ jobs:
       - build-snapshot
     if: ${{ always() }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: setup git for bitbucket
         run: tools/bitbucket-mirror/setup-bitbucket.sh
         shell: bash
