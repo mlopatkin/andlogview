@@ -48,32 +48,24 @@ jobs:
         run: |
           tools/remove-release.sh "latest-snapshot" "$GITHUB_REPOSITORY"
       - name: Create new release
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         if: ${{ success() }}
         with:
-          allowUpdates: false
-          bodyFile: docs/releases/release_0.24.md # This is a temporary location
-          makeLatest: false
+          body_path: docs/releases/release_0.24.md # This is a temporary location
           draft: true
           prerelease: true
-          removeArtifacts: true
-          tag: latest-snapshot
-          updateOnlyUnreleased: true
+          tag_name: latest-snapshot
+          generate_release_notes: false
+          make_latest: false
       - name: Publish Linux and cross-platform installers
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         if: ${{ success() }}
         with:
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          artifacts: build/distributions/*
-          omitBody: true
-          omitDraftDuringUpdate: true
-          omitName: true
-          omitPrereleaseDuringUpdate: true
-          removeArtifacts: false
-          replacesArtifacts: false
-          tag: latest-snapshot
-          updateOnlyUnreleased: true
+          files: build/distributions/*
+          tag_name: latest-snapshot
+          fail_on_unmatched_files: true
+          generate_release_notes: false
+          make_latest: false
 
   build-snapshot-win:
     runs-on: windows-latest
@@ -102,20 +94,14 @@ jobs:
             --stacktrace
             windowsInstallers
       - name: Add Windows Installers to release
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         if: ${{ success() }}
         with:
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          artifacts: build/distributions/*
-          omitBody: true
-          omitDraftDuringUpdate: true
-          omitName: true
-          omitPrereleaseDuringUpdate: true
-          removeArtifacts: false
-          replacesArtifacts: false
-          tag: latest-snapshot
-          updateOnlyUnreleased: true
+          files: build/distributions/*
+          tag_name: latest-snapshot
+          fail_on_unmatched_files: true
+          generate_release_notes: false
+          make_latest: false
 
   publish-snapshot-release:
     runs-on: ubuntu-latest
@@ -126,18 +112,14 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Publish draft release as pre-release
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         if: ${{ success() }}
         with:
-          allowUpdates: true
           draft: false
-          omitBody: true
-          omitName: true
           prerelease: true
-          removeArtifacts: false
-          replacesArtifacts: false
-          tag: latest-snapshot
-          updateOnlyUnreleased: true
+          tag_name: latest-snapshot
+          generate_release_notes: false
+          make_latest: false
 
   build-release:
     runs-on: ubuntu-latest
