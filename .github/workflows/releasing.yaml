@@ -53,11 +53,44 @@ jobs:
         if: ${{ success() }}
         with:
           allowUpdates: true
+          artifactErrorsFailBuild: true
           artifacts: build/distributions/*
           bodyFile: docs/releases/release_0.24.md # This is a temporary location
           makeLatest: false
           prerelease: true
           removeArtifacts: true
+          tag: latest-snapshot
+          updateOnlyUnreleased: true
+
+  build-snapshot-win:
+    runs-on: windows-latest
+    needs:
+      - build-snapshot  # We need the release to be prepared first.
+    # Only build snapshots on master
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Eclipse Temurin JDK 17
+        uses: actions/setup-java@v4.6.0
+        with:
+          distribution: 'temurin'
+          java-version: '17.0.13'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Run Gradle Task 'windowsInstallers'
+        run: gradlew.bat windowsInstallers
+      - name: Add Windows Installers to release
+        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
+        if: ${{ success() }}
+        with:
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: build/distributions/*
+          omitBody: true
+          omitName: true
+          removeArtifacts: false
+          replacesArtifacts: false
           tag: latest-snapshot
           updateOnlyUnreleased: true
 
