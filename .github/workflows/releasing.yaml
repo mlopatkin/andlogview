@@ -38,19 +38,22 @@ jobs:
         uses: ./.github/actions/publish-gradle-outputs
       - name: Update Snapshot Tag
         if: ${{ success() }}
+        run: |
+          git tag --force "latest-snapshot" $GITHUB_SHA && \
+          git push --force origin "latest-snapshot"
+      - name: Clean up old release
+        if: ${{ success() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git tag --force "latest-snapshot" $GITHUB_SHA && \
-          git push --force origin "latest-snapshot" && \
-          gh release delete "latest-snapshot" --yes --repo $GITHUB_REPOSITORY
+          tools/remove-release.sh "latest-snapshot" "$GITHUB_REPOSITORY"
       - name: Publish Github release
         uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
         if: ${{ success() }}
         with:
           allowUpdates: true
           artifacts: build/distributions/*
-          bodyFile: assets/release_0.24.md # This is a temporary location
+          bodyFile: docs/releases/release_0.24.md # This is a temporary location
           makeLatest: false
           prerelease: true
           removeArtifacts: true
