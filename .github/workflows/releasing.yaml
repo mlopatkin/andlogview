@@ -38,12 +38,9 @@ jobs:
         uses: ./.github/actions/publish-gradle-outputs
       - name: Update Snapshot Tag
         if: ${{ success() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           git tag --force "latest-snapshot" $GITHUB_SHA && \
-          git push --force origin "latest-snapshot" && \
-          gh release delete "latest-snapshot" --yes --repo $GITHUB_REPOSITORY
+          git push --force origin "latest-snapshot"
       - name: Publish Github release
         uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
         if: ${{ success() }}
