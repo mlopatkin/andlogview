@@ -1,4 +1,4 @@
-<#macro createRelease tag>
+<#macro createRelease tag prerelease="true">
         uses: ncipollo/release-action@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
         with:
@@ -6,6 +6,7 @@
           bodyFile: docs/releases/release_0.24.md # This is a temporary location
           makeLatest: false
           draft: true
+          prerelease: [=prerelease]
           removeArtifacts: true
           tag: [=tag]
           updateOnlyUnreleased: true
@@ -18,7 +19,9 @@
           artifactErrorsFailBuild: true
           artifacts: build/distributions/*
           omitBody: true
+          omitDraftDuringUpdate: true
           omitName: true
+          omitPrereleaseDuringUpdate: true
           removeArtifacts: false
           replacesArtifacts: false
           tag: [=tag]
