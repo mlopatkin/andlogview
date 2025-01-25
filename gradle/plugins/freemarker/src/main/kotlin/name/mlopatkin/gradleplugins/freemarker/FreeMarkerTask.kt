@@ -26,7 +26,9 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -44,6 +46,10 @@ abstract class FreeMarkerTask : DefaultTask() {
 
     @get:Input
     abstract val definitions: MapProperty<String, String>
+
+    @get:InputDirectory
+    @get:Optional
+    abstract val includes: DirectoryProperty
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)
@@ -64,6 +70,7 @@ abstract class FreeMarkerTask : DefaultTask() {
         templates.files.forEach { inputTemplate ->
             queue.submit(FreeMarkerWorkItem::class) {
                 template.set(inputTemplate)
+                includes.set(this@FreeMarkerTask.includes)
                 definitions.set(this@FreeMarkerTask.definitions)
                 outputDirectory.set(this@FreeMarkerTask.outputDirectory)
             }
@@ -73,6 +80,7 @@ abstract class FreeMarkerTask : DefaultTask() {
 
 interface FreeMarkerWorkParams : WorkParameters {
     val template: RegularFileProperty
+    val includes: DirectoryProperty
     val definitions: MapProperty<String, String>
     val outputDirectory: DirectoryProperty
 }
@@ -82,6 +90,9 @@ abstract class FreeMarkerWorkItem : WorkAction<FreeMarkerWorkParams> {
         val cfg = Configuration(Configuration.VERSION_2_3_34).apply {
             defaultEncoding = "UTF-8"
             interpolationSyntax = Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX
+            if (parameters.includes.isPresent) {
+                setDirectoryForTemplateLoading(parameters.includes.get().asFile)
+            }
         }
 
         with(parameters) {

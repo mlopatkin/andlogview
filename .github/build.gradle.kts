@@ -25,6 +25,8 @@ plugins {
 
 
 val buildWorkflows = tasks.register<FreeMarkerTask>("buildWorkflows") {
+    includes = file("workflow-templates/includes")
+
     templates = fileTree(file("workflow-templates")) {
         include("*.ftl")
     }

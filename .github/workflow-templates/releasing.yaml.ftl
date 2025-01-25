@@ -1,3 +1,4 @@
+<#import "gradle.ftlh" as gradle>
 name: Run releasing action (snapshot or release)
 on:
   push:
@@ -20,16 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: Build and publish snapshot
-        uses: gradle/gradle-build-action@[=GRADLE_BUILD_ACTION_VERSION]
-        # Do not use Gradle Daemon because we only have a single invocation.
-        with:
-          arguments: |
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
-            -Porg.gradle.java.installations.auto-download=false
-            -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
-            --stacktrace
-            check installers bitbucketUpload
+        <@gradle.runGradle "check installers bitbucketUpload"/>
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
@@ -101,16 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: Build and publish release
-        uses: gradle/gradle-build-action@[=GRADLE_BUILD_ACTION_VERSION]
-        # Do not use Gradle Daemon because we only have a single invocation.
-        with:
-          arguments: |
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
-            -Porg.gradle.java.installations.auto-download=false
-            -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
-            --stacktrace
-            check installers bitbucketUpload
+        <@gradle.runGradle "check installers bitbucketUpload"/>
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin

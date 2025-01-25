@@ -1,3 +1,4 @@
+<#import "gradle.ftlh" as gradle>
 name: PR Tests for Github
 on:
   pull_request:
@@ -15,18 +16,7 @@ jobs:
       - name: Run lint checks
         run: bash tools/hooks/lint-all.sh
       - name: Run unit tests
-        uses: gradle/gradle-build-action@[=GRADLE_BUILD_ACTION_VERSION]
-        with:
-          # Do not use Gradle Daemon because we only have a single invocation.
-          arguments: |
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
-            -Porg.gradle.java.installations.auto-download=false
-            -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
-            --stacktrace
-            --continue
-            check
-            shadowDistZip
+        <@gradle.runGradle "--continue check shadowDistZip"/>
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
   prevent-fixup-commit:

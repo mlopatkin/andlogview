@@ -16,17 +16,15 @@ jobs:
         run: bash tools/hooks/lint-all.sh
       - name: Run unit tests
         uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a # 2.9.0
+        # Do not use Gradle Daemon because we only have a single invocation.
         with:
-          # Do not use Gradle Daemon because we only have a single invocation.
           arguments: |
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --no-daemon
             --stacktrace
-            --continue
-            check
-            shadowDistZip
+            --continue check shadowDistZip
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
   prevent-fixup-commit:
