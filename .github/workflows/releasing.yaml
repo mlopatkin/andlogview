@@ -36,14 +36,24 @@ jobs:
           BITBUCKET_USER: mlopatkin
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
+      - name: Update Snapshot Tag
+        if: ${{ success() }}
+        run: |
+          git tag --force "latest-snapshot" $GITHUB_SHA && \
+          git push --force origin "latest-snapshot"
       - name: Publish Github release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
         if: ${{ success() }}
         with:
-          files: build/distributions/*
+          allowUpdates: true
+          artifacts: build/distributions/*
+          generateReleaseNotes: true
+          makeLatest: false
           prerelease: true
-          automatic_release_tag: "latest-snapshot"
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          removeArtifacts: true
+          tag: latest-snapshot
+          updateOnlyUnreleased: true
+
   build-release:
     runs-on: ubuntu-latest
     container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:25841e30354b78d0e7dbb82ec7d0d8b049b2019b7fa56db94c14d1f3f2d823af
@@ -69,6 +79,7 @@ jobs:
           LOGVIEW_SNAPSHOT_BUILD: false
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
+
   mirror-to-bitbucket:
     runs-on: ubuntu-latest
     # build-snapshot publishes a tag that we want to sync with bitbucket as well, so wait for it to complete
