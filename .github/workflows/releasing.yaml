@@ -45,6 +45,7 @@ jobs:
         if: ${{ success() }}
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           tools/remove-release.sh "latest-snapshot" "$GITHUB_REPOSITORY"
       - name: Publish Github release

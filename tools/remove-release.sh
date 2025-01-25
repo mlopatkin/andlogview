@@ -36,13 +36,13 @@ REPO="$2"
 release_status=$(gh release view "$TAG" --repo "$REPO" 2>&1 >/dev/null)
 exit_code=$?
 
-if [ $status -eq 0 ]; then
+if [ exit_code -eq 0 ]; then
     gh release delete "$TAG" --yes --repo "$REPO"
-elif echo "$output" | grep -q "release not found"; then
+elif echo "release_status" | grep -q "release not found"; then
     echo "Release for $TAG is not present, skipping deletion"
     exit 0
 else
     echo "Command failed with unexpected error:"
-    echo "$output"
-    exit $status
+    echo "$release_status"
+    exit exit_code
 fi
