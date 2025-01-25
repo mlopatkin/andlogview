@@ -79,7 +79,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Run Gradle Task 'windowsInstallers'
-        run: gradlew.bat windowsInstallers
+        run: .\gradlew.bat windowsInstallers --stacktrace
       - name: Add Windows Installers to release
         uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 # v1.15.0
         if: ${{ success() }}
