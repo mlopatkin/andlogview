@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - name: Run lint checks
         run: bash tools/hooks/lint-all.sh
+      - <@gradle.setupGradle />
       - name: Run unit tests
         <@gradle.runGradle "--continue check shadowDistZip"/>
       - name: Publish artifacts

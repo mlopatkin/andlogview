@@ -20,6 +20,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
+      - <@gradle.setupGradle />
       - name: Build and publish snapshot
         <@gradle.runGradle "check installers bitbucketUpload"/>
         env:
@@ -67,10 +68,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17.0.13'
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-      - name: Run Gradle Task 'windowsInstallers'
-        run: .\gradlew.bat windowsInstallers --stacktrace
+      - <@gradle.setupGradle />
+      - name: Build Windows Installers
+        <@gradle.runGradle "windowsInstallers" ".\\gradlew.bat"/>
       - name: Add Windows Installers to release
         uses: ncipollo/release-action@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
@@ -92,6 +92,7 @@ jobs:
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
     steps:
       - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
+      - <@gradle.setupGradle />
       - name: Build and publish release
         <@gradle.runGradle "check installers bitbucketUpload"/>
         env:

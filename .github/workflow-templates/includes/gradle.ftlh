@@ -1,8 +1,6 @@
-<#macro runGradle tasks>
-        uses: gradle/gradle-build-action@[=GRADLE_BUILD_ACTION_VERSION]
-        # Do not use Gradle Daemon because we only have a single invocation.
-        with:
-          arguments: |
+<#macro runGradle tasks gradleCmd="./gradlew">
+        run: >
+            [=gradleCmd]
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
@@ -10,3 +8,5 @@
             --stacktrace
             [=tasks]
 </#macro>
+<#macro setupGradle>name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4</#macro>
