@@ -94,6 +94,8 @@ jobs:
             --no-daemon
             --stacktrace
             windowsInstallers
+        env:
+          LOGVIEW_SNAPSHOT_BUILD: true
       - name: Add Windows Installers to release
         if: ${{ success() }}
         shell: bash
@@ -192,6 +194,8 @@ jobs:
             --no-daemon
             --stacktrace
             windowsInstallers
+        env:
+          LOGVIEW_SNAPSHOT_BUILD: false
       - name: Add Windows Installers to release
         if: ${{ success() }}
         shell: bash
