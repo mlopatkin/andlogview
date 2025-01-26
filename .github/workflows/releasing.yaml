@@ -116,6 +116,7 @@ jobs:
           --latest=false
           --prerelease=true
           --verify-tag
+          --repo "$GITHUB_REPOSITORY"
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}

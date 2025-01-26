@@ -27,6 +27,7 @@
           --latest=false
           --prerelease=[=prerelease]
           --verify-tag
+          --repo "$GITHUB_REPOSITORY"
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
