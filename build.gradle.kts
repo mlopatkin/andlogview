@@ -140,8 +140,7 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
 buildMetadata {
     revision = buildEnvironment.sourceRevision
     packageName = "name.mlopatkin.andlogview"
-    className = "BuildInfo"
-    version = project.version.toString()
+    version = provider { project.version.toString() }
 }
 
 val generateNotices = tasks.register<GenerateNotices>("generateNotices") {

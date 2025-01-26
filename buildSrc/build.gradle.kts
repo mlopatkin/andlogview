@@ -29,6 +29,5 @@ dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
     implementation(libs.build.errorprone.plugin)
-    implementation(libs.build.javapoet)
     implementation(libs.build.jlink.plugin)
 }

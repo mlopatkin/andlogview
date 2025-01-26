@@ -23,7 +23,6 @@ plugins {
 interface BuildMetadataExtension {
     val revision: Property<String>
     val packageName: Property<String>
-    val className: Property<String>
     val version: Property<String>
 }
 
@@ -33,7 +32,7 @@ val metadataExtension = extensions.create<BuildMetadataExtension>("buildMetadata
 val generateBuildMetadata by tasks.registering(GenerateBuildMetadata::class) {
     revision = metadataExtension.revision
     packageName = metadataExtension.packageName
-    className = metadataExtension.className
+    propertyFile = "build-info.properties"
     version = metadataExtension.version
     // Like annotationProcessor. Note java/main instead of Gradle's usual main/java.
     into = layout.buildDirectory.dir("generated/sources/metadata/java/main")
@@ -41,10 +40,16 @@ val generateBuildMetadata by tasks.registering(GenerateBuildMetadata::class) {
 
 val metadata by sourceSets.creating {
     java {
-        srcDir(generateBuildMetadata)
+        resources.srcDir(generateBuildMetadata)
     }
 }
 
 dependencies {
     implementation(metadata.output)
+}
+
+normalization {
+    runtimeClasspath {
+        ignore("**/build-info.properties")
+    }
 }
