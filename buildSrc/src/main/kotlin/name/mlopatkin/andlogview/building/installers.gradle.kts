@@ -287,7 +287,13 @@ abstract class CopyInstallers : DefaultTask() {
     abstract val outputDirectory: DirectoryProperty
 
     @get:Input
-    abstract val snapshot: Property<Boolean>
+    abstract val appName: Property<String>
+
+    @get:Input
+    abstract val version: Property<String>
+
+    @get:Input
+    abstract val platformArchitecture: Property<String>
 
     @get:OutputFiles
     val copiedInstallers: FileCollection = project.files(installers.elements.zip(outputDirectory) { files, dst ->
@@ -298,7 +304,8 @@ abstract class CopyInstallers : DefaultTask() {
     abstract val fsOps: FileSystemOperations
 
     init {
-        snapshot.convention(project.provider { project.version.toString().endsWith("-SNAPSHOT") })
+        appName.convention(project.provider { project.name })
+        version.convention(project.provider { project.version.toString() })
     }
 
     @TaskAction
@@ -314,14 +321,20 @@ abstract class CopyInstallers : DefaultTask() {
     }
 
     private fun decorateInstallerName(originalName: File): String {
-        return if (snapshot.get() && (originalName.extension == "exe" || originalName.extension == "msi")) {
-            // Due to technical limitations, Windows Installers have versions without the snapshot suffix. We re-append
-            // the suffix to the distribution image names, so the users have a clue what they are downloading.
-            originalName.nameWithoutExtension.lowercase(Locale.ENGLISH) + "-SNAPSHOT." + originalName.extension
-        } else {
-            originalName.name
+        require(!originalName.name.contains("noJRE")) {
+            "Must not copy the noJRE installer through this task"
         }
+        val extension = originalName.extension
+        val version = this.version.get()
+        val appName = this.appName.get()
+        val qualifier = this.platformArchitecture.get()
+
+        return "$appName-$version-$qualifier.$extension"
     }
+}
+
+tasks.withType<CopyInstallers> {
+    platformArchitecture = buildEnvironment.architecture
 }
 
 // Register entry points for distributions.
@@ -334,7 +347,6 @@ val linuxInstaller = tasks.register<CopyInstallers>("linuxInstallers") {
     group = "distribution"
     description = "Builds Linux installers with bundled Java runtime (only on Linux)"
 
-    snapshot = buildEnvironment.isSnapshot
     outputDirectory = theBuildDir.dir("distributions")
 
     installers.from(fileTree(theBuildDir.dir("jpackage")) {
@@ -352,7 +364,6 @@ val windowsInstaller = tasks.register<CopyInstallers>("windowsInstallers") {
     group = "distribution"
     description = "Builds Windows installers with bundled Java runtime (only on Windows)"
 
-    snapshot = buildEnvironment.isSnapshot
     outputDirectory = theBuildDir.dir("distributions")
 
     installers.from(fileTree(theBuildDir.dir("jpackage")) {

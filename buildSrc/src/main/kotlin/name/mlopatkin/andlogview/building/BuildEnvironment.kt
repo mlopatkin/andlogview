@@ -19,8 +19,10 @@ package name.mlopatkin.andlogview.building
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
+import org.gradle.platform.Architecture
 import org.gradle.platform.BuildPlatform
 import org.gradle.platform.OperatingSystem
+import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -32,7 +34,7 @@ import javax.inject.Inject
 abstract class BuildEnvironment(project: Project) {
 
     @get:Inject
-    abstract val platform: BuildPlatform
+    protected abstract val platform: BuildPlatform
 
     /**
      * Is `true` if the current build should use `-SNAPSHOT` version, `false` if not.
@@ -82,4 +84,12 @@ abstract class BuildEnvironment(project: Project) {
      */
     val isWindows
         get() = platform.operatingSystem == OperatingSystem.WINDOWS
+
+    val architecture
+        get() = when (platform.architecture) {
+            Architecture.X86 -> "x86"
+            Architecture.X86_64 -> "x64"
+            Architecture.AARCH64 -> "arm64"
+            else -> throw IllegalArgumentException("Unknown platform architecture ${platform.architecture}")
+        }
 }
