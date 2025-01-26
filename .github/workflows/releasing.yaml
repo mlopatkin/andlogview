@@ -51,7 +51,7 @@ jobs:
       - name: Create new release
         if: ${{ success() }}
         run: >
-          gh release create latest-snapshot
+          gh release create "latest-snapshot"
           --draft
           --latest=false
           --notes-file docs/releases/release_0.24.md
@@ -149,12 +149,12 @@ jobs:
       - name: Create new release
         if: ${{ success() }}
         run: >
-          gh release create ${{ github.ref }}
+          gh release create "${{ github.ref_name }}"
           --draft
           --latest=false
           --notes-file docs/releases/release_0.24.md
           --prerelease=false
-          --title "${{ github.ref }}"
+          --title "${{ github.ref_name }}"
           --verify-tag
         shell: bash
         env:
@@ -162,7 +162,7 @@ jobs:
       - name: Publish Linux and cross-platform installers
         if: ${{ success() }}
         shell: bash
-        run: gh release upload "${{ github.ref }}" build/distributions/*
+        run: gh release upload "${{ github.ref_name }}" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -195,7 +195,7 @@ jobs:
       - name: Add Windows Installers to release
         if: ${{ success() }}
         shell: bash
-        run: gh release upload "${{ github.ref }}" build/distributions/*
+        run: gh release upload "${{ github.ref_name }}" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 

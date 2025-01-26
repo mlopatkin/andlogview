@@ -1,7 +1,7 @@
 <#macro createRelease tag prerelease="true">
         if: ${{ success() }}
         run: >
-          gh release create [=tag]
+          gh release create "[=tag]"
           --draft
           --latest=false
           --notes-file docs/releases/release_0.24.md

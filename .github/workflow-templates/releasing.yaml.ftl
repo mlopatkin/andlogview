@@ -19,7 +19,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
   </@releases.releasePipeline>
 
-  <@releases.releasePipeline "tag" "${{ github.ref }}">
+  <@releases.releasePipeline "tag" "${{ github.ref_name }}">
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
   </@releases.releasePipeline>
