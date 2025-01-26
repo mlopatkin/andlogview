@@ -37,16 +37,20 @@
   build-[=pipeline]:
     runs-on: ubuntu-latest
     container: ghcr.io/mlopatkin/andlogview-build-environment@[=ANDLOGVIEW_ENV_VERSION]
+    env:
+      LOGVIEW_SNAPSHOT_BUILD: [=prerelease]
     <#nested/>
     steps:
       - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
       - <@gradle.setupGradle />
-      - name: Build and publish [=pipeline]
-        <@gradle.runGradle "check installers bitbucketUpload"/>
+      - name: Run checks and build noJRE installer
+        # This can benefit from the configuration cache, unlike the installer builds later
+        <@gradle.runGradle "check noJreInstaller bitbucketUpload"/>
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
-          LOGVIEW_SNAPSHOT_BUILD: [=prerelease]
+      - name: Build and publish [=pipeline]
+        <@gradle.runGradle "linuxInstallers"/>
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
       <#if pipeline == "snapshot">

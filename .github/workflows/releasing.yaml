@@ -15,25 +15,34 @@ jobs:
   build-snapshot:
     runs-on: ubuntu-latest
     container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:5d34e961a07019b09599025c5de65f3e7d6a44b80072f92114e35bde212e41b8
+    env:
+      LOGVIEW_SNAPSHOT_BUILD: true
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+      - name: Run checks and build noJRE installer
+        # This can benefit from the configuration cache, unlike the installer builds later
+        run: >
+            ./gradlew
+            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.auto-download=false
+            -Porg.gradle.java.installations.auto-detect=false
+            --stacktrace
+            check noJreInstaller bitbucketUpload
+        env:
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
+          BITBUCKET_USER: mlopatkin
       - name: Build and publish snapshot
         run: >
             ./gradlew
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
             --stacktrace
-            check installers bitbucketUpload
-        env:
-          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
-          BITBUCKET_USER: mlopatkin
-          LOGVIEW_SNAPSHOT_BUILD: true
+            linuxInstallers
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
       - name: Update Snapshot Tag
@@ -91,7 +100,6 @@ jobs:
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
             --stacktrace
             windowsInstallers
         env:
@@ -127,25 +135,34 @@ jobs:
   build-tag:
     runs-on: ubuntu-latest
     container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:5d34e961a07019b09599025c5de65f3e7d6a44b80072f92114e35bde212e41b8
+    env:
+      LOGVIEW_SNAPSHOT_BUILD: false
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
     steps:
       - uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+      - name: Run checks and build noJRE installer
+        # This can benefit from the configuration cache, unlike the installer builds later
+        run: >
+            ./gradlew
+            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.auto-download=false
+            -Porg.gradle.java.installations.auto-detect=false
+            --stacktrace
+            check noJreInstaller bitbucketUpload
+        env:
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
+          BITBUCKET_USER: mlopatkin
       - name: Build and publish tag
         run: >
             ./gradlew
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
             --stacktrace
-            check installers bitbucketUpload
-        env:
-          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
-          BITBUCKET_USER: mlopatkin
-          LOGVIEW_SNAPSHOT_BUILD: false
+            linuxInstallers
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
       - name: Create new release
@@ -191,7 +208,6 @@ jobs:
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
             --stacktrace
             windowsInstallers
         env:

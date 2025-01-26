@@ -4,7 +4,6 @@
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
-            --no-daemon
             --stacktrace
             [=tasks]
 </#macro>
