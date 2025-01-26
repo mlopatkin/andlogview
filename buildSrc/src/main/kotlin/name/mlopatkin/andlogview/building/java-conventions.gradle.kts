@@ -29,11 +29,6 @@ plugins {
     id("name.mlopatkin.andlogview.building.reproducible-builds")
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 dependencies {
     compileOnly(buildLibs.checkerframeworkAnnotations)
 
