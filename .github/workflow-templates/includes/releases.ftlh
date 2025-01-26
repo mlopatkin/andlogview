@@ -85,6 +85,8 @@
       - name: Build Windows Installers
         shell: cmd
         <@gradle.runGradle "windowsInstallers" "gradlew.bat"/>
+        env:
+          LOGVIEW_SNAPSHOT_BUILD: [=prerelease]
       - name: Add Windows Installers to release
         <@releases.publishArtifacts "[=tag]"/>
 
