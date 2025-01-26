@@ -47,7 +47,4 @@ val metadata by sourceSets.creating {
 
 dependencies {
     implementation(metadata.output)
-
-    metadata.annotationProcessorConfigurationName(buildLibs.build.jabel)
-    metadata.annotationProcessorConfigurationName(buildLibs.build.nullaway)
 }

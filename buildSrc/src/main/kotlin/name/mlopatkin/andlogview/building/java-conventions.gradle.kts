@@ -37,9 +37,6 @@ repositories {
 dependencies {
     compileOnly(buildLibs.checkerframeworkAnnotations)
 
-    implementation(buildLibs.guava)
-
-    testImplementation(buildLibs.guava)
     testImplementation(buildLibs.test.junit4)
     testImplementation(buildLibs.test.mockito.core)
     testImplementation(buildLibs.test.mockito.jupiter)
@@ -52,28 +49,14 @@ dependencies {
     testImplementation(buildLibs.test.junit5.jupiter)
     testRuntimeOnly(buildLibs.test.junit5.vintageEngine)
 
-    annotationProcessor(buildLibs.build.jabel)
-    annotationProcessor(buildLibs.build.nullaway)
-    testAnnotationProcessor(buildLibs.build.jabel)
-    testAnnotationProcessor(buildLibs.build.nullaway)
-
     errorprone(buildLibs.build.errorprone.core)
 }
 
-// Apply NullAway to JMH benchmark sources, if the plugin is available
-pluginManager.withPlugin(buildLibs.plugins.jmh.pluginId) {
+sourceSets.withType<SourceSet> {
     dependencies {
-        "jmhImplementation"(buildLibs.guava)
-        "jmhAnnotationProcessor"(buildLibs.build.jabel)
-        "jmhAnnotationProcessor"(buildLibs.build.nullaway)
-    }
-}
-
-pluginManager.withPlugin("java-test-fixtures") {
-    dependencies {
-        "testFixturesImplementation"(buildLibs.guava)
-        "testFixturesAnnotationProcessor"(buildLibs.build.jabel)
-        "testFixturesAnnotationProcessor"(buildLibs.build.nullaway)
+        implementationConfigurationName(buildLibs.guava)
+        annotationProcessorConfigurationName(buildLibs.build.jabel)
+        annotationProcessorConfigurationName(buildLibs.build.nullaway)
     }
 }
 
