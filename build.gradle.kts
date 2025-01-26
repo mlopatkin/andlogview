@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.building.theBuildDir
 import name.mlopatkin.bitbucket.gradle.UploadTask
 
 plugins {
-    idea
     application
 
     alias(libs.plugins.shadow)
