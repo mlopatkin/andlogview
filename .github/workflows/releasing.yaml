@@ -51,12 +51,12 @@ jobs:
         if: ${{ success() }}
         run: >
           gh release create latest-snapshot
-            --draft
-            --latest=false
-            --notes-file docs/releases/release_0.24.md
-            --prerelease=true
-            --title latest-snapshot
-            --verify-tag
+          --draft
+          --latest=false
+          --notes-file docs/releases/release_0.24.md
+          --prerelease=true
+          --title latest-snapshot
+          --verify-tag
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -112,10 +112,10 @@ jobs:
         if: ${{ success() }}
         run: >
           gh release edit latest-snapshot
-            --draft=false
-            --latest=false
-            --prerelease=true
-            --verify-tag
+          --draft=false
+          --latest=false
+          --prerelease=true
+          --verify-tag
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
