@@ -47,6 +47,10 @@ public class ConfigurationDialogPresenter {
 
         void showInvalidAdbLocationError(String newLocation);
 
+        void setAdbInstallAvailable(boolean available);
+
+        default void setAdbInstallerAction(Runnable runnable) {}
+
         void show();
 
         void hide();
@@ -76,6 +80,7 @@ public class ConfigurationDialogPresenter {
 
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());
+        view.setAdbInstallAvailable(!adbConfigurationPref.hasValidAdbLocation());
         view.show();
     }
 
