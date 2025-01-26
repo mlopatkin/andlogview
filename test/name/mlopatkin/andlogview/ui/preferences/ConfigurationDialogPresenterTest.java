@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,8 +59,7 @@ class ConfigurationDialogPresenterTest {
 
     private final FakeView fakeView = new FakeView();
 
-    private final AdbConfigurationPref adbConfiguration = new AdbConfigurationPref(new FakeInMemoryConfigStorage(),
-            new FakePathResolver(VALID_ADB_LOCATION, DEFAULT_ADB_LOCATION));
+    private final TestAdbConfigurationPref adbConfiguration = new TestAdbConfigurationPref();
 
     @Mock
     private AdbServicesInitializationPresenter adbServicesInitPresenter;
@@ -171,6 +171,26 @@ class ConfigurationDialogPresenterTest {
         verify(adbServicesInitPresenter).restartAdb();
     }
 
+    @Test
+    void adbInstallIsNotAvailableWhenLocationIsValid() {
+        adbConfiguration.forceAdbLocation(VALID_ADB_LOCATION);
+
+        var presenter = createPresenter();
+        presenter.openDialog();
+
+        assertThat(fakeView.isAdbInstallAvailable()).isFalse();
+    }
+
+    @Test
+    void adbInstallIsAvailableWhenLocationIsInvalid() {
+        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+
+        var presenter = createPresenter();
+        presenter.openDialog();
+
+        assertThat(fakeView.isAdbInstallAvailable()).isTrue();
+    }
+
     private ConfigurationDialogPresenter createPresenter() {
         return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter,
                 adbServicesStatus);
@@ -180,6 +200,7 @@ class ConfigurationDialogPresenterTest {
         private final TestActionHandler<Runnable> onCommit = TestActionHandler.runnableAction();
         private final TestActionHandler<Runnable> onDiscard = TestActionHandler.runnableAction();
         private final TestActionHandler<Predicate<String>> checkAdbLocation = TestActionHandler.predicateAction(true);
+        private final TestActionHandler<Runnable> onAdbInstall = TestActionHandler.runnableAction();
 
         final TestActionHandler<Runnable> onAdbLocationWarningShown = TestActionHandler.runnableAction();
 
@@ -187,6 +208,7 @@ class ConfigurationDialogPresenterTest {
         private boolean isShown;
         private boolean enableAutoReconnect;
         private boolean isInvalidAdbLocationHighlighted;
+        private boolean isAdbInstallAvailable;
 
         public boolean isShown() {
             return isShown;
@@ -194,6 +216,10 @@ class ConfigurationDialogPresenterTest {
 
         public boolean isInvalidAdbLocationHighlighted() {
             return isInvalidAdbLocationHighlighted;
+        }
+
+        public boolean isAdbInstallAvailable() {
+            return isAdbInstallAvailable;
         }
 
         public void commit() {
@@ -245,6 +271,16 @@ class ConfigurationDialogPresenterTest {
         }
 
         @Override
+        public void setAdbInstallAvailable(boolean available) {
+            isAdbInstallAvailable = available;
+        }
+
+        @Override
+        public void setAdbInstallerAction(Runnable runnable) {
+            onAdbInstall.setAction(runnable);
+        }
+
+        @Override
         public void show() {
             isShown = true;
         }
@@ -274,6 +310,18 @@ class ConfigurationDialogPresenterTest {
                 return Optional.of(new File(rawPath));
             }
             return Optional.empty();
+        }
+    }
+
+    private static class TestAdbConfigurationPref extends AdbConfigurationPref {
+        public TestAdbConfigurationPref() {
+            super(new FakeInMemoryConfigStorage(),
+                    new FakePathResolver(ConfigurationDialogPresenterTest.VALID_ADB_LOCATION,
+                            ConfigurationDialogPresenterTest.DEFAULT_ADB_LOCATION));
+        }
+
+        public void forceAdbLocation(String rawAdbLocation) {
+            super.setRawAdbLocation(rawAdbLocation);
         }
     }
 }

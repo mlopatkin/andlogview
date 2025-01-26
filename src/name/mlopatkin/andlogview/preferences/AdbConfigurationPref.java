@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.device.AdbLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -95,6 +96,15 @@ public class AdbConfigurationPref implements AdbLocation {
     }
 
     /**
+     * Checks if the preference holds the valid ADB location
+     *
+     * @return true if the current ADB location is valid
+     */
+    public boolean hasValidAdbLocation() {
+        return resolvedExecutable != null;
+    }
+
+    /**
      * Checks the ADB location for validity.
      *
      * @param rawAdbLocation the path to ADB or naked executable name
@@ -125,7 +135,8 @@ public class AdbConfigurationPref implements AdbLocation {
         }
     }
 
-    private void setRawAdbLocation(String rawAdbLocation) {
+    @VisibleForTesting
+    protected final void setRawAdbLocation(String rawAdbLocation) {
         this.rawAdbLocation = rawAdbLocation;
         this.resolvedExecutable = resolveAdbLocation(rawAdbLocation).orElse(null);
     }

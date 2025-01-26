@@ -82,6 +82,11 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     }
 
     @Override
+    public void setAdbInstallAvailable(boolean available) {
+        getDialog().installAdbBtn.setVisible(available);
+    }
+
+    @Override
     public void show() {
         ConfigurationDialogUi dialog = getDialog();
         if (!dialog.isVisible()) {
@@ -133,6 +138,10 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
                     if (onDiscard != null) {
                         onDiscard.run();
                     }
+                }
+
+                @Override
+                protected void onInstallAdb() {
                 }
             };
         }

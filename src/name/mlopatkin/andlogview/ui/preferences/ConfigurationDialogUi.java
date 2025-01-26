@@ -38,6 +38,7 @@ abstract class ConfigurationDialogUi extends JDialog {
     protected final JTextField adbExecutableText = new JTextField(25);
     protected final JButton browseAdbBtn = new JButton(String.valueOf(CommonChars.ELLIPSIS));
     protected final JCheckBox autoReconnectCheckbox = new JCheckBox("Reconnect to device automatically");
+    protected final JButton installAdbBtn = new JButton(UiHelper.makeAction("Install ADB...", this::onInstallAdb));
     protected final Action okAction = UiHelper.makeAction("OK", this::onPositiveResult);
     protected final Action cancelAction = UiHelper.makeAction("Cancel", this::onNegativeResult);
 
@@ -59,6 +60,8 @@ abstract class ConfigurationDialogUi extends JDialog {
         content.add(adbExecutableText, CC().split().growX().pushX());
         content.add(browseAdbBtn, CC().wrap());
 
+        content.add(installAdbBtn, CC().wrap().hideMode(3));
+
         content.add(autoReconnectCheckbox, CC().spanX(2).wrap("0 push"));
 
         JButton okButton = new JButton(okAction);
@@ -77,4 +80,6 @@ abstract class ConfigurationDialogUi extends JDialog {
     protected abstract void onPositiveResult();
 
     protected abstract void onNegativeResult();
+
+    protected abstract void onInstallAdb();
 }
