@@ -13,3 +13,4 @@ gen/
 logview.properties
 !.github
 !test_resources/*.log
+!.gitignore
