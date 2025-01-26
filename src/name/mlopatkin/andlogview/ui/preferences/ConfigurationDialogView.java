@@ -142,6 +142,7 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
 
                 @Override
                 protected void onInstallAdb() {
+                    new InstallAdbDialogUi(dialogFactory.getOwner()).setVisible(true);
                 }
             };
         }
