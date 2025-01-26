@@ -49,7 +49,7 @@ public class ConfigurationDialogPresenter {
 
         void setAdbInstallAvailable(boolean available);
 
-        default void setAdbInstallerAction(Runnable runnable) {}
+        void setAdbInstallerAction(Runnable runnable);
 
         void show();
 
@@ -60,17 +60,20 @@ public class ConfigurationDialogPresenter {
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesInitializationPresenter adbServicesPresenter;
     private final AdbServicesStatus adbServicesStatus;
+    private final InstallAdbPresenter adbInstaller;
 
     @Inject
     ConfigurationDialogPresenter(
             View view,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesInitializationPresenter adbServicesPresenter,
-            AdbServicesStatus adbServicesStatus) {
+            AdbServicesStatus adbServicesStatus,
+            InstallAdbPresenter adbInstaller) {
         this.view = view;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbServicesPresenter = adbServicesPresenter;
         this.adbServicesStatus = adbServicesStatus;
+        this.adbInstaller = adbInstaller;
     }
 
     public void openDialog() {
@@ -80,7 +83,8 @@ public class ConfigurationDialogPresenter {
 
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());
-        view.setAdbInstallAvailable(!adbConfigurationPref.hasValidAdbLocation());
+        view.setAdbInstallAvailable(!adbConfigurationPref.hasValidAdbLocation() && adbInstaller.isAvailable());
+        view.setAdbInstallerAction(adbInstaller::startInstall);
         view.show();
     }
 

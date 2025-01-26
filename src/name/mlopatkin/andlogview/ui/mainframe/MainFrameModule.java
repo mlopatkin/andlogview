@@ -27,6 +27,8 @@ import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.mainframe.device.MainFrameAdbModule;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
 import name.mlopatkin.andlogview.ui.mainframe.search.MainFrameSearchModule;
+import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter;
+import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenterFactory;
 import name.mlopatkin.andlogview.ui.preferences.PreferencesUiModule;
 import name.mlopatkin.andlogview.ui.status.StatusPanelModule;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
@@ -80,6 +82,11 @@ public class MainFrameModule {
     name.mlopatkin.andlogview.ui.filtertree.FilterCreator provideTreeFilterCreator(
             MainFilterController mainFilterController) {
         return mainFilterController;
+    }
+
+    @Provides
+    InstallAdbPresenter installAdbPresenter(InstallAdbPresenterFactory factory) {
+        return factory.createPresenter();
     }
 
     @Provides
