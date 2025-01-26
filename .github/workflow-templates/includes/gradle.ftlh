@@ -9,4 +9,4 @@
             [=tasks]
 </#macro>
 <#macro setupGradle>name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4</#macro>
+        uses: gradle/actions/setup-gradle@[=SETUP_GRADLE_ACTION_VERSION]</#macro>
