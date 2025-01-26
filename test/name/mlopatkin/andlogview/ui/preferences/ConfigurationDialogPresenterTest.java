@@ -65,6 +65,8 @@ class ConfigurationDialogPresenterTest {
     private AdbServicesInitializationPresenter adbServicesInitPresenter;
     @Mock(strictness = Mock.Strictness.LENIENT)
     private AdbServicesStatus adbServicesStatus;
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private InstallAdbPresenter installPresenter;
 
     @BeforeEach
     void setUp() {
@@ -72,6 +74,7 @@ class ConfigurationDialogPresenterTest {
         adbConfiguration.trySetAdbLocation(DEFAULT_ADB_LOCATION);
 
         when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.initialized());
+        when(installPresenter.isAvailable()).thenReturn(true);
     }
 
     @Test
@@ -191,9 +194,20 @@ class ConfigurationDialogPresenterTest {
         assertThat(fakeView.isAdbInstallAvailable()).isTrue();
     }
 
+    @Test
+    void adbInstallationStartsWhenUserSelects() {
+        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+
+        var presenter = createPresenter();
+        presenter.openDialog();
+        fakeView.requestAdbInstall();
+
+        verify(installPresenter).startInstall();
+    }
+
     private ConfigurationDialogPresenter createPresenter() {
         return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter,
-                adbServicesStatus);
+                adbServicesStatus, installPresenter);
     }
 
     static class FakeView implements ConfigurationDialogPresenter.View {
@@ -228,6 +242,11 @@ class ConfigurationDialogPresenterTest {
 
         public void discard() {
             onDiscard.action().run();
+        }
+
+        public void requestAdbInstall() {
+            assertThat(isAdbInstallAvailable).isTrue();
+            onAdbInstall.action().run();
         }
 
         public void selectAdbLocation(String location) {

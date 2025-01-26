@@ -34,6 +34,7 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
 
     private @MonotonicNonNull Runnable onCommit;
     private @MonotonicNonNull Runnable onDiscard;
+    private @MonotonicNonNull Runnable onInstall;
     private @MonotonicNonNull Predicate<String> adbLocationChecker;
 
     @Inject
@@ -84,6 +85,11 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     @Override
     public void setAdbInstallAvailable(boolean available) {
         getDialog().installAdbBtn.setVisible(available);
+    }
+
+    @Override
+    public void setAdbInstallerAction(Runnable runnable) {
+        onInstall = runnable;
     }
 
     @Override
@@ -142,7 +148,9 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
 
                 @Override
                 protected void onInstallAdb() {
-                    new InstallAdbDialogUi(dialogFactory.getOwner()).setVisible(true);
+                    if (onInstall != null) {
+                        onInstall.run();
+                    }
                 }
             };
         }
