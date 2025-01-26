@@ -71,6 +71,7 @@ configurations {
         // These annotations aren't needed in runtime.
         exclude(group = "com.google.code.findbugs", module = "jsr305")
         exclude(group = "org.checkerframework", module = "checker-qual")
+        exclude(group = "org.jspecify", module = "jspecify")
         exclude(group = "com.google.errorprone", module = "error_prone_annotations")
         exclude(group = "com.google.j2objc", module = "j2objc-annotations")
         exclude(group = "org.codehaus.mojo", module = "animal-sniffer-annotations")

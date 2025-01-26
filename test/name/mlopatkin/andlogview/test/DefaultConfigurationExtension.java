@@ -38,7 +38,9 @@ public class DefaultConfigurationExtension implements InvocationInterceptor {
             try {
                 InvocationInterceptor.super.interceptTestMethod(invocation, invocationContext, extensionContext);
             } catch (Throwable th) {   // OK to catch Throwable here
-                Throwables.propagateIfPossible(th, Exception.class);
+                Throwables.throwIfInstanceOf(th, Exception.class);
+                Throwables.throwIfUnchecked(th);
+                throw new AssertionError("Unexpected exception type", th);
             }
             return null;
         });
