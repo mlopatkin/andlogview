@@ -18,7 +18,6 @@ package name.mlopatkin.gradleplugins.freemarker
 
 import freemarker.template.Configuration
 import freemarker.template.Template
-import freemarker.template.TemplateException
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
