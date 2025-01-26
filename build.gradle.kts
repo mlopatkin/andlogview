@@ -282,6 +282,9 @@ installers {
                 include("andlogview.*.png")
                 include("andlogview.svg")
                 exclude("andlogview.32.png") // This one is added by the JPackage as "andlogview.png", see `icon` above.
+                // Also exclude big macOS-only icons
+                exclude("andlogview.512.png")
+                exclude("andlogview.1024.png")
             })
         }
     }

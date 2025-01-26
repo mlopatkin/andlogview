@@ -28,8 +28,9 @@ SVG_FILE="$1"
 BASE_NAME="${2:-$(basename "$SVG_FILE" .svg)}"
 DIR_NAME="$(dirname "$SVG_FILE")"
 
-# Hardcoded sizes taken from Chromium's post-install
-SIZES="16 24 32 48 64 128 256"
+# Hardcoded sizes taken from Chromium's post-install, bigger sizes added for macOS, as per
+# https://apple.stackexchange.com/a/402653
+SIZES="16 24 32 48 64 128 256 512 1024"
 
 # Check if inkscape and optipng are available
 INKSCAPE="`command -v inkscape 2> /dev/null || true`"
