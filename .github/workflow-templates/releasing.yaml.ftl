@@ -19,22 +19,10 @@ jobs:
     if: github.ref == 'refs/heads/master'
   </@releases.releasePipeline>
 
-  build-release:
-    runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@[=ANDLOGVIEW_ENV_VERSION]
+  <@releases.releasePipeline "tag" "${{ github.ref }}">
     # Only build releases out of tags
     if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
-    steps:
-      - uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
-      - <@gradle.setupGradle />
-      - name: Build and publish release
-        <@gradle.runGradle "check installers bitbucketUpload"/>
-        env:
-          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
-          BITBUCKET_USER: mlopatkin
-          LOGVIEW_SNAPSHOT_BUILD: false
-      - name: Publish artifacts
-        uses: ./.github/actions/publish-gradle-outputs
+  </@releases.releasePipeline>
 
   mirror-to-bitbucket:
     runs-on: ubuntu-latest

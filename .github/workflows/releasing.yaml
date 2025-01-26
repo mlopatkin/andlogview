@@ -33,6 +33,7 @@ jobs:
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
+          LOGVIEW_SNAPSHOT_BUILD: true
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
       - name: Update Snapshot Tag
@@ -55,7 +56,7 @@ jobs:
           --latest=false
           --notes-file docs/releases/release_0.24.md
           --prerelease=true
-          --title latest-snapshot
+          --title "latest-snapshot"
           --verify-tag
         shell: bash
         env:
@@ -63,7 +64,7 @@ jobs:
       - name: Publish Linux and cross-platform installers
         if: ${{ success() }}
         shell: bash
-        run: gh release upload latest-snapshot build/distributions/*
+        run: gh release upload "latest-snapshot" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -96,7 +97,7 @@ jobs:
       - name: Add Windows Installers to release
         if: ${{ success() }}
         shell: bash
-        run: gh release upload latest-snapshot build/distributions/*
+        run: gh release upload "latest-snapshot" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -111,7 +112,7 @@ jobs:
       - name: Publish draft release as pre-release
         if: ${{ success() }}
         run: >
-          gh release edit latest-snapshot
+          gh release edit "latest-snapshot"
           --draft=false
           --latest=false
           --prerelease=true
@@ -121,7 +122,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-  build-release:
+  build-tag:
     runs-on: ubuntu-latest
     container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:5d34e961a07019b09599025c5de65f3e7d6a44b80072f92114e35bde212e41b8
     # Only build releases out of tags
@@ -130,7 +131,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Build and publish release
+      - name: Build and publish tag
         run: >
             ./gradlew
             -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
@@ -145,6 +146,59 @@ jobs:
           LOGVIEW_SNAPSHOT_BUILD: false
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
+      - name: Create new release
+        if: ${{ success() }}
+        run: >
+          gh release create ${{ github.ref }}
+          --draft
+          --latest=false
+          --notes-file docs/releases/release_0.24.md
+          --prerelease=false
+          --title "${{ github.ref }}"
+          --verify-tag
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Publish Linux and cross-platform installers
+        if: ${{ success() }}
+        shell: bash
+        run: gh release upload "${{ github.ref }}" build/distributions/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build-tag-win:
+    runs-on: windows-latest
+    needs:
+      - build-tag  # We need the release to be prepared first.
+    # Only build releases out of tags
+    if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Eclipse Temurin JDK 17
+        uses: actions/setup-java@v4.6.0
+        with:
+          distribution: 'temurin'
+          java-version: '17.0.13'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build Windows Installers
+        shell: cmd
+        run: >
+            gradlew.bat
+            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.auto-download=false
+            -Porg.gradle.java.installations.auto-detect=false
+            --no-daemon
+            --stacktrace
+            windowsInstallers
+      - name: Add Windows Installers to release
+        if: ${{ success() }}
+        shell: bash
+        run: gh release upload "${{ github.ref }}" build/distributions/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+
 
   mirror-to-bitbucket:
     runs-on: ubuntu-latest

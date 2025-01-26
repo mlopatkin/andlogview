@@ -6,7 +6,7 @@
           --latest=false
           --notes-file docs/releases/release_0.24.md
           --prerelease=[=prerelease]
-          --title [=tag]
+          --title "[=tag]"
           --verify-tag
         shell: bash
         env:
@@ -15,14 +15,14 @@
 <#macro publishArtifacts tag>
         if: ${{ success() }}
         shell: bash
-        run: gh release upload [=tag] build/distributions/*
+        run: gh release upload "[=tag]" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 </#macro>
 <#macro publishRelease tag prerelease="true">
         if: ${{ success() }}
         run: >
-          gh release edit [=tag]
+          gh release edit "[=tag]"
           --draft=false
           --latest=false
           --prerelease=[=prerelease]
@@ -46,6 +46,7 @@
         env:
           BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
           BITBUCKET_USER: mlopatkin
+          LOGVIEW_SNAPSHOT_BUILD: [=prerelease]
       - name: Publish artifacts
         uses: ./.github/actions/publish-gradle-outputs
       <#if pipeline == "snapshot">
