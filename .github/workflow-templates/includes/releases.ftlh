@@ -1,31 +1,33 @@
 <#macro createRelease tag prerelease="true">
-        uses: softprops/action-gh-release@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
-        with:
-          body_path: docs/releases/release_0.24.md # This is a temporary location
-          draft: true
-          prerelease: [=prerelease]
-          tag_name: [=tag]
-          generate_release_notes: false
-          make_latest: false
+        run: >
+          gh release create [=tag]
+            --draft
+            --latest=false
+            --notes-file docs/releases/release_0.24.md
+            --prerelease=[=prerelease]
+            --title [=tag]
+            --verify-tag
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
 </#macro>
 <#macro publishArtifacts tag>
-        uses: softprops/action-gh-release@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
-        with:
-          files: build/distributions/*
-          tag_name: [=tag]
-          fail_on_unmatched_files: true
-          generate_release_notes: false
-          make_latest: false
+        shell: bash
+        run: gh release upload [=tag] build/distributions/*
+        env:
+          GH_TOKEN: ${{ github.token }}
 </#macro>
 <#macro publishRelease tag prerelease="true">
-        uses: softprops/action-gh-release@[=RELEASE_ACTION_VERSION]
         if: ${{ success() }}
-        with:
-          draft: false
-          prerelease: [=prerelease]
-          tag_name: [=tag]
-          generate_release_notes: false
-          make_latest: false
+        run: >
+          gh release edit [=tag]
+            --draft=false
+            --latest=false
+            --prerelease=[=prerelease]
+            --verify-tag
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
 </#macro>
