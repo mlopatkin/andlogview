@@ -22,10 +22,6 @@ import org.gradle.kotlin.dsl.assign
 import org.gradle.platform.Architecture
 import org.gradle.platform.BuildPlatform
 import org.gradle.platform.OperatingSystem
-import java.lang.IllegalArgumentException
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -85,11 +81,27 @@ abstract class BuildEnvironment(project: Project) {
     val isWindows
         get() = platform.operatingSystem == OperatingSystem.WINDOWS
 
+    /**
+     * A string representation of the current's machine architecture. Can be `null` if building architecture-specific
+     * packages for it isn't supported.
+     */
     val architecture
         get() = when (platform.architecture) {
             Architecture.X86 -> "x86"
             Architecture.X86_64 -> "x64"
             Architecture.AARCH64 -> "arm64"
-            else -> throw IllegalArgumentException("Unknown platform architecture ${platform.architecture}")
+            else -> null
+        }
+
+    /**
+     * A string representation of the current's machine OS. Can be `null` if building OS-specific packages for it isn't
+     * supported.
+     */
+    val platformName
+        get() = when (platform.operatingSystem) {
+            OperatingSystem.LINUX -> "linux"
+            OperatingSystem.WINDOWS -> "win"
+            OperatingSystem.MAC_OS -> "mac"
+            else -> null
         }
 }

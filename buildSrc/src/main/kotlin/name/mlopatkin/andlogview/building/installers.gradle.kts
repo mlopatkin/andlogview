@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.building
 
 import org.beryx.runtime.JPackageImageTask
 import org.gradle.kotlin.dsl.support.serviceOf
-import java.util.Locale
 
 plugins {
     id("name.mlopatkin.andlogview.building.build-environment")
@@ -293,6 +292,9 @@ abstract class CopyInstallers : DefaultTask() {
     abstract val version: Property<String>
 
     @get:Input
+    abstract val platform: Property<String>
+
+    @get:Input
     abstract val platformArchitecture: Property<String>
 
     @get:OutputFiles
@@ -327,14 +329,16 @@ abstract class CopyInstallers : DefaultTask() {
         val extension = originalName.extension
         val version = this.version.get()
         val appName = this.appName.get()
+        val platform = this.platform.get()
         val qualifier = this.platformArchitecture.get()
 
-        return "$appName-$version-$qualifier.$extension"
+        return "$appName-$version-$platform-$qualifier.$extension"
     }
 }
 
 tasks.withType<CopyInstallers> {
     platformArchitecture = buildEnvironment.architecture
+    platform = buildEnvironment.platformName
 }
 
 // Register entry points for distributions.
