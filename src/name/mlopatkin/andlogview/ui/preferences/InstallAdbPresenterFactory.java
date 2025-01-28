@@ -19,15 +19,22 @@ package name.mlopatkin.andlogview.ui.preferences;
 import java.awt.Desktop;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
-
+/**
+ * Manages the creation of the presenter.
+ */
 public class InstallAdbPresenterFactory {
+    private final Provider<DesktopInstallAdbPresenter> desktopInstalProvider;
+
     @Inject
-    public InstallAdbPresenterFactory() {}
+    public InstallAdbPresenterFactory(Provider<DesktopInstallAdbPresenter> desktopInstalProvider) {
+        this.desktopInstalProvider = desktopInstalProvider;
+    }
 
     public InstallAdbPresenter createPresenter() {
         if (Desktop.isDesktopSupported()) {
-            return new DesktopInstallAdbPresenter();
+            return desktopInstalProvider.get();
         }
         return DisabledInstallAdbPresenter.INSTANCE;
     }

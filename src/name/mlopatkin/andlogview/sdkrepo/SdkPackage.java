@@ -14,7 +14,28 @@
  * limitations under the License.
  */
 
-/**
- * Working with the Android SDK Repository.
- */
-package name.mlopatkin.andlogview.repository;
+package name.mlopatkin.andlogview.sdkrepo;
+
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+
+import java.net.URI;
+
+public interface SdkPackage {
+    enum TargetOs {
+        LINUX,
+        MAC_OS,
+        WINDOWS
+    }
+    String getLicense();
+
+    URI getDownloadUrl();
+
+    long getSize();
+
+    TargetOs getTargetOs();
+
+    HashFunction getChecksumAlgorithm();
+
+    HashCode getPackageChecksum();
+}

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
@@ -41,15 +42,17 @@ public class DesktopInstallAdbPresenter implements InstallAdbPresenter {
     }
 
     @Override
-    public void startInstall() {
+    public CompletableFuture<Result> startInstall() {
         try {
             // TODO(mlopatkin) should I go through andlogview.mlopatkin.name to give a chance to redirect if the url
             //  changes?
             //  Probably should do a quick ping first, to make sure my site is still available.
             Desktop.getDesktop()
                     .browse(URI.create("https://developer.android.com/tools/releases/platform-tools#downloads"));
+            return CompletableFuture.completedFuture(Result.manual());
         } catch (IOException e) {
             logger.error("Failed to open the default browser");
+            return CompletableFuture.completedFuture(Result.failure(e));
         }
     }
 }

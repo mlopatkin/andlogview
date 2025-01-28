@@ -16,6 +16,9 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import java.io.File;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Goes through ADB install flow. It is planned to have several steps:
  * <ol>
@@ -29,7 +32,132 @@ package name.mlopatkin.andlogview.ui.preferences;
  * tools.
  */
 public interface InstallAdbPresenter {
+    /**
+     * Checks if the web install service is available. For example, it may not be available if the JVM doesn't allow
+     * opening the browser.
+     *
+     * @return {@code true} if installing the ADB can be attempted
+     */
     boolean isAvailable();
 
-    void startInstall();
+    /**
+     * Starts the ADB installation flow.
+     *
+     * @return the promise of installation result.
+     * @throws IllegalStateException if the ADB install is not available
+     */
+    CompletableFuture<Result> startInstall();
+
+
+    /**
+     * A result of the installation action. A poor man's sealed class. Use static factory methods to obtains a concrete
+     * instance of this class.
+     */
+    abstract class Result {
+        private Result() {}
+
+        /**
+         * The download was abandoned because of the network or file failure.
+         *
+         * @param failure the failure
+         * @return the {@link DownloadFailure} instance
+         */
+        public static DownloadFailure failure(Throwable failure) {
+            return new DownloadFailure(failure);
+        }
+
+        /**
+         * The package wasn't found in the remote repository. This is likely because the XML structure has been changed.
+         *
+         * @return the {@link PackageNotFound} instance
+         */
+        public static PackageNotFound notFound() {
+            return PackageNotFound.INSTANCE;
+        }
+
+        /**
+         * The package was successfully installed.
+         *
+         * @param adbPath the path to the installed ADB executable
+         * @return the {@link Installed} instance pointing to the executable
+         */
+        public static Installed installed(File adbPath) {
+            return new Installed(adbPath);
+        }
+
+        /**
+         * The user was sent to download the package manually.
+         *
+         * @return the {@link ManualFallback} instance
+         */
+        public static ManualFallback manual() {
+            return ManualFallback.INSTANCE;
+        }
+
+        /**
+         * The user has cancelled the download.
+         *
+         * @return the {@link Cancelled} instance
+         */
+        public static Cancelled cancelled() {
+            return Cancelled.INSTANCE;
+        }
+    }
+
+    /**
+     * The download was abandoned because of the network or file failure.
+     */
+    final class DownloadFailure extends Result {
+        private final Throwable failure;
+
+        private DownloadFailure(Throwable failure) {
+            this.failure = failure;
+        }
+
+        public Throwable getFailure() {
+            return failure;
+        }
+    }
+
+    /**
+     * The package wasn't found in the remote repository.
+     */
+    final class PackageNotFound extends Result {
+        private static final PackageNotFound INSTANCE = new PackageNotFound();
+
+        private PackageNotFound() {}
+    }
+
+    /**
+     * The package was successfully installed.
+     */
+    final class Installed extends Result {
+        private final File adbPath;
+
+        private Installed(File adbPath) {
+            this.adbPath = adbPath;
+        }
+
+        public File getAdbPath() {
+            return adbPath;
+        }
+    }
+
+    /**
+     * The user was sent to download the package manually.
+     */
+    final class ManualFallback extends Result {
+        private static final ManualFallback INSTANCE = new ManualFallback();
+
+        private ManualFallback() {}
+    }
+
+    /**
+     * The user has cancelled the download.
+     */
+    final class Cancelled extends Result {
+        private static final Cancelled INSTANCE = new Cancelled();
+
+        private Cancelled() {}
+    }
 }

@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
+import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.base.CharMatcher;
 
@@ -84,12 +85,17 @@ public class ConfigurationDialogPresenter {
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());
         view.setAdbInstallAvailable(!adbConfigurationPref.hasValidAdbLocation() && adbInstaller.isAvailable());
-        view.setAdbInstallerAction(adbInstaller::startInstall);
+        view.setAdbInstallerAction(this::startAdbInstall);
         view.show();
     }
 
     private String sanitizeAdbLocation(String location) {
         return CharMatcher.whitespace().trimFrom(location);
+    }
+
+    private void startAdbInstall() {
+        // TODO(mlopatkin) this function is a stub.
+        adbInstaller.startInstall().exceptionally(MyFutures::uncaughtException);
     }
 
     private void tryCommit() {
