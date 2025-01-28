@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +76,8 @@ class ConfigurationDialogPresenterTest {
 
         when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.initialized());
         when(installPresenter.isAvailable()).thenReturn(true);
+        when(installPresenter.startInstall()).thenReturn(
+                CompletableFuture.completedFuture(InstallAdbPresenter.Result.manual()));
     }
 
     @Test

@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui.preferences;
-
-import java.util.concurrent.CompletableFuture;
-
-class DisabledInstallAdbPresenter implements InstallAdbPresenter {
-    public static final DisabledInstallAdbPresenter INSTANCE = new DisabledInstallAdbPresenter();
-
-    @Override
-    public boolean isAvailable() {
-        return false;
-    }
-
-    @Override
-    public CompletableFuture<Result> startInstall() {
-        throw new UnsupportedOperationException();
-    }
-}
+/**
+ * Working with the Android SDK Repository.
+ */
+package name.mlopatkin.andlogview.sdkrepo;
