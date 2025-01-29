@@ -287,6 +287,17 @@ installers {
         }
     }
 
+    macos {
+        displayAppName = "AndLogView"
+        icon = file("assets/andlogview.icns")
+
+        installerOptions = listOf(
+            "--description", "Visual Log Viewer for Android logcat\n  " +
+                    "AndLogView displays logs from a file or live from a connected device. " +
+                    "Advanced filtering and search capabilities to navigate long and noisy logs.",
+        )
+    }
+
     windows {
         displayAppName = "AndLogView"
         icon = file("assets/andlogview.ico")

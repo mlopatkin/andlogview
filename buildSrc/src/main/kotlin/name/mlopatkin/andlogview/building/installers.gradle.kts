@@ -216,6 +216,9 @@ runtime {
                         installerType = "dmg"
                         // macOS version is integers only, starting with non-zero. No SNAPSHOT, no 0.x for you.
                         appVersion = "1." + project.version.toString().replace("-SNAPSHOT", "")
+
+                        // Add the icon to the installer too
+                        installerOptions = installerOptions + optionalSwitch("--icon", forCurrentPlatform.icon.asPath)
                     }
 
                     buildEnvironment.isWindows -> {
