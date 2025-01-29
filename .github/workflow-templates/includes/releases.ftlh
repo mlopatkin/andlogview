@@ -94,6 +94,28 @@
       - name: Add Windows Installers to release
         <@releases.publishArtifacts "[=tag]"/>
 
+  build-[=pipeline]-mac:
+    runs-on: macos-latest
+    needs:
+      - build-[=pipeline]  # We need the release to be prepared first.
+    <#nested/>
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
+      - name: Set up Eclipse Temurin JDK 17
+        uses: actions/setup-java@[=SETUP_JAVA_ACTION_VERSION]
+        with:
+          distribution: 'temurin'
+          java-version: '17.0.13'
+      - <@gradle.setupGradle />
+      - name: Build macOS Installers
+        shell: sh
+        <@gradle.runGradle "macosInstallers" />
+        env:
+          LOGVIEW_SNAPSHOT_BUILD: [=prerelease]
+      - name: Add macOS Installers to release
+        <@releases.publishArtifacts "[=tag]"/>
+
   <#if pipeline == "snapshot">
   publish-[=pipeline]-release:
     runs-on: ubuntu-latest
