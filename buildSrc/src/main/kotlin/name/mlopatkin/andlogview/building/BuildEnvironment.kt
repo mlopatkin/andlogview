@@ -76,6 +76,12 @@ abstract class BuildEnvironment(project: Project) {
         get() = platform.operatingSystem == OperatingSystem.LINUX
 
     /**
+     * Is `true` if building on macOS
+     */
+    val isMacos
+        get() = platform.operatingSystem == OperatingSystem.MAC_OS
+
+    /**
      * Is `true` if building on Windows
      */
     val isWindows

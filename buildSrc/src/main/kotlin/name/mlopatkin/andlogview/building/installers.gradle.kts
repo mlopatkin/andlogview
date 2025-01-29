@@ -121,6 +121,17 @@ abstract class InstallerExtension @Inject constructor(
     fun linux(configure: PackageExtension.() -> Unit) = configure(linux)
 
     /**
+     * MacOS distribution configuration.
+     */
+    val macos: PackageExtension = objects.newInstance<PackageExtension>()
+
+    /**
+     * Configures macOS distribution.
+     */
+    @Suppress("unused")
+    fun macos(configure: PackageExtension.() -> Unit) = configure(macos)
+
+    /**
      * Windows distribution configuration.
      */
     val windows: PackageExtension = objects.newInstance<PackageExtension>()
@@ -134,11 +145,12 @@ abstract class InstallerExtension @Inject constructor(
     internal val forCurrentPlatform: PackageExtension
         get() = when {
             buildEnvironment.isLinux -> linux
+            buildEnvironment.isMacos -> macos
             buildEnvironment.isWindows -> windows
             else -> throw IllegalArgumentException("Unsupported Build Platform")
         }
 
-    internal val platforms: List<PackageExtension> = listOf(linux, windows)
+    internal val platforms: List<PackageExtension> = listOf(linux, macos, windows)
 }
 
 // Gradle doesn't generate accessors for sibling plugins.
@@ -200,6 +212,12 @@ runtime {
                         installerType = "deb"
                     }
 
+                    buildEnvironment.isMacos -> {
+                        installerType = "dmg"
+                        // macOS version is integers only, starting with non-zero. No SNAPSHOT, no 0.x for you.
+                        appVersion = "1." + project.version.toString().replace("-SNAPSHOT", "")
+                    }
+
                     buildEnvironment.isWindows -> {
                         installerType = "exe"
                         // Windows Version must be at most three dot-separated numbers. We cannot fit SNAPSHOT there.
@@ -254,6 +272,7 @@ val JPackageImageTask.contentOutput: Provider<File>
         when {
             buildEnvironment.isLinux -> File(imageDir, "lib/")
             buildEnvironment.isWindows -> imageDir
+            buildEnvironment.isMacos -> File(imageDir, "Contents/")
             else -> throw IllegalArgumentException("Unsupported platform")
         }
     }
@@ -359,6 +378,23 @@ val linuxInstaller = tasks.register<CopyInstallers>("linuxInstallers") {
     })
 }
 
+val macosInstaller = tasks.register<CopyInstallers>("macosInstallers") {
+    // We have to copy the output, because jpackage cleans up its destination dir if it doesn't contain the image.
+    dependsOn(":jpackage")
+    val isMacos = buildEnvironment.isMacos
+    onlyIf("Can only run when running on macOS") { isMacos }
+
+    group = "distribution"
+    description = "Builds macOS installers with bundled Java runtime (only on macOS)"
+
+    outputDirectory = theBuildDir.dir("distributions")
+
+    installers.from(fileTree(theBuildDir.dir("jpackage")) {
+        include("*.dmg")
+        include("*.pkg")
+    })
+}
+
 val windowsInstaller = tasks.register<CopyInstallers>("windowsInstallers") {
     // We have to copy the output, because jpackage cleans up its destination dir if it doesn't contain the image.
     dependsOn(":jpackage")
@@ -384,7 +420,7 @@ val noJreInstaller = tasks.register("noJreInstaller") {
 }
 
 tasks.register("installers") {
-    dependsOn(linuxInstaller, noJreInstaller, windowsInstaller)
+    dependsOn(linuxInstaller, macosInstaller, noJreInstaller, windowsInstaller)
 
     group = "distribution"
     description = "Builds all installers for the current platform"
