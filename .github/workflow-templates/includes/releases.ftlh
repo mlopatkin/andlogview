@@ -122,6 +122,7 @@
     needs:
       - build-[=pipeline]  # We need all the artifacts to be published
       - build-[=pipeline]-win
+      - build-[=pipeline]-mac
     <#nested/>
     steps:
       - name: Publish draft release as pre-release

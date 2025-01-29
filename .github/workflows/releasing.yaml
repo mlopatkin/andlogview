@@ -150,6 +150,7 @@ jobs:
     needs:
       - build-snapshot  # We need all the artifacts to be published
       - build-snapshot-win
+      - build-snapshot-mac
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
     steps:
