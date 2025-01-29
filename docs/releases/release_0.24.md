@@ -3,7 +3,8 @@
 * Platform-specific installers with bundled Java runtime ([#428](https://github.com/mlopatkin/andlogview/issues/428)).
   There is no need to install JDK manually if you use one of these. So far, these platforms are supported:
   * Linux (x64 aka amd64), only for DEB-based distributions, e.g. Debian, Ubuntu, Mint ([#437](https://github.com/mlopatkin/andlogview/issues/437)).
-  * Windows (x64)
+  * Windows (x64), as EXE installer ([#436](https://github.com/mlopatkin/andlogview/issues/436)).
+  * macOS (arm64 aka M1+), as DMG image ([#438](https://github.com/mlopatkin/andlogview/issues/438)).
 
   Users on other platforms should continue use the `noJRE` distribution with manually installed JDK for now.
 
