@@ -63,6 +63,13 @@ abstract class PackageExtension @Inject constructor(
     abstract val resourceDir: DirectoryProperty
 
     /**
+     * A copyright string. Shown in the package and application metadata.
+     * <p>
+     * By default, uses [InstallerExtension.copyright].
+     */
+    abstract val copyright: Property<String>
+
+    /**
      * Extra application content to be packaged into the distribution. The exact location is platform-dependent. On
      * Linux, it will be installed into `/opt/andlogview/lib/`, alongside the icon and launcher. On Windows it is
      * installed into the root of the app installation directory.
@@ -159,6 +166,7 @@ val buildEnvironment = extensions.getByType<BuildEnvironment>()
 val installersExtension = extensions.create<InstallerExtension>("installers", buildEnvironment).apply {
     val nameProvider = provider { project.name }
     platforms.forEach {
+        it.copyright.convention(copyright)
         it.displayAppName.convention(nameProvider)
     }
 }
@@ -189,6 +197,7 @@ runtime {
 
                 imageOptions = buildList {
                     withOptionalSwitch("--icon", forCurrentPlatform.icon.asPath)
+                    withOptionalSwitch("--copyright", forCurrentPlatform.copyright)
 
                     addAll(forCurrentPlatform.imageOptions.get())
                 }
@@ -196,7 +205,7 @@ runtime {
                 installerOptions = buildList {
                     withOptionalSwitch("--vendor", vendor)
                     withOptionalSwitch("--license-file", licenseFile.asPath)
-                    withOptionalSwitch("--copyright", copyright)
+                    withOptionalSwitch("--copyright", forCurrentPlatform.copyright)
                     withOptionalSwitch("--about-url", aboutUrl)
 
                     addAll(forCurrentPlatform.installerOptions.get())

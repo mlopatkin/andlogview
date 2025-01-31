@@ -254,7 +254,7 @@ installers {
 
     vendor = "Mikhail Lopatkin"
     licenseFile = file("LICENSE")
-    copyright = "Copyright 2011-2025 AndLogView authors"
+    copyright = "Copyright 2011-2025 The AndLogView authors"
     aboutUrl = "https://andlogview.mlopatkin.name"
 
     linux {
@@ -301,6 +301,7 @@ installers {
     windows {
         displayAppName = "AndLogView"
         icon = file("assets/andlogview.ico")
+        copyright = "(C) 2011-2025 The AndLogView authors"
 
         installerOptions = listOf(
             "--description", "Visual Log Viewer for Android logcat\n  " +
