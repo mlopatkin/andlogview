@@ -312,6 +312,7 @@ installers {
             "--win-menu",
             "--win-menu-group", "AndLogView",
             "--win-per-user-install",
+            "--win-upgrade-uuid", "6d50b0e0-cabc-4d18-b7b2-d70806b0a01b"
         )
 
         extraContent {
