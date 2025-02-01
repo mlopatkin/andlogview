@@ -67,6 +67,7 @@ abstract class JpackagePlugin : Plugin<Project> {
         val java = extensions.getByType<JavaPluginExtension>()
 
         val installers = extensions.create<InstallerExtension>("installers", buildEnvironment).apply {
+            version = provider { project.version.toString() }
             val defaultToolchain = java.toolchain
             javaToolchain {
                 languageVersion.convention(defaultToolchain.languageVersion)
@@ -76,6 +77,7 @@ abstract class JpackagePlugin : Plugin<Project> {
 
             val nameProvider = provider { project.name }
             platforms.forEach {
+                it.version.convention(version)
                 it.copyright.convention(copyright)
                 it.displayAppName.convention(nameProvider)
                 it.licenseFile.convention(licenseFile)
@@ -157,6 +159,7 @@ abstract class JpackagePlugin : Plugin<Project> {
                 with(installers) {
                     imageName = forCurrentPlatform.displayAppName.get()
                     installerName = forCurrentPlatform.displayAppName.get()
+                    appVersion = forCurrentPlatform.version.get()
 
                     imageOptions = buildList {
                         withOptionalSwitch("--icon", forCurrentPlatform.icon.asPath)
@@ -186,8 +189,6 @@ abstract class JpackagePlugin : Plugin<Project> {
 
                         buildEnvironment.isMacos -> {
                             installerType = "dmg"
-                            // macOS version is integers only, starting with non-zero. No SNAPSHOT, no 0.x for you.
-                            appVersion = "1." + version.toString().replace("-SNAPSHOT", "")
 
                             // Add the icon to the installer too
                             installerOptions =
@@ -196,8 +197,6 @@ abstract class JpackagePlugin : Plugin<Project> {
 
                         buildEnvironment.isWindows -> {
                             installerType = "exe"
-                            // Windows Version must be at most three dot-separated numbers. We cannot fit SNAPSHOT there.
-                            appVersion = version.toString().replace("-SNAPSHOT", "")
                         }
                     }
 

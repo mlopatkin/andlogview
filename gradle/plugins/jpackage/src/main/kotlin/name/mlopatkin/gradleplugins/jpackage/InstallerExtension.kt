@@ -74,6 +74,11 @@ abstract class InstallerExtension @Inject constructor(
     abstract val aboutUrl: Property<String>
 
     /**
+     * The version of the application. Can be overridden per-platform, uses project's version by default.
+     */
+    abstract val version: Property<String>
+
+    /**
      * Linux distribution configuration.
      */
     val linux: PackageExtension = objects.newInstance()

@@ -76,6 +76,12 @@ abstract class PackageExtension @Inject constructor(
     abstract val licenseFile: RegularFileProperty
 
     /**
+     * The version of the application. By default, uses [InstallerExtension.version], which falls back to the project
+     * version.
+     */
+    abstract val version: Property<String>
+
+    /**
      * Extra application content to be packaged into the distribution. The exact location is platform-dependent. On
      * Linux, it will be installed into `/opt/andlogview/lib/`, alongside the icon and launcher. On Windows it is
      * installed into the root of the app installation directory.
