@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview.building
 
-import org.beryx.runtime.RuntimePlugin
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -51,8 +50,3 @@ val Project.theBuildDir: DirectoryProperty
     get() = layout.buildDirectory
 
 fun Provider<out FileSystemLocation>.toFile() = get().asFile
-
-// JLink RuntimePlugin extensions for cleaner access in Kotlin
-object RuntimePluginExt {
-    val TASK_NAME_JPACKAGE_IMAGE: String = RuntimePlugin.getTASK_NAME_JPACKAGE_IMAGE()
-}
