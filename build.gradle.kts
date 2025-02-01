@@ -303,10 +303,12 @@ installers {
         icon = file("assets/andlogview.ico")
         copyright = "(C) 2011-2025 The AndLogView authors"
 
+        imageOptions = listOf(
+            "--description", "Visual log viewer for Android logcat"
+        )
+
         installerOptions = listOf(
-            "--description", "Visual Log Viewer for Android logcat\n  " +
-                    "AndLogView displays logs from a file or live from a connected device. " +
-                    "Advanced filtering and search capabilities to navigate long and noisy logs.",
+            "--description", "Visual log viewer for Android logcat",
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-shortcut-prompt",
