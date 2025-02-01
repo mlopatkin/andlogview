@@ -318,6 +318,8 @@ installers {
             "--win-upgrade-uuid", "6d50b0e0-cabc-4d18-b7b2-d70806b0a01b"
         )
 
+        resourceDir = file("install/windows")
+
         extraContent {
             with(additionalFiles)
             into(".")
