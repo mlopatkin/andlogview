@@ -29,9 +29,9 @@ plugins {
     alias(libs.plugins.jmh)
 
     id("name.mlopatkin.andlogview.building.build-environment")
-    id("name.mlopatkin.andlogview.building.installers")
     id("name.mlopatkin.andlogview.building.java-conventions")
     id("name.mlopatkin.andlogview.building.metadata")
+    id("name.mlopatkin.gradleplugins.jpackage")
 }
 
 dependencies {

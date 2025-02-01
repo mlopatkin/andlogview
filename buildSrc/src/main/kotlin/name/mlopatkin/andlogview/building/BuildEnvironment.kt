@@ -19,19 +19,11 @@ package name.mlopatkin.andlogview.building
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
-import org.gradle.platform.Architecture
-import org.gradle.platform.BuildPlatform
-import org.gradle.platform.OperatingSystem
-import javax.inject.Inject
 
 /**
  * Helper methods to access environment parameters: is build run by CI server? what revision is checked out?
  */
 abstract class BuildEnvironment(project: Project) {
-
-    @get:Inject
-    protected abstract val platform: BuildPlatform
-
     /**
      * Is `true` if the current build should use `-SNAPSHOT` version, `false` if not.
      */
@@ -68,46 +60,4 @@ abstract class BuildEnvironment(project: Project) {
             }.orElse(gitRevision)
         }
     }
-
-    /**
-     * Is `true` if building on Linux
-     */
-    val isLinux
-        get() = platform.operatingSystem == OperatingSystem.LINUX
-
-    /**
-     * Is `true` if building on macOS
-     */
-    val isMacos
-        get() = platform.operatingSystem == OperatingSystem.MAC_OS
-
-    /**
-     * Is `true` if building on Windows
-     */
-    val isWindows
-        get() = platform.operatingSystem == OperatingSystem.WINDOWS
-
-    /**
-     * A string representation of the current's machine architecture. Can be `null` if building architecture-specific
-     * packages for it isn't supported.
-     */
-    val architecture
-        get() = when (platform.architecture) {
-            Architecture.X86 -> "x86"
-            Architecture.X86_64 -> "x64"
-            Architecture.AARCH64 -> "arm64"
-            else -> null
-        }
-
-    /**
-     * A string representation of the current's machine OS. Can be `null` if building OS-specific packages for it isn't
-     * supported.
-     */
-    val platformName
-        get() = when (platform.operatingSystem) {
-            OperatingSystem.LINUX -> "linux"
-            OperatingSystem.WINDOWS -> "win"
-            OperatingSystem.MAC_OS -> "mac"
-            else -> null
-        }
 }
