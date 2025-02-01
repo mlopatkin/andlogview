@@ -11,6 +11,7 @@ base/src/jmh/resources/*
 
 # Nobody cares
 *.svg
+*.rtf
 
 # IDEA Run Configurations (IDEA removes the trailing EOL when the configuration changes)
 config/idea/run/*.xml

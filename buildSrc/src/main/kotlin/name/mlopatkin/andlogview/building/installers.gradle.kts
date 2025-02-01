@@ -70,6 +70,13 @@ abstract class PackageExtension @Inject constructor(
     abstract val copyright: Property<String>
 
     /**
+     * A license file. Shown in the installer.
+     * <p>
+     * By default, uses [InstallerExtension.licenseFile].
+     */
+    abstract val licenseFile: RegularFileProperty
+
+    /**
      * Extra application content to be packaged into the distribution. The exact location is platform-dependent. On
      * Linux, it will be installed into `/opt/andlogview/lib/`, alongside the icon and launcher. On Windows it is
      * installed into the root of the app installation directory.
@@ -168,6 +175,7 @@ val installersExtension = extensions.create<InstallerExtension>("installers", bu
     platforms.forEach {
         it.copyright.convention(copyright)
         it.displayAppName.convention(nameProvider)
+        it.licenseFile.convention(licenseFile)
     }
 }
 
@@ -204,7 +212,7 @@ runtime {
 
                 installerOptions = buildList {
                     withOptionalSwitch("--vendor", vendor)
-                    withOptionalSwitch("--license-file", licenseFile.asPath)
+                    withOptionalSwitch("--license-file", forCurrentPlatform.licenseFile.asPath)
                     withOptionalSwitch("--copyright", forCurrentPlatform.copyright)
                     withOptionalSwitch("--about-url", aboutUrl)
 
@@ -236,6 +244,15 @@ runtime {
                         appVersion = project.version.toString().replace("-SNAPSHOT", "")
                     }
                 }
+
+                tasks.jpackageImage {
+                    withOptionalInput("icon", forCurrentPlatform.icon)
+                }
+
+                tasks.jpackage {
+                    withOptionalInput("icon", forCurrentPlatform.icon)
+                    withOptionalInput("license", forCurrentPlatform.licenseFile)
+                }
             }
         }
     }
@@ -255,6 +272,9 @@ fun MutableList<String>.withOptionalSwitch(switch: String, value: Provider<out S
     addAll(optionalSwitch(switch, value))
 }
 
+fun Task.withOptionalInput(name: String, value: Provider<RegularFile>) {
+    inputs.files(value).withPropertyName(name).optional()
+}
 
 inline fun <T> Provider<out T>.ifPresent(block: (T) -> Unit) {
     if (isPresent) {

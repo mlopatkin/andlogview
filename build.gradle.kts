@@ -301,7 +301,9 @@ installers {
     windows {
         displayAppName = "AndLogView"
         icon = file("assets/andlogview.ico")
+
         copyright = "(C) 2011-2025 The AndLogView authors"
+        licenseFile = file("install/windows/LICENSE.rtf")
 
         imageOptions = listOf(
             "--description", "Visual log viewer for Android logcat"
