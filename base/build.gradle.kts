@@ -18,8 +18,6 @@ plugins {
     id("name.mlopatkin.andlogview.building.java-library-conventions")
 
     alias(libs.plugins.jmh)
-
-    `java-test-fixtures`
 }
 
 description = "Common utilities that every other model can use"

@@ -21,6 +21,7 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     java
     checkstyle
+    `java-test-fixtures`
     `jvm-test-suite`
 
     // It is not possible to use a constant from the version catalog there
@@ -30,8 +31,6 @@ plugins {
 }
 
 dependencies {
-    compileOnly(buildLibs.checkerframeworkAnnotations)
-
     testImplementation(buildLibs.test.junit4)
     testImplementation(buildLibs.test.mockito.core)
     testImplementation(buildLibs.test.mockito.jupiter)
@@ -47,9 +46,13 @@ dependencies {
     errorprone(buildLibs.build.errorprone.core)
 }
 
+// Set up common dependencies for every Java source set - main, test, jmh, test-fixtures.
 sourceSets.withType<SourceSet> {
     dependencies {
+        compileOnlyConfigurationName(buildLibs.checkerframeworkAnnotations)
+
         implementationConfigurationName(buildLibs.guava)
+
         annotationProcessorConfigurationName(buildLibs.build.jabel)
         annotationProcessorConfigurationName(buildLibs.build.nullaway)
     }

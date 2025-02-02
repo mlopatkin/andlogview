@@ -16,7 +16,6 @@
 
 plugins {
     id("name.mlopatkin.andlogview.building.java-library-conventions")
-    `java-test-fixtures`
 }
 
 dependencies {
@@ -27,7 +26,6 @@ dependencies {
     testFixturesApi(libs.test.hamcrest.hamcrest)
     testFixturesImplementation(project(":base"))
     testFixturesImplementation(testFixtures(project(":base")))
-    testFixturesImplementation(libs.checkerframeworkAnnotations)
     testFixturesImplementation(libs.test.junit4)
 
     testImplementation(testFixtures(project(":base")))

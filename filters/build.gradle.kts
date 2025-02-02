@@ -16,8 +16,6 @@
 
 plugins {
     id("name.mlopatkin.andlogview.building.java-library-conventions")
-
-    `java-test-fixtures`
 }
 
 dependencies {
