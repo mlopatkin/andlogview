@@ -43,6 +43,9 @@ public abstract class GenerateBuildMetadata extends DefaultTask {
     @Input
     public abstract Property<String> getVersion();
 
+    @Input
+    public abstract Property<String> getBuildTimestamp();  // In ISO format, 2025-01-31T23:59:00Z
+
     @OutputDirectory
     public abstract DirectoryProperty getInto();
 
@@ -62,6 +65,9 @@ public abstract class GenerateBuildMetadata extends DefaultTask {
             out.write('\n');
             out.write("VERSION=");
             out.write(getVersion().get());
+            out.write('\n');
+            out.write("BUILD_TIMESTAMP=");
+            out.write(getBuildTimestamp().get());
             out.write('\n');
         }
     }

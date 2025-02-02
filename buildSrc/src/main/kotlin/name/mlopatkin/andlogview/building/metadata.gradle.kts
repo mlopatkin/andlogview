@@ -16,6 +16,10 @@
 
 package name.mlopatkin.andlogview.building
 
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+
 plugins {
     java
 }
@@ -29,11 +33,19 @@ interface BuildMetadataExtension {
 
 val metadataExtension = extensions.create<BuildMetadataExtension>("buildMetadata")
 
+abstract class BuildDateValueSource : ValueSource<String, ValueSourceParameters.None> {
+    override fun obtain(): String {
+        val buildTime = Instant.now().truncatedTo(ChronoUnit.MINUTES)
+        return DateTimeFormatter.ISO_INSTANT.format(buildTime)
+    }
+}
+
 val generateBuildMetadata by tasks.registering(GenerateBuildMetadata::class) {
     revision = metadataExtension.revision
     packageName = metadataExtension.packageName
     propertyFile = "build-info.properties"
     version = metadataExtension.version
+    buildTimestamp = providers.of(BuildDateValueSource::class) {}
     // Like annotationProcessor. Note java/main instead of Gradle's usual main/java.
     into = layout.buildDirectory.dir("generated/sources/metadata/java/main")
 }

@@ -35,6 +35,9 @@ import java.awt.Window;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -82,16 +85,20 @@ public class AboutUi extends JDialog {
                 .put("APP_NAME", Main.APP_NAME)
                 .put("APP_VERSION", BuildInfo.VERSION)
                 .put("REVISION", BuildInfo.REVISION)
+                .put("BUILT_ON", BuildInfo.BUILT_ON.format(createDateFormatter()))
                 .put("JAVA_VENDOR", System.getProperty("java.vendor"))
                 .put("JVM_NAME", System.getProperty("java.vm.name"))
                 .put("JAVA_VERSION", System.getProperty("java.version"))
                 .put("JAVA_HOME", javaHome)
-                .put("LAST_CHANGE_YEAR", "2025")
+                .put("LAST_CHANGE_YEAR", String.valueOf(BuildInfo.BUILT_ON.getYear()))
                 .build();
 
         var aboutContent = new JEditorPane("text/html", template("""
                 <h1>{{ APP_NAME }}&nbsp;{{ APP_VERSION }}</h1>
-                <p>Revision: {{ REVISION }}</p>
+                <p>
+                Revision: {{ REVISION }}<br/>
+                Built on: {{ BUILT_ON }}
+                </p>
                 <p>
                 Java Runtime: {{ JAVA_VENDOR }} {{ JVM_NAME }} {{ JAVA_VERSION }}<br/>
                 Java Home: {{ JAVA_HOME }}
@@ -141,5 +148,10 @@ public class AboutUi extends JDialog {
                 target.getSchemeSpecificPart())) {
             new LicensesUi(this).setVisible(true);
         }
+    }
+
+    private static DateTimeFormatter createDateFormatter() {
+        // As the application is not localized, we should not use the system locale to format the date.
+        return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.US);
     }
 }

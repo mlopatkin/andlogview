@@ -20,6 +20,10 @@ import name.mlopatkin.andlogview.base.AppResources;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -36,10 +40,16 @@ public class BuildInfo {
      */
     public static final String REVISION;
 
+    /**
+     * The date when the application was built.
+     */
+    public static final LocalDate BUILT_ON;
+
     static {
         var properties = loadProperties();
-        VERSION = properties.getProperty("VERSION", "0.0");
+        VERSION = Objects.requireNonNull(properties.getProperty("VERSION"));
         REVISION = properties.getProperty("REVISION", "n/a");
+        BUILT_ON = parseTimestamp(Objects.requireNonNull(properties.getProperty("BUILD_TIMESTAMP")));
     }
 
     private static Properties loadProperties() {
@@ -52,6 +62,10 @@ public class BuildInfo {
             // Reading code will fall back to default values.
         }
         return properties;
+    }
+
+    private static LocalDate parseTimestamp(String tsString) {
+        return Instant.parse(tsString).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     public static boolean isSnapshot() {
