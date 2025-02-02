@@ -31,6 +31,7 @@ import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
+import name.mlopatkin.andlogview.ui.about.AboutUi;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbOpener;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
@@ -233,6 +234,9 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     private final Action acChangeConfiguration =
             UiHelper.makeAction("Configuration...", () -> configurationDialogPresenter.openDialog());
     private final Action acDumpDevice = UiHelper.makeAction("Prepare device dump...", this::selectAndDumpDevice);
+
+    // Help menu
+    private final Action acAbout = UiHelper.makeAction("About", this::showAboutDialog);
 
     @SuppressWarnings("NullAway")
     private MainFrame(AppGlobals globals, CommandLine commandLine) {
@@ -498,6 +502,10 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         mainMenu.add(bufferMenu.getBuffersMenu());
 
+        var mnHelp = new JMenu("Help");
+        mnHelp.add(acAbout);
+        mainMenu.add(mnHelp);
+
         mainFrameUi.setJMenuBar(mainMenu);
 
         adbServicesStatus.asObservable().addObserver(this::onAdbServicesStatusChanged);
@@ -598,6 +606,10 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     private void onAdbServicesStatusChanged(AdbServicesStatus.StatusValue newStatus) {
         acConnectToDevice.setEnabled(!newStatus.isFailed());
         acDumpDevice.setEnabled(!newStatus.isFailed());
+    }
+
+    private void showAboutDialog() {
+        new AboutUi(mainFrameUi).setVisible(true);
     }
 
     public static class Factory implements Provider<MainFrame> {

@@ -104,9 +104,8 @@ public class Main {
         this.commandLine = commandLine;
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static String getVersionString() {
-        if (!BuildInfo.VERSION.endsWith("SNAPSHOT")) {
+        if (!BuildInfo.isSnapshot()) {
             return BuildInfo.VERSION;
         }
         return BuildInfo.VERSION + " (rev " + BuildInfo.REVISION + ")";

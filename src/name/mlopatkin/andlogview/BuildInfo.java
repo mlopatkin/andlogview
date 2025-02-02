@@ -53,4 +53,8 @@ public class BuildInfo {
         }
         return properties;
     }
+
+    public static boolean isSnapshot() {
+        return VERSION.endsWith("-SNAPSHOT");
+    }
 }
