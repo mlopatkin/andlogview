@@ -21,7 +21,6 @@ plugins {
 dependencies {
     api(project(":logmodel"))
     implementation(project(":base"))
-    implementation(libs.slf4j.api)
 
     testFixturesApi(platform(libs.test.junit5.bom))
     testFixturesApi(libs.test.junit5.jupiter)

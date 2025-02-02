@@ -24,7 +24,6 @@ dependencies {
     implementation(project(":base"))
     implementation(libs.ddmlib)
     implementation(libs.gson)
-    implementation(libs.slf4j.api)
 
     testFixturesApi(libs.test.hamcrest.hamcrest)
     testFixturesImplementation(testFixtures(project(":base")))

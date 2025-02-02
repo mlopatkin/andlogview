@@ -31,6 +31,8 @@ plugins {
 }
 
 dependencies {
+    implementation(buildLibs.slf4j.api)
+
     testImplementation(buildLibs.test.junit4)
     testImplementation(buildLibs.test.mockito.core)
     testImplementation(buildLibs.test.mockito.jupiter)
