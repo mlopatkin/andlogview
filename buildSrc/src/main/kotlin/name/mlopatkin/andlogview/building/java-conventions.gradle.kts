@@ -91,36 +91,54 @@ tasks.withType<JavaCompile>().configureEach {
     javaCompiler.convention(javaToolchains.compilerFor(java.toolchain))
 
     sourceCompatibility = buildLibs.versions.sourceJavaVersion.get() // for the IDE support
-    options.release = runtimeJdk.intProvider
 
-    // Configure javac warnings
-    options.compilerArgs.addAll(listOf(
-            "-Xlint:all",
-            "-Xlint:-serial,-processing",
-            "-Werror",  // Treat warnings as errors
-    ))
-    options.errorprone {
-        // Configure ErrorProne
-        errorproneArgs.addAll(
+    with(options) {
+        encoding = "UTF-8"
+        release = runtimeJdk.intProvider
+
+        // Configure javac warnings
+        compilerArgs.addAll(
+            listOf(
+                "-Xlint:all", // Enable everything
+                // But silence some warnings we don't care about:
+                // - serial is triggered by Swing-extending classes, but these are never serialized in the app.
+                // - processing is too strict for the annotation processors we use.
+                "-Xlint:-serial,-processing",
+                "-Werror",  // Treat warnings as errors
+            )
+        )
+        errorprone {
+            // Configure ErrorProne
+            errorproneArgs.addAll(
                 "-Xep:JavaLangClash:OFF",
                 "-Xep:MissingSummary:OFF",
                 "-Xep:JavaUtilDate:OFF",
                 "-Xep:UnusedVariable:OFF", // Incompatible with Dagger-generated class
                 "-Xep:EmptyBlockTag:OFF",
-        )
-        // Configure NullAway
-        option("NullAway:AnnotatedPackages", "name.mlopatkin")
-        option("NullAway:AssertsEnabled", "true")
-        option("NullAway:ExcludedClassAnnotations", "javax.annotation.Generated,javax.annotation.processing.Generated")
-        option(
-            "NullAway:ExcludedFieldAnnotations",
-            listOf(
-                "org.checkerframework.checker.nullness.qual.MonotonicNonNull",
-                "org.mockito.Mock",
-                "org.mockito.Captor,org.mockito.Spy",
-                "org.junit.jupiter.api.io.TempDir"
-            ).joinToString(separator = ",")
-        )
-        errorproneArgs.add("-Xep:NullAway:ERROR")
+            )
+            // Configure NullAway
+            option("NullAway:AnnotatedPackages", "name.mlopatkin")
+            option("NullAway:AssertsEnabled", "true")
+            option(
+                "NullAway:ExcludedClassAnnotations",
+                annotations(
+                    "javax.annotation.Generated",
+                    "javax.annotation.processing.Generated"
+                )
+            )
+            option(
+                "NullAway:ExcludedFieldAnnotations",
+                annotations(
+                    "org.checkerframework.checker.nullness.qual.MonotonicNonNull",
+                    "org.junit.jupiter.api.io.TempDir",
+                    "org.mockito.Captor",
+                    "org.mockito.Mock",
+                    "org.mockito.Spy",
+                )
+            )
+            errorproneArgs.add("-Xep:NullAway:ERROR")
+        }
     }
 }
+
+private fun annotations(vararg annotations: String): String = annotations.joinToString(separator = ",")
