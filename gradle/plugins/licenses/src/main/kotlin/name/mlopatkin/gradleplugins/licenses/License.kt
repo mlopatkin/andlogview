@@ -19,93 +19,159 @@ package name.mlopatkin.gradleplugins.licenses
 import java.io.File
 import java.io.Serializable
 
+/**
+ * A License for the dependency
+ */
 sealed interface License : Serializable {
-    interface SourceLicense : License {
+    /**
+     * A license that can fetch some resources from the runtime JAR of the dependency.
+     */
+    sealed interface BinaryLicense : License {
+        /**
+         * Adds a notice from some resource.
+         *
+         * @see LicenseExtension.fromJar
+         * @see LicenseExtension.fromFile
+         */
+        fun withNotice(notice: Resource): BinaryLicense
+
+        /**
+         * Builds the license text
+         */
+        fun buildText(artifact: File): LicenseText
+    }
+
+    /**
+     * A license that can be built without looking into the runtime JAR.
+     */
+    sealed interface SourceLicense : BinaryLicense {
         fun withNotice(notice: Resource.SourceResource): SourceLicense
 
         fun buildText(): LicenseText
     }
 
-    interface BinaryLicense : License {
-        fun withNotice(notice: Resource): BinaryLicense
-
-        fun buildText(artifact: File): LicenseText
-    }
-
-    interface AnyLicense : SourceLicense, BinaryLicense {
-        override fun withNotice(notice: Resource.SourceResource): AnyLicense
-        override fun withNotice(notice: Resource): BinaryLicense
-    }
-
-    class WellKnown(override val name: String, override val spdxId: String) : AnyLicense, LicenseText {
-        override fun buildText(artifact: File) = this
-
-        override fun buildText(): LicenseText = this
-
-        override val text: String
-            get() = javaClass.getResourceAsStream(spdxId)?.use { it.bufferedReader().use { it.readText() } }
-                ?: throw IllegalArgumentException("Can't read text for $spdxId")
-
-        fun fromJar(pathInJar: String): BinaryLicense =
-            BinaryResourceBackedLicense(name, spdxId, listOf(Resource.fromJar(pathInJar)))
-
-        fun fromFile(path: File): AnyLicense = SourceResourceBackedLicense(name, spdxId, listOf(Resource.ofFile(path)))
-
-        override fun withNotice(notice: Resource.SourceResource): AnyLicense =
-            SourceResourceBackedLicense(name, spdxId, listOf(notice, Resource.ofText(text)))
-
-        override fun withNotice(notice: Resource): BinaryLicense =
-            BinaryResourceBackedLicense(name, spdxId, listOf(notice as Resource.BinaryResource, Resource.ofText(text)))
-    }
-
     companion object {
-        fun apache2(): WellKnown = WellKnown("Apache License Version 2.0", "Apache-2.0")
+        private class LicenseFactory(val name: String, val spdxId: String) {
+            fun sourceLicense(resource: Resource.SourceResource): SourceLicense {
+                return SourceResourceBackedLicense(name, spdxId, listOf(resource))
+            }
 
-        fun mit() = IncompleteLicense("MIT License", "MIT")
+            fun binaryLicense(resource: Resource): BinaryLicense {
+                return when (resource) {
+                    is Resource.SourceResource -> sourceLicense(resource)
+                    is Resource.BinaryResource -> BinaryResourceBackedLicense(name, spdxId, listOf(resource))
+                }
+            }
+        }
 
-        fun bsd3() = IncompleteLicense("BSD 3-Clause License", "BSD-3-Clause")
+        private val apache2 = LicenseFactory("Apache License Version 2.0", "Apache-2.0")
+        private val mit = LicenseFactory("MIT License", "MIT")
+        private val bsd3clause = LicenseFactory("BSD 3-Clause License", "BSD-3-Clause")
+        private val ccBy4 = LicenseFactory("CC BY 4.0", "CC-BY-4.0")
+        private val publicDomain = LicenseFactory("Public Domain", "X-PD")
 
-        fun ccBy4() = WellKnown("CC BY 4.0", "CC-BY-4.0")
+        /**
+         * An Apache License Version 2.0.
+         *
+         * @param resource optional custom text
+         */
+        fun apache2(resource: Resource.SourceResource = Resource.ofText(wellKnownText(apache2.spdxId))) =
+            apache2.sourceLicense(resource)
 
-        fun publicDomain() = IncompleteLicense("Public Domain", "PD")
-    }
+        /**
+         * An Apache License Version 2.0.
+         *
+         * @param resource custom text from a JAR
+         */
+        fun apache2(resource: Resource) = apache2.binaryLicense(resource)
 
-    /**
-     * Some licenses, like MIT, always have customized text that has to be provided separately.
-     */
-    class IncompleteLicense(private val name: String, private val spdxId: String) {
-        fun fromFile(path: File): AnyLicense = SourceResourceBackedLicense(name, spdxId, listOf(Resource.ofFile(path)))
+        /**
+         * MIT License.
+         *
+         * @param resource the license text
+         */
+        fun mit(resource: Resource.SourceResource) = mit.sourceLicense(resource)
 
-        fun fromJar(pathInJar: String): BinaryLicense =
-            BinaryResourceBackedLicense(name, spdxId, listOf(Resource.fromJar(pathInJar)))
+        /**
+         * MIT License.
+         *
+         * @param resource the license text
+         */
+        fun mit(resource: Resource) = mit.binaryLicense(resource)
+
+        /**
+         * BSD 3-Clause License.
+         *
+         * @param resource the license text
+         */
+        fun bsd3(resource: Resource.SourceResource) = bsd3clause.sourceLicense(resource)
+
+        /**
+         * BSD 3-Clause License.
+         *
+         * @param resource the license text
+         */
+        fun bsd3(resource: Resource) = bsd3clause.binaryLicense(resource)
+
+        /**
+         * Creative Commons Attribution 4.0
+         *
+         * @param resource the license text
+         */
+        // TODO(mlopatkin) The text can be optional?
+        fun ccBy4(resource: Resource.SourceResource) = ccBy4.sourceLicense(resource)
+        /**
+         * Creative Commons Attribution 4.0
+         *
+         * @param resource the license text
+         */
+        fun ccBy4(resource: Resource) = ccBy4.binaryLicense(resource)
+
+        /**
+         * Public Domain
+         *
+         * @param resource the license text
+         */
+        fun publicDomain(resource: Resource.SourceResource) = publicDomain.sourceLicense(resource)
+
+        /**
+         * Public Domain
+         *
+         * @param resource the license text
+         */
+        fun publicDomain(resource: Resource) = publicDomain.binaryLicense(resource)
+
+        private fun wellKnownText(spdxId: String): String {
+            return License::class.java.getResourceAsStream(spdxId)?.use {
+                it.bufferedReader().use { reader ->
+                    reader.readText()
+                }
+            } ?: throw IllegalArgumentException("Can't read text for $spdxId")
+        }
     }
 
     private class SourceResourceBackedLicense(
         private val name: String,
         private val spdxId: String,
         private val fileResources: List<Resource.SourceResource>
-    ) : AnyLicense {
+    ) : SourceLicense {
         override fun buildText(): LicenseText {
             val buffer = StringBuilder()
             fileResources.forEach {
                 buffer.appendLine(it.load())
             }
 
-            return object : LicenseText {
-                override val name: String = this@SourceResourceBackedLicense.name
-                override val spdxId: String = this@SourceResourceBackedLicense.spdxId
-                override val text: String = buffer.toString()
-            }
+            return LicenseText(name, spdxId, buffer.toString())
         }
 
-        override fun withNotice(notice: Resource.SourceResource): AnyLicense {
+        override fun withNotice(notice: Resource.SourceResource): SourceLicense {
             return SourceResourceBackedLicense(name, spdxId, fileResources + notice)
         }
 
         override fun withNotice(notice: Resource): BinaryLicense {
             return when (notice) {
                 is Resource.SourceResource -> withNotice(notice)
-                is Resource.BinaryResource -> TODO()
+                is Resource.BinaryResource -> BinaryResourceBackedLicense(name, spdxId, fileResources + notice)
             }
         }
 
@@ -131,11 +197,7 @@ sealed interface License : Serializable {
                 buffer.appendLine(it.loadFromBinary(artifact))
             }
 
-            return object : LicenseText {
-                override val name: String = this@BinaryResourceBackedLicense.name
-                override val spdxId: String = this@BinaryResourceBackedLicense.spdxId
-                override val text: String = buffer.toString()
-            }
+            return LicenseText(name, spdxId, buffer.toString())
         }
     }
 }

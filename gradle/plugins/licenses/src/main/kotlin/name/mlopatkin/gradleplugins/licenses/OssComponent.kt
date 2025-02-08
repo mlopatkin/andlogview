@@ -25,11 +25,14 @@ import java.net.URI
 import java.util.SortedSet
 import java.util.TreeSet
 
-interface LicenseText {
-    val name: String
-    val spdxId: String
-    val text: String
-}
+/**
+ * The combined text of the license with all notices.
+ */
+class LicenseText(
+    val name: String,
+    val spdxId: String,
+    val text: String,
+)
 
 class OssComponent(
     val displayName: String,

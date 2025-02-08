@@ -59,4 +59,8 @@ internal abstract class LicenseExtensionImpl : LicenseExtension {
     override fun fromFile(path: String): Resource.SourceResource {
         return Resource.ofFile(layout.projectDirectory.file(path).asFile)
     }
+
+    override fun fromJar(path: String): Resource.BinaryResource {
+        return Resource.fromJar(path)
+    }
 }

@@ -156,7 +156,7 @@ licenses {
         "jakarta.inject:jakarta.inject-api",
         "Jakarta Dependency Injection",
         uri("https://github.com/eclipse-ee4j/injection-api"),
-        License.apache2().fromJar("META-INF/LICENSE.txt").withNotice(Resource.fromJar("META-INF/NOTICE.md"))
+        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(Resource.fromJar("META-INF/NOTICE.md"))
     )
     binaryDependency(
         "javax.inject:javax.inject",
@@ -169,46 +169,46 @@ licenses {
         libs.ddmlib,
         "Android Tools ddmlib",
         uri("http://tools.android.com/"),
-        License.apache2().fromJar("NOTICE") // NOTICE includes the license
+        License.apache2(fromJar("NOTICE")) // NOTICE includes the license
     )
     binaryDependency(
         "com.android.tools:annotations",
         "com.android.tools.annotations",
         uri("http://tools.android.com/"),
-        License.apache2().fromJar("NOTICE") // NOTICE includes the license
+        License.apache2(fromJar("NOTICE")) // NOTICE includes the license
     )
     binaryDependency(
         "com.android.tools:common",
         "com.android.tools.common",
         uri("http://tools.android.com/"),
-        License.apache2().fromJar("NOTICE") // NOTICE includes the license
+        License.apache2(fromJar("NOTICE")) // NOTICE includes the license
     )
     binaryDependency(
         "net.sf.kxml:kxml2",
         "kXML 2",
         uri("http://kxml.sourceforge.net/"),
-        License.mit().fromFile(file("third-party/libs/notices/net.sf.kxml.kxml2.LICENSE"))
+        License.mit(fromFile("third-party/libs/notices/net.sf.kxml.kxml2.LICENSE"))
     )
 
     binaryDependency(
         libs.flatlaf.core,
         "FlatLaf",
         uri("https://github.com/JFormDesigner/FlatLaf"),
-        License.apache2().fromJar("META-INF/LICENSE")
+        License.apache2(fromJar("META-INF/LICENSE"))
     )
 
     binaryDependency(
         libs.flatlaf.extras,
         "FlatLaf Extras",
         uri("https://github.com/JFormDesigner/FlatLaf"),
-        License.apache2().fromJar("META-INF/LICENSE")
+        License.apache2(fromJar("META-INF/LICENSE"))
     )
 
     binaryDependency(
         "com.github.weisj:jsvg",
         "Jsvg",
         uri("https://github.com/weisJ/jsvg"),
-        License.mit().fromJar("META-INF/LICENSE")
+        License.mit(fromJar("META-INF/LICENSE"))
     )
 
     binaryDependency(
@@ -222,7 +222,7 @@ licenses {
         libs.guava,
         "Guava: Google Core Libraries for Java",
         uri("https://github.com/google/guava"),
-        License.apache2().fromJar("META-INF/LICENSE")
+        License.apache2(fromJar("META-INF/LICENSE"))
     )
     binaryDependency(
         "com.google.guava:failureaccess",
@@ -235,33 +235,33 @@ licenses {
         libs.jopt,
         "JOpt Simple",
         uri("http://jopt-simple.github.io/jopt-simple"),
-        License.mit().fromFile(file("third-party/libs/notices/net.sf.jopt-simple.LICENSE"))
+        License.mit(fromFile("third-party/libs/notices/net.sf.jopt-simple.LICENSE"))
     )
 
     binaryDependency(
         libs.miglayout,
         "MiGLayout Swing",
         uri("http://www.miglayout.com/"),
-        License.bsd3().fromFile(file("third-party/libs/notices/com.miglayout.miglayout-swing.LICENSE"))
+        License.bsd3(fromFile("third-party/libs/notices/com.miglayout.miglayout-swing.LICENSE"))
     )
     binaryDependency(
         "com.miglayout:miglayout-core",
         "MiGLayout Core",
         uri("http://www.miglayout.com/"),
-        License.bsd3().fromFile(file("third-party/libs/notices/com.miglayout.miglayout-core.LICENSE"))
+        License.bsd3(fromFile("third-party/libs/notices/com.miglayout.miglayout-core.LICENSE"))
     )
 
     binaryDependency(
         libs.slf4j.api,
         "SLF4J API Module",
         uri("http://www.slf4j.org/"),
-        License.mit().fromJar("META-INF/LICENSE.txt")
+        License.mit(fromJar("META-INF/LICENSE.txt"))
     )
     binaryDependency(
         libs.slf4j.reload4j,
         "SLF4J Reload4j Provider",
         uri("http://reload4j.qos.ch/"),
-        License.mit().fromJar("META-INF/LICENSE.txt")
+        License.mit(fromJar("META-INF/LICENSE.txt"))
     )
     binaryDependency(
         libs.log4j,
@@ -275,7 +275,7 @@ licenses {
         "Chromium",
         "Chromium",
         uri("https://www.chromium.org/Home/"),
-        License.bsd3().fromFile(file("base/third-party/observerList/LICENSE"))
+        License.bsd3(fromFile("base/third-party/observerList/LICENSE"))
     )
 
     sourceDependency(
@@ -291,7 +291,7 @@ licenses {
         "android",
         "Android Open Source Project",
         uri("https://source.android.com"),
-        License.apache2().fromFile(file("device/third-party/versionCodes/NOTICE"))
+        License.apache2(fromFile("device/third-party/versionCodes/NOTICE"))
     )
 
     sourceDependency(
@@ -299,7 +299,7 @@ licenses {
         "fontAwesome",
         "Font Awesome",
         uri("https://fontawesome.com"),
-        License.ccBy4().fromFile(file("third-party/fontawesomeIcons/NOTICE"))
+        License.ccBy4(fromFile("third-party/fontawesomeIcons/NOTICE"))
     )
 
     sourceDependency(
@@ -307,7 +307,7 @@ licenses {
         "tango",
         "Tango Desktop Project",
         uri("http://tango.freedesktop.org/Tango_Desktop_Project"),
-        License.publicDomain().fromFile(file("third-party/tangoIcons/NOTICE"))
+        License.publicDomain(fromFile("third-party/tangoIcons/NOTICE"))
     )
 
     sourceDependency(
@@ -315,7 +315,7 @@ licenses {
         "lightFlatTheme",
         "Light Flat Theme",
         uri("https://github.com/nerzhulart/LightFlatTheme"),
-        License.mit().fromFile(file("third-party/themes/NOTICE"))
+        License.mit(fromFile("third-party/themes/NOTICE"))
     )
 }
 
