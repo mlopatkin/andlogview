@@ -34,7 +34,7 @@ class LicenseText(
     val text: String,
 )
 
-class OssComponent(
+internal class OssComponent(
     val displayName: String,
     val version: String,
     val homepage: URI,
@@ -66,7 +66,7 @@ class OssComponent(
     override fun compareTo(other: OssComponent): Int = displayName.compareTo(other.displayName)
 }
 
-fun buildOssComponents(
+internal fun buildOssComponents(
     artifacts: Collection<ResolvedArtifactResult>,
     licensedComponents: Collection<LicensedComponent>
 ): SortedSet<OssComponent> {

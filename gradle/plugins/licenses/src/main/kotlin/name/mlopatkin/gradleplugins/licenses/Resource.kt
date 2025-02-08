@@ -54,9 +54,9 @@ sealed interface Resource : Serializable {
     }
 
     companion object {
-        fun ofFile(path: File): SourceResource = FileResource(path)
-        fun fromJar(pathInJar: String): BinaryResource = JarResource(pathInJar)
-        fun ofText(text: String): SourceResource = TextResource(text)
+        internal fun ofFile(path: File): SourceResource = FileResource(path)
+        internal fun fromJar(pathInJar: String): BinaryResource = JarResource(pathInJar)
+        internal fun ofText(text: String): SourceResource = TextResource(text)
     }
 }
 

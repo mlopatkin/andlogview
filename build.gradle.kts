@@ -20,7 +20,6 @@ import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
 import name.mlopatkin.bitbucket.gradle.UploadTask
 import name.mlopatkin.gradleplugins.licenses.License
-import name.mlopatkin.gradleplugins.licenses.Resource
 
 plugins {
     application
@@ -156,7 +155,7 @@ licenses {
         "jakarta.inject:jakarta.inject-api",
         "Jakarta Dependency Injection",
         uri("https://github.com/eclipse-ee4j/injection-api"),
-        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(Resource.fromJar("META-INF/NOTICE.md"))
+        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(fromJar("META-INF/NOTICE.md"))
     )
     binaryDependency(
         "javax.inject:javax.inject",
@@ -267,7 +266,7 @@ licenses {
         libs.log4j,
         "reload4j",
         uri("https://reload4j.qos.ch/"),
-        License.apache2().withNotice(Resource.fromJar("META-INF/NOTICE"))
+        License.apache2().withNotice(fromJar("META-INF/NOTICE"))
     )
 
     sourceDependency(
