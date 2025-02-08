@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.about;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.net.URI;
 
 class OssComponent implements Comparable<OssComponent> {
@@ -25,18 +23,15 @@ class OssComponent implements Comparable<OssComponent> {
     private final String name;
     private final String version;
     private final URI homepage;
-    private final @Nullable String scope;
 
     private final String license;
     private final String licenseText;
 
-    public OssComponent(int id, String name, String version, URI homepage, @Nullable String scope, String license,
-            String licenseText) {
+    public OssComponent(int id, String name, String version, URI homepage, String license, String licenseText) {
         this.id = id;
         this.name = name;
         this.version = version;
         this.homepage = homepage;
-        this.scope = scope;
         this.license = license;
         this.licenseText = licenseText;
     }
@@ -55,10 +50,6 @@ class OssComponent implements Comparable<OssComponent> {
 
     public URI getHomepage() {
         return homepage;
-    }
-
-    public @Nullable String getScope() {
-        return scope;
     }
 
     public String getLicense() {

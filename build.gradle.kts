@@ -15,11 +15,12 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import name.mlopatkin.andlogview.building.GenerateNotices
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
 import name.mlopatkin.bitbucket.gradle.UploadTask
+import name.mlopatkin.gradleplugins.licenses.License
+import name.mlopatkin.gradleplugins.licenses.Resource
 
 plugins {
     application
@@ -32,6 +33,7 @@ plugins {
     id("name.mlopatkin.andlogview.building.java-conventions")
     id("name.mlopatkin.andlogview.building.metadata")
     id("name.mlopatkin.gradleplugins.jpackage")
+    id("name.mlopatkin.gradleplugins.licenses")
 }
 
 dependencies {
@@ -141,24 +143,200 @@ buildMetadata {
     version = provider { project.version.toString() }
 }
 
-val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
-    bundledDependencies = configurations.runtimeClasspath.flatMap { rtCp ->
-        rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
-            artifacts.map { artifact -> artifact.id.componentIdentifier }
-                .filterIsInstance<ModuleComponentIdentifier>()
-        }
-    }
-    libraryNoticesDirectory = file("third-party/libs/notices")
-    sourceFilesNotices.from(
-        "assets/NOTICE",
-        "base/third-party/observerList/NOTICE",
-        "base/third-party/systemUtils/NOTICE",
-        "device/third-party/versionCodes/NOTICE",
-        "third-party/fontawesomeIcons/NOTICE",
-        "third-party/tangoIcons/NOTICE",
-        "third-party/themes/NOTICE",
+licenses {
+    configuration = configurations.runtimeClasspath
+
+    binaryDependency(
+        libs.dagger.runtime,
+        "Dagger",
+        uri("https://dagger.dev"),
+        License.apache2()
+    )
+    binaryDependency(
+        "jakarta.inject:jakarta.inject-api",
+        "Jakarta Dependency Injection",
+        uri("https://github.com/eclipse-ee4j/injection-api"),
+        License.apache2().fromJar("META-INF/LICENSE.txt").withNotice(Resource.fromJar("META-INF/NOTICE.md"))
+    )
+    binaryDependency(
+        "javax.inject:javax.inject",
+        "javax.inject",
+        uri("http://code.google.com/p/atinject/"),
+        License.apache2()
+    )
+
+    binaryDependency(
+        libs.ddmlib,
+        "Android Tools ddmlib",
+        uri("http://tools.android.com/"),
+        License.apache2().fromJar("NOTICE") // NOTICE includes the license
+    )
+    binaryDependency(
+        "com.android.tools:annotations",
+        "com.android.tools.annotations",
+        uri("http://tools.android.com/"),
+        License.apache2().fromJar("NOTICE") // NOTICE includes the license
+    )
+    binaryDependency(
+        "com.android.tools:common",
+        "com.android.tools.common",
+        uri("http://tools.android.com/"),
+        License.apache2().fromJar("NOTICE") // NOTICE includes the license
+    )
+    binaryDependency(
+        "net.sf.kxml:kxml2",
+        "kXML 2",
+        uri("http://kxml.sourceforge.net/"),
+        License.mit().fromFile(file("third-party/libs/notices/net.sf.kxml.kxml2.LICENSE"))
+    )
+
+    binaryDependency(
+        libs.flatlaf.core,
+        "FlatLaf",
+        uri("https://github.com/JFormDesigner/FlatLaf"),
+        License.apache2().fromJar("META-INF/LICENSE")
+    )
+
+    binaryDependency(
+        libs.flatlaf.extras,
+        "FlatLaf Extras",
+        uri("https://github.com/JFormDesigner/FlatLaf"),
+        License.apache2().fromJar("META-INF/LICENSE")
+    )
+
+    binaryDependency(
+        "com.github.weisj:jsvg",
+        "Jsvg",
+        uri("https://github.com/weisJ/jsvg"),
+        License.mit().fromJar("META-INF/LICENSE")
+    )
+
+    binaryDependency(
+        libs.gson,
+        "Gson",
+        uri("https://github.com/google/gson"),
+        License.apache2()
+    )
+
+    binaryDependency(
+        libs.guava,
+        "Guava: Google Core Libraries for Java",
+        uri("https://github.com/google/guava"),
+        License.apache2().fromJar("META-INF/LICENSE")
+    )
+    binaryDependency(
+        "com.google.guava:failureaccess",
+        "Guava InternalFutureFailureAccess and InternalFutures",
+        uri("https://github.com/google/guava/failureaccess"),
+        License.apache2()
+    )
+
+    binaryDependency(
+        libs.jopt,
+        "JOpt Simple",
+        uri("http://jopt-simple.github.io/jopt-simple"),
+        License.mit().fromFile(file("third-party/libs/notices/net.sf.jopt-simple.LICENSE"))
+    )
+
+    binaryDependency(
+        libs.miglayout,
+        "MiGLayout Swing",
+        uri("http://www.miglayout.com/"),
+        License.bsd3().fromFile(file("third-party/libs/notices/com.miglayout.miglayout-swing.LICENSE"))
+    )
+    binaryDependency(
+        "com.miglayout:miglayout-core",
+        "MiGLayout Core",
+        uri("http://www.miglayout.com/"),
+        License.bsd3().fromFile(file("third-party/libs/notices/com.miglayout.miglayout-core.LICENSE"))
+    )
+
+    binaryDependency(
+        libs.slf4j.api,
+        "SLF4J API Module",
+        uri("http://www.slf4j.org/"),
+        License.mit().fromJar("META-INF/LICENSE.txt")
+    )
+    binaryDependency(
+        libs.slf4j.reload4j,
+        "SLF4J Reload4j Provider",
+        uri("http://reload4j.qos.ch/"),
+        License.mit().fromJar("META-INF/LICENSE.txt")
+    )
+    binaryDependency(
+        libs.log4j,
+        "reload4j",
+        uri("https://reload4j.qos.ch/"),
+        License.apache2().withNotice(Resource.fromJar("META-INF/NOTICE"))
+    )
+
+    sourceDependency(
+        "name/mlopatkin/andlogview/thirdparty/observerlist/ObserverList.java",
+        "Chromium",
+        "Chromium",
+        uri("https://www.chromium.org/Home/"),
+        License.bsd3().fromFile(file("base/third-party/observerList/LICENSE"))
+    )
+
+    sourceDependency(
+        "name/mlopatkin/andlogview/thirdparty/systemutils/SystemUtils.java",
+        "org.apache.commons:commons-lang3:3.2",
+        "Apache Commons Lang",
+        uri("https://commons.apache.org/proper/commons-lang/"),
+        License.apache2().withNotice(fromFile("base/third-party/systemUtils/NOTICE"))
+    )
+
+    sourceDependency(
+        "name/mlopatkin/andlogview/thirdparty/device/AndroidVersionCodes.java",
+        "android",
+        "Android Open Source Project",
+        uri("https://source.android.com"),
+        License.apache2().fromFile(file("device/third-party/versionCodes/NOTICE"))
+    )
+
+    sourceDependency(
+        "name/mlopatkin/andlogview/ui/icons/fontawesome/*.svg",
+        "fontAwesome",
+        "Font Awesome",
+        uri("https://fontawesome.com"),
+        License.ccBy4().fromFile(file("third-party/fontawesomeIcons/NOTICE"))
+    )
+
+    sourceDependency(
+        "name/mlopatkin/andlogview/ui/icons/legacy/*.png",
+        "tango",
+        "Tango Desktop Project",
+        uri("http://tango.freedesktop.org/Tango_Desktop_Project"),
+        License.publicDomain().fromFile(file("third-party/tangoIcons/NOTICE"))
+    )
+
+    sourceDependency(
+        "name/mlopatkin/andlogview/ui/themes/LightFlatTheme.theme.json",
+        "lightFlatTheme",
+        "Light Flat Theme",
+        uri("https://github.com/nerzhulart/LightFlatTheme"),
+        License.mit().fromFile(file("third-party/themes/NOTICE"))
     )
 }
+
+//val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
+//    bundledDependencies = configurations.runtimeClasspath.flatMap { rtCp ->
+//        rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
+//            artifacts.map { artifact -> artifact.id.componentIdentifier }
+//                .filterIsInstance<ModuleComponentIdentifier>()
+//        }
+//    }
+//    libraryNoticesDirectory = file("third-party/libs/notices")
+//    sourceFilesNotices.from(
+//        "assets/NOTICE",
+//        "base/third-party/observerList/NOTICE",
+//        "base/third-party/systemUtils/NOTICE",
+//        "device/third-party/versionCodes/NOTICE",
+//        "third-party/fontawesomeIcons/NOTICE",
+//        "third-party/tangoIcons/NOTICE",
+//        "third-party/themes/NOTICE",
+//    )
+//}
 
 // Configure distribution (archive creation).
 distributions {
@@ -182,7 +360,7 @@ tasks.shadowDistZip.configure {
 // - simply listing from/include in contents completely replaces the archive content
 val additionalFiles = copySpec {
     from(projectDir)
-    from(generateNotices.flatMap { it.outputNoticeFile })
+    from(tasks.generateNotices.flatMap { it.noticeOutputFile })
     include("AUTHORS.md", "HISTORY", "LICENSE", "NOTICE", "README.md")
 }
 distributions.all { contents.with(additionalFiles) }
@@ -260,7 +438,8 @@ installers {
         icon = file("assets/andlogview.32.png")
 
         installerOptions = listOf(
-            "--description", "Visual Log Viewer for Android logcat\n  " +
+            "--description",
+            "Visual Log Viewer for Android logcat\n  " +
                     "AndLogView displays logs from a file or live from a connected device. " +
                     "Advanced filtering and search capabilities to navigate long and noisy logs.",
             "--linux-deb-maintainer", "me@mlopatkin.name",
@@ -293,7 +472,8 @@ installers {
         icon = file("assets/andlogview.icns")
 
         installerOptions = listOf(
-            "--description", "Visual Log Viewer for Android logcat\n  " +
+            "--description",
+            "Visual Log Viewer for Android logcat\n  " +
                     "AndLogView displays logs from a file or live from a connected device. " +
                     "Advanced filtering and search capabilities to navigate long and noisy logs.",
         )

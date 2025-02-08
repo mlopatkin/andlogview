@@ -17,6 +17,7 @@
 pluginManagement {
     includeBuild("gradle/plugins/freemarker")
     includeBuild("gradle/plugins/jpackage")
+    includeBuild("gradle/plugins/licenses")
 }
 
 dependencyResolutionManagement {

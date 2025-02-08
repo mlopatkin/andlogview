@@ -16,8 +16,13 @@
 
 package name.mlopatkin.andlogview.ui.about;
 
-import com.google.common.collect.ImmutableList;
+import name.mlopatkin.andlogview.base.AppResources;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -25,6 +30,14 @@ import java.util.List;
  */
 class OssComponents {
     public List<OssComponent> getComponents() {
-        return ImmutableList.of();
+        var gson = new Gson();
+        try {
+            return gson.fromJson(
+                    AppResources.getResource("ui/about/licenses.json").asCharSource(StandardCharsets.UTF_8).read(),
+                    new TypeToken<>() {}
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
