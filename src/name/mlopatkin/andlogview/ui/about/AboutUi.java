@@ -146,7 +146,7 @@ public class AboutUi extends JDialog {
     private void open(URI target) {
         if ("andlogview".equalsIgnoreCase(target.getScheme()) && "licenses".equalsIgnoreCase(
                 target.getSchemeSpecificPart())) {
-            new LicensesUi(this).setVisible(true);
+            new LicensesUi(this, new OssComponents()).setVisible(true);
         }
     }
 

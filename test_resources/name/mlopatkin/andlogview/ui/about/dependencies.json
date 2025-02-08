@@ -1,0 +1,39 @@
+[
+  {
+    "id": 0,
+    "name": "Eclipse Jakarta Dependency Injection",
+    "version": "2.0.1",
+    "homepage": "https://example.org/jakarta",
+    "license": "Apache License Version 2.0",
+    "spdx": "Apache-2.0",
+    "licenseText": "ASL 2.0 text with Jakarta NOTICE"
+  },
+  {
+    "id": 1,
+    "name": "Apache Commons Lang3",
+    "version": "3.2",
+    "homepage": "https://example.org/lang3",
+    "scope": "base/third-party/systemUtils",
+    "license": "Apache License Version 2.0",
+    "spdx": "Apache-2.0",
+    "licenseText": "ASL 2.0 text with lang3 NOTICE"
+  },
+  {
+    "id": 2,
+    "name": "JSVG",
+    "version": "1.4.0",
+    "homepage": "https://example.org/jsvg",
+    "license": "MIT License",
+    "spdx": "MIT",
+    "licenseText": "MIT License text for JSVG"
+  },
+  {
+    "id": 3,
+    "name": "JOpt-simple",
+    "version": "5.0.4",
+    "homepage": "https://example.org/jopt",
+    "license": "MIT License",
+    "spdx": "MIT",
+    "licenseText": "MIT License text for JOPT-Simple"
+  }
+]

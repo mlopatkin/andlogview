@@ -21,6 +21,8 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
 import name.mlopatkin.andlogview.BuildInfo;
 import name.mlopatkin.andlogview.Main;
+import name.mlopatkin.andlogview.utils.MyFutures;
+import name.mlopatkin.andlogview.widgets.LinkOpener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -29,34 +31,45 @@ import java.awt.Window;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
 
-public class LicensesUi extends JDialog {
-    public LicensesUi(Window owner) {
+class LicensesUi extends JDialog {
+    public LicensesUi(Window owner, OssComponents ossComponents) {
         super(owner, "List of third-party libraries used in " + Main.APP_NAME + " " + BuildInfo.VERSION,
                 ModalityType.APPLICATION_MODAL);
 
         var content = getContentPane();
+        // Max height is to prevent the dialog from growing too tall.
         content.setLayout(new MigLayout(
-                LC().insets("dialog").wrapAfter(1).fillX().width("400lp"))
+                LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"))
         );
 
-        var text = new JEditorPane("text/html", """
+        var thirdPartyComponents = new StringBuilder("""
                 <html>
                 <table>
                 <tr>
                 <th>Component</th>
+                <th>Version</th>
                 <th>License</th>
                 </tr>
-                <tr>
-                <td><a href="https://adoptium.net/">Eclipse Temurin Java Runtime</a></td>
-                <td>GPL v2</td>
-                </tr>
+                """);
+
+        for (var component : ossComponents.getComponents()) {
+            appendComponent(thirdPartyComponents, component);
+        }
+
+        var text = new JEditorPane("text/html", thirdPartyComponents + """
                 </table>
                 </html>
                 """);
         text.setEditable(false);
+        text.addHyperlinkListener(new LinkOpener((url, failure) -> MyFutures.uncaughtException(failure)));
 
-        content.add(text, CC().grow().wrap("push"));
+        var scrollPane = new JScrollPane(text);
+        // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
+        // appears.
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        content.add(scrollPane, CC().grow().wrap("push"));
 
         var okButton = new JButton("OK");
         okButton.addActionListener(e -> dispose());
@@ -66,5 +79,28 @@ public class LicensesUi extends JDialog {
         pack();
         setMinimumSize(getSize());
         setLocationRelativeTo(getParent());
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    }
+
+    private StringBuilder appendComponent(StringBuilder builder, OssComponent component) {
+        builder.append("<tr>");
+
+        builder.append("<td>");
+        builder.append("<a href=\"").append(component.getHomepage().toASCIIString()).append("\">");
+        builder.append(component.getName());
+        builder.append("</a>");
+        builder.append("</td>");
+
+        builder.append("<td>").append(component.getVersion()).append("</td>");
+
+        builder.append("<td>");
+        builder.append("<a href=\"andlogview://licenses/").append(component.getId()).append("\">");
+        builder.append(component.getLicense());
+        builder.append("</a>");
+        builder.append("</td>");
+
+        builder.append("</tr>");
+
+        return builder;
     }
 }
