@@ -21,6 +21,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import java.util.Locale
 
 abstract class GenerateLicensesListJson : BaseLicenseTask() {
     @get:OutputFile
@@ -46,7 +47,7 @@ abstract class GenerateLicensesListJson : BaseLicenseTask() {
                 cs.size == 1 -> cs.single()
                 else -> merge(cs)
             }
-        }
+        }.toSortedSet(Comparator.comparing { it.displayName.lowercase(Locale.ENGLISH) })
 
         json(outputJsonFile.asFile) {
             jsonArray {
