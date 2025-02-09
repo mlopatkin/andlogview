@@ -36,7 +36,10 @@ abstract class GenerateLicensesListJson : BaseLicenseTask() {
         licensedComponents: List<LicensedComponent>,
         outputJsonFile: RegularFile
     ) {
-        val components = buildOssComponents(bundledDependencies, licensedComponents)
+        val components = buildOssComponents(
+            bundledDependencies,
+            licensedComponents
+        ).toSortedSet(Comparator.comparing { c -> c.displayName })
 
         json(outputJsonFile.asFile) {
             jsonArray {

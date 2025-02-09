@@ -22,8 +22,7 @@ import name.mlopatkin.gradleplugins.licenses.LicensedComponent.LicensedSource
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
 import java.net.URI
-import java.util.SortedSet
-import java.util.TreeSet
+import java.util.Objects
 
 /**
  * The combined text of the license with all notices.
@@ -34,21 +33,33 @@ class LicenseText(
     val text: String,
 )
 
+internal fun Appendable.appendNoticeHeader(noticeScope: String) {
+    appendLine(
+        """
+========================================================================================================================
+NOTICE for $noticeScope
+------------------------------------------------------------------------------------------------------------------------
+""".trimIndent()
+    )
+}
+
 internal class OssComponent(
     val displayName: String,
     val version: String,
     val homepage: URI,
     val scope: String,
     val licenseText: LicenseText,
-) : Comparable<OssComponent> {
+) {
     fun appendToNotice(noticeFile: Appendable) {
-        noticeFile.appendLine(
-            """
-        ========================================================================================================================
-        NOTICE for $displayName ($scope)
-        ------------------------------------------------------------------------------------------------------------------------
-        """.trimIndent()
-        )
+        noticeFile.appendNoticeHeader("$displayName ($scope)")
+        noticeFile.append(licenseText.text)
+    }
+
+    fun appendToNoticeScope(noticeFile: Appendable) {
+        val subHeader = "License terms for $displayName"
+        val underline = "-".repeat(subHeader.length)
+
+        noticeFile.appendLine(subHeader).appendLine(underline).appendLine()
         noticeFile.append(licenseText.text)
     }
 
@@ -63,13 +74,23 @@ internal class OssComponent(
         "licenseText" jsonTo licenseText.text
     }
 
-    override fun compareTo(other: OssComponent): Int = displayName.compareTo(other.displayName)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other is OssComponent) {
+            return displayName == other.displayName && scope == other.scope
+        }
+        return false
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(displayName, scope)
+    }
 }
 
 internal fun buildOssComponents(
     artifacts: Collection<ResolvedArtifactResult>,
     licensedComponents: Collection<LicensedComponent>
-): SortedSet<OssComponent> {
+): Set<OssComponent> {
     val result = OssComponentsBuildResult(artifacts, licensedComponents)
 
     require(result.isValid) {
@@ -101,7 +122,7 @@ private class OssComponentsBuildResult(
     val artifactsWithoutLicense: Set<ModuleKey>
     val unusedComponents: Set<ModuleKey>
 
-    val components: SortedSet<OssComponent>
+    val components: Set<OssComponent>
 
     val isValid
         get() = artifactsWithoutLicense.isEmpty() && unusedComponents.isEmpty()
@@ -146,7 +167,7 @@ private class OssComponentsBuildResult(
             result.add(OssComponent(it.name, "n/a", it.homepage, "file: ${it.scope}", it.license.buildText()))
         }
 
-        components = TreeSet(result)
+        components = HashSet(result)
     }
 }
 

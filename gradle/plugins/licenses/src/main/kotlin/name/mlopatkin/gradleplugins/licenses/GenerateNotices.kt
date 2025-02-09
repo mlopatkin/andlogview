@@ -36,11 +36,19 @@ abstract class GenerateNotices : BaseLicenseTask() {
         licensedComponents: List<LicensedComponent>,
         noticeOutputFile: RegularFile
     ) {
-        val components = buildOssComponents(bundledDependencies, licensedComponents)
+        val components = buildOssComponents(bundledDependencies, licensedComponents).groupBy { it.scope }
 
         noticeOutputFile.asFile.bufferedWriter().use { output ->
-            components.forEach {
-                it.appendToNotice(output)
+            components.keys.sorted().forEach { scope ->
+                val scopedComponents = components[scope]!!
+                if (scopedComponents.size == 1) {
+                    scopedComponents.single().appendToNotice(output)
+                } else {
+                    output.appendNoticeHeader(scope)
+                    scopedComponents.sortedBy { it.displayName }.forEach { component ->
+                        component.appendToNoticeScope(output)
+                    }
+                }
             }
         }
     }
