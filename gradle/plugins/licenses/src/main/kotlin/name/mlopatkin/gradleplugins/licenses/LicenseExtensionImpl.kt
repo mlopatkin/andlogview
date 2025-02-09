@@ -46,7 +46,6 @@ internal abstract class LicenseExtensionImpl : LicenseExtension {
 
     override fun sourceDependency(
         scope: String,
-        gav: String,
         displayName: String,
         homepage: URI,
         license: License.SourceLicense

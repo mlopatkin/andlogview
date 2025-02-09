@@ -85,12 +85,11 @@ interface LicenseExtension {
      * Defines the metadata for a dependency that exists as sources.
      *
      * @param scope the resources that this dependency provides (e.g. source files)
-     * @param gav the GAV coordinates of the original artifact from which this dependency was taken from
      * @param displayName the user-visible name of the dependency
      * @param homepage the home page of the dependency
      * @param license the license of the dependency. Cannot refer to resource from JAR because there is no JAR
      */
-    fun sourceDependency(scope: String, gav: String, displayName: String, homepage: URI, license: License.SourceLicense)
+    fun sourceDependency(scope: String, displayName: String, homepage: URI, license: License.SourceLicense)
 
     /**
      * A resource that will be loaded from the given file. The path is resolved according to [Project.file].

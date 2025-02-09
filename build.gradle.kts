@@ -272,7 +272,6 @@ licenses {
     sourceDependency(
         "name/mlopatkin/andlogview/thirdparty/observerlist/ObserverList.java",
         "Chromium",
-        "Chromium",
         uri("https://www.chromium.org/Home/"),
         License.bsd3(fromFile("base/third-party/observerList/LICENSE"))
             .withNotice(fromFile("base/third-party/observerList/NOTICE"))
@@ -280,7 +279,6 @@ licenses {
 
     sourceDependency(
         "name/mlopatkin/andlogview/thirdparty/systemutils/SystemUtils.java",
-        "org.apache.commons:commons-lang3:3.2",
         "Apache Commons Lang",
         uri("https://commons.apache.org/proper/commons-lang/"),
         License.apache2().withNotice(fromFile("base/third-party/systemUtils/NOTICE"))
@@ -288,7 +286,6 @@ licenses {
 
     sourceDependency(
         "name/mlopatkin/andlogview/thirdparty/device/AndroidVersionCodes.java",
-        "android",
         "Android Open Source Project",
         uri("https://source.android.com"),
         License.apache2(fromFile("device/third-party/versionCodes/NOTICE"))
@@ -296,7 +293,6 @@ licenses {
 
     sourceDependency(
         "name/mlopatkin/andlogview/ui/icons/fontawesome/*.svg",
-        "fontAwesome",
         "Font Awesome",
         uri("https://fontawesome.com"),
         License.ccBy4(fromFile("third-party/fontawesomeIcons/LICENSE"))
@@ -304,7 +300,6 @@ licenses {
 
     sourceDependency(
         "name/mlopatkin/andlogview/ui/icons/legacy/*.png",
-        "tango",
         "Tango Desktop Project",
         uri("http://tango.freedesktop.org/Tango_Desktop_Project"),
         License.publicDomain(fromFile("third-party/tangoIcons/LICENSE"))
@@ -312,7 +307,6 @@ licenses {
 
     sourceDependency(
         "name/mlopatkin/andlogview/ui/themes/LightFlatTheme.theme.json",
-        "lightFlatTheme",
         "Light Flat Theme",
         uri("https://github.com/nerzhulart/LightFlatTheme"),
         License.mit(fromFile("third-party/themes/LICENSE"))
