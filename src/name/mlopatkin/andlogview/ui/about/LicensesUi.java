@@ -20,23 +20,32 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
 import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
 import name.mlopatkin.andlogview.BuildInfo;
+import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.Main;
-import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.widgets.LinkOpener;
+
+import joptsimple.internal.Strings;
 
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Window;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
 
 class LicensesUi extends JDialog {
+    private final OssComponents ossComponents;
+
     public LicensesUi(Window owner, OssComponents ossComponents) {
         super(owner, "List of third-party libraries used in " + Main.APP_NAME + " " + BuildInfo.VERSION,
                 ModalityType.APPLICATION_MODAL);
+        this.ossComponents = ossComponents;
 
         var content = getContentPane();
         // Max height is to prevent the dialog from growing too tall.
@@ -81,7 +90,8 @@ class LicensesUi extends JDialog {
                 </html>
                 """);
         text.setEditable(false);
-        text.addHyperlinkListener(new LinkOpener((url, failure) -> MyFutures.uncaughtException(failure)));
+        text.addHyperlinkListener(new LinkOpener(this::onLinkOpeningFailed));
+        text.addHyperlinkListener(this::onLinkClicked);
 
         var scrollPane = new JScrollPane(text);
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
@@ -116,5 +126,27 @@ class LicensesUi extends JDialog {
         builder.append("</td>");
 
         return builder;
+    }
+
+    private void onLinkClicked(HyperlinkEvent hyperlinkEvent) {
+        if (hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            open(URI.create(hyperlinkEvent.getDescription()));
+        }
+    }
+
+    private void onLinkOpeningFailed(URL target, Exception failure) {
+        if (failure instanceof IOException) {
+            ErrorDialogsHelper.showError(this, "Cannot open the url %s in the default browser", target.toString());
+        }
+    }
+
+    private void open(URI target) {
+        if ("andlogview".equalsIgnoreCase(target.getScheme()) && "licenses".equalsIgnoreCase(
+                target.getAuthority()) && !Strings.isNullOrEmpty(target.getPath())) {
+            int id = Integer.parseInt(target.getPath().substring(1));
+            ossComponents.getComponents().stream().filter(c -> c.getId() == id).findFirst().ifPresent(c -> {
+                new LicenseUi(this, c).setVisible(true);
+            });
+        }
     }
 }
