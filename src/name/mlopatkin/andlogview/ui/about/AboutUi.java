@@ -108,6 +108,7 @@ public class AboutUi extends BaseAboutDialogUi {
 
         aboutContent.addHyperlinkListener(createBrowserLinkOpener());
         aboutContent.addHyperlinkListener(new AboutLinkHandler(this::onAboutLinkClick));
+        aboutContent.setFocusable(false); // Allow the default button to handle Enter press
 
         // Without JPanel, the layout breaks, the window becomes much taller than necessary.
         var containment = new JPanel(new FlowLayout(FlowLayout.LEFT));

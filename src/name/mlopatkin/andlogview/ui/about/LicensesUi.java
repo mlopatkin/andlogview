@@ -74,7 +74,8 @@ class LicensesUi extends BaseAboutDialogUi {
         text.setEditable(false);
         text.addHyperlinkListener(createBrowserLinkOpener());
         text.addHyperlinkListener(new AboutLinkHandler(this::onAboutLinkClick));
-        text.setCaretPosition(0);  // So the scroll doesn't go to the bottom.
+        text.setCaretPosition(0); // So the scroll doesn't go to the bottom.
+        text.setFocusable(false); // Allow the default button to handle Enter press
 
         scrollPane = new JScrollPane(text);
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it

@@ -20,12 +20,14 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.widgets.LinkOpener;
+import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
 
@@ -58,10 +60,12 @@ public abstract class BaseAboutDialogUi extends JDialog {
 
         createContent(content);
 
-        var okButton = new JButton("Close");
-        okButton.addActionListener(e -> dispose());
+        var closeAction = UiHelper.makeAction("Close", this::dispose);
+        var okButton = new JButton(closeAction);
         content.add(okButton, CC().alignX("right").spanX());
         getRootPane().setDefaultButton(okButton);
+
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", closeAction);
 
         pack();
         setMinimumSize(getSize());

@@ -56,6 +56,7 @@ class LicenseUi extends BaseAboutDialogUi {
                 "License for " + scope + "\n\n" + ossComponent.getLicenseText()
         );
         text.setEditable(false);
+        text.setFocusable(false);  // Allow the default button to handle Enter press
 
         scrollPane = new JScrollPane(text);
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
