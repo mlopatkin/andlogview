@@ -53,13 +53,13 @@ sealed interface License : Serializable {
     companion object {
         private class LicenseFactory(val name: String, val spdxId: String) {
             fun sourceLicense(resource: Resource.SourceResource): SourceLicense {
-                return SourceResourceBackedLicense(name, spdxId, listOf(resource))
+                return SourceResourceBackedLicense(name, spdxId, resource)
             }
 
             fun binaryLicense(resource: Resource): BinaryLicense {
                 return when (resource) {
                     is Resource.SourceResource -> sourceLicense(resource)
-                    is Resource.BinaryResource -> BinaryResourceBackedLicense(name, spdxId, listOf(resource))
+                    is Resource.BinaryResource -> BinaryResourceBackedLicense(name, spdxId, resource)
                 }
             }
         }
@@ -120,6 +120,7 @@ sealed interface License : Serializable {
          */
         // TODO(mlopatkin) The text can be optional?
         fun ccBy4(resource: Resource.SourceResource) = ccBy4.sourceLicense(resource)
+
         /**
          * Creative Commons Attribution 4.0
          *
@@ -153,7 +154,8 @@ sealed interface License : Serializable {
     private class SourceResourceBackedLicense(
         private val name: String,
         private val spdxId: String,
-        private val fileResources: List<Resource.SourceResource>
+        private val license: Resource.SourceResource,
+        private val fileResources: List<Resource.SourceResource> = listOf()
     ) : SourceLicense {
         override fun buildText(): LicenseText {
             val buffer = StringBuilder()
@@ -161,17 +163,19 @@ sealed interface License : Serializable {
                 buffer.appendLine(it.load())
             }
 
+            buffer.appendLine(license.load())
+
             return LicenseText(name, spdxId, buffer.toString())
         }
 
         override fun withNotice(notice: Resource.SourceResource): SourceLicense {
-            return SourceResourceBackedLicense(name, spdxId, fileResources + notice)
+            return SourceResourceBackedLicense(name, spdxId, license, fileResources + notice)
         }
 
         override fun withNotice(notice: Resource): BinaryLicense {
             return when (notice) {
                 is Resource.SourceResource -> withNotice(notice)
-                is Resource.BinaryResource -> BinaryResourceBackedLicense(name, spdxId, fileResources + notice)
+                is Resource.BinaryResource -> BinaryResourceBackedLicense(name, spdxId, license, fileResources + notice)
             }
         }
 
@@ -181,12 +185,13 @@ sealed interface License : Serializable {
     private class BinaryResourceBackedLicense(
         private val name: String,
         private val spdxId: String,
-        private val resources: List<Resource.BinaryResource>
+        private val license: Resource.BinaryResource,
+        private val resources: List<Resource.BinaryResource> = listOf()
     ) : BinaryLicense {
         override fun withNotice(notice: Resource): BinaryLicense {
             return when (notice) {
                 is Resource.BinaryResource -> {
-                    BinaryResourceBackedLicense(name, spdxId, resources + notice)
+                    BinaryResourceBackedLicense(name, spdxId, license, resources + notice)
                 }
             }
         }
@@ -196,6 +201,8 @@ sealed interface License : Serializable {
             resources.forEach {
                 buffer.appendLine(it.loadFromBinary(artifact))
             }
+
+            buffer.appendLine(license.loadFromBinary(artifact))
 
             return LicenseText(name, spdxId, buffer.toString())
         }
