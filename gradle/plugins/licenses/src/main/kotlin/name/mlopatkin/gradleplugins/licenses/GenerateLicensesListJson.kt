@@ -36,10 +36,17 @@ abstract class GenerateLicensesListJson : BaseLicenseTask() {
         licensedComponents: List<LicensedComponent>,
         outputJsonFile: RegularFile
     ) {
-        val components = buildOssComponents(
+        val componentsByDisplayName = buildOssComponents(
             bundledDependencies,
             licensedComponents
-        ).toSortedSet(Comparator.comparing { c -> c.displayName })
+        ).groupBy { it.displayName }
+
+        val components = componentsByDisplayName.values.asSequence().map { cs ->
+            when {
+                cs.size == 1 -> cs.single()
+                else -> merge(cs)
+            }
+        }
 
         json(outputJsonFile.asFile) {
             jsonArray {
@@ -48,5 +55,12 @@ abstract class GenerateLicensesListJson : BaseLicenseTask() {
                 }
             }
         }
+    }
+
+    private fun merge(components: List<OssComponent>): OssComponent {
+        val base = components.first()
+        val scopes = components.map { it.scope }.sorted()
+
+        return OssComponent(base.displayName, base.version, base.homepage, scopes.joinToString("\n"), base.licenseText)
     }
 }

@@ -38,7 +38,13 @@ class LicenseUi extends JDialog {
                 LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"))
         );
 
-        var text = new JTextArea(ossComponent.getLicenseText());
+        var scope = ossComponent.getScope();
+        if (scope.contains("\n")) {
+            scope = "\n" + scope;
+        }
+        var text = new JTextArea(
+                "License for " + scope + "\n\n" + ossComponent.getLicenseText()
+        );
         text.setEditable(false);
 
         var scrollPane = new JScrollPane(text);
