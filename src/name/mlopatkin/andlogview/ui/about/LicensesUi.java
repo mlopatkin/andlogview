@@ -87,7 +87,7 @@ class LicensesUi extends JDialog {
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
         // appears.
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        content.add(scrollPane, CC().grow().wrap("push"));
+        content.add(scrollPane, CC().grow().wrap("related push"));
 
         var okButton = new JButton("OK");
         okButton.addActionListener(e -> dispose());
