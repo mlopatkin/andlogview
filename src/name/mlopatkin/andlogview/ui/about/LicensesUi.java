@@ -24,20 +24,18 @@ import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.widgets.LinkOpener;
 
-import joptsimple.internal.Strings;
+import com.google.common.base.Preconditions;
 
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Window;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
-import javax.swing.event.HyperlinkEvent;
 
 class LicensesUi extends JDialog {
     private final OssComponents ossComponents;
@@ -73,7 +71,7 @@ class LicensesUi extends JDialog {
                 """);
         text.setEditable(false);
         text.addHyperlinkListener(new LinkOpener(this::onLinkOpeningFailed));
-        text.addHyperlinkListener(this::onLinkClicked);
+        text.addHyperlinkListener(new AboutLinkHandler(this::onAboutLinkClick));
         text.setCaretPosition(0);  // So the scroll doesn't go to the bottom.
 
         var scrollPane = new JScrollPane(text);
@@ -115,23 +113,21 @@ class LicensesUi extends JDialog {
         return builder;
     }
 
-    private void onLinkClicked(HyperlinkEvent hyperlinkEvent) {
-        if (hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-            open(URI.create(hyperlinkEvent.getDescription()));
-        }
-    }
-
     private void onLinkOpeningFailed(URL target, Exception failure) {
         if (failure instanceof IOException) {
             ErrorDialogsHelper.showError(this, "Cannot open the url %s in the default browser", target.toString());
         }
     }
 
-    private void open(URI target) {
-        if ("andlogview".equalsIgnoreCase(target.getScheme()) && "licenses".equalsIgnoreCase(
-                target.getAuthority()) && !Strings.isNullOrEmpty(target.getPath())) {
-            int id = Integer.parseInt(target.getPath().substring(1));
+    private void onAboutLinkClick(String authority, String path) {
+        if ("licenses".equals(authority)) {
+            int id = parseId(path);
             new LicenseUi(this, ossComponents.getComponentById(id)).setVisible(true);
         }
+    }
+
+    private int parseId(String path) {
+        Preconditions.checkArgument(path.startsWith("/"), "Unsupported path %s", path);
+        return Integer.parseInt(path.substring(1));
     }
 }

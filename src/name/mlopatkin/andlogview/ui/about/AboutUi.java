@@ -33,7 +33,6 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -45,7 +44,6 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.event.HyperlinkEvent;
 
 public class AboutUi extends JDialog {
     private static final int ICON_WIDTH = 100;
@@ -108,13 +106,13 @@ public class AboutUi extends JDialog {
                 <a href="https://github.com/mlopatkin/andlogview/blob/HEAD/AUTHORS.md">AndLogView authors</a>.
                 </p>
                 <p>
-                Powered by <a href="andlogview:licenses">open-source software</a>.
+                Powered by <a href="andlogview://licenses">open-source software</a>.
                 </p>
                 """, replacements));
         aboutContent.setEditable(false);
 
         aboutContent.addHyperlinkListener(new LinkOpener(this::onLinkOpeningFailed));
-        aboutContent.addHyperlinkListener(this::onLinkClicked);
+        aboutContent.addHyperlinkListener(new AboutLinkHandler(this::onAboutLinkClick));
 
         // Without JPanel, the layout breaks, the window becomes much taller than necessary.
         var containment = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -131,21 +129,14 @@ public class AboutUi extends JDialog {
         return template;
     }
 
-    private void onLinkClicked(HyperlinkEvent hyperlinkEvent) {
-        if (hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-            open(URI.create(hyperlinkEvent.getDescription()));
-        }
-    }
-
     private void onLinkOpeningFailed(URL target, Exception failure) {
         if (failure instanceof IOException) {
             ErrorDialogsHelper.showError(this, "Cannot open the url %s in the default browser", target.toString());
         }
     }
 
-    private void open(URI target) {
-        if ("andlogview".equalsIgnoreCase(target.getScheme()) && "licenses".equalsIgnoreCase(
-                target.getSchemeSpecificPart())) {
+    private void onAboutLinkClick(String authority, String path) {
+        if ("licenses".equalsIgnoreCase(authority) && (path.equals("/") || path.isEmpty())) {
             new LicensesUi(this, new OssComponents()).setVisible(true);
         }
     }
