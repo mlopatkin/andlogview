@@ -16,23 +16,31 @@
 
 package name.mlopatkin.gradleplugins.licenses
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 import java.io.Serializable
 import java.net.URI
 
 sealed interface LicensedComponent : Serializable {
+    @get:Input
     val name: String
+    @get:Input
     val homepage: URI
+    @get:Nested
     val license: License
 
     data class LicensedSource(
         override val name: String,
         override val homepage: URI,
         override val license: License.SourceLicense,
+        @get:Input
         val scope: String,
     ) : LicensedComponent
 
     data class LicensedModule(
+        @get:Input
         val group: String,
+        @get:Input
         val module: String,
         override val name: String,
         override val homepage: URI,

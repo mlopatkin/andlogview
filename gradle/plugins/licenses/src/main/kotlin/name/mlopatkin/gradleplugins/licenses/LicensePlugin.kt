@@ -32,15 +32,18 @@ class LicensePlugin : Plugin<Project> {
             extensions.create(LicenseExtension::class, "licenses", LicenseExtensionImpl::class) as LicenseExtensionImpl
 
         tasks.register<GenerateLicensesListJson>("generateLicenses") {
-            bundledDependencies = licenses.bundledDependencies
-            licensedComponentList = licenses.dependencies
+            configureFrom(licenses)
             outputJsonFile = layout.buildDirectory.file("generated/licenses/licenses.json")
         }
 
         tasks.register<GenerateNotices>("generateNotices") {
-            bundledDependencies = licenses.bundledDependencies
-            licensedComponentList = licenses.dependencies
+            configureFrom(licenses)
             noticeOutputFile = layout.buildDirectory.file("generated/licenses/NOTICE")
         }
+    }
+
+    private fun BaseLicenseTask.configureFrom(extension: LicenseExtensionImpl) {
+        bundledDependencies = extension.bundledDependencies
+        licensedComponentList = extension.dependencies
     }
 }

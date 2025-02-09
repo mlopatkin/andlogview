@@ -16,6 +16,10 @@
 
 package name.mlopatkin.gradleplugins.licenses
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import java.io.File
 import java.io.IOException
 import java.io.Serializable
@@ -31,7 +35,10 @@ sealed interface Resource : Serializable {
         fun load(): String
     }
 
-    private class JarResource(private val pathInJar: String) : BinaryResource {
+    private class JarResource(
+        @get:Input  // We cannot get the JAR contents here, but tasks usually depend on it in some other way
+        val pathInJar: String
+    ) : BinaryResource {
         override fun loadFromBinary(jarFile: File): String {
             ZipFile(jarFile).use { jar ->
                 val entry =
@@ -43,13 +50,20 @@ sealed interface Resource : Serializable {
         }
     }
 
-    private class FileResource(private val file: File) : SourceResource, BinaryResource {
+    private class FileResource(
+        @get:InputFile
+        @get:PathSensitive(PathSensitivity.NONE)
+        val file: File
+    ) : SourceResource, BinaryResource {
         override fun load(): String {
             return file.readText()
         }
     }
 
-    private class TextResource(private val text: String): SourceResource, BinaryResource {
+    private class TextResource(
+        @get:Input
+        val text: String
+    ) : SourceResource, BinaryResource {
         override fun load(): String = text
     }
 

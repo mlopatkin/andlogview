@@ -16,6 +16,7 @@
 
 package name.mlopatkin.gradleplugins.licenses
 
+import org.gradle.api.tasks.Nested
 import java.io.File
 import java.io.Serializable
 
@@ -154,8 +155,10 @@ sealed interface License : Serializable {
     private class SourceResourceBackedLicense(
         private val name: String,
         private val spdxId: String,
-        private val license: Resource.SourceResource,
-        private val fileResources: List<Resource.SourceResource> = listOf()
+        @get:Nested
+        val license: Resource.SourceResource,
+        @get:Nested
+        val fileResources: List<Resource.SourceResource> = listOf()
     ) : SourceLicense {
         override fun buildText(): LicenseText {
             val buffer = StringBuilder()
@@ -185,8 +188,10 @@ sealed interface License : Serializable {
     private class BinaryResourceBackedLicense(
         private val name: String,
         private val spdxId: String,
-        private val license: Resource.BinaryResource,
-        private val resources: List<Resource.BinaryResource> = listOf()
+        @get:Nested
+        val license: Resource.BinaryResource,
+        @get:Nested
+        val resources: List<Resource.BinaryResource> = listOf()
     ) : BinaryLicense {
         override fun withNotice(notice: Resource): BinaryLicense {
             return when (notice) {
