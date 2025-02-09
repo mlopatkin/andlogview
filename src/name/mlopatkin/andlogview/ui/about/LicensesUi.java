@@ -51,11 +51,29 @@ class LicensesUi extends JDialog {
                 <th>Component</th>
                 <th>Version</th>
                 <th>License</th>
+                <th style="width: 35px;"/>
+                <th>Component</th>
+                <th>Version</th>
+                <th>License</th>
                 </tr>
                 """);
 
+        int index = 0;
         for (var component : ossComponents.getComponents()) {
+            if (index % 2 == 0) {
+                thirdPartyComponents.append("<tr>");
+            } else {
+                thirdPartyComponents.append("<td style=\"width: 35px;\"/>");
+            }
+
             appendComponent(thirdPartyComponents, component);
+            if (index % 2 != 0) {
+                thirdPartyComponents.append("</tr>");
+            }
+            ++index;
+        }
+        if (index % 2 != 0) {
+            thirdPartyComponents.append("</tr>");
         }
 
         var text = new JEditorPane("text/html", thirdPartyComponents + """
@@ -83,8 +101,6 @@ class LicensesUi extends JDialog {
     }
 
     private StringBuilder appendComponent(StringBuilder builder, OssComponent component) {
-        builder.append("<tr>");
-
         builder.append("<td>");
         builder.append("<a href=\"").append(component.getHomepage().toASCIIString()).append("\">");
         builder.append(component.getName());
@@ -98,8 +114,6 @@ class LicensesUi extends JDialog {
         builder.append(component.getLicense());
         builder.append("</a>");
         builder.append("</td>");
-
-        builder.append("</tr>");
 
         return builder;
     }

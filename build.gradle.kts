@@ -133,6 +133,10 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
         include("andlogview.svg")
         into("name/mlopatkin/andlogview/")
     }
+    from(tasks.generateLicenses) {
+        include("licenses.json")
+        into("name/mlopatkin/andlogview/ui/about/")
+    }
 }
 
 // Configure build metadata generator
