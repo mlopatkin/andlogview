@@ -21,23 +21,33 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.Window;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
+import java.awt.Container;
+import java.awt.Window;
+import java.util.Objects;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-class LicenseUi extends JDialog {
+class LicenseUi extends BaseAboutDialogUi {
+    private final OssComponent ossComponent;
+    private @Nullable JScrollPane scrollPane;
+
     public LicenseUi(Window owner, OssComponent ossComponent) {
-        super(owner, "License for " + ossComponent.getName(), ModalityType.APPLICATION_MODAL);
+        super(owner, "License for " + ossComponent.getName());
+        this.ossComponent = ossComponent;
+    }
 
-        var content = getContentPane();
+    @Override
+    protected MigLayout createContentLayout() {
         // Max height is to prevent the dialog from growing too tall.
-        content.setLayout(new MigLayout(
-                LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"))
-        );
+        return new MigLayout(
+                LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"));
+    }
 
+    @Override
+    protected void createContent(Container content) {
         var scope = ossComponent.getScope();
         if (scope.contains("\n")) {
             scope = "\n" + scope;
@@ -47,20 +57,16 @@ class LicenseUi extends JDialog {
         );
         text.setEditable(false);
 
-        var scrollPane = new JScrollPane(text);
+        scrollPane = new JScrollPane(text);
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
         // appears.
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        content.add(scrollPane, CC().grow().wrap("related push"));
+        content.add(scrollPane, lastComponentConstraint(CC().grow()));
+    }
 
-        var okButton = new JButton("OK");
-        okButton.addActionListener(e -> dispose());
-        content.add(okButton, CC().alignX("right"));
-        getRootPane().setDefaultButton(okButton);
-
-        pack();
-        setMinimumSize(getSize());
-        setLocationRelativeTo(getParent());
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    @Override
+    protected void createUi() {
+        super.createUi();
+        Objects.requireNonNull(scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     }
 }

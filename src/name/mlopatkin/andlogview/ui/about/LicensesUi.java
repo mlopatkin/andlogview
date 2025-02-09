@@ -20,37 +20,39 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
 import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
 import name.mlopatkin.andlogview.BuildInfo;
-import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.Main;
-import name.mlopatkin.andlogview.widgets.LinkOpener;
 
 import com.google.common.base.Preconditions;
 
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.Window;
-import java.io.IOException;
-import java.net.URL;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
+import java.awt.Container;
+import java.awt.Window;
+import java.util.Objects;
+
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 
-class LicensesUi extends JDialog {
+class LicensesUi extends BaseAboutDialogUi {
     private final OssComponents ossComponents;
+    private @Nullable JScrollPane scrollPane;
 
     public LicensesUi(Window owner, OssComponents ossComponents) {
-        super(owner, "List of third-party libraries used in " + Main.APP_NAME + " " + BuildInfo.VERSION,
-                ModalityType.APPLICATION_MODAL);
+        super(owner, "List of third-party libraries used in " + Main.APP_NAME + " " + BuildInfo.VERSION);
         this.ossComponents = ossComponents;
 
-        var content = getContentPane();
-        // Max height is to prevent the dialog from growing too tall.
-        content.setLayout(new MigLayout(
-                LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"))
-        );
+    }
 
+    @Override
+    protected MigLayout createContentLayout() {
+        // Max height is to prevent the dialog from growing too tall.
+        return new MigLayout(LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"));
+    }
+
+    @Override
+    protected void createContent(Container content) {
         var thirdPartyComponents = new StringBuilder("""
                 <html>
                 <table>
@@ -70,27 +72,23 @@ class LicensesUi extends JDialog {
                 </html>
                 """);
         text.setEditable(false);
-        text.addHyperlinkListener(new LinkOpener(this::onLinkOpeningFailed));
+        text.addHyperlinkListener(createBrowserLinkOpener());
         text.addHyperlinkListener(new AboutLinkHandler(this::onAboutLinkClick));
         text.setCaretPosition(0);  // So the scroll doesn't go to the bottom.
 
-        var scrollPane = new JScrollPane(text);
+        scrollPane = new JScrollPane(text);
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
         // appears.
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        content.add(scrollPane, CC().grow().wrap("related push"));
+        content.add(scrollPane, lastComponentConstraint(CC().grow()));
+    }
 
-        var okButton = new JButton("OK");
-        okButton.addActionListener(e -> dispose());
-        content.add(okButton, CC().alignX("right"));
-        getRootPane().setDefaultButton(okButton);
-
-        pack();
-        setMinimumSize(getSize());
-        setLocationRelativeTo(getParent());
+    @Override
+    protected void createUi() {
+        super.createUi();
         // After layout, we can revert scrollbars back to normal.
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        Objects.requireNonNull(scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     }
 
     private StringBuilder appendComponent(StringBuilder builder, OssComponent component) {
@@ -111,12 +109,6 @@ class LicensesUi extends JDialog {
         builder.append("</tr>");
 
         return builder;
-    }
-
-    private void onLinkOpeningFailed(URL target, Exception failure) {
-        if (failure instanceof IOException) {
-            ErrorDialogsHelper.showError(this, "Cannot open the url %s in the default browser", target.toString());
-        }
     }
 
     private void onAboutLinkClick(String authority, String path) {

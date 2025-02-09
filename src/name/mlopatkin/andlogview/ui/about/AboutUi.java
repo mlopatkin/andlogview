@@ -21,62 +21,57 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
 import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
 import name.mlopatkin.andlogview.BuildInfo;
-import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.Main;
-import name.mlopatkin.andlogview.widgets.LinkOpener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.ImmutableMap;
 
 import net.miginfocom.swing.MigLayout;
 
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.io.IOException;
-import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class AboutUi extends JDialog {
+public class AboutUi extends BaseAboutDialogUi {
     private static final int ICON_WIDTH = 100;
     private static final int ICON_HEIGHT = 100;
     private static final String ICON_PATH = "name/mlopatkin/andlogview/andlogview.svg";
 
-    public AboutUi(Window owner) {
-        super(owner, "About " + Main.APP_NAME, ModalityType.APPLICATION_MODAL);
+    public AboutUi(Window parent) {
+        super(parent, "About " + Main.APP_NAME);
+    }
 
-        var content = getContentPane();
-        content.setLayout(new MigLayout(
+    @Override
+    protected MigLayout createContentLayout() {
+        return new MigLayout(
                 LC().insets("dialog").fillX(),
-                AC().align("center").gap().grow().align("left"))
-        );
+                AC().align("center").gap().grow().align("left"));
+    }
 
+    @Override
+    protected void createContent(Container content) {
         var iconLabel = new JLabel(new FlatSVGIcon(ICON_PATH, ICON_WIDTH, ICON_HEIGHT));
 
         content.add(iconLabel);
 
-        buildAboutData();
+        buildAboutData(content);
+    }
 
-        var okButton = new JButton("Close");
-        okButton.addActionListener(e -> dispose());
-        content.add(okButton, CC().alignX("right").spanX());
-        getRootPane().setDefaultButton(okButton);
-
-        pack();
-        setMinimumSize(getSize());
-        setLocationRelativeTo(getParent());
+    @Override
+    protected void createUi() {
+        super.createUi();
         setResizable(false);
     }
 
-    private void buildAboutData() {
+    private void buildAboutData(Container content) {
         var isBundledRuntime = System.getProperty("jpackage.app-version") != null;
         var javaHome = isBundledRuntime ? "bundled" : System.getProperty("java.home");
         var replacements = ImmutableMap.<String, String>builder()
@@ -111,13 +106,13 @@ public class AboutUi extends JDialog {
                 """, replacements));
         aboutContent.setEditable(false);
 
-        aboutContent.addHyperlinkListener(new LinkOpener(this::onLinkOpeningFailed));
+        aboutContent.addHyperlinkListener(createBrowserLinkOpener());
         aboutContent.addHyperlinkListener(new AboutLinkHandler(this::onAboutLinkClick));
 
         // Without JPanel, the layout breaks, the window becomes much taller than necessary.
         var containment = new JPanel(new FlowLayout(FlowLayout.LEFT));
         containment.add(aboutContent);
-        getContentPane().add(containment, CC().growX().wrap("push"));
+        content.add(containment, lastComponentConstraint(CC().growX()));
     }
 
     private static String template(String template, Map<String, String> replacements) {
@@ -129,11 +124,6 @@ public class AboutUi extends JDialog {
         return template;
     }
 
-    private void onLinkOpeningFailed(URL target, Exception failure) {
-        if (failure instanceof IOException) {
-            ErrorDialogsHelper.showError(this, "Cannot open the url %s in the default browser", target.toString());
-        }
-    }
 
     private void onAboutLinkClick(String authority, String path) {
         if ("licenses".equalsIgnoreCase(authority) && (path.equals("/") || path.isEmpty())) {
