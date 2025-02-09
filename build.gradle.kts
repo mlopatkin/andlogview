@@ -275,6 +275,7 @@ licenses {
         "Chromium",
         uri("https://www.chromium.org/Home/"),
         License.bsd3(fromFile("base/third-party/observerList/LICENSE"))
+            .withNotice(fromFile("base/third-party/observerList/NOTICE"))
     )
 
     sourceDependency(
@@ -298,7 +299,7 @@ licenses {
         "fontAwesome",
         "Font Awesome",
         uri("https://fontawesome.com"),
-        License.ccBy4(fromFile("third-party/fontawesomeIcons/NOTICE"))
+        License.ccBy4(fromFile("third-party/fontawesomeIcons/LICENSE"))
     )
 
     sourceDependency(
@@ -306,7 +307,7 @@ licenses {
         "tango",
         "Tango Desktop Project",
         uri("http://tango.freedesktop.org/Tango_Desktop_Project"),
-        License.publicDomain(fromFile("third-party/tangoIcons/NOTICE"))
+        License.publicDomain(fromFile("third-party/tangoIcons/LICENSE"))
     )
 
     sourceDependency(
@@ -314,28 +315,9 @@ licenses {
         "lightFlatTheme",
         "Light Flat Theme",
         uri("https://github.com/nerzhulart/LightFlatTheme"),
-        License.mit(fromFile("third-party/themes/NOTICE"))
+        License.mit(fromFile("third-party/themes/LICENSE"))
     )
 }
-
-//val generateNotices = tasks.register<GenerateNotices>("generateNotices") {
-//    bundledDependencies = configurations.runtimeClasspath.flatMap { rtCp ->
-//        rtCp.incoming.artifacts.resolvedArtifacts.map { artifacts ->
-//            artifacts.map { artifact -> artifact.id.componentIdentifier }
-//                .filterIsInstance<ModuleComponentIdentifier>()
-//        }
-//    }
-//    libraryNoticesDirectory = file("third-party/libs/notices")
-//    sourceFilesNotices.from(
-//        "assets/NOTICE",
-//        "base/third-party/observerList/NOTICE",
-//        "base/third-party/systemUtils/NOTICE",
-//        "device/third-party/versionCodes/NOTICE",
-//        "third-party/fontawesomeIcons/NOTICE",
-//        "third-party/tangoIcons/NOTICE",
-//        "third-party/themes/NOTICE",
-//    )
-//}
 
 // Configure distribution (archive creation).
 distributions {
