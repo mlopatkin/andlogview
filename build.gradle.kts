@@ -324,9 +324,9 @@ licenses {
     )
     sourceDependency(
         "assets/{andlogview.ico,andlogview.svg,andlogview_icon.svg}",
-        "The Activity Log Icon",
-        uri("https://www.iconfinder.com/icons/9034591/activity_log_icon"),
-        License.ccBy4(fromFile("assets/activity_log.NOTICE"))
+        "Radix Icons",
+        uri("https://github.com/radix-ui/icons"),
+        License.mit(fromFile("assets/activity_log.NOTICE"))
     )
     sourceDependency(
         "assets/{andlogview.ico,andlogview.svg,andlogview_icon.svg}",
