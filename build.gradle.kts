@@ -311,6 +311,25 @@ licenses {
         uri("https://github.com/nerzhulart/LightFlatTheme"),
         License.mit(fromFile("third-party/themes/LICENSE"))
     )
+
+    sourceDependency(
+        "assets/{andlogview.ico,andlogview.svg,andlogview_icon.svg}",
+        "The Android robot",
+        uri("https://developer.android.com/distribute/marketing-tools/brand-guidelines#android_robot"),
+        License.ccBy3(fromFile("assets/android.NOTICE"))
+    )
+    sourceDependency(
+        "assets/{andlogview.ico,andlogview.svg,andlogview_icon.svg}",
+        "The Activity Log Icon",
+        uri("https://www.iconfinder.com/icons/9034591/activity_log_icon"),
+        License.ccBy4(fromFile("assets/activity_log.NOTICE"))
+    )
+    sourceDependency(
+        "assets/{andlogview.ico,andlogview.svg,andlogview_icon.svg}",
+        "Font Awesome",
+        uri("https://fontawesome.com"),
+        License.ccBy4(fromFile("third-party/fontawesomeIcons/LICENSE"))
+    )
 }
 
 // Configure distribution (archive creation).

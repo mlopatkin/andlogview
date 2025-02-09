@@ -69,6 +69,7 @@ sealed interface License : Serializable {
         private val mit = LicenseFactory("MIT License", "MIT")
         private val bsd3clause = LicenseFactory("BSD 3-Clause License", "BSD-3-Clause")
         private val ccBy4 = LicenseFactory("CC BY 4.0", "CC-BY-4.0")
+        private val ccBy3 = LicenseFactory("CC BY 3.0", "CC-BY-3.0")
         private val publicDomain = LicenseFactory("Public Domain", "X-PD")
 
         /**
@@ -128,6 +129,21 @@ sealed interface License : Serializable {
          * @param resource the license text
          */
         fun ccBy4(resource: Resource) = ccBy4.binaryLicense(resource)
+
+        /**
+         * Creative Commons Attribution 3.0
+         *
+         * @param resource the license text
+         */
+        // TODO(mlopatkin) The text can be optional?
+        fun ccBy3(resource: Resource.SourceResource) = ccBy3.sourceLicense(resource)
+
+        /**
+         * Creative Commons Attribution 3.0
+         *
+         * @param resource the license text
+         */
+        fun ccBy3(resource: Resource) = ccBy3.binaryLicense(resource)
 
         /**
          * Public Domain
