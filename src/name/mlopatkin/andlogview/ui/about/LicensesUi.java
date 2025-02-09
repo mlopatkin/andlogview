@@ -60,29 +60,11 @@ class LicensesUi extends JDialog {
                 <th>Component</th>
                 <th>Version</th>
                 <th>License</th>
-                <th style="width: 35px;"/>
-                <th>Component</th>
-                <th>Version</th>
-                <th>License</th>
                 </tr>
                 """);
 
-        int index = 0;
         for (var component : ossComponents.getComponents()) {
-            if (index % 2 == 0) {
-                thirdPartyComponents.append("<tr>");
-            } else {
-                thirdPartyComponents.append("<td style=\"width: 35px;\"/>");
-            }
-
             appendComponent(thirdPartyComponents, component);
-            if (index % 2 != 0) {
-                thirdPartyComponents.append("</tr>");
-            }
-            ++index;
-        }
-        if (index % 2 != 0) {
-            thirdPartyComponents.append("</tr>");
         }
 
         var text = new JEditorPane("text/html", thirdPartyComponents + """
@@ -92,11 +74,13 @@ class LicensesUi extends JDialog {
         text.setEditable(false);
         text.addHyperlinkListener(new LinkOpener(this::onLinkOpeningFailed));
         text.addHyperlinkListener(this::onLinkClicked);
+        text.setCaretPosition(0);  // So the scroll doesn't go to the bottom.
 
         var scrollPane = new JScrollPane(text);
         // Lame trick to always reserve some space for the scroll bar, so it doesn't cause content to wrap when it
         // appears.
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         content.add(scrollPane, CC().grow().wrap("related push"));
 
         var okButton = new JButton("OK");
@@ -107,10 +91,12 @@ class LicensesUi extends JDialog {
         pack();
         setMinimumSize(getSize());
         setLocationRelativeTo(getParent());
+        // After layout, we can revert scrollbars back to normal.
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     }
 
     private StringBuilder appendComponent(StringBuilder builder, OssComponent component) {
+        builder.append("<tr>");
         builder.append("<td>");
         builder.append("<a href=\"").append(component.getHomepage().toASCIIString()).append("\">");
         builder.append(component.getName());
@@ -124,6 +110,7 @@ class LicensesUi extends JDialog {
         builder.append(component.getLicense());
         builder.append("</a>");
         builder.append("</td>");
+        builder.append("</tr>");
 
         return builder;
     }
