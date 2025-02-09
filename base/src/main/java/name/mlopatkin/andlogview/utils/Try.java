@@ -16,11 +16,18 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a result of computation that could throw an exception. It closely resembles a classic
@@ -52,6 +59,13 @@ public abstract class Try<T> {
      */
     public abstract Throwable getError() throws IllegalStateException;
 
+    @SuppressWarnings("unchecked")
+    private <R> Try<R> castIfError() {
+        Preconditions.checkState(!isPresent());
+        // This is a safe cast because the Error instance doesn't actually hold the value.
+        return (Try<R>) this;
+    }
+
     /**
      * Applies a function to the value if it is present and returns the result. If the value is not present then the
      * original exception is preserved in the result. If the function throws exception then the result holds this
@@ -66,10 +80,7 @@ public abstract class Try<T> {
             return Try.ofCallable(() -> function.apply(get()));
         }
 
-        // This is a safe cast because the Error instance doesn't actually hold the value.
-        @SuppressWarnings("unchecked")
-        Try<V> r = (Try<V>) this;
-        return r;
+        return castIfError();
     }
 
     /**
@@ -86,10 +97,7 @@ public abstract class Try<T> {
             return Try.ofCallable(() -> function.apply(get()));
         }
 
-        // This is a safe cast because the Error instance doesn't actually hold the value.
-        @SuppressWarnings("unchecked")
-        Try<V> r = (Try<V>) this;
-        return r;
+        return castIfError();
     }
 
     /**
@@ -103,6 +111,27 @@ public abstract class Try<T> {
             handler.accept(getError());
         }
         return this;
+    }
+
+    /**
+     * Combines two Try instances if they are present, or combines their exceptions.
+     *
+     * @param rhs the value to combine with
+     * @param combiner the combiner function
+     * @param <V> the type to combine with
+     * @param <R> the result type
+     * @return the combined try instance
+     */
+    public final <V, R> Try<R> zip(Try<V> rhs, BiFunction<? super T, ? super V, ? extends R> combiner) {
+        if (isPresent() && rhs.isPresent()) {
+            return Try.ofCallable(() -> combiner.apply(get(), rhs.get()));
+        }
+        if (rhs.isPresent()) {
+            assert !isPresent();
+            return castIfError();
+        }
+        // We're both failures.
+        return Try.ofError(combineFailures(getError(), rhs.getError()));
     }
 
     /**
@@ -222,6 +251,41 @@ public abstract class Try<T> {
             return Try.ofValue(action.call());
         } catch (Throwable e) {  // OK to catch Throwable here
             return Try.ofError(e);
+        }
+    }
+
+    /**
+     * Collects the stream of {@code Try<T>} into a {@code Try<List<T>>}. Any failure in the stream results in the
+     * overall failure.
+     *
+     * @param <T> the type of the elements
+     * @return the collector to combine the stream elements.
+     */
+    public static <T> Collector<Try<T>, ?, Try<List<T>>> liftToList() {
+        return Collectors.reducing(Try.ofValue(ImmutableList.of()), t -> t.map(ImmutableList::of),
+                (a, b) -> a.zip(b, (l, r) -> ImmutableList.<T>builder().addAll(l).addAll(r).build()));
+    }
+
+    private static Throwable combineFailures(Throwable a, Throwable b) {
+        final var cloned =
+                a instanceof MultiTryException multiTryException ? multiTryException.copy() : new MultiTryException(a);
+        cloned.addSuppressed(b);
+        return cloned;
+    }
+
+    private static class MultiTryException extends Exception {
+        public MultiTryException(Throwable cause) {
+            super(cause);
+        }
+
+        public MultiTryException copy() {
+            var cause = getCause();
+            assert cause != null;
+            var cloned = new MultiTryException(cause);
+            for (var suppressed : getSuppressed()) {
+                cloned.addSuppressed(suppressed);
+            }
+            return cloned;
         }
     }
 }

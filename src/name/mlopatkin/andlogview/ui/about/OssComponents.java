@@ -16,21 +16,29 @@
 
 package name.mlopatkin.andlogview.ui.about;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+
 import name.mlopatkin.andlogview.base.AppResources;
 import name.mlopatkin.andlogview.utils.LazyInstance;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.ByteSource;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A model of our third-party dependencies.
  */
 class OssComponents {
-    private final LazyInstance<List<OssComponent>> components = LazyInstance.lazy(OssComponents::loadComponents);
+    private final LazyInstance<List<OssComponent>> components = LazyInstance.lazy(
+            OssComponents::loadComponents);
 
     public OssComponent getComponentById(int id) {
         return components.get()
@@ -45,14 +53,27 @@ class OssComponents {
     }
 
     private static List<OssComponent> loadComponents() {
+        var components = loadComponentsFrom(AppResources.getResource("ui/about/licenses.json")).stream();
+        var isBundledRuntime = System.getProperty("jpackage.app-version") != null;
+        if (isBundledRuntime) {
+            components = Stream.concat(components,
+                    Stream.of(new RuntimeJdkLicenseLoader(new File(System.getProperty("java.home"))).getBundledJdk()));
+        }
+        return components
+                .sorted(Comparator.comparing(OssComponent::getName))
+                .collect(toImmutableList());
+    }
+
+    private static List<OssComponent> loadComponentsFrom(ByteSource source) {
         var gson = new Gson();
         try {
             return gson.fromJson(
-                    AppResources.getResource("ui/about/licenses.json").asCharSource(StandardCharsets.UTF_8).read(),
-                    new TypeToken<>() {}
+                    source.asCharSource(StandardCharsets.UTF_8).read(),
+                    new TypeToken<ImmutableList<OssComponent>>() {}
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 }
