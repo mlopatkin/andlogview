@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.about;
 
 import name.mlopatkin.andlogview.base.AppResources;
+import name.mlopatkin.andlogview.utils.LazyInstance;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +30,21 @@ import java.util.List;
  * A model of our third-party dependencies.
  */
 class OssComponents {
+    private final LazyInstance<List<OssComponent>> components = LazyInstance.lazy(OssComponents::loadComponents);
+
+    public OssComponent getComponentById(int id) {
+        return components.get()
+                .stream()
+                .filter(c -> c.getId() == id)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     public List<OssComponent> getComponents() {
+        return components.get();
+    }
+
+    private static List<OssComponent> loadComponents() {
         var gson = new Gson();
         try {
             return gson.fromJson(

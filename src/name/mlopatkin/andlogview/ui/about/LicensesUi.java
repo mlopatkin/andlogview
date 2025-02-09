@@ -131,9 +131,7 @@ class LicensesUi extends JDialog {
         if ("andlogview".equalsIgnoreCase(target.getScheme()) && "licenses".equalsIgnoreCase(
                 target.getAuthority()) && !Strings.isNullOrEmpty(target.getPath())) {
             int id = Integer.parseInt(target.getPath().substring(1));
-            ossComponents.getComponents().stream().filter(c -> c.getId() == id).findFirst().ifPresent(c -> {
-                new LicenseUi(this, c).setVisible(true);
-            });
+            new LicenseUi(this, ossComponents.getComponentById(id)).setVisible(true);
         }
     }
 }
