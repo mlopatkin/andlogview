@@ -43,7 +43,7 @@ class LicenseUi extends BaseAboutDialogUi {
     protected MigLayout createContentLayout() {
         // Max height is to prevent the dialog from growing too tall.
         return new MigLayout(
-                LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp"));
+                LC().insets("dialog").wrapAfter(1).fillX().maxHeight("600lp").width("600lp"));
     }
 
     @Override
@@ -56,6 +56,8 @@ class LicenseUi extends BaseAboutDialogUi {
                 "License for " + scope + "\n\n" + ossComponent.getLicenseText()
         );
         text.setEditable(false);
+        text.setLineWrap(true);
+        text.setWrapStyleWord(true);
         text.setFocusable(false);  // Allow the default button to handle Enter press
 
         scrollPane = new JScrollPane(text);
