@@ -31,5 +31,4 @@ By default it is defined, use <?undef JpAllowUpgrades?> to disable.
 <Include>
     <?define JpAllowDowngrades="yes" ?>
     <?define JpAllowUpgrades="yes" ?>
-    <?define JpProductCode="*" ?>
 </Include>

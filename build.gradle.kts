@@ -15,6 +15,7 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import name.mlopatkin.andlogview.building.Version
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
@@ -478,8 +479,9 @@ installers {
     }
 
     windows {
-        // Do not use "-SNAPSHOT" versions here.
-        version = libs.versions.andlogview
+        // Do not use "-SNAPSHOT" versions here. Also produce unique build numbers per revision to prevent update
+        // shenanigans.
+        version = getAdjustedVersionForWindows()
 
         displayAppName = "AndLogView"
         icon = file("assets/andlogview.ico")
@@ -508,5 +510,25 @@ installers {
             with(additionalFiles)
             into(".")
         }
+    }
+}
+
+/**
+ * On Windows we generate the version number by the following scheme: `<MAJOR>.<MINOR>.<PATCH>*10000 + <revision>`.
+ * Here `revision` is the number of commits since the last release tag. We need ever-incrementing version numbers for
+ * our snapshot builds.
+ */
+fun getAdjustedVersionForWindows(): Provider<String> {
+    return libs.versions.andlogview.zip(buildEnvironment.revisionNumber) { versionString, revisionNumber ->
+        require(revisionNumber in 0..9999) {
+            "Revision number out of range $revisionNumber"
+        }
+        val v = Version.fromString(versionString)
+        require(v.patch <= 5) {
+            "Can only produce 5 patch releases"
+        }
+        val r = v.copy(patch = v.patch * 10_0000 + revisionNumber.toInt())
+
+        r.format("%d.%d.%05d")
     }
 }

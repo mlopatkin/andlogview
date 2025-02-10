@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 the Andlogview authors
+ * Copyright 2025 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +17,41 @@
 package name.mlopatkin.andlogview.building
 
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.slf4j.LoggerFactory
 import java.io.IOException
 
-private val logger = LoggerFactory.getLogger("Git")
-
-internal abstract class GitRevisionValueSource : ValueSource<String, GitRevisionValueSource.Params> {
+abstract class GitRevCountValueSource : ValueSource<Int, GitRevCountValueSource.Params> {
     interface Params : ValueSourceParameters {
-        val fallback: Property<String>
         val repoRoot: DirectoryProperty
     }
 
-    override fun obtain(): String {
+    override fun obtain(): Int {
         try {
-            return git(
-                parameters.repoRoot.toFile(),
+            val repoRoot = parameters.repoRoot.toFile()
+            val lastReleaseTag = git(
+                repoRoot,
                 "describe",
-                "--always",  // Always output commit hash
-                "--exclude=*",  // Ignore all tags, only hash is sufficient for now
-                "--dirty=+"  // Add '+' suffix if the working copy is dirty
+                "--abbrev=0",
+                "--tags",
+                "latest-snapshot^" // Exclude latest-snapshot tag
             )
+            require(lastReleaseTag.matches("[0-9]+\\.[0-9]+(\\.[0-9]+)?".toRegex())) {
+                "Invalid version tag '$lastReleaseTag'"
+            }
+
+            val revCountSinceRelease = git(
+                repoRoot,
+                "rev-list",
+                "--count",
+                "--first-parent",
+                "$lastReleaseTag..HEAD"
+            )
+
+            return revCountSinceRelease.toInt()
         } catch (e: IOException) {
-            logger.warn("Failed to get version info from Git", e)
+            throw RuntimeException("Cannot fetch the revision count: ${e.message}", e)
         }
-        return parameters.fallback.get()
     }
 }

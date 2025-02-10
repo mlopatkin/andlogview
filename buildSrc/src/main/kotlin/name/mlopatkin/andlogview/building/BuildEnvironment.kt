@@ -38,9 +38,12 @@ abstract class BuildEnvironment(project: Project) {
     @Suppress("MemberVisibilityCanBePrivate")  // The warning is false positive
     val sourceRevision: Provider<String>
 
+    @Suppress("MemberVisibilityCanBePrivate")  // The warning is false positive
+    val revisionNumber: Provider<Int>
+
     init {
         with(project) {
-            val isCi = providers.environmentVariable("CI")
+            val isCi = providers.environmentVariable("CI").map { it.toBoolean() }.orElse(false)
             val bitbucketPipelinesRevision = providers.environmentVariable("BITBUCKET_COMMIT")
             val githubActionsRevision = providers.environmentVariable("GITHUB_SHA")
 
@@ -52,12 +55,28 @@ abstract class BuildEnvironment(project: Project) {
             }
 
             sourceRevision = isCi.flatMap { isCiValue ->
-                if (isCiValue.toBoolean()) {
-                    githubActionsRevision.orElse(bitbucketPipelinesRevision)
+                if (isCiValue) {
+                    githubActionsRevision.orElse(bitbucketPipelinesRevision).orElse(gitRevision)
                 } else {
                     gitRevision
                 }
-            }.orElse(gitRevision)
+            }
+
+            val fallbackRevisionNumber = provider { 0 }
+
+            val gitRevisionNumber = providers.of(GitRevCountValueSource::class.java) {
+                parameters {
+                    repoRoot = projectDir
+                }
+            }
+
+            revisionNumber = isCi.flatMap { isCiValue ->
+                if (isCiValue) {
+                    gitRevisionNumber
+                } else {
+                    fallbackRevisionNumber
+                }
+            }
         }
     }
 }
