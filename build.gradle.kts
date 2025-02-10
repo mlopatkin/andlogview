@@ -514,20 +514,32 @@ installers {
 }
 
 /**
- * On Windows we generate the version number by the following scheme: `<MAJOR>.<MINOR>.<PATCH>*10000 + <revision>`.
+ * On Windows we generate the version number by the following scheme: `<MAJOR>.<MINOR>.<PATCH>*10_000 + <revision>`.
  * Here `revision` is the number of commits since the last release tag. We need ever-incrementing version numbers for
  * our snapshot builds.
  */
 fun getAdjustedVersionForWindows(): Provider<String> {
-    return libs.versions.andlogview.zip(buildEnvironment.revisionNumber) { versionString, revisionNumber ->
-        require(revisionNumber in 0..9999) {
-            "Revision number out of range $revisionNumber"
+    val maxRevisionNumber = 9_999
+    val actualRevisionNumber = if (buildEnvironment.isSnapshot) {
+        buildEnvironment.revisionNumber.map {
+            // just add verification
+            require(it in 0 until maxRevisionNumber) {
+                "Revision number out of range: $it"
+            }
+            it
         }
+    } else {
+        // We're building the release. It is "newer" than any of the revisions. It is also likely that revision number
+        // is already taking the current release tag into account.
+        provider { maxRevisionNumber }
+    }
+
+    return libs.versions.andlogview.zip(actualRevisionNumber) { versionString, revisionNumber ->
         val v = Version.fromString(versionString)
         require(v.patch <= 5) {
-            "Can only produce 5 patch releases"
+            "Can only produce 5 patch releases" // :(
         }
-        val r = v.copy(patch = v.patch * 10_0000 + revisionNumber.toInt())
+        val r = v.copy(patch = v.patch * 10_000 + revisionNumber.toInt())
 
         r.format("%d.%d.%05d")
     }

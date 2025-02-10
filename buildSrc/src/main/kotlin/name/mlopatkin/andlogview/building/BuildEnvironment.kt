@@ -38,6 +38,9 @@ abstract class BuildEnvironment(project: Project) {
     @Suppress("MemberVisibilityCanBePrivate")  // The warning is false positive
     val sourceRevision: Provider<String>
 
+    /**
+     * Number of commits since the last release, excluding commits on branches. Only available on CI.
+     */
     @Suppress("MemberVisibilityCanBePrivate")  // The warning is false positive
     val revisionNumber: Provider<Int>
 
