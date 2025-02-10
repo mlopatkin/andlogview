@@ -16,10 +16,14 @@
 
 package name.mlopatkin.andlogview.ui.about;
 
+import static java.util.stream.Collectors.toMap;
+
 import name.mlopatkin.andlogview.utils.Try;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,11 +32,15 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 class RuntimeJdkLicenseLoader {
+    private static final Logger log = LoggerFactory.getLogger(RuntimeJdkLicenseLoader.class);
+
     private final File legalDir;
 
     public RuntimeJdkLicenseLoader(File javaHome) {
@@ -40,7 +48,9 @@ class RuntimeJdkLicenseLoader {
     }
 
     public OssComponent getBundledJdk() {
-        var license = getBundledJdkLicense().toOptional()
+        var license = getBundledJdkLicense()
+                .handleError(th -> log.error("Failed to load OpenJDK license", th))
+                .toOptional()
                 .orElse("Failed to load OpenJDK license. You can find it in " + legalDir.getAbsolutePath());
         return buildJdkComponent(license);
     }
@@ -55,15 +65,34 @@ class RuntimeJdkLicenseLoader {
                     .map(p -> Try.ofCallable(() -> Maps.immutableEntry(p.toFile().getName(), readText(p))))
                     .filter(RuntimeJdkLicenseLoader::isValidLicenseOrFailure)
                     .collect(Try.liftToList())
-                    .map(ImmutableMap::copyOf)
+                    .map(RuntimeJdkLicenseLoader::collectLicenseMap)
                     .map(RuntimeJdkLicenseLoader::buildLicenseText);
         } catch (IOException ex) {
             return Try.ofError(ex);
         }
     }
 
+    private static SortedMap<String, String> collectLicenseMap(List<Map.Entry<String, String>> entries) {
+        // We cannot use ImmutableMap, because it doesn't allow duplicates.
+        return entries.stream().collect(
+                toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (v1, v2) -> {
+                            if (Objects.equals(v1, v2)) {
+                                return v1;
+                            } else {
+                                throw new IllegalArgumentException("Duplicate entry with different contents found");
+                            }
+                        },
+                        TreeMap::new));
+    }
+
     private static Boolean isValidLicenseOrFailure(Try<Map.Entry<String, String>> t) {
-        return t.toOptional().map(l -> !l.getValue().startsWith("Please see ..")).orElse(true);
+        // We want to preserve the failures to e.g. log them. We don't want to collect incomplete license because of
+        // that.
+        // On at least Windows, some LICENSE files are just pointers to another one in java.base. We exclude these too.
+        return !t.isPresent() || !t.get().getValue().startsWith("Please see ..");
     }
 
     private static OssComponent buildJdkComponent(String license) {
@@ -78,21 +107,19 @@ class RuntimeJdkLicenseLoader {
         );
     }
 
-    private static String buildLicenseText(Map<String, String> licenseFiles) {
-        var sortedLicenseFiles = new TreeMap<>(licenseFiles);
-
+    private static String buildLicenseText(SortedMap<String, String> licenseFiles) {
         var result = new StringBuilder();
         result.append(Objects.requireNonNull(
-                        sortedLicenseFiles.remove("LICENSE"), "LICENSE not found"))
+                        licenseFiles.remove("LICENSE"), "LICENSE not found"))
                 .append('\n');
         result.append(Objects.requireNonNull(
-                        sortedLicenseFiles.remove("ASSEMBLY_EXCEPTION"), "ASSEMBLY_EXCEPTION not found"))
+                        licenseFiles.remove("ASSEMBLY_EXCEPTION"), "ASSEMBLY_EXCEPTION not found"))
                 .append('\n');
         result.append(Objects.requireNonNull(
-                        sortedLicenseFiles.remove("ADDITIONAL_LICENSE_INFO"), "ADDITIONAL_LICENSE_INFO not found"))
+                        licenseFiles.remove("ADDITIONAL_LICENSE_INFO"), "ADDITIONAL_LICENSE_INFO not found"))
                 .append('\n');
 
-        for (String license : sortedLicenseFiles.values()) {
+        for (String license : licenseFiles.values()) {
             result.append(license).append('\n');
         }
 

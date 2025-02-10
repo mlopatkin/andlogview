@@ -205,6 +205,11 @@ public abstract class Try<T> {
             public Throwable getError() throws IllegalStateException {
                 throw new IllegalStateException("Error is not present");
             }
+
+            @Override
+            public String toString() {
+                return "Try{value=" + value + "}";
+            }
         };
     }
 
@@ -233,6 +238,11 @@ public abstract class Try<T> {
             @Override
             public Throwable getError() throws IllegalStateException {
                 return throwable;
+            }
+
+            @Override
+            public String toString() {
+                return "Try{failure=" + throwable + "}";
             }
         };
     }
