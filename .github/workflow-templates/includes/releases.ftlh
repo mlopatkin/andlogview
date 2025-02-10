@@ -80,9 +80,11 @@
     steps:
       - name: Checkout Repository
         uses: actions/checkout@[=CHECKOUT_ACTION_VERSION]
+        <#if pipeline == "snapshot">
         with:
           # Building the version number requires full history, but it is only used on Windows
           fetch-depth: 0
+        </#if>
       - name: Set up Eclipse Temurin JDK 17
         uses: actions/setup-java@[=SETUP_JAVA_ACTION_VERSION]
         with:
