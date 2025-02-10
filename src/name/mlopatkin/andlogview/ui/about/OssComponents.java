@@ -56,8 +56,10 @@ class OssComponents {
         var components = loadComponentsFrom(AppResources.getResource("ui/about/licenses.json")).stream();
         var isBundledRuntime = System.getProperty("jpackage.app-version") != null;
         if (isBundledRuntime) {
-            components = Stream.concat(components,
-                    Stream.of(new RuntimeJdkLicenseLoader(new File(System.getProperty("java.home"))).getBundledJdk()));
+            components = Stream.concat(
+                    components,
+                    Stream.of(new RuntimeJdkLicenseLoader(new File(System.getProperty("java.home"))).getBundledJdk())
+            );
         }
         return components
                 .sorted(Comparator.comparing(OssComponent::getName))
@@ -75,5 +77,4 @@ class OssComponents {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toMap;
 import name.mlopatkin.andlogview.utils.Try;
 
 import com.google.common.collect.Maps;
+import com.google.common.io.MoreFiles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +129,6 @@ class RuntimeJdkLicenseLoader {
 
     private static String readText(Path p) throws IOException {
         // Can't use Files.readText as it is Java 11+
-        return com.google.common.io.Files.asByteSource(p.toFile()).asCharSource(StandardCharsets.UTF_8).read();
+        return MoreFiles.asByteSource(p).asCharSource(StandardCharsets.UTF_8).read();
     }
 }
