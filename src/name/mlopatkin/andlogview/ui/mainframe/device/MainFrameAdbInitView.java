@@ -17,7 +17,9 @@
 package name.mlopatkin.andlogview.ui.mainframe.device;
 
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
+import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.mainframe.ErrorDialogs;
+import name.mlopatkin.andlogview.widgets.dialogs.ProgressDialog;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -27,14 +29,13 @@ import javax.inject.Inject;
  * A view to show ADB initialization in the Main Frame.
  */
 class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
-
-    private final AdbInitProgressDialog.Factory dialogFactory;
+    private final DialogFactory dialogFactory;
     private final ErrorDialogs errorDialogs;
 
-    private @Nullable AdbInitProgressDialog currentDialog;
+    private @Nullable ProgressDialog currentDialog;
 
     @Inject
-    MainFrameAdbInitView(AdbInitProgressDialog.Factory dialogFactory, ErrorDialogs errorDialogs) {
+    MainFrameAdbInitView(DialogFactory dialogFactory, ErrorDialogs errorDialogs) {
         this.dialogFactory = dialogFactory;
         this.errorDialogs = errorDialogs;
     }
@@ -42,7 +43,12 @@ class MainFrameAdbInitView implements AdbServicesInitializationPresenter.View {
     @Override
     public void showAdbLoadingProgress(boolean isCancellable, Runnable userHideAction) {
         assert currentDialog == null;
-        currentDialog = dialogFactory.create(isCancellable ? "Cancel" : "Hide");
+        currentDialog = new ProgressDialog(
+                dialogFactory.getOwner(),
+                "Initializing ADB…",
+                "Connecting to ADB server…",
+                isCancellable ? "Cancel" : "Hide"
+        );
         currentDialog.show(userHideAction);
     }
 
