@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 the Andlogview authors
+ * Copyright 2025 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,35 +14,28 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui.mainframe.device;
+package name.mlopatkin.andlogview.widgets.dialogs;
 
-import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
-import name.mlopatkin.andlogview.utils.CommonChars;
-
-import dagger.assisted.Assisted;
-import dagger.assisted.AssistedFactory;
-import dagger.assisted.AssistedInject;
-
+import java.awt.Window;
 import java.util.Objects;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
-public class AdbInitProgressDialog {
-    private final JDialog dialog;
+public class ProgressDialog {
     private final JOptionPane optionPane;
+    private final JDialog dialog;
 
-    @AssistedInject
-    public AdbInitProgressDialog(DialogFactory dialogFactory, @Assisted String defaultOptionTitle) {
+    public ProgressDialog(Window owner, String title, String message, String actionTitle) {
         optionPane = new JOptionPane(
                 new Object[] {
-                        "Connecting to ADB server" + CommonChars.ELLIPSIS,
+                        message,
                         createProgressBar()
                 }, JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.DEFAULT_OPTION, null, new String[] {defaultOptionTitle});
+                JOptionPane.DEFAULT_OPTION, null, new String[] {actionTitle});
 
-        dialog = optionPane.createDialog(dialogFactory.getOwner(), "Initializing ADB" + CommonChars.ELLIPSIS);
+        dialog = optionPane.createDialog(owner, title);
     }
 
     public void show(Runnable cancellationAction) {
@@ -61,10 +54,5 @@ public class AdbInitProgressDialog {
         var bar = new JProgressBar(JProgressBar.HORIZONTAL);
         bar.setIndeterminate(true);
         return bar;
-    }
-
-    @AssistedFactory
-    interface Factory {
-        AdbInitProgressDialog create(String defaultOptionTitle);
     }
 }
