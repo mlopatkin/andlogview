@@ -56,6 +56,11 @@ public interface InstallAdbPresenter {
     abstract class Result {
         private Result() {}
 
+        @Override
+        public String toString() {
+            return getClass().getSimpleName();
+        }
+
         /**
          * The download was abandoned because of the network or file failure.
          *
@@ -116,6 +121,11 @@ public interface InstallAdbPresenter {
 
         public Throwable getFailure() {
             return failure;
+        }
+
+        @Override
+        public String toString() {
+            return "DownloadFailure(" + failure.getMessage() + ")";
         }
     }
 

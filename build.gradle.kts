@@ -529,3 +529,21 @@ fun getAdjustedVersionForWindows(): Provider<String> {
         r.format("%d.%d.%05d")
     }
 }
+
+tasks.register<Exec>("updateAndroidSdkRepoManifestForTests") {
+    val repositoryFilePath = file("test_resources/name/mlopatkin/andlogview/sdkrepo/repository2-3.xml")
+    val sdkUrl = uri("https://dl.google.com/android/repository/repository2-3.xml")
+
+    commandLine = listOf(
+        "curl",
+        sdkUrl.toASCIIString(),
+        "-o",
+        repositoryFilePath.absolutePath
+    )
+
+    doLast {
+        println("Finished downloading the new snapshot of Android SDK repo manifest")
+        println("Don't forget to commit!")
+    }
+}
+
