@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
-import java.awt.Desktop;
+import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -26,16 +26,45 @@ import javax.inject.Provider;
  */
 public class InstallAdbPresenterFactory {
     private final Provider<DesktopInstallAdbPresenter> desktopInstalProvider;
+    private final Provider<DownloadAdbPresenter> downloadProvider;
 
     @Inject
-    public InstallAdbPresenterFactory(Provider<DesktopInstallAdbPresenter> desktopInstalProvider) {
+    public InstallAdbPresenterFactory(
+            Provider<DesktopInstallAdbPresenter> desktopInstalProvider,
+            Provider<DownloadAdbPresenter> downloadProvider
+    ) {
         this.desktopInstalProvider = desktopInstalProvider;
+        this.downloadProvider = downloadProvider;
     }
 
     public InstallAdbPresenter createPresenter() {
-        if (Desktop.isDesktopSupported()) {
-            return desktopInstalProvider.get();
+        return new CompoundPresenter();
+    }
+
+    private class CompoundPresenter implements InstallAdbPresenter {
+        // TODO(mlopatkin) this class is a stub
+        private final DownloadAdbPresenter downloadPresenter = downloadProvider.get();
+        private final DesktopInstallAdbPresenter desktopInstallPresenter = desktopInstalProvider.get();
+
+        @Override
+        public boolean isAvailable() {
+            return downloadPresenter.isAvailable() || desktopInstallPresenter.isAvailable();
         }
-        return DisabledInstallAdbPresenter.INSTANCE;
+
+        @Override
+        public CompletableFuture<Result> startInstall() {
+            if (downloadPresenter.isAvailable()) {
+                return downloadPresenter.startInstall().thenCompose(result ->
+                        (result instanceof PackageNotFound || result instanceof DownloadFailure)
+                                ? desktopInstallPresenter.startInstall()
+                                : CompletableFuture.completedFuture(result)
+                );
+            }
+            if (desktopInstallPresenter.isAvailable()) {
+                return desktopInstallPresenter.startInstall();
+            }
+
+            return CompletableFuture.completedFuture(Result.failure(new UnsupportedOperationException()));
+        }
     }
 }
