@@ -68,9 +68,14 @@ class DownloadAdbPresenterTest {
     }
 
     private DownloadAdbPresenter createPresenter() {
-        return new DownloadAdbPresenter(sdkRepository, () -> initView,
-                () -> mock(DownloadAdbPresenter.InstallView.class), MoreExecutors.directExecutor(),
-                netExecutor);
+        return new DownloadAdbPresenter(
+                sdkRepository,
+                () -> initView,
+                () -> mock(DownloadAdbPresenter.InstallView.class),
+                () -> mock(DownloadAdbPresenter.SdkDownloadView.class),
+                MoreExecutors.directExecutor(),
+                netExecutor
+        );
     }
 
     static class FakeInitView implements DownloadAdbPresenter.SdkInitView {

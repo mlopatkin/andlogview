@@ -22,11 +22,14 @@ import com.google.common.hash.HashingOutputStream;
 import com.google.common.io.ByteSource;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
@@ -86,10 +89,33 @@ public class SdkRepository {
                 throw new IOException("Checksum mismatch");
             }
 
-            Files.move(tempFile.toPath(), targetDirectory.toPath().resolve(sdkPackage.getName() + ".zip"));
+            extractZip(tempFile, targetDirectory);
         } finally {
             if (tempFile.exists()) {
                 tempFile.delete();
+            }
+        }
+    }
+
+    private void extractZip(File zipFile, File targetDirectory) throws IOException {
+        var targetPath = targetDirectory.toPath();
+        try (
+                var zipBytes = new FileInputStream(zipFile);
+                var zip = new ZipInputStream(zipBytes)
+        ) {
+            for (var entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+                var extractPath = Paths.get(entry.getName()).normalize();
+                var targetEntryPath = targetPath.resolve(extractPath);
+                if (!targetEntryPath.startsWith(targetPath)) {
+                    throw new IOException(
+                            String.format(
+                                    "Path traversal detected in '%s', writing file '%s' outside the target directory",
+                                    zipFile,
+                                    extractPath)
+                    );
+                }
+                Files.createDirectories(targetEntryPath.getParent());
+                Files.copy(zip, targetEntryPath);
             }
         }
     }

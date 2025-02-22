@@ -40,10 +40,30 @@ public abstract class PreferencesUiModule {
     @Binds
     abstract DownloadAdbPresenter.InstallView installView(InstallViewImpl installView);
 
+    @Binds
+    abstract DownloadAdbPresenter.SdkDownloadView downloadView(SdkDownloadViewImpl sdkDownloadView);
+
     static class SdkInitViewImpl extends ProgressDialog implements DownloadAdbPresenter.SdkInitView {
         @Inject
         SdkInitViewImpl(DialogFactory dialogFactory) {
             super(dialogFactory.getOwner(), "Loading SDK components", "Loading SDK components…", "Cancel");
+        }
+
+        @Override
+        public void show(Runnable cancellationAction) {
+            super.show(cancellationAction);
+        }
+
+        @Override
+        public void hide() {
+            super.hide();
+        }
+    }
+
+    static class SdkDownloadViewImpl extends ProgressDialog implements DownloadAdbPresenter.SdkDownloadView {
+        @Inject
+        public SdkDownloadViewImpl(DialogFactory dialogFactory) {
+            super(dialogFactory.getOwner(), "Installing SDK package", "Installing SDK package…", "Cancel");
         }
 
         @Override

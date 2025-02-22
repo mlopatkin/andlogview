@@ -104,11 +104,18 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         void setDownloadAllowed(boolean allowed);
     }
 
+    interface SdkDownloadView {
+        void show(Runnable cancelAction);
+
+        void hide();
+    }
+
     // Since the dawn of time, ADB lives there
     private static final String PLATFORM_TOOLS_PACKAGE = "platform-tools";
     private final SdkRepository repository;
     private final Provider<SdkInitView> sdkInitView;
     private final Provider<InstallView> installView;
+    private final Provider<SdkDownloadView> downloadView;
     private final Executor uiExecutor;
     private final Executor networkExecutor;
 
@@ -117,12 +124,14 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
             SdkRepository repository,
             Provider<SdkInitView> sdkInitView,
             Provider<InstallView> installView,
+            Provider<SdkDownloadView> downloadView,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor networkExecutor
     ) {
         this.repository = repository;
         this.sdkInitView = sdkInitView;
         this.installView = installView;
+        this.downloadView = downloadView;
         this.uiExecutor = uiExecutor;
         this.networkExecutor = networkExecutor;
     }
@@ -175,7 +184,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         var result = new CompletableFuture<File>();
         var view = installView.get();
         view.setLicenseText(pkg.getLicense());
-        view.setInstallLocation(new File(Main.getConfigurationDir(), "platform-tools"));
+        view.setInstallLocation(new File(Main.getConfigurationDir(), "android-sdk"));
         view.setDownloadAllowed(false);
         view.setInstallLocationSelectionAction(() -> {
             view.showInstallDirSelector(view::setInstallLocation, () -> {});
@@ -205,7 +214,9 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
     }
 
     private CompletableFuture<File> showInstallProgressDialog(CompletableFuture<File> install) {
-        var completion = install.whenCompleteAsync((r, th) -> {}, uiExecutor);
+        var view = downloadView.get();
+        var completion = install.whenCompleteAsync((r, th) -> view.hide(), uiExecutor);
+        view.show(MyFutures.toCancellable(install)::cancel);
         return completion;
     }
 }
