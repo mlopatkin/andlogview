@@ -17,13 +17,14 @@
 package name.mlopatkin.gradleplugins.jpackage
 
 import org.gradle.platform.Architecture
-import org.gradle.platform.BuildPlatform
 import org.gradle.platform.OperatingSystem
+import org.gradle.platform.internal.CurrentBuildPlatform
 import javax.inject.Inject
 
-abstract class BuildEnvironment {
-    @get:Inject
-    protected abstract val platform: BuildPlatform
+abstract class BuildEnvironment @Inject constructor(
+    currentPlatform: CurrentBuildPlatform
+) {
+    private val platform = currentPlatform.toBuildPlatform()
 
     /**
      * Is `true` if building on Linux
