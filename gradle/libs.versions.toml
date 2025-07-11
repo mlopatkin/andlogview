@@ -21,6 +21,7 @@ build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:1.13.1"
 build-jabel = "com.github.bsideup.jabel:jabel-javac-plugin:1.0.0"
 build-nullaway = "com.uber.nullaway:nullaway:0.12.3"
 checkerframeworkAnnotations = "org.checkerframework:checker-qual:3.38.0"
+commons-compress = "org.apache.commons:commons-compress:1.27.1"
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 ddmlib = "com.android.tools.ddms:ddmlib:26.1.3"

@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":search:logrecord"))
     implementation(project(":widgets"))
 
+    implementation(libs.commons.compress)
     implementation(libs.dagger.runtime)
     implementation(libs.flatlaf.core)
     implementation(libs.flatlaf.extras)
@@ -147,6 +148,31 @@ buildMetadata {
 
 licenses {
     configuration = configurations.runtimeClasspath
+
+    binaryDependency(
+        libs.commons.compress,
+        "Apache Commons Compress",
+        uri("https://commons.apache.org/proper/commons-compress/"),
+        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(fromJar("META-INF/NOTICE.txt"))
+    )
+    binaryDependency(
+        "commons-codec:commons-codec",
+        "Apache Commons Codec",
+        uri("https://commons.apache.org/proper/commons-codec/"),
+        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(fromJar("META-INF/NOTICE.txt"))
+    )
+    binaryDependency(
+        "commons-io:commons-io",
+        "Apache Commons IO",
+        uri("https://commons.apache.org/proper/commons-io/"),
+        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(fromJar("META-INF/NOTICE.txt"))
+    )
+    binaryDependency(
+        "org.apache.commons:commons-lang3",
+        "Apache Commons Lang",
+        uri("https://commons.apache.org/proper/commons-lang/"),
+        License.apache2(fromJar("META-INF/LICENSE.txt")).withNotice(fromJar("META-INF/NOTICE.txt"))
+    )
 
     binaryDependency(
         libs.dagger.runtime,

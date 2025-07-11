@@ -16,20 +16,26 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
+import static name.mlopatkin.andlogview.base.collections.MyIterables.forEnumeration;
+
 import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.HashingOutputStream;
 import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+
+import org.apache.commons.compress.archivers.zip.ZipFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.zip.ZipInputStream;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -97,13 +103,15 @@ public class SdkRepository {
         }
     }
 
-    private void extractZip(File zipFile, File targetDirectory) throws IOException {
+    public void extractZip(File zipFile, File targetDirectory) throws IOException {
         var targetPath = targetDirectory.toPath();
+        var archiveSize = Files.size(zipFile.toPath());
+        var maxExpectedFileSize = archiveSize * 100;
+
         try (
-                var zipBytes = new FileInputStream(zipFile);
-                var zip = new ZipInputStream(zipBytes)
+                var zip = ZipFile.builder().setFile(zipFile).get()
         ) {
-            for (var entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+            for (var entry : forEnumeration(zip::getEntries)) {
                 var extractPath = Paths.get(entry.getName()).normalize();
                 var targetEntryPath = targetPath.resolve(extractPath);
                 if (!targetEntryPath.startsWith(targetPath)) {
@@ -114,9 +122,67 @@ public class SdkRepository {
                                     extractPath)
                     );
                 }
-                Files.createDirectories(targetEntryPath.getParent());
-                Files.copy(zip, targetEntryPath);
+
+                if (entry.isDirectory()) {
+                    Files.createDirectories(targetEntryPath);
+                    continue;
+                } else {
+                    Files.createDirectories(targetEntryPath.getParent());
+                }
+
+                try (var zipEntryStream = zip.getInputStream(entry)) {
+                    Files.copy(ByteStreams.limit(zipEntryStream, maxExpectedFileSize), targetEntryPath);
+                    if (zipEntryStream.read() != -1) {
+                        throw new IOException(
+                                "The compression ratio for the file is over 99%. This is likely a zip bomb");
+                    }
+                    if (entry.getUnixMode() != 0) {
+                        try {
+                            Files.setPosixFilePermissions(targetEntryPath, modeToPermissions(entry.getUnixMode()));
+                        } catch (UnsupportedOperationException ignored) {
+                            // ok to ignore on Windows
+                        }
+                    }
+                }
             }
         }
+    }
+
+    @SuppressWarnings("OctalInteger")
+    private static Set<PosixFilePermission> modeToPermissions(int unixMode) {
+        var permissions = ImmutableSet.<PosixFilePermission>builder();
+        // Owner permissions
+        if ((unixMode & 0400) != 0) {
+            permissions.add(PosixFilePermission.OWNER_READ);
+        }
+        if ((unixMode & 0200) != 0) {
+            permissions.add(PosixFilePermission.OWNER_WRITE);
+        }
+        if ((unixMode & 0100) != 0) {
+            permissions.add(PosixFilePermission.OWNER_EXECUTE);
+        }
+
+        // Group permissions
+        if ((unixMode & 0040) != 0) {
+            permissions.add(PosixFilePermission.GROUP_READ);
+        }
+        if ((unixMode & 0020) != 0) {
+            permissions.add(PosixFilePermission.GROUP_WRITE);
+        }
+        if ((unixMode & 0010) != 0) {
+            permissions.add(PosixFilePermission.GROUP_EXECUTE);
+        }
+
+        // Others permissions
+        if ((unixMode & 0004) != 0) {
+            permissions.add(PosixFilePermission.OTHERS_READ);
+        }
+        if ((unixMode & 0002) != 0) {
+            permissions.add(PosixFilePermission.OTHERS_WRITE);
+        }
+        if ((unixMode & 0001) != 0) {
+            permissions.add(PosixFilePermission.OTHERS_EXECUTE);
+        }
+        return permissions.build();
     }
 }

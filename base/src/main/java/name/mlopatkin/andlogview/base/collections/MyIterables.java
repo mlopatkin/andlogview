@@ -17,11 +17,14 @@
 package name.mlopatkin.andlogview.base.collections;
 
 import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.Iterators;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class MyIterables {
     private MyIterables() {}
@@ -64,5 +67,16 @@ public final class MyIterables {
                 return endOfData();
             }
         };
+    }
+
+    /**
+     * Allows using {@link Enumeration} in foreach loops
+     *
+     * @param enumeration the supplier of enumerations
+     * @param <T> the element type
+     * @return the iterable that builds its iterable out of the supplier
+     */
+    public static <T> Iterable<T> forEnumeration(Supplier<? extends Enumeration<T>> enumeration) {
+        return () -> Iterators.forEnumeration(enumeration.get());
     }
 }
