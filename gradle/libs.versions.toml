@@ -54,4 +54,4 @@ bitbucket = "name.mlopatkin.bitbucket:0.6"
 # JMH plugin allows building and running JMH benchmarks
 jmh = "me.champeau.jmh:0.7.2"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool
-shadow = "com.gradleup.shadow:8.3.5"
+shadow = "com.gradleup.shadow:8.3.8"
