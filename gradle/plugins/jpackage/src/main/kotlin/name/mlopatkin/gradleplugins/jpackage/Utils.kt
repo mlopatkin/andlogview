@@ -59,7 +59,7 @@ internal fun Task.withOptionalInput(name: String, value: Provider<RegularFile>) 
 /**
  * Runs the provided block with the value of the provider if it is present, otherwise does nothing.
  */
-internal inline fun <T> Provider<out T>.ifPresent(block: (T) -> Unit) {
+internal inline fun <T : Any> Provider<out T>.ifPresent(block: (T) -> Unit) {
     if (isPresent) {
         block(get())
     }
