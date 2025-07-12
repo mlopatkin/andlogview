@@ -49,8 +49,6 @@ test-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockit
 test-mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 
 [plugins]
-# Bitbucket plugin allows publishing releases to the Bitbucket project's Downloads page
-bitbucket = "name.mlopatkin.bitbucket:0.6"
 # JMH plugin allows building and running JMH benchmarks
 jmh = "me.champeau.jmh:0.7.3"
 # Shadow plugin provides means to prepare a single-JAR distribution of the tool

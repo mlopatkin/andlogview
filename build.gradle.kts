@@ -19,14 +19,12 @@ import name.mlopatkin.andlogview.building.Version
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
-import name.mlopatkin.bitbucket.gradle.UploadTask
 import name.mlopatkin.gradleplugins.licenses.License
 
 plugins {
     application
 
     alias(libs.plugins.shadow)
-    alias(libs.plugins.bitbucket)
     alias(libs.plugins.jmh)
 
     id("name.mlopatkin.andlogview.building.build-environment")
@@ -410,19 +408,6 @@ tasks.named<ShadowJar>("shadowJar") {
         exclude(dependency(libs.log4j.get()))
         exclude(dependency(libs.slf4j.reload4j.get()))
     }
-}
-
-// Configure publishing
-bitbucket {
-    repository = "android-log-viewer"
-    username =
-        providers.environmentVariable("BITBUCKET_USER").orElse(providers.gradleProperty("bitbucket.user"))
-    applicationPassword =
-        providers.environmentVariable("BITBUCKET_PASSWORD").orElse(providers.gradleProperty("bitbucket.password"))
-}
-
-tasks.register<UploadTask>("bitbucketUpload") {
-    fileToUpload = tasks.shadowDistZip.flatMap { it.archiveFile }
 }
 
 installers {
