@@ -45,10 +45,7 @@
       - <@gradle.setupGradle />
       - name: Run checks and build noJRE installer
         # This can benefit from the configuration cache, unlike the installer builds later
-        <@gradle.runGradle "check noJreInstaller bitbucketUpload"/>
-        env:
-          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_PASSWORD }}
-          BITBUCKET_USER: mlopatkin
+        <@gradle.runGradle "check noJreInstaller"/>
       - name: Build and publish [=pipeline]
         <@gradle.runGradle "linuxInstallers"/>
       - name: Publish artifacts
