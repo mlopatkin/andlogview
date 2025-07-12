@@ -26,8 +26,12 @@ dependencies {
     api(libs.dagger.runtime)
 
     testFixturesApi(platform(libs.test.assertj.bom))
+    testFixturesApi(platform(libs.test.junit5.bom))
+
     testFixturesApi(libs.test.assertj.core)
     testFixturesApi(libs.test.hamcrest.hamcrest)
+    testFixturesApi(libs.test.junit5.jupiter)
+
     testFixturesImplementation(libs.test.mockito.core)
 }
 
