@@ -16,19 +16,21 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import name.mlopatkin.andlogview.test.Resource;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
+import java.nio.file.Path;
 
-class SdkRepositoryTest {
-
+class SafeZipFileTest {
     @Test
-    void name() throws Exception {
-        var repo = new SdkRepository(mock());
+    void canDetectZipBombs(@Resource("zip-bomb.zip") Path zipBomb, @TempDir Path outputDirectory) throws Exception {
+        var zipFile = new SafeZipFile(zipBomb);
 
-        repo.extractZip(new File("/home/mlopatkin/android-log-viewer/zbsm.zip"),
-                new File("/home/mlopatkin/android-log-viewer/build/tmp/archive"));
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory)).hasMessageContaining("This is likely a zip bomb");
     }
 }
