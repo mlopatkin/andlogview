@@ -94,6 +94,21 @@ final class SdkRepoSchema {
             }
         }
 
+        public static class ChannelRef { // <channelRef ref="channel-2" />
+            public static final String STABLE_CHANNEL = "channel-0";
+
+            private static final QName CHANNEL_REF_TAG = new QName("channelRef");
+            private static final QName REF_ATTR = new QName("ref");
+
+            public static boolean is(StartElement channelRef) {
+                return CHANNEL_REF_TAG.equals(channelRef.getName());
+            }
+
+            public static @Nullable String getRef(StartElement tag) {
+                return getAttrValue(tag, REF_ATTR);
+            }
+        }
+
         public static class Archives { // <archives>
             private Archives() {}
 

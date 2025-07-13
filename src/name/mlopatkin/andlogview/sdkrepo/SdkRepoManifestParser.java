@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.sdkrepo.SdkRepoSchema.RemotePackage.Archives.Ar
 import name.mlopatkin.andlogview.sdkrepo.SdkRepoSchema.RemotePackage.Archives.Archive.Complete.Checksum;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepoSchema.RemotePackage.Archives.Archive.Complete.Url;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepoSchema.RemotePackage.Archives.Archive.HostOs;
+import name.mlopatkin.andlogview.sdkrepo.SdkRepoSchema.RemotePackage.ChannelRef;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepoSchema.RemotePackage.UsesLicense;
 import name.mlopatkin.andlogview.utils.Try;
 
@@ -132,6 +133,13 @@ class SdkRepoManifestParser implements Closeable {
                 licenseId = UsesLicense.getRef(tag);
             } else if (Archives.is(tag)) {
                 readArchives(tag, path, packages::add);
+            } else if (ChannelRef.is(tag)) {
+                var channel = ChannelRef.getRef(tag);
+                if (!ChannelRef.STABLE_CHANNEL.equals(channel)) {
+                    // This is a package from pre-stable channel, skip it.
+                    reader.skipTag(packageTag);
+                    return;
+                }
             } else {
                 reader.skipTag(tag);
             }

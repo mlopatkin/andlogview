@@ -82,8 +82,15 @@ public class SdkRepository {
             httpClient.get(sdkPackage.getDownloadUrl()).downloadInto(hashingStream);
             hashingStream.flush();
 
-            if (!Objects.equals(hashingStream.hash(), sdkPackage.getPackageChecksum())) {
-                throw new IOException("Checksum mismatch");
+            var downloadedChecksum = hashingStream.hash();
+            var expectedChecksum = sdkPackage.getPackageChecksum();
+            if (!Objects.equals(downloadedChecksum, expectedChecksum)) {
+                throw new IOException(
+                        String.format(
+                                "Checksum mismatch, wanted `%s` but got `%s`",
+                                expectedChecksum,
+                                downloadedChecksum
+                        ));
             }
 
             extractZip(tempFile, targetDirectory);
