@@ -32,6 +32,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Utilities to work with {@link Future}s.
@@ -76,6 +77,24 @@ public final class MyFutures {
                 cancellationHandler.run();
             } else {
                 failureHandler.accept(th);
+            }
+        };
+    }
+
+    /**
+     * Builds a failure handler with a special handling of cancellations. It can unwrap cancellation exceptions.
+     *
+     * @param cancellationHandler the cancellation handler
+     * @param failureHandler the failure handler
+     * @return the combined handler
+     */
+    public static <T> Function<Throwable, T> cancellationTransformer(Supplier<? extends T> cancellationHandler,
+            Function<? super Throwable, ? extends T> failureHandler) {
+        return th -> {
+            if (isCancellation(th)) {
+                return cancellationHandler.get();
+            } else {
+                return failureHandler.apply(th);
             }
         };
     }
@@ -280,12 +299,7 @@ public final class MyFutures {
         Thread thread = Thread.currentThread();
         thread.getUncaughtExceptionHandler().uncaughtException(thread, th);
         // Rethrow the exception, so the downstream chain is still unsuccessful.
-        throw sneakyRethrow(th);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <E extends Throwable> RuntimeException sneakyRethrow(Throwable th) throws E {
-        throw (E) th;
+        throw MyThrowables.sneakyRethrow(th);
     }
 
     private static boolean isCancellation(Throwable th) {

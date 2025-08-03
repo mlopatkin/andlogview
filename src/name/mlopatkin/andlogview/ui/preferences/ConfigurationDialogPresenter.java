@@ -23,12 +23,17 @@ import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.base.CharMatcher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
 public class ConfigurationDialogPresenter {
+    private static final Logger log = LoggerFactory.getLogger(ConfigurationDialogPresenter.class);
+
     // Design consideration: the dialog doesn't close itself on commit/discard, it waits for the presenter to take a
     // decision and call show()/hide(). This means that the presenter can abort the closing.
     interface View {
@@ -95,7 +100,11 @@ public class ConfigurationDialogPresenter {
 
     private void startAdbInstall() {
         // TODO(mlopatkin) this function is a stub.
-        adbInstaller.startInstall().exceptionally(MyFutures::uncaughtException);
+        adbInstaller.startInstall()
+                .thenAccept(r -> {
+                    log.info("Downloaded r={}", r);
+                })
+                .exceptionally(MyFutures::uncaughtException);
     }
 
     private void tryCommit() {

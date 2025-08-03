@@ -16,26 +16,73 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
+import com.google.common.base.Preconditions;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 
 import java.net.URI;
+import java.util.Comparator;
 
-public interface SdkPackage {
-    enum TargetOs {
+public class SdkPackage implements Comparable<SdkPackage> {
+    private static final Comparator<SdkPackage> COMPARATOR =
+            Comparator.comparing(SdkPackage::getName).thenComparing(SdkPackage::getTargetOs);
+
+    public enum TargetOs {
         LINUX,
         MAC_OS,
         WINDOWS
     }
-    String getLicense();
 
-    URI getDownloadUrl();
+    private final String name;
+    private final String license;
+    private final URI downloadUrl;
+    private final TargetOs targetOs;
+    private final HashFunction checksumAlgorithm;
+    private final HashCode checksum;
 
-    long getSize();
+    public SdkPackage(String name, String license, URI downloadUrl, TargetOs targetOs, HashFunction checksumAlgorithm,
+            HashCode checksum) {
+        Preconditions.checkArgument(checksumAlgorithm.bits() == checksum.bits(),
+                "Hash function %s doesn't produce the same number of bits as in %s", checksumAlgorithm, checksum);
+        this.name = name;
+        this.license = license;
+        this.downloadUrl = downloadUrl;
+        this.targetOs = targetOs;
+        this.checksumAlgorithm = checksumAlgorithm;
+        this.checksum = checksum;
+    }
 
-    TargetOs getTargetOs();
+    public String getName() {
+        return name;
+    }
 
-    HashFunction getChecksumAlgorithm();
+    public String getLicense() {
+        return license;
+    }
 
-    HashCode getPackageChecksum();
+    public URI getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public TargetOs getTargetOs() {
+        return targetOs;
+    }
+
+    public HashFunction getChecksumAlgorithm() {
+        return checksumAlgorithm;
+    }
+
+    public HashCode getPackageChecksum() {
+        return checksum;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SdkPackage{%s; hostOs=%s, url=%s}", name, targetOs, downloadUrl);
+    }
+
+    @Override
+    public int compareTo(SdkPackage o) {
+        return COMPARATOR.compare(this, o);
+    }
 }

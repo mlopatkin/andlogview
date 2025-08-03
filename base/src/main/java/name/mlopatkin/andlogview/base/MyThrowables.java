@@ -71,7 +71,7 @@ public final class MyThrowables {
         // Check if the given throwable is just a wrapper for some other exception. In most cases, the wrapper itself
         // isn't interesting.
         return (th instanceof ExecutionException || th instanceof CompletionException
-                                         || th instanceof InvocationTargetException);
+                || th instanceof InvocationTargetException);
     }
 
     private static boolean hasSuppressed(Throwable th, Throwable maybeSuppressed) {
@@ -81,5 +81,18 @@ public final class MyThrowables {
             }
         }
         return false;
+    }
+
+    /**
+     * Throws a checked exception as an unchecked one. Use sparingly.
+     *
+     * @param th the throwable to throw
+     * @param <E> the exception type to trick compiler
+     * @return never returns, but you can use its result as an argument for {@code throw }
+     * @throws E the exception
+     */
+    @SuppressWarnings("unchecked")
+    public static <E extends Throwable> RuntimeException sneakyRethrow(Throwable th) throws E {
+        throw (E) th;
     }
 }

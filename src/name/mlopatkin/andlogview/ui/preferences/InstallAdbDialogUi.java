@@ -22,17 +22,13 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
-import com.google.common.base.Strings;
-
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -41,8 +37,12 @@ import javax.swing.JTextField;
 
 public class InstallAdbDialogUi extends JDialog {
     protected final JButton selectDirectory = new JButton(String.valueOf(CommonChars.ELLIPSIS));
-    protected final Action okAction = UiHelper.makeAction("OK", this::onPositiveResult);
-    protected final Action cancelAction = UiHelper.makeAction("Cancel", this::onNegativeResult);
+    protected final JButton okButton = new JButton("OK");
+    protected final JButton cancelButton = new JButton("Cancel");
+    protected final JTextArea licenseView = createLicenseView();
+    protected final JCheckBox acceptLicense =
+            new JCheckBox("I have read and agree with the above terms and conditions");
+    protected final JTextField downloadDirectory = new JTextField();
 
     public InstallAdbDialogUi(Frame owner) {
         super(owner, "Install ADB", true);
@@ -51,55 +51,35 @@ public class InstallAdbDialogUi extends JDialog {
         var content = getContentPane();
         content.setLayout(new MigLayout(LC().fillX().wrapAfter(2)));
 
-        content.add(new JScrollPane(createLicenseView()),
+        content.add(new JScrollPane(licenseView),
                 CC().spanX(2).minHeight("600lp").minWidth("500lp").grow().wrap("unrel push"));
 
+        content.add(acceptLicense, CC().spanX(2).wrap());
 
-        content.add(new JCheckBox(" I have read and agree with the above terms and conditions"),
-                CC().spanX(2).wrap());
-
-        var platformToolsInstallLocation = new JTextField();
         JLabel platformToolsInstallLocationLabel = new JLabel("Install into");
-        platformToolsInstallLocationLabel.setLabelFor(platformToolsInstallLocation);
+        platformToolsInstallLocationLabel.setLabelFor(downloadDirectory);
 
         content.add(platformToolsInstallLocationLabel, CC().alignX("label"));
-        content.add(platformToolsInstallLocation, CC().split().growX().pushX());
+        content.add(downloadDirectory, CC().split().growX().pushX());
         content.add(selectDirectory, CC().wrap());
 
-        JButton okButton = new JButton(okAction);
         content.add(okButton, CC().spanX(2).split().alignX("right"));
         getRootPane().setDefaultButton(okButton);
 
-        content.add(new JButton(cancelAction));
+        content.add(cancelButton);
 
         pack();
         setLocationRelativeTo(owner);
         setMinimumSize(getSize());
 
-        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
+        UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", e -> cancelButton.doClick());
     }
 
-    private JComponent createLicenseView() {
-        @SuppressWarnings("InlineMeInliner")
-        var licenseContent = new JTextArea(Strings.repeat("""
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et \
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut \
-                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum \
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui \
-                officia deserunt mollit anim id est laborum.
-
-                """, 10));
+    private JTextArea createLicenseView() {
+        var licenseContent = new JTextArea();
         licenseContent.setEditable(false);
         licenseContent.setLineWrap(true);
         licenseContent.setWrapStyleWord(true);
         return licenseContent;
-    }
-
-    private void onPositiveResult() {
-        dispose();
-    }
-
-    private void onNegativeResult() {
-        dispose();
     }
 }
