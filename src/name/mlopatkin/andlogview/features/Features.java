@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.features;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -25,9 +27,12 @@ import javax.inject.Singleton;
 @Singleton
 public class Features {
     public final Feature useFilterTree;
+    public final Feature downloadAdb;
 
     @Inject
-    Features() {
+    @VisibleForTesting
+    public Features() {
         useFilterTree = Feature.create("name.mlopatkin.andlogview.features.useFilterTree", true);
+        downloadAdb = Feature.create("name.mlopatkin.andlogview.features.downloadAdb", false);
     }
 }

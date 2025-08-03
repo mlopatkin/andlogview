@@ -16,13 +16,18 @@
 
 package name.mlopatkin.andlogview.features;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A feature flag.
  */
 public class Feature {
+    private static final Logger log = LoggerFactory.getLogger(Feature.class);
     private final boolean enabled;
 
-    public Feature(boolean enabled) {
+    public Feature(String name, boolean enabled) {
+        log.info("Feature {} is {}", name, enabled ? "enabled" : "disabled");
         this.enabled = enabled;
     }
 
@@ -32,6 +37,8 @@ public class Feature {
 
     public static Feature create(String systemPropertyName, boolean enabledByDefault) {
         return new Feature(
-                Boolean.parseBoolean(System.getProperty(systemPropertyName, Boolean.toString(enabledByDefault))));
+                systemPropertyName,
+                Boolean.parseBoolean(System.getProperty(systemPropertyName, Boolean.toString(enabledByDefault)))
+        );
     }
 }

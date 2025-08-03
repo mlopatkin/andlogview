@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import name.mlopatkin.andlogview.features.Features;
+
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -25,19 +27,26 @@ import javax.inject.Provider;
  * Manages the creation of the presenter.
  */
 public class InstallAdbPresenterFactory {
+    private final Features features;
     private final Provider<DesktopInstallAdbPresenter> desktopInstalProvider;
     private final Provider<DownloadAdbPresenter> downloadProvider;
 
     @Inject
     public InstallAdbPresenterFactory(
+            Features features,
             Provider<DesktopInstallAdbPresenter> desktopInstalProvider,
             Provider<DownloadAdbPresenter> downloadProvider
     ) {
+        this.features = features;
         this.desktopInstalProvider = desktopInstalProvider;
         this.downloadProvider = downloadProvider;
     }
 
     public InstallAdbPresenter createPresenter() {
+        if (!features.downloadAdb.isEnabled()) {
+            return DisabledInstallAdbPresenter.INSTANCE;
+        }
+
         return new CompoundPresenter();
     }
 
