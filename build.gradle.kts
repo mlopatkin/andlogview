@@ -60,6 +60,7 @@ dependencies {
     testImplementation(testFixtures(project(":filters")))
     testImplementation(testFixtures(project(":logmodel")))
     testImplementation(testFixtures(project(":search")))
+    testImplementation(libs.test.jetbrainsAnnotations)
 
     jmhImplementation(testFixtures(project(":parsers")))
 }
