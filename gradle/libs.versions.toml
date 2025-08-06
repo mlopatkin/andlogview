@@ -4,6 +4,7 @@ checkstyle = "10.21.1"
 dagger = "2.55"
 errorprone = "2.41.0"
 errorpronePlugin = "4.3.0"
+nullawayPlugin = "2.2.0"
 flatlaf = "3.5.4"
 guava = "33.4.0-jre"
 mockito = "4.11.0"
@@ -20,7 +21,8 @@ build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin",
 # Runtime plugin allows preparing runtime images with JDK included
 build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:1.13.1"
 build-jabel = "com.github.bsideup.jabel:jabel-javac-plugin:1.0.0"
-build-nullaway = "com.uber.nullaway:nullaway:0.12.7"
+build-nullaway-processor = "com.uber.nullaway:nullaway:0.12.7"
+build-nullaway-plugin = { module = "net.ltgt.nullaway:net.ltgt.nullaway.gradle.plugin", version.ref = "nullawayPlugin" }
 checkerframeworkAnnotations = "org.checkerframework:checker-qual:3.38.0"
 commons-compress = "org.apache.commons:commons-compress:1.27.1"
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }

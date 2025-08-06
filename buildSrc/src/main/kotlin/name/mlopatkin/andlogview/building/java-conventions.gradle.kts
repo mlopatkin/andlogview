@@ -16,7 +16,9 @@
 
 package name.mlopatkin.andlogview.building
 
+import net.ltgt.gradle.errorprone.CheckSeverity
 import net.ltgt.gradle.errorprone.errorprone
+import net.ltgt.gradle.nullaway.nullaway
 
 plugins {
     java
@@ -26,6 +28,7 @@ plugins {
 
     // It is not possible to use a constant from the version catalog there
     id("net.ltgt.errorprone")
+    id("net.ltgt.nullaway")
 
     id("name.mlopatkin.andlogview.building.reproducible-builds")
 }
@@ -56,7 +59,7 @@ sourceSets.withType<SourceSet> {
         implementationConfigurationName(buildLibs.guava)
 
         annotationProcessorConfigurationName(buildLibs.build.jabel)
-        annotationProcessorConfigurationName(buildLibs.build.nullaway)
+        annotationProcessorConfigurationName(buildLibs.build.nullaway.processor)
     }
 }
 
@@ -112,6 +115,7 @@ tasks.withType<JavaCompile>().configureEach {
                 "-Werror",  // Treat warnings as errors
             )
         )
+
         errorprone {
             disableWarningsInGeneratedCode = true
 
@@ -124,19 +128,16 @@ tasks.withType<JavaCompile>().configureEach {
                 "MissingSummary",
             )
 
-            // Configure NullAway
-            option("NullAway:AnnotatedPackages", "name.mlopatkin")
-            option("NullAway:AssertsEnabled", "true")
-            option(
-                "NullAway:ExcludedClassAnnotations",
-                annotations(
+            nullaway {
+                annotatedPackages = listOf("name.mlopatkin")
+                isAssertsEnabled = true
+
+                excludedClassAnnotations = listOf(
                     "javax.annotation.Generated",
-                    "javax.annotation.processing.Generated"
+                    "javax.annotation.processing.Generated",
                 )
-            )
-            option(
-                "NullAway:ExcludedFieldAnnotations",
-                annotations(
+
+                excludedFieldAnnotations = listOf(
                     "name.mlopatkin.andlogview.base.LateInit",
                     "org.junit.jupiter.api.io.TempDir",
                     "org.junit.runners.Parameterized.Parameter",
@@ -145,10 +146,9 @@ tasks.withType<JavaCompile>().configureEach {
                     "org.mockito.Spy",
                     "org.openjdk.jmh.annotations.Param",
                 )
-            )
-            errorproneArgs.add("-Xep:NullAway:ERROR")
+
+                severity = CheckSeverity.ERROR
+            }
         }
     }
 }
-
-private fun annotations(vararg annotations: String): String = annotations.joinToString(separator = ",")
