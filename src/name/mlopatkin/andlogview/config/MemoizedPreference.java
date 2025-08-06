@@ -18,16 +18,15 @@ package name.mlopatkin.andlogview.config;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-
+// TODO(mlopatkin) introduce type-based nullness
 class MemoizedPreference<T> implements Preference<T> {
+    private static final Object EMPTY = new Object();
+
     private final Object lock = new Object();
     private final Preference<T> basePreference;
 
     @GuardedBy("lock")
-    private boolean hasValue;
-    @GuardedBy("lock")
-    private @MonotonicNonNull T cachedValue;
+    private T cachedValue = emptyValue();
 
     public MemoizedPreference(Preference<T> basePreference) {
         this.basePreference = basePreference;
@@ -36,7 +35,6 @@ class MemoizedPreference<T> implements Preference<T> {
     @Override
     public void set(T value) {
         synchronized (lock) {
-            hasValue = true;
             cachedValue = value;
             basePreference.set(value);
         }
@@ -45,11 +43,16 @@ class MemoizedPreference<T> implements Preference<T> {
     @Override
     public T get() {
         synchronized (lock) {
-            if (hasValue) {
-                return cachedValue;
+            if (cachedValue == emptyValue()) {
+                cachedValue = basePreference.get();
             }
-            hasValue = true;
-            return cachedValue = basePreference.get();
+            return cachedValue;
         }
+    }
+
+    @SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
+    private static <T> T emptyValue() {
+        // Thanks to the type erasure, our witness can pretend to be of the proper type.
+        return (T) EMPTY;
     }
 }
