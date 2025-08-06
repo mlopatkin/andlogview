@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview.utils.events;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 /**
  * Clients use Observable to register and unregister observers.
  * <p/>
@@ -27,7 +25,6 @@ import javax.annotation.concurrent.NotThreadSafe;
  *
  * @param <T> the type of the observers
  */
-@NotThreadSafe
 public interface Observable<T> {
     /**
      * Adds the observer if it wasn't added already. It is safe to add observers inside observer's callback but newly

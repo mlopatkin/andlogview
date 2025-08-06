@@ -17,7 +17,6 @@
 package name.mlopatkin.andlogview.utils;
 
 import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -35,7 +34,7 @@ public class MorePredicates {
      */
     public static <T> Predicate<T> and(Collection<? extends Predicate<? super T>> predicates) {
         if (predicates.size() <= 1) {
-            return narrow(Iterables.getFirst(predicates, Predicates.alwaysTrue()));
+            return narrow(getFirstElement(predicates, Predicates.alwaysTrue()));
         }
         return Predicates.and(
                 predicates.stream().<com.google.common.base.Predicate<T>>map(p -> p::test).collect(
@@ -47,7 +46,7 @@ public class MorePredicates {
      */
     public static <T> Predicate<T> or(Collection<? extends Predicate<? super T>> predicates) {
         if (predicates.size() <= 1) {
-            return narrow(Iterables.getFirst(predicates, Predicates.alwaysFalse()));
+            return narrow(getFirstElement(predicates, Predicates.alwaysFalse()));
         }
         return Predicates.or(
                 predicates.stream().<com.google.common.base.Predicate<T>>map(p -> p::test).collect(
@@ -57,5 +56,10 @@ public class MorePredicates {
     @SuppressWarnings("unchecked")  // Predicates are contravariant, so narrowing is always safe
     private static <T> Predicate<T> narrow(Predicate<? super T> basePredicate) {
         return (Predicate<T>) basePredicate;
+    }
+
+    private static <T> T getFirstElement(Iterable<? extends T> items, T defaultVal) {
+        var iter = items.iterator();
+        return iter.hasNext() ? iter.next() : defaultVal;
     }
 }

@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.config;
 import name.mlopatkin.andlogview.base.AtExitManager;
 
 import com.google.common.io.Files;
+import com.google.errorprone.annotations.ThreadSafe;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
-import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;

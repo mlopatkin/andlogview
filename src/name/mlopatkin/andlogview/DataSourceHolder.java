@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.inject.Inject;
 
 /**
@@ -31,7 +30,6 @@ import javax.inject.Inject;
  * This class is not thread-safe: it must be used on UI thread only.
  */
 @MainFrameScoped
-@NotThreadSafe
 public class DataSourceHolder {
     private final Subject<Observer> observers = new Subject<>();
     private @Nullable DataSource source;

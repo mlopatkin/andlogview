@@ -46,6 +46,9 @@ dependencies {
     testImplementation(buildLibs.test.assertj.guava)
     testImplementation(platform(buildLibs.test.junit5.bom))
     testImplementation(buildLibs.test.junit5.jupiter)
+    testRuntimeOnly(buildLibs.checkerframeworkAnnotations) {
+        because("Java 8 needs type annotations on the classpath to avoid NPEs when reflecting")
+    }
     testRuntimeOnly(buildLibs.test.junit5.vintageEngine)
 
     errorprone(buildLibs.build.errorprone.core)
@@ -56,6 +59,7 @@ sourceSets.withType<SourceSet> {
     dependencies {
         compileOnlyConfigurationName(buildLibs.checkerframeworkAnnotations)
 
+        compileOnlyConfigurationName(buildLibs.errorprone.annotations)
         implementationConfigurationName(buildLibs.guava)
 
         annotationProcessorConfigurationName(buildLibs.build.jabel)

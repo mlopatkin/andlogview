@@ -22,14 +22,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Iterator;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 /**
  * The Subject is something that allows embedder to notify registered parties.
  *
  * @param <T> the type of the observer
  */
-@NotThreadSafe
 public class Subject<T> implements Iterable<T> {
     private final ObserverList<T> observers = new ObserverList<>();
 
