@@ -100,6 +100,7 @@ class DeviceProvisionerImpl implements DeviceProvisioner {
         return onlineDevice.whenComplete((d, th) -> adb.removeDeviceChangeListener(listener));
     }
 
+    @SuppressWarnings("CollectionUndefinedEquality")
     private CompletableFuture<LoggingDevice> createDeviceFuture() {
         CompletableFuture<LoggingDevice> deviceFuture = new CompletableFuture<>();
 

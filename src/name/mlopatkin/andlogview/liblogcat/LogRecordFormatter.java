@@ -40,31 +40,46 @@ public class LogRecordFormatter {
         if (!checkMask(getRecordMask(record), MASK_THREADTIME_FORMAT)) {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
-        String formatString = "%s %5d %5d %s %-8s: %s";
         Timestamp time = record.getTime();
         assert time != null;
-        return String.format(formatString, TimeFormatUtils.convertTimeToString(time), record.getPid(),
-                record.getTid(), record.getPriority().getLetter(), record.getTag(), record.getMessage());
+        return String.format(
+                "%s %5d %5d %s %-8s: %s",
+                TimeFormatUtils.convertTimeToString(time),
+                record.getPid(),
+                record.getTid(),
+                record.getPriority().getLetter(),
+                record.getTag(),
+                record.getMessage()
+        );
     }
 
     public static String formatTime(LogRecord record) {
         if (!checkMask(getRecordMask(record), MASK_TIME_FORMAT)) {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
-        String formatString = "%s %s/%-8s(%5d): %s";
         Timestamp time = record.getTime();
         assert time != null;
-        return String.format(formatString, TimeFormatUtils.convertTimeToString(time),
-                record.getPriority().getLetter(), record.getTag(), record.getPid(), record.getMessage());
+        return String.format(
+                "%s %s/%-8s(%5d): %s",
+                TimeFormatUtils.convertTimeToString(time),
+                record.getPriority().getLetter(),
+                record.getTag(),
+                record.getPid(),
+                record.getMessage()
+        );
     }
 
     public static String formatBrief(LogRecord record) {
         if (!checkMask(getRecordMask(record), MASK_BRIEF_FORMAT)) {
             throw new IllegalArgumentException("Not sufficient data: " + record);
         }
-        String formatString = "%s/%-8s(%5d): %s";
         return String.format(
-                formatString, record.getPriority().getLetter(), record.getTag(), record.getPid(), record.getMessage());
+                "%s/%-8s(%5d): %s",
+                record.getPriority().getLetter(),
+                record.getTag(),
+                record.getPid(),
+                record.getMessage()
+        );
     }
 
     private static final int MASK_TIME = 1;

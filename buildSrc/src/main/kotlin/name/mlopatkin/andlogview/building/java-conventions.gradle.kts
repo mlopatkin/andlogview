@@ -113,14 +113,17 @@ tasks.withType<JavaCompile>().configureEach {
             )
         )
         errorprone {
-            // Configure ErrorProne
-            errorproneArgs.addAll(
-                "-Xep:JavaLangClash:OFF",
-                "-Xep:MissingSummary:OFF",
-                "-Xep:JavaUtilDate:OFF",
-                "-Xep:UnusedVariable:OFF", // Incompatible with Dagger-generated class
-                "-Xep:EmptyBlockTag:OFF",
+            disableWarningsInGeneratedCode = true
+
+            disable(
+                "AssignmentExpression", // I'm fine with assignment expressions.
+                "EffectivelyPrivate", // I like to highlight the public members of private classes too.
+                "EmptyBlockTag",
+                "JavaLangClash",
+                "JavaUtilDate",
+                "MissingSummary",
             )
+
             // Configure NullAway
             option("NullAway:AnnotatedPackages", "name.mlopatkin")
             option("NullAway:AssertsEnabled", "true")

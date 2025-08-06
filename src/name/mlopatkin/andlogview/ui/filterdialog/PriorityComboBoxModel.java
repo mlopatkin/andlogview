@@ -38,6 +38,7 @@ class PriorityComboBoxModel extends AbstractListModel<LogRecord.@Nullable Priori
     }
 
     @Override
+    @SuppressWarnings("EnumOrdinal")
     public LogRecord.@Nullable Priority getElementAt(int index) {
         if (index == 0) {
             return null;

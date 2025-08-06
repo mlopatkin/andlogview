@@ -183,8 +183,7 @@ class FilterModelImpl implements MutableFilterModel {
     @Override
     public void replaceFilter(Filter toReplace, Filter newFilter) {
         var position = filters.indexOf(toReplace);
-        Preconditions.checkArgument(position >= 0,
-                String.format("Filter %s is not in the model", toReplace));
+        Preconditions.checkArgument(position >= 0, "Filter %s is not in the model", toReplace);
         if (Objects.equals(toReplace, newFilter)) {
             // Replacing the filter with itself, do nothing.
             return;

@@ -39,7 +39,7 @@ import javax.swing.border.EmptyBorder;
 class FlatLafWidgetFactory implements ThemedWidgetFactory {
     @Override
     public ImageIcon getIcon(Icons iconId) {
-        return createIcon(iconId, getIconWidth(iconId), getIconHeight(iconId));
+        return createIcon(iconId, getIconWidth(iconId), getIconHeight());
     }
 
     private @NonNull FlatSVGIcon createIcon(Icons iconId, int iconWidth, int iconHeight) {
@@ -73,7 +73,7 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
         return UIScale.scale(10);
     }
 
-    private int getIconHeight(Icons iconId) {
+    private int getIconHeight() {
         return UIScale.scale(24);
     }
 

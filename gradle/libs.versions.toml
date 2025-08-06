@@ -2,6 +2,7 @@
 andlogview = "0.24"
 checkstyle = "10.21.1"
 dagger = "2.55"
+errorprone = "2.41.0"
 errorpronePlugin = "4.3.0"
 flatlaf = "3.5.4"
 guava = "33.4.0-jre"
@@ -13,7 +14,7 @@ sourceJavaVersion = "16"
 runtimeJdkVersion = "8"  # JDK version used at runtime, determines available APIs
 
 [libraries]
-build-errorprone-core = "com.google.errorprone:error_prone_core:2.36.0"
+build-errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 # Errorprone plugin allows to configure Errorprone compiler
 build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included

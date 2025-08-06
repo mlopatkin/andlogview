@@ -42,7 +42,7 @@ public class MainFilterController implements MenuFilterCreator,
     MainFilterController(
             // TODO(mlopatkin): figure out how to bootstrap these ignored folks. Nothing really depends on them, so
             //  nothing causes them to be created.
-            IndexFilterCollection ignoredIndexFilters,
+            @SuppressWarnings("unused") IndexFilterCollection ignoredIndexFilters,
             FilterDialogFactory dialogFactory,
             MutableFilterModel filterModel
     ) {

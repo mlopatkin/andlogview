@@ -36,8 +36,6 @@ public class ProcessWaitChannelsParser<H extends ProcessEventsHandler> extends A
     //    pid == tid ? 0 : 3, "", name);
     //
     //    printf("%-7d %-32s %s\n", tid, name_buffer, buffer);
-
-    private static final String SEP = "\\s+";
     private static final String HEX_NUMBER_REGEX = "\\p{XDigit}+";
     private static final String IDENTIFIER_REGEX = "[A-z0-9_]+";
 
