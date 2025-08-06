@@ -137,11 +137,13 @@ tasks.withType<JavaCompile>().configureEach {
             option(
                 "NullAway:ExcludedFieldAnnotations",
                 annotations(
-                    "org.checkerframework.checker.nullness.qual.MonotonicNonNull",
+                    "name.mlopatkin.andlogview.base.LateInit",
                     "org.junit.jupiter.api.io.TempDir",
+                    "org.junit.runners.Parameterized.Parameter",
                     "org.mockito.Captor",
                     "org.mockito.Mock",
                     "org.mockito.Spy",
+                    "org.openjdk.jmh.annotations.Param",
                 )
             )
             errorproneArgs.add("-Xep:NullAway:ERROR")

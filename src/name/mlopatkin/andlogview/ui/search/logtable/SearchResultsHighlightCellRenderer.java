@@ -46,6 +46,8 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
     @Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int columnIndex) {
+        // TODO(mlopatkin) Can we have a better flow?
+        assert inner != null;
         JComponent c =
                 (JComponent) inner.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, columnIndex);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();

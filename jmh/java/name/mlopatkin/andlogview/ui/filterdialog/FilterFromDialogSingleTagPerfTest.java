@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
+import name.mlopatkin.andlogview.base.LateInit;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.jmh.BenchmarkResources;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -25,7 +26,6 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -47,10 +47,13 @@ import java.util.stream.Stream;
 @State(Scope.Thread)
 @Fork(1)
 public class FilterFromDialogSingleTagPerfTest {
-    private @MonotonicNonNull ImmutableList<LogRecord> records;
+    @LateInit
+    private ImmutableList<LogRecord> records;
 
-    private @MonotonicNonNull Predicate<LogRecord> simplestPredicate;
-    private @MonotonicNonNull Predicate<LogRecord> compiledPredicatePlainText;
+    @LateInit
+    private Predicate<LogRecord> simplestPredicate;
+    @LateInit
+    private Predicate<LogRecord> compiledPredicatePlainText;
 
     @SuppressWarnings("unchecked")
     @Setup(Level.Trial)

@@ -16,10 +16,11 @@
 
 package name.mlopatkin.andlogview.base.io;
 
+import name.mlopatkin.andlogview.base.LateInit;
+
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -43,9 +44,10 @@ import java.util.function.Supplier;
 @Fork(3)
 public class LineReaderPerfTest {
     @Param({"lf", "crlf", "random"})
-    private @MonotonicNonNull String eoln;
+    private String eoln;
 
-    private @MonotonicNonNull CharSource input;
+    @LateInit
+    private CharSource input;
 
     @Setup(Level.Trial)
     public void setUp() throws Exception {

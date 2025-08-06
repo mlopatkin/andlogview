@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.base.LateInit;
 import name.mlopatkin.andlogview.jmh.BenchmarkResources;
 import name.mlopatkin.andlogview.parsers.ParserUtils;
 import name.mlopatkin.andlogview.parsers.logcat.ListCollectingHandler;
@@ -23,7 +24,6 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -49,7 +49,8 @@ public class ParserPerfTest {
     @Param({"100", "1000", "5000"})
     public int listSize;
 
-    private @MonotonicNonNull ImmutableList<String> lines;
+    @LateInit
+    private ImmutableList<String> lines;
 
     @Setup(Level.Trial)
     public void setUp() throws Exception {

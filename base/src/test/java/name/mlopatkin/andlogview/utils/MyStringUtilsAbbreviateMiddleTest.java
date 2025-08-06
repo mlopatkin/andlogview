@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,7 +28,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class MyStringUtilsAbbreviateMiddleTest {
     @Parameterized.Parameter
-    public @MonotonicNonNull String stringToAbbreviate;
+    public String stringToAbbreviate;
 
     @Parameterized.Parameter(1)
     public char replacement;
@@ -41,7 +40,7 @@ public class MyStringUtilsAbbreviateMiddleTest {
     public int prefixLength;
 
     @Parameterized.Parameter(4)
-    public @MonotonicNonNull String expectedResult;
+    public String expectedResult;
 
     @Parameterized.Parameters(name = "{index}: '{0}' => '{4}'")
     public static List<Object[]> getParams() {

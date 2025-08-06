@@ -16,13 +16,13 @@
 
 package name.mlopatkin.andlogview;
 
+import name.mlopatkin.andlogview.base.LateInit;
 import name.mlopatkin.andlogview.logmodel.BatchRecordsReceiver;
 import name.mlopatkin.andlogview.logmodel.BufferedListener;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.RecordListener;
 import name.mlopatkin.andlogview.test.TestData;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -58,11 +58,13 @@ import java.util.List;
 public abstract class BufferedListenerPerfTest {
     private static final String GROUP = "LogRecordProcessor";
 
-    protected @MonotonicNonNull BatchRecordsReceiver<LogRecord> consumer;
+    @LateInit
+    protected BatchRecordsReceiver<LogRecord> consumer;
 
     protected abstract RecordListener<LogRecord> createListener();
 
-    protected @MonotonicNonNull RecordListener<LogRecord> listener;
+    @LateInit
+    protected RecordListener<LogRecord> listener;
 
     @Setup(Level.Trial)
     public void setUp(Blackhole blackhole) throws Exception {

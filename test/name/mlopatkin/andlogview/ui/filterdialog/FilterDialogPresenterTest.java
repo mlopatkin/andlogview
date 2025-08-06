@@ -178,11 +178,11 @@ public class FilterDialogPresenterTest {
         }
 
         public void commit() {
-            commitAction.run();
+            Objects.requireNonNull(commitAction).run();
         }
 
         public void discard() {
-            discardAction.run();
+            Objects.requireNonNull(discardAction).run();
         }
 
         public void clearError() {
