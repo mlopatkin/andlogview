@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.base.io;
 
-import name.mlopatkin.andlogview.base.LateInit;
-
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
@@ -46,7 +44,6 @@ public class LineReaderPerfTest {
     @Param({"lf", "crlf", "random"})
     private String eoln;
 
-    @LateInit
     private CharSource input;
 
     @Setup(Level.Trial)

@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.base.LateInit;
 import name.mlopatkin.andlogview.logmodel.BatchRecordsReceiver;
 import name.mlopatkin.andlogview.logmodel.BufferedListener;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -58,12 +57,10 @@ import java.util.List;
 public abstract class BufferedListenerPerfTest {
     private static final String GROUP = "LogRecordProcessor";
 
-    @LateInit
     protected BatchRecordsReceiver<LogRecord> consumer;
 
     protected abstract RecordListener<LogRecord> createListener();
 
-    @LateInit
     protected RecordListener<LogRecord> listener;
 
     @Setup(Level.Trial)

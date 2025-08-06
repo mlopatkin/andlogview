@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.base.LateInit;
 import name.mlopatkin.andlogview.jmh.BenchmarkResources;
 import name.mlopatkin.andlogview.parsers.ParserUtils;
 import name.mlopatkin.andlogview.parsers.logcat.ListCollectingHandler;
@@ -49,7 +48,6 @@ public class ParserPerfTest {
     @Param({"100", "1000", "5000"})
     public int listSize;
 
-    @LateInit
     private ImmutableList<String> lines;
 
     @Setup(Level.Trial)
