@@ -83,9 +83,10 @@ public class FileOpener {
      *
      * @return the cancellable handle to stop initialization
      */
+    @SuppressWarnings("RedundantCast") // The cast helps NullAway to infer the proper nullability
     public CompletableFuture<@Nullable DataSource> selectAndOpenFile() {
         return fileDialog.selectFileToOpen()
-                .map(this::openFileAsDataSource)
+                .map(file -> (CompletableFuture<@Nullable DataSource>) openFileAsDataSource(file))
                 .orElse(CompletableFuture.completedFuture(null));
     }
 

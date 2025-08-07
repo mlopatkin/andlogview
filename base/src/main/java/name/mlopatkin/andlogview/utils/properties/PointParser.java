@@ -30,7 +30,6 @@ class PointParser implements Parser<@Nullable Point> {
     private final ListParser<Integer> internalListParser = new ListParser<>(Parsers.integerParser);
 
     @Override
-    @SuppressWarnings("NullAway")  // NullAway cannot handle type annotations on generics
     public @Nullable Point read(@Nullable String value) {
         value = Strings.emptyToNull(Strings.nullToEmpty(value).trim());
         if (value == null || UNDEFINED.equalsIgnoreCase(value)) {

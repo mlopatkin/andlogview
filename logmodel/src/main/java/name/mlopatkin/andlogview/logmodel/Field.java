@@ -36,6 +36,7 @@ public final class Field<T extends @Nullable Comparable<T>> {
     /**
      * The timestamp. This is an optional field with {@code null} representing the missing value.
      */
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1128
     public static final Field<@Nullable Timestamp> TIME = new Field<>("TIME", LogRecord::getTime);
 
     /**
@@ -66,6 +67,7 @@ public final class Field<T extends @Nullable Comparable<T>> {
     /**
      * The buffer. This is an optional field with {@code null} representing the missing value.
      */
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1128
     public static final Field<LogRecord.@Nullable Buffer> BUFFER = new Field<>("BUFFER", LogRecord::getBuffer);
 
     /**
@@ -75,9 +77,11 @@ public final class Field<T extends @Nullable Comparable<T>> {
 
     private static class ValuesHolder {
         // A Holder class idiom to prevent initialization order issues with constants.
+        @SuppressWarnings("NullableProblems") // False positive "Nullable" Field type in IDEA
         private static ImmutableSet.@Nullable Builder<Field<?>> builder = ImmutableSet.builder();
     }
 
+    @SuppressWarnings("NullableProblems") // False positive "Nullable" Field type in IDEA
     private static final ImmutableSet<Field<?>> VALUES;
 
     static {

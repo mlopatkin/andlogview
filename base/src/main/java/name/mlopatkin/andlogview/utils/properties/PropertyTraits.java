@@ -16,6 +16,9 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.awt.Point;
 
 /**
@@ -46,7 +49,7 @@ public class PropertyTraits {
      * @param parser parser to convert value to and from string
      * @return object for chaining
      */
-    public static <T> PropertyBuilder<T> type(Class<T> type, Parser<T> parser) {
+    public static <T extends @Nullable Object> PropertyBuilder<T> type(Class<@NonNull T> type, Parser<T> parser) {
         return PropertyBuilder.newPropertyBuilder(type).parser(parser);
     }
 

@@ -46,14 +46,17 @@ public class FilterMatchers {
         return new AdaptingMatcher<>(FilterFromDialogData::getApps, appsMatcher);
     }
 
+    @SuppressWarnings("NullAway")
     public static Matcher<FilterFromDialogData> hasMessage(Matcher<? super String> messageMatcher) {
         return new AdaptingMatcher<>(FilterFromDialogData::getMessagePattern, messageMatcher);
     }
 
+    @SuppressWarnings("NullAway")
     public static Matcher<FilterFromDialogData> hasPriority(Matcher<? super LogRecord.Priority> priorityMatcher) {
         return new AdaptingMatcher<>(FilterFromDialogData::getPriority, priorityMatcher);
     }
 
+    @SuppressWarnings("NullAway")
     public static Matcher<FilterFromDialogData> hasColor(Matcher<? super Color> colorMatcher) {
         return new AdaptingMatcher<>(FilterFromDialogData::getHighlightColor, colorMatcher);
     }
@@ -66,10 +69,12 @@ public class FilterMatchers {
         return new AdaptingMatcher<>(FilterFromDialog::isEnabled, Matchers.is(false));
     }
 
+    @SuppressWarnings("NullAway")
     public static Matcher<FilterFromDialog> hasNoName() {
         return new AdaptingMatcher<>(FilterFromDialog::getName, Matchers.nullValue());
     }
 
+    @SuppressWarnings("NullAway")
     public static Matcher<FilterFromDialog> hasName(String name) {
         return new AdaptingMatcher<>(FilterFromDialog::getName, Matchers.is(name));
     }

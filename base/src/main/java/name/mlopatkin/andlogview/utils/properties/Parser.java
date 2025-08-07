@@ -16,13 +16,15 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Interface to convert property values to and from strings to store them in
  * file.
  *
  * @param <T> actual type of the property value.
  */
-public interface Parser<T> {
+public interface Parser<T extends @Nullable Object> {
     /**
      * Parses value string and converts it into property object
      *

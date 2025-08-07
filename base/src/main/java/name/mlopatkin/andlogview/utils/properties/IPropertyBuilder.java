@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
-public interface IPropertyBuilder<T> {
+import org.jspecify.annotations.Nullable;
+
+public interface IPropertyBuilder<T extends @Nullable Object> {
     Property<T> build();
 }

@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
+import org.jspecify.annotations.Nullable;
+
 import java.awt.Point;
 
 public class Parsers {
@@ -24,7 +26,7 @@ public class Parsers {
     public static final Parser<String> stringParser = new StringParser();
     public static final Parser<Integer> integerParser = new IntegerParser();
     public static final Parser<Boolean> booleanParser = new BooleanParser();
-    public static final Parser<Point> pointParser = new PointParser();
+    public static final Parser<@Nullable Point> pointParser = new PointParser();
 
     public static <T extends Enum<T>> Parser<T> enumParser(Class<T> clazz) {
         return new EnumParser<>(clazz);

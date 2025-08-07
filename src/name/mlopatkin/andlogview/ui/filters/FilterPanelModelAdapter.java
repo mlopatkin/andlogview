@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
-import name.mlopatkin.andlogview.filters.Filter;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
@@ -33,9 +32,10 @@ class FilterPanelModelAdapter extends BaseFilterModelAdapter<PanelFilter> implem
     private final Subject<FilterPanelModel.FilterPanelModelListener<? super PanelFilter>> listeners = new Subject<>();
 
     @Inject
+    @SuppressWarnings("NullAway")
     FilterPanelModelAdapter(FilterModel model, PanelFilter.Factory panelFilterFactory) {
-        super(model, (Filter f) -> {
-            if (f instanceof FilterFromDialog filterFromDialog) {
+        super(model, filter -> {
+            if (filter instanceof FilterFromDialog filterFromDialog) {
                 return panelFilterFactory.create(filterFromDialog);
             }
             return null;

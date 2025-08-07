@@ -60,7 +60,8 @@ public class AdbOpener {
      * @return the pending AdbDataSource reference
      */
     public CompletableFuture<@Nullable AdbDataSource> selectAndOpenDevice() {
-        var result = new CompletableFuture<@Nullable AdbDataSource>();
+        // TODO(mlopatkin) Cannot use var here. https://github.com/uber/NullAway/issues/1022 ?
+        CompletableFuture<@Nullable AdbDataSource> result = new CompletableFuture<>();
 
         MyFutures.cancelBy(presenter.withAdbServicesInteractive(
                         adb -> adbDataSourceFactory.selectDeviceAndOpenAsDataSource(

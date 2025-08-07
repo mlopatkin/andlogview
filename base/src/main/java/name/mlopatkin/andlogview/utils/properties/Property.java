@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Properties;
 
-public class Property<T> {
+public class Property<T extends @Nullable Object> {
     private @Nullable T value;
     private final Class<T> type;
     private final Parser<T> parser;

@@ -148,6 +148,7 @@ tasks.withType<JavaCompile>().configureEach {
             nullaway {
                 annotatedPackages = listOf("name.mlopatkin")
                 isAssertsEnabled = true
+                isJSpecifyMode = true
 
                 excludedClassAnnotations = listOf(
                     "javax.annotation.Generated",
@@ -165,6 +166,13 @@ tasks.withType<JavaCompile>().configureEach {
 
                 customInitializerAnnotations = listOf(
                     "org.openjdk.jmh.annotations.Setup"
+                )
+
+                // NullAway doesn't support parametric nullness properly, and treats the code as NonNull.
+                // Unfortunately, this is sometimes problematic.
+                customNullableAnnotations = listOf(
+                    "com.google.common.collect.ParametricNullness",
+                    "com.google.common.util.concurrent.ParametricNullness",
                 )
 
                 severity = CheckSeverity.ERROR

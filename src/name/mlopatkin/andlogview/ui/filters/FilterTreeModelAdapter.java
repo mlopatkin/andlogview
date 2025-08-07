@@ -30,6 +30,7 @@ class FilterTreeModelAdapter extends BaseFilterModelAdapter<TreeNodeFilter> impl
     private final MutableFilterModel model;
 
     @Inject
+    @SuppressWarnings("NullAway")
     FilterTreeModelAdapter(MutableFilterModel model, TreeNodeFilter.Factory nodeFactory) {
         super(model, (Filter f) -> {
             if (f instanceof FilterFromDialog filterFromDialog) {
