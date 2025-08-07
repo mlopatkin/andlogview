@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.device.DeviceChangeObserver;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.AdbDataSource;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

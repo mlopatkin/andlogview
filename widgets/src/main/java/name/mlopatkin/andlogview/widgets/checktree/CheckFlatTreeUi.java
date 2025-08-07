@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.widgets.checktree;
 
 import name.mlopatkin.andlogview.widgets.FixedTreeUi;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Component;
 import java.awt.Point;

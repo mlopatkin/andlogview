@@ -23,7 +23,7 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import com.google.common.base.MoreObjects;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Color;
 import java.util.Objects;

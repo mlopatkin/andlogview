@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

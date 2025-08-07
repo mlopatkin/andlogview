@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.ui.themes.ThemedWidgetFactory;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Component;
 import java.awt.Rectangle;

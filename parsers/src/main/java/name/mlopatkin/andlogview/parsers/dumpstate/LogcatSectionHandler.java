@@ -23,7 +23,7 @@ import name.mlopatkin.andlogview.parsers.logcat.LogcatFormatSniffer;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatPushParser;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

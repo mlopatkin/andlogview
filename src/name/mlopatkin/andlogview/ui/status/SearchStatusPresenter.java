@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.inject.Inject;
 

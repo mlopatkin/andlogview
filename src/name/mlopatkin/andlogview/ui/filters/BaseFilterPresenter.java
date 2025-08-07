@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogHandle;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A base presenter for the filter.

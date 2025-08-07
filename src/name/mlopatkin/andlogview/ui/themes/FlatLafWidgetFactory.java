@@ -22,8 +22,6 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -42,7 +40,7 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
         return createIcon(iconId, getIconWidth(iconId), getIconHeight());
     }
 
-    private @NonNull FlatSVGIcon createIcon(Icons iconId, int iconWidth, int iconHeight) {
+    private FlatSVGIcon createIcon(Icons iconId, int iconWidth, int iconHeight) {
         FlatSVGIcon icon = new FlatSVGIcon(iconId.resolveModernPath(), iconWidth, iconHeight);
         FlatSVGIcon.ColorFilter colorFilter = new FlatSVGIcon.ColorFilter();
         colorFilter.add(Color.BLACK, UIManager.getColor("ToggleButton.foreground"));

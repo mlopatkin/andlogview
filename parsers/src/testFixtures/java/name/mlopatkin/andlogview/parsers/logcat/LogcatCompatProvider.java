@@ -23,7 +23,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import com.google.common.io.CharSource;
 import com.google.gson.Gson;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;

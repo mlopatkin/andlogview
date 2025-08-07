@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.widgets.DialogResult.DialogSubject;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base implementation of the {@link SearchPresenter.SearchPromptView}.

@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.Assert;
 
 import java.awt.Color;

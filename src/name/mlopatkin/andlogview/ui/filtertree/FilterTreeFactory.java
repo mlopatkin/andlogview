@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.ui.filtertree;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.event.MouseEvent;
 

@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.logmodel;
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.Immutable;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Objects;

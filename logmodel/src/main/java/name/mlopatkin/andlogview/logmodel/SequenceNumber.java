@@ -20,8 +20,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -45,7 +44,7 @@ public class SequenceNumber implements Comparable<SequenceNumber> {
     }
 
     @Override
-    public int compareTo(@NonNull SequenceNumber o) {
+    public int compareTo(SequenceNumber o) {
         Preconditions.checkArgument(isComparableTo(o), "Comparing non-comparable sequence numbers");
         return Integer.compare(seqNo, o.seqNo);
     }

@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.base.concurrent;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayDeque;
 import java.util.Objects;

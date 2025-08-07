@@ -32,7 +32,7 @@ import com.google.errorprone.annotations.FormatString;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashSet;

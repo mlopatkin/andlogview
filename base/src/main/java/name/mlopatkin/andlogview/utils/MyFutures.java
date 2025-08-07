@@ -20,7 +20,7 @@ import name.mlopatkin.andlogview.base.MyThrowables;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;

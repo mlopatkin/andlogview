@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui;
 
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URL;
 import java.util.Objects;

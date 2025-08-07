@@ -25,7 +25,7 @@ import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Component;
 import java.util.Objects;

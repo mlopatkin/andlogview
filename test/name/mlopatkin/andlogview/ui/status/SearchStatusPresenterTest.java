@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.utils.MockUiThreadScheduler;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

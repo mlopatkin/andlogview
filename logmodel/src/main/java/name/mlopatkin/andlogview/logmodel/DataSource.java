@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview.logmodel;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.Map;

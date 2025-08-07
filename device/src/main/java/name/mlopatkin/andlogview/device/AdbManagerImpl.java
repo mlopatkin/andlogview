@@ -23,7 +23,7 @@ import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.Log;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

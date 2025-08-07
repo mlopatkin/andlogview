@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.widgets;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Color;
 import java.awt.Component;

@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.sdkrepo;
 import joptsimple.internal.Strings;
 
 import org.assertj.core.api.AbstractAssert;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 

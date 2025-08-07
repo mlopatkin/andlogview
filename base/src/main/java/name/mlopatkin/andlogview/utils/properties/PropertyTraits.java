@@ -72,6 +72,7 @@ public class PropertyTraits {
         return type(Boolean.class, Parsers.booleanParser);
     }
 
+    @SuppressWarnings("NullAway")
     public static PropertyBuilder<Point> point() {
         return type(Point.class, Parsers.pointParser);
     }

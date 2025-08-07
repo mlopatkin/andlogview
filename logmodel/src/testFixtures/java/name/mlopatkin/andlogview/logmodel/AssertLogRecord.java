@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.logmodel;
 import com.google.common.primitives.Ints;
 
 import org.assertj.core.util.CanIgnoreReturnValue;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.Assert;
 
 import java.time.LocalDate;

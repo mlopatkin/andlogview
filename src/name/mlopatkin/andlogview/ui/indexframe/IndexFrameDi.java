@@ -36,7 +36,7 @@ import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
 

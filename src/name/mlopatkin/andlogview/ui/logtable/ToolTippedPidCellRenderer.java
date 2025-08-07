@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.logtable;
 import name.mlopatkin.andlogview.PidToProcessMapper;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Component;
 

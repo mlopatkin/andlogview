@@ -50,7 +50,7 @@ import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.Test;
 
 import java.awt.Color;

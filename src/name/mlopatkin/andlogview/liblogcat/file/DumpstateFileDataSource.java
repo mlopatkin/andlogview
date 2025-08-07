@@ -32,7 +32,7 @@ import name.mlopatkin.andlogview.parsers.logcat.CollectingHandler;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParseEventsHandler;
 import name.mlopatkin.andlogview.parsers.ps.PsParseEventsHandler;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

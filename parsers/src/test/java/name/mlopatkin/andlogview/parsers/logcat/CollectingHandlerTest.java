@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.utils.Try;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class CollectingHandlerTest {

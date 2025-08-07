@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.Patterns;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;

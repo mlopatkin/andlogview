@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.device;
 
 import name.mlopatkin.andlogview.device.Device;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for receiving selected device from a SelectDeviceDialog.

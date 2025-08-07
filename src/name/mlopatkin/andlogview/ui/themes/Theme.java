@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;

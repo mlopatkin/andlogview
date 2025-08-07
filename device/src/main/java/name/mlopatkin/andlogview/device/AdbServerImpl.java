@@ -23,7 +23,7 @@ import com.android.ddmlib.IDevice;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

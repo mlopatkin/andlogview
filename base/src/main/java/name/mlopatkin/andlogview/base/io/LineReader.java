@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.base.io;
 import com.google.common.base.Preconditions;
 import com.google.common.io.CharSource;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.Closeable;

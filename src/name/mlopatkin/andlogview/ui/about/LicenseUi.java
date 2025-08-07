@@ -21,7 +21,7 @@ import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Container;
 import java.awt.Window;

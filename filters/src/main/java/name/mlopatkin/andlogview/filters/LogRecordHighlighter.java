@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.collect.Lists;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Color;
 import java.util.ArrayList;

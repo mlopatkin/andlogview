@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.sdkrepo.SdkPackage.TargetOs;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 

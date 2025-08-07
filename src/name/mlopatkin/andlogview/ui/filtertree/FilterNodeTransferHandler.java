@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filtertree;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

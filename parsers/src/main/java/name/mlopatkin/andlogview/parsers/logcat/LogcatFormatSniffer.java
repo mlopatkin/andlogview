@@ -23,7 +23,7 @@ import name.mlopatkin.andlogview.parsers.ParserControl;
 
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;

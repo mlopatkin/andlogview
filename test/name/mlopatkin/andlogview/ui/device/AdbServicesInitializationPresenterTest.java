@@ -37,7 +37,7 @@ import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

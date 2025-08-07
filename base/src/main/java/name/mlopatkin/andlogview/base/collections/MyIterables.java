@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.base.collections;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Enumeration;
 import java.util.Iterator;

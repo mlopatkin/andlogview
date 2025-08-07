@@ -164,7 +164,9 @@
       <property name="option" value="EOL"/>
     </module>
     <module name="IllegalImport">
+      <property name="severity" value="error"/>
       <property name="illegalPkgs" value="junit"/>
+      <property name="illegalClasses" value="org.checkerframework.checker.nullness.qual.Nullable, org.checkerframework.checker.nullness.qual.NonNull" />
     </module>
       <module name="SuppressWithNearbyCommentFilter">
           <property name="commentFormat" value="OK to catch (\w+) here"/>

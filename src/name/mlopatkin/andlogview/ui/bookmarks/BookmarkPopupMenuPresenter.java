@@ -23,7 +23,7 @@ import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

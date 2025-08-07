@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.utils.MyStringUtils;
 
 import com.google.common.base.CharMatcher;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.text.ParseException;
 import java.util.ArrayList;

@@ -26,7 +26,7 @@ import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Color;
 import java.util.List;

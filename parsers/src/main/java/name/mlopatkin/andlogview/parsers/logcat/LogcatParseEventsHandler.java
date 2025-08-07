@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.PushParser;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A handler of push parses events. The parser invokes an appropriate callback depending on the number of

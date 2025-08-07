@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecordFactory;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntFunction;

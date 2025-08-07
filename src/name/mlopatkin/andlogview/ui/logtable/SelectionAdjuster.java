@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.logtable;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.inject.Inject;
 

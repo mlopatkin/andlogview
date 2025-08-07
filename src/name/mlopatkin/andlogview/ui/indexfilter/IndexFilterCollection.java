@@ -22,7 +22,7 @@ import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.filters.FiltersChangeObserver;
 import name.mlopatkin.andlogview.ui.filterdialog.IndexWindowFilter;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;

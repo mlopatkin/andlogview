@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.base.MyThrowables;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

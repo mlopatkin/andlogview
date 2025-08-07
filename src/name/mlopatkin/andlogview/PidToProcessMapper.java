@@ -15,7 +15,7 @@
  */
 package name.mlopatkin.andlogview;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface PidToProcessMapper {

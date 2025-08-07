@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.logtable;
 
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Point;
 import java.awt.event.MouseAdapter;

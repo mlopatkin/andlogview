@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.utils.events;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A combination of two observables. The observers registered with this observable will receive notifications from both.

@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.test;
 
 import com.google.common.base.MoreObjects;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Predicate;
 

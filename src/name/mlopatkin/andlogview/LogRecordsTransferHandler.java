@@ -21,8 +21,8 @@ import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordClipboardFormatter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

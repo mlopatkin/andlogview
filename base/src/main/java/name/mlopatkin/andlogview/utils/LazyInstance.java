@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.utils;
 
 import dagger.Lazy;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Supplier;

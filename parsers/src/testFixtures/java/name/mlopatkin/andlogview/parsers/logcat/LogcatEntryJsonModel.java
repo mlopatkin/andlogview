@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordBuilder;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;

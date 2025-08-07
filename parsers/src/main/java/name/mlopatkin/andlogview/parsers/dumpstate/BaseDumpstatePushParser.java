@@ -21,7 +21,7 @@ import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.LineParser.State;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base parser understands only some aspects of the dumpstate structure and serves as a foundation for the more complex

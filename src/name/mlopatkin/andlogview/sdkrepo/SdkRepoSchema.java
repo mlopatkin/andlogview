@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.sdkrepo;
 
 import com.google.common.base.MoreObjects;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.StartElement;

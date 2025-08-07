@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.utils.properties;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class PropertyBuilder<T> implements IPropertyBuilder<T> {
     private @Nullable T defaultValue;

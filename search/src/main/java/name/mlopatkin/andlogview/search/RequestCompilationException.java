@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.search;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.regex.PatternSyntaxException;
 

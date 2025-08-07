@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;

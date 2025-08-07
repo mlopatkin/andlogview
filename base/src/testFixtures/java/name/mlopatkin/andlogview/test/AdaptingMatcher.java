@@ -16,10 +16,10 @@
 
 package name.mlopatkin.andlogview.test;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
 

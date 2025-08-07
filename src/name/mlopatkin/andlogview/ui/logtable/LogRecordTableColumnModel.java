@@ -24,7 +24,7 @@ import name.mlopatkin.andlogview.widgets.TableColumnBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.EnumMap;

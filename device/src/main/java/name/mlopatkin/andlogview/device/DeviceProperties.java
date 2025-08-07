@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.device;
 import com.android.ddmlib.IDevice;
 import com.android.sdklib.AndroidVersion;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The set of immutable device properties.

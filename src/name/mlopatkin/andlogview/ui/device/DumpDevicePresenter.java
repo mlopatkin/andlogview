@@ -25,7 +25,7 @@ import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import com.google.common.io.Files;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

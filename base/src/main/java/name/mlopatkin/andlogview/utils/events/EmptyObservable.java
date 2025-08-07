@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.utils.events;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An empty observable that ignores added/removed observers.

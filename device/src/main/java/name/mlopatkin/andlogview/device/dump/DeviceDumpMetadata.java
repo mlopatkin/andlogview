@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.device.dump;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

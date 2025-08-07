@@ -17,7 +17,7 @@ package name.mlopatkin.andlogview.utils.properties;
 
 import com.google.common.base.Strings;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Point;
 import java.util.Arrays;

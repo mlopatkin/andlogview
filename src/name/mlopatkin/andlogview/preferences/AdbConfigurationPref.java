@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.utils.SystemPathResolver;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;

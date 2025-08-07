@@ -5,7 +5,7 @@
 // Changes from the original implementation - moved to org.bitbucket.mlopatkin.utils.events package
 package name.mlopatkin.andlogview.thirdparty.observerlist;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;

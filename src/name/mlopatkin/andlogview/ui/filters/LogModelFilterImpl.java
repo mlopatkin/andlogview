@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Color;
 

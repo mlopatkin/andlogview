@@ -25,7 +25,7 @@ import name.mlopatkin.andlogview.ui.mainframe.popupmenu.TablePopupMenuViewImpl;
 import dagger.Module;
 import dagger.Provides;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.JTable;
 

@@ -27,7 +27,7 @@ import name.mlopatkin.andlogview.search.RequestCompilationException;
 
 import com.google.common.collect.ImmutableSet;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Predicate;

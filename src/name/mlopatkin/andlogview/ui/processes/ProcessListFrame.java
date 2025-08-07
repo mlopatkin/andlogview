@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 
 import dagger.Lazy;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Point;
 import java.util.HashSet;

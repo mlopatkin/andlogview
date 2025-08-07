@@ -39,9 +39,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.jspecify.annotations.Nullable;
 import org.junit.Assume;
 import org.junit.Test;
 
