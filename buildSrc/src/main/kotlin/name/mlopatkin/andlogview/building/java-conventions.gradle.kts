@@ -68,6 +68,17 @@ sourceSets.withType<SourceSet> {
     }
 }
 
+val cpiTask = tasks.register<PackageInfoCheckTask>("checkPackageInfos") {
+    val srcDirRoots = sourceSets.main.map { it.java.srcDirTrees }
+    this.sourceRoots.from(srcDirRoots.map { it.map(DirectoryTree::getDir) })
+}
+
+plugins.withType<LifecycleBasePlugin> {
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).configure {
+        dependsOn(cpiTask)
+    }
+}
+
 val compileJdk = JdkVersion(buildLibs.versions.compileJdkVersion)
 val runtimeJdk = JdkVersion(buildLibs.versions.runtimeJdkVersion)
 

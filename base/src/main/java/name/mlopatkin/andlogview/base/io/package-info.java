@@ -17,4 +17,7 @@
 /**
  * Common input-output utilities.
  */
+@NullMarked
 package name.mlopatkin.andlogview.base.io;
+
+import org.jspecify.annotations.NullMarked;

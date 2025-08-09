@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Mikhail Lopatkin
+ * Copyright 2025 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * I really hate writing Observer pattern again and again. Here is my attempt to generalize it.
- * <p/>
- * The idea is to provide generic Observable interface that may be exposed to clients. Clients will register/unregister
- * from this thing. The provider of this Observable will have another view (Subject) of the thing that allows to
- * walk through all registered clients and notify them.
- */
 @NullMarked
-package name.mlopatkin.andlogview.utils.events;
+package name.mlopatkin.andlogview.ui.bookmarks;
 
 import org.jspecify.annotations.NullMarked;
