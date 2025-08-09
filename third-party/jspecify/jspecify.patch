@@ -1,0 +1,23 @@
+ .../jspecify/src/main/java/org/jspecify/annotations/NullMarked.java    | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/third-party/jspecify/src/main/java/org/jspecify/annotations/NullMarked.java b/third-party/jspecify/src/main/java/org/jspecify/annotations/NullMarked.java
+index 3b33ecd8..5136cfa0 100644
+--- a/third-party/jspecify/src/main/java/org/jspecify/annotations/NullMarked.java
++++ b/third-party/jspecify/src/main/java/org/jspecify/annotations/NullMarked.java
+@@ -17,7 +17,6 @@ package org.jspecify.annotations;
+
+ import static java.lang.annotation.ElementType.CONSTRUCTOR;
+ import static java.lang.annotation.ElementType.METHOD;
+-import static java.lang.annotation.ElementType.MODULE;
+ import static java.lang.annotation.ElementType.PACKAGE;
+ import static java.lang.annotation.ElementType.TYPE;
+ import static java.lang.annotation.RetentionPolicy.RUNTIME;
+@@ -107,6 +106,6 @@ import java.lang.annotation.Target;
+  * </ul>
+  */
+ @Documented
+-@Target({MODULE, PACKAGE, TYPE, METHOD, CONSTRUCTOR})
++@Target({PACKAGE, TYPE, METHOD, CONSTRUCTOR})
+ @Retention(RUNTIME)
+ public @interface NullMarked {}

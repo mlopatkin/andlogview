@@ -26,7 +26,7 @@ java {
     }
 }
 
-val targetVersion = JdkVersion(libs.versions.compileJdkVersion)
+val targetVersion = JdkVersion(libs.versions.runtimeJdkVersion)
 
 tasks.withType<JavaCompile>().configureEach {
     this.options.release = targetVersion.intProvider
