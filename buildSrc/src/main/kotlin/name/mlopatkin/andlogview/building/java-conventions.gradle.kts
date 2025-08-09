@@ -161,3 +161,15 @@ tasks.withType<JavaCompile>().configureEach {
         }
     }
 }
+
+afterEvaluate {
+    // Use afterEvaluate to make sure all configurations have their roles set.
+
+    configurations.all {
+        if (isCanBeResolved && !isCanBeConsumed) {
+            resolutionStrategy.dependencySubstitution {
+                substitute(module(buildLibs.jspecify.get().toString())).using(project(":jspecify"))
+            }
+        }
+    }
+}
