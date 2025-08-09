@@ -42,9 +42,12 @@
  * With provisioning, clients of this library don't have to deal with the async API of property retrieval and can rely
  * on metadata being always available immediately.
  */
+@NullMarked
 package name.mlopatkin.andlogview.device;
 
 // Implementation notes
 //
 // This package should be the only one that talks to the DDMLIB. Everything else should use this package's AdbDevice
 // instead.
+
+import org.jspecify.annotations.NullMarked;

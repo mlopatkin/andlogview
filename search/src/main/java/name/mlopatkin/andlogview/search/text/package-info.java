@@ -17,4 +17,7 @@
 /**
  * The infrastructure for the text search. Creating patterns from regular expressions, highlighting matches, etc.
  */
+@NullMarked
 package name.mlopatkin.andlogview.search.text;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * An implementation of the full-text search functionality. This is a GUI-independent part.
  */
+@NullMarked
 package name.mlopatkin.andlogview.search;
+
+import org.jspecify.annotations.NullMarked;

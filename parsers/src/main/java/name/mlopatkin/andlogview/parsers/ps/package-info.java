@@ -17,4 +17,7 @@
 /**
  * Parsers for the output of the {@code ps} tool.
  */
+@NullMarked
 package name.mlopatkin.andlogview.parsers.ps;
+
+import org.jspecify.annotations.NullMarked;

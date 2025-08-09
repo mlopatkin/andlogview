@@ -17,4 +17,7 @@
 /**
  * Parent package of large GUI components packages, like filter editor, log record table.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui;
+
+import org.jspecify.annotations.NullMarked;

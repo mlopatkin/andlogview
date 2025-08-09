@@ -18,4 +18,7 @@
  * Filter configuration UI code. Alongside filter editing dialogs, this package also provides binding to various filter
  * lists, like {@link name.mlopatkin.andlogview.ui.filterpanel.FilterPanel}.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.filters;
+
+import org.jspecify.annotations.NullMarked;

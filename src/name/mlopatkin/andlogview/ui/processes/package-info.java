@@ -17,4 +17,7 @@
 /**
  * A window that shows list of processes.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.processes;
+
+import org.jspecify.annotations.NullMarked;

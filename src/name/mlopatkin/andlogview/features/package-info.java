@@ -17,4 +17,7 @@
 /**
  * Feature flags.
  */
+@NullMarked
 package name.mlopatkin.andlogview.features;
+
+import org.jspecify.annotations.NullMarked;

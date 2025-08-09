@@ -17,4 +17,7 @@
 /**
  * The parsers for various text files produced by the Android debugging tools.
  */
+@NullMarked
 package name.mlopatkin.andlogview.parsers;
+
+import org.jspecify.annotations.NullMarked;

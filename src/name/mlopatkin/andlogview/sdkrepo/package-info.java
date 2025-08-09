@@ -17,4 +17,7 @@
 /**
  * Working with the Android SDK Repository.
  */
+@NullMarked
 package name.mlopatkin.andlogview.sdkrepo;
+
+import org.jspecify.annotations.NullMarked;

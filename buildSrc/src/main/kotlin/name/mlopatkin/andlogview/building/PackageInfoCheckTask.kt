@@ -44,41 +44,104 @@ abstract class PackageInfoCheckTask : DefaultTask() {
     @get:OutputFile
     val stampFile: Provider<RegularFile> = project.layout.buildDirectory.file("tmp/${name}/check.stamp")
 
+    private sealed class PackageError(val path: File, val packageName: String) : Comparable<PackageError> {
+        // This format and using logs to output instead of exception is to make sure IDE can convert error messages to
+        // clickable links.
+        val message = "$path:0: $packageName"
+
+        class NoPackageInfo(path: File, packageName: String) : PackageError(path, packageName)
+        class NoAnnotation(path: File, packageName: String) : PackageError(File(path, "package-info.java"), packageName)
+
+        override fun compareTo(other: PackageError): Int {
+            return when (val packageCompareResult = packageName.compareTo(other.packageName)) {
+                0 -> path.compareTo(other.path)
+                else -> packageCompareResult
+            }
+        }
+    }
+
     @TaskAction
     protected fun checkPackages() {
         val incompatiblePackages = sourceRoots.files
             .asSequence()
             .flatMap(this::findPackagesWithoutPackageInfoInRoot)
-            .toSortedSet(Comparator.comparing { it.second })
+            .toSortedSet()
 
-        if (incompatiblePackages.isNotEmpty()) {
-            throw IllegalStateException(
-                incompatiblePackages.joinToString(
-                    separator = "\n",
-                    prefix = "Packages without package-info.java detected:\n"
-                ) {
-                    "${it.second} (${it.first.path})"
-                }
+        val failures = buildList {
+            formatErrorMessageInto<PackageError.NoPackageInfo>(
+                "No package-info.java in packages",
+                incompatiblePackages,
+                this
             )
-        } else {
-            stampFile.get().touch()
+
+            formatErrorMessageInto<PackageError.NoAnnotation>(
+                "Missing @NullMarked annotation in packages",
+                incompatiblePackages,
+                this
+            )
         }
+
+        if (failures.isNotEmpty()) {
+            val message = failures.joinToString("\n")
+            logger.error(message)
+            throw RuntimeException("Some package-info.java are not well-formed. Check the logs for the list.")
+        }
+
+        stampFile.get().touch()
     }
 
-    private fun findPackagesWithoutPackageInfoInRoot(sourceRoot: File): Sequence<Pair<File, String>> {
+    private inline fun <reified T : PackageError> formatErrorMessageInto(
+        errorMessage: String,
+        packageErrors: Set<PackageError>,
+        failures: MutableList<String>
+    ) {
+        val failure = packageErrors
+            .filterIsInstance<T>()
+            .ifEmpty { null }
+            ?.joinToString(
+                separator = "\n",
+                prefix = "$errorMessage:\n"
+            ) {
+                it.message
+            }
+        failure?.let { failures.add(it) }
+    }
+
+    private fun findPackagesWithoutPackageInfoInRoot(sourceRoot: File): Sequence<PackageError> {
         if (!sourceRoot.isDirectory) return emptySequence()
         return sourceRoot.walkTopDown()
             .filter { it.isDirectory }
             .mapNotNull { dir ->
-                val javaFiles = dir.listFiles { f -> f.isFile && f.extension == "java" }?.toList().orEmpty()
+                val javaFiles = listJavaSources(dir)
 
+                val packageName = dir.relativeTo(sourceRoot).invariantSeparatorsPath.replace('/', '.')
                 when {
                     javaFiles.isEmpty() -> null
-                    javaFiles.any { it.name == "package-info.java" } -> null
-                    else -> dir to dir.relativeTo(sourceRoot).invariantSeparatorsPath.replace('/', '.')
+                    !hasPackageInfo(javaFiles) -> PackageError.NoPackageInfo(
+                        dir,
+                        packageName
+                    )
+
+                    !isPackageAnnotated(
+                        dir,
+                        "@NullMarked",
+                        "@org.jspecify.annotations"
+                    ) -> PackageError.NoAnnotation(dir, packageName)
+
+                    else -> null
                 }
             }
     }
+
+    private fun isPackageAnnotated(dir: File, vararg annotation: String): Boolean {
+        val text = File(dir, "package-info.java").readText()
+        return annotation.any { text.contains(it) }
+    }
+
+    private fun listJavaSources(dir: File): List<File> =
+        dir.listFiles { f -> f.isFile && f.extension == "java" }?.toList().orEmpty()
+
+    private fun hasPackageInfo(javaFiles: List<File>): Boolean = javaFiles.any { it.name == "package-info.java" }
 
     private fun RegularFile.touch() {
         val filePath = asFile.toPath()

@@ -17,4 +17,7 @@
 /**
  * Common dialog implementations
  */
+@NullMarked
 package name.mlopatkin.andlogview.widgets.dialogs;
+
+import org.jspecify.annotations.NullMarked;

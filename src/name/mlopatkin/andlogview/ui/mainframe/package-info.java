@@ -17,4 +17,7 @@
 /**
  * This is where all Main-window related stuff will end up.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.mainframe;
+
+import org.jspecify.annotations.NullMarked;

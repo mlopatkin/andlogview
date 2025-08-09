@@ -17,4 +17,7 @@
 /**
  * Configuration dialog and related classes.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.preferences;
+
+import org.jspecify.annotations.NullMarked;

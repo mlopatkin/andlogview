@@ -17,4 +17,7 @@
 /**
  * Glue between name.mlopatkin.andlogview.ui.device and the mainframe.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.mainframe.device;
+
+import org.jspecify.annotations.NullMarked;

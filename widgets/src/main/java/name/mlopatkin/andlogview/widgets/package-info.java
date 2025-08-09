@@ -18,4 +18,7 @@
  * This package contains generic extensions to the Swing widgets unrelated
  * to the AndLogView implementation.
  */
+@NullMarked
 package name.mlopatkin.andlogview.widgets;
+
+import org.jspecify.annotations.NullMarked;

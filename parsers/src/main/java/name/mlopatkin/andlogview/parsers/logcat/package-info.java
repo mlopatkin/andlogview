@@ -28,4 +28,7 @@
  * according to the parsing state. Some common events are "log record parsed", "a line was not parsed",
  * "document ended". Parsers are fed with lines, one by one.
  */
+@NullMarked
 package name.mlopatkin.andlogview.parsers.logcat;
+
+import org.jspecify.annotations.NullMarked;

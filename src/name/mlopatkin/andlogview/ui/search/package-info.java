@@ -17,4 +17,7 @@
 /**
  * A GUI part of the text search feature.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.search;
+
+import org.jspecify.annotations.NullMarked;

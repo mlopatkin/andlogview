@@ -23,4 +23,7 @@
  * <p>
  * Individual filters are represented as {@link name.mlopatkin.andlogview.ui.filtertree.FilterNodeViewModel}.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.filtertree;
+
+import org.jspecify.annotations.NullMarked;

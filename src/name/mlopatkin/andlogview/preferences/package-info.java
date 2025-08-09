@@ -17,4 +17,7 @@
 /**
  * Typically, these are user-controlled preferences.
  */
+@NullMarked
 package name.mlopatkin.andlogview.preferences;
+
+import org.jspecify.annotations.NullMarked;

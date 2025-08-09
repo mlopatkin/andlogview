@@ -22,4 +22,7 @@
  * Clients are expected to have a @{@link name.mlopatkin.andlogview.ui.logtable.LogTableScoped} Dagger 2
  * {@link dagger.Component} to assemble the table.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.logtable;
+
+import org.jspecify.annotations.NullMarked;

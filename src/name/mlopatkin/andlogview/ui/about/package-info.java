@@ -17,4 +17,7 @@
 /**
  * The "About" dialog and the list of third party licenses.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.about;
+
+import org.jspecify.annotations.NullMarked;

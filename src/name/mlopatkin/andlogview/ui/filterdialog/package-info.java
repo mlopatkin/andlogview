@@ -17,4 +17,7 @@
 /**
  * Dialog for creating/editing filters.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.filterdialog;
+
+import org.jspecify.annotations.NullMarked;

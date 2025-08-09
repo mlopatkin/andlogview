@@ -17,4 +17,7 @@
 /**
  * This is a core model of the application - the log entries aka {@link name.mlopatkin.andlogview.logmodel.LogRecord}.
  */
+@NullMarked
 package name.mlopatkin.andlogview.logmodel;
+
+import org.jspecify.annotations.NullMarked;

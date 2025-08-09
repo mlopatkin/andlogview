@@ -30,4 +30,7 @@
  * Currently it only works with FlatLaF.
  * </p>
  */
+@NullMarked
 package name.mlopatkin.andlogview.widgets.checktree;
+
+import org.jspecify.annotations.NullMarked;

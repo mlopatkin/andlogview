@@ -22,5 +22,7 @@
  *     <li>FlatLaf with LightFlat theme - modern theme that supports HiDpi properly</li>
  * </ol>
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.themes;
 
+import org.jspecify.annotations.NullMarked;

@@ -19,4 +19,7 @@
  * This package holds GUI related to the interaction with the Android device through ADB. This includes device selection
  * dialog, and device dump.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.device;
+
+import org.jspecify.annotations.NullMarked;

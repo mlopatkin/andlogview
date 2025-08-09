@@ -20,4 +20,7 @@
  * The panel interacts with the filters through {@link name.mlopatkin.andlogview.ui.filterpanel.FilterPanelModel}. All
  * changes are first requested through the model. Then the result is delivered through the usual change notifications.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.filterpanel;
+
+import org.jspecify.annotations.NullMarked;

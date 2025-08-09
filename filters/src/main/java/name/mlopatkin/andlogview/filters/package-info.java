@@ -17,4 +17,7 @@
 /**
  * A generic log filtering code.
  */
+@NullMarked
 package name.mlopatkin.andlogview.filters;
+
+import org.jspecify.annotations.NullMarked;

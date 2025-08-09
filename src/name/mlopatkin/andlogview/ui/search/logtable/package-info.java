@@ -17,4 +17,7 @@
 /**
  * A search infrastructure for the log table.
  */
+@NullMarked
 package name.mlopatkin.andlogview.ui.search.logtable;
+
+import org.jspecify.annotations.NullMarked;
