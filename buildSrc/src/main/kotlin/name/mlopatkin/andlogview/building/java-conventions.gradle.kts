@@ -58,8 +58,9 @@ dependencies {
 sourceSets.withType<SourceSet> {
     dependencies {
         compileOnlyConfigurationName(buildLibs.checkerframeworkAnnotations)
-
         compileOnlyConfigurationName(buildLibs.errorprone.annotations)
+        compileOnlyConfigurationName(buildLibs.jspecify)
+
         implementationConfigurationName(buildLibs.guava)
 
         annotationProcessorConfigurationName(buildLibs.build.jabel)
@@ -130,6 +131,7 @@ tasks.withType<JavaCompile>().configureEach {
                 "JavaLangClash",
                 "JavaUtilDate",
                 "MissingSummary",
+                "NullArgumentForNonNullParameter", // Breaks compilation
             )
 
             nullaway {

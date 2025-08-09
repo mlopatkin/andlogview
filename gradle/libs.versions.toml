@@ -34,6 +34,7 @@ flatlaf-extras = { module = "com.formdev:flatlaf-extras", version.ref = "flatlaf
 gson = "com.google.code.gson:gson:2.11.0"
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jopt = "net.sf.jopt-simple:jopt-simple:5.0.4"
+jspecify = "org.jspecify:jspecify:1.0.0"
 # Reload4j is a drop-in replacement for log4j 1.x
 log4j = "ch.qos.reload4j:reload4j:1.2.26"
 # MigLayout 11.x requires Java 11, so we stick with 5.x for now.
