@@ -47,7 +47,7 @@ public class ConfigurationMap implements Configuration {
      * @return the value of the property or null if there's nothing
      */
     @Override
-    @SuppressWarnings("NullAway")  // Properties are too hard. Some are nullable and some aren't.
+    @SuppressWarnings({"NullAway", "DataFlowIssue"})  // Properties are too hard. Some are nullable and some aren't.
     public <T> T get(String key) {
         Property<T> p = getPropertyOrThrow(key);
         return p.getValue();

@@ -22,6 +22,8 @@ import name.mlopatkin.andlogview.parsers.ParserControl;
 
 import com.google.common.collect.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -31,7 +33,8 @@ public class ListCollectingHandler extends CollectingHandler {
 
     public ListCollectingHandler() {}
 
-    public ListCollectingHandler(IntFunction<String> appNameLookup) {
+    @SuppressWarnings("NullAway")  // NullAway doesn't see the target type properly or what?
+    public ListCollectingHandler(IntFunction<@Nullable String> appNameLookup) {
         super(appNameLookup);
     }
 

@@ -45,7 +45,7 @@ public class SearchResultsHighlightCellRenderer implements DecoratingCellRendere
 
     @Override
     public Component getTableCellRendererComponent(
-            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int columnIndex) {
+            JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, int row, int columnIndex) {
         // TODO(mlopatkin) Can we have a better flow?
         assert inner != null;
         JComponent c =

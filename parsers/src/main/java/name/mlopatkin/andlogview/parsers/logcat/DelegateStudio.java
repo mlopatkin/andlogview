@@ -22,8 +22,6 @@ import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.Patterns;
 
-import org.jspecify.annotations.Nullable;
-
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +47,7 @@ class DelegateStudio extends SingleLineRegexLogcatParserDelegate {
         int pid = Integer.parseInt(m.group(2));
         int tid = Integer.parseInt(m.group(3));
         String rawAppName = m.group(4);
-        @Nullable String appName = "?".equals(rawAppName) ? null : rawAppName;
+        String appName = "?".equals(rawAppName) ? null : rawAppName;
         LogRecord.Priority priority = LogRecord.Priority.fromChar(m.group(5));
         String tag = m.group(6);
         String message = m.group(7);

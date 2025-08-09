@@ -118,8 +118,8 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         }
 
         Object columnValue = column.getValue(row.getRowIndex(), row.getRecord());
-        if (columnValue == null || (columnValue instanceof String && PatternsList.WHITESPACE.matchesAllOf(
-                (String) columnValue))) {
+        if (columnValue == null || (columnValue instanceof String strValue && PatternsList.WHITESPACE.matchesAllOf(
+                strValue))) {
             // Do not add filter actions for null/blank String columns. Until we can filter on 'em.
             return;
         }
@@ -185,25 +185,12 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
         public static void applyColumnValueToFilter(FilterFromDialogData dialog, Column c, TableRow row) {
             LogRecord record = row.getRecord();
             switch (c) {
-                case INDEX:
-                case TIME:
-                case TID:
-                    throw new IllegalArgumentException("Cannot filter on " + c + " column");
-                case PID:
-                    dialog.setPids(Collections.singletonList(record.getPid()));
-                    break;
-                case APP_NAME:
-                    dialog.setApps(Collections.singletonList(escapeString(record.getAppName())));
-                    break;
-                case PRIORITY:
-                    dialog.setPriority(record.getPriority());
-                    break;
-                case TAG:
-                    dialog.setTags(Collections.singletonList(escapeString(record.getTag())));
-                    break;
-                case MESSAGE:
-                    dialog.setMessagePattern(escapeString(record.getMessage()));
-                    break;
+                case INDEX, TIME, TID -> throw new IllegalArgumentException("Cannot filter on " + c + " column");
+                case PID -> dialog.setPids(Collections.singletonList(record.getPid()));
+                case APP_NAME -> dialog.setApps(Collections.singletonList(escapeString(record.getAppName())));
+                case PRIORITY -> dialog.setPriority(record.getPriority());
+                case TAG -> dialog.setTags(Collections.singletonList(escapeString(record.getTag())));
+                case MESSAGE -> dialog.setMessagePattern(escapeString(record.getMessage()));
             }
         }
     }

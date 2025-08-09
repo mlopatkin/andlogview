@@ -42,6 +42,7 @@ public class TreeModelAdapter implements CheckableTreeModel {
 
     @SuppressWarnings("unchecked")
     public <V extends FilterNodeViewModel> TreeModelAdapter(FilterTreeModel<V> filterTreeModel) {
+        //noinspection NullableProblems
         this.filterTreeModel = (FilterTreeModel<FilterNodeViewModel>) filterTreeModel;
         filterTreeModel.asObservable().addObserver(filterModelObserver);
 

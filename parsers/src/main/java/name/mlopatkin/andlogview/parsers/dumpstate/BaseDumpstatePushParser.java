@@ -76,7 +76,7 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> extends
 
     private State stateSeekSectionStart(CharSequence line) {
         assert currentSection == null;
-        @Nullable String nextSectionName = DumpstateElements.tryGetSectionName(line);
+        String nextSectionName = DumpstateElements.tryGetSectionName(line);
         if (nextSectionName != null) {
             return handleSectionStart(nextSectionName);
         }
@@ -118,7 +118,7 @@ class BaseDumpstatePushParser<H extends BaseDumpstateParseEventsHandler> extends
             return endSection();
         }
 
-        @Nullable String maybeNewSection = DumpstateElements.tryGetSectionName(line);
+        String maybeNewSection = DumpstateElements.tryGetSectionName(line);
         if (maybeNewSection != null) {
             endSection();
             if (!shouldStop()) {

@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FileDataSourceFactoryTest {
@@ -158,7 +159,7 @@ public class FileDataSourceFactoryTest {
 
         var records = getRecords(importData("time-travel.dump", log).getDataSource());
 
-        var timeComparator = Comparator.comparing(LogRecord::getTime);
+        var timeComparator = Comparator.comparing((LogRecord r) -> Objects.requireNonNull(r.getTime()));
         assertThat(getRecordsWithBuffer(records, Buffer.MAIN)).isSortedAccordingTo(timeComparator);
         assertThat(getRecordsWithBuffer(records, Buffer.RADIO)).isSortedAccordingTo(timeComparator);
         assertThat(getRecordsWithBuffer(records, Buffer.EVENTS)).isSortedAccordingTo(timeComparator);

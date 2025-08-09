@@ -47,7 +47,7 @@ public class Utils {
         }
 
         @Override
-        public String write(Color value) {
+        public String write(@SuppressWarnings("NullableProblems") Color value) {
             return String.format("#%02x%02x%02x", value.getRed(), value.getGreen(), value.getBlue());
         }
     };

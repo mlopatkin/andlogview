@@ -55,7 +55,7 @@ public class DelegateLongTest {
     void parsesBlankMessage() {
         assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
                 [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
-                \s\s\s\t
+                    \t
 
                 """))
                 .hasDate(1, 2)
@@ -64,7 +64,7 @@ public class DelegateLongTest {
                 .hasTid(4321)
                 .hasPriority(LogRecord.Priority.ERROR)
                 .hasTag("sometag")
-                .hasMessage("\s\s\s\t");
+                .hasMessage("    \t");
     }
 
     @Test

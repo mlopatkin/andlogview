@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.ui.logtable.ColumnTogglesModel;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordClipboardFormatter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.datatransfer.DataFlavor;
@@ -38,7 +37,7 @@ public class LogRecordsTransferHandler extends TransferHandler {
 
     public LogRecordsTransferHandler() {}
 
-    public LogRecordsTransferHandler(@NonNull TransferHandler globalHandler) {
+    public LogRecordsTransferHandler(TransferHandler globalHandler) {
         this.globalHandler = globalHandler;
     }
 

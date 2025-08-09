@@ -25,10 +25,12 @@ import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.tree.TreeNode;
 
@@ -80,10 +82,10 @@ class TreeModelAdapterTest {
 
     private static AbstractListAssert<
             ?,
-            List<? extends FakeFilter>,
-            FakeFilter,
-            ObjectAssert<FakeFilter>> assertChildren(TreeNode node) {
-        return assertThat(children(node)).map(value::toModel);
+            List<? extends @Nullable FakeFilter>,
+            @Nullable FakeFilter,
+            ObjectAssert<@Nullable FakeFilter>> assertChildren(TreeNode node) {
+        return assertThat(children(node)).<@Nullable FakeFilter>map(value::toModel);
     }
 
     @SuppressWarnings({"unchecked", "RedundantSuppression"})
@@ -108,7 +110,8 @@ class TreeModelAdapterTest {
         }
     }
 
-    private static FilterAssert assertThatFilter(FakeFilter f) {
-        return new FilterAssert(f);
+    private static FilterAssert assertThatFilter(@Nullable FakeFilter f) {
+        assertThat(f).isNotNull();
+        return new FilterAssert(Objects.requireNonNull(f));
     }
 }

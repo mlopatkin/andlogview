@@ -28,22 +28,11 @@ class DdmlibToLog4jWrapper implements ILogOutput {
     public void printLog(LogLevel logLevel, String tag, String message) {
         String formattedMessage = formatLogString(tag, message);
         switch (logLevel) {
-            case ASSERT:
-            case VERBOSE:
-                logger.trace(formattedMessage);
-                break;
-            case DEBUG:
-                logger.debug(formattedMessage);
-                break;
-            case INFO:
-                logger.info(formattedMessage);
-                break;
-            case WARN:
-                logger.warn(formattedMessage);
-                break;
-            case ERROR:
-                logger.error(formattedMessage);
-                break;
+            case ASSERT, VERBOSE -> logger.trace(formattedMessage);
+            case DEBUG -> logger.debug(formattedMessage);
+            case INFO -> logger.info(formattedMessage);
+            case WARN -> logger.warn(formattedMessage);
+            case ERROR -> logger.error(formattedMessage);
         }
     }
 

@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.widgets;
 
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,7 @@ public class LinkOpener implements HyperlinkListener {
             return;
         }
 
-        @Nullable URL target = e.getURL();
+        URL target = e.getURL();
         if (target == null) {
             return;
         }

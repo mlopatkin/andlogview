@@ -23,7 +23,7 @@ class BooleanParser implements Parser<Boolean> {
     }
 
     @Override
-    public String write(Boolean value) {
+    public String write(@SuppressWarnings("NullableProblems") Boolean value) {
         return value ? "true" : "false";
     }
 }

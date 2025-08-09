@@ -27,6 +27,7 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 public class MyStringUtilsAbbreviateMiddleTest {
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @Parameterized.Parameter
     public String stringToAbbreviate;
 
@@ -39,6 +40,7 @@ public class MyStringUtilsAbbreviateMiddleTest {
     @Parameterized.Parameter(3)
     public int prefixLength;
 
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @Parameterized.Parameter(4)
     public String expectedResult;
 

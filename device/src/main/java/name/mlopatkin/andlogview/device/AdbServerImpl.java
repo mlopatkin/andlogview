@@ -23,7 +23,6 @@ import com.android.ddmlib.IDevice;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +56,7 @@ class AdbServerImpl implements AdbServer {
                 .orElseThrow(
                         () -> new AdbException("ADB location '" + adbLocation.getExecutableString() + "' is invalid"));
         logger.debug("ADB server executable: {}", adbExecutable.getAbsolutePath());
-        final @Nullable AndroidDebugBridge bridge;
+        final AndroidDebugBridge bridge;
         try {
             bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);
         } catch (IllegalArgumentException e) {

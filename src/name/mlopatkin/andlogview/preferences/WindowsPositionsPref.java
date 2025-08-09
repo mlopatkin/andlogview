@@ -203,7 +203,7 @@ public class WindowsPositionsPref {
         }
 
         public FrameInfo tryDeserialize() throws InvalidJsonContentException {
-            @Nullable FrameLocation location = (x != null && y != null) ? new FrameLocation(x, y) : null;
+            FrameLocation location = (x != null && y != null) ? new FrameLocation(x, y) : null;
             if (width <= 0 || height <= 0) {
                 throw new InvalidJsonContentException("Unsupported window size (%d x %d)", width, height);
             }

@@ -43,6 +43,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -177,7 +178,8 @@ class AdbServicesBridgeTest {
         var testAdbExecutor = new TestExecutor();
         var bridge = createBridge(testUiExecutor, testAdbExecutor);
 
-        var bridgeStatus = new AtomicReference<StatusValue>();
+        @SuppressWarnings("NullAway")  // NullAway and IDEA disagree on this
+        var bridgeStatus = new AtomicReference<@Nullable StatusValue>();
         var result = bridge.getAdbServicesAsync()
                 .thenAcceptAsync(services -> bridgeStatus.set(bridge.getStatus()), MoreExecutors.directExecutor());
 

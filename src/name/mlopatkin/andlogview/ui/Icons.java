@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview.ui;
 
 import com.google.common.base.Preconditions;
 
-import org.jspecify.annotations.Nullable;
-
 import java.net.URL;
 import java.util.Objects;
 
@@ -51,7 +49,7 @@ public enum Icons {
     }
 
     private URL getUrl(String path) {
-        @Nullable URL result = Icons.class.getResource(path);
+        URL result = Icons.class.getResource(path);
         Preconditions.checkArgument(result != null, "Can't find resource for path %s", path);
         return Objects.requireNonNull(result);
     }

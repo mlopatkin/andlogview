@@ -23,7 +23,8 @@ public class StringParser implements Parser<String> {
     }
 
     @Override
-    public String write(String value) {
+    // IDEA doesn't infer that the type argument is non-nullable.
+    public String write(@SuppressWarnings("NullableProblems") String value) {
         return value;
     }
 }

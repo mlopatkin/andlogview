@@ -37,7 +37,6 @@ import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Configuration {
-    private static final AtomicReference<name.mlopatkin.andlogview.utils.properties.@NonNull Configuration> config =
+    private static final AtomicReference<name.mlopatkin.andlogview.utils.properties.Configuration> config =
             new AtomicReference<>(createDefaultConfiguration());
 
     public static class ui { // NO CHECKSTYLE

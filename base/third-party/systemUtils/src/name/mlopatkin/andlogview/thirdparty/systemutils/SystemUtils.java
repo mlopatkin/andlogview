@@ -18,8 +18,12 @@
 // Local Changes:
 // - Changed package name
 // - Removed unused methods and constants
+// - Some Nullability annotations added
+// - Fail when cannot read OS-related properties
 
 package name.mlopatkin.andlogview.thirdparty.systemutils;
+
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 
@@ -179,7 +183,7 @@ public class SystemUtils {
             // we are not allowed to look at this property
             System.err.println("Caught a SecurityException reading the system property '" + property
                     + "'; the SystemUtils property value will default to null.");
-            return null;
+            throw new AssertionError("Cannot proceed without checking the OS name");
         }
     }
 
@@ -193,7 +197,7 @@ public class SystemUtils {
      * @param osNamePrefix the prefix for the expected OS name
      * @return true if matches, or false if not or can't determine
      */
-    static boolean isOSNameMatch(final String osName, final String osNamePrefix) {
+    static boolean isOSNameMatch(final @Nullable String osName, final String osNamePrefix) {
         if (osName == null) {
             return false;
         }

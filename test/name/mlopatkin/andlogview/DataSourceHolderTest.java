@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 
 import name.mlopatkin.andlogview.logmodel.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,7 +48,8 @@ public class DataSourceHolderTest {
         DataSource oldDataSource = mock(DataSource.class);
         DataSource newDataSource = mock(DataSource.class);
 
-        AtomicReference<DataSource> dataSourceInCallback = new AtomicReference<>();
+        @SuppressWarnings("NullAway") // NullAway and IDEA disagree on this
+        var dataSourceInCallback = new AtomicReference<@Nullable DataSource>();
 
         DataSourceHolder holder = new DataSourceHolder();
         holder.setDataSource(oldDataSource);

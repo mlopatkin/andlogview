@@ -60,14 +60,9 @@ public class DeviceDisconnectedHandler implements AdbDataSource.StateObserver {
     @Override
     public void onDataSourceInvalidated(AdbDataSource.InvalidationReason reason) {
         switch (reason) {
-            case DISCONNECT:
-                onDeviceDisconnected("Device is disconnected");
-                break;
-            case OFFLINE:
-                onDeviceDisconnected("Device goes offline");
-                break;
-            default:
-                throw new AssertionError("Unexpected reason " + reason);
+            case DISCONNECT -> onDeviceDisconnected("Device is disconnected");
+            case OFFLINE -> onDeviceDisconnected("Device goes offline");
+            default -> throw new AssertionError("Unexpected reason " + reason);
         }
     }
 

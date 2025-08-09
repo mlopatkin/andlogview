@@ -65,7 +65,7 @@ public final class ClientProperty<V> {
      * @see #getWithUpcast(ClientProperty, Component, Object)
      */
     public V getOrElse(Component c, V fallbackValue) {
-        @Nullable V value = get(c);
+        V value = get(c);
         return value != null ? value : fallbackValue;
     }
 
@@ -108,8 +108,8 @@ public final class ClientProperty<V> {
     }
 
     private @Nullable V getFromComponent(Component c) {
-        if (c instanceof JComponent) {
-            @Nullable Object value = ((JComponent) c).getClientProperty(this);
+        if (c instanceof JComponent jc) {
+            Object value = jc.getClientProperty(this);
             return tryDowncast(value);
         }
         return null;

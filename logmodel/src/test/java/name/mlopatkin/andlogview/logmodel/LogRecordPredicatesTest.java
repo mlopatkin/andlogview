@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.logmodel;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -137,7 +138,7 @@ public class LogRecordPredicatesTest {
     }
 
     @SuppressWarnings("ReturnValueIgnored")
-    private void assertNpe(Predicate<LogRecord> predicate) {
+    private void assertNpe(Predicate<? super @Nullable LogRecord> predicate) {
         Assert.assertNotNull(predicate);
         predicate.test(null);
     }

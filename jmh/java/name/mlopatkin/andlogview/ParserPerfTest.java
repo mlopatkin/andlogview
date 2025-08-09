@@ -36,7 +36,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 
 @BenchmarkMode(Mode.Throughput)
@@ -54,7 +53,6 @@ public class ParserPerfTest {
     public void setUp() throws Exception {
         try (Stream<String> lines = BenchmarkResources.loadResource("goldfish_omr1_threadtime.log").lines()) {
             this.lines = lines
-                    .filter(Objects::nonNull)
                     .limit(listSize)
                     .collect(ImmutableList.toImmutableList());
         }

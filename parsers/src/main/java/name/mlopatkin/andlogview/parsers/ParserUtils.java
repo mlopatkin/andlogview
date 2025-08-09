@@ -44,7 +44,7 @@ public final class ParserUtils {
      */
     public static <E extends Exception> boolean readInto(BasePushParser parser,
             ThrowingSupplier<? extends CharSequence, E> supplier) throws E {
-        @Nullable CharSequence line;
+        CharSequence line;
         while ((line = supplier.get()) != null) {
             if (!parser.nextLine(line)) {
                 return false;

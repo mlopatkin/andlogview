@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ class HttpResource {
     private static final Logger log = LoggerFactory.getLogger(HttpResource.class);
 
     @FunctionalInterface
-    private interface IoFunction<T, R> {
+    private interface IoFunction<T, R extends @Nullable Object> {
         R apply(T argument) throws IOException;
     }
 
@@ -71,7 +72,7 @@ class HttpResource {
         });
     }
 
-    @SuppressWarnings("NullAway")
+    @SuppressWarnings("NullAway") // NullAway cannot infer the type, I don't want to leave this.<@Nullable Void> there
     public void downloadInto(OutputStream output) throws IOException {
         withUrlConnection(connection -> {
             try (var input = connection.getInputStream()) {
@@ -81,7 +82,8 @@ class HttpResource {
         });
     }
 
-    private <T> T withUrlConnection(IoFunction<? super HttpURLConnection, T> function) throws IOException {
+    private <T extends @Nullable Object> T withUrlConnection(IoFunction<? super HttpURLConnection, T> function)
+            throws IOException {
         var connection = (HttpURLConnection) uri.toURL().openConnection();
         connection.setRequestMethod("GET");
         connection.setInstanceFollowRedirects(true);

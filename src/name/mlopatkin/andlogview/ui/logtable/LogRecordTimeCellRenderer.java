@@ -19,6 +19,8 @@ import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
 import name.mlopatkin.andlogview.logmodel.Timestamp;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
+import org.jspecify.annotations.Nullable;
+
 import java.awt.Component;
 
 import javax.swing.JTable;
@@ -26,7 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
     @Override
-    protected void setValue(Object value) {
+    protected void setValue(@Nullable Object value) {
         if (value == null) {
             super.setValue(null);
             return;
@@ -38,7 +40,7 @@ class LogRecordTimeCellRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(
-            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (UiHelper.isTextFit(this, table, row, column, getText())) {
             setToolTipText(null);

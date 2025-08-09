@@ -43,7 +43,7 @@ public class ObserverList<E> implements Iterable<E> {
         void rewind();
     }
 
-    public final List<E> mObservers = new ArrayList<>();
+    public final List<@Nullable E> mObservers = new ArrayList<>();
     private int mIterationDepth = 0;
     private int mCount = 0;
 
@@ -224,7 +224,7 @@ public class ObserverList<E> implements Iterable<E> {
                 mIndex++;
             }
             if (mIndex < mListEndMarker) {
-                var result = ObserverList.this.getObserverAt(mIndex++);
+                E result = ObserverList.this.getObserverAt(mIndex++);
                 assert result != null;
                 return result;
             }

@@ -16,10 +16,13 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
-import java.util.List;
+import org.jspecify.annotations.Nullable;
 
-@SuppressWarnings({"unchecked", "rawtypes", "NullAway", "DataFlowIssue"})
-class ListProperty<T> extends Property<List<T>> {
+import java.util.List;
+import java.util.Objects;
+
+@SuppressWarnings({"unchecked", "rawtypes"})
+class ListProperty<T extends @Nullable Object> extends Property<List<T>> {
     private final Class<T> elemType;
 
     ListProperty(Class<T> type, Parser<T> parser) {
@@ -28,8 +31,13 @@ class ListProperty<T> extends Property<List<T>> {
     }
 
     @Override
-    void setValue(List values) {
-        for (Object value : values) {
+    void setValue(@Nullable List<T> values) {
+        if (values == null) {
+            super.setValue(null);
+            return;
+        }
+
+        for (Object value : Objects.requireNonNull(values)) {
             if (value != null && !elemType.isInstance(value)) {
                 throw new ClassCastException("Incompatible property type");
             }

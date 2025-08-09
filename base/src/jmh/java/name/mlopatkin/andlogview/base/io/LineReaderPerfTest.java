@@ -44,6 +44,7 @@ public class LineReaderPerfTest {
     @Param({"lf", "crlf", "random"})
     private String eoln;
 
+    @SuppressWarnings("NotNullFieldNotInitialized")
     private CharSource input;
 
     @Setup(Level.Trial)

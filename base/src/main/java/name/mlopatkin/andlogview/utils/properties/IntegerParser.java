@@ -24,7 +24,7 @@ public class IntegerParser implements Parser<Integer> {
     }
 
     @Override
-    public String write(Integer value) {
+    public String write(@SuppressWarnings("NullableProblems") Integer value) {
         return value.toString();
     }
 }

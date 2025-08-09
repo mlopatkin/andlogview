@@ -48,7 +48,7 @@ public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
         model.asObservable().addObserver(new FilterModel.Observer() {
             @Override
             public void onFilterAdded(FilterModel model, Filter newFilter, @Nullable Filter before) {
-                var newTransformedFilter = transformFilter(newFilter);
+                P newTransformedFilter = transformFilter(newFilter);
                 if (newTransformedFilter != null) {
                     addFilter(newTransformedFilter);
                 }
@@ -64,7 +64,7 @@ public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
 
             @Override
             public void onFilterReplaced(FilterModel model, Filter oldFilter, Filter newFilter) {
-                var newTransformedFilter = transformFilter(newFilter);
+                P newTransformedFilter = transformFilter(newFilter);
                 var oldTransformedFilter = filters.remove(oldFilter);
 
                 if (newTransformedFilter != null && oldTransformedFilter != null) {
@@ -80,7 +80,7 @@ public abstract class BaseFilterModelAdapter<P extends BaseFilterPresenter> {
 
             @Override
             public void onFilterMoved(FilterModel model, Filter movedFilter) {
-                var movedTransformedFilter = transformFilter(movedFilter);
+                P movedTransformedFilter = transformFilter(movedFilter);
                 if (movedTransformedFilter != null) {
                     removeFilter(movedTransformedFilter);
                     addFilter(movedTransformedFilter);

@@ -67,10 +67,9 @@ public abstract class FilterModule {
         //  as the TreeModelAdapter is created with the FilterTreeModelAdapter, it should work fine.
         //  The problem is that the filtertree module may pick up nodes from the tree model adapter and feed them into
         //  FilterTreeModel.
-        @SuppressWarnings("UnnecessaryLocalVariable")
         FilterTreeModel<?> model = modelAdapter;
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "NullableProblems"}) // IDEA wants more non-null on the type argument.
         var typedModel = (FilterTreeModel<FilterNodeViewModel>) model;
         return typedModel;
     }

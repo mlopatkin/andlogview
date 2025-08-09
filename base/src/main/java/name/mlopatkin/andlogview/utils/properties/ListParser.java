@@ -42,7 +42,7 @@ class ListParser<T> implements Parser<List<T>> {
     }
 
     @Override
-    public String write(List<T> values) {
+    public String write(@SuppressWarnings("NullableProblems") List<T> values) {
         StringBuilder builder = new StringBuilder();
         for (Iterator<T> iter = values.iterator(); iter.hasNext(); ) {
             builder.append(internal.write(iter.next()));

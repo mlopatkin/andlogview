@@ -76,6 +76,7 @@ public class LogcatCompatProvider implements ArgumentsProvider, AnnotationConsum
                 );
     }
 
+    @SuppressWarnings({"ConstantValue", "NullableProblems"}) // IDEA doesn't recognize @Nullable array parameter?
     private static <T extends Enum<T>> void updateSetWithEnumArray(@Nullable T[] input, Set<T> output) {
         if (input != null && input.length > 0) {
             output.clear();

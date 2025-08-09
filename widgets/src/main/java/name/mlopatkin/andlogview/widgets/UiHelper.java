@@ -186,8 +186,8 @@ public class UiHelper {
     }
 
     private static Action wrapActionListener(ActionListener actionListener) {
-        if (actionListener instanceof Action) {
-            return (Action) actionListener;
+        if (actionListener instanceof Action action) {
+            return action;
         }
         return new AbstractAction() {
             @Override

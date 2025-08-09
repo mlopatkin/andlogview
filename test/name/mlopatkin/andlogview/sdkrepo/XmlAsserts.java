@@ -29,13 +29,13 @@ import javax.xml.stream.events.StartElement;
  * Assertions for XML processing routines.
  */
 public class XmlAsserts {
-    public static class StartElementAssert extends AbstractAssert<StartElementAssert, StartElement> {
+    public static class StartElementAssert extends AbstractAssert<StartElementAssert, @Nullable StartElement> {
         protected StartElementAssert(@Nullable StartElement startElement) {
             super(startElement, StartElementAssert.class);
         }
 
         public StartElementAssert hasDefaultNamespace() {
-            var namespaceURI = actual().getName().getNamespaceURI();
+            var namespaceURI = safeActual().getName().getNamespaceURI();
             if (!Strings.isNullOrEmpty(namespaceURI)) {
                 throw failureWithActualExpected(namespaceURI, "", "Expected namespace to be absent but was <%s>",
                         namespaceURI);
@@ -43,10 +43,15 @@ public class XmlAsserts {
             return this;
         }
 
+        private StartElement safeActual() {
+            assertThat(actual).isNotNull();
+            return Objects.requireNonNull(actual);
+        }
+
         public StartElementAssert hasName(String name) {
             hasDefaultNamespace();
 
-            var localPart = actual.getName().getLocalPart();
+            var localPart = safeActual().getName().getLocalPart();
             if (!Objects.equals(name, localPart)) {
                 throw failureWithActualExpected(localPart, name, "Expected name <%s> but was <%s>",
                         name, localPart);

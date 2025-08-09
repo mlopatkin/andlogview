@@ -23,6 +23,8 @@ import com.formdev.flatlaf.ui.FlatLabelUI;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Range;
 
+import org.jspecify.annotations.Nullable;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -53,7 +55,7 @@ public class HighlightCellRenderer extends DefaultTableCellRenderer implements T
 
     @Override
     public Component getTableCellRendererComponent(
-            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         clearHighlight();
         if (hasFocus) {
             setBorder(FOCUSED_BORDER);

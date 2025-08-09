@@ -18,8 +18,6 @@ package name.mlopatkin.andlogview.base.concurrent;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import org.jspecify.annotations.NonNull;
-
 import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -32,7 +30,7 @@ public class TestExecutor implements Executor {
     private final ArrayDeque<Runnable> commands = new ArrayDeque<>();
 
     @Override
-    public void execute(@NonNull Runnable command) {
+    public void execute(Runnable command) {
         synchronized (commands) {
             commands.add(Objects.requireNonNull(command));
         }

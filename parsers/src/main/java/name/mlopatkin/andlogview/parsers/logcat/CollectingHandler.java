@@ -39,13 +39,13 @@ public abstract class CollectingHandler implements LogcatParseEventsHandler {
     private static final @Nullable String NO_APP_NAME = null;
 
     private final LogRecordFactory logRecordFactory;
-    private final IntFunction<String> appNameLookup;
+    private final IntFunction<@Nullable String> appNameLookup;
 
     public CollectingHandler() {
         this(new LogRecordFactory(), id -> NO_APP_NAME);
     }
 
-    public CollectingHandler(IntFunction<String> appNameLookup) {
+    public CollectingHandler(IntFunction<@Nullable String> appNameLookup) {
         this(new LogRecordFactory(), appNameLookup);
     }
 
@@ -53,11 +53,11 @@ public abstract class CollectingHandler implements LogcatParseEventsHandler {
         this(buffer, id -> NO_APP_NAME);
     }
 
-    public CollectingHandler(Buffer buffer, IntFunction<String> appNameLookup) {
+    public CollectingHandler(Buffer buffer, IntFunction<@Nullable String> appNameLookup) {
         this(new LogRecordFactory(buffer), appNameLookup);
     }
 
-    private CollectingHandler(LogRecordFactory logRecordFactory, IntFunction<String> appNameLookup) {
+    private CollectingHandler(LogRecordFactory logRecordFactory, IntFunction<@Nullable String> appNameLookup) {
         this.logRecordFactory = logRecordFactory;
         this.appNameLookup = appNameLookup;
     }

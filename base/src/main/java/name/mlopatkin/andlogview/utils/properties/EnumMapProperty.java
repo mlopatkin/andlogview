@@ -16,10 +16,12 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.EnumMap;
 import java.util.Properties;
 
-@SuppressWarnings({"rawtypes", "NullAway"})
+@SuppressWarnings({"rawtypes", "NullAway", "DataFlowIssue"})
 class EnumMapProperty<K extends Enum<K>, V> extends Property<EnumMap> {
     private final Parser<V> valueParser;
     private final Class<K> keyType;
@@ -64,7 +66,7 @@ class EnumMapProperty<K extends Enum<K>, V> extends Property<EnumMap> {
     }
 
     @Override
-    void setValue(EnumMap map) {
+    void setValue(@Nullable EnumMap map) {
         throw new UnsupportedOperationException("Internal map cannot be retrieved. Use setValue(T key) instead.");
     }
 

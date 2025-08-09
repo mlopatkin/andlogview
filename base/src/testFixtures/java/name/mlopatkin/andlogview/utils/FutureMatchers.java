@@ -21,7 +21,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,8 +84,8 @@ public class FutureMatchers {
     @SuppressWarnings("UseCorrectAssertInTests")
     private static class ExecutionResult<T> implements BiFunction<T, Throwable, Void> {
         private final AtomicBoolean isCompleted = new AtomicBoolean(false);
-        private final AtomicReference<T> result = new AtomicReference<>();
-        private final AtomicReference<Throwable> exception = new AtomicReference<>();
+        private final AtomicReference<@Nullable T> result = new AtomicReference<>();
+        private final AtomicReference<@Nullable Throwable> exception = new AtomicReference<>();
 
         @Override
         public Void apply(T t, Throwable throwable) {
@@ -102,10 +104,9 @@ public class FutureMatchers {
             return exception.get() != null;
         }
 
-        @SuppressWarnings("NullAway")
         T getResult() {
             assert isCompleted() && !hasException();
-            return result.get();
+            return Objects.requireNonNull(result.get());
         }
 
         public static <T> ExecutionResult<T> check(CompletionStage<T> stage) {

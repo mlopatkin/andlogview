@@ -196,7 +196,7 @@ public class FilterPanel extends FilterPanelUi {
         private final JPopupMenu menu = new JPopupMenu();
         private @Nullable FilterButton<?> activeButton;
 
-        @SuppressWarnings("NullAway")
+        @SuppressWarnings({"NullAway", "DataFlowIssue"})
         PopupMenuHandler() {
             JMenuItem editItem = new JMenuItem("Edit filter");
             JMenuItem removeItem = new JMenuItem("Remove filter");

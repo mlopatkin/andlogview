@@ -19,11 +19,11 @@ package name.mlopatkin.andlogview.ui.filters;
 import static name.mlopatkin.andlogview.filters.FilterModelAssert.assertThatFilters;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 class StoredFiltersTest {
-    private final Gson gson = new GsonBuilder().registerTypeAdapterFactory(FilterGlobals.typeAdapterFactory()).create();
+    // TODO(mlopatkin) Figure out how to build a proper Gson instance
+    private final Gson gson = Utils.createConfigurationGson().newBuilder()
+            .registerTypeAdapterFactory(FilterGlobals.typeAdapterFactory())
+            .create();
 
     @Test
     void deserializeExistingFilter() throws Exception {
