@@ -105,8 +105,14 @@ class HttpResource {
         log.info("Initiating HTTP request to {}", uri);
         try {
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Server returned " + connection.getResponseCode());
+                throw new IOException(String.format(
+                        "Server returned %d %s",
+                        connection.getResponseCode(),
+                        connection.getResponseMessage()
+                ));
             }
+
+            log.info("Server returned {} {}", connection.getResponseCode(), connection.getResponseMessage());
 
             return function.apply(connection);
         } finally {
