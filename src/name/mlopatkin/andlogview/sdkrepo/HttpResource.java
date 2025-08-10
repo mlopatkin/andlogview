@@ -40,6 +40,11 @@ class HttpResource {
         R apply(T argument) throws IOException;
     }
 
+    @FunctionalInterface
+    private interface IoConsumer<T> {
+        void accept(T argument) throws IOException;
+    }
+
     private static final int CONNECT_TIMEOUT_MS = 10_000;
     private static final int READ_TIMEOUT_MS = 10_000;
 
@@ -72,16 +77,23 @@ class HttpResource {
         });
     }
 
-    @SuppressWarnings("NullAway") // NullAway cannot infer the type, I don't want to leave this.<@Nullable Void> there
     public void downloadInto(OutputStream output) throws IOException {
         withUrlConnection(connection -> {
             try (var input = connection.getInputStream()) {
                 ByteStreams.copy(input, output);
             }
+        });
+    }
+
+    @SuppressWarnings("overloads")
+    private void withUrlConnection(IoConsumer<? super HttpURLConnection> consumer) throws IOException {
+        withUrlConnection((IoFunction<? super HttpURLConnection, ?>) connection -> {
+            consumer.accept(connection);
             return null;
         });
     }
 
+    @SuppressWarnings("overloads")
     private <T extends @Nullable Object> T withUrlConnection(IoFunction<? super HttpURLConnection, T> function)
             throws IOException {
         var connection = (HttpURLConnection) uri.toURL().openConnection();
