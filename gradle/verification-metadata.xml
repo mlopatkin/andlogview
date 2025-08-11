@@ -21,6 +21,7 @@
          <trusted-key id="0785B3EFF60B1B1BEA94E0BB7C25280EAE63EBE5" group="^org[.]apache[.]httpcomponents($|([.].*))" regex="true"/>
          <trusted-key id="0A123C1ED3F13A6A0140E166C71FB765CD9DE313" group="org.apache.ant"/>
          <trusted-key id="0CC641C3A62453AB390066C4A41F13C999945293" group="commons-collections" name="commons-collections"/>
+         <trusted-key id="110688FBA8BA3992DD2F2F1B6746229D0F629EDB" group="org.junit-pioneer" name="junit-pioneer"/>
          <trusted-key id="12D16069219C90212A974D119AE296FD02E9F65B" group="org.apache.commons" name="commons-math3" version="3.2"/>
          <trusted-key id="13AC2213964ABE1D1C147C0E1939A2520BAB1D90" group="org.freemarker" name="freemarker"/>
          <trusted-key id="1412DBF4601D1AE0AA64FEA8D1E66853D4FEC883" group="com.spotify" name="hamcrest-optional"/>

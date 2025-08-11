@@ -42,16 +42,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junitpioneer.jupiter.cartesian.CartesianTest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 class HttpClientTest {
     private static final String TEXT_PLAIN = MediaType.PLAIN_TEXT_UTF_8.toString();
     private static final String OCTET_STREAM = MediaType.OCTET_STREAM.toString();
+
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
             .options(wireMockConfig().dynamicPort())
@@ -59,8 +62,9 @@ class HttpClientTest {
 
     private final HttpClient httpClient = new HttpClient();
 
-    @Test
-    void downloadsFileSuccessfully() throws IOException {
+    @ParameterizedTest
+    @EnumSource
+    void canDownloadResourceSuccessfully(DownloadMode mode) throws IOException {
         byte[] testData = testBytes("Hello, WireMock!");
 
         stubFor(
@@ -70,10 +74,8 @@ class HttpClientTest {
                 )
         );
 
-        var resource = httpClient.get(uri("/file.txt"));
-
-        var downloadedBytes = new ByteArrayOutputStream();
-        resource.downloadInto(downloadedBytes);
+        var downloadedBytes =
+                mode.download(httpClient.get(uri("/file.txt")), testData.length, new ByteArrayOutputStream());
 
         assertThat(downloadedBytes.toByteArray()).isEqualTo(testData);
     }
@@ -83,7 +85,7 @@ class HttpClientTest {
             "10, 100",
             "10, 10"
     })
-    void canDownloadBoundedResourceWithContentLengthHeader(int dataLength, int maxLength) throws Exception {
+    void canFetchDataWithSizeLimit(int dataLength, int maxLength) throws Exception {
         byte[] testData = testBytesOfLength(dataLength);
 
         stubFor(
@@ -95,9 +97,7 @@ class HttpClientTest {
                 )
         );
 
-        var resource = httpClient.get(uri("/file.bin"));
-
-        var downloadedBytes = resource.download(maxLength).read();
+        var downloadedBytes = httpClient.get(uri("/file.bin")).download(maxLength).read();
 
         assertThat(downloadedBytes).isEqualTo(testData);
     }
@@ -118,9 +118,7 @@ class HttpClientTest {
                 )
         );
 
-        var resource = httpClient.get(uri("/file.bin"));
-
-        var downloadedBytes = resource.download(maxLength).read();
+        var downloadedBytes = httpClient.get(uri("/file.bin")).download(maxLength).read();
 
         assertThat(downloadedBytes).isEqualTo(testData);
     }
@@ -138,21 +136,19 @@ class HttpClientTest {
                 )
         );
 
-        var resource = httpClient.get(uri("/file.txt"));
-
-        var downloadedBytes = resource.download(testData.length);
+        var downloadedBytes = httpClient.get(uri("/file.txt")).download(testData.length);
 
         assertThat(downloadedBytes).hasSameContentAs(ByteSource.wrap(testData));
         assertThat(downloadedBytes.read()).isEqualTo(testData);
     }
 
-    @ParameterizedTest
-    @ValueSource(
-            ints = {
-                    HTTP_MOVED_PERM, HTTP_MOVED_TEMP, HTTP_SEE_OTHER, 307
-            }
-    )
-    void downloadingByteSourceCanFollowRedirects(int responseCode) throws Exception {
+    @CartesianTest
+    void downloadingByteSourceCanFollowRedirects(
+            @CartesianTest.Values(
+                    ints = {HTTP_MOVED_PERM, HTTP_MOVED_TEMP, HTTP_SEE_OTHER, 307}
+            ) int responseCode,
+            @CartesianTest.Enum DownloadMode mode
+    ) throws Exception {
         byte[] testData = testBytes("Some data");
 
         stubFor(
@@ -171,10 +167,10 @@ class HttpClientTest {
                 )
         );
 
-        var resource = httpClient.get(uri("/initial-request"));
-        var downloadedBytes = resource.download(testData.length);
+        var downloadedBytes =
+                mode.download(httpClient.get(uri("/initial-request")), testData.length, new ByteArrayOutputStream());
 
-        assertThat(downloadedBytes.read()).isEqualTo(testData);
+        assertThat(downloadedBytes.toByteArray()).isEqualTo(testData);
     }
 
     private static URI uri(String path) {
@@ -195,5 +191,28 @@ class HttpClientTest {
 
     private static StubMapping stubFor(MappingBuilder mapping) {
         return wm.stubFor(mapping);
+    }
+
+    @SuppressWarnings("unused") // Constants are used in the parameterized tests.
+    enum DownloadMode {
+        DATA {
+            @Override
+            <T extends OutputStream> T download(HttpResource resource, int sizeLimit, T destination)
+                    throws IOException {
+                resource.download(sizeLimit).copyTo(destination);
+                return destination;
+            }
+        },
+        STREAMING {
+            @Override
+            <T extends OutputStream> T download(HttpResource resource, int sizeLimit, T destination)
+                    throws IOException {
+                resource.downloadInto(destination);
+                return destination;
+            }
+        };
+
+        abstract <T extends OutputStream> T download(HttpResource resource, int sizeLimit, T destination)
+                throws IOException;
     }
 }
