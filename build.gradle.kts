@@ -61,7 +61,9 @@ dependencies {
     testImplementation(testFixtures(project(":filters")))
     testImplementation(testFixtures(project(":logmodel")))
     testImplementation(testFixtures(project(":search")))
+
     testImplementation(libs.test.jetbrainsAnnotations)
+    testImplementation(libs.test.wiremock)
 
     jmhImplementation(testFixtures(project(":parsers")))
 }

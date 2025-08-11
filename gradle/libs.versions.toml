@@ -54,6 +54,8 @@ test-junit5-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 test-junit5-vintageEngine = { module = "org.junit.vintage:junit-vintage-engine" }
 test-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 test-mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+# WireMock 3 requires Java 11, so we're sticking with 2.x for now
+test-wiremock = "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
 [plugins]
 # JMH plugin allows building and running JMH benchmarks
