@@ -16,6 +16,7 @@
 
 package name.mlopatkin.gradleplugins.jpackage
 
+import groovy.lang.Closure
 import org.beryx.runtime.JPackageImageTask
 import org.beryx.runtime.JPackageTask
 import org.beryx.runtime.JreTask
@@ -31,11 +32,14 @@ import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.gradle.process.ExecOperations
+import org.gradle.process.ExecResult
 import java.io.File
 import javax.inject.Inject
 
@@ -52,6 +56,9 @@ abstract class JpackagePlugin : Plugin<Project> {
     @get:Inject
     protected abstract val fsOps: FileSystemOperations
 
+    @get:Inject
+    protected abstract val execOps: ExecOperations
+
     @Suppress("LeakingThis")
     private val buildEnvironment = objectFactory.newInstance<BuildEnvironment>()
 
@@ -61,7 +68,20 @@ abstract class JpackagePlugin : Plugin<Project> {
         }
     }
 
+    private fun addBackportingMethodToProject(project: Project) {
+        // Add the removed Project.exec method as a project extension to keep the runtime plugin working.
+        project.extra["exec"] = object : Closure<ExecResult>(project) {
+            fun doCall(argument: Closure<*>): ExecResult {
+                return execOps.exec {
+                    project.configure(this, argument)
+                }
+            }
+        }
+    }
+
     private fun Project.configureThisPlugin() {
+        addBackportingMethodToProject(this)
+
         pluginManager.apply("org.beryx.runtime")
 
         val java = extensions.getByType<JavaPluginExtension>()
