@@ -65,6 +65,7 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,7 +239,6 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     // Help menu
     private final Action acAbout = UiHelper.makeAction("About", this::showAboutDialog);
 
-    @SuppressWarnings("NullAway")
     private MainFrame(AppGlobals globals, CommandLine commandLine) {
         MainFrameDependencies dependencies =
                 DaggerMainFrameDependencies.factory().create(new MainFrameModule(this), globals);
@@ -315,6 +315,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     /**
      * Initialize the contents of the frame.
      */
+    @EnsuresNonNull({"controlsPanel", "instantSearchTextField"})
     private void initialize(boolean isDebug) {
         mainFrameUi.setTitle(Main.APP_NAME + " " + Main.getVersionString());
         mainFrameUi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -393,6 +394,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         component2.setPreferredSize(size2);
     }
 
+    @EnsuresNonNull({"controlsPanel", "instantSearchTextField"})
     private void initControlPanel() {
         controlsPanel = new JPanel();
         mainFrameUi.getContentPane().add(controlsPanel, BorderLayout.SOUTH);
@@ -407,6 +409,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         controlsPanel.add(statusPanel.getPanel());
     }
 
+    @EnsuresNonNull("instantSearchTextField")
     private void initInstantSearch() {
         instantSearchTextField = new JTextField();
         controlsPanel.add(instantSearchTextField);

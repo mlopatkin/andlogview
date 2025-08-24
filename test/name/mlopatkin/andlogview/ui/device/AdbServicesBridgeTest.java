@@ -178,8 +178,7 @@ class AdbServicesBridgeTest {
         var testAdbExecutor = new TestExecutor();
         var bridge = createBridge(testUiExecutor, testAdbExecutor);
 
-        @SuppressWarnings("NullAway")  // NullAway and IDEA disagree on this
-        var bridgeStatus = new AtomicReference<@Nullable StatusValue>();
+        AtomicReference<@Nullable StatusValue> bridgeStatus = new AtomicReference<>();
         var result = bridge.getAdbServicesAsync()
                 .thenAcceptAsync(services -> bridgeStatus.set(bridge.getStatus()), MoreExecutors.directExecutor());
 

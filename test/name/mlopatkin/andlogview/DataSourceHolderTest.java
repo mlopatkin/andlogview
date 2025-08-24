@@ -48,8 +48,7 @@ public class DataSourceHolderTest {
         DataSource oldDataSource = mock(DataSource.class);
         DataSource newDataSource = mock(DataSource.class);
 
-        @SuppressWarnings("NullAway") // NullAway and IDEA disagree on this
-        var dataSourceInCallback = new AtomicReference<@Nullable DataSource>();
+        AtomicReference<@Nullable DataSource> dataSourceInCallback = new AtomicReference<>();
 
         DataSourceHolder holder = new DataSourceHolder();
         holder.setDataSource(oldDataSource);
