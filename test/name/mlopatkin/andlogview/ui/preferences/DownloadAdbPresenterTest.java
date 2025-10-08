@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -31,22 +31,21 @@ import static org.mockito.Mockito.when;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
+import name.mlopatkin.andlogview.sdkrepo.TestSdkPackage;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Cancelled;
-import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.DownloadFailure;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Installed;
+import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.ManualFallback;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.PackageNotFound;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Result;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -54,16 +53,21 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("FutureReturnValueIgnored")
 class DownloadAdbPresenterTest {
-    private static final String TEST_LICENSE = "Android SDK License Text";
 
     private final SdkRepository sdkRepository = mock();
 
     private final FakeProgressView initView = new FakeProgressView();
     private final FakeProgressView downloadView = new FakeProgressView();
     private final FakeInstallView installView = new FakeInstallView();
+    private final FakeFailureView failureView = new FakeFailureView();
 
     private final TestExecutor uiExecutor = new TestExecutor();
     private final TestExecutor netExecutor = new TestExecutor();
+
+    @BeforeEach
+    void setUp() throws IOException {
+        withSdkPackageDownloadSucceeding();
+    }
 
     @Test
     void showsProgressViewToInitSdk() {
@@ -117,7 +121,7 @@ class DownloadAdbPresenterTest {
         var result = withSdkPackageLoaded(presenter, createPackage());
 
         assertThat(installView.isShown()).isTrue();
-        assertThat(installView.getLicenseText()).isEqualTo(TEST_LICENSE);
+        assertThat(installView.getLicenseText()).isEqualTo(TestSdkPackage.TEST_LICENSE);
         assertThat(installView.isDownloadAllowed()).isFalse();
 
         assertThat(result).isNotCompleted();
@@ -234,18 +238,120 @@ class DownloadAdbPresenterTest {
     }
 
     @Test
-    void propagatesDownloadFailure() throws Exception {
+    void showsErrorDialogWhenDownloadingPackageFails() throws Exception {
         var aPackage = createPackage();
         var installDir = new File("installDir");
-        doThrow(IOException.class).when(sdkRepository).downloadPackage(eq(aPackage), eq(installDir));
+        withSdkPackageDownloadFailing();
 
         var presenter = createPresenter();
         var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
 
         completePendingActions();
 
+        assertThat(installView.isShown()).isFalse();
         assertThat(downloadView.isShown()).isFalse();
-        assertThat(result).isCompletedWithValueMatching(DownloadFailure.class::isInstance);
+        assertThat(failureView.isShown()).isTrue();
+        assertThat(result).isNotCompleted();
+    }
+
+    @Test
+    void userCanRetryWhenDownloadingPackageFails() throws Exception {
+        var aPackage = createPackage();
+        var installDir = new File("installDir");
+        withSdkPackageDownloadFailing();
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
+
+        completePendingActions();
+
+        failureView.runTryAgain();
+        completePendingActions();
+
+        assertThat(failureView.isShown()).isFalse();
+        assertThat(installView.isShown()).isTrue();
+        assertThat(result).isNotCompleted();
+    }
+
+    @Test
+    void retryAfterDownloadingFailsCanSucceed() throws Exception {
+        var aPackage = createPackage();
+        var installDir = new File("installDir");
+        withSdkPackageDownloadFailing();
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
+
+        completePendingActions();
+
+        withSdkPackageDownloadSucceeding();
+        failureView.runTryAgain();
+
+        installView.runCommitAction(installDir);
+        completePendingActions();
+
+        assertThat(downloadView.isShown()).isFalse();
+        assertThat(result).isCompletedWithValueMatching(
+                r -> r instanceof Installed installed && installDir.equals(installed.getAdbPath()),
+                "is installed"
+        );
+    }
+
+    @Test
+    void userCanCancelWhenDownloadingPackageFails() throws Exception {
+        var aPackage = createPackage();
+        var installDir = new File("installDir");
+        withSdkPackageDownloadFailing();
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
+
+        completePendingActions();
+
+        failureView.runCancel();
+        completePendingActions();
+
+        assertThat(failureView.isShown()).isFalse();
+        assertThat(installView.isShown()).isFalse();
+        assertThat(result).isCompletedWithValueMatching(Cancelled.class::isInstance);
+    }
+
+    @Test
+    void userCanFallBackToManualDownloadWhenDownloadingPackageFails() throws Exception {
+        var aPackage = createPackage();
+        var installDir = new File("installDir");
+        withSdkPackageDownloadFailing();
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
+
+        completePendingActions();
+
+        failureView.runInstallManually();
+        completePendingActions();
+
+        assertThat(failureView.isShown()).isFalse();
+        assertThat(installView.isShown()).isFalse();
+        assertThat(result).isCompletedWithValueMatching(ManualFallback.class::isInstance);
+    }
+
+    @Test
+    void userCanCancelAfterTryingAgain() throws Exception {
+        withSdkPackageDownloadFailing();
+
+        var aPackage = createPackage();
+        var installDir = new File("installDir");
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
+
+        completePendingActions();
+        failureView.runTryAgain();
+        completePendingActions();
+        installView.runCancelAction();
+        completePendingActions();
+
+        assertThat(result).isCompletedWithValueMatching(Cancelled.class::isInstance);
     }
 
     @Test
@@ -271,6 +377,7 @@ class DownloadAdbPresenterTest {
                 sdkRepository,
                 () -> initView,
                 () -> installView,
+                () -> failureView,
                 () -> downloadView,
                 MoreExecutors.directExecutor(),
                 netExecutor
@@ -278,26 +385,24 @@ class DownloadAdbPresenterTest {
     }
 
     private SdkPackage createPackage() {
-        return new SdkPackage(
-                DownloadAdbPresenter.PLATFORM_TOOLS_PACKAGE,
-                TEST_LICENSE,
-                URI.create("https://example.com"),
-                SdkPackage.TargetOs.LINUX,
-                Hashing.sha256(),
-                HashCode.fromString("0000000000000000000000000000000000000000000000000000000000000000")
-        );
+        return TestSdkPackage.createPackage(DownloadAdbPresenter.PLATFORM_TOOLS_PACKAGE);
+    }
+
+    private void withSdkPackageDownloadFailing() throws IOException {
+        doThrow(IOException.class).when(sdkRepository).downloadPackage(any(), any());
+    }
+
+    private void withSdkPackageDownloadSucceeding() throws IOException {
+        doAnswer(invocation -> null).when(sdkRepository).downloadPackage(any(), any());
     }
 
     static class FakeProgressView implements DownloadAdbPresenter.SdkInitView, DownloadAdbPresenter.SdkDownloadView {
         private boolean isShown = false;
-        private boolean wasEverShown = false;
         private @Nullable Runnable cancelAction = null;
 
         @Override
         public void show(Runnable cancelAction) {
-            assertFalse(wasEverShown, "Dialog cannot be shown more than once");
             this.isShown = true;
-            this.wasEverShown = true;
             this.cancelAction = cancelAction;
         }
 
@@ -433,6 +538,56 @@ class DownloadAdbPresenterTest {
 
         public boolean isFileSelectorShown() {
             return isFileSelectorShown;
+        }
+    }
+
+    static class FakeFailureView implements DownloadAdbPresenter.FailureView {
+        private @Nullable String message;
+        private @Nullable Runnable tryAgainAction;
+        private @Nullable Runnable installManuallyAction;
+        private @Nullable Runnable cancelAction;
+        private boolean isShown;
+
+        @Override
+        public void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel) {
+            this.message = Objects.requireNonNull(message);
+            this.tryAgainAction = Objects.requireNonNull(tryAgain);
+            this.installManuallyAction = Objects.requireNonNull(installManually);
+            this.cancelAction = Objects.requireNonNull(cancel);
+            this.isShown = true;
+        }
+
+        public void hide() {
+            this.isShown = false;
+        }
+
+        public void runTryAgain() {
+            assertTrue(isShown, "Dialog not shown");
+            assertNotNull(tryAgainAction, "Try again action not set");
+            hide();
+            tryAgainAction.run();
+        }
+
+        public void runInstallManually() {
+            assertTrue(isShown, "Dialog not shown");
+            assertNotNull(installManuallyAction, "Install manually action not set");
+            hide();
+            installManuallyAction.run();
+        }
+
+        public void runCancel() {
+            assertTrue(isShown, "Dialog not shown");
+            assertNotNull(cancelAction, "Cancel action not set");
+            hide();
+            cancelAction.run();
+        }
+
+        public boolean isShown() {
+            return isShown;
+        }
+
+        public @Nullable String getMessage() {
+            return message;
         }
     }
 }

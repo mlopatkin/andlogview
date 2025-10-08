@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 @Module
 public abstract class PreferencesUiModule {
@@ -42,6 +43,9 @@ public abstract class PreferencesUiModule {
 
     @Binds
     abstract DownloadAdbPresenter.SdkDownloadView downloadView(SdkDownloadViewImpl sdkDownloadView);
+
+    @Binds
+    abstract DownloadAdbPresenter.FailureView failureView(FailureViewImpl failureView);
 
     static class SdkInitViewImpl extends ProgressDialog implements DownloadAdbPresenter.SdkInitView {
         @Inject
@@ -134,6 +138,36 @@ public abstract class PreferencesUiModule {
                 commitAction.accept(chooser.getSelectedFile());
             } else {
                 cancelAction.run();
+            }
+        }
+    }
+
+    static class FailureViewImpl implements DownloadAdbPresenter.FailureView {
+        private final DialogFactory dialogFactory;
+
+        @Inject
+        public FailureViewImpl(DialogFactory dialogFactory) {
+            this.dialogFactory = dialogFactory;
+        }
+
+        @Override
+        public void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel) {
+            String[] options = {"Try again", "Install manually", "Cancel"};
+            int choice = JOptionPane.showOptionDialog(
+                    dialogFactory.getOwner(),
+                    message,
+                    "Error",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.ERROR_MESSAGE,
+                    /* custom icon */ null,
+                    options,
+                    /* default button */ options[0]
+            );
+            switch (choice) {
+                case 0 -> tryAgain.run();
+                case 1 -> installManually.run();
+                case 2, JOptionPane.CLOSED_OPTION -> cancel.run();
+                default -> cancel.run(); // Safe catch-all.
             }
         }
     }

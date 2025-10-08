@@ -84,6 +84,21 @@ public abstract class Try<T> {
     }
 
     /**
+     * Applies the function to the exception if it is present. If the value is present, it is preserved in the result.
+     * If the function throws exception then the result holds this exception instead of the transformed value.
+     *
+     * @param function the function that converts an exception to a value
+     * @return the result of applying the function to the exception or the original value
+     */
+    public final Try<T> mapFailure(Function<? super Throwable, ? extends T> function) {
+        if (isPresent()) {
+            return this;
+        }
+
+        return Try.ofCallable(() -> function.apply(getError()));
+    }
+
+    /**
      * Applies a function to the value if it is present and returns the result. If the value is not present then the
      * original exception is preserved in the result. If the function throws exception then the result holds this
      * exception instead of the value.

@@ -52,6 +52,28 @@ public final class MyFutures {
     }
 
     /**
+     * Connects output of the {@code source} to the {@code target}. The value or exception produced by the source are
+     * set to target.
+     *
+     * @param source the source future to produce the result
+     * @param target the target future to receive the result
+     * @param <T> the type of the future
+     */
+    public static <T> void connect(CompletionStage<T> source, CompletableFuture<? super T> target) {
+        source.whenComplete((v, th) -> {
+            if (th != null) {
+                if (isCancellation(th)) {
+                    target.cancel(false);
+                } else {
+                    target.completeExceptionally(th);
+                }
+            } else {
+                target.complete(v);
+            }
+        });
+    }
+
+    /**
      * Wraps failure handler into cancellation-ignoring adapter. The adapter can unwrap cancellation exceptions. It is
      * intended for {@link #consumingHandler(Consumer, Consumer)} and {@link #exceptionHandler(Consumer)}
      * implementations.
@@ -79,6 +101,16 @@ public final class MyFutures {
                 failureHandler.accept(th);
             }
         };
+    }
+
+    /**
+     * Builds a cancellation handler that rethrows other exceptions. It can unwrap cancellation exceptions.
+     *
+     * @param cancellationHandler the cancellation handler
+     * @return the combined handler
+     */
+    public static Consumer<Throwable> cancellationHandler(Runnable cancellationHandler) {
+        return cancellationHandler(cancellationHandler, MyThrowables::sneakyRethrow);
     }
 
     /**

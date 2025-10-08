@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.utils.MyFutures;
+import name.mlopatkin.andlogview.utils.Try;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -50,6 +51,10 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         void show(Runnable cancelAction);
 
         void hide();
+    }
+
+    interface FailureView {
+        void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel);
     }
 
     interface InstallView {
@@ -118,6 +123,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
     private final SdkRepository repository;
     private final Provider<SdkInitView> sdkInitView;
     private final Provider<InstallView> installView;
+    private final Provider<FailureView> failureView;
     private final Provider<SdkDownloadView> downloadView;
     private final Executor uiExecutor;
     private final Executor networkExecutor;
@@ -127,6 +133,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
             SdkRepository repository,
             Provider<SdkInitView> sdkInitView,
             Provider<InstallView> installView,
+            Provider<FailureView> failureView,
             Provider<SdkDownloadView> downloadView,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor networkExecutor
@@ -134,6 +141,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         this.repository = repository;
         this.sdkInitView = sdkInitView;
         this.installView = installView;
+        this.failureView = failureView;
         this.downloadView = downloadView;
         this.uiExecutor = uiExecutor;
         this.networkExecutor = networkExecutor;
@@ -153,6 +161,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         // 4. Download the archive (may take time, cancellable).
         // 5. Unpack the archive (may take time, cancellable).
         // 6. Give the installed ADB path back.
+        // x. If anything goes wrong while downloading - allow the user to try again.
 
         var packageData =
                 MyFutures.runAsync(() -> repository.locatePackage(PLATFORM_TOOLS_PACKAGE), networkExecutor);
@@ -196,7 +205,34 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
                 installDir -> showInstallProgressDialog(downloadAndUnpack(pkg, installDir)),
                 uiExecutor
         );
-        return installedAdb.thenApply(Result::installed);
+
+        return installedAdb.thenComposeAsync(
+                maybeInstallDir ->
+                        maybeInstallDir.<Result>map(Result::installed)
+                                .map(CompletableFuture::completedFuture)
+                                .mapFailure(th -> onPackageDownloadError(pkg, th))
+                                .get(),
+                uiExecutor
+        );
+    }
+
+    /**
+     * Handles the failure of package downloading. Shows an error dialog and allows the user to select how to proceed.
+     *
+     * @param pkg the package that failed to download/unpack
+     * @param failure the failure
+     * @return the new result for the pipeline
+     */
+    private CompletableFuture<Result> onPackageDownloadError(SdkPackage pkg, Throwable failure) {
+        log.error("Failed to download package {}", pkg, failure);
+        var failureResponse = new CompletableFuture<Result>();
+        failureView.get().show(
+                "Download failed: " + failure.getMessage(),
+                () -> MyFutures.connect(installPackage(pkg), failureResponse),
+                () -> failureResponse.complete(Result.manual()),
+                () -> failureResponse.cancel(false)
+        );
+        return failureResponse;
     }
 
     /**
@@ -230,18 +266,19 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
 
     /**
      * Starts the downloading and unpacking (asynchronously).
+     *
      * @param pkg the package to download and unpack
      * @param installDir the target installation directory
-     * @return the future with the resulting unpacked location of the package. Can carry the failure information
+     * @return the future with the resulting unpacked location of the package or with the download failure
      */
-    private CompletableFuture<File> downloadAndUnpack(SdkPackage pkg, File installDir) {
-        return MyFutures.runAsync(() -> repository.downloadPackage(pkg, installDir), networkExecutor)
-                .whenComplete((r, th) -> {
-                    if (th != null) {
-                        log.error("Failed to download", th);
-                    }
-                })
-                .thenApply(ignored -> installDir);
+    private CompletableFuture<Try<File>> downloadAndUnpack(SdkPackage pkg, File installDir) {
+        return MyFutures.runAsync(
+                () -> Try.ofCallable(() -> {
+                    repository.downloadPackage(pkg, installDir);
+                    return installDir;
+                }),
+                networkExecutor
+        );
     }
 
     /**
@@ -250,7 +287,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      * @param install the installation future, will be cancelled if the user cancels the dialog
      * @return the decorated future that handles the dialog UI
      */
-    private CompletableFuture<File> showInstallProgressDialog(CompletableFuture<File> install) {
+    private CompletableFuture<Try<File>> showInstallProgressDialog(CompletableFuture<Try<File>> install) {
         var view = downloadView.get();
         var completion = install.whenCompleteAsync((r, th) -> view.hide(), uiExecutor);
         view.show(MyFutures.toCancellable(install)::cancel);
