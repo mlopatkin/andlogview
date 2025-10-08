@@ -234,7 +234,7 @@ class DownloadAdbPresenterTest {
     }
 
     @Test
-    void canCancelRunningDownload() throws Exception {
+    void propagatesDownloadFailure() throws Exception {
         var aPackage = createPackage();
         var installDir = new File("installDir");
         doThrow(IOException.class).when(sdkRepository).downloadPackage(eq(aPackage), eq(installDir));
@@ -246,6 +246,18 @@ class DownloadAdbPresenterTest {
 
         assertThat(downloadView.isShown()).isFalse();
         assertThat(result).isCompletedWithValueMatching(DownloadFailure.class::isInstance);
+    }
+
+    @Test
+    void canCancelRunningDownload() throws Exception {
+        var presenter = createPresenter();
+        var installDir = new File("installDir");
+        var result = withSdkPackageInstallReady(presenter, createPackage(), installDir);
+
+        downloadView.runCancelAction();
+
+        assertThat(downloadView.isShown()).isFalse();
+        assertThat(result).isCompletedWithValueMatching(Cancelled.class::isInstance);
     }
 
     private void completePendingActions() {
