@@ -66,6 +66,13 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         void setAcceptAction(Consumer<Boolean> acceptAction);
 
         /**
+         * Sets the initial state of the license acceptance. It doesn't run the accept action.
+         *
+         * @param licenseAccepted the state of the acceptance
+         */
+        void setLicenseAccepted(boolean licenseAccepted);
+
+        /**
          * Sets the license text to display to the user to accept.
          *
          * @param licenseText the text of the license
@@ -200,7 +207,20 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      * @return a non-cancellable future with the result of the installation
      */
     private CompletableFuture<Result> installPackage(SdkPackage pkg) {
-        var installLocation = showAdbInstallDialog(pkg);
+        return installPackageWithLicenseState(pkg, false);
+    }
+
+    /**
+     * Like {@link #installPackage(SdkPackage)} but creates the dialog with the license already accepted.
+     * @param pkg the package to install
+     * @return a non-cancellable future with the result of the installation
+     */
+    private CompletableFuture<Result> installPackageWithAcceptedLicense(SdkPackage pkg) {
+        return installPackageWithLicenseState(pkg, true);
+    }
+
+    private CompletableFuture<Result> installPackageWithLicenseState(SdkPackage pkg, boolean licenceAccepted) {
+        var installLocation = showAdbInstallDialog(pkg, licenceAccepted);
         var installedAdb = installLocation.thenComposeAsync(
                 installDir -> showInstallProgressDialog(downloadAndUnpack(pkg, installDir)),
                 uiExecutor
@@ -228,7 +248,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         var failureResponse = new CompletableFuture<Result>();
         failureView.get().show(
                 "Download failed: " + failure.getMessage(),
-                () -> MyFutures.connect(installPackage(pkg), failureResponse),
+                () -> MyFutures.connect(installPackageWithAcceptedLicense(pkg), failureResponse),
                 () -> failureResponse.complete(Result.manual()),
                 () -> failureResponse.cancel(false)
         );
@@ -241,12 +261,13 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      * @param pkg the ADB package
      * @return the future with the selected installation path, will be cancelled if the user aborts install
      */
-    private CompletableFuture<File> showAdbInstallDialog(SdkPackage pkg) {
+    private CompletableFuture<File> showAdbInstallDialog(SdkPackage pkg, boolean isLicenseAccepted) {
         var result = new CompletableFuture<File>();
         var view = installView.get();
         view.setLicenseText(pkg.getLicense());
         view.setInstallLocation(new File(Main.getConfigurationDir(), "android-sdk"));
-        view.setDownloadAllowed(false);
+        view.setLicenseAccepted(isLicenseAccepted);
+        view.setDownloadAllowed(isLicenseAccepted);
         view.setInstallLocationSelectionAction(() -> {
             view.showInstallDirSelector(view::setInstallLocation, () -> {});
         });

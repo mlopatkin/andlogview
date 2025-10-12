@@ -104,6 +104,11 @@ public abstract class PreferencesUiModule {
         }
 
         @Override
+        public void setLicenseAccepted(boolean licenseAccepted) {
+            dialog.acceptLicense.setSelected(licenseAccepted);
+        }
+
+        @Override
         public void setInstallLocation(File path) {
             dialog.downloadDirectory.setText(path.getAbsolutePath());
         }

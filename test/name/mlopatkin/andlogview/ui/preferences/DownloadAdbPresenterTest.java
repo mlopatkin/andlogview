@@ -262,6 +262,7 @@ class DownloadAdbPresenterTest {
         completePendingActions();
 
         assertOnlyShows(installView());
+        assertThat(installView().isLicenseAccepted()).isTrue();
         assertThat(result).isNotCompleted();
     }
 
@@ -508,10 +509,16 @@ class DownloadAdbPresenterTest {
         private boolean downloadAllowed;
         private boolean isShown;
         private boolean isFileSelectorShown;
+        private boolean licenseAccepted;
 
         @Override
         public void setAcceptAction(Consumer<Boolean> acceptAction) {
             this.acceptAction = Objects.requireNonNull(acceptAction);
+        }
+
+        @Override
+        public void setLicenseAccepted(boolean licenseAccepted) {
+            this.licenseAccepted = licenseAccepted;
         }
 
         @Override
@@ -559,6 +566,7 @@ class DownloadAdbPresenterTest {
 
         public void runAcceptStateChange(boolean accepted) {
             assertNotNull(acceptAction, "Accept action not set");
+            licenseAccepted = accepted;
             acceptAction.accept(accepted);
         }
 
@@ -611,6 +619,10 @@ class DownloadAdbPresenterTest {
 
         public boolean isFileSelectorShown() {
             return isFileSelectorShown;
+        }
+
+        public boolean isLicenseAccepted() {
+            return licenseAccepted;
         }
     }
 
