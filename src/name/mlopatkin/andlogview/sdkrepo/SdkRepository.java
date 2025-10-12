@@ -66,7 +66,7 @@ public class SdkRepository {
         }
     }
 
-    private SdkPackage.TargetOs getHostOs() {
+    public static SdkPackage.TargetOs getHostOs() {
         if (SystemUtils.IS_OS_MACOS) {
             return SdkPackage.TargetOs.MAC_OS;
         } else if (SystemUtils.IS_OS_WINDOWS) {
