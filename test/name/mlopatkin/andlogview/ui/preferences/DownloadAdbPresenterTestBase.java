@@ -24,8 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
@@ -42,7 +40,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,17 +48,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-@SuppressWarnings("FutureReturnValueIgnored")
-class DownloadAdbPresenterTest {
-
-    private final SdkRepository sdkRepository = mock();
+abstract class DownloadAdbPresenterTestBase {
+    protected final SdkRepository sdkRepository = mock();
 
     private @Nullable FakeProgressView initView;
     private @Nullable FakeProgressView downloadView;
     private @Nullable FakeInstallView installView;
     private @Nullable FakeFailureView failureView;
 
-    private final TestExecutor uiExecutor = new TestExecutor();
     private final TestExecutor netExecutor = new TestExecutor();
 
     @BeforeEach
@@ -69,45 +63,11 @@ class DownloadAdbPresenterTest {
         withSdkPackageDownloadSucceeding();
     }
 
-    @Test
-    void showsProgressViewToInitSdk() throws Exception {
-        var presenter = createPresenter();
-
-        var result = presenter.startInstall();
-
-        assertThat(result).isNotDone();
-        assertThat(initView().isShown()).isTrue();
-    }
-
-    @Test
-    void canCancelSdkInit() {
-        var presenter = createPresenter();
-
-        var result = presenter.startInstall();
-
-        initView().runCancelAction();
-        completePendingActions();
-
-        assertFinishedCancelled(result);
-    }
-
-    private void withSdkPackageNotFound() throws Exception {
+    protected void withSdkPackageNotFound() throws Exception {
         when(sdkRepository.locatePackage(DownloadAdbPresenter.PLATFORM_TOOLS_PACKAGE)).thenReturn(Optional.empty());
     }
 
-    @Test
-    void fallsBackWhenSdkPackageIsNotAvailable() throws Exception {
-        withSdkPackageNotFound();
-
-        var presenter = createPresenter();
-        var result = presenter.startInstall();
-
-        completePendingActions();
-
-        assertFinishedWithPackageNotFound(result);
-    }
-
-    private CompletableFuture<Result> withSdkPackageLoaded(
+    protected CompletableFuture<Result> withSdkPackageLoaded(
             DownloadAdbPresenter presenter,
             SdkPackage aPackage
     ) throws Exception {
@@ -121,63 +81,7 @@ class DownloadAdbPresenterTest {
         return r;
     }
 
-    @Test
-    void showsDialogButDoesNotProceedWithDownloadUntilLicenseAccepted() throws Exception {
-        var presenter = createPresenter();
-        var result = withSdkPackageLoaded(presenter, createPackage());
-
-        assertOnlyShows(installView());
-        assertThat(installView().getLicenseText()).isEqualTo(TestSdkPackage.TEST_LICENSE);
-        assertThat(installView().isDownloadAllowed()).isFalse();
-
-        assertThat(result).isNotCompleted();
-        verify(sdkRepository, never()).downloadPackage(any(), any());
-    }
-
-    @Test
-    void canCancelWhenPresentedLicense() throws Exception {
-        var presenter = createPresenter();
-        var result = withSdkPackageLoaded(presenter, createPackage());
-
-        installView().runCancelAction();
-
-        assertFinishedCancelled(result);
-        verify(sdkRepository, never()).downloadPackage(any(), any());
-    }
-
-    @Test
-    void acceptingLicenseAllowsToProceed() throws Exception {
-        var presenter = createPresenter();
-        withSdkPackageLoaded(presenter, createPackage());
-
-        installView().runAcceptStateChange(true);
-
-        assertOnlyShows(installView());
-        assertThat(installView().isDownloadAllowed()).isTrue();
-    }
-
-    @Test
-    void rejectingLicenseDoesNotAllowToProceed() throws Exception {
-        var presenter = createPresenter();
-        withSdkPackageLoaded(presenter, createPackage());
-
-        installView().runAcceptStateChange(true);
-        installView().runAcceptStateChange(false);
-
-        assertOnlyShows(installView());
-        assertThat(installView().isDownloadAllowed()).isFalse();
-    }
-
-    @Test
-    void providesDefaultInstallLocation() throws Exception {
-        var presenter = createPresenter();
-        withSdkPackageLoaded(presenter, createPackage());
-
-        assertOnlyShows(installView());
-        assertThat(installView().getInstallLocation()).isNotNull();
-    }
-
-    private CompletableFuture<Result> withSdkPackageLoadedAndLicenseAccepted(
+    protected CompletableFuture<Result> withSdkPackageLoadedAndLicenseAccepted(
             DownloadAdbPresenter presenter,
             SdkPackage aPackage
     ) throws Exception {
@@ -186,38 +90,7 @@ class DownloadAdbPresenterTest {
         return r;
     }
 
-    @Test
-    void canSelectInstallLocation() throws Exception {
-        var presenter = createPresenter();
-        withSdkPackageLoadedAndLicenseAccepted(presenter, createPackage());
-
-        installView().runLocationSelectionAction();
-
-        var newFile = new File("test/changed");
-        installView().runSelectFileAction(newFile);
-
-        assertOnlyShows(installView());
-        assertThat(installView().isFileSelectorShown()).isFalse();
-        assertThat(installView().getInstallLocation()).isEqualTo(newFile);
-    }
-
-    @Test
-    void canCancelSelectingInstallLocation() throws Exception {
-        var presenter = createPresenter();
-        withSdkPackageLoadedAndLicenseAccepted(presenter, createPackage());
-        var currentFile = new File("test/current");
-
-        installView().setInstallLocation(currentFile);
-
-        installView().runLocationSelectionAction();
-        installView().runCancelFileSelectorAction();
-
-        assertOnlyShows(installView());
-        assertThat(installView().isFileSelectorShown()).isFalse();
-        assertThat(installView().getInstallLocation()).isEqualTo(currentFile);
-    }
-
-    private CompletableFuture<Result> withSdkPackageInstallReady(
+    protected CompletableFuture<Result> withSdkPackageInstallReady(
             DownloadAdbPresenter presenter,
             SdkPackage aPackage,
             File installPath
@@ -230,145 +103,11 @@ class DownloadAdbPresenterTest {
         return r;
     }
 
-    @Test
-    void downloadsSdkToAppropriateDirectory() throws Exception {
-        var presenter = createPresenter();
-        var installDir = new File("installDir");
-        var result = withSdkPackageInstallReady(presenter, createPackage(), installDir);
-
-        assertThat(installView().isShown()).isFalse(); // progressing hides the license dialog
-        assertThat(downloadView().isShown()).isTrue(); // downloadView appears immediately
-
-        completePendingActions();
-
-        assertFinishedSuccessfully(result, installDir);
+    protected void completePendingActions() {
+        netExecutor.flush();
     }
 
-    @Test
-    void showsErrorDialogWhenDownloadingPackageFails() throws Exception {
-        var aPackage = createPackage();
-        var installDir = new File("installDir");
-        withSdkPackageDownloadFailing();
-
-        var presenter = createPresenter();
-        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
-
-        completePendingActions();
-
-        assertOnlyShows(failureView());
-        assertThat(result).isNotCompleted();
-    }
-
-    @Test
-    void userCanRetryWhenDownloadingPackageFails() throws Exception {
-        var aPackage = createPackage();
-        var installDir = new File("installDir");
-        withSdkPackageDownloadFailing();
-
-        var presenter = createPresenter();
-        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
-
-        completePendingActions();
-
-        failureView().runTryAgain();
-        completePendingActions();
-
-        assertOnlyShows(installView());
-        assertThat(installView().isLicenseAccepted()).isTrue();
-        assertThat(result).isNotCompleted();
-    }
-
-    @Test
-    void retryAfterDownloadingFailsCanSucceed() throws Exception {
-        var aPackage = createPackage();
-        var installDir = new File("installDir");
-        withSdkPackageDownloadFailing();
-
-        var presenter = createPresenter();
-        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
-
-        completePendingActions();
-
-        withSdkPackageDownloadSucceeding();
-        failureView().runTryAgain();
-
-        installView().runCommitAction(installDir);
-        completePendingActions();
-
-        assertFinishedSuccessfully(result, installDir);
-    }
-
-    @Test
-    void userCanCancelWhenDownloadingPackageFails() throws Exception {
-        var aPackage = createPackage();
-        var installDir = new File("installDir");
-        withSdkPackageDownloadFailing();
-
-        var presenter = createPresenter();
-        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
-
-        completePendingActions();
-
-        failureView().runCancel();
-        completePendingActions();
-
-        assertFinishedCancelled(result);
-    }
-
-    @Test
-    void userCanFallBackToManualDownloadWhenDownloadingPackageFails() throws Exception {
-        var aPackage = createPackage();
-        var installDir = new File("installDir");
-        withSdkPackageDownloadFailing();
-
-        var presenter = createPresenter();
-        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
-
-        completePendingActions();
-
-        failureView().runInstallManually();
-        completePendingActions();
-
-        assertFinishedWithManualFallback(result);
-    }
-
-    @Test
-    void userCanCancelAfterTryingAgain() throws Exception {
-        withSdkPackageDownloadFailing();
-
-        var aPackage = createPackage();
-        var installDir = new File("installDir");
-
-        var presenter = createPresenter();
-        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
-
-        completePendingActions();
-        failureView().runTryAgain();
-        completePendingActions();
-        installView().runCancelAction();
-        completePendingActions();
-
-        assertFinishedCancelled(result);
-    }
-
-    @Test
-    void canCancelRunningDownload() throws Exception {
-        var presenter = createPresenter();
-        var installDir = new File("installDir");
-        var result = withSdkPackageInstallReady(presenter, createPackage(), installDir);
-
-        downloadView().runCancelAction();
-
-        assertFinishedCancelled(result);
-    }
-
-    private void completePendingActions() {
-        do {
-            netExecutor.flush();
-        } while (uiExecutor.flush());
-    }
-
-    private DownloadAdbPresenter createPresenter() {
+    protected DownloadAdbPresenter createPresenter() {
         return new DownloadAdbPresenter(
                 sdkRepository,
                 this::newInitView,
@@ -380,51 +119,51 @@ class DownloadAdbPresenterTest {
         );
     }
 
-    private FakeProgressView newInitView() {
+    protected FakeProgressView newInitView() {
         assertTrue(initView == null || !initView.isShown(), "initView must be disposed");
         return initView = new FakeProgressView();
     }
 
-    private FakeInstallView newInstallView() {
+    protected FakeInstallView newInstallView() {
         assertTrue(installView == null || !installView.isShown(), "installView must be disposed");
         return installView = new FakeInstallView();
     }
 
-    private FakeFailureView newFailureView() {
+    protected FakeFailureView newFailureView() {
         assertTrue(failureView == null || !failureView().isShown(), "failureView must be disposed");
         return failureView = new FakeFailureView();
     }
 
-    private FakeProgressView newDownloadView() {
+    protected FakeProgressView newDownloadView() {
         assertTrue(downloadView == null || !downloadView().isShown(), "downloadView must be disposed");
         return downloadView = new FakeProgressView();
     }
 
 
-    private FakeProgressView initView() {
+    protected FakeProgressView initView() {
         return Objects.requireNonNull(initView, "initView not created");
     }
 
-    private FakeInstallView installView() {
+    protected FakeInstallView installView() {
         return Objects.requireNonNull(installView, "installView not created");
     }
 
-    private FakeFailureView failureView() {
+    protected FakeFailureView failureView() {
         return Objects.requireNonNull(failureView, "failureView not created");
     }
 
-    private FakeProgressView downloadView() {
+    protected FakeProgressView downloadView() {
         return Objects.requireNonNull(downloadView, "downloadView not created");
     }
 
-    private void assertViewsHidden() {
+    protected void assertViewsHidden() {
         assertTrue(initView == null || !initView().isShown(), "initView must be disposed");
         assertTrue(installView == null || !installView().isShown(), "installView must be disposed");
         assertTrue(failureView == null || !failureView().isShown(), "failureView must be disposed");
         assertTrue(downloadView == null || !downloadView().isShown(), "downloadView must be disposed");
     }
 
-    private void assertOnlyShows(View view) {
+    protected void assertOnlyShows(View view) {
         assertTrue(view == initView || view == installView || view == failureView || view == downloadView);
         assertViewShown(initView, initView == view);
         assertViewShown(installView, installView == view);
@@ -432,7 +171,7 @@ class DownloadAdbPresenterTest {
         assertViewShown(downloadView, downloadView == view);
     }
 
-    private void assertViewShown(@Nullable View view, boolean expectedState) {
+    protected void assertViewShown(@Nullable View view, boolean expectedState) {
         if (expectedState) {
             assertNotNull(view);
             assertTrue(view.isShown());
@@ -441,7 +180,7 @@ class DownloadAdbPresenterTest {
         }
     }
 
-    private void assertFinishedSuccessfully(CompletableFuture<Result> result, File expectedPath) {
+    protected void assertFinishedSuccessfully(CompletableFuture<Result> result, File expectedPath) {
         assertViewsHidden();
         assertThat(result).isCompletedWithValueMatching(
                 r -> r instanceof Installed installed && expectedPath.equals(installed.getAdbPath()),
@@ -449,34 +188,34 @@ class DownloadAdbPresenterTest {
         );
     }
 
-    private void assertFinishedCancelled(CompletableFuture<Result> result) {
+    protected void assertFinishedCancelled(CompletableFuture<Result> result) {
         assertViewsHidden();
         assertThat(result).isCompletedWithValueMatching(Cancelled.class::isInstance);
     }
 
-    private void assertFinishedWithPackageNotFound(CompletableFuture<Result> result) {
+    protected void assertFinishedWithPackageNotFound(CompletableFuture<Result> result) {
         assertViewsHidden();
         assertThat(result).isCompletedWithValueMatching(PackageNotFound.class::isInstance);
     }
 
-    private void assertFinishedWithManualFallback(CompletableFuture<Result> result) {
+    protected void assertFinishedWithManualFallback(CompletableFuture<Result> result) {
         assertThat(result).isCompletedWithValueMatching(ManualFallback.class::isInstance);
         assertViewsHidden();
     }
 
-    private SdkPackage createPackage() {
+    protected SdkPackage createPackage() {
         return TestSdkPackage.createPackage(DownloadAdbPresenter.PLATFORM_TOOLS_PACKAGE);
     }
 
-    private void withSdkPackageDownloadFailing() throws IOException {
+    protected void withSdkPackageDownloadFailing() throws IOException {
         doThrow(IOException.class).when(sdkRepository).downloadPackage(any(), any());
     }
 
-    private void withSdkPackageDownloadSucceeding() throws IOException {
+    protected void withSdkPackageDownloadSucceeding() throws IOException {
         doAnswer(invocation -> null).when(sdkRepository).downloadPackage(any(), any());
     }
 
-    static class FakeProgressView
+    protected static class FakeProgressView
             implements DownloadAdbPresenter.SdkInitView, DownloadAdbPresenter.SdkDownloadView, View {
         private boolean isShown = false;
         private boolean wasEverShown = false;
@@ -508,7 +247,7 @@ class DownloadAdbPresenterTest {
         }
     }
 
-    static class FakeInstallView implements DownloadAdbPresenter.InstallView, View {
+    protected static class FakeInstallView implements DownloadAdbPresenter.InstallView, View {
         private @Nullable Consumer<Boolean> acceptAction;
         private @Nullable Runnable installLocationSelectionAction;
         private @Nullable Consumer<? super File> showCommitAction;
@@ -638,7 +377,7 @@ class DownloadAdbPresenterTest {
         }
     }
 
-    static class FakeFailureView implements DownloadAdbPresenter.FailureView, View {
+    protected static class FakeFailureView implements DownloadAdbPresenter.FailureView, View {
         private @Nullable String message;
         private @Nullable Runnable tryAgainAction;
         private @Nullable Runnable installManuallyAction;
@@ -689,7 +428,7 @@ class DownloadAdbPresenterTest {
         }
     }
 
-    interface View {
+    protected interface View {
         boolean isShown();
     }
 }
