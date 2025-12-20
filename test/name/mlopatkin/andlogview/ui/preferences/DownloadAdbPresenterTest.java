@@ -70,17 +70,13 @@ class DownloadAdbPresenterTest {
     }
 
     @Test
-    void showsProgressViewToInitSdk() {
+    void showsProgressViewToInitSdk() throws Exception {
         var presenter = createPresenter();
 
         var result = presenter.startInstall();
 
         assertThat(result).isNotDone();
         assertThat(initView().isShown()).isTrue();
-
-        completePendingActions();
-
-        assertFinishedWithPackageNotFound(result);
     }
 
     @Test
@@ -93,6 +89,22 @@ class DownloadAdbPresenterTest {
         completePendingActions();
 
         assertFinishedCancelled(result);
+    }
+
+    private void withSdkPackageNotFound() throws Exception {
+        when(sdkRepository.locatePackage(DownloadAdbPresenter.PLATFORM_TOOLS_PACKAGE)).thenReturn(Optional.empty());
+    }
+
+    @Test
+    void fallsBackWhenSdkPackageIsNotAvailable() throws Exception {
+        withSdkPackageNotFound();
+
+        var presenter = createPresenter();
+        var result = presenter.startInstall();
+
+        completePendingActions();
+
+        assertFinishedWithPackageNotFound(result);
     }
 
     private CompletableFuture<Result> withSdkPackageLoaded(
