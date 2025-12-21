@@ -201,54 +201,58 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
     }
 
     /**
-     * Proceeds with installing the package, showing UI if necessary.
+     * Proceeds with installing the package, showing UI if necessary. This is an "entry point" method that is only used
+     * during first run. It populates the UI with the default initial data.
      *
      * @param pkg the ADB package data
      * @return a non-cancellable future with the result of the installation
      */
     private CompletableFuture<Result> installPackage(SdkPackage pkg) {
-        return installPackageWithLicenseState(pkg, false);
+        return installPackageWithState(pkg, false, new File(Main.getConfigurationDir(), "android-sdk"));
     }
 
     /**
-     * Like {@link #installPackage(SdkPackage)} but creates the dialog with the license already accepted.
+     * Proceeds with installing the package, showing the UI if necessary. The UI state is based on the arguments.
+     *
      * @param pkg the package to install
+     * @param licenseAccepted whether the license is already accepted
+     * @param installLocation the installation location to use
      * @return a non-cancellable future with the result of the installation
      */
-    private CompletableFuture<Result> installPackageWithAcceptedLicense(SdkPackage pkg) {
-        return installPackageWithLicenseState(pkg, true);
-    }
-
-    private CompletableFuture<Result> installPackageWithLicenseState(SdkPackage pkg, boolean licenceAccepted) {
-        var installLocation = showAdbInstallDialog(pkg, licenceAccepted);
-        var installedAdb = installLocation.thenComposeAsync(
-                installDir -> showInstallProgressDialog(downloadAndUnpack(pkg, installDir)),
-                uiExecutor
-        );
-
-        return installedAdb.thenComposeAsync(
-                maybeInstallDir ->
-                        maybeInstallDir.<Result>map(Result::installed)
-                                .map(CompletableFuture::completedFuture)
-                                .mapFailure(th -> onPackageDownloadError(pkg, th))
-                                .get(),
-                uiExecutor
-        );
+    private CompletableFuture<Result> installPackageWithState(
+            SdkPackage pkg,
+            boolean licenseAccepted,
+            File installLocation
+    ) {
+        return showAdbInstallDialog(pkg, licenseAccepted, installLocation)
+                .thenComposeAsync(
+                        installDir -> showInstallProgressDialog(downloadAndUnpack(pkg, installDir))
+                                .thenComposeAsync(
+                                        maybeInstallDir ->
+                                                maybeInstallDir.<Result>map(Result::installed)
+                                                        .map(CompletableFuture::completedFuture)
+                                                        .mapFailure(th -> onPackageDownloadError(pkg, installDir, th))
+                                                        .get(),
+                                        uiExecutor
+                                ),
+                        uiExecutor
+                );
     }
 
     /**
      * Handles the failure of package downloading. Shows an error dialog and allows the user to select how to proceed.
      *
      * @param pkg the package that failed to download/unpack
+     * @param installDir the directory that was selected for installation
      * @param failure the failure
      * @return the new result for the pipeline
      */
-    private CompletableFuture<Result> onPackageDownloadError(SdkPackage pkg, Throwable failure) {
+    private CompletableFuture<Result> onPackageDownloadError(SdkPackage pkg, File installDir, Throwable failure) {
         log.error("Failed to download package {}", pkg, failure);
         var failureResponse = new CompletableFuture<Result>();
         failureView.get().show(
                 "Download failed: " + failure.getMessage(),
-                () -> MyFutures.connect(installPackageWithAcceptedLicense(pkg), failureResponse),
+                () -> MyFutures.connect(installPackageWithState(pkg, true, installDir), failureResponse),
                 () -> failureResponse.complete(Result.manual()),
                 () -> failureResponse.cancel(false)
         );
@@ -259,13 +263,16 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      * Shows the installation dialog for the user to accept the license and select the installation location if desired.
      *
      * @param pkg the ADB package
-     * @return the future with the selected installation path, will be cancelled if the user aborts install
+     * @param isLicenseAccepted whether the license is already accepted
+     * @param installLocation the initial install location to use
+     * @return the future with the selected installation path, will be canceled if the user aborts install
      */
-    private CompletableFuture<File> showAdbInstallDialog(SdkPackage pkg, boolean isLicenseAccepted) {
+    private CompletableFuture<File> showAdbInstallDialog(
+            SdkPackage pkg, boolean isLicenseAccepted, File installLocation) {
         var result = new CompletableFuture<File>();
         var view = installView.get();
         view.setLicenseText(pkg.getLicense());
-        view.setInstallLocation(new File(Main.getConfigurationDir(), "android-sdk"));
+        view.setInstallLocation(installLocation);
         view.setLicenseAccepted(isLicenseAccepted);
         view.setDownloadAllowed(isLicenseAccepted);
         view.setInstallLocationSelectionAction(() -> {

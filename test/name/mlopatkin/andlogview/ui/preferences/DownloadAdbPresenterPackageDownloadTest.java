@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -158,7 +157,6 @@ class DownloadAdbPresenterPackageDownloadTest extends DownloadAdbPresenterTestBa
     }
 
     @Test
-    @Disabled("Not yet implemented")
     void retryPreservesCustomizedInstallLocation() throws Exception {
         var aPackage = createPackage();
         var customInstallDir = new File("custom/install/path");
@@ -175,7 +173,6 @@ class DownloadAdbPresenterPackageDownloadTest extends DownloadAdbPresenterTestBa
         completePendingActions();
 
         assertOnlyShows(installView());
-        // TODO(mlopatkin): this should be preserved too
         assertThat(installView().getInstallLocation()).isEqualTo(customInstallDir);
         assertThat(result).isNotCompleted();
     }
