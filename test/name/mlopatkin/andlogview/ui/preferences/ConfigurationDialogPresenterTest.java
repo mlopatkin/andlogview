@@ -32,6 +32,8 @@ import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
+import com.google.common.util.concurrent.MoreExecutors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -208,9 +210,52 @@ class ConfigurationDialogPresenterTest {
         verify(installPresenter).startInstall();
     }
 
+    @Test
+    void successfulAdbInstallSetsLocationToExecutablePath() {
+        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        File adbExecutable = new File("/home/user/.logview/android-sdk/platform-tools/adb");
+        when(installPresenter.startInstall()).thenReturn(
+                CompletableFuture.completedFuture(InstallAdbPresenter.Result.installed(adbExecutable)));
+
+        var presenter = createPresenter();
+        presenter.openDialog();
+        fakeView.requestAdbInstall();
+
+        assertThat(fakeView.getAdbLocation()).isEqualTo(adbExecutable.getAbsolutePath());
+    }
+
+    @Test
+    void cancelledAdbInstallDoesNotChangeLocation() {
+        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        when(installPresenter.startInstall()).thenReturn(
+                CompletableFuture.completedFuture(InstallAdbPresenter.Result.cancelled()));
+
+        var presenter = createPresenter();
+        presenter.openDialog();
+        String originalLocation = fakeView.getAdbLocation();
+        fakeView.requestAdbInstall();
+
+        assertThat(fakeView.getAdbLocation()).isEqualTo(originalLocation);
+    }
+
+    @Test
+    void failedAdbInstallDoesNotChangeLocation() {
+        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        when(installPresenter.startInstall()).thenReturn(
+                CompletableFuture.completedFuture(
+                        InstallAdbPresenter.Result.failure(new RuntimeException("Network error"))));
+
+        var presenter = createPresenter();
+        presenter.openDialog();
+        String originalLocation = fakeView.getAdbLocation();
+        fakeView.requestAdbInstall();
+
+        assertThat(fakeView.getAdbLocation()).isEqualTo(originalLocation);
+    }
+
     private ConfigurationDialogPresenter createPresenter() {
         return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter,
-                adbServicesStatus, installPresenter);
+                adbServicesStatus, installPresenter, MoreExecutors.directExecutor());
     }
 
     static class FakeView implements ConfigurationDialogPresenter.View {

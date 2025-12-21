@@ -21,6 +21,7 @@ import static name.mlopatkin.andlogview.utils.MyFutures.toCancellable;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.Main;
+import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.sdkrepo.TargetDirectoryNotEmptyException;
@@ -259,7 +260,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
                         installMode)
         ).thenComposeAsync(
                 maybeInstallDir ->
-                        maybeInstallDir.<Result>map(Result::installed)
+                        maybeInstallDir.<Result>map(sdkRoot -> Result.installed(getAdbExecutablePath(sdkRoot)))
                                 .map(CompletableFuture::completedFuture)
                                 .mapFailure(th -> onPackageDownloadError(pkg, installDir, th))
                                 .get(),
@@ -388,5 +389,10 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         var completion = install.whenCompleteAsync((r, th) -> view.hide(), uiExecutor);
         view.show(MyFutures.toCancellable(install)::cancel);
         return completion;
+    }
+
+    @VisibleForTesting
+    static File getAdbExecutablePath(File sdkRoot) {
+        return sdkRoot.toPath().resolve(PLATFORM_TOOLS_PACKAGE).resolve(Configuration.adb.DEFAULT_EXECUTABLE).toFile();
     }
 }

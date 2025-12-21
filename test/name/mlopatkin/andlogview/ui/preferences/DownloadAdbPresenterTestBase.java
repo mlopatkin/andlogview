@@ -202,11 +202,12 @@ abstract class DownloadAdbPresenterTestBase {
         }
     }
 
-    protected void assertFinishedSuccessfully(CompletableFuture<Result> result, File expectedPath) {
+    protected void assertFinishedSuccessfully(CompletableFuture<Result> result, File expectedSdkRoot) {
         assertViewsHidden();
+        File expectedAdbPath = DownloadAdbPresenter.getAdbExecutablePath(expectedSdkRoot);
         assertThat(result).isCompletedWithValueMatching(
-                r -> r instanceof Installed installed && expectedPath.equals(installed.getAdbPath()),
-                "is installed in " + expectedPath
+                r -> r instanceof Installed installed && expectedAdbPath.equals(installed.getAdbPath()),
+                "is installed with adb at " + expectedAdbPath
         );
     }
 

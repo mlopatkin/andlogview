@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
@@ -27,9 +28,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ConfigurationDialogPresenter {
     private static final Logger log = LoggerFactory.getLogger(ConfigurationDialogPresenter.class);
@@ -67,6 +70,7 @@ public class ConfigurationDialogPresenter {
     private final AdbServicesInitializationPresenter adbServicesPresenter;
     private final AdbServicesStatus adbServicesStatus;
     private final InstallAdbPresenter adbInstaller;
+    private final Executor uiExecutor;
 
     @Inject
     ConfigurationDialogPresenter(
@@ -74,12 +78,14 @@ public class ConfigurationDialogPresenter {
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesInitializationPresenter adbServicesPresenter,
             AdbServicesStatus adbServicesStatus,
-            InstallAdbPresenter adbInstaller) {
+            InstallAdbPresenter adbInstaller,
+            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.view = view;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbServicesPresenter = adbServicesPresenter;
         this.adbServicesStatus = adbServicesStatus;
         this.adbInstaller = adbInstaller;
+        this.uiExecutor = uiExecutor;
     }
 
     public void openDialog() {
@@ -99,11 +105,13 @@ public class ConfigurationDialogPresenter {
     }
 
     private void startAdbInstall() {
-        // TODO(mlopatkin) this function is a stub.
         adbInstaller.startInstall()
-                .thenAccept(r -> {
-                    log.info("Downloaded r={}", r);
-                })
+                .thenAcceptAsync(result -> {
+                    log.info("ADB install completed with result={}", result);
+                    if (result instanceof InstallAdbPresenter.Installed installed) {
+                        view.setAdbLocation(installed.getAdbPath().getAbsolutePath());
+                    }
+                }, uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
     }
 
