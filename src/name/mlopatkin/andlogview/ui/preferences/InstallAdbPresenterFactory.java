@@ -16,34 +16,52 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.features.Features;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 
 /**
  * Manages the creation of the presenter.
  */
 public class InstallAdbPresenterFactory {
-    private final Features features;
+    private final boolean downloadAdbEnabled;
     private final Provider<DesktopInstallAdbPresenter> desktopInstalProvider;
     private final Provider<DownloadAdbPresenter> downloadProvider;
+    private final Executor uiExecutor;
 
     @Inject
     public InstallAdbPresenterFactory(
             Features features,
             Provider<DesktopInstallAdbPresenter> desktopInstalProvider,
-            Provider<DownloadAdbPresenter> downloadProvider
+            Provider<DownloadAdbPresenter> downloadProvider,
+            @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor
     ) {
-        this.features = features;
+        this(features.downloadAdb.isEnabled(), desktopInstalProvider, downloadProvider, uiExecutor);
+    }
+
+    @VisibleForTesting
+    InstallAdbPresenterFactory(
+            boolean downloadAdbEnabled,
+            Provider<DesktopInstallAdbPresenter> desktopInstalProvider,
+            Provider<DownloadAdbPresenter> downloadProvider,
+            Executor uiExecutor
+    ) {
+        this.downloadAdbEnabled = downloadAdbEnabled;
         this.desktopInstalProvider = desktopInstalProvider;
         this.downloadProvider = downloadProvider;
+        this.uiExecutor = uiExecutor;
     }
 
     public InstallAdbPresenter createPresenter() {
-        if (!features.downloadAdb.isEnabled()) {
+        if (!downloadAdbEnabled) {
             return DisabledInstallAdbPresenter.INSTANCE;
         }
 
@@ -51,7 +69,6 @@ public class InstallAdbPresenterFactory {
     }
 
     private class CompoundPresenter implements InstallAdbPresenter {
-        // TODO(mlopatkin) this class is a stub
         private final DownloadAdbPresenter downloadPresenter = downloadProvider.get();
         private final DesktopInstallAdbPresenter desktopInstallPresenter = desktopInstalProvider.get();
 
@@ -63,17 +80,25 @@ public class InstallAdbPresenterFactory {
         @Override
         public CompletableFuture<Result> startInstall() {
             if (downloadPresenter.isAvailable()) {
-                return downloadPresenter.startInstall().thenCompose(result ->
-                        (result instanceof PackageNotFound || result instanceof DownloadFailure)
-                                ? desktopInstallPresenter.startInstall()
-                                : CompletableFuture.completedFuture(result)
-                );
+                return downloadPresenter.startInstall().thenComposeAsync(result -> {
+                    if (result instanceof ManualFallback || result instanceof PackageNotFound) {
+                        return desktopInstallPresenter.startInstall();
+                    }
+
+                    assert result instanceof Installed
+                           || result instanceof Cancelled
+                           || result instanceof DownloadFailure;
+
+                    return CompletableFuture.completedFuture(result);
+                }, uiExecutor);
             }
+
             if (desktopInstallPresenter.isAvailable()) {
                 return desktopInstallPresenter.startInstall();
             }
 
-            return CompletableFuture.completedFuture(Result.failure(new UnsupportedOperationException()));
+            return CompletableFuture.completedFuture(
+                    Result.failure(new UnsupportedOperationException("Installing ADB is not available")));
         }
     }
 }
