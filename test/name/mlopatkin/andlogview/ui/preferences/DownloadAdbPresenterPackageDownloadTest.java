@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -154,5 +155,58 @@ class DownloadAdbPresenterPackageDownloadTest extends DownloadAdbPresenterTestBa
         downloadView().runCancelAction();
 
         assertFinishedCancelled(result);
+    }
+
+    @Test
+    @Disabled("Not yet implemented")
+    void retryPreservesCustomizedInstallLocation() throws Exception {
+        var aPackage = createPackage();
+        var customInstallDir = new File("custom/install/path");
+        withSdkPackageDownloadFailing();
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, customInstallDir);
+
+        completePendingActions();
+
+        withSdkPackageDownloadSucceeding();
+        failureView().runTryAgain();
+
+        completePendingActions();
+
+        assertOnlyShows(installView());
+        // TODO(mlopatkin): this should be preserved too
+        assertThat(installView().getInstallLocation()).isEqualTo(customInstallDir);
+        assertThat(result).isNotCompleted();
+    }
+
+    @Test
+    void canRetryMultipleTimesUntilSuccess() throws Exception {
+        var aPackage = createPackage();
+        var installDir = new File("installDir");
+        withSdkPackageDownloadFailing();
+
+        var presenter = createPresenter();
+        var result = withSdkPackageInstallReady(presenter, aPackage, installDir);
+
+        completePendingActions();
+
+        // First retry - still fails
+        failureView().runTryAgain();
+        completePendingActions();
+        installView().runCommitAction(installDir);
+        completePendingActions();
+
+        assertOnlyShows(failureView());
+        assertThat(result).isNotCompleted();
+
+        // Second retry - succeeds
+        withSdkPackageDownloadSucceeding();
+        failureView().runTryAgain();
+        completePendingActions();
+        installView().runCommitAction(installDir);
+        completePendingActions();
+
+        assertFinishedSuccessfully(result, installDir);
     }
 }

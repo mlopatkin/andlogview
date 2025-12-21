@@ -55,4 +55,16 @@ class DownloadAdbPresenterSdkInitTest extends DownloadAdbPresenterTestBase {
 
         assertFinishedWithPackageNotFound(result);
     }
+
+    @Test
+    void failsWhenSdkInitializationThrowsException() throws Exception {
+        withSdkPackageLocateFailing();
+
+        var presenter = createPresenter();
+        var result = presenter.startInstall();
+
+        completePendingActions();
+
+        assertFinishedWithFailure(result);
+    }
 }
