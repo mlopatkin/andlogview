@@ -141,6 +141,12 @@ public abstract class Try<T> {
         if (isPresent() && rhs.isPresent()) {
             return Try.ofCallable(() -> combiner.apply(get(), rhs.get()));
         }
+
+        if (isPresent()) {
+            assert !rhs.isPresent();
+            return rhs.castIfError();
+        }
+
         if (rhs.isPresent()) {
             assert !isPresent();
             return castIfError();

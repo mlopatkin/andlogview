@@ -26,7 +26,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
@@ -115,6 +117,7 @@ class TryTest {
     }
 
     @ParameterizedTest
+
     @MethodSource("triesWithValues")
     void tryWithValueDoesNotThrowInOrElseThrow(Try<Integer> t) {
         assertThatNoException().isThrownBy(() -> t.orElseThrow(Function.identity()));
@@ -160,6 +163,39 @@ class TryTest {
     @MethodSource("triesWithErrors")
     void tryWithErrorConvertsToEmptyOptional(Try<Integer> t) {
         assertThat(t.toOptional()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @CsvSource(textBlock = """
+            false, false, false
+            false, true, false
+            true, false, false
+            true, true, true
+            """)
+    void zipCanHandleDifferentTryCombinations(boolean lhsPresent, boolean rhsPresent, boolean expectPresent) {
+        var leftException = new RuntimeException("left");
+        var rightException = new RuntimeException("right");
+        Try<String> lhs = lhsPresent ? Try.ofValue("left") : Try.ofError(leftException);
+        Try<String> rhs = rhsPresent ? Try.ofValue("right") : Try.ofError(rightException);
+
+        Try<String> zip = lhs.zip(rhs, String::concat);
+
+        assertThat(zip.isPresent()).isEqualTo(expectPresent);
+        if (expectPresent) {
+            assertThat(zip.get()).isEqualTo("leftright");
+        }
+    }
+
+    @Test
+    void zipHandlesThrowingCombiner() {
+        var lhs = Try.ofValue("left");
+        var rhs = Try.ofValue("right");
+
+        var zip = lhs.zip(rhs, (l, r) -> {
+            throw new RuntimeException("Failure");
+        });
+
+        assertThatThrownBy(() -> zip.rethrowOfType(RuntimeException.class)).hasMessage("Failure");
     }
 
     public static Stream<Try<Integer>> triesWithValues() {
