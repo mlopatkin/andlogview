@@ -43,8 +43,10 @@ class SafeZipFileTest {
     void extractionFailsWhenOutOfDiskSpace(@TempDir Path tempDir) throws Exception {
         // Create a zip file with data that will exceed the Jimfs space limit
         Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("test.zip"), zip -> {
+            var payload = Strings.repeat("0123456789", 200); // ~2KB per file
+            // 100 files, total ~200KB extracted data.
             for (int i = 0; i < 100; ++i) {
-                zip.file("entry " + i + ".txt", file -> file.append(Strings.repeat("0123456789", 200)));
+                zip.file("entry " + i + ".txt", payload);
             }
         });
 
@@ -62,5 +64,47 @@ class SafeZipFileTest {
             assertThatThrownBy(() -> safeZipFile.extractTo(targetDir))
                     .isInstanceOf(IOException.class);
         }
+    }
+
+    @Test
+    void canDetectPathTraversalWithParentReferences(@TempDir Path tempDir) throws Exception {
+        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("traversal.zip"), zip -> {
+            zip.file("../../etc/passwd", "malicious content");
+        });
+
+        Path outputDirectory = tempDir.resolve("output");
+        var zipFile = new SafeZipFile(zipPath);
+
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Path traversal detected");
+    }
+
+    @Test
+    void canDetectPathTraversalWithSingleParentReference(@TempDir Path tempDir) throws Exception {
+        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("traversal.zip"), zip -> {
+            zip.file("../outside.txt", "malicious content");
+        });
+
+        Path outputDirectory = tempDir.resolve("output");
+        var zipFile = new SafeZipFile(zipPath);
+
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Path traversal detected");
+    }
+
+    @Test
+    void canDetectPathTraversalWithMixedSegments(@TempDir Path tempDir) throws Exception {
+        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("traversal.zip"), zip -> {
+            zip.file("subdir/../../outside.txt", "malicious content");
+        });
+
+        Path outputDirectory = tempDir.resolve("output");
+        var zipFile = new SafeZipFile(zipPath);
+
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Path traversal detected");
     }
 }

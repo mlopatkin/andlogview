@@ -37,7 +37,7 @@ public class ZipFileBuilder implements Closeable {
     }
 
     @CanIgnoreReturnValue
-    ZipFileBuilder file(String entryPath, IOConsumer<? super Appendable> consumer) throws IOException {
+    ZipFileBuilder file(String entryPath, String content) throws IOException {
         ZipArchiveEntry entry = new ZipArchiveEntry(entryPath);
         outputStream.putArchiveEntry(entry);
         try (var entryWriter = new BufferedWriter(
@@ -46,7 +46,7 @@ public class ZipFileBuilder implements Closeable {
                         StandardCharsets.UTF_8
                 )
         )) {
-            consumer.accept(entryWriter);
+            entryWriter.append(content);
         }
         outputStream.closeArchiveEntry();
 
