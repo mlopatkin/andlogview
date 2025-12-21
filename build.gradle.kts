@@ -577,8 +577,3 @@ tasks.register<Exec>("updateAndroidSdkRepoManifestForTests") {
         println("Don't forget to commit!")
     }
 }
-
-// Enable feature flags for the app
-tasks.withType<JavaExec>().configureEach {
-    systemProperties.put("name.mlopatkin.andlogview.features.downloadAdb", "true")
-}

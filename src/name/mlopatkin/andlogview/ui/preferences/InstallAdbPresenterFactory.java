@@ -17,10 +17,7 @@
 package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.AppExecutors;
-import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.utils.MyFutures;
-
-import com.google.common.annotations.VisibleForTesting;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -33,39 +30,22 @@ import javax.inject.Provider;
  * Manages the creation of the presenter.
  */
 public class InstallAdbPresenterFactory {
-    private final boolean downloadAdbEnabled;
     private final Provider<DesktopInstallAdbPresenter> desktopInstalProvider;
     private final Provider<DownloadAdbPresenter> downloadProvider;
     private final Executor uiExecutor;
 
     @Inject
     public InstallAdbPresenterFactory(
-            Features features,
             Provider<DesktopInstallAdbPresenter> desktopInstalProvider,
             Provider<DownloadAdbPresenter> downloadProvider,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor
     ) {
-        this(features.downloadAdb.isEnabled(), desktopInstalProvider, downloadProvider, uiExecutor);
-    }
-
-    @VisibleForTesting
-    InstallAdbPresenterFactory(
-            boolean downloadAdbEnabled,
-            Provider<DesktopInstallAdbPresenter> desktopInstalProvider,
-            Provider<DownloadAdbPresenter> downloadProvider,
-            Executor uiExecutor
-    ) {
-        this.downloadAdbEnabled = downloadAdbEnabled;
         this.desktopInstalProvider = desktopInstalProvider;
         this.downloadProvider = downloadProvider;
         this.uiExecutor = uiExecutor;
     }
 
     public InstallAdbPresenter createPresenter() {
-        if (!downloadAdbEnabled) {
-            return DisabledInstallAdbPresenter.INSTANCE;
-        }
-
         return new CompoundPresenter();
     }
 

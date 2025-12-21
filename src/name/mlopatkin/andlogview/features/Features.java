@@ -27,12 +27,10 @@ import javax.inject.Singleton;
 @Singleton
 public class Features {
     public final Feature useFilterTree;
-    public final Feature downloadAdb;
 
     @Inject
     @VisibleForTesting
     public Features() {
         useFilterTree = Feature.create("name.mlopatkin.andlogview.features.useFilterTree", true);
-        downloadAdb = Feature.create("name.mlopatkin.andlogview.features.downloadAdb", false);
     }
 }

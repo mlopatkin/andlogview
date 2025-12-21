@@ -64,7 +64,7 @@ class InstallAdbPresenterFactoryTest {
         when(desktopProvider.get()).thenReturn(desktopPresenter);
         when(downloadProvider.get()).thenReturn(downloadPresenter);
 
-        var factory = new InstallAdbPresenterFactory(true, desktopProvider, downloadProvider, uiExecutor);
+        var factory = new InstallAdbPresenterFactory(desktopProvider, downloadProvider, uiExecutor);
         presenter = factory.createPresenter();
     }
 
