@@ -132,6 +132,19 @@ public final class MyFutures {
     }
 
     /**
+     * Builds a failure handler with a special handling of cancellations. It can unwrap cancellation exceptions. Unlike
+     * the two-argument version, it just rethrows other exceptions without handling them.
+     *
+     * @param cancellationHandler the cancellation handler
+     * @return the combined handler
+     */
+    public static <T> Function<Throwable, T> cancellationTransformer(Supplier<? extends T> cancellationHandler) {
+        return cancellationTransformer(cancellationHandler, th -> {
+            throw MyThrowables.sneakyRethrow(th);
+        });
+    }
+
+    /**
      * Helper interface for {@code runAsync}.
      */
     @FunctionalInterface

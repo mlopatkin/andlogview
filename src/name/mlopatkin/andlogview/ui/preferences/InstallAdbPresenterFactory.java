@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.features.Features;
+import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -86,8 +87,7 @@ public class InstallAdbPresenterFactory {
                     }
 
                     assert result instanceof Installed
-                           || result instanceof Cancelled
-                           || result instanceof DownloadFailure;
+                           || result instanceof Cancelled;
 
                     return CompletableFuture.completedFuture(result);
                 }, uiExecutor);
@@ -97,8 +97,8 @@ public class InstallAdbPresenterFactory {
                 return desktopInstallPresenter.startInstall();
             }
 
-            return CompletableFuture.completedFuture(
-                    Result.failure(new UnsupportedOperationException("Installing ADB is not available")));
+            return MyFutures.failedFuture(
+                    new UnsupportedOperationException("Installing ADB is not available"));
         }
     }
 }

@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.preferences;
 
+import name.mlopatkin.andlogview.utils.MyFutures;
+
 import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
@@ -51,8 +53,8 @@ public class DesktopInstallAdbPresenter implements InstallAdbPresenter {
                     .browse(URI.create("https://developer.android.com/tools/releases/platform-tools#downloads"));
             return CompletableFuture.completedFuture(Result.manual());
         } catch (IOException e) {
-            logger.error("Failed to open the default browser");
-            return CompletableFuture.completedFuture(Result.failure(e));
+            logger.error("Failed to open the default browser", e);
+            return MyFutures.failedFuture(e);
         }
     }
 }

@@ -31,7 +31,6 @@ import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.sdkrepo.TestSdkPackage;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Cancelled;
-import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.DownloadFailure;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Installed;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.ManualFallback;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.PackageNotFound;
@@ -70,8 +69,12 @@ abstract class DownloadAdbPresenterTestBase {
     }
 
     protected void withSdkPackageLocateFailing() throws Exception {
+        withSdkPackageLocateFailingWith(new IOException("Failed to connect to repository"));
+    }
+
+    protected void withSdkPackageLocateFailingWith(Exception ex) throws Exception {
         when(sdkRepository.locatePackage(DownloadAdbPresenter.PLATFORM_TOOLS_PACKAGE))
-                .thenThrow(new IOException("Failed to connect to repository"));
+                .thenThrow(ex);
     }
 
     protected CompletableFuture<Result> withSdkPackageLoaded(
@@ -228,7 +231,7 @@ abstract class DownloadAdbPresenterTestBase {
 
     protected void assertFinishedWithFailure(CompletableFuture<Result> result) {
         assertViewsHidden();
-        assertThat(result).isCompletedWithValueMatching(DownloadFailure.class::isInstance);
+        assertThat(result).isCompletedExceptionally();
     }
 
     protected SdkPackage createPackage() {

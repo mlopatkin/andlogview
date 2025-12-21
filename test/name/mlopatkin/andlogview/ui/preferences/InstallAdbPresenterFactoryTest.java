@@ -22,10 +22,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Cancelled;
-import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.DownloadFailure;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Installed;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.ManualFallback;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Result;
+import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -106,14 +106,14 @@ class InstallAdbPresenterFactoryTest {
         }
 
         @Test
-        void startInstallReturnsDownloadFailureWhenDownloadFails() throws Exception {
+        void startInstallFailsWhenDownloadFails() {
             RuntimeException exception = new RuntimeException("Network error");
-            setupDownloadPresenter(Result.failure(exception));
+            when(downloadPresenter.isAvailable()).thenReturn(true);
+            when(downloadPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
 
-            var result = presenter.startInstall().get();
+            var future = presenter.startInstall();
 
-            assertThat(result).isInstanceOf(DownloadFailure.class);
-            assertThat(((DownloadFailure) result).getFailure()).isSameAs(exception);
+            assertThat(future).isCompletedExceptionally();
             verify(desktopPresenter, never()).startInstall();
         }
 
@@ -159,17 +159,47 @@ class InstallAdbPresenterFactoryTest {
         }
 
         @Test
-        void startInstallReturnsFailureWhenNeitherPresenterIsAvailable() throws Exception {
+        void startInstallFailsWhenDesktopPresenterFailsAsOnlyAvailablePresenter() {
+            RuntimeException exception = new RuntimeException("Failed to open browser");
+            when(downloadPresenter.isAvailable()).thenReturn(false);
+            when(desktopPresenter.isAvailable()).thenReturn(true);
+            when(desktopPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+
+            var future = presenter.startInstall();
+
+            assertThat(future).isCompletedExceptionally();
+        }
+
+        @Test
+        void startInstallFailsWhenDesktopPresenterFailsAfterManualFallback() {
+            RuntimeException exception = new RuntimeException("Failed to open browser");
+            setupDownloadPresenter(Result.manual());
+            when(desktopPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+
+            var future = presenter.startInstall();
+
+            assertThat(future).isCompletedExceptionally();
+        }
+
+        @Test
+        void startInstallFailsWhenDesktopPresenterFailsAfterPackageNotFoundFallback() {
+            RuntimeException exception = new RuntimeException("Failed to open browser");
+            setupDownloadPresenter(Result.notFound());
+            when(desktopPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+
+            var future = presenter.startInstall();
+
+            assertThat(future).isCompletedExceptionally();
+        }
+
+        @Test
+        void startInstallFailsWhenNeitherPresenterIsAvailable() {
             when(downloadPresenter.isAvailable()).thenReturn(false);
             when(desktopPresenter.isAvailable()).thenReturn(false);
 
-            var result = presenter.startInstall().get();
+            var future = presenter.startInstall();
 
-            assertThat(result).isInstanceOf(DownloadFailure.class);
-            DownloadFailure failure = (DownloadFailure) result;
-            assertThat(failure.getFailure())
-                    .isInstanceOf(UnsupportedOperationException.class)
-                    .hasMessageContaining("Installing ADB is not available");
+            assertThat(future).isCompletedExceptionally();
         }
     }
 }

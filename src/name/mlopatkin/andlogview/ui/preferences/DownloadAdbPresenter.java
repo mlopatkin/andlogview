@@ -22,6 +22,7 @@ import static name.mlopatkin.andlogview.utils.MyFutures.toCancellable;
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.sdkrepo.ManifestParseException;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.sdkrepo.TargetDirectoryNotEmptyException;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -187,8 +189,20 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         // 6. Give the installed ADB path back.
         // x. If anything goes wrong while downloading - allow the user to try again.
 
-        var packageData =
-                MyFutures.runAsync(() -> repository.locatePackage(PLATFORM_TOOLS_PACKAGE), networkExecutor);
+        CompletableFuture<Optional<SdkPackage>> packageData =
+                MyFutures.runAsync(() -> {
+                    try {
+                        return repository.locatePackage(PLATFORM_TOOLS_PACKAGE);
+                    } catch (IOException | ManifestParseException e) {
+                        log.error(
+                                "Failed to locate {} package, falling back to manual install",
+                                PLATFORM_TOOLS_PACKAGE,
+                                e
+                        );
+                        // For now, don't bother user with the failure.
+                        return Optional.empty();
+                    }
+                }, networkExecutor);
 
         var packageLookupCompleted = showSdkInitProgressDialog(packageData);
 
@@ -198,7 +212,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
                                         .map(this::installPackage)
                                         .orElse(CompletableFuture.completedFuture(Result.notFound())),
                         uiExecutor)
-                .exceptionally(cancellationTransformer(Result::cancelled, Result::failure));
+                .exceptionally(cancellationTransformer(Result::cancelled));
     }
 
     /**

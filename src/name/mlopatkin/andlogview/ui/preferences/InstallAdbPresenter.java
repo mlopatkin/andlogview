@@ -62,16 +62,6 @@ public interface InstallAdbPresenter {
         }
 
         /**
-         * The download was abandoned because of the network or file failure.
-         *
-         * @param failure the failure
-         * @return the {@link DownloadFailure} instance
-         */
-        public static DownloadFailure failure(Throwable failure) {
-            return new DownloadFailure(failure);
-        }
-
-        /**
          * The package wasn't found in the remote repository. This is likely because the XML structure has been changed.
          *
          * @return the {@link PackageNotFound} instance
@@ -106,26 +96,6 @@ public interface InstallAdbPresenter {
          */
         public static Cancelled cancelled() {
             return Cancelled.INSTANCE;
-        }
-    }
-
-    /**
-     * The download was abandoned because of the network or file failure.
-     */
-    final class DownloadFailure extends Result {
-        private final Throwable failure;
-
-        private DownloadFailure(Throwable failure) {
-            this.failure = failure;
-        }
-
-        public Throwable getFailure() {
-            return failure;
-        }
-
-        @Override
-        public String toString() {
-            return "DownloadFailure(" + failure.getMessage() + ")";
         }
     }
 

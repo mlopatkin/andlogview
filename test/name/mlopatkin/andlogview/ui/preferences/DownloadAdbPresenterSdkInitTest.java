@@ -57,8 +57,20 @@ class DownloadAdbPresenterSdkInitTest extends DownloadAdbPresenterTestBase {
     }
 
     @Test
-    void failsWhenSdkInitializationThrowsException() throws Exception {
+    void fallsBackWhenSdkInitializationThrowsCheckedException() throws Exception {
         withSdkPackageLocateFailing();
+
+        var presenter = createPresenter();
+        var result = presenter.startInstall();
+
+        completePendingActions();
+
+        assertFinishedWithPackageNotFound(result);
+    }
+
+    @Test
+    void failsWhenSdkInitializationThrowsUnexpectedException() throws Exception {
+        withSdkPackageLocateFailingWith(new RuntimeException("Unexpected exception"));
 
         var presenter = createPresenter();
         var result = presenter.startInstall();
