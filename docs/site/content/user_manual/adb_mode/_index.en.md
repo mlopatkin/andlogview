@@ -35,8 +35,30 @@ just the `adb` from SDK platform-tools and, on Windows, an appropriate device
 driver. If you're running an emulator, chances are you already have a full
 Android SDK installed.
 
-You can download the plaform tools for your operating system from
-[developer.android.com](https://developer.android.com/tools/releases/platform-tools#downloads).
+### Automated Installation
+
+AndLogView can download and install the platform tools for you. In the ADB
+Configuration dialog, click the "Install ADB" button. This will guide you
+through:
+
+1. Reviewing and accepting the Android SDK license
+2. Selecting a directory where platform-tools will be installed
+3. Downloading and unpacking the tools
+
+Once complete, AndLogView will automatically configure itself to use the
+installed ADB.
+
+{{< hint type=note >}}
+The automated installer downloads platform-tools directly from Google's Android
+SDK repository. An internet connection is required.
+{{< /hint >}}
+
+### Manual Installation
+
+Alternatively, you can download the platform tools for your operating system
+manually from
+[developer.android.com](https://developer.android.com/tools/releases/platform-tools#downloads)
+and configure the path in the ADB Configuration dialog.
 
 ## Connecting to device over USB
 
