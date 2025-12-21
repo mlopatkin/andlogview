@@ -57,7 +57,7 @@ Mint) is required.
 AndLogView should be available in the application list of your Desktop
 Environment (Start Menu) and as `andlogview` in the terminal.
 
-[gh_nightly_release]: https://github.com/mlopatkin/andlogview/releases/tag/latest-snapshot
+[gh_nightly_release]: https://github.com/mlopatkin/andlogview/releases/tag/nightly
 {{< /tab >}}
 
 {{< tab "Windows" >}}
@@ -71,7 +71,7 @@ Environment (Start Menu) and as `andlogview` in the terminal.
 AndLogView should be available in the Start Menu or on Desktop, depending
 on your choices during installation.
 
-[gh_nightly_release]: https://github.com/mlopatkin/andlogview/releases/tag/latest-snapshot
+[gh_nightly_release]: https://github.com/mlopatkin/andlogview/releases/tag/nightly
 {{< /tab >}}
 
 {{< /tabs >}}

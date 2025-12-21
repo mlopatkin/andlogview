@@ -45,24 +45,24 @@ jobs:
       - name: Update Snapshot Tag
         if: ${{ success() }}
         run: |
-          git tag --force "latest-snapshot" $GITHUB_SHA && \
-          git push --force origin "latest-snapshot"
+          git tag --force "nightly" $GITHUB_SHA && \
+          git push --force origin "nightly"
       - name: Remove old release
         if: ${{ success() }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          tools/remove-release.sh "latest-snapshot" "$GITHUB_REPOSITORY"
+          tools/remove-release.sh "nightly" "$GITHUB_REPOSITORY"
       - name: Create new release
         if: ${{ success() }}
         run: >
-          gh release create "latest-snapshot"
+          gh release create "nightly"
           --draft
           --latest=false
           --notes-file docs/releases/release_0.24.md
           --prerelease=true
-          --title "latest-snapshot"
+          --title "nightly"
           --verify-tag
         shell: bash
         env:
@@ -70,7 +70,7 @@ jobs:
       - name: Publish Linux and cross-platform installers
         if: ${{ success() }}
         shell: bash
-        run: gh release upload "latest-snapshot" build/distributions/*
+        run: gh release upload "nightly" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -107,7 +107,7 @@ jobs:
       - name: Add Windows Installers to release
         if: ${{ success() }}
         shell: bash
-        run: gh release upload "latest-snapshot" build/distributions/*
+        run: gh release upload "nightly" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -141,7 +141,7 @@ jobs:
       - name: Add macOS Installers to release
         if: ${{ success() }}
         shell: bash
-        run: gh release upload "latest-snapshot" build/distributions/*
+        run: gh release upload "nightly" build/distributions/*
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -157,7 +157,7 @@ jobs:
       - name: Publish draft release as pre-release
         if: ${{ success() }}
         run: >
-          gh release edit "latest-snapshot"
+          gh release edit "nightly"
           --draft=false
           --latest=false
           --prerelease=true
@@ -173,7 +173,7 @@ jobs:
     env:
       LOGVIEW_SNAPSHOT_BUILD: false
     # Only build releases out of tags
-    if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
+    if: github.ref_type == 'tag' && !endsWith(github.ref, 'nightly')
     steps:
       - uses: actions/checkout@v4
       - name: Setup Gradle
@@ -222,7 +222,7 @@ jobs:
     needs:
       - build-tag  # We need the release to be prepared first.
     # Only build releases out of tags
-    if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
+    if: github.ref_type == 'tag' && !endsWith(github.ref, 'nightly')
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -256,7 +256,7 @@ jobs:
     needs:
       - build-tag  # We need the release to be prepared first.
     # Only build releases out of tags
-    if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
+    if: github.ref_type == 'tag' && !endsWith(github.ref, 'nightly')
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

@@ -35,7 +35,7 @@ abstract class GitRevCountValueSource : ValueSource<Int, GitRevCountValueSource.
                 "describe",
                 "--abbrev=0",
                 "--tags",
-                "latest-snapshot^" // Exclude latest-snapshot tag
+                "nightly^" // Exclude nightly tag
             )
             require(lastReleaseTag.matches("[0-9]+\\.[0-9]+(\\.[0-9]+)?".toRegex())) {
                 "Invalid version tag '$lastReleaseTag'"

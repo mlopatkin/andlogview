@@ -14,14 +14,14 @@ on:
 env:
   PYTHON_BINARY: python3
 jobs:
-  <@releases.releasePipeline "snapshot" "latest-snapshot">
+  <@releases.releasePipeline "snapshot" "nightly">
     # Only build snapshots on master
     if: github.ref == 'refs/heads/master'
   </@releases.releasePipeline>
 
   <@releases.releasePipeline "tag" "${{ github.ref_name }}">
     # Only build releases out of tags
-    if: github.ref_type == 'tag' && !endsWith(github.ref, '-snapshot')
+    if: github.ref_type == 'tag' && !endsWith(github.ref, 'nightly')
   </@releases.releasePipeline>
 
   mirror-to-bitbucket:
