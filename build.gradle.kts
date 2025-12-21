@@ -63,6 +63,7 @@ dependencies {
     testImplementation(testFixtures(project(":search")))
 
     testImplementation(libs.test.jetbrainsAnnotations)
+    testImplementation(libs.test.jimfs)
     testImplementation(libs.test.junitPioneer)
     testImplementation(libs.test.wiremock)
 

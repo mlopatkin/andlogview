@@ -26,7 +26,6 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
@@ -60,14 +59,14 @@ class SafeZipFile {
                     Files.getFileStore(targetDirectory).supportsFileAttributeView(PosixFileAttributeView.class);
 
             for (var entry : forEnumeration(zip::getEntries)) {
-                var extractPath = Paths.get(entry.getName()).normalize();
-                var targetEntryPath = targetDirectory.resolve(extractPath);
+                var targetEntryPath = targetDirectory.resolve(entry.getName()).normalize();
                 if (!targetEntryPath.startsWith(targetDirectory)) {
                     throw new IOException(
                             String.format(
                                     "Path traversal detected in '%s', writing file '%s' outside the target directory",
                                     zipFile,
-                                    extractPath)
+                                    entry.getName()
+                            )
                     );
                 }
 
@@ -76,7 +75,8 @@ class SafeZipFile {
                     continue;
                 }
                 // Zip files do not have to contain directory entries or to contain them before the files.
-                Files.createDirectories(targetEntryPath.getParent());
+                var targetDirectoryForEntry = targetEntryPath.getParent();
+                Files.createDirectories(targetDirectoryForEntry);
 
                 try (var zipEntryStream = zip.getInputStream(entry)) {
                     Files.copy(ByteStreams.limit(zipEntryStream, maxExpectedFileSize), targetEntryPath);
@@ -84,7 +84,7 @@ class SafeZipFile {
                         // We have read about MAX_COMPRESSION_RATIO times the size of the archive, but the compressed
                         // file is still going.
                         throw new IOException(
-                                "The compression ratio for the file `" + extractPath + "` is over 99%. "
+                                "The compression ratio for the file `" + entry.getName() + "` is over 99%. "
                                 + "This is likely a zip bomb");
                     }
                     if (filePermissionsSupported && entry.getUnixMode() != 0) {
