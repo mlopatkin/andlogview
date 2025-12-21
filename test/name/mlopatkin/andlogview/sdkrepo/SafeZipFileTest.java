@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import name.mlopatkin.andlogview.test.Resource;
@@ -28,7 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 class SafeZipFileTest {
@@ -36,7 +39,8 @@ class SafeZipFileTest {
     void canDetectZipBombs(@Resource("zip-bomb.zip") Path zipBomb, @TempDir Path outputDirectory) throws Exception {
         var zipFile = new SafeZipFile(zipBomb);
 
-        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory)).hasMessageContaining("This is likely a zip bomb");
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory, false))
+                .hasMessageContaining("This is likely a zip bomb");
     }
 
     @Test
@@ -61,50 +65,103 @@ class SafeZipFileTest {
             SafeZipFile safeZipFile = new SafeZipFile(zipPath);
 
             // Extraction should fail when running out of space
-            assertThatThrownBy(() -> safeZipFile.extractTo(targetDir))
+            assertThatThrownBy(() -> safeZipFile.extractTo(targetDir, false))
                     .isInstanceOf(IOException.class);
         }
     }
 
     @Test
     void canDetectPathTraversalWithParentReferences(@TempDir Path tempDir) throws Exception {
-        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("traversal.zip"), zip -> {
-            zip.file("../../etc/passwd", "malicious content");
-        });
+        Path zipPath = ZipFileBuilder.zipFile(
+                tempDir.resolve("traversal.zip"),
+                zip -> zip.file("../../etc/passwd", "malicious content")
+        );
 
         Path outputDirectory = tempDir.resolve("output");
         var zipFile = new SafeZipFile(zipPath);
 
-        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory))
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory, false))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("Path traversal detected");
     }
 
     @Test
     void canDetectPathTraversalWithSingleParentReference(@TempDir Path tempDir) throws Exception {
-        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("traversal.zip"), zip -> {
-            zip.file("../outside.txt", "malicious content");
-        });
+        Path zipPath = ZipFileBuilder.zipFile(
+                tempDir.resolve("traversal.zip"),
+                zip -> zip.file("../outside.txt", "malicious content")
+        );
 
         Path outputDirectory = tempDir.resolve("output");
         var zipFile = new SafeZipFile(zipPath);
 
-        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory))
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory, false))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("Path traversal detected");
     }
 
     @Test
     void canDetectPathTraversalWithMixedSegments(@TempDir Path tempDir) throws Exception {
-        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("traversal.zip"), zip -> {
-            zip.file("subdir/../../outside.txt", "malicious content");
-        });
+        Path zipPath = ZipFileBuilder.zipFile(
+                tempDir.resolve("traversal.zip"),
+                zip -> zip.file("subdir/../../outside.txt", "malicious content")
+        );
 
         Path outputDirectory = tempDir.resolve("output");
         var zipFile = new SafeZipFile(zipPath);
 
-        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory))
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory, false))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("Path traversal detected");
+    }
+
+    @Test
+    void extractionFailsWhenFileExistsAndOverwriteDisabled(@TempDir Path tempDir) throws Exception {
+        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("test.zip"), zip -> zip.file("file.txt", "new content"));
+
+        Path outputDirectory = tempDir.resolve("output");
+        Files.createDirectories(outputDirectory);
+        Files.write(outputDirectory.resolve("file.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
+
+        var zipFile = new SafeZipFile(zipPath);
+
+        assertThatThrownBy(() -> zipFile.extractTo(outputDirectory, false))
+                .isInstanceOf(IOException.class);
+    }
+
+    @Test
+    void extractionOverwritesExistingFilesWhenOverwriteEnabled(@TempDir Path tempDir) throws Exception {
+        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("test.zip"), zip -> zip.file("file.txt", "new content"));
+
+        Path outputDirectory = tempDir.resolve("output");
+        Files.createDirectories(outputDirectory);
+        Files.write(outputDirectory.resolve("file.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
+
+        var zipFile = new SafeZipFile(zipPath);
+        zipFile.extractTo(outputDirectory, true);
+
+        assertThat(outputDirectory.resolve("file.txt"))
+                .content(StandardCharsets.UTF_8)
+                .isEqualTo("new content");
+    }
+
+    @Test
+    void extractionWithOverwritePreservesOtherFiles(@TempDir Path tempDir) throws Exception {
+        Path zipPath = ZipFileBuilder.zipFile(tempDir.resolve("test.zip"), zip -> zip.file("file.txt", "new content"));
+
+        Path outputDirectory = tempDir.resolve("output");
+        Files.createDirectories(outputDirectory);
+        Files.write(outputDirectory.resolve("file.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
+        Files.write(outputDirectory.resolve("other.txt"), "other content".getBytes(StandardCharsets.UTF_8));
+
+        var zipFile = new SafeZipFile(zipPath);
+        zipFile.extractTo(outputDirectory, true);
+
+        assertThat(outputDirectory.resolve("file.txt"))
+                .content(StandardCharsets.UTF_8)
+                .isEqualTo("new content");
+        assertThat(outputDirectory.resolve("other.txt"))
+                .content(StandardCharsets.UTF_8)
+                .isEqualTo("other content");
     }
 }

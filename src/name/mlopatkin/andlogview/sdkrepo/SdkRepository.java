@@ -40,6 +40,22 @@ import javax.inject.Inject;
 public class SdkRepository {
     private static final Logger logger = LoggerFactory.getLogger(SdkRepository.class);
 
+    /**
+     * Installation mode for {@link #downloadPackage(SdkPackage, File, InstallMode)}.
+     */
+    public enum InstallMode {
+        /**
+         * Check if the target directory is empty before proceeding. Throws {@link TargetDirectoryNotEmptyException}
+         * if the directory exists and contains files.
+         */
+        FAIL_IF_NOT_EMPTY,
+
+        /**
+         * Proceed with installation even if the target directory is not empty. Existing files may be overwritten.
+         */
+        OVERWRITE
+    }
+
     private static final URI REPOSITORY_URI = URI.create("https://dl.google.com/android/repository/");
     private static final URI MANIFEST_URI = REPOSITORY_URI.resolve("repository2-3.xml");
     private static final long MAX_REPOSITORY_MANIFEST_SIZE = 5 * 1024 * 1024; // 5 Mb
@@ -75,7 +91,17 @@ public class SdkRepository {
         return SdkPackage.TargetOs.LINUX;
     }
 
-    public void downloadPackage(SdkPackage sdkPackage, File targetDirectory) throws IOException {
+    public void downloadPackage(SdkPackage sdkPackage, File targetDirectory, InstallMode mode) throws IOException {
+        // Check if directory is not empty in FAIL_IF_NOT_EMPTY mode
+        if (mode == InstallMode.FAIL_IF_NOT_EMPTY) {
+            if (targetDirectory.isDirectory()) {
+                String[] contents = targetDirectory.list();
+                if (contents != null && contents.length > 0) {
+                    throw new TargetDirectoryNotEmptyException(targetDirectory);
+                }
+            }
+        }
+
         Files.createDirectories(targetDirectory.toPath());
 
         var tempFile = File.createTempFile("adb", ".download", targetDirectory);
@@ -98,7 +124,7 @@ public class SdkRepository {
                         ));
             }
 
-            extractZip(tempFile, targetDirectory);
+            extractZip(tempFile, targetDirectory, mode == InstallMode.OVERWRITE);
         } finally {
             deleteSilently(tempFile);
         }
@@ -112,7 +138,7 @@ public class SdkRepository {
         }
     }
 
-    private void extractZip(File zipFile, File targetDirectory) throws IOException {
-        new SafeZipFile(zipFile.toPath()).extractTo(targetDirectory.toPath());
+    private void extractZip(File zipFile, File targetDirectory, boolean overwriteExisting) throws IOException {
+        new SafeZipFile(zipFile.toPath()).extractTo(targetDirectory.toPath(), overwriteExisting);
     }
 }

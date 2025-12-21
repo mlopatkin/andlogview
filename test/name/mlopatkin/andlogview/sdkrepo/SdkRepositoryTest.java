@@ -40,10 +40,12 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 class SdkRepositoryTest {
     private static final HashFunction HASH = Hashing.sha256();
     private static final URI TEST_URI = URI.create("https://example.com/src.zip");
+    public static final String ARCHIVED_CONTENT = "some data";
 
     @TempDir
     Path sourceDataDir;
@@ -62,14 +64,80 @@ class SdkRepositoryTest {
     @Test
     void canDownloadTestZip() throws IOException {
         var repo = createRepo();
-        repo.downloadPackage(createTestPackage(), targetDir.toFile());
+        repo.downloadPackage(createTestPackage(), targetDir.toFile(), SdkRepository.InstallMode.OVERWRITE);
 
         try (var files = Files.list(targetDir)) {
-            assertThat(files
-                    .map(Path::getFileName)
-                    .map(Path::toString)
-            ).containsExactly("file.txt");
+            assertThat(paths(files)).containsExactly("file.txt");
         }
+    }
+
+    @Test
+    void failIfNotEmptyThrowsWhenDirectoryHasFiles() throws IOException {
+        // Create a non-empty directory
+        Files.createDirectories(targetDir);
+        Files.write(targetDir.resolve("existing.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
+
+        var repo = createRepo();
+        try {
+            repo.downloadPackage(createTestPackage(), targetDir.toFile(), SdkRepository.InstallMode.FAIL_IF_NOT_EMPTY);
+            throw new AssertionError("Expected DirectoryNotEmptyException");
+        } catch (TargetDirectoryNotEmptyException e) {
+            assertThat(e.getDirectory()).isEqualTo(targetDir.toFile());
+        }
+    }
+
+    @Test
+    void failIfNotEmptySucceedsWhenDirectoryIsEmpty() throws IOException {
+        var emptyDir = targetDir.resolve("empty");
+        Files.createDirectories(emptyDir);
+
+        var repo = createRepo();
+        repo.downloadPackage(createTestPackage(), emptyDir.toFile(), SdkRepository.InstallMode.FAIL_IF_NOT_EMPTY);
+
+        try (var files = Files.list(emptyDir)) {
+            assertThat(paths(files)).containsExactly("file.txt");
+        }
+    }
+
+    @Test
+    void failIfNotEmptySucceedsWhenDirectoryDoesNotExist() throws IOException {
+        var nonExistingDir = targetDir.resolve("non-existing");
+        var repo = createRepo();
+        repo.downloadPackage(createTestPackage(), nonExistingDir.toFile(), SdkRepository.InstallMode.FAIL_IF_NOT_EMPTY);
+
+        try (var files = Files.list(nonExistingDir)) {
+            assertThat(paths(files)).containsExactly("file.txt");
+        }
+    }
+
+    @Test
+    void overwriteModeSucceedsWhenDirectoryIsNonEmpty() throws IOException {
+        // Create a non-empty directory
+        Files.createDirectories(targetDir);
+        Files.write(targetDir.resolve("existing.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
+
+        var repo = createRepo();
+        repo.downloadPackage(createTestPackage(), targetDir.toFile(), SdkRepository.InstallMode.OVERWRITE);
+
+        try (var files = Files.list(targetDir)) {
+            assertThat(paths(files)).containsExactlyInAnyOrder("file.txt", "existing.txt");
+        }
+    }
+
+    @Test
+    void overwriteModeOverwritesExistingFiles() throws IOException {
+        // Create a non-empty directory
+        Files.createDirectories(targetDir);
+        Files.write(targetDir.resolve("file.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
+
+        var repo = createRepo();
+        repo.downloadPackage(createTestPackage(), targetDir.toFile(), SdkRepository.InstallMode.OVERWRITE);
+
+        try (var files = Files.list(targetDir)) {
+            assertThat(paths(files)).containsExactly("file.txt");
+        }
+
+        assertThat(targetDir.resolve("file.txt")).content(StandardCharsets.UTF_8).isEqualTo(ARCHIVED_CONTENT);
     }
 
     private SdkRepository createRepo() {
@@ -95,7 +163,7 @@ class SdkRepositoryTest {
                 new ZipArchiveOutputStream(Files.newOutputStream(zipPath))) {
             ZipArchiveEntry entry = new ZipArchiveEntry("file.txt");
             zipOut.putArchiveEntry(entry);
-            ByteSource.wrap("some data".getBytes(StandardCharsets.UTF_8)).copyTo(zipOut);
+            ByteSource.wrap(ARCHIVED_CONTENT.getBytes(StandardCharsets.UTF_8)).copyTo(zipOut);
             zipOut.closeArchiveEntry();
         }
         return zipPath;
@@ -112,5 +180,11 @@ class SdkRepositoryTest {
                 HASH,
                 zipHash
         );
+    }
+
+    private static Stream<String> paths(Stream<Path> files) {
+        return files
+                .map(Path::getFileName)
+                .map(Path::toString);
     }
 }

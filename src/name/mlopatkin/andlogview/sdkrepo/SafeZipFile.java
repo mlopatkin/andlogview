@@ -26,6 +26,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
@@ -46,9 +47,10 @@ class SafeZipFile {
      * Extracts this ZIP file into the target directory, creating it if necessary.
      *
      * @param targetDirectory the target directory to extract files into
+     * @param overwriteExisting whether to overwrite existing files
      * @throws IOException if extraction fails
      */
-    public void extractTo(Path targetDirectory) throws IOException {
+    public void extractTo(Path targetDirectory, boolean overwriteExisting) throws IOException {
         var archiveSize = Files.size(zipFile);
         var maxExpectedFileSize = archiveSize * MAX_COMPRESSION_RATIO;
 
@@ -79,7 +81,12 @@ class SafeZipFile {
                 Files.createDirectories(targetDirectoryForEntry);
 
                 try (var zipEntryStream = zip.getInputStream(entry)) {
-                    Files.copy(ByteStreams.limit(zipEntryStream, maxExpectedFileSize), targetEntryPath);
+                    var targetStream = ByteStreams.limit(zipEntryStream, maxExpectedFileSize);
+                    if (overwriteExisting) {
+                        Files.copy(targetStream, targetEntryPath, StandardCopyOption.REPLACE_EXISTING);
+                    } else {
+                        Files.copy(targetStream, targetEntryPath);
+                    }
                     if (zipEntryStream.read() != -1) {
                         // We have read about MAX_COMPRESSION_RATIO times the size of the archive, but the compressed
                         // file is still going.

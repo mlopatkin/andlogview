@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
+import name.mlopatkin.andlogview.sdkrepo.TargetDirectoryNotEmptyException;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.Try;
 
@@ -55,6 +56,18 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
 
     interface FailureView {
         void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel);
+    }
+
+    interface DirectoryWarningView {
+        /**
+         * Shows a warning that the selected directory is not empty and gives the user options.
+         *
+         * @param directory the directory that is not empty
+         * @param continueAnyway called if user wants to continue with the non-empty directory
+         * @param chooseAnother called if user wants to select a different directory
+         * @param cancel called if user wants to cancel the installation
+         */
+        void show(File directory, Runnable continueAnyway, Runnable chooseAnother, Runnable cancel);
     }
 
     interface InstallView {
@@ -131,6 +144,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
     private final Provider<SdkInitView> sdkInitView;
     private final Provider<InstallView> installView;
     private final Provider<FailureView> failureView;
+    private final Provider<DirectoryWarningView> directoryWarningView;
     private final Provider<SdkDownloadView> downloadView;
     private final Executor uiExecutor;
     private final Executor networkExecutor;
@@ -141,6 +155,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
             Provider<SdkInitView> sdkInitView,
             Provider<InstallView> installView,
             Provider<FailureView> failureView,
+            Provider<DirectoryWarningView> directoryWarningView,
             Provider<SdkDownloadView> downloadView,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor networkExecutor
@@ -149,6 +164,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         this.sdkInitView = sdkInitView;
         this.installView = installView;
         this.failureView = failureView;
+        this.directoryWarningView = directoryWarningView;
         this.downloadView = downloadView;
         this.uiExecutor = uiExecutor;
         this.networkExecutor = networkExecutor;
@@ -216,27 +232,39 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      *
      * @param pkg the package to install
      * @param licenseAccepted whether the license is already accepted
-     * @param installLocation the installation location to use
+     * @param initialInstallLocation the installation location to use
      * @return a non-cancellable future with the result of the installation
      */
     private CompletableFuture<Result> installPackageWithState(
             SdkPackage pkg,
             boolean licenseAccepted,
-            File installLocation
+            File initialInstallLocation
     ) {
-        return showAdbInstallDialog(pkg, licenseAccepted, installLocation)
+        return showAdbInstallDialog(pkg, licenseAccepted, initialInstallLocation)
                 .thenComposeAsync(
-                        installDir -> showInstallProgressDialog(downloadAndUnpack(pkg, installDir))
-                                .thenComposeAsync(
-                                        maybeInstallDir ->
-                                                maybeInstallDir.<Result>map(Result::installed)
-                                                        .map(CompletableFuture::completedFuture)
-                                                        .mapFailure(th -> onPackageDownloadError(pkg, installDir, th))
-                                                        .get(),
-                                        uiExecutor
-                                ),
+                        installDir ->
+                                startDownloadAndUnpack(pkg, SdkRepository.InstallMode.FAIL_IF_NOT_EMPTY, installDir),
                         uiExecutor
                 );
+    }
+
+    private CompletableFuture<Result> startDownloadAndUnpack(
+            SdkPackage pkg,
+            SdkRepository.InstallMode installMode,
+            File installDir) {
+        return showInstallProgressDialog(
+                downloadAndUnpack(
+                        pkg,
+                        installDir,
+                        installMode)
+        ).thenComposeAsync(
+                maybeInstallDir ->
+                        maybeInstallDir.<Result>map(Result::installed)
+                                .map(CompletableFuture::completedFuture)
+                                .mapFailure(th -> onPackageDownloadError(pkg, installDir, th))
+                                .get(),
+                uiExecutor
+        );
     }
 
     /**
@@ -249,6 +277,13 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      */
     private CompletableFuture<Result> onPackageDownloadError(SdkPackage pkg, File installDir, Throwable failure) {
         log.error("Failed to download package {}", pkg, failure);
+
+        // Check if it's a DirectoryNotEmptyException
+        if (failure instanceof TargetDirectoryNotEmptyException dirNotEmpty) {
+            return onDirectoryNotEmpty(pkg, dirNotEmpty.getDirectory());
+        }
+
+        // Handle other errors with existing FailureView
         var failureResponse = new CompletableFuture<Result>();
         failureView.get().show(
                 "Download failed: " + failure.getMessage(),
@@ -257,6 +292,34 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
                 () -> failureResponse.cancel(false)
         );
         return failureResponse;
+    }
+
+    /**
+     * Handles the case when the user selects a non-empty directory for installation.
+     * Shows a warning dialog and allows the user to continue anyway, choose another directory, or cancel.
+     *
+     * @param pkg the package being installed
+     * @param installLocation the non-empty directory
+     * @return the new result for the pipeline
+     */
+    private CompletableFuture<Result> onDirectoryNotEmpty(SdkPackage pkg, File installLocation) {
+        var response = new CompletableFuture<Result>();
+        directoryWarningView.get().show(
+                installLocation,
+                // Continue anyway - retry with OVERWRITE mode
+                () -> MyFutures.connect(
+                        startDownloadAndUnpack(pkg, SdkRepository.InstallMode.OVERWRITE, installLocation),
+                        response
+                ),
+                // Choose another - go back to InstallView with license accepted
+                () -> MyFutures.connect(
+                        installPackageWithState(pkg, true, installLocation),
+                        response
+                ),
+                // Cancel
+                () -> response.cancel(false)
+        );
+        return response;
     }
 
     /**
@@ -297,12 +360,17 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      *
      * @param pkg the package to download and unpack
      * @param installDir the target installation directory
+     * @param mode the installation mode
      * @return the future with the resulting unpacked location of the package or with the download failure
      */
-    private CompletableFuture<Try<File>> downloadAndUnpack(SdkPackage pkg, File installDir) {
+    private CompletableFuture<Try<File>> downloadAndUnpack(
+            SdkPackage pkg,
+            File installDir,
+            SdkRepository.InstallMode mode
+    ) {
         return MyFutures.runAsync(
                 () -> Try.ofCallable(() -> {
-                    repository.downloadPackage(pkg, installDir);
+                    repository.downloadPackage(pkg, installDir, mode);
                     return installDir;
                 }),
                 networkExecutor

@@ -47,6 +47,9 @@ public abstract class PreferencesUiModule {
     @Binds
     abstract DownloadAdbPresenter.FailureView failureView(FailureViewImpl failureView);
 
+    @Binds
+    abstract DownloadAdbPresenter.DirectoryWarningView directoryWarningView(DirectoryWarningViewImpl impl);
+
     static class SdkInitViewImpl extends ProgressDialog implements DownloadAdbPresenter.SdkInitView {
         @Inject
         SdkInitViewImpl(DialogFactory dialogFactory) {
@@ -173,6 +176,45 @@ public abstract class PreferencesUiModule {
                 case 1 -> installManually.run();
                 case 2, JOptionPane.CLOSED_OPTION -> cancel.run();
                 default -> cancel.run(); // Safe catch-all.
+            }
+        }
+    }
+
+    static class DirectoryWarningViewImpl implements DownloadAdbPresenter.DirectoryWarningView {
+        private final DialogFactory dialogFactory;
+
+        @Inject
+        public DirectoryWarningViewImpl(DialogFactory dialogFactory) {
+            this.dialogFactory = dialogFactory;
+        }
+
+        @Override
+        public void show(File directory, Runnable continueAnyway, Runnable chooseAnother, Runnable cancel) {
+            String message = String.format(
+                    """
+                            The selected directory is not empty:
+                            %s
+
+                            Files in this directory may be overwritten during installation.
+                            What would you like to do?""",
+                    directory.getAbsolutePath()
+            );
+            String[] options = {"Continue anyway", "Choose another directory", "Cancel"};
+            int choice = JOptionPane.showOptionDialog(
+                    dialogFactory.getOwner(),
+                    message,
+                    "Directory Not Empty",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    /* custom icon */ null,
+                    options,
+                    /* default button */ options[1]
+            );
+            switch (choice) {
+                case 0 -> continueAnyway.run();
+                case 1 -> chooseAnother.run();
+                case 2, JOptionPane.CLOSED_OPTION -> cancel.run();
+                default -> cancel.run(); // Safe catch-all
             }
         }
     }

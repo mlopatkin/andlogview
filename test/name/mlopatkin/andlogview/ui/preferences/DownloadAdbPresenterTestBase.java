@@ -56,6 +56,7 @@ abstract class DownloadAdbPresenterTestBase {
     private @Nullable FakeProgressView downloadView;
     private @Nullable FakeInstallView installView;
     private @Nullable FakeFailureView failureView;
+    private @Nullable FakeDirectoryWarningView directoryWarningView;
 
     private final TestExecutor netExecutor = new TestExecutor();
 
@@ -119,6 +120,7 @@ abstract class DownloadAdbPresenterTestBase {
                 this::newInitView,
                 this::newInstallView,
                 this::newFailureView,
+                this::newDirectoryWarningView,
                 this::newDownloadView,
                 MoreExecutors.directExecutor(),
                 netExecutor
@@ -145,6 +147,12 @@ abstract class DownloadAdbPresenterTestBase {
         return downloadView = new FakeProgressView();
     }
 
+    protected FakeDirectoryWarningView newDirectoryWarningView() {
+        assertTrue(directoryWarningView == null || !directoryWarningView().isShown(),
+                   "directoryWarningView must be disposed");
+        return directoryWarningView = new FakeDirectoryWarningView();
+    }
+
 
     protected FakeProgressView initView() {
         return Objects.requireNonNull(initView, "initView not created");
@@ -162,19 +170,27 @@ abstract class DownloadAdbPresenterTestBase {
         return Objects.requireNonNull(downloadView, "downloadView not created");
     }
 
+    protected FakeDirectoryWarningView directoryWarningView() {
+        return Objects.requireNonNull(directoryWarningView, "directoryWarningView not created");
+    }
+
     protected void assertViewsHidden() {
         assertTrue(initView == null || !initView().isShown(), "initView must be disposed");
         assertTrue(installView == null || !installView().isShown(), "installView must be disposed");
         assertTrue(failureView == null || !failureView().isShown(), "failureView must be disposed");
         assertTrue(downloadView == null || !downloadView().isShown(), "downloadView must be disposed");
+        assertTrue(directoryWarningView == null || !directoryWarningView().isShown(),
+                   "directoryWarningView must be disposed");
     }
 
     protected void assertOnlyShows(View view) {
-        assertTrue(view == initView || view == installView || view == failureView || view == downloadView);
+        assertTrue(view == initView || view == installView || view == failureView || view == downloadView
+                   || view == directoryWarningView);
         assertViewShown(initView, initView == view);
         assertViewShown(installView, installView == view);
         assertViewShown(failureView, failureView == view);
         assertViewShown(downloadView, downloadView == view);
+        assertViewShown(directoryWarningView, directoryWarningView == view);
     }
 
     protected void assertViewShown(@Nullable View view, boolean expectedState) {
@@ -219,11 +235,11 @@ abstract class DownloadAdbPresenterTestBase {
     }
 
     protected void withSdkPackageDownloadFailing() throws IOException {
-        doThrow(IOException.class).when(sdkRepository).downloadPackage(any(), any());
+        doThrow(IOException.class).when(sdkRepository).downloadPackage(any(), any(), any());
     }
 
     protected void withSdkPackageDownloadSucceeding() throws IOException {
-        doAnswer(invocation -> null).when(sdkRepository).downloadPackage(any(), any());
+        doAnswer(invocation -> null).when(sdkRepository).downloadPackage(any(), any(), any());
     }
 
     protected static class FakeProgressView
@@ -436,6 +452,57 @@ abstract class DownloadAdbPresenterTestBase {
 
         public @Nullable String getMessage() {
             return message;
+        }
+    }
+
+    protected static class FakeDirectoryWarningView implements DownloadAdbPresenter.DirectoryWarningView, View {
+        private @Nullable File directory;
+        private @Nullable Runnable continueAnywayAction;
+        private @Nullable Runnable chooseAnotherAction;
+        private @Nullable Runnable cancelAction;
+        private boolean isShown;
+
+        @Override
+        public void show(File directory, Runnable continueAnyway, Runnable chooseAnother, Runnable cancel) {
+            this.directory = Objects.requireNonNull(directory);
+            this.continueAnywayAction = Objects.requireNonNull(continueAnyway);
+            this.chooseAnotherAction = Objects.requireNonNull(chooseAnother);
+            this.cancelAction = Objects.requireNonNull(cancel);
+            this.isShown = true;
+        }
+
+        public void hide() {
+            this.isShown = false;
+        }
+
+        public void runContinueAnyway() {
+            assertTrue(isShown, "Dialog not shown");
+            assertNotNull(continueAnywayAction);
+            hide();
+            continueAnywayAction.run();
+        }
+
+        public void runChooseAnother() {
+            assertTrue(isShown, "Dialog not shown");
+            assertNotNull(chooseAnotherAction);
+            hide();
+            chooseAnotherAction.run();
+        }
+
+        public void runCancel() {
+            assertTrue(isShown, "Dialog not shown");
+            assertNotNull(cancelAction);
+            hide();
+            cancelAction.run();
+        }
+
+        @Override
+        public boolean isShown() {
+            return isShown;
+        }
+
+        public @Nullable File getDirectory() {
+            return directory;
         }
     }
 

@@ -131,6 +131,6 @@ class DownloadAdbPresenterLicenseAndTargetTest extends DownloadAdbPresenterTestB
     private void assertDownloadNotStarted(CompletableFuture<Result> result) throws Exception {
         completePendingActions();
         assertThat(result).isNotCompleted();
-        verify(sdkRepository, never()).downloadPackage(any(), any());
+        verify(sdkRepository, never()).downloadPackage(any(), any(), any());
     }
 }
