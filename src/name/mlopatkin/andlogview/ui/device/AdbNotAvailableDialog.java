@@ -19,15 +19,14 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
 
 import dagger.Lazy;
 
 import java.awt.event.ItemEvent;
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 
 public class AdbNotAvailableDialog {
     private static final String SETUP_ADB_OPTION = "Set up ADB";
@@ -49,32 +48,22 @@ public class AdbNotAvailableDialog {
     }
 
     public void show(String failureMessage, boolean isAutoStart) {
-        var messageComponents = new ArrayList<>();
-        messageComponents.add(failureMessage);
+        var dialog = OptionPaneBuilder.error("Error")
+                .message(failureMessage)
+                .addInitialOption(SETUP_ADB_OPTION, () -> configurationDialogPresenter.get().openDialog())
+                .addCancelOption(IGNORE_OPTION, () -> {});
 
         if (isAutoStart) {
             var doNotStartCheckbox = new JCheckBox("Do not show again on startup");
-            messageComponents.add(doNotStartCheckbox);
 
             doNotStartCheckbox.addItemListener(e -> {
                 var isSelected = e.getStateChange() == ItemEvent.SELECTED;
                 adbConfigurationPref.setShowAdbAutostartFailures(!isSelected);
             });
+
+            dialog.extraMessage(doNotStartCheckbox);
         }
 
-        int result = JOptionPane.showOptionDialog(
-                dialogFactory.getOwner(),
-                messageComponents.toArray(),
-                "Error",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.ERROR_MESSAGE,
-                null,
-                new String[] {SETUP_ADB_OPTION, IGNORE_OPTION},
-                SETUP_ADB_OPTION
-        );
-
-        if (result == JOptionPane.YES_OPTION) {
-            configurationDialogPresenter.get().openDialog();
-        }
+        dialog.show(dialogFactory.getOwner());
     }
 }

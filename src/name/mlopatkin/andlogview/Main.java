@@ -19,6 +19,7 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
 
 import com.formdev.flatlaf.util.SystemInfo;
 
@@ -29,7 +30,6 @@ import java.awt.EventQueue;
 import java.io.File;
 
 import javax.inject.Inject;
-import javax.swing.JOptionPane;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -128,8 +128,9 @@ public class Main {
         });
 
         if (commandLine.isShouldShowUsage()) {
-            JOptionPane.showMessageDialog(window.mainFrameUi, "<html>Usage:<br>java -jar logview.jar [FILENAME]</html>",
-                    "Incorrect parameters", JOptionPane.ERROR_MESSAGE);
+            OptionPaneBuilder.error("Incorrect parameters")
+                    .message("<html>Usage:<br>java -jar logview.jar [FILENAME]</html>")
+                    .show(window.mainFrameUi);
         }
         File fileToOpen = commandLine.getFileArgument();
         if (fileToOpen != null) {

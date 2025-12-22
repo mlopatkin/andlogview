@@ -16,6 +16,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.widgets.dialogs.ErrorDialogWithDetails;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
 
 import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
@@ -23,8 +24,6 @@ import com.google.errorprone.annotations.FormatString;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.Component;
-
-import javax.swing.JOptionPane;
 
 /**
  * This class contains helper methods to show error dialogs
@@ -40,10 +39,12 @@ public class ErrorDialogsHelper {
     }
 
     public static void showError(@Nullable Component owner, String message) {
-        JOptionPane.showMessageDialog(owner, message, "Error", JOptionPane.ERROR_MESSAGE);
+        OptionPaneBuilder.error("Error")
+                .message(message)
+                .show(owner);
     }
 
     public static void showError(@Nullable Component owner, String message, Throwable failure) {
-        ErrorDialogWithDetails.show(owner,  message, failure);
+        ErrorDialogWithDetails.show(owner, message, failure);
     }
 }

@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.DialogResult;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
 import name.mlopatkin.andlogview.widgets.dialogs.ProgressDialog;
 
 import dagger.Binds;
@@ -28,7 +29,6 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 @Module
 public abstract class PreferencesUiModule {
@@ -160,23 +160,12 @@ public abstract class PreferencesUiModule {
 
         @Override
         public void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel) {
-            String[] options = {"Try again", "Install manually", "Cancel"};
-            int choice = JOptionPane.showOptionDialog(
-                    dialogFactory.getOwner(),
-                    message,
-                    "Error",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.ERROR_MESSAGE,
-                    /* custom icon */ null,
-                    options,
-                    /* default button */ options[0]
-            );
-            switch (choice) {
-                case 0 -> tryAgain.run();
-                case 1 -> installManually.run();
-                case 2, JOptionPane.CLOSED_OPTION -> cancel.run();
-                default -> cancel.run(); // Safe catch-all.
-            }
+            OptionPaneBuilder.error("Error")
+                    .message(message)
+                    .addInitialOption("Try again", tryAgain)
+                    .addOption("Install manually", installManually)
+                    .addCancelOption("Cancel", cancel)
+                    .show(dialogFactory.getOwner());
         }
     }
 
@@ -199,23 +188,13 @@ public abstract class PreferencesUiModule {
                             What would you like to do?""",
                     directory.getAbsolutePath()
             );
-            String[] options = {"Continue anyway", "Choose another directory", "Cancel"};
-            int choice = JOptionPane.showOptionDialog(
-                    dialogFactory.getOwner(),
-                    message,
-                    "Directory Not Empty",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.WARNING_MESSAGE,
-                    /* custom icon */ null,
-                    options,
-                    /* default button */ options[1]
-            );
-            switch (choice) {
-                case 0 -> continueAnyway.run();
-                case 1 -> chooseAnother.run();
-                case 2, JOptionPane.CLOSED_OPTION -> cancel.run();
-                default -> cancel.run(); // Safe catch-all
-            }
+
+            OptionPaneBuilder.warning("Directory Not Empty")
+                    .message(message)
+                    .addOption("Continue anyway", continueAnyway)
+                    .addInitialOption("Choose another directory", chooseAnother)
+                    .addCancelOption("Cancel", cancel)
+                    .show(dialogFactory.getOwner());
         }
     }
 }

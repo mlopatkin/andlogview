@@ -28,6 +28,7 @@ import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.TextUtils;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
 
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -39,7 +40,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
-import javax.swing.JOptionPane;
 
 /**
  * Handles opening a files as a {@link DataSource}. Shows error or warning dialogs if the file cannot be opened
@@ -136,9 +136,9 @@ public class FileOpener {
         }
         warningMessage.append("</html>");
 
-        JOptionPane.showMessageDialog(dialogFactory.getOwner(), warningMessage,
-                TextUtils.plural(numProblems, "Import problem", numProblems + " import problems"),
-                JOptionPane.WARNING_MESSAGE);
+        OptionPaneBuilder.warning(TextUtils.plural(numProblems, "Import problem", numProblems + " import problems"))
+                .message(warningMessage.toString())
+                .show(dialogFactory.getOwner());
     }
 
     private void formatProblemsList(int problemsToShow, Collection<ImportProblem> problems, StringBuilder output) {
