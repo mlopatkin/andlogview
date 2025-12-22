@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Run checks and build noJRE installer
         # This can benefit from the configuration cache, unlike the installer builds later
         run: >
@@ -92,7 +92,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17.0.13'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build Windows Installers
         shell: cmd
         run: >
@@ -126,7 +126,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17.0.13'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build macOS Installers
         shell: sh
         run: >
@@ -177,7 +177,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Run checks and build noJRE installer
         # This can benefit from the configuration cache, unlike the installer builds later
         run: >
@@ -232,7 +232,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17.0.13'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build Windows Installers
         shell: cmd
         run: >
@@ -266,7 +266,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17.0.13'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # 4.2.2
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build macOS Installers
         shell: sh
         run: >
