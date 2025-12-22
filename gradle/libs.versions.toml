@@ -2,7 +2,7 @@
 andlogview = "0.24"
 checkstyle = "10.21.1"
 dagger = "2.55"
-errorprone = "2.41.0"
+errorprone = "2.42.0"
 errorpronePlugin = "4.3.0"
 nullawayPlugin = "2.2.0"
 flatlaf = "3.5.4"
