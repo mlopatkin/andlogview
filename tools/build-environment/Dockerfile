@@ -1,9 +1,9 @@
-FROM eclipse-temurin:17.0.13_11-jdk-focal@sha256:dd2cf0a6705b6a3d09009e326daac98113c5b3e411f18233c92547e8b1596f83
+FROM eclipse-temurin:17.0.17_10-jdk@sha256:7bcd719950407380e7acd15b53b228673c82289a7d8c765cbdb0c89a75f17a12
 
 ENV JDK17=/opt/java/openjdk
 ENV JDK8=/opt/java/openjdk8
 
-COPY --from=eclipse-temurin:8u432-b06-jdk-focal@sha256:38fd5ae69787f9712ff9e7a520d75532586bad8319f20c5e30e73acb22a57ac2 /opt/java/openjdk $JDK8
+COPY --from=eclipse-temurin:8u472-b08-jdk@sha256:6c9af470aeafde76116d29f500e899454c42001b5d7f7385ae0aadebe851073e /opt/java/openjdk $JDK8
 
 LABEL org.opencontainers.image.authors="Mikhail Lopatkin <me@mlopatkin.name>"
 LABEL org.opencontainers.image.source="https://github.com/mlopatkin/andlogview"
@@ -15,6 +15,7 @@ LABEL org.opencontainers.image.source="https://github.com/mlopatkin/andlogview"
 # - rpm - to build RPM packages
 # - wget - to install GH (removed afterwards)
 # - gh (from GitHub repo) - to manage releases
+# - unzip - for Gradle GH action
 # The safe.directory is to prevent Git warnings when running in the github action environment.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
