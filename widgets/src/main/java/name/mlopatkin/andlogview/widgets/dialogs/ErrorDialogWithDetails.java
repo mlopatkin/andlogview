@@ -41,7 +41,7 @@ import javax.swing.JTextArea;
 /**
  * Shows an error dialog with an expandable stacktrace for exception.
  */
-public class ErrorDialogWithDetails extends OptionPaneBuilder<ErrorDialogWithDetails> {
+public class ErrorDialogWithDetails extends OptionPanes.OptionPaneBuilder<ErrorDialogWithDetails> {
     private @Nullable DetailsPanel detailsPanel;
 
     private ErrorDialogWithDetails(String title) {

@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.DialogResult;
-import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 import name.mlopatkin.andlogview.widgets.dialogs.ProgressDialog;
 
 import dagger.Binds;
@@ -160,7 +160,7 @@ public abstract class PreferencesUiModule {
 
         @Override
         public void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel) {
-            OptionPaneBuilder.error("Error")
+            OptionPanes.error("Error")
                     .message(message)
                     .addInitialOption("Try again", tryAgain)
                     .addOption("Install manually", installManually)
@@ -189,7 +189,7 @@ public abstract class PreferencesUiModule {
                     directory.getAbsolutePath()
             );
 
-            OptionPaneBuilder.warning("Directory Not Empty")
+            OptionPanes.warning("Directory Not Empty")
                     .message(message)
                     .addOption("Continue anyway", continueAnyway)
                     .addInitialOption("Choose another directory", chooseAnother)

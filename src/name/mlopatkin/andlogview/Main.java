@@ -19,7 +19,7 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
-import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import com.formdev.flatlaf.util.SystemInfo;
 
@@ -128,7 +128,7 @@ public class Main {
         });
 
         if (commandLine.isShouldShowUsage()) {
-            OptionPaneBuilder.error("Incorrect parameters")
+            OptionPanes.error("Incorrect parameters")
                     .message("<html>Usage:<br>java -jar logview.jar [FILENAME]</html>")
                     .show(window.mainFrameUi);
         }

@@ -28,7 +28,7 @@ import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.TextUtils;
-import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -136,7 +136,7 @@ public class FileOpener {
         }
         warningMessage.append("</html>");
 
-        OptionPaneBuilder.warning(TextUtils.plural(numProblems, "Import problem", numProblems + " import problems"))
+        OptionPanes.warning(TextUtils.plural(numProblems, "Import problem", numProblems + " import problems"))
                 .message(warningMessage.toString())
                 .show(dialogFactory.getOwner());
     }

@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.ui.device.AdbNotAvailableDialog;
-import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -51,7 +51,7 @@ public class ErrorDialogs {
      * @param disconnectReason the disconnect reason
      */
     public void showDeviceDisconnectedWarning(String disconnectReason) {
-        OptionPaneBuilder.warning("Warning")
+        OptionPanes.warning("Warning")
                 .message(disconnectReason)
                 .show(dialogFactory.getOwner());
     }

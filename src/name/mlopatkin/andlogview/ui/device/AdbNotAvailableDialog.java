@@ -19,7 +19,7 @@ package name.mlopatkin.andlogview.ui.device;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.preferences.ConfigurationDialogPresenter;
-import name.mlopatkin.andlogview.widgets.dialogs.OptionPaneBuilder;
+import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import dagger.Lazy;
 
@@ -48,7 +48,7 @@ public class AdbNotAvailableDialog {
     }
 
     public void show(String failureMessage, boolean isAutoStart) {
-        var dialog = OptionPaneBuilder.error("Error")
+        var dialog = OptionPanes.error("Error")
                 .message(failureMessage)
                 .addInitialOption(SETUP_ADB_OPTION, () -> configurationDialogPresenter.get().openDialog())
                 .addCancelOption(IGNORE_OPTION, () -> {});
