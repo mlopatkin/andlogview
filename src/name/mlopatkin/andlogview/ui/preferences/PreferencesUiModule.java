@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.DialogResult;
+import name.mlopatkin.andlogview.widgets.dialogs.ErrorDialogWithDetails;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 import name.mlopatkin.andlogview.widgets.dialogs.ProgressDialog;
 
@@ -159,9 +160,16 @@ public abstract class PreferencesUiModule {
         }
 
         @Override
-        public void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel) {
-            OptionPanes.error("Error")
+        public void show(
+                String message,
+                Throwable failure,
+                Runnable tryAgain,
+                Runnable installManually,
+                Runnable cancel
+        ) {
+            ErrorDialogWithDetails.error("Error")
                     .message(message)
+                    .details(failure)
                     .addInitialOption("Try again", tryAgain)
                     .addOption("Install manually", installManually)
                     .addCancelOption("Cancel", cancel)

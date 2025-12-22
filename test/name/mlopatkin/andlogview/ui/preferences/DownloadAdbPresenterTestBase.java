@@ -416,7 +416,13 @@ abstract class DownloadAdbPresenterTestBase {
         private boolean isShown;
 
         @Override
-        public void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel) {
+        public void show(
+                String message,
+                Throwable failure,
+                Runnable tryAgain,
+                Runnable installManually,
+                Runnable cancel
+        ) {
             this.message = Objects.requireNonNull(message);
             this.tryAgainAction = Objects.requireNonNull(tryAgain);
             this.installManuallyAction = Objects.requireNonNull(installManually);

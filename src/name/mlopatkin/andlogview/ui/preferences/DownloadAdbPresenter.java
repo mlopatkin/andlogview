@@ -58,7 +58,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
     }
 
     interface FailureView {
-        void show(String message, Runnable tryAgain, Runnable installManually, Runnable cancel);
+        void show(String message, Throwable failure, Runnable tryAgain, Runnable installManually, Runnable cancel);
     }
 
     interface DirectoryWarningView {
@@ -302,6 +302,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
         var failureResponse = new CompletableFuture<Result>();
         failureView.get().show(
                 "Download failed: " + failure.getMessage(),
+                failure,
                 () -> MyFutures.connect(installPackageWithState(pkg, true, installDir), failureResponse),
                 () -> failureResponse.complete(Result.manual()),
                 () -> failureResponse.cancel(false)
