@@ -142,10 +142,11 @@ public class Main {
     private static void uncaughtHandler(Thread thread, Throwable throwable) {
         try {
             logger.error("Uncaught exception in {}", thread.getName(), throwable);
+            // TODO(mlopatkin): the error dialog is shown from arbitrary thread here.
             ErrorDialogsHelper.showError(null,
                     "<html>Unhandled exception occured. Please collect log file at<br>"
                             + new File(SystemUtils.getJavaIoTmpDir(), "logview.log").getAbsolutePath()
-                            + "<br>and send it to the authors, then restart the program");
+                            + "<br>and send it to the authors, then restart the program", throwable);
         } catch (Throwable ex) { // OK to catch Throwable here
             // bad idea to log something if we already failed with logging
             // logger.error("Exception in exception handler", ex);
