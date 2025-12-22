@@ -31,6 +31,7 @@ import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
+import name.mlopatkin.andlogview.ui.UncaughtExceptionDialogHandler;
 import name.mlopatkin.andlogview.ui.about.AboutUi;
 import name.mlopatkin.andlogview.ui.bookmarks.BookmarkController;
 import name.mlopatkin.andlogview.ui.device.AdbOpener;
@@ -91,7 +92,6 @@ import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -333,12 +333,19 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         setupMainMenu(isDebug);
         setupSize();
 
+        var exceptionDialog = UncaughtExceptionDialogHandler.install(mainFrameUi);
+
         mainFrameUi.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 windowsPositionsPref.setFrameInfo(WindowsPositionsPref.Frame.MAIN,
                         new FrameLocation(mainFrameUi.getLocation().x, mainFrameUi.getLocation().y),
                         new FrameDimensions(mainFrameUi.getWidth(), mainFrameUi.getHeight()));
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                exceptionDialog.uninstall();
             }
         });
         mainFrameUi.pack();
@@ -615,7 +622,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         new AboutUi(mainFrameUi).setVisible(true);
     }
 
-    public static class Factory implements Provider<MainFrame> {
+    public static class Factory {
         private final AppGlobals globals;
         private final CommandLine commandLine;
 
@@ -625,10 +632,8 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
             this.commandLine = commandLine;
         }
 
-        @Override
         public MainFrame get() {
             return new MainFrame(globals, commandLine);
         }
     }
-
 }

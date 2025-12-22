@@ -16,7 +16,6 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
@@ -30,7 +29,6 @@ import java.awt.EventQueue;
 import java.io.File;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.swing.JOptionPane;
 
 public class Main {
@@ -41,7 +39,7 @@ public class Main {
     public static final String APP_NAME = "AndLogView";
 
     private static final String SHORT_APP_NAME = "logview";
-    private final Provider<MainFrame> mainFrameProvider;
+    private final MainFrame.Factory mainFrameProvider;
     private final CommandLine commandLine;
 
     public static File getConfigurationDir() {
@@ -53,6 +51,8 @@ public class Main {
         initProperties();
 
         Configuration.init();
+
+        // This is the log-only handler. Logging depends on configuration, though.
         Thread.setDefaultUncaughtExceptionHandler(Main::uncaughtHandler);
 
         var commandLine = CommandLine.fromArgs(args);
@@ -142,11 +142,6 @@ public class Main {
     private static void uncaughtHandler(Thread thread, Throwable throwable) {
         try {
             logger.error("Uncaught exception in {}", thread.getName(), throwable);
-            // TODO(mlopatkin): the error dialog is shown from arbitrary thread here.
-            ErrorDialogsHelper.showError(null,
-                    "<html>Unhandled exception occured. Please collect log file at<br>"
-                            + new File(SystemUtils.getJavaIoTmpDir(), "logview.log").getAbsolutePath()
-                            + "<br>and send it to the authors, then restart the program", throwable);
         } catch (Throwable ex) { // OK to catch Throwable here
             // bad idea to log something if we already failed with logging
             // logger.error("Exception in exception handler", ex);
