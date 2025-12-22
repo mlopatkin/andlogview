@@ -86,7 +86,7 @@
         uses: actions/setup-java@[=SETUP_JAVA_ACTION_VERSION]
         with:
           distribution: 'temurin'
-          java-version: '17.0.13'
+          java-version: '[=JDK_VERSION]'
       - <@gradle.setupGradle />
       - name: Build Windows Installers
         shell: cmd
@@ -108,7 +108,7 @@
         uses: actions/setup-java@[=SETUP_JAVA_ACTION_VERSION]
         with:
           distribution: 'temurin'
-          java-version: '17.0.13'
+          java-version: '[=JDK_VERSION]'
       - <@gradle.setupGradle />
       - name: Build macOS Installers
         shell: sh
