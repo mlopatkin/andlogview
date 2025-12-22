@@ -6,7 +6,7 @@ errorprone = "2.41.0"
 errorpronePlugin = "4.3.0"
 nullawayPlugin = "2.2.0"
 flatlaf = "3.5.4"
-guava = "33.4.8-jre"
+guava = "33.5.0-jre"
 mockito = "4.11.0"
 compileJdkVersion = "17"  # JDK version used for compilation
 # Language level used for compilation. Java 17 introduces sealed classes that may not be supported in Jabel, so we stick
