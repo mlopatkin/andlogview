@@ -19,19 +19,20 @@ package name.mlopatkin.andlogview.widgets.dialogs;
 import static name.mlopatkin.andlogview.widgets.MigConstraints.CC;
 import static name.mlopatkin.andlogview.widgets.MigConstraints.LC;
 
+import com.google.common.base.Preconditions;
+
 import net.miginfocom.swing.MigLayout;
 
 import org.jspecify.annotations.Nullable;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,107 +41,104 @@ import javax.swing.JTextArea;
 /**
  * Shows an error dialog with an expandable stacktrace for exception.
  */
-public class ErrorDialogWithDetails {
-    private final JDialog dialog;
-    private final JScrollPane stackTraceScrollPane;
-    private final JButton detailsButton;
+public class ErrorDialogWithDetails extends OptionPaneBuilder<ErrorDialogWithDetails> {
+    private @Nullable DetailsPanel detailsPanel;
 
-    public ErrorDialogWithDetails(@Nullable Component owner, String message, Throwable exception) {
-        this(owner, "Error", message, exception);
+    private ErrorDialogWithDetails(String title) {
+        super(title, JOptionPane.ERROR_MESSAGE);
     }
 
-    public ErrorDialogWithDetails(@Nullable Component owner, String title, String message, Throwable exception) {
-        // Create components first
-        var messagePanel = createMessagePanel(message);
-        this.detailsButton = createDetailsToggleButton();
-        this.stackTraceScrollPane = createStackTracePanel(exception);
-
-        // Create content panel with all components
-        var contentPanel = createContentPanel(messagePanel, detailsButton, stackTraceScrollPane);
-
-        var optionPane = new JOptionPane(
-                contentPanel,
-                JOptionPane.ERROR_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,
-                null,  // Use default error icon from L&F
-                new String[] {"OK"}
-        );
-
-        dialog = optionPane.createDialog(owner, title);
-        dialog.setResizable(true);
+    @Override
+    protected ErrorDialogWithDetails self() {
+        return this;
     }
 
-    public void show() {
-        dialog.setVisible(true);
+    @Override
+    protected void prepareDialog(JDialog dialog) {
+        super.prepareDialog(dialog);
+
+        if (detailsPanel != null) {
+            detailsPanel.dialog = dialog;
+        }
     }
 
-    private JPanel createContentPanel(
-            JPanel messagePanel,
-            JButton detailsButton,
-            JScrollPane stackTraceScrollPane
-    ) {
-        var contentPanel = new JPanel();
-        contentPanel.setLayout(new MigLayout(
-                LC().insets("0").wrapAfter(1).fillX().width("600lp")
-        ));
-
-        contentPanel.add(messagePanel, CC().growX().wrap());
-        contentPanel.add(detailsButton, CC().alignX("left").wrap());
-
-        contentPanel.add(stackTraceScrollPane,
-                CC().growX().growY().minHeight("0").maxHeight("300lp").hideMode(3).wrap()
-        );
-
-        return contentPanel;
+    public ErrorDialogWithDetails details(Throwable exception) {
+        Preconditions.checkState(detailsPanel == null, "Details is already set");
+        detailsPanel = new DetailsPanel(exception);
+        return extraMessage(detailsPanel.createContentPanel());
     }
 
-    private JPanel createMessagePanel(String message) {
-        var messagePanel = new JPanel(new BorderLayout());
-
-        var messageLabel = new JLabel(message);
-        messagePanel.add(messageLabel, BorderLayout.CENTER);
-
-        return messagePanel;
-    }
-
-    private JButton createDetailsToggleButton() {
-        var button = new JButton("Details >>");
-        button.addActionListener(e -> toggleDetails());
-        return button;
-    }
-
-    private JScrollPane createStackTracePanel(Throwable exception) {
-        var stackTraceArea = new JTextArea(formatStackTrace(exception));
-        stackTraceArea.setEditable(false);
-        stackTraceArea.setLineWrap(false);        // No wrapping for horizontal scroll
-        stackTraceArea.setWrapStyleWord(false);
-        stackTraceArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-
-        var scrollPane = new JScrollPane(stackTraceArea);
-        scrollPane.setVisible(false);   // Initially collapsed
-
-        return scrollPane;
-    }
-
-    private void toggleDetails() {
-        boolean isCurrentlyVisible = stackTraceScrollPane.isVisible();
-        boolean willBeVisible = !isCurrentlyVisible;
-
-        stackTraceScrollPane.setVisible(willBeVisible);
-        detailsButton.setText(willBeVisible ? "Details <<" : "Details >>");
-
-        dialog.pack();
-    }
-
-    private static String formatStackTrace(Throwable exception) {
-        var sw = new StringWriter();
-        var pw = new PrintWriter(sw);
-        exception.printStackTrace(pw);
-        return sw.toString();
+    public static ErrorDialogWithDetails error(String title) {
+        return new ErrorDialogWithDetails(title);
     }
 
     public static void show(@Nullable Component owner, String message, Throwable exception) {
-        var dialog = new ErrorDialogWithDetails(owner, message, exception);
-        dialog.show();
+        error("Error")
+                .message(message)
+                .details(exception)
+                .show(owner);
+    }
+
+    private static class DetailsPanel {
+        private final JScrollPane stackTraceScrollPane;
+        private final JButton detailsButton;
+
+        @Nullable JDialog dialog;
+
+        public DetailsPanel(Throwable exception) {
+            this.detailsButton = createDetailsToggleButton();
+            this.stackTraceScrollPane = createStackTracePanel(exception);
+        }
+
+        private JButton createDetailsToggleButton() {
+            var button = new JButton("Details >>");
+            button.addActionListener(e -> toggleDetails());
+            return button;
+        }
+
+        private JScrollPane createStackTracePanel(Throwable exception) {
+            var stackTraceArea = new JTextArea(formatStackTrace(exception));
+            stackTraceArea.setEditable(false);
+            stackTraceArea.setLineWrap(false);        // No wrapping for horizontal scroll
+            stackTraceArea.setWrapStyleWord(false);
+            stackTraceArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+
+            var scrollPane = new JScrollPane(stackTraceArea);
+            scrollPane.setVisible(false);   // Initially collapsed
+
+            return scrollPane;
+        }
+
+        private void toggleDetails() {
+            boolean isCurrentlyVisible = stackTraceScrollPane.isVisible();
+            boolean willBeVisible = !isCurrentlyVisible;
+
+            stackTraceScrollPane.setVisible(willBeVisible);
+            detailsButton.setText(willBeVisible ? "Details <<" : "Details >>");
+
+            Objects.requireNonNull(dialog).pack();
+        }
+
+        JPanel createContentPanel() {
+            var contentPanel = new JPanel();
+            contentPanel.setLayout(new MigLayout(
+                    LC().insets("0").wrapAfter(1).fillX().width("600lp")
+            ));
+
+            contentPanel.add(detailsButton, CC().alignX("left").wrap());
+
+            contentPanel.add(stackTraceScrollPane,
+                    CC().growX().growY().minHeight("0").maxHeight("600lp").hideMode(3).wrap()
+            );
+
+            return contentPanel;
+        }
+
+        private static String formatStackTrace(Throwable exception) {
+            var sw = new StringWriter();
+            var pw = new PrintWriter(sw);
+            exception.printStackTrace(pw);
+            return sw.toString();
+        }
     }
 }

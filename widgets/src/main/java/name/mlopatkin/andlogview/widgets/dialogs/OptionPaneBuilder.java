@@ -27,12 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
  * Builder class to set up complex {@link JOptionPane} with multiple custom actions.
  */
-public class OptionPaneBuilder {
+public abstract class OptionPaneBuilder<T extends OptionPaneBuilder<T>> {
     private final String title;
     private final int messageType;
 
@@ -42,9 +43,22 @@ public class OptionPaneBuilder {
     private @Nullable String initialOption;
     private @Nullable Runnable cancelAction;
 
-    private OptionPaneBuilder(String title, int messageType) {
+    protected OptionPaneBuilder(String title, int messageType) {
         this.title = title;
         this.messageType = messageType;
+    }
+
+    protected abstract T self();
+
+    private static class Impl extends OptionPaneBuilder<Impl> {
+        private Impl(String title, int messageType) {
+            super(title, messageType);
+        }
+
+        @Override
+        protected Impl self() {
+            return this;
+        }
     }
 
     /**
@@ -53,8 +67,8 @@ public class OptionPaneBuilder {
      * @param title the dialog title
      * @return a builder to further configure
      */
-    public static OptionPaneBuilder error(String title) {
-        return new OptionPaneBuilder(title, JOptionPane.ERROR_MESSAGE);
+    public static OptionPaneBuilder<?> error(String title) {
+        return new Impl(title, JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -63,8 +77,8 @@ public class OptionPaneBuilder {
      * @param title the dialog title
      * @return a builder to further configure
      */
-    public static OptionPaneBuilder warning(String title) {
-        return new OptionPaneBuilder(title, JOptionPane.WARNING_MESSAGE);
+    public static OptionPaneBuilder<?> warning(String title) {
+        return new Impl(title, JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -73,10 +87,10 @@ public class OptionPaneBuilder {
      * @param message the primary message
      * @return this
      */
-    public OptionPaneBuilder message(String message) {
+    public T message(String message) {
         Preconditions.checkState(messageElements.isEmpty(), "Single string message element can only be the first");
         messageElements.add(message);
-        return this;
+        return self();
     }
 
     /**
@@ -85,10 +99,10 @@ public class OptionPaneBuilder {
      * @param messageContent the primary message
      * @return this
      */
-    public OptionPaneBuilder messageContent(JComponent messageContent) {
+    public T messageContent(JComponent messageContent) {
         Preconditions.checkState(messageElements.isEmpty(), "Single message content element can only be the first");
         messageElements.add(messageContent);
-        return this;
+        return self();
     }
 
     /**
@@ -97,10 +111,10 @@ public class OptionPaneBuilder {
      * @param message the extra content
      * @return this
      */
-    public OptionPaneBuilder extraMessage(Object message) {
+    public T extraMessage(Object message) {
         Preconditions.checkState(!messageElements.isEmpty(), "Extra message element cannot be added before main");
         messageElements.add(message);
-        return this;
+        return self();
     }
 
     /**
@@ -111,11 +125,11 @@ public class OptionPaneBuilder {
      * @param action the action to run if the option is selected by the user
      * @return this
      */
-    public OptionPaneBuilder addInitialOption(String title, Runnable action) {
+    public T addInitialOption(String title, Runnable action) {
         Preconditions.checkState(initialOption == null, "Can't add another initial option");
         actions.put(title, action);
         initialOption = title;
-        return this;
+        return self();
     }
 
     /**
@@ -125,9 +139,9 @@ public class OptionPaneBuilder {
      * @param action the action to run if the option is selected by the user
      * @return this
      */
-    public OptionPaneBuilder addOption(String title, Runnable action) {
+    public T addOption(String title, Runnable action) {
         actions.put(title, action);
-        return this;
+        return self();
     }
 
     /**
@@ -138,11 +152,11 @@ public class OptionPaneBuilder {
      * @param action the action to run if the option is selected by the user or if the dialog is closed
      * @return this
      */
-    public OptionPaneBuilder addCancelOption(String title, Runnable action) {
+    public T addCancelOption(String title, Runnable action) {
         Preconditions.checkState(cancelAction == null, "Can't add another cancel action");
         actions.put(title, action);
         cancelAction = action;
-        return this;
+        return self();
     }
     /**
      * Adds cancel option and makes it initial.
@@ -153,7 +167,7 @@ public class OptionPaneBuilder {
      * @param action the action to run if the option is selected by the user or if the dialog is closed
      * @return this
      */
-    public OptionPaneBuilder addCancelOptionAsInitial(String title, Runnable action) {
+    public T addCancelOptionAsInitial(String title, Runnable action) {
         Preconditions.checkState(initialOption == null, "Can't add another initial option");
         initialOption = title;
         return addCancelOption(title, action);
@@ -175,6 +189,8 @@ public class OptionPaneBuilder {
         return actions.keySet().toArray(new String[0]);
     }
 
+    protected void prepareDialog(JDialog dialog) {}
+
     /**
      * Shows the dialog in the context of the parent frame. Blocks until the dialog is dismissed. This method will run
      * the selected action.
@@ -192,7 +208,9 @@ public class OptionPaneBuilder {
                 initialOption
         );
 
-        optionPane.createDialog(parent, title).setVisible(true);
+        var dialog = optionPane.createDialog(parent, title);
+        prepareDialog(dialog);
+        dialog.setVisible(true);
 
         var result = optionPane.getValue();
         if (result == null) {
