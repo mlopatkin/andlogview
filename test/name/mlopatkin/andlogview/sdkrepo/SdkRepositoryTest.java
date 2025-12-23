@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.sdkrepo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -33,6 +34,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -78,12 +81,13 @@ class SdkRepositoryTest {
         Files.write(targetDir.resolve("existing.txt"), "existing content".getBytes(StandardCharsets.UTF_8));
 
         var repo = createRepo();
-        try {
-            repo.downloadPackage(createTestPackage(), targetDir.toFile(), SdkRepository.InstallMode.FAIL_IF_NOT_EMPTY);
-            throw new AssertionError("Expected DirectoryNotEmptyException");
-        } catch (TargetDirectoryNotEmptyException e) {
-            assertThat(e.getDirectory()).isEqualTo(targetDir.toFile());
-        }
+        assertThatThrownBy(() ->
+                repo.downloadPackage(createTestPackage(), targetDir.toFile(),
+                        SdkRepository.InstallMode.FAIL_IF_NOT_EMPTY)
+        ).isInstanceOf(TargetDirectoryNotEmptyException.class)
+                .satisfies(
+                        e -> assertThat(((TargetDirectoryNotEmptyException) e).getDirectory())
+                                .isEqualTo(targetDir.toFile()));
     }
 
     @Test
@@ -138,6 +142,20 @@ class SdkRepositoryTest {
         }
 
         assertThat(targetDir.resolve("file.txt")).content(StandardCharsets.UTF_8).isEqualTo(ARCHIVED_CONTENT);
+    }
+
+    @ParameterizedTest
+    @EnumSource(SdkRepository.InstallMode.class)
+    void usingExistingFileAsTargetFails(SdkRepository.InstallMode mode) throws IOException {
+        // Create a non-empty directory
+        Files.createDirectories(targetDir);
+        var destination = Files.createFile(targetDir.resolve("destination"));
+
+        var repo = createRepo();
+        assertThatThrownBy(
+                () -> repo.downloadPackage(createTestPackage(), destination.toFile(), mode)
+        ).isInstanceOf(SdkException.class)
+                .hasMessageContaining("A file with that name already exists.");
     }
 
     private SdkRepository createRepo() {

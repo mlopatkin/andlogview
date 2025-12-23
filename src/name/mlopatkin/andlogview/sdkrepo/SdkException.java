@@ -16,6 +16,11 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
+import com.google.common.base.Throwables;
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -27,12 +32,38 @@ public class SdkException extends IOException {
         super(message);
     }
 
-    public SdkException(String message, Throwable cause) {
+    private SdkException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    @FormatMethod
+    public SdkException(@FormatString String format, Object... args) {
+        super(String.format(format, sanitizeArgs(args)));
     }
 
     @Override
     public String getMessage() {
         return Objects.requireNonNull(super.getMessage());
+    }
+
+    @FormatMethod
+    public static SdkException rethrow(
+            Throwable cause,
+            @FormatString String format,
+            Object... args
+    ) throws SdkException {
+        Throwables.throwIfUnchecked(cause);
+        Throwables.throwIfInstanceOf(cause, SdkException.class);
+
+        throw new SdkException(String.format(format, sanitizeArgs(args)), cause);
+    }
+
+    private static Object[] sanitizeArgs(Object[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof File) {
+                args[i] = ((File) args[i]).getAbsolutePath();
+            }
+        }
+        return args;
     }
 }

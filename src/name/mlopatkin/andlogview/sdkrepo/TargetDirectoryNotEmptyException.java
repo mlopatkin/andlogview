@@ -26,7 +26,7 @@ public class TargetDirectoryNotEmptyException extends SdkException {
     private final File directory;
 
     public TargetDirectoryNotEmptyException(File directory) {
-        super("Directory is not empty: " + directory.getAbsolutePath());
+        super("Directory `%s` is not empty.", directory);
         this.directory = directory;
     }
 

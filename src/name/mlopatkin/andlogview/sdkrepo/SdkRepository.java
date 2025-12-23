@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.Objects;
@@ -93,19 +94,17 @@ public class SdkRepository {
     }
 
     public void downloadPackage(SdkPackage sdkPackage, File targetDirectory, InstallMode mode) throws SdkException {
-        if (mode == InstallMode.FAIL_IF_NOT_EMPTY) {
-            if (targetDirectory.isDirectory()) {
-                String[] contents = targetDirectory.list();
-                if (contents != null && contents.length > 0) {
-                    throw new TargetDirectoryNotEmptyException(targetDirectory);
-                }
+        if (mode == InstallMode.FAIL_IF_NOT_EMPTY && targetDirectory.isDirectory()) {
+            String[] contents = targetDirectory.list();
+            if (contents != null && contents.length > 0) {
+                throw new TargetDirectoryNotEmptyException(targetDirectory);
             }
         }
 
         File tempFile = createTempDownloadTarget(targetDirectory);
 
         try (
-                var tempFileOutput = Files.newOutputStream(tempFile.toPath());
+                var tempFileOutput = ExceptionTranslatingOutputStream.open(tempFile);
                 var hashingStream = new HashingOutputStream(sdkPackage.getChecksumAlgorithm(), tempFileOutput)
         ) {
             httpClient.get(sdkPackage.getDownloadUrl()).downloadInto(hashingStream);
@@ -115,22 +114,19 @@ public class SdkRepository {
             var expectedChecksum = sdkPackage.getPackageChecksum();
             if (!Objects.equals(downloadedChecksum, expectedChecksum)) {
                 throw new SdkException(
-                        String.format(
-                                "The checksum of the downloaded package doesn't match. "
-                                + "The file may have been corrupted while downloading. "
-                                + "Expected `%s` but got `%s`.",
-                                expectedChecksum,
-                                downloadedChecksum
-                        ));
+                        "The checksum of the downloaded package doesn't match. "
+                        + "The file may have been corrupted while downloading. "
+                        + "Expected `%s` but got `%s`.",
+                        expectedChecksum,
+                        downloadedChecksum
+                );
             }
 
             extractZip(tempFile, targetDirectory, mode == InstallMode.OVERWRITE);
-        } catch (SdkException ex) {
-            throw ex;
         } catch (IOException ex) {
-            // Non-SdkException variant of IOException
-            throw new SdkException(
-                    "Failed to download package " + sdkPackage.getName() + ". See details for more information.", ex);
+            throw SdkException.rethrow(
+                    ex, "Failed to download package %s. See details for more information.", sdkPackage.getName()
+            );
         } finally {
             deleteSilently(tempFile);
         }
@@ -140,10 +136,15 @@ public class SdkRepository {
         try {
             Files.createDirectories(targetDirectory.toPath());
         } catch (FileAlreadyExistsException ex) {
-            throw new SdkException("Cannot create directory '" + targetDirectory + "'. "
-                                   + "A file with that name already exists.", ex);
+            throw SdkException.rethrow(
+                    ex, "Cannot create directory `%s`. A file with that name already exists.", targetDirectory
+            );
+        } catch (AccessDeniedException ex) {
+            throw SdkException.rethrow(
+                    ex, "Insufficient permissions to create directory `%s`.", targetDirectory
+            );
         } catch (IOException ex) {
-            throw new SdkException("Cannot create directory '" + targetDirectory + "'.", ex);
+            throw SdkException.rethrow(ex, "Cannot create directory `%s`.", targetDirectory);
         }
 
         try {
@@ -151,7 +152,9 @@ public class SdkRepository {
             tempFile.deleteOnExit();
             return tempFile;
         } catch (IOException ex) {
-            throw new SdkException("Cannot download file into '" + targetDirectory + "'", ex);
+            throw SdkException.rethrow(
+                    ex, "Cannot save the package. Is the target directory `%s` writable?", targetDirectory
+            );
         }
     }
 
@@ -163,7 +166,13 @@ public class SdkRepository {
         }
     }
 
-    private void extractZip(File zipFile, File targetDirectory, boolean overwriteExisting) throws IOException {
-        new SafeZipFile(zipFile.toPath()).extractTo(targetDirectory.toPath(), overwriteExisting);
+    private void extractZip(File zipFile, File targetDirectory, boolean overwriteExisting) throws SdkException {
+        try {
+            new SafeZipFile(zipFile.toPath()).extractTo(targetDirectory.toPath(), overwriteExisting);
+        } catch (IOException ex) {
+            throw SdkException.rethrow(
+                    ex, "Failed to extract downloaded package zip at `%s` into `%s`.", zipFile, targetDirectory
+            );
+        }
     }
 }
