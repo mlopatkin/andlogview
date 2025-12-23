@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.net.URI;
 
 import javax.inject.Inject;
@@ -24,10 +26,24 @@ import javax.inject.Inject;
  * A factory for the HTTP resources.
  */
 class HttpClient {
+    private static final int CONNECT_TIMEOUT_MS = 10_000;
+    private static final int READ_TIMEOUT_MS = 10_000;
+
+    private final int connectTimeout;
+    private final int readTimeout;
+
     @Inject
-    public HttpClient() {}
+    public HttpClient() {
+        this(CONNECT_TIMEOUT_MS, READ_TIMEOUT_MS);
+    }
+
+    @VisibleForTesting
+    HttpClient(int connectTimeout, int readTimeout) {
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
+    }
 
     public HttpResource get(URI uri) {
-        return new HttpResource(uri);
+        return new HttpResource(uri, connectTimeout, readTimeout);
     }
 }

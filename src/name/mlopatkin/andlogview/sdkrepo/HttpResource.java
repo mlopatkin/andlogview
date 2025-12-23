@@ -45,17 +45,18 @@ class HttpResource {
         void accept(T argument) throws IOException;
     }
 
-    private static final int CONNECT_TIMEOUT_MS = 10_000;
-    private static final int READ_TIMEOUT_MS = 10_000;
-
     private final URI uri;
+    private final int connectTimeout;
+    private final int readTimeout;
 
-    HttpResource(URI uri) {
+    HttpResource(URI uri, int connectTimeout, int readTimeout) {
         Preconditions.checkArgument(
                 "http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()),
                 "Only support http and https URIs, got %s", uri
         );
         this.uri = uri;
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
     }
 
     public ByteSource download(long sizeLimit) throws IOException {
@@ -99,8 +100,8 @@ class HttpResource {
         var connection = (HttpURLConnection) uri.toURL().openConnection();
         connection.setRequestMethod("GET");
         connection.setInstanceFollowRedirects(true);
-        connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
-        connection.setReadTimeout(READ_TIMEOUT_MS);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
 
         log.info("Initiating HTTP request to {}", uri);
         try {

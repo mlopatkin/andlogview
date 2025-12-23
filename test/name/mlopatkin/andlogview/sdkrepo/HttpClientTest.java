@@ -25,6 +25,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static com.google.common.net.HttpHeaders.LOCATION;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.guava.api.Assertions.assertThat;
 
 import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
@@ -39,6 +40,7 @@ import com.google.common.io.ByteSource;
 import com.google.common.net.MediaType;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -173,6 +175,42 @@ class HttpClientTest {
         assertThat(downloadedBytes.toByteArray()).isEqualTo(testData);
     }
 
+    @ParameterizedTest
+    @Timeout(3)
+    @EnumSource(DownloadMode.class)
+    void canHandleConnectionTimeouts(DownloadMode mode) throws Exception {
+        // Use small connect timeout to run test faster. Read timeout is longer than test timeout to fail the test
+        // if something goes wrong.
+        var smallConnectTimeoutClient = new HttpClient(100, 5000);
+        var timeoutUri = URI.create("http://192.168.255.255:12345/file.txt");
+
+        assertThatThrownBy(
+                () -> mode.download(smallConnectTimeoutClient.get(timeoutUri))
+        ).isInstanceOf(IOException.class);
+    }
+
+    @ParameterizedTest
+    @Timeout(3)
+    @EnumSource(DownloadMode.class)
+    void canHandleReadTimeouts(DownloadMode mode) {
+        // Use small read timeout to run test faster. Connect timeout is longer than test timeout to fail the test
+        // if something goes wrong.
+        var smallReadTimeoutClient = new HttpClient(5000, 100);
+
+        stubFor(
+                get("/slow-response").willReturn(aResponse()
+                        .withStatus(HTTP_OK)
+                        .withHeader(CONTENT_TYPE, TEXT_PLAIN)
+                        .withFixedDelay(500) // Delay longer than the read timeout
+                        .withBody("This response will timeout")
+                )
+        );
+
+        assertThatThrownBy(
+                () -> mode.download(smallReadTimeoutClient.get(uri("/slow-response")))
+        ).isInstanceOf(IOException.class);
+    }
+
     private static URI uri(String path) {
         return URI.create(wm.url(path));
     }
@@ -214,5 +252,9 @@ class HttpClientTest {
 
         abstract <T extends OutputStream> T download(HttpResource resource, int sizeLimit, T destination)
                 throws IOException;
+
+        void download(HttpResource resource) throws IOException {
+            download(resource, Integer.MAX_VALUE, new ByteArrayOutputStream());
+        }
     }
 }
