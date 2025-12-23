@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.widgets.dialogs.ErrorDialogWithDetails;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import com.google.errorprone.annotations.FormatMethod;
@@ -45,7 +44,7 @@ public class ErrorDialogsHelper {
     }
 
     public static void showError(@Nullable Component owner, String message, Throwable failure) {
-        ErrorDialogWithDetails.error("Error")
+        OptionPanes.error("Error")
                 .message(message)
                 .details(failure)
                 .show(owner);
