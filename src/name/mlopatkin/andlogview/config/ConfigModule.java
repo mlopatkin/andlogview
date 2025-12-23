@@ -34,13 +34,13 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Module
-public class ConfigModule {
+public abstract class ConfigModule {
     static final String CONFIG_THREAD_POOL = "config_thread_pool";
 
     @Provides
     @Singleton
     @Named(CONFIG_THREAD_POOL)
-    ExecutorService getConfigIoThreadPool() {
+    static ExecutorService getConfigIoThreadPool() {
         return Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
                 .setThreadFactory(Threads.withName("StorageFileWorker"))
                 .setDaemon(true)

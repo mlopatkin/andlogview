@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import dagger.Module;
@@ -25,26 +26,19 @@ import dagger.Provides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.inject.Singleton;
 
 @Module
-public class GlobalsModule {
+public abstract class GlobalsModule {
     private static final Logger logger = LoggerFactory.getLogger(GlobalsModule.class);
-
-    private final File appConfigDir;
-
-    public GlobalsModule(File appConfigDir) {
-        this.appConfigDir = appConfigDir;
-    }
 
     @Provides
     @Singleton
-    ConfigStorage getConfigStorage(ConfigStorage.Factory factory) {
+    static ConfigStorage getConfigStorage(ConfigurationLocation configurationLoc, ConfigStorage.Factory factory) {
         try {
-            return factory.createForFile(new File(appConfigDir, "logview.json"));
+            return factory.createForFile(configurationLoc.getConfigurationFile());
         } catch (IOException e) {
             logger.error("Cannot start at all", e);
             System.exit(-1);
@@ -54,7 +48,7 @@ public class GlobalsModule {
     }
 
     @Provides
-    SystemPathResolver getSystemPathResolver() {
+    static SystemPathResolver getSystemPathResolver() {
         return SystemPathResolver.getPathResolver();
     }
 }

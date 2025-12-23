@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
+import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.sdkrepo.SdkException;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
@@ -120,6 +121,7 @@ abstract class DownloadAdbPresenterTestBase {
 
     protected DownloadAdbPresenter createPresenter() {
         return new DownloadAdbPresenter(
+                new ConfigurationLocation(),
                 sdkRepository,
                 this::newInitView,
                 this::newInstallView,

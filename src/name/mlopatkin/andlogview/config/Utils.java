@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview.config;
 
-import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
 import name.mlopatkin.andlogview.utils.properties.Parser;
 
@@ -52,15 +51,16 @@ public class Utils {
         }
     };
 
-    private static final String CONFIG_FILE_NAME = "logview.properties";
-
-    static void saveConfiguration(name.mlopatkin.andlogview.utils.properties.Configuration cfg) {
+    static void saveConfiguration(
+            File cfgFile,
+            name.mlopatkin.andlogview.utils.properties.Configuration cfg
+    ) {
         try {
-            File cfgDir = Main.getConfigurationDir();
+            File cfgDir = cfgFile.getParentFile();
             if (!cfgDir.exists()) {
                 Files.createDirectories(cfgDir.toPath());
             }
-            File cfgFile = new File(cfgDir, CONFIG_FILE_NAME);
+
             try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile))) {
                 cfg.save(output, "Do not modify while Logviewer is running");
             }
@@ -69,13 +69,10 @@ public class Utils {
         }
     }
 
-    public static void loadConfiguration(name.mlopatkin.andlogview.utils.properties.Configuration config)
-            throws IllegalConfigurationException {
-        File cfgDir = Main.getConfigurationDir();
-        if (!cfgDir.exists()) {
-            return;
-        }
-        File cfgFile = new File(cfgDir, CONFIG_FILE_NAME);
+    public static void loadConfiguration(
+            File cfgFile,
+            name.mlopatkin.andlogview.utils.properties.Configuration config
+    ) throws IllegalConfigurationException {
         if (!cfgFile.exists()) {
             return;
         }

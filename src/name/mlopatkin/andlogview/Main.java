@@ -16,9 +16,9 @@
 package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.Try;
-import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import com.formdev.flatlaf.util.SystemInfo;
@@ -38,13 +38,8 @@ public class Main {
 
     public static final String APP_NAME = "AndLogView";
 
-    private static final String SHORT_APP_NAME = "logview";
     private final MainFrame.Factory mainFrameProvider;
     private final CommandLine commandLine;
-
-    public static File getConfigurationDir() {
-        return PropertyUtils.getAppConfigDir(SHORT_APP_NAME);
-    }
 
     public static void main(String[] args) {
         // Initializing the configuration may init AWT too.
@@ -58,17 +53,16 @@ public class Main {
         var commandLine = CommandLine.fromArgs(args);
         boolean isDebugMode = commandLine.isDebug();
 
+        var configurationLoc = new ConfigurationLocation();
+
         Try<?> configurationState = Try.ofCallable(() -> {
-            Configuration.load(isDebugMode);
+            Configuration.load(configurationLoc.getLegacyConfigurationFile(), isDebugMode);
             return true;
         });
 
         Theme theme = initLaf();
 
-        AppGlobals globals = DaggerAppGlobals.factory().create(
-                new GlobalsModule(getConfigurationDir()),
-                commandLine,
-                theme);
+        AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, theme);
 
         logger.info("{} {}", APP_NAME, getVersionString());
         logger.info("Revision {}", BuildInfo.REVISION);

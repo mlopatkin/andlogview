@@ -20,8 +20,8 @@ import static name.mlopatkin.andlogview.utils.MyFutures.cancellationTransformer;
 import static name.mlopatkin.andlogview.utils.MyFutures.toCancellable;
 
 import name.mlopatkin.andlogview.AppExecutors;
-import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.sdkrepo.ManifestParseException;
 import name.mlopatkin.andlogview.sdkrepo.SdkException;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
@@ -144,6 +144,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
     // Since the dawn of time, ADB lives there
     @VisibleForTesting
     static final String PLATFORM_TOOLS_PACKAGE = "platform-tools";
+    private final ConfigurationLocation configurationLocation;
     private final SdkRepository repository;
     private final Provider<SdkInitView> sdkInitView;
     private final Provider<InstallView> installView;
@@ -155,6 +156,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
 
     @Inject
     DownloadAdbPresenter(
+            ConfigurationLocation configurationLocation,
             SdkRepository repository,
             Provider<SdkInitView> sdkInitView,
             Provider<InstallView> installView,
@@ -164,6 +166,7 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor networkExecutor
     ) {
+        this.configurationLocation = configurationLocation;
         this.repository = repository;
         this.sdkInitView = sdkInitView;
         this.installView = installView;
@@ -240,7 +243,13 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      * @return a non-cancellable future with the result of the installation
      */
     private CompletableFuture<Result> installPackage(SdkPackage pkg) {
-        return installPackageWithState(pkg, false, new File(Main.getConfigurationDir(), "android-sdk"));
+        // TODO(mlopatkin) Using the default configuration dir for SDK is not great, as on Windows it is Roaming.
+        //  It would be better to store it in Local or LocalLow.
+        return installPackageWithState(
+                pkg,
+                false,
+                new File(configurationLocation.getConfigurationDir(), "android-sdk")
+        );
     }
 
     /**

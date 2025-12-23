@@ -22,6 +22,7 @@ import static name.mlopatkin.andlogview.AppExecutors.UI_EXECUTOR;
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.config.ConfigModule;
 import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
@@ -86,7 +87,7 @@ public interface AppGlobals {
     @Component.Factory
     interface Factory {
         AppGlobals create(
-                GlobalsModule module,
+                @BindsInstance ConfigurationLocation configurationLocation,
                 @BindsInstance CommandLine cmdline,
                 @BindsInstance Theme selectedTheme);
     }

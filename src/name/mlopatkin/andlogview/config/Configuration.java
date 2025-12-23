@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -176,11 +177,11 @@ public class Configuration {
         Logging.setUpDefault();
     }
 
-    public static void load(boolean debug) throws IllegalConfigurationException {
+    public static void load(File cfgFile, boolean debug) throws IllegalConfigurationException {
         // save on exit
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                Configuration.save();
+                Configuration.save(cfgFile);
             } catch (Throwable e) { // OK to catch Throwable here
                 // exception in shutdown hook is bad
                 logger.error("Exception while saving configuration", e);
@@ -193,11 +194,11 @@ public class Configuration {
         } else {
             Logging.loadNormal();
         }
-        Utils.loadConfiguration(getConfig());
+        Utils.loadConfiguration(cfgFile, getConfig());
     }
 
-    public static void save() {
-        Utils.saveConfiguration(getConfig());
+    public static void save(File cfgFile) {
+        Utils.saveConfiguration(cfgFile, getConfig());
     }
 
     private static name.mlopatkin.andlogview.utils.properties.Configuration getConfig() {
