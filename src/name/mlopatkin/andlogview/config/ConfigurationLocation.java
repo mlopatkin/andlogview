@@ -28,9 +28,15 @@ import javax.inject.Inject;
  * {@code %APPDATA%/logview/} and on Linux and macOS in {@code $HOME/.logview/}.
  */
 public class ConfigurationLocation {
+    // Name of the system property that overrides the default configuration directory
+    private static final String CONFIG_DIR_OVERRIDE_KEY = "name.mlopatkin.andlogview.config.dir";
+    private final File configurationDir;
 
     @Inject
-    public ConfigurationLocation() {}
+    public ConfigurationLocation() {
+        var override = System.getProperty(CONFIG_DIR_OVERRIDE_KEY);
+        configurationDir = override != null ? new File(override) : getDefaultConfigurationDir();
+    }
 
     /**
      * Returns the configuration directory.
@@ -38,8 +44,7 @@ public class ConfigurationLocation {
      * @return the configuration directory
      */
     public File getConfigurationDir() {
-        String appConfigDirName = SystemUtils.IS_OS_WINDOWS ? "logview" : ".logview";
-        return new File(getSystemConfigDir(), appConfigDirName);
+        return configurationDir;
     }
 
     /**
@@ -58,6 +63,11 @@ public class ConfigurationLocation {
      */
     public File getConfigurationFile() {
         return new File(getConfigurationDir(), "logview.json");
+    }
+
+    private static File getDefaultConfigurationDir() {
+        String appConfigDirName = SystemUtils.IS_OS_WINDOWS ? "logview" : ".logview";
+        return new File(getSystemConfigDir(), appConfigDirName);
     }
 
     private static File getSystemConfigDir() {
