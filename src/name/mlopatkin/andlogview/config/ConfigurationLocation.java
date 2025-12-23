@@ -16,9 +16,10 @@
 
 package name.mlopatkin.andlogview.config;
 
-import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
+import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
 import java.io.File;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import javax.inject.Inject;
  * {@code %APPDATA%/logview/} and on Linux and macOS in {@code $HOME/.logview/}.
  */
 public class ConfigurationLocation {
+
     @Inject
     public ConfigurationLocation() {}
 
@@ -36,7 +38,8 @@ public class ConfigurationLocation {
      * @return the configuration directory
      */
     public File getConfigurationDir() {
-        return PropertyUtils.getAppConfigDir("logview");
+        String appConfigDirName = SystemUtils.IS_OS_WINDOWS ? "logview" : ".logview";
+        return new File(getSystemConfigDir(), appConfigDirName);
     }
 
     /**
@@ -55,5 +58,10 @@ public class ConfigurationLocation {
      */
     public File getConfigurationFile() {
         return new File(getConfigurationDir(), "logview.json");
+    }
+
+    private static File getSystemConfigDir() {
+        String systemConfigDirPath = SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : SystemUtils.USER_HOME;
+        return new File(Objects.requireNonNull(systemConfigDirPath, "Can't find user home"));
     }
 }
