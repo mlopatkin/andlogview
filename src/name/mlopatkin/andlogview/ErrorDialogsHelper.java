@@ -45,6 +45,9 @@ public class ErrorDialogsHelper {
     }
 
     public static void showError(@Nullable Component owner, String message, Throwable failure) {
-        ErrorDialogWithDetails.show(owner, message, failure);
+        ErrorDialogWithDetails.error("Error")
+                .message(message)
+                .details(failure)
+                .show(owner);
     }
 }

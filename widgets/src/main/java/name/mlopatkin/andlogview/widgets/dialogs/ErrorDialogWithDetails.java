@@ -72,13 +72,6 @@ public class ErrorDialogWithDetails extends OptionPanes.OptionPaneBuilder<ErrorD
         return new ErrorDialogWithDetails(title);
     }
 
-    public static void show(@Nullable Component owner, String message, Throwable exception) {
-        error("Error")
-                .message(message)
-                .details(exception)
-                .show(owner);
-    }
-
     private static class DetailsPanel {
         private final JScrollPane stackTraceScrollPane;
         private final JButton detailsButton;
