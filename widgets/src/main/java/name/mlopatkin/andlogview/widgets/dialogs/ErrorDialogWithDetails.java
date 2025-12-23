@@ -122,10 +122,10 @@ public class ErrorDialogWithDetails extends OptionPanes.OptionPaneBuilder<ErrorD
         JPanel createContentPanel() {
             var contentPanel = new JPanel();
             contentPanel.setLayout(new MigLayout(
-                    LC().insets("0").wrapAfter(1).fillX().width("600lp")
+                    LC().insets("panel").wrapAfter(1).fillX().width("600lp")
             ));
 
-            contentPanel.add(detailsButton, CC().alignX("left").wrap());
+            contentPanel.add(detailsButton, CC().alignX("left").wrap("related"));
 
             contentPanel.add(stackTraceScrollPane,
                     CC().growX().growY().minHeight("0").maxHeight("600lp").hideMode(3).wrap()
