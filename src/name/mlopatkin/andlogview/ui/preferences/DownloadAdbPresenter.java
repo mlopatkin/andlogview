@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.sdkrepo.ManifestParseException;
+import name.mlopatkin.andlogview.sdkrepo.SdkException;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.sdkrepo.TargetDirectoryNotEmptyException;
@@ -300,14 +301,35 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
 
         // Handle other errors with existing FailureView
         var failureResponse = new CompletableFuture<Result>();
+
         failureView.get().show(
-                "Download failed: " + failure.getMessage(),
+                formatFailureMessage(failure),
                 failure,
                 () -> MyFutures.connect(installPackageWithState(pkg, true, installDir), failureResponse),
                 () -> failureResponse.complete(Result.manual()),
                 () -> failureResponse.cancel(false)
         );
         return failureResponse;
+    }
+
+    private static String formatFailureMessage(Throwable failure) {
+        if (failure instanceof SdkException sdkException) {
+            return sdkException.getMessage();
+        }
+
+        var message = failure.getMessage();
+        if (message == null || message.isEmpty()) {
+            return String.format(
+                    "Unexpected exception %s when downloading the package.",
+                    failure.getClass().getSimpleName()
+            );
+        }
+
+        return String.format(
+                "Unexpected exception %s when downloading the package: %s.",
+                failure.getClass().getSimpleName(),
+                message.endsWith(".") ? message.substring(0, message.length() - 1) : message
+        );
     }
 
     /**

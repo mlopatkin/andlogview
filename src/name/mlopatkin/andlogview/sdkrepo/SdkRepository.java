@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.Objects;
 import java.util.Optional;
@@ -91,8 +92,7 @@ public class SdkRepository {
         return SdkPackage.TargetOs.LINUX;
     }
 
-    public void downloadPackage(SdkPackage sdkPackage, File targetDirectory, InstallMode mode) throws IOException {
-        // Check if directory is not empty in FAIL_IF_NOT_EMPTY mode
+    public void downloadPackage(SdkPackage sdkPackage, File targetDirectory, InstallMode mode) throws SdkException {
         if (mode == InstallMode.FAIL_IF_NOT_EMPTY) {
             if (targetDirectory.isDirectory()) {
                 String[] contents = targetDirectory.list();
@@ -102,10 +102,8 @@ public class SdkRepository {
             }
         }
 
-        Files.createDirectories(targetDirectory.toPath());
+        File tempFile = createTempDownloadTarget(targetDirectory);
 
-        var tempFile = File.createTempFile("adb", ".download", targetDirectory);
-        tempFile.deleteOnExit();
         try (
                 var tempFileOutput = Files.newOutputStream(tempFile.toPath());
                 var hashingStream = new HashingOutputStream(sdkPackage.getChecksumAlgorithm(), tempFileOutput)
@@ -116,17 +114,44 @@ public class SdkRepository {
             var downloadedChecksum = hashingStream.hash();
             var expectedChecksum = sdkPackage.getPackageChecksum();
             if (!Objects.equals(downloadedChecksum, expectedChecksum)) {
-                throw new IOException(
+                throw new SdkException(
                         String.format(
-                                "Checksum mismatch, wanted `%s` but got `%s`",
+                                "The checksum of the downloaded package doesn't match. "
+                                + "The file may have been corrupted while downloading. "
+                                + "Expected `%s` but got `%s`.",
                                 expectedChecksum,
                                 downloadedChecksum
                         ));
             }
 
             extractZip(tempFile, targetDirectory, mode == InstallMode.OVERWRITE);
+        } catch (SdkException ex) {
+            throw ex;
+        } catch (IOException ex) {
+            // Non-SdkException variant of IOException
+            throw new SdkException(
+                    "Failed to download package " + sdkPackage.getName() + ". See details for more information.", ex);
         } finally {
             deleteSilently(tempFile);
+        }
+    }
+
+    private File createTempDownloadTarget(File targetDirectory) throws SdkException {
+        try {
+            Files.createDirectories(targetDirectory.toPath());
+        } catch (FileAlreadyExistsException ex) {
+            throw new SdkException("Cannot create directory '" + targetDirectory + "'. "
+                                   + "A file with that name already exists.", ex);
+        } catch (IOException ex) {
+            throw new SdkException("Cannot create directory '" + targetDirectory + "'.", ex);
+        }
+
+        try {
+            var tempFile = File.createTempFile("adb", ".download", targetDirectory);
+            tempFile.deleteOnExit();
+            return tempFile;
+        } catch (IOException ex) {
+            throw new SdkException("Cannot download file into '" + targetDirectory + "'", ex);
         }
     }
 

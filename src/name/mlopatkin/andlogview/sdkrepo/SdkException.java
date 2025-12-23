@@ -16,21 +16,23 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
-import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
- * Exception thrown when attempting to install SDK into a non-empty directory
- * in {@link SdkRepository.InstallMode#FAIL_IF_NOT_EMPTY} mode.
+ * Base class for exceptions reported while managing SDKs. These exceptions always carry user-readable failure messages.
  */
-public class TargetDirectoryNotEmptyException extends SdkException {
-    private final File directory;
-
-    public TargetDirectoryNotEmptyException(File directory) {
-        super("Directory is not empty: " + directory.getAbsolutePath());
-        this.directory = directory;
+public class SdkException extends IOException {
+    public SdkException(String message) {
+        super(message);
     }
 
-    public File getDirectory() {
-        return directory;
+    public SdkException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    @Override
+    public String getMessage() {
+        return Objects.requireNonNull(super.getMessage());
     }
 }

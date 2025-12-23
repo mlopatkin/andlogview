@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
+import name.mlopatkin.andlogview.sdkrepo.SdkException;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.sdkrepo.TestSdkPackage;
@@ -239,7 +240,7 @@ abstract class DownloadAdbPresenterTestBase {
     }
 
     protected void withSdkPackageDownloadFailing() throws IOException {
-        doThrow(IOException.class).when(sdkRepository).downloadPackage(any(), any(), any());
+        doThrow(new SdkException("Failure")).when(sdkRepository).downloadPackage(any(), any(), any());
     }
 
     protected void withSdkPackageDownloadSucceeding() throws IOException {

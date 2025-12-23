@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 
+import name.mlopatkin.andlogview.sdkrepo.SdkException;
 import name.mlopatkin.andlogview.sdkrepo.SdkRepository;
 import name.mlopatkin.andlogview.sdkrepo.TargetDirectoryNotEmptyException;
 
@@ -160,7 +161,7 @@ class DownloadAdbPresenterDirectoryWarningTest extends DownloadAdbPresenterTestB
     }
 
     private void withPackageOverwriteFailing(File nonEmptyDir) throws IOException {
-        doThrow(new IOException("Disk full"))
+        doThrow(new SdkException("Disk full"))
                 .when(sdkRepository)
                 .downloadPackage(any(), eq(nonEmptyDir), eq(SdkRepository.InstallMode.OVERWRITE));
     }
