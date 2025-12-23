@@ -26,7 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -34,6 +37,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLException;
 
 /**
  * The main entry point into downloading the repository components. It connects to the web service, downloads the XML
@@ -103,32 +107,68 @@ public class SdkRepository {
 
         File tempFile = createTempDownloadTarget(targetDirectory);
 
+        try {
+            downloadWithChecksumVerification(sdkPackage, tempFile);
+            extractZip(tempFile, targetDirectory, mode == InstallMode.OVERWRITE);
+        } finally {
+            deleteSilently(tempFile);
+        }
+    }
+
+    private void downloadWithChecksumVerification(SdkPackage sdkPackage, File destination) throws SdkException {
         try (
-                var tempFileOutput = ExceptionTranslatingOutputStream.open(tempFile);
+                var tempFileOutput = ExceptionTranslatingOutputStream.open(destination);
                 var hashingStream = new HashingOutputStream(sdkPackage.getChecksumAlgorithm(), tempFileOutput)
         ) {
-            httpClient.get(sdkPackage.getDownloadUrl()).downloadInto(hashingStream);
+            downloadPackageInto(sdkPackage, hashingStream);
             hashingStream.flush();
 
             var downloadedChecksum = hashingStream.hash();
             var expectedChecksum = sdkPackage.getPackageChecksum();
             if (!Objects.equals(downloadedChecksum, expectedChecksum)) {
-                throw new SdkException(
+                // Don't show the actual checksums to the user in the primary message.
+                throw SdkException.rethrow(
+                        new IOException(String.format(
+                                "Checksum mismatch: expected `%s`, got `%s`", expectedChecksum, downloadedChecksum
+                        )),
                         "The checksum of the downloaded package doesn't match. "
-                        + "The file may have been corrupted while downloading. "
-                        + "Expected `%s` but got `%s`.",
-                        expectedChecksum,
-                        downloadedChecksum
+                        + "The file may have been corrupted while downloading."
                 );
             }
-
-            extractZip(tempFile, targetDirectory, mode == InstallMode.OVERWRITE);
         } catch (IOException ex) {
             throw SdkException.rethrow(
-                    ex, "Failed to download package %s. See details for more information.", sdkPackage.getName()
+                    ex,
+                    "Unexpected failure when downloading package %s. Consider reporting this issue. "
+                    + "See details for more information.",
+                    sdkPackage.getName()
             );
-        } finally {
-            deleteSilently(tempFile);
+        }
+    }
+
+    private void downloadPackageInto(SdkPackage sdkPackage, HashingOutputStream hashingStream) throws SdkException {
+        try {
+            httpClient.get(sdkPackage.getDownloadUrl()).downloadInto(hashingStream);
+        } catch (UnknownHostException e) {
+            throw SdkException.rethrow(e, "Cannot resolve host `%s`.", sdkPackage.getDownloadUrl().getHost());
+        } catch (SocketTimeoutException e) {
+            throw SdkException.rethrow(
+                    e,
+                    "Timed out while downloading package `%s`. A firewall may be blocking connections to `%s`.",
+                    sdkPackage.getName(),
+                    sdkPackage.getDownloadUrl().getHost()
+            );
+        } catch (SocketException e) {
+            throw SdkException.rethrow(e, "Cannot connect to host `%s`.", sdkPackage.getDownloadUrl().getHost());
+        } catch (SSLException e) {
+            throw SdkException.rethrow(
+                    e,
+                    "Secure connection failure when connecting to `%s`. "
+                    + "Your connection may be intercepted or Java SSL configuration may be invalid.",
+                    sdkPackage.getDownloadUrl().getHost()
+            );
+        } catch (IOException e) {
+            throw SdkException.rethrow(e, "Failed to download package `%s`. See details for more information.",
+                    sdkPackage.getName());
         }
     }
 

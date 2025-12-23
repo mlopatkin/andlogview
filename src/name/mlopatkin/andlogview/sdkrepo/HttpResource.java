@@ -106,11 +106,7 @@ class HttpResource {
         log.info("Initiating HTTP request to {}", uri);
         try {
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException(String.format(
-                        "Server returned %d %s",
-                        connection.getResponseCode(),
-                        connection.getResponseMessage()
-                ));
+                throw translateErrorCode(connection.getResponseCode(), connection.getResponseMessage());
             }
 
             log.info("Server returned {} {}", connection.getResponseCode(), connection.getResponseMessage());
@@ -120,5 +116,17 @@ class HttpResource {
             connection.disconnect();
             log.info("HTTP request to {} completed", uri);
         }
+    }
+
+    private IOException translateErrorCode(int responseCode, String responseMessage) {
+        var internalException = new IOException(String.format(
+                "HTTP Error: %d %s", responseCode, responseMessage
+        ));
+        if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            return SdkException.of(
+                    internalException, "Requested URL `%s` was not found on the server.", uri.toASCIIString()
+            );
+        }
+        return SdkException.of(internalException, "Server `%s` reports an HTTP error %d.", uri.getHost(), responseCode);
     }
 }

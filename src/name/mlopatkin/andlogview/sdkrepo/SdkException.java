@@ -47,6 +47,11 @@ public class SdkException extends IOException {
     }
 
     @FormatMethod
+    public static SdkException of(Throwable cause, @FormatString String format, Object... args) {
+        return new SdkException(String.format(format, sanitizeArgs(args)), cause);
+    }
+
+    @FormatMethod
     public static SdkException rethrow(
             Throwable cause,
             @FormatString String format,
