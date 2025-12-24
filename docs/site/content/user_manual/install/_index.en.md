@@ -74,6 +74,32 @@ on your choices during installation.
 [gh_nightly_release]: https://github.com/mlopatkin/andlogview/releases/tag/nightly
 {{< /tab >}}
 
+{{< tab "macOS" >}}
+
+1. Download the appropriate `dmg` installer from [nightly builds on GitHub][gh_nightly_release].
+2. Install it as usual (open and drag&drop onto `Applications` or just drag it
+   there in Finder).
+3. Open the app. It is not signed (yet), so it may be blocked. You'll have to
+   [manually unblock it](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac).
+
+#### Unblocking the app
+This is a quick recap of the steps linked above:
+1. Open the App. An "Untrusted application" warning appears. Close it.
+2. Go to System Settings &gt; Privacy and Security
+3. Scroll down and find the entry about AndLogView being blocked.
+4. Click Open.
+5. Click Open Anyway.
+
+Unblocking must be done only once.
+
+#### Requested permissions
+
+AndLogView may request a permission to "find devices in local networks". This is
+necessary to communicate with devices or emulators through ADB.
+
+[gh_nightly_release]: https://github.com/mlopatkin/andlogview/releases/tag/nightly
+{{< /tab >}}
+
 {{< /tabs >}}
 <!--
 TODO(mlopatkin): https://github.com/mlopatkin/andlogview/issues/339
