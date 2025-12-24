@@ -64,6 +64,7 @@ public class Main {
 
         logger.info("{} {}", APP_NAME, getVersionString());
         logger.info("Revision {}", BuildInfo.REVISION);
+        logger.info("Configuration: {}", configurationLoc.getConfigurationDir().getAbsolutePath());
 
         Try<?> configurationState = Try.ofCallable(() -> {
             Configuration.load(configurationLoc.getLegacyConfigurationFile());
