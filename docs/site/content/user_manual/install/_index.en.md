@@ -101,13 +101,15 @@ necessary to communicate with devices or emulators through ADB.
 {{< /tab >}}
 
 {{< /tabs >}}
-<!--
-TODO(mlopatkin): https://github.com/mlopatkin/andlogview/issues/339
+
+### Configuring ADB
+
 If adb.exe/adb aren't on the `PATH` you should manually set its location at the
 first launch. You will be prompted about it:
 
 ![ADB setup prompt](adb_setup_prompt.png)
 
-Click "Yes" to open [[AdbMode | ADB setup dialog]]. However it is necessary
-for working with device/emulator only.
--->
+Click "Set up ADB" to open
+[ADB setup dialog](/user_manual/adb_mode/#adb-configuration).
+However, it is only necessary for working with device/emulator.
+
