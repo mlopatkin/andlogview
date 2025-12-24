@@ -15,6 +15,7 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import name.mlopatkin.andlogview.building.JdkVersion
 import name.mlopatkin.andlogview.building.Version
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
@@ -576,4 +577,18 @@ tasks.register<Exec>("updateAndroidSdkRepoManifestForTests") {
         println("Finished downloading the new snapshot of Android SDK repo manifest")
         println("Don't forget to commit!")
     }
+}
+
+
+tasks.run {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JdkVersion(libs.versions.compileJdkVersion).languageVersion
+    }
+
+    args("-d")
+
+    systemProperty(
+        "name.mlopatkin.andlogview.config.dir",
+        layout.buildDirectory.dir("tmp/andlogview-home").get().asFile.absolutePath
+    )
 }
