@@ -173,11 +173,7 @@ public class Configuration {
 
     private Configuration() {}
 
-    public static void init() {
-        Logging.setUpDefault();
-    }
-
-    public static void load(File cfgFile, boolean debug) throws IllegalConfigurationException {
+    public static void load(File cfgFile) throws IllegalConfigurationException {
         // save on exit
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -188,12 +184,6 @@ public class Configuration {
             }
         }));
 
-        if (debug) {
-            Logging.loadDebug();
-            logger.info("debug mode on");
-        } else {
-            Logging.loadNormal();
-        }
         Utils.loadConfiguration(cfgFile, getConfig());
     }
 

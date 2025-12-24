@@ -32,6 +32,13 @@ import java.io.File;
 import javax.inject.Inject;
 
 public class Main {
+    static {
+        // Configure system properties for the runtime.
+        // We must do it before AWT initializes, and it can happen in surprising places.
+        // As it is very unlikely to fail, we do it even before starting the logs.
+        initProperties();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static final String THEME_SYSTEM_PROPERTY = "name.mlopatkin.andlogview.theme";
@@ -42,30 +49,30 @@ public class Main {
     private final CommandLine commandLine;
 
     public static void main(String[] args) {
-        // Initializing the configuration may init AWT too.
-        initProperties();
-
-        Configuration.init();
-
+        Logging.initialConfiguration();
         // This is the log-only handler. Logging depends on configuration, though.
         Thread.setDefaultUncaughtExceptionHandler(Main::uncaughtHandler);
 
-        var commandLine = CommandLine.fromArgs(args);
-        boolean isDebugMode = commandLine.isDebug();
-
         var configurationLoc = new ConfigurationLocation();
+        var commandLine = CommandLine.fromArgs(args);
+
+        if (commandLine.isDebug()) {
+            Logging.useDebugLogging();
+        } else {
+            Logging.useProductionLogging();
+        }
+
+        logger.info("{} {}", APP_NAME, getVersionString());
+        logger.info("Revision {}", BuildInfo.REVISION);
 
         Try<?> configurationState = Try.ofCallable(() -> {
-            Configuration.load(configurationLoc.getLegacyConfigurationFile(), isDebugMode);
+            Configuration.load(configurationLoc.getLegacyConfigurationFile());
             return true;
         });
 
         Theme theme = initLaf();
 
         AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, theme);
-
-        logger.info("{} {}", APP_NAME, getVersionString());
-        logger.info("Revision {}", BuildInfo.REVISION);
 
         EventQueue.invokeLater(() -> globals.getMain().start(configurationState));
     }
