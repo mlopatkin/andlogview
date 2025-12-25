@@ -29,5 +29,10 @@ java {
 val targetVersion = JdkVersion(libs.versions.runtimeJdkVersion)
 
 tasks.withType<JavaCompile>().configureEach {
-    this.options.release = targetVersion.intProvider
+    with(options) {
+        release = targetVersion.intProvider
+
+        // Suppress warning when targeting Java 8 on Java 25
+        compilerArgs.add("-Xlint:-options")
+    }
 }
