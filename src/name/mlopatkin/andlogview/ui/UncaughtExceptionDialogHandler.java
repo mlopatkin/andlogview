@@ -17,8 +17,8 @@
 package name.mlopatkin.andlogview.ui;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.Component;

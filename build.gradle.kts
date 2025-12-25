@@ -313,13 +313,6 @@ licenses {
     )
 
     sourceDependency(
-        "name/mlopatkin/andlogview/thirdparty/systemutils/SystemUtils.java",
-        "Apache Commons Lang",
-        uri("https://commons.apache.org/proper/commons-lang/"),
-        License.apache2().withNotice(fromFile("base/third-party/systemUtils/NOTICE"))
-    )
-
-    sourceDependency(
         "name/mlopatkin/andlogview/thirdparty/device/AndroidVersionCodes.java",
         "Android Open Source Project",
         uri("https://source.android.com"),

@@ -27,7 +27,6 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.search.logrecord.RowSearchStrategy;
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.ui.FileDialog;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
@@ -66,6 +65,7 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -113,11 +113,11 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     private static final KeyStroke KEY_HIDE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     private static final KeyStroke KEY_SHOW_SEARCH_FIELD = UiHelper.createPlatformKeystroke(KeyEvent.VK_F);
     private static final KeyStroke KEY_FIND_NEXT =
-            SystemUtils.IS_OS_MACOS
+            SystemUtils.IS_OS_MAC_OSX
                     ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G)
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
     private static final KeyStroke KEY_FIND_PREV =
-            SystemUtils.IS_OS_MACOS
+            SystemUtils.IS_OS_MAC_OSX
                     ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
 
@@ -380,7 +380,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         // This isn't needed on macOS, because the top menu is detached, and there is a line between the window header
         // and the content. An extra separator results in double line. This may be reconsidered if I decide to merge
         // top bar with the panel.
-        if (!SystemUtils.IS_OS_MACOS) {
+        if (!SystemUtils.IS_OS_MAC_OSX) {
             filterControls.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
         }
 

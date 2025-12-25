@@ -16,11 +16,10 @@
 
 package name.mlopatkin.andlogview.sdkrepo;
 
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
-
 import com.google.common.hash.HashingOutputStream;
 import com.google.common.io.ByteSource;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +88,7 @@ public class SdkRepository {
     }
 
     public static SdkPackage.TargetOs getHostOs() {
-        if (SystemUtils.IS_OS_MACOS) {
+        if (SystemUtils.IS_OS_MAC_OSX) {
             return SdkPackage.TargetOs.MAC_OS;
         } else if (SystemUtils.IS_OS_WINDOWS) {
             return SdkPackage.TargetOs.WINDOWS;

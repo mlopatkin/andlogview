@@ -25,6 +25,8 @@ description = "Common utilities that every other model can use"
 dependencies {
     api(libs.dagger.runtime)
 
+    implementation(libs.commons.lang3)
+
     testFixturesApi(platform(libs.test.assertj.bom))
     testFixturesApi(platform(libs.test.junit5.bom))
 
@@ -39,7 +41,6 @@ sourceSets {
     main {
         java {
             srcDir(file("third-party/observerList/src"))
-            srcDir(file("third-party/systemUtils/src"))
         }
     }
 }

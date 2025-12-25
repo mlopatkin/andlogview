@@ -16,8 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
-
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ class MacOsSystemTheme implements Theme {
 
     @Override
     public boolean isSupported() {
-        return SystemUtils.IS_OS_MACOS;
+        return SystemUtils.IS_OS_MAC_OSX;
     }
 
     @Override

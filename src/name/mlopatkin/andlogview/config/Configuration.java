@@ -27,7 +27,6 @@ import static name.mlopatkin.andlogview.utils.properties.PropertyTraits.type;
 import name.mlopatkin.andlogview.Main;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
 import name.mlopatkin.andlogview.utils.properties.ConfigurationMap;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
 import name.mlopatkin.andlogview.utils.properties.Parsers;
@@ -37,6 +36,7 @@ import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +141,7 @@ public class Configuration {
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
 
-        public static final String DEFAULT_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb").intern();
+        public static final String DEFAULT_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb");
 
 
         public static String bufferName(Buffer buffer) {

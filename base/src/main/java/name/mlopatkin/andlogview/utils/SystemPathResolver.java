@@ -20,13 +20,12 @@ import static com.google.common.io.Files.getFileExtension;
 
 import static java.util.stream.Collectors.toList;
 
-import name.mlopatkin.andlogview.thirdparty.systemutils.SystemUtils;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Streams;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
