@@ -4,6 +4,8 @@ FROM eclipse-temurin:17.0.17_10-jdk@sha256:7bcd719950407380e7acd15b53b228673c822
 
 ENV JDK17=/opt/java/openjdk
 ENV JDK8=/opt/java/openjdk8
+# Ensure reproducible DEB builds, 1980-01-31T23:00:00Z, something close to what Gradle uses as a default timestamp
+ENV SOURCE_DATE_EPOCH=318207600
 
 COPY --from=eclipse-temurin:8u472-b08-jdk@sha256:6c9af470aeafde76116d29f500e899454c42001b5d7f7385ae0aadebe851073e /opt/java/openjdk $JDK8
 
