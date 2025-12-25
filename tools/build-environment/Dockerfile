@@ -1,6 +1,6 @@
 # When changing the version here, update the JDK version in .github/versions.properties.
 # This is the version to bundle with Linux distribution, and it is good to have it consistent across platforms.
-FROM eclipse-temurin:17.0.17_10-jdk@sha256:7bcd719950407380e7acd15b53b228673c82289a7d8c765cbdb0c89a75f17a12
+ FROM eclipse-temurin:25.0.1_8-jdk@sha256:194e728dada6f5bf366f62398e53ef0d1b57ac67c8042da0f43edd92385fe9ec
 
 ENV JDK17=/opt/java/openjdk
 ENV JDK8=/opt/java/openjdk8
