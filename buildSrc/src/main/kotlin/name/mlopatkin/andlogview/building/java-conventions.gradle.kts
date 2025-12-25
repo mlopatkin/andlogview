@@ -145,15 +145,10 @@ tasks.withType<JavaCompile>().configureEach {
                 // - processing is too strict for the annotation processors we use.
                 // - serial is triggered by Swing-extending classes, but these are never serialized in the app.
                 // - this-escape is a common pattern in our code
-                "-Xlint:-options,-processing,-serial",
+                "-Xlint:-options,-processing,-serial,-this-escape",
                 "-Werror",  // Treat warnings as errors
             )
         )
-
-        if (compileJdk.int >= 21) {
-            // The diagnostic is only available since JDK 21
-            compilerArgs.add("-Xlint:-this-escape")
-        }
 
         errorprone {
             disableWarningsInGeneratedCode = true

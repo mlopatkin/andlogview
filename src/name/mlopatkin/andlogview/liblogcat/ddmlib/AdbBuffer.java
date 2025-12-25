@@ -73,7 +73,6 @@ class AdbBuffer {
 
     private void executeCommand() {
         //noinspection RedundantCast - NullAway complains without it
-        @SuppressWarnings("NullAway") // TODO(mlopatkin): remove on JDK 25
         CollectingHandler parserEventsHandler = new CollectingHandler(
                 buffer, (IntFunction<@Nullable String>) pidToProcess::get
         ) {

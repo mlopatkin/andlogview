@@ -142,7 +142,6 @@ public final class DumpstateFileDataSource implements DataSource {
                 public Optional<LogcatParseEventsHandler> logcatSectionBegin(Buffer buffer) {
                     availableBuffers.add(buffer);
                     //noinspection RedundantCast - NullAway complains without it
-                    @SuppressWarnings("NullAway") // TODO(mlopatkin): remove on JDK 25
                     var handler = new CollectingHandler(
                             buffer, (IntFunction<@Nullable String>) pidToProcessConverter::get
                     ) {
