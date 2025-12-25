@@ -18,6 +18,7 @@ package name.mlopatkin.gradleplugins.jpackage
 
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.jvm.toolchain.JavaToolchainService
@@ -52,6 +53,11 @@ abstract class InstallerExtension @Inject constructor(
      * Path to the vintage distribution that doesn't contain Java runtime.
      */
     abstract val noJreDistribution: RegularFileProperty
+
+    /**
+     * A list of modules to include into the resulting package. Uses autodetect if empty.
+     */
+    abstract val modules: ListProperty<String>
 
     /**
      * Application vendor. Shown in the package and application metadata.

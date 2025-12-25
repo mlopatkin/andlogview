@@ -445,6 +445,19 @@ tasks.named<ShadowJar>("shadowJar") {
 installers {
     noJreDistribution = tasks.shadowDistZip.flatMap { it.archiveFile }
 
+    // Printed by :suggestModules, must be explicit with Temurin 24+ because of
+    // https://github.com/beryx/badass-runtime-plugin/issues/161
+    modules = listOf(
+        "java.datatransfer",
+        "java.desktop",
+        "java.logging",
+        "java.naming",
+        "java.prefs",
+        "java.sql",
+        "java.xml",
+        "jdk.unsupported",
+    )
+
     vendor = "Mikhail Lopatkin"
     licenseFile = file("LICENSE")
     copyright = "Copyright 2011-2025 The AndLogView authors"

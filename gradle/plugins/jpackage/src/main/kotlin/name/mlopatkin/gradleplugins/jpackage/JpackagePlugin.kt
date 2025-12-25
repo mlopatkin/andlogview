@@ -148,6 +148,8 @@ abstract class JpackagePlugin : Plugin<Project> {
         runtime.run {
             javaHome = installers.jdkPath
 
+            modules = installers.modules
+
             options.addAll(
                 "--strip-debug",
                 "--no-header-files",
