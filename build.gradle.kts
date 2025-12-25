@@ -585,8 +585,6 @@ tasks.run {
         languageVersion = JdkVersion(libs.versions.compileJdkVersion).languageVersion
     }
 
-    args("-d")
-
     systemProperty(
         "name.mlopatkin.andlogview.config.dir",
         layout.buildDirectory.dir("tmp/andlogview-home").get().asFile.absolutePath
