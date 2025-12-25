@@ -17,8 +17,12 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+package_type=deb
+LAUNCHER_AS_SERVICE_SCRIPTS
+
 install_andlogview() {
   DESKTOP_COMMANDS_INSTALL
+  LAUNCHER_AS_SERVICE_COMMANDS_INSTALL
 
   # Add icons to the system icons
   XDG_ICON_RESOURCE="`command -v xdg-icon-resource 2> /dev/null || true`"

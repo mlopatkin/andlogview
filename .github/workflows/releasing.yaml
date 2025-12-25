@@ -14,7 +14,7 @@ env:
 jobs:
   build-snapshot:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:b3b49963974daa1cacddf7711ce55ae36476b878324b659e8e0c0cbf097d23b0
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:12e18d995ba5d572ab13a7cd19f9e8e10f144b26823653e854905e506eebafad
     env:
       LOGVIEW_SNAPSHOT_BUILD: true
     # Only build snapshots on master
@@ -90,7 +90,7 @@ jobs:
         uses: actions/setup-java@v4.6.0
         with:
           distribution: 'temurin'
-          java-version: '17.0.17'
+          java-version: '25.0.1'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build Windows Installers
@@ -124,7 +124,7 @@ jobs:
         uses: actions/setup-java@v4.6.0
         with:
           distribution: 'temurin'
-          java-version: '17.0.17'
+          java-version: '25.0.1'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build macOS Installers
@@ -169,7 +169,7 @@ jobs:
 
   build-tag:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:b3b49963974daa1cacddf7711ce55ae36476b878324b659e8e0c0cbf097d23b0
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:12e18d995ba5d572ab13a7cd19f9e8e10f144b26823653e854905e506eebafad
     env:
       LOGVIEW_SNAPSHOT_BUILD: false
     # Only build releases out of tags
@@ -230,7 +230,7 @@ jobs:
         uses: actions/setup-java@v4.6.0
         with:
           distribution: 'temurin'
-          java-version: '17.0.17'
+          java-version: '25.0.1'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build Windows Installers
@@ -264,7 +264,7 @@ jobs:
         uses: actions/setup-java@v4.6.0
         with:
           distribution: 'temurin'
-          java-version: '17.0.17'
+          java-version: '25.0.1'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # 5.0.0
       - name: Build macOS Installers
