@@ -47,6 +47,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public final class DumpstateFileDataSource implements DataSource {
     private static final Logger logger = LoggerFactory.getLogger(DumpstateFileDataSource.class);
@@ -140,7 +141,11 @@ public final class DumpstateFileDataSource implements DataSource {
                 @Override
                 public Optional<LogcatParseEventsHandler> logcatSectionBegin(Buffer buffer) {
                     availableBuffers.add(buffer);
-                    return Optional.of(new CollectingHandler(buffer, pidToProcessConverter::get) {
+                    //noinspection RedundantCast - NullAway complains without it
+                    @SuppressWarnings("NullAway") // TODO(mlopatkin): remove on JDK 25
+                    var handler = new CollectingHandler(
+                            buffer, (IntFunction<@Nullable String>) pidToProcessConverter::get
+                    ) {
                         @Override
                         protected ParserControl logRecord(LogRecord record) {
                             records.add(record);
@@ -154,7 +159,8 @@ public final class DumpstateFileDataSource implements DataSource {
                             }
                             return ParserControl.proceed();
                         }
-                    });
+                    };
+                    return Optional.of(handler);
                 }
 
                 @Override
@@ -220,7 +226,7 @@ public final class DumpstateFileDataSource implements DataSource {
                 problems.add(
                         new ImportProblem("Failed to find Processes section. Application names are not available."));
             } else if ((psSectionHadUnparseableLines || processWaitSectionHadUnparseableLines)
-                    && pidToProcessConverter.isEmpty()) {
+                       && pidToProcessConverter.isEmpty()) {
                 problems.add(
                         new ImportProblem("Failed to parse Processes section. Application names are not available."));
             } else {

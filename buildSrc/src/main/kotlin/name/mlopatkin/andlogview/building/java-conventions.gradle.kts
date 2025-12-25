@@ -63,6 +63,12 @@ sourceSets.withType<SourceSet> {
 
         implementationConfigurationName(buildLibs.guava)
 
+        annotationProcessorConfigurationName(buildLibs.build.bytebuddy) {
+            because("upgrading Jabel's dependency to support Java 25")
+        }
+        annotationProcessorConfigurationName(buildLibs.guava) {
+            because("upgrading NullAway's dependency to avoid warning on Java 25")
+        }
         annotationProcessorConfigurationName(buildLibs.build.jabel)
         annotationProcessorConfigurationName(buildLibs.build.nullaway.processor)
     }
@@ -120,17 +126,34 @@ tasks.withType<JavaCompile>().configureEach {
         encoding = "UTF-8"
         release = runtimeJdk.intProvider
 
+        forkOptions {
+            // Allow Jabel to attach its agent.
+            jvmArgs = (jvmArgs ?: listOf()) + "-XX:+EnableDynamicAgentLoading"
+        }
+
+        // Generates metadata for reflection on method parameters.
+        // This is required for Mockito to work properly on Java 8.
+        // See https://github.com/junit-team/junit-framework/issues/3797 for inspiration.
+        compilerArgs.add("-parameters")
+
         // Configure javac warnings
         compilerArgs.addAll(
             listOf(
                 "-Xlint:all", // Enable everything
                 // But silence some warnings we don't care about:
-                // - serial is triggered by Swing-extending classes, but these are never serialized in the app.
+                // - options warns about Java 8 target on modern JVMs
                 // - processing is too strict for the annotation processors we use.
-                "-Xlint:-serial,-processing",
+                // - serial is triggered by Swing-extending classes, but these are never serialized in the app.
+                // - this-escape is a common pattern in our code
+                "-Xlint:-options,-processing,-serial",
                 "-Werror",  // Treat warnings as errors
             )
         )
+
+        if (compileJdk.int >= 21) {
+            // The diagnostic is only available since JDK 21
+            compilerArgs.add("-Xlint:-this-escape")
+        }
 
         errorprone {
             disableWarningsInGeneratedCode = true
@@ -139,6 +162,7 @@ tasks.withType<JavaCompile>().configureEach {
                 "AssignmentExpression", // I'm fine with assignment expressions.
                 "EffectivelyPrivate", // I like to highlight the public members of private classes too.
                 "EmptyBlockTag",
+                "InlineMeInliner", // Incorrect suggestions of Java 11+ APIs
                 "JavaLangClash",
                 "JavaUtilDate",
                 "MissingSummary",

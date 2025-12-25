@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.parsers.logcat.Format;
 import name.mlopatkin.andlogview.parsers.logcat.LogcatParsers;
 import name.mlopatkin.andlogview.utils.Threads;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.IntFunction;
 
 /**
  * This class retrieves log records from the device using a background thread
@@ -70,7 +72,11 @@ class AdbBuffer {
     }
 
     private void executeCommand() {
-        CollectingHandler parserEventsHandler = new CollectingHandler(buffer, pidToProcess::get) {
+        //noinspection RedundantCast - NullAway complains without it
+        @SuppressWarnings("NullAway") // TODO(mlopatkin): remove on JDK 25
+        CollectingHandler parserEventsHandler = new CollectingHandler(
+                buffer, (IntFunction<@Nullable String>) pidToProcess::get
+        ) {
             @Override
             protected ParserControl logRecord(LogRecord record) {
                 receiver.pushRecord(record);
