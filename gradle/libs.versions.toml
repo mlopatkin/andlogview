@@ -21,7 +21,7 @@ build-errorprone-core = { module = "com.google.errorprone:error_prone_core", ver
 # Errorprone plugin allows to configure Errorprone compiler
 build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included
-build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:1.13.1"
+build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:2.0.1"
 build-jabel = "com.pkware.jabel:jabel-javac-plugin:1.0.1-1"
 build-nullaway-processor = "com.uber.nullaway:nullaway:0.12.9"
 build-nullaway-plugin = { module = "net.ltgt.nullaway:net.ltgt.nullaway.gradle.plugin", version.ref = "nullawayPlugin" }
