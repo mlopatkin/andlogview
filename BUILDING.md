@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
- * Windows or Linux (macOS would probably work too)
+ * Windows, Linux, or macOS
  * OpenJDK 8 or newer (e.g. from [Eclipse Adoptium](https://adoptium.net/)) to run Gradle
  * Internet connection to download dependencies from Maven Central, Gradle Plugin Portal, etc.
  * Git (to check out and commit)
@@ -53,7 +53,7 @@ each line ends with line ending symbol, there are no tab symbols. To install the
 
 ## Building with Gradle
 ### Setting up the JDK
-Technically, the build uses JDK 17 to compile everything and JDK 8 to run tests. It utilizes Gradle's
+Technically, the build uses JDK 25 to compile everything and JDK 8 to run tests. It utilizes Gradle's
 [Java Toolchains](https://docs.gradle.org/current/userguide/toolchains.html) to select the proper JDK. You have to
 either provide JDKs to Gradle somehow, as described in the docs, or rely on its automated provisioning.
 
