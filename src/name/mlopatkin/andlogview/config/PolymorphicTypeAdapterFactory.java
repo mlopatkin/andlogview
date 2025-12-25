@@ -102,6 +102,10 @@ public class PolymorphicTypeAdapterFactory<B> implements TypeAdapterFactory {
         }
 
         @Override
+        @SuppressWarnings("NullAway") // NullAway fails with an exception there:
+        // class com.sun.tools.javac.code.Type$WildcardType cannot be cast to class
+        //    com.sun.tools.javac.code.Type$TypeVar
+        // at com.uber.nullaway.generics.TypeSubstitutionUtils$RestoreNullnessAnnotationsVisitor.visitTypeVar
         public void write(JsonWriter out, B value) throws IOException {
             // I'm not sure why it compiles
             writeImpl(out, classOf(value), value);

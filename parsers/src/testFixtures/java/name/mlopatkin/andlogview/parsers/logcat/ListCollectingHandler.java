@@ -33,7 +33,6 @@ public class ListCollectingHandler extends CollectingHandler {
 
     public ListCollectingHandler() {}
 
-    @SuppressWarnings("NullAway")  // NullAway doesn't see the target type properly or what?
     public ListCollectingHandler(IntFunction<@Nullable String> appNameLookup) {
         super(appNameLookup);
     }

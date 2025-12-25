@@ -26,7 +26,6 @@ public class Parsers {
     public static final Parser<String> stringParser = new StringParser();
     public static final Parser<Integer> integerParser = new IntegerParser();
     public static final Parser<Boolean> booleanParser = new BooleanParser();
-    @SuppressWarnings("NullAway") // I have no idea why it complains
     public static final Parser<@Nullable Point> pointParser = new PointParser();
 
     public static <T extends Enum<T>> Parser<T> enumParser(Class<T> clazz) {

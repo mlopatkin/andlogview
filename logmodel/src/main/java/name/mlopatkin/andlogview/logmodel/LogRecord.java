@@ -34,7 +34,6 @@ public class LogRecord {
     private static final Comparator<@Nullable Timestamp> NULL_SAFE_TIME_COMPARATOR =
             Comparator.nullsFirst(Comparator.naturalOrder());
 
-    @SuppressWarnings("NullAway") // Nullaway cannot infer nullness properly here
     public static final Comparator<LogRecord> LEGACY_COMPARATOR = (a, b) -> ComparisonChain.start()
             .compare(a.getTime(), b.getTime(), NULL_SAFE_TIME_COMPARATOR)
             .compare(a.getBuffer(), b.getBuffer(), NULL_SAFE_BUFFER_COMPARATOR)

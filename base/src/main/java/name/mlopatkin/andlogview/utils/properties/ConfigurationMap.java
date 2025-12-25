@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.utils.properties;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,7 +32,7 @@ import java.util.Properties;
 public class ConfigurationMap implements Configuration {
     private final Map<String, Property<?>> properties = new LinkedHashMap<>();
 
-    public <T> ConfigurationMap property(String key, IPropertyBuilder<T> builder) {
+    public <T extends @Nullable Object> ConfigurationMap property(String key, IPropertyBuilder<T> builder) {
         properties.put(key, builder.build());
         return this;
     }

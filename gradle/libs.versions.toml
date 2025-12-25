@@ -23,7 +23,7 @@ build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin",
 # Runtime plugin allows preparing runtime images with JDK included
 build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:2.0.1"
 build-jabel = "com.pkware.jabel:jabel-javac-plugin:1.0.1-1"
-build-nullaway-processor = "com.uber.nullaway:nullaway:0.12.9"
+build-nullaway-processor = "com.uber.nullaway:nullaway:0.12.15"
 build-nullaway-plugin = { module = "net.ltgt.nullaway:net.ltgt.nullaway.gradle.plugin", version.ref = "nullawayPlugin" }
 checkerframeworkAnnotations = "org.checkerframework:checker-qual:3.38.0"
 commons-compress = "org.apache.commons:commons-compress:1.27.1"
