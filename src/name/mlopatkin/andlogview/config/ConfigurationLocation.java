@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.config;
 
+import name.mlopatkin.andlogview.base.io.WindowsPaths;
+
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
@@ -93,9 +95,11 @@ public class ConfigurationLocation {
     }
 
     private static File getSystemConfigDir() {
-        String systemConfigDirPath = SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : SystemUtils.USER_HOME;
-        // TODO(mlopatkin) What if it is null?
-        return new File(Objects.requireNonNull(systemConfigDirPath, "Can't find user home"));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return Objects.requireNonNull(WindowsPaths.getRoamingAppData(), "Can't find user home")
+                    .toFile();
+        }
+        return new File(Objects.requireNonNull(SystemUtils.USER_HOME, "Can't find user home"));
     }
 
     private static File getSystemLocalConfigDir() {
@@ -103,22 +107,12 @@ public class ConfigurationLocation {
             // This isn't XDG-compliant, but who cares :)
             return getSystemConfigDir();
         }
-        // Windows is tricky. Since Windows Vista, the local configuration lives in C:\Users\<username>\AppData\Local
-        // and is available through LOCALAPPDATA env var.
-        // On XP and 2K it lives in C:\Documents and Settings\<username>\Local Settings\Application data
-        // and there is no env var to fetch it.
-        // See: https://web.archive.org/web/20251002193525/https://learn.microsoft.com/en-us/previous-versions/ms995853(v=msdn.10)?redirectedfrom=MSDN#using-application-data-folders
-        // for pre-Windows Vista definitions.
-        var localAppData = System.getenv("LOCALAPPDATA");
+
+        var localAppData = WindowsPaths.getLocalAppData();
         if (localAppData != null) {
-            return new File(localAppData);
+            return localAppData.toFile();
         }
-
-        if (SystemUtils.IS_OS_WINDOWS_XP || SystemUtils.IS_OS_WINDOWS_2000 || SystemUtils.IS_OS_WINDOWS_2003) {
-            return new File(SystemUtils.getUserHome(), "Local Settings/Application data");
-        }
-
-        // Fallback on weird Vista+ that doesn't have the env var set.
+        // Just a fallback in case we don't have local app data at all.
         return getSystemConfigDir();
     }
 }
