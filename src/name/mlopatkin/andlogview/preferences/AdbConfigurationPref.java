@@ -24,6 +24,7 @@ import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import com.google.common.base.MoreObjects;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import org.jspecify.annotations.Nullable;
 
@@ -78,10 +79,14 @@ public class AdbConfigurationPref {
     private static final ConfigStorageClient<AdbConfiguration> STORAGE_CLIENT =
             new SimpleClient<>("adb", AdbConfiguration.class, AdbConfiguration::new);
 
+    private final Object lock = new Object();
+
     private final Preference<AdbConfiguration> preference;
     private final SystemPathResolver systemPathResolver;
 
+    @GuardedBy("lock")
     private AdbConfiguration current;
+    @GuardedBy("lock")
     private @Nullable File resolvedExecutable;
 
     @Inject
@@ -95,7 +100,9 @@ public class AdbConfigurationPref {
 
     /** @return the location of the ADB executable as set up by the user */
     public String getAdbLocation() {
-        return MoreObjects.firstNonNull(current.location, Configuration.adb.DEFAULT_EXECUTABLE);
+        synchronized (lock) {
+            return MoreObjects.firstNonNull(current.location, Configuration.adb.DEFAULT_EXECUTABLE);
+        }
     }
 
     /**
@@ -104,7 +111,9 @@ public class AdbConfigurationPref {
      * @return true if the current ADB location is valid
      */
     public boolean hasValidAdbLocation() {
-        return resolvedExecutable != null;
+        synchronized (lock) {
+            return resolvedExecutable != null;
+        }
     }
 
     /**
@@ -139,31 +148,47 @@ public class AdbConfigurationPref {
     }
 
     private void setResolvedAdbLocation(String rawAdbLocation, File resolvedExecutable) {
-        this.resolvedExecutable = resolvedExecutable;
-        setConfiguration(current.withLocation(rawAdbLocation));
+        synchronized (lock) {
+            this.resolvedExecutable = resolvedExecutable;
+            setConfiguration(current.withLocation(rawAdbLocation));
+        }
     }
 
     public Optional<File> getExecutable() {
-        return Optional.ofNullable(resolvedExecutable);
+        synchronized (lock) {
+            return Optional.ofNullable(resolvedExecutable);
+        }
     }
 
     public boolean isAutoReconnectEnabled() {
-        return current.isAutoReconnectEnabled;
+        synchronized (lock) {
+            return current.isAutoReconnectEnabled;
+        }
     }
 
     public void setAutoReconnectEnabled(boolean enabled) {
-        setConfiguration(current.withAutoReconnectEnabled(enabled));
+        synchronized (lock) {
+            setConfiguration(current.withAutoReconnectEnabled(enabled));
+        }
     }
 
     public boolean shouldShowAutostartFailures() {
-        return current.shouldShowAutostartFailures;
+        synchronized (lock) {
+            return current.shouldShowAutostartFailures;
+        }
     }
 
     public void setShowAdbAutostartFailures(boolean enabled) {
-        setConfiguration(current.withShouldShowAutostartFailures(enabled));
+        synchronized (lock) {
+            setConfiguration(current.withShouldShowAutostartFailures(enabled));
+        }
     }
 
+    @GuardedBy("lock")
     private void setConfiguration(AdbConfiguration newConfiguration) {
+        // Do not grab the lock inside, otherwise you may end up with the newConfiguration being based on stale values
+        // if other thread updates the current between this thread reading base value and setting the updated.
+        // Doing reading and writing under the same hold avoids this.
         current = newConfiguration;
         preference.set(current);
     }
