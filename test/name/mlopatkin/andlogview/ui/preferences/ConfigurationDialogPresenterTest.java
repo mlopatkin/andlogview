@@ -30,8 +30,8 @@ import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
+import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.MyFutures;
-import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -42,11 +42,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -252,7 +248,7 @@ class ConfigurationDialogPresenterTest {
     private AdbConfigurationPref adbConfiguration() {
         return new AdbConfigurationPref(
                 configStorage,
-                new FakePathResolver(VALID_ADB_LOCATION, DEFAULT_ADB_LOCATION)
+                FakePathResolver.withValidPaths(VALID_ADB_LOCATION, DEFAULT_ADB_LOCATION)
         );
     }
 
@@ -267,7 +263,8 @@ class ConfigurationDialogPresenterTest {
     private void withAdbLocation(String adbLocation) {
         // To avoid setting the location in the storage directly, we create a temp pref instance that will accept
         // the location regardless of what adbConfiguration()-provided instance thinks.
-        var forceAcceptingLocation = new AdbConfigurationPref(configStorage, new FakePathResolver(adbLocation));
+        var forceAcceptingLocation =
+                new AdbConfigurationPref(configStorage, FakePathResolver.withValidPaths(adbLocation));
         if (!forceAcceptingLocation.trySetAdbLocation(adbLocation)) {
             throw new AssertionError("Could not set adb location");
         }
@@ -375,22 +372,6 @@ class ConfigurationDialogPresenterTest {
         @Override
         public void showInvalidAdbLocationError(String newLocation) {
             onAdbLocationWarningShown.action().run();
-        }
-    }
-
-    private static class FakePathResolver extends SystemPathResolver {
-        private final Set<String> validPaths = new HashSet<>();
-
-        FakePathResolver(String... validPaths) {
-            this.validPaths.addAll(Arrays.asList(validPaths));
-        }
-
-        @Override
-        public Optional<File> resolveExecutablePath(String rawPath) {
-            if (validPaths.contains(rawPath)) {
-                return Optional.of(new File(rawPath));
-            }
-            return Optional.empty();
         }
     }
 }

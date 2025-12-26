@@ -26,17 +26,14 @@ import name.mlopatkin.andlogview.base.MyThrowables;
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
-import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
-import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameCleaner;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.utils.events.Observable;
 import name.mlopatkin.andlogview.utils.events.Subject;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Stopwatch;
 
@@ -44,15 +41,12 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -72,9 +66,9 @@ public class AdbServicesBridge implements AdbServicesStatus {
     private final AdbServiceStarter adbStarter;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
+    private final GlobalAdbDeviceList adbDeviceList;
     private final Executor uiExecutor;
     private final Executor adbInitExecutor;
-    private final GlobalAdbDeviceList adbDeviceList;
     private final Subject<Observer> statusObservers = new Subject<>();
 
     private @Nullable CompletableFuture<AdbServices> adbSubcomponent; // This one is three-state. The `null` here
@@ -83,39 +77,19 @@ public class AdbServicesBridge implements AdbServicesStatus {
 
     @Inject
     AdbServicesBridge(
-            AdbManager adbManager,
+            AdbServiceStarter adbServiceStarter,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
+            GlobalAdbDeviceList adbDeviceList,
             @Named(AppExecutors.UI_EXECUTOR) SequentialExecutor uiExecutor,
             @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor
     ) {
-        this(
-                adbManager,
-                adbConfigurationPref,
-                adbSubcomponentFactory,
-                uiExecutor,
-                adbInitExecutor,
-                new GlobalAdbDeviceList(uiExecutor),
-                AdbLocationDiscovery::discoverAdbLocations
-        );
-    }
-
-    @VisibleForTesting
-    AdbServicesBridge(
-            AdbManager adbManager,
-            AdbConfigurationPref adbConfigurationPref,
-            AdbServicesSubcomponent.Factory adbSubcomponentFactory,
-            Executor uiExecutor,
-            Executor adbInitExecutor,
-            GlobalAdbDeviceList adbDeviceList,
-            Supplier<Stream<File>> commonAdbLocations
-    ) {
-        this.adbStarter = new AdbServiceStarter(adbManager, adbConfigurationPref, commonAdbLocations);
+        this.adbStarter = adbServiceStarter;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
+        this.adbDeviceList = adbDeviceList;
         this.uiExecutor = uiExecutor;
         this.adbInitExecutor = adbInitExecutor;
-        this.adbDeviceList = adbDeviceList;
     }
 
     @Inject

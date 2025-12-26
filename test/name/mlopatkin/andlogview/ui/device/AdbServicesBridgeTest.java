@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 import name.mlopatkin.andlogview.base.concurrent.TestExecutor;
 import name.mlopatkin.andlogview.base.concurrent.TestSequentialExecutor;
 import name.mlopatkin.andlogview.device.AdbException;
-import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.test.ThreadTestUtils;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus.StatusValue;
@@ -44,17 +43,14 @@ import com.google.common.collect.Multimaps;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -62,23 +58,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class AdbServicesBridgeTest {
     @Mock
-    AdbManager adbManager;
-    @Mock(strictness = Mock.Strictness.LENIENT)
+    AdbServiceStarter adbStarter;
+    @Mock
     AdbConfigurationPref adbConfigurationPref;
 
     @Mock
     AdbServicesSubcomponent.Factory adbServicesFactory;
-
-    @BeforeEach
-    void setUp() {
-        when(adbConfigurationPref.isAdbAutoDiscoveryAllowed()).thenReturn(false);
-        when(adbConfigurationPref.getExecutable()).thenReturn(Optional.of(new File("adb")));
-    }
 
     @Test
     void adbServicesCanBeObtained() {
@@ -273,8 +262,8 @@ class AdbServicesBridgeTest {
 
         assertThat(bridge.getAdbServicesAsync()).isCompleted();
 
-        var order = inOrder(deviceList, adbManager);
-        order.verify(adbManager).startServer(any());  // Initial start
+        var order = inOrder(deviceList, adbStarter);
+        order.verify(adbStarter).startAdb();  // Initial start
         order.verify(deviceList).setAdbServer(any());
 
         bridge.stopAdb();
@@ -309,19 +298,25 @@ class AdbServicesBridgeTest {
 
     private AdbServicesBridge createBridge(GlobalAdbDeviceList deviceList) {
         return new AdbServicesBridge(
-                adbManager,
+                adbStarter,
                 adbConfigurationPref,
                 adbServicesFactory,
-                new TestSequentialExecutor(MoreExecutors.directExecutor()),
-                MoreExecutors.directExecutor(),
                 deviceList,
-                Stream::empty
+                new TestSequentialExecutor(MoreExecutors.directExecutor()),
+                MoreExecutors.directExecutor()
         );
     }
 
     private AdbServicesBridge createBridge(Executor uiExecutor, Executor adbExecutor) {
-        return new AdbServicesBridge(adbManager, adbConfigurationPref, adbServicesFactory,
-                new TestSequentialExecutor(uiExecutor), adbExecutor);
+        var sequentialUiExecutor = new TestSequentialExecutor(uiExecutor);
+        return new AdbServicesBridge(
+                adbStarter,
+                adbConfigurationPref,
+                adbServicesFactory,
+                new GlobalAdbDeviceList(sequentialUiExecutor),
+                sequentialUiExecutor,
+                adbExecutor
+        );
     }
 
     private void drainExecutors(TestExecutor... executor) {
@@ -332,7 +327,7 @@ class AdbServicesBridgeTest {
     }
 
     private void whenServerFailsToStart() throws AdbException {
-        when(adbManager.startServer(any())).thenThrow(new AdbException("Failed to create server"));
+        when(adbStarter.startAdb()).thenThrow(new AdbException("Failed to create server"));
     }
 
     private static void ensureCompleted(Future<?> f) {

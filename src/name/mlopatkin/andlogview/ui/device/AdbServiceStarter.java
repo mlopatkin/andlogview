@@ -20,6 +20,9 @@ import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 /**
  * Starts the ADB service.
@@ -40,7 +45,13 @@ class AdbServiceStarter {
     private final AdbConfigurationPref adbPref;
     private final Supplier<Stream<File>> commonAdbLocations;
 
-    public AdbServiceStarter(
+    @Inject
+    AdbServiceStarter(AdbManager adbManager, AdbConfigurationPref adbPref) {
+        this(adbManager, adbPref, AdbLocationDiscovery::discoverAdbLocations);
+    }
+
+    @VisibleForTesting
+    AdbServiceStarter(
             AdbManager adbManager,
             AdbConfigurationPref adbPref,
             Supplier<Stream<File>> commonAdbLocations
