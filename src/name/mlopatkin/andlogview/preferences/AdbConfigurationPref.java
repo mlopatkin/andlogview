@@ -23,7 +23,6 @@ import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 
 import org.jspecify.annotations.Nullable;
@@ -42,24 +41,37 @@ import javax.inject.Singleton;
 public class AdbConfigurationPref {
     // Helper class to store inner configuration.
     private static class AdbConfiguration {
-        final String location;
+        final @Nullable String location;
         final boolean isAutoReconnectEnabled;
         final boolean shouldShowAutostartFailures;
 
         @SuppressWarnings("deprecation")
         public AdbConfiguration() {
-            // Default configuration values
-            this(MoreObjects.firstNonNull(
-                            Configuration.adb.executable(),
-                            Configuration.adb.DEFAULT_EXECUTABLE),
-                    Configuration.adb.isAutoReconnectEnabled(),
-                    true);
+            // Default configuration values. Gson uses this constructor to create the instance, then overrides all
+            // values with what is present in JSON data.
+            this(Configuration.adb.executable(), Configuration.adb.isAutoReconnectEnabled(), true);
         }
 
-        public AdbConfiguration(String location, boolean isAutoReconnectEnabled, boolean shouldShowAutostartFailures) {
+        public AdbConfiguration(
+                @Nullable String location,
+                boolean isAutoReconnectEnabled,
+                boolean shouldShowAutostartFailures
+        ) {
             this.location = location;
             this.isAutoReconnectEnabled = isAutoReconnectEnabled;
             this.shouldShowAutostartFailures = shouldShowAutostartFailures;
+        }
+
+        public AdbConfiguration withLocation(@Nullable String location) {
+            return new AdbConfiguration(location, isAutoReconnectEnabled, shouldShowAutostartFailures);
+        }
+
+        public AdbConfiguration withAutoReconnectEnabled(boolean autoReconnectEnabled) {
+            return new AdbConfiguration(location, autoReconnectEnabled, shouldShowAutostartFailures);
+        }
+
+        public AdbConfiguration withShouldShowAutostartFailures(boolean shouldShowAutostartFailures) {
+            return new AdbConfiguration(location, isAutoReconnectEnabled, shouldShowAutostartFailures);
         }
     }
 
@@ -69,29 +81,21 @@ public class AdbConfigurationPref {
     private final Preference<AdbConfiguration> preference;
     private final SystemPathResolver systemPathResolver;
 
-    private String rawAdbLocation;
+    private AdbConfiguration current;
     private @Nullable File resolvedExecutable;
-
-    private boolean isAutoReconnectEnabled;
-    private boolean shouldShowAutostartFailures;
 
     @Inject
     public AdbConfigurationPref(ConfigStorage configStorage, SystemPathResolver systemPathResolver) {
         this.preference = configStorage.preference(STORAGE_CLIENT);
         this.systemPathResolver = systemPathResolver;
-        AdbConfiguration stored = preference.get();
-        isAutoReconnectEnabled = stored.isAutoReconnectEnabled;
-        shouldShowAutostartFailures = stored.shouldShowAutostartFailures;
-        setRawAdbLocation(stored.location);
-    }
+        this.current = preference.get();
 
-    private void save() {
-        preference.set(new AdbConfiguration(rawAdbLocation, isAutoReconnectEnabled, shouldShowAutostartFailures));
+        this.resolvedExecutable = resolveAdbLocation(getAdbLocation()).orElse(null);
     }
 
     /** @return the location of the ADB executable as set up by the user */
     public String getAdbLocation() {
-        return rawAdbLocation;
+        return MoreObjects.firstNonNull(current.location, Configuration.adb.DEFAULT_EXECUTABLE);
     }
 
     /**
@@ -134,20 +138,9 @@ public class AdbConfigurationPref {
         }
     }
 
-    @VisibleForTesting
-    protected final void setRawAdbLocation(String rawAdbLocation) {
-        this.rawAdbLocation = rawAdbLocation;
-        this.resolvedExecutable = resolveAdbLocation(rawAdbLocation).orElse(null);
-    }
-
     private void setResolvedAdbLocation(String rawAdbLocation, File resolvedExecutable) {
-        this.rawAdbLocation = rawAdbLocation;
         this.resolvedExecutable = resolvedExecutable;
-        save();
-    }
-
-    public String getExecutableString() {
-        return getAdbLocation();
+        setConfiguration(current.withLocation(rawAdbLocation));
     }
 
     public Optional<File> getExecutable() {
@@ -155,20 +148,23 @@ public class AdbConfigurationPref {
     }
 
     public boolean isAutoReconnectEnabled() {
-        return isAutoReconnectEnabled;
+        return current.isAutoReconnectEnabled;
     }
 
     public void setAutoReconnectEnabled(boolean enabled) {
-        isAutoReconnectEnabled = enabled;
-        save();
+        setConfiguration(current.withAutoReconnectEnabled(enabled));
     }
 
     public boolean shouldShowAutostartFailures() {
-        return shouldShowAutostartFailures;
+        return current.shouldShowAutostartFailures;
     }
 
     public void setShowAdbAutostartFailures(boolean enabled) {
-        shouldShowAutostartFailures = enabled;
-        save();
+        setConfiguration(current.withShouldShowAutostartFailures(enabled));
+    }
+
+    private void setConfiguration(AdbConfiguration newConfiguration) {
+        current = newConfiguration;
+        preference.set(current);
     }
 }

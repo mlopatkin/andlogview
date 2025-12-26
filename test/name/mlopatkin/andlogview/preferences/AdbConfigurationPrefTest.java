@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
@@ -32,7 +32,7 @@ import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
 class AdbConfigurationPrefTest {
-    private final ConfigStorage storage = new FakeInMemoryConfigStorage();
+    private final FakeInMemoryConfigStorage storage = new FakeInMemoryConfigStorage();
 
     @Test
     void canCheckInvalidPath() {
@@ -46,7 +46,49 @@ class AdbConfigurationPrefTest {
         assertThat(pref.checkAdbLocation("invalid path")).isFalse();
     }
 
+    @Test
+    void changingFlagsDoesNotWriteAdbPath() {
+        var resolver = mockResolver();
+        var pref = createPref(resolver);
+
+        pref.setShowAdbAutostartFailures(false);
+
+        assertThat(storage.getJsonData("adb", "location")).isNull();
+    }
+
+    @Test
+    void canCreateAdbPreferenceWhenOnlyLocationIsProvidedInConfig() {
+        storage.setJsonData("adb", """
+                {
+                  "location": "adb.exe"
+                }""");
+
+        var resolver = mockResolver();
+        var pref = createPref(resolver);
+
+        assertThat(pref.getExecutable()).contains(new File("adb.exe"));
+        assertThat(pref.isAutoReconnectEnabled()).isTrue();
+        assertThat(pref.shouldShowAutostartFailures()).isTrue();
+    }
+
+    @Test
+    void canResolveDefaultAdbLocation() {
+        var resolver = mockResolver();
+        var pref = createPref(resolver);
+
+        assertThat(pref.hasValidAdbLocation()).isTrue();
+        assertThat(pref.getExecutable()).contains(new File(Configuration.adb.DEFAULT_EXECUTABLE));
+    }
+
     private AdbConfigurationPref createPref(SystemPathResolver resolver) {
         return new AdbConfigurationPref(storage, resolver);
+    }
+
+    private SystemPathResolver mockResolver() {
+        SystemPathResolver resolver = mock(SystemPathResolver.class);
+        when(resolver.resolveExecutablePath(anyString())).thenAnswer(
+                i -> Optional.of(new File((String) i.getArguments()[0]))
+        );
+        return resolver;
     }
 }

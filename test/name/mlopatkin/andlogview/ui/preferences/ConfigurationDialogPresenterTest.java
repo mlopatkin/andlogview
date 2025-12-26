@@ -17,13 +17,13 @@
 package name.mlopatkin.andlogview.ui.preferences;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.test.Expectations;
@@ -52,18 +52,12 @@ import java.util.function.Predicate;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigurationDialogPresenterTest {
-
     private static final String DEFAULT_ADB_LOCATION = "adb";
     private static final String VALID_ADB_LOCATION = "validAdb";
     private static final String INVALID_ADB_LOCATION = "invalidAdb";
 
-
-    private static final boolean DEFAULT_AUTO_RECONNECT = false;
-    private static final boolean CHANGED_AUTO_RECONNECT = true;
-
+    private final ConfigStorage configStorage = new FakeInMemoryConfigStorage();
     private final FakeView fakeView = new FakeView();
-
-    private final TestAdbConfigurationPref adbConfiguration = new TestAdbConfigurationPref();
 
     @Mock
     private AdbServicesInitializationPresenter adbServicesInitPresenter;
@@ -74,9 +68,6 @@ class ConfigurationDialogPresenterTest {
 
     @BeforeEach
     void setUp() {
-        adbConfiguration.setAutoReconnectEnabled(DEFAULT_AUTO_RECONNECT);
-        adbConfiguration.trySetAdbLocation(DEFAULT_ADB_LOCATION);
-
         when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.initialized());
         when(installPresenter.isAvailable()).thenReturn(true);
         when(installPresenter.startInstall()).thenReturn(
@@ -89,9 +80,9 @@ class ConfigurationDialogPresenterTest {
 
         presenter.openDialog();
 
-        assertEquals(DEFAULT_ADB_LOCATION, fakeView.getAdbLocation());
-        assertFalse(fakeView.isAutoReconnectEnabled());
-        assertTrue(fakeView.isShown());
+        assertThat(fakeView.getAdbLocation()).isEqualTo(DEFAULT_ADB_LOCATION);
+        assertThat(fakeView.isAutoReconnectEnabled()).isTrue();
+        assertThat(fakeView.isShown()).isTrue();
     }
 
     @Test
@@ -140,10 +131,10 @@ class ConfigurationDialogPresenterTest {
         var presenter = createPresenter();
 
         presenter.openDialog();
-        fakeView.setAutoReconnectEnabled(CHANGED_AUTO_RECONNECT);
+        fakeView.setAutoReconnectEnabled(false);
         fakeView.commit();
 
-        assertEquals(CHANGED_AUTO_RECONNECT, adbConfiguration.isAutoReconnectEnabled());
+        assertThat(adbConfiguration().isAutoReconnectEnabled()).isFalse();
     }
 
     @Test
@@ -169,7 +160,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void committingRestartsAdbWithoutChangesIfItWasNotRunning() {
-        adbConfiguration.trySetAdbLocation(VALID_ADB_LOCATION);
+        withValidAdbLocation();
         when(adbServicesStatus.getStatus()).thenReturn(AdbServicesStatus.StatusValue.failed("Not initialized"));
 
         var presenter = createPresenter();
@@ -182,7 +173,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void adbInstallIsNotAvailableWhenLocationIsValid() {
-        adbConfiguration.forceAdbLocation(VALID_ADB_LOCATION);
+        withValidAdbLocation();
 
         var presenter = createPresenter();
         presenter.openDialog();
@@ -192,7 +183,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void adbInstallIsAvailableWhenLocationIsInvalid() {
-        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        withInvalidAdbLocation();
 
         var presenter = createPresenter();
         presenter.openDialog();
@@ -202,7 +193,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void adbInstallationStartsWhenUserSelects() {
-        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        withInvalidAdbLocation();
 
         var presenter = createPresenter();
         presenter.openDialog();
@@ -213,7 +204,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void successfulAdbInstallSetsLocationToExecutablePath() {
-        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        withInvalidAdbLocation();
         File adbExecutable = new File("/home/user/.logview/android-sdk/platform-tools/adb");
         when(installPresenter.startInstall()).thenReturn(
                 CompletableFuture.completedFuture(InstallAdbPresenter.Result.installed(adbExecutable)));
@@ -227,7 +218,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void cancelledAdbInstallDoesNotChangeLocation() {
-        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        withInvalidAdbLocation();
         when(installPresenter.startInstall()).thenReturn(
                 CompletableFuture.completedFuture(InstallAdbPresenter.Result.cancelled()));
 
@@ -241,7 +232,7 @@ class ConfigurationDialogPresenterTest {
 
     @Test
     void failedAdbInstallDoesNotChangeLocation() {
-        adbConfiguration.forceAdbLocation(INVALID_ADB_LOCATION);
+        withInvalidAdbLocation();
         when(installPresenter.startInstall()).thenReturn(
                 MyFutures.failedFuture(new RuntimeException("Network error")));
 
@@ -254,8 +245,32 @@ class ConfigurationDialogPresenterTest {
     }
 
     private ConfigurationDialogPresenter createPresenter() {
-        return new ConfigurationDialogPresenter(fakeView, adbConfiguration, adbServicesInitPresenter,
+        return new ConfigurationDialogPresenter(fakeView, adbConfiguration(), adbServicesInitPresenter,
                 adbServicesStatus, installPresenter, MoreExecutors.directExecutor());
+    }
+
+    private AdbConfigurationPref adbConfiguration() {
+        return new AdbConfigurationPref(
+                configStorage,
+                new FakePathResolver(VALID_ADB_LOCATION, DEFAULT_ADB_LOCATION)
+        );
+    }
+
+    private void withValidAdbLocation() {
+        withAdbLocation(VALID_ADB_LOCATION);
+    }
+
+    private void withInvalidAdbLocation() {
+        withAdbLocation(INVALID_ADB_LOCATION);
+    }
+
+    private void withAdbLocation(String adbLocation) {
+        // To avoid setting the location in the storage directly, we create a temp pref instance that will accept
+        // the location regardless of what adbConfiguration()-provided instance thinks.
+        var forceAcceptingLocation = new AdbConfigurationPref(configStorage, new FakePathResolver(adbLocation));
+        if (!forceAcceptingLocation.trySetAdbLocation(adbLocation)) {
+            throw new AssertionError("Could not set adb location");
+        }
     }
 
     static class FakeView implements ConfigurationDialogPresenter.View {
@@ -361,7 +376,6 @@ class ConfigurationDialogPresenterTest {
         public void showInvalidAdbLocationError(String newLocation) {
             onAdbLocationWarningShown.action().run();
         }
-
     }
 
     private static class FakePathResolver extends SystemPathResolver {
@@ -377,18 +391,6 @@ class ConfigurationDialogPresenterTest {
                 return Optional.of(new File(rawPath));
             }
             return Optional.empty();
-        }
-    }
-
-    private static class TestAdbConfigurationPref extends AdbConfigurationPref {
-        public TestAdbConfigurationPref() {
-            super(new FakeInMemoryConfigStorage(),
-                    new FakePathResolver(ConfigurationDialogPresenterTest.VALID_ADB_LOCATION,
-                            ConfigurationDialogPresenterTest.DEFAULT_ADB_LOCATION));
-        }
-
-        public void forceAdbLocation(String rawAdbLocation) {
-            super.setRawAdbLocation(rawAdbLocation);
         }
     }
 }

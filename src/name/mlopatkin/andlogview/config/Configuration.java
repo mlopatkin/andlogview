@@ -37,6 +37,7 @@ import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 import com.google.common.annotations.VisibleForTesting;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,8 +149,16 @@ public class Configuration {
             return getConfig().get(BUFFER_NAME_KEY, buffer);
         }
 
+        /**
+         * Returns the current path to the adb executable, as specified in logview.properties, or null if there is
+         * no pre-existing value. This method doesn't fall back to default to help distinguish between not having value
+         * and having the value that matches the default.
+         *
+         * @return the path to ADB specified in the legacy configuration or null if there is nothing.
+         */
+        @SuppressWarnings("DataFlowIssue") // The annotation on get() is off.
         @Deprecated
-        public static String executable() {
+        public static @Nullable String executable() {
             return getConfig().get(EXECUTABLE_KEY);
         }
 

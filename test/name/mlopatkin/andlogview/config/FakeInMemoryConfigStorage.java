@@ -19,7 +19,10 @@ package name.mlopatkin.andlogview.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,5 +63,22 @@ public class FakeInMemoryConfigStorage implements ConfigStorage {
 
     public void setJsonData(String key, String json) {
         data.put(key, JsonParser.parseString(json));
+    }
+
+    public @Nullable Object getJsonData(String element0, String... keyElements) {
+        StringBuilder path = new StringBuilder(element0);
+        JsonElement current = data.get(element0);
+        for (var p : keyElements) {
+            if (current instanceof JsonObject jsonObject) {
+                current = jsonObject.get(p);
+                path.append('.').append(p);
+            } else {
+                throw new IllegalArgumentException(
+                        "Expected element " + path + " to be a JsonObject but got " + current
+                );
+            }
+        }
+
+        return current;
     }
 }

@@ -153,7 +153,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
      */
     private File resolveAdbExecutable() throws AdbException {
         return adbConfigurationPref.getExecutable().orElseThrow(() ->
-                new AdbException("ADB location '" + adbConfigurationPref.getExecutableString() + "' is invalid")
+                new AdbException("Provided ADB location '" + adbConfigurationPref.getAdbLocation() + "' is invalid")
         );
     }
 
