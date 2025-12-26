@@ -16,20 +16,26 @@
 
 package name.mlopatkin.andlogview.ui.device;
 
+import static name.mlopatkin.andlogview.ui.device.AdbServiceStarterTest.AdbServerAssert.assertThat;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.device.AdbDeviceList;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
+import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,45 +51,40 @@ class AdbServiceStarterTest {
     static final String ANOTHER_VALID_ADB = "/home/user/Android/Sdk/platform-tools/adb";
     static final String INVALID_ADB = "/usr/local/bin/invalid-adb";
 
+    final FakeInMemoryConfigStorage configStorage = new FakeInMemoryConfigStorage();
+
     @Mock
     AdbManager adbManager;
 
-    AdbConfigurationPref adbPref =
-            new AdbConfigurationPref(new FakeInMemoryConfigStorage(),
-                    FakePathResolver.withValidPaths(VALID_ADB, ANOTHER_VALID_ADB));
-
     @BeforeEach
     void setUp() throws Exception {
-        lenient().when(adbManager.startServer(any())).thenReturn(mock());
+        lenient().when(adbManager.startServer(any())).thenAnswer(args -> new MockAdbServer(args.getArgument(0)));
     }
 
     @Test
     void canStartFromSpecifiedLocation() throws Exception {
-        withAdbLocationSpecified(VALID_ADB);
+        var starter = createStarter(withAdbLocationSpecified(VALID_ADB), noAutoDiscovery());
 
-        var starter = createStarter();
-
-        starter.startAdb();
-
-        verify(adbManager).startServer(new File(VALID_ADB));
+        assertThat(starter.startAdb()).hasAdbLocation(VALID_ADB);
     }
 
     @Test
     void canAutoDiscoverAdb() throws Exception {
-        var starter = createStarterWithAutoDiscovery(INVALID_ADB, VALID_ADB, ANOTHER_VALID_ADB);
+        var adbPref = adbPrefThatAccepts(VALID_ADB, ANOTHER_VALID_ADB);
+        var starter = createStarter(
+                adbPref,
+                autoDiscovery(INVALID_ADB, VALID_ADB, ANOTHER_VALID_ADB)
+        );
 
-        starter.startAdb();
-
-        verify(adbManager).startServer(new File(VALID_ADB));
+        assertThat(starter.startAdb()).hasAdbLocation(VALID_ADB);
         assertThat(adbPref.getAdbLocation()).isEqualTo(VALID_ADB);
     }
 
     @Test
     void failsWhenNoAdbProvidedAndItCannotBeDiscovered() throws Exception {
-        var starter = createStarterWithAutoDiscovery(INVALID_ADB);
+        var starter = createStarter(adbPrefThatAccepts(VALID_ADB), autoDiscovery(INVALID_ADB));
 
         assertThatThrownBy(starter::startAdb).isInstanceOf(AdbException.class);
-
         verify(adbManager, never()).startServer(any());
     }
 
@@ -91,15 +92,14 @@ class AdbServiceStarterTest {
     void noAutodiscoveryWhenAdbIsSpecified() throws Exception {
         withAdbLocationSpecified(VALID_ADB);
 
-        var starter = createStarterWithAutoDiscovery(ANOTHER_VALID_ADB);
+        var starter = createStarter(adbPrefThatAccepts(VALID_ADB, ANOTHER_VALID_ADB), autoDiscovery(ANOTHER_VALID_ADB));
 
-        starter.startAdb();
-
-        verify(adbManager).startServer(new File(VALID_ADB));
+        assertThat(starter.startAdb()).hasAdbLocation(VALID_ADB);
     }
 
     @Test
     void stopsDiscoveryIfAdbPreferenceIsSet() throws Exception {
+        var adbPref = adbPrefThatAccepts(VALID_ADB, ANOTHER_VALID_ADB);
         var locations = Stream.of(INVALID_ADB, ANOTHER_VALID_ADB).peek(path -> {
             if (ANOTHER_VALID_ADB.equals(path)) {
                 // A side effect while consuming the stream to stop iteration early.
@@ -108,27 +108,92 @@ class AdbServiceStarterTest {
             }
         });
 
-        var starter = createStarterWithAutoDiscovery(locations);
-
-        starter.startAdb();
+        var starter = createStarter(adbPref, locations);
 
         // Should start the server based on the value set by the user rather than auto-discovered one.
-        verify(adbManager).startServer(new File(VALID_ADB));
+        assertThat(starter.startAdb()).hasAdbLocation(VALID_ADB);
     }
 
-    private void withAdbLocationSpecified(String adbLocation) {
-        adbPref.trySetAdbLocation(adbLocation);
+    @Test
+    void canRerunAutoDiscoveryIfPreviouslyDiscoveredBecomesInvalid() throws Exception {
+        var previouslyValidAdb = "/this/was/valid/some/time/ago";
+        var initialStarter = createStarter(
+                adbPrefThatAccepts(previouslyValidAdb),
+                autoDiscovery(previouslyValidAdb)
+        );
+        initialStarter.startAdb(); // Runs the auto-discovery process
+
+        var newStarter = createStarter(
+                adbPrefThatAccepts(VALID_ADB),
+                autoDiscovery(previouslyValidAdb, VALID_ADB)
+        );
+
+        assertThat(newStarter.startAdb()).hasAdbLocation(VALID_ADB);
     }
 
-    private AdbServiceStarter createStarter() {
-        return createStarterWithAutoDiscovery(Stream.empty());
+    @Test
+    void doesNotRunAutoDiscoveryIfPreviouslyCommittedAdbBecomesInvalid() throws Exception {
+        var previouslyValidAdb = "/this/was/valid/some/time/ago";
+        withAdbLocationSpecified(previouslyValidAdb);
+
+        var newStarter = createStarter(
+                adbPrefThatAccepts(VALID_ADB),
+                autoDiscovery(VALID_ADB)
+        );
+
+        assertThatThrownBy(newStarter::startAdb).isInstanceOf(AdbException.class);
     }
 
-    private AdbServiceStarter createStarterWithAutoDiscovery(String... autoDiscoveryLocations) {
-        return createStarterWithAutoDiscovery(Stream.of(autoDiscoveryLocations));
+    private AdbConfigurationPref withAdbLocationSpecified(String adbLocation) {
+        var pref = adbPrefThatAccepts(adbLocation);
+        if (!pref.trySetAdbLocation(adbLocation)) {
+            throw new AssertionError("Adb location is not set");
+        }
+        return pref;
     }
 
-    private AdbServiceStarter createStarterWithAutoDiscovery(Stream<String> autoDiscoveryLocations) {
+    private AdbConfigurationPref adbPrefThatAccepts(String... validAdbLocations) {
+        return new AdbConfigurationPref(configStorage, FakePathResolver.withValidPaths(validAdbLocations));
+    }
+
+    private AdbServiceStarter createStarter(AdbConfigurationPref adbPref, Stream<String> autoDiscoveryLocations) {
         return new AdbServiceStarter(adbManager, adbPref, () -> autoDiscoveryLocations.map(File::new));
+    }
+
+    private static Stream<String> autoDiscovery(String... locations) {
+        return Stream.of(locations);
+    }
+
+    private static Stream<String> noAutoDiscovery() {
+        return Stream.empty();
+    }
+
+    static class MockAdbServer implements AdbServer {
+        final File adbLocation;
+
+        public MockAdbServer(File adbLocation) {
+            this.adbLocation = adbLocation;
+        }
+
+        @Override
+        public AdbDeviceList getDeviceList(SequentialExecutor listenerExecutor) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    static class AdbServerAssert extends AbstractAssert<AdbServerAssert, AdbServer> {
+        protected AdbServerAssert(AdbServer adbServer) {
+            super(adbServer, AdbServerAssert.class);
+        }
+
+        public AdbServerAssert hasAdbLocation(String adbLocation) {
+            Assertions.assertThat(actual).as("Must be mock server").isInstanceOf(MockAdbServer.class);
+            Assertions.assertThat(((MockAdbServer) actual).adbLocation.getPath()).isEqualTo(adbLocation);
+            return this;
+        }
+
+        static AdbServerAssert assertThat(AdbServer actual) {
+            return new AdbServerAssert(actual);
+        }
     }
 }

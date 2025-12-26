@@ -82,9 +82,21 @@ class AdbServiceStarter {
             }
         }
 
-        return adbPref.getExecutable().orElseThrow(() ->
-                new AdbException("Provided ADB location '" + adbPref.getAdbLocation() + "' is invalid")
-        );
+        return adbPref.getExecutable().orElseThrow(() -> {
+            // We only get there if the currently set location is not resolvable, including when there is no set
+            // location at all. The latter falls back to just `adb`, but it may not be resolvable either.
+            if (adbPref.isAdbAutoDiscoveryAllowed()) {
+                // There is no set location: our discovery process has failed to find anything. Do not mention the
+                // provided path, because nothing is really provided.
+                return new AdbException("Cannot find ADB executable. Set up ADB to specify it.");
+            }
+
+            // Auto-resolve is not allowed. Something is set by the user, but it is no longer available.
+            // TODO(mlopatkin): this is a TOC/TOU issue, the location might have been changed since we tried to
+            //  resolve the executable.
+            var invalidLocation = adbPref.getAdbLocation();
+            return new AdbException("The ADB location `" + invalidLocation + "` is invalid");
+        });
     }
 
     /**

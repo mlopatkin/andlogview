@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.utils;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 
 import java.io.File;
@@ -25,21 +26,26 @@ import java.util.function.Predicate;
 /**
  * Test implementation of {@link SystemPathResolver}.
  */
-public class FakePathResolver extends SystemPathResolver {
-    private final Predicate<? super String> accepts;
+public final class FakePathResolver {
+    private FakePathResolver() {}
 
-    private FakePathResolver(Predicate<? super String> accepts) {
-        this.accepts = accepts;
-    }
+    private static class ResolverImpl extends SystemPathResolver {
+        private final Predicate<? super String> accepts;
 
-    @Override
-    public Optional<File> resolveExecutablePath(String rawPath) {
-        if (accepts.test(rawPath)) {
-            return Optional.of(new File(rawPath));
+        private ResolverImpl(Predicate<? super String> accepts) {
+            this.accepts = accepts;
         }
 
-        return Optional.empty();
+        @Override
+        public Optional<File> resolveExecutablePath(String rawPath) {
+            if (accepts.test(rawPath)) {
+                return Optional.of(new File(rawPath));
+            }
+
+            return Optional.empty();
+        }
     }
+
 
     /**
      * Creates a resolver that only accepts the given paths.
@@ -48,6 +54,24 @@ public class FakePathResolver extends SystemPathResolver {
      * @return the resolver
      */
     public static SystemPathResolver withValidPaths(String... validPaths) {
-        return new FakePathResolver(ImmutableSet.copyOf(validPaths)::contains);
+        return new ResolverImpl(ImmutableSet.copyOf(validPaths)::contains);
+    }
+
+    /**
+     * Creates a resolver that accepts any paths.
+     *
+     * @return the resolver
+     */
+    public static SystemPathResolver acceptsAnything() {
+        return new ResolverImpl(Predicates.alwaysTrue());
+    }
+
+    /**
+     * Creates a resolver that accepts no paths.
+     *
+     * @return the resolver
+     */
+    public static SystemPathResolver acceptsNothing() {
+        return new ResolverImpl(Predicates.alwaysFalse());
     }
 }

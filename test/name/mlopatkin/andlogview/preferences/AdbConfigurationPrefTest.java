@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
+import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.Test;
@@ -100,12 +101,25 @@ class AdbConfigurationPrefTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
+    void autoDiscoveryIsNotAllowedIfLegacyAdbIsAvailableButInvalid() {
+        Configuration.adb.executable("adb.exe");
+
+        var pref = createPref(FakePathResolver.acceptsNothing());
+
+        assertThat(pref.hasValidAdbLocation()).isFalse();
+        assertThat(pref.getAdbLocation()).isEqualTo("adb.exe");
+        assertThat(pref.isAdbAutoDiscoveryAllowed()).isFalse();
+    }
+
+    @Test
     void canCommitAutoDiscoveredLocation() {
         var pref = createPref(mockResolver());
         var autoDiscoveredPath = "/usr/bin/adb";
 
-        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+        var committedAutoDiscovered = pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
 
+        assertThat(committedAutoDiscovered).isTrue();
         assertThat(pref.getAdbLocation()).isEqualTo(autoDiscoveredPath);
         assertThat(pref.getExecutable()).contains(new File(autoDiscoveredPath));
     }
@@ -117,10 +131,67 @@ class AdbConfigurationPrefTest {
         var autoDiscoveredPath = "/usr/bin/adb";
 
         pref.trySetAdbLocation(explicitPath);
-        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
 
+        var committedAutoDiscovered = pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+
+        assertThat(committedAutoDiscovered).isFalse();
         assertThat(pref.getAdbLocation()).isEqualTo(explicitPath);
         assertThat(pref.getExecutable()).contains(new File(explicitPath));
+    }
+
+    @Test
+    void committingAutoDiscoveredLocationStillAllowsAutoDiscovery() {
+        var pref = createPref(mockResolver());
+        var autoDiscoveredPath = "/usr/bin/adb";
+
+        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+
+        assertThat(pref.isAdbAutoDiscoveryAllowed()).isTrue();
+    }
+
+    @Test
+    void canOverrideAutoDiscoveredLocationWithExplicit() {
+        var pref = createPref(mockResolver());
+        var autoDiscoveredPath = "/usr/bin/adb";
+        var explicitPath = "/home/user/bin/adb";
+
+        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+
+        var committedExplicit = pref.trySetAdbLocation(explicitPath);
+
+        assertThat(committedExplicit).isTrue();
+        assertThat(pref.getAdbLocation()).isEqualTo(explicitPath);
+        assertThat(pref.getExecutable()).contains(new File(explicitPath));
+    }
+
+    @Test
+    void canOverrideExplicitLocationWithAnotherExplicit() {
+        var pref = createPref(mockResolver());
+        var explicitPath = "/usr/bin/adb";
+        var anotherExplicitPath = "/home/user/bin/adb";
+
+        pref.trySetAdbLocation(explicitPath);
+
+        var committedExplicit = pref.trySetAdbLocation(anotherExplicitPath);
+
+        assertThat(committedExplicit).isTrue();
+        assertThat(pref.getAdbLocation()).isEqualTo(anotherExplicitPath);
+        assertThat(pref.getExecutable()).contains(new File(anotherExplicitPath));
+    }
+
+    @Test
+    void canOverrideAutoDiscoveredLocationWithAnotherAutoDiscovery() {
+        var pref = createPref(mockResolver());
+        var autoDiscoveredPath = "/usr/bin/adb";
+        var anotherDiscoveredPath = "/home/user/bin/adb";
+
+        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+
+        var committedAnother = pref.trySetAutoDiscoveredLocation(anotherDiscoveredPath);
+
+        assertThat(committedAnother).isTrue();
+        assertThat(pref.getAdbLocation()).isEqualTo(anotherDiscoveredPath);
+        assertThat(pref.getExecutable()).contains(new File(anotherDiscoveredPath));
     }
 
     private AdbConfigurationPref createPref(SystemPathResolver resolver) {
@@ -128,10 +199,6 @@ class AdbConfigurationPrefTest {
     }
 
     private SystemPathResolver mockResolver() {
-        SystemPathResolver resolver = mock(SystemPathResolver.class);
-        when(resolver.resolveExecutablePath(anyString())).thenAnswer(
-                i -> Optional.of(new File((String) i.getArguments()[0]))
-        );
-        return resolver;
+        return FakePathResolver.acceptsAnything();
     }
 }

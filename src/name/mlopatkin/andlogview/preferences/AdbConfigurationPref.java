@@ -45,34 +45,76 @@ public class AdbConfigurationPref {
         final @Nullable String location;
         final boolean isAutoReconnectEnabled;
         final boolean shouldShowAutostartFailures;
+        final boolean isAutoDiscoveryAllowed;
 
         @SuppressWarnings("deprecation")
         public AdbConfiguration() {
             // Default configuration values. Gson uses this constructor to create the instance, then overrides all
             // values with what is present in JSON data.
-            this(Configuration.adb.executable(), Configuration.adb.isAutoReconnectEnabled(), true);
+            this(
+                    Configuration.adb.executable(),
+                    Configuration.adb.isAutoReconnectEnabled(),
+                    true,
+                    // Disable auto discovery by default if the legacy configuration has location
+                    Configuration.adb.executable() == null
+            );
         }
 
         public AdbConfiguration(
                 @Nullable String location,
                 boolean isAutoReconnectEnabled,
-                boolean shouldShowAutostartFailures
+                boolean shouldShowAutostartFailures,
+                boolean isAutoDiscoveryAllowed
         ) {
             this.location = location;
             this.isAutoReconnectEnabled = isAutoReconnectEnabled;
             this.shouldShowAutostartFailures = shouldShowAutostartFailures;
+            this.isAutoDiscoveryAllowed = isAutoDiscoveryAllowed;
         }
 
         public AdbConfiguration withLocation(@Nullable String location) {
-            return new AdbConfiguration(location, isAutoReconnectEnabled, shouldShowAutostartFailures);
+            return new AdbConfiguration(
+                    location,
+                    isAutoReconnectEnabled,
+                    shouldShowAutostartFailures,
+                    isAutoDiscoveryAllowed
+            );
         }
 
-        public AdbConfiguration withAutoReconnectEnabled(boolean autoReconnectEnabled) {
-            return new AdbConfiguration(location, autoReconnectEnabled, shouldShowAutostartFailures);
+        public AdbConfiguration withAutoReconnectEnabled(boolean isAutoReconnectEnabled) {
+            if (isAutoReconnectEnabled == this.isAutoReconnectEnabled) {
+                return this;
+            }
+            return new AdbConfiguration(
+                    location,
+                    isAutoReconnectEnabled,
+                    shouldShowAutostartFailures,
+                    isAutoDiscoveryAllowed
+            );
         }
 
         public AdbConfiguration withShouldShowAutostartFailures(boolean shouldShowAutostartFailures) {
-            return new AdbConfiguration(location, isAutoReconnectEnabled, shouldShowAutostartFailures);
+            if (shouldShowAutostartFailures == this.shouldShowAutostartFailures) {
+                return this;
+            }
+            return new AdbConfiguration(
+                    location,
+                    isAutoReconnectEnabled,
+                    shouldShowAutostartFailures,
+                    isAutoDiscoveryAllowed
+            );
+        }
+
+        public AdbConfiguration withAutoDiscoveryAllowed(boolean isAutoDiscoveryAllowed) {
+            if (isAutoDiscoveryAllowed == this.isAutoDiscoveryAllowed) {
+                return this;
+            }
+            return new AdbConfiguration(
+                    location,
+                    isAutoReconnectEnabled,
+                    shouldShowAutostartFailures,
+                    isAutoDiscoveryAllowed
+            );
         }
     }
 
@@ -134,9 +176,14 @@ public class AdbConfigurationPref {
      * @return {@code true} if the update was successful or {@code false} if the new location is invalid.
      */
     public boolean trySetAdbLocation(String rawAdbLocation) {
+        return trySetAdbLocation(false, rawAdbLocation);
+    }
+
+    private boolean trySetAdbLocation(boolean autoDiscovery, String rawAdbLocation) {
         Optional<File> maybeResolved = resolveAdbLocation(rawAdbLocation);
-        maybeResolved.ifPresent(resolvedExecutable -> setResolvedAdbLocation(rawAdbLocation, resolvedExecutable));
-        return maybeResolved.isPresent();
+        return maybeResolved.map(
+                resolvedExecutable -> setResolvedAdbLocation(autoDiscovery, rawAdbLocation, resolvedExecutable)
+        ).orElse(false);
     }
 
     private Optional<File> resolveAdbLocation(String rawAdbLocation) {
@@ -147,11 +194,18 @@ public class AdbConfigurationPref {
         }
     }
 
-    private void setResolvedAdbLocation(String rawAdbLocation, File resolvedExecutable) {
+    private boolean setResolvedAdbLocation(boolean autoDiscovery, String rawAdbLocation, File resolvedExecutable) {
         synchronized (lock) {
-            this.resolvedExecutable = resolvedExecutable;
-            setConfiguration(current.withLocation(rawAdbLocation));
+            if (!autoDiscovery || current.isAutoDiscoveryAllowed) {
+                this.resolvedExecutable = resolvedExecutable;
+                setConfiguration(
+                        current.withLocation(rawAdbLocation)
+                                .withAutoDiscoveryAllowed(current.isAutoDiscoveryAllowed && autoDiscovery)
+                );
+                return true;
+            }
         }
+        return false;
     }
 
     public Optional<File> getExecutable() {
@@ -200,7 +254,7 @@ public class AdbConfigurationPref {
      */
     public boolean isAdbAutoDiscoveryAllowed() {
         synchronized (lock) {
-            return current.location == null;
+            return current.isAutoDiscoveryAllowed;
         }
     }
 
@@ -210,11 +264,6 @@ public class AdbConfigurationPref {
      * @param location the auto-discovered location
      */
     public boolean trySetAutoDiscoveredLocation(String location) {
-        synchronized (lock) {
-            if (!isAdbAutoDiscoveryAllowed()) {
-                return false;
-            }
-            return trySetAdbLocation(location);
-        }
+        return trySetAdbLocation(true, location);
     }
 }
