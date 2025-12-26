@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,14 +45,17 @@ import com.google.common.collect.Multimaps;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -69,6 +73,11 @@ class AdbServicesBridgeTest {
 
     @Mock
     AdbServicesSubcomponent.Factory adbServicesFactory;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(adbConfigurationPref.getExecutable()).thenReturn(Optional.of(new File("adb")));
+    }
 
     @Test
     void adbServicesCanBeObtained() {

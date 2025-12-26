@@ -18,6 +18,7 @@ package name.mlopatkin.andlogview.device;
 
 import name.mlopatkin.andlogview.base.AtExitManager;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 
 /**
@@ -27,17 +28,8 @@ import java.util.concurrent.Executor;
  * The implementation is thread-safe.
  */
 public interface AdbManager {
-    /**
-     * Ensures that the ADB server is running and sets up the connection. If the server isn't running then it is
-     * started, otherwise the running server is stopped and a new one starts. This method may block for a significant
-     * period of time.
-     *
-     * @param adbLocation the ADB location to use when starting server
-     * @return the server
-     * @throws AdbException if the server cannot be started
-     */
-    AdbServer startServer(AdbLocation adbLocation) throws AdbException;
 
+    AdbServer startServer(File adbExecutable) throws AdbException;
     /**
      * Creates an instance of the AdbManager but doesn't initialize the DDMLIB yet.
      *

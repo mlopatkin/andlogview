@@ -43,6 +43,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -125,7 +126,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         final var result = adbSubcomponent =
-                runAsync(() -> adbManager.startServer(adbConfigurationPref), adbInitExecutor)
+                runAsync(() -> adbManager.startServer(resolveAdbExecutable()), adbInitExecutor)
                         .thenApplyAsync(this::buildServices, uiExecutor);
 
         if (!result.isDone()) {
@@ -142,6 +143,18 @@ public class AdbServicesBridge implements AdbServicesStatus {
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
         return result;
+    }
+
+    /**
+     * Returns the full path of the ADB executable to use. Throws an exception if the currently set up location is
+     * invalid, i.e. doesn't represent an executable file.
+     * @return the absolute path to the executable
+     * @throws AdbException if the executable cannot be found.
+     */
+    private File resolveAdbExecutable() throws AdbException {
+        return adbConfigurationPref.getExecutable().orElseThrow(() ->
+                new AdbException("ADB location '" + adbConfigurationPref.getExecutableString() + "' is invalid")
+        );
     }
 
     private AdbServices buildServices(AdbServer adbServer) {

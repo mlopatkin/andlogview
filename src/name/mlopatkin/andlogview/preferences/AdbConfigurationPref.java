@@ -21,7 +21,6 @@ import name.mlopatkin.andlogview.config.ConfigStorageClient;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
-import name.mlopatkin.andlogview.device.AdbLocation;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -40,7 +39,7 @@ import javax.inject.Singleton;
  * A collection of the ADB-related preferences.
  */
 @Singleton
-public class AdbConfigurationPref implements AdbLocation {
+public class AdbConfigurationPref {
     // Helper class to store inner configuration.
     private static class AdbConfiguration {
         final String location;
@@ -147,12 +146,10 @@ public class AdbConfigurationPref implements AdbLocation {
         save();
     }
 
-    @Override
     public String getExecutableString() {
         return getAdbLocation();
     }
 
-    @Override
     public Optional<File> getExecutable() {
         return Optional.ofNullable(resolvedExecutable);
     }

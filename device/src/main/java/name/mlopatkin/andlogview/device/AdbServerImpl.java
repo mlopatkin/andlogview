@@ -40,8 +40,8 @@ class AdbServerImpl implements AdbServer {
     private final AdbFacade adbFacade;
     private final DeviceProvisioner deviceProvisioner;
 
-    public AdbServerImpl(AdbLocation adbLocation, Executor ioExecutor) throws AdbException {
-        adbFacade = new AdbFacadeImpl(createBridge(adbLocation));
+    public AdbServerImpl(File adbExecutable, Executor ioExecutor) throws AdbException {
+        adbFacade = new AdbFacadeImpl(createBridge(adbExecutable));
         deviceProvisioner = new DeviceProvisionerImpl(adbFacade, ioExecutor);
     }
 
@@ -50,12 +50,10 @@ class AdbServerImpl implements AdbServer {
         return DispatchingDeviceList.create(adbFacade, deviceProvisioner, listenerExecutor);
     }
 
-    private static AndroidDebugBridge createBridge(AdbLocation adbLocation) throws AdbException {
+    private static AndroidDebugBridge createBridge(File adbExecutable) throws AdbException {
         logger.info("Starting ADB server");
-        File adbExecutable = adbLocation.getExecutable()
-                .orElseThrow(
-                        () -> new AdbException("ADB location '" + adbLocation.getExecutableString() + "' is invalid"));
         logger.debug("ADB server executable: {}", adbExecutable.getAbsolutePath());
+
         final AndroidDebugBridge bridge;
         try {
             bridge = AndroidDebugBridge.createBridge(adbExecutable.getAbsolutePath(), false);

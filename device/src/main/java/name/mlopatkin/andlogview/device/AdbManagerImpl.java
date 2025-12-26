@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 
 class AdbManagerImpl implements AdbManager {
@@ -50,20 +51,20 @@ class AdbManagerImpl implements AdbManager {
     }
 
     @Override
-    public AdbServer startServer(AdbLocation adbLocation) throws AdbException {
+    public AdbServer startServer(File adbExecutable) throws AdbException {
         synchronized (lock) {
             var theServer = server;
             if (theServer != null) {
                 theServer.stop();
             }
-            return server = createServerLocked(adbLocation);
+            return server = createServerLocked(adbExecutable);
         }
     }
 
     @GuardedBy("lock")
-    private AdbServerImpl createServerLocked(AdbLocation adbLocation) throws AdbException {
+    private AdbServerImpl createServerLocked(File adbExecutable) throws AdbException {
         initIfNeededLocked();
-        return new AdbServerImpl(adbLocation, ioExecutor);
+        return new AdbServerImpl(adbExecutable, ioExecutor);
     }
 
     @GuardedBy("lock")
