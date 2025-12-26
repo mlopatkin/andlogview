@@ -243,12 +243,10 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
      * @return a non-cancellable future with the result of the installation
      */
     private CompletableFuture<Result> installPackage(SdkPackage pkg) {
-        // TODO(mlopatkin) Using the default configuration dir for SDK is not great, as on Windows it is Roaming.
-        //  It would be better to store it in Local or LocalLow.
         return installPackageWithState(
                 pkg,
                 false,
-                new File(configurationLocation.getConfigurationDir(), "android-sdk")
+                new File(configurationLocation.getLocalConfigurationDir(), "android-sdk")
         );
     }
 

@@ -28,14 +28,20 @@ import javax.inject.Inject;
  * {@code %APPDATA%/logview/} and on Linux and macOS in {@code $HOME/.logview/}.
  */
 public class ConfigurationLocation {
+    // TODO(mlopatkin): we're relying on environment variables and the likes to fetch the configuration and assume that
+    //  the configuration directories are writable. This may not always be the case, but the app can still function,
+    //  at least with some degradation.
+
     // Name of the system property that overrides the default configuration directory
     private static final String CONFIG_DIR_OVERRIDE_KEY = "name.mlopatkin.andlogview.config.dir";
     private final File configurationDir;
+    private final File localConfigurationDir;
 
     @Inject
     public ConfigurationLocation() {
         var override = System.getProperty(CONFIG_DIR_OVERRIDE_KEY);
         configurationDir = override != null ? new File(override) : getDefaultConfigurationDir();
+        localConfigurationDir = override != null ? configurationDir : getDefaultLocalConfigurationDir();
     }
 
     /**
@@ -45,6 +51,15 @@ public class ConfigurationLocation {
      */
     public File getConfigurationDir() {
         return configurationDir;
+    }
+
+    /**
+     * Returns the local configuration directory. On Windows it is typically {@code AppData/Local}.
+     *
+     * @return the local configuration directory.
+     */
+    public File getLocalConfigurationDir() {
+        return localConfigurationDir;
     }
 
     /**
@@ -65,13 +80,45 @@ public class ConfigurationLocation {
         return new File(getConfigurationDir(), "logview.json");
     }
 
+    private static String getAppConfigDirName() {
+        return SystemUtils.IS_OS_WINDOWS ? "logview" : ".logview";
+    }
+
     private static File getDefaultConfigurationDir() {
-        String appConfigDirName = SystemUtils.IS_OS_WINDOWS ? "logview" : ".logview";
-        return new File(getSystemConfigDir(), appConfigDirName);
+        return new File(getSystemConfigDir(), getAppConfigDirName());
+    }
+
+    private static File getDefaultLocalConfigurationDir() {
+        return new File(getSystemLocalConfigDir(), getAppConfigDirName());
     }
 
     private static File getSystemConfigDir() {
         String systemConfigDirPath = SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : SystemUtils.USER_HOME;
+        // TODO(mlopatkin) What if it is null?
         return new File(Objects.requireNonNull(systemConfigDirPath, "Can't find user home"));
+    }
+
+    private static File getSystemLocalConfigDir() {
+        if (!SystemUtils.IS_OS_WINDOWS) {
+            // This isn't XDG-compliant, but who cares :)
+            return getSystemConfigDir();
+        }
+        // Windows is tricky. Since Windows Vista, the local configuration lives in C:\Users\<username>\AppData\Local
+        // and is available through LOCALAPPDATA env var.
+        // On XP and 2K it lives in C:\Documents and Settings\<username>\Local Settings\Application data
+        // and there is no env var to fetch it.
+        // See: https://web.archive.org/web/20251002193525/https://learn.microsoft.com/en-us/previous-versions/ms995853(v=msdn.10)?redirectedfrom=MSDN#using-application-data-folders
+        // for pre-Windows Vista definitions.
+        var localAppData = System.getenv("LOCALAPPDATA");
+        if (localAppData != null) {
+            return new File(localAppData);
+        }
+
+        if (SystemUtils.IS_OS_WINDOWS_XP || SystemUtils.IS_OS_WINDOWS_2000 || SystemUtils.IS_OS_WINDOWS_2003) {
+            return new File(SystemUtils.getUserHome(), "Local Settings/Application data");
+        }
+
+        // Fallback on weird Vista+ that doesn't have the env var set.
+        return getSystemConfigDir();
     }
 }
