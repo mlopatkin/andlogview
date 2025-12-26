@@ -166,6 +166,12 @@ public class Configuration {
         public static Boolean isAutoReconnectEnabled() {
             return getConfig().get(AUTORECONNECT_KEY);
         }
+
+        @Deprecated
+        @VisibleForTesting
+        public static void executable(String executable) {
+            getConfig().set(EXECUTABLE_KEY, executable);
+        }
     }
 
     public static class dump { // NO CHECKSTYLE

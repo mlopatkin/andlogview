@@ -24,6 +24,11 @@ import java.net.URI;
 import java.util.Comparator;
 
 public class SdkPackage implements Comparable<SdkPackage> {
+    /**
+     * A package with ADB and fastboot.
+     */
+    public static final String PLATFORM_TOOLS = "platform-tools";
+
     private static final Comparator<SdkPackage> COMPARATOR =
             Comparator.comparing(SdkPackage::getName).thenComparing(SdkPackage::getTargetOs);
 

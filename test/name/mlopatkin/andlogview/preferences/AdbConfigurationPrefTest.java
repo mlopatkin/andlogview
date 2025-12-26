@@ -23,14 +23,17 @@ import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
+@ExtendWith(DefaultConfigurationExtension.class)
 class AdbConfigurationPrefTest {
     private final FakeInMemoryConfigStorage storage = new FakeInMemoryConfigStorage();
 
@@ -78,6 +81,46 @@ class AdbConfigurationPrefTest {
 
         assertThat(pref.hasValidAdbLocation()).isTrue();
         assertThat(pref.getExecutable()).contains(new File(Configuration.adb.DEFAULT_EXECUTABLE));
+    }
+
+    @Test
+    void autoDiscoveryIsAllowedByDefault() {
+        var pref = createPref(mockResolver());
+
+        assertThat(pref.isAdbAutoDiscoveryAllowed()).isTrue();
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    void autoDiscoveryIsNotAllowedIfLegacyAdbIsAvailable() {
+        Configuration.adb.executable("adb.exe");
+
+        var pref = createPref(mockResolver());
+        assertThat(pref.isAdbAutoDiscoveryAllowed()).isFalse();
+    }
+
+    @Test
+    void canCommitAutoDiscoveredLocation() {
+        var pref = createPref(mockResolver());
+        var autoDiscoveredPath = "/usr/bin/adb";
+
+        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+
+        assertThat(pref.getAdbLocation()).isEqualTo(autoDiscoveredPath);
+        assertThat(pref.getExecutable()).contains(new File(autoDiscoveredPath));
+    }
+
+    @Test
+    void autoDiscoveredLocationDoesNotOverrideExplicit() {
+        var pref = createPref(mockResolver());
+        var explicitPath = "/home/user/bin/adb";
+        var autoDiscoveredPath = "/usr/bin/adb";
+
+        pref.trySetAdbLocation(explicitPath);
+        pref.trySetAutoDiscoveredLocation(autoDiscoveredPath);
+
+        assertThat(pref.getAdbLocation()).isEqualTo(explicitPath);
+        assertThat(pref.getExecutable()).contains(new File(explicitPath));
     }
 
     private AdbConfigurationPref createPref(SystemPathResolver resolver) {

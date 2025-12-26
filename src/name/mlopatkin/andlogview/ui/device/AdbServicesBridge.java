@@ -29,6 +29,7 @@ import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameCleaner;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.MyFutures;
@@ -50,6 +51,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -66,7 +69,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
     // split into two in the future.
     private static final Logger logger = LoggerFactory.getLogger(AdbServicesBridge.class);
 
-    private final AdbManager adbManager;
+    private final AdbServiceStarter adbStarter;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesSubcomponent.Factory adbSubcomponentFactory;
     private final Executor uiExecutor;
@@ -84,16 +87,30 @@ public class AdbServicesBridge implements AdbServicesStatus {
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesSubcomponent.Factory adbSubcomponentFactory,
             @Named(AppExecutors.UI_EXECUTOR) SequentialExecutor uiExecutor,
-            @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor) {
-        this(adbManager, adbConfigurationPref, adbSubcomponentFactory, uiExecutor, adbInitExecutor,
-                new GlobalAdbDeviceList(uiExecutor));
+            @Named(AppExecutors.FILE_EXECUTOR) Executor adbInitExecutor
+    ) {
+        this(
+                adbManager,
+                adbConfigurationPref,
+                adbSubcomponentFactory,
+                uiExecutor,
+                adbInitExecutor,
+                new GlobalAdbDeviceList(uiExecutor),
+                AdbLocationDiscovery::discoverAdbLocations
+        );
     }
 
     @VisibleForTesting
-    AdbServicesBridge(AdbManager adbManager, AdbConfigurationPref adbConfigurationPref,
-            AdbServicesSubcomponent.Factory adbSubcomponentFactory, Executor uiExecutor, Executor adbInitExecutor,
-            GlobalAdbDeviceList adbDeviceList) {
-        this.adbManager = adbManager;
+    AdbServicesBridge(
+            AdbManager adbManager,
+            AdbConfigurationPref adbConfigurationPref,
+            AdbServicesSubcomponent.Factory adbSubcomponentFactory,
+            Executor uiExecutor,
+            Executor adbInitExecutor,
+            GlobalAdbDeviceList adbDeviceList,
+            Supplier<Stream<File>> commonAdbLocations
+    ) {
+        this.adbStarter = new AdbServiceStarter(adbManager, adbConfigurationPref, commonAdbLocations);
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbSubcomponentFactory = adbSubcomponentFactory;
         this.uiExecutor = uiExecutor;
@@ -126,7 +143,7 @@ public class AdbServicesBridge implements AdbServicesStatus {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         final var result = adbSubcomponent =
-                runAsync(() -> adbManager.startServer(resolveAdbExecutable()), adbInitExecutor)
+                runAsync(adbStarter::startAdb, adbInitExecutor)
                         .thenApplyAsync(this::buildServices, uiExecutor);
 
         if (!result.isDone()) {
@@ -143,18 +160,6 @@ public class AdbServicesBridge implements AdbServicesStatus {
                         uiExecutor)
                 .exceptionally(MyFutures::uncaughtException);
         return result;
-    }
-
-    /**
-     * Returns the full path of the ADB executable to use. Throws an exception if the currently set up location is
-     * invalid, i.e. doesn't represent an executable file.
-     * @return the absolute path to the executable
-     * @throws AdbException if the executable cannot be found.
-     */
-    private File resolveAdbExecutable() throws AdbException {
-        return adbConfigurationPref.getExecutable().orElseThrow(() ->
-                new AdbException("Provided ADB location '" + adbConfigurationPref.getAdbLocation() + "' is invalid")
-        );
     }
 
     private AdbServices buildServices(AdbServer adbServer) {

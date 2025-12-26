@@ -39,7 +39,7 @@ public final class WindowsPaths {
      * @return the path to the directory, if available, or null
      */
     public static @Nullable Path getRoamingAppData() {
-        return resolveKnownFolder("APPDATA", "AppData/Roaming/", "Application Data/");
+        return resolveKnownFolderInUserProfile("APPDATA", "AppData/Roaming/", "Application Data/");
     }
 
     /**
@@ -52,11 +52,53 @@ public final class WindowsPaths {
      * @return the path to the directory, if available, or null
      */
     public static @Nullable Path getLocalAppData() {
-        return resolveKnownFolder("LOCALAPPDATA", "AppData/Local/", "Local Settings/Application Data/");
+        return resolveKnownFolderInUserProfile("LOCALAPPDATA", "AppData/Local/", "Local Settings/Application Data/");
     }
 
-    private static @Nullable Path resolveKnownFolder(String environmentVariable, String inUserProfilePath,
-            String legacyInUserProfilePath) {
+    /**
+     * Returns path to the primary Program Files directory on the system drive. On 64-bit systems, it holds 64-bit
+     * programs.
+     * <p>
+     * Returns null if not running on Windows.
+     *
+     * @return the path to the directory, if available, or null
+     */
+    public static @Nullable Path getProgramFiles() {
+        return resolveKnownFolderOnSystemDrive("ProgramFiles", "Program Files/");
+    }
+
+    /**
+     * Returns path to the 32-bit Program Files directory on the system drive. It is only available on 64-bit OS.
+     * <p>
+     * Returns null if not running on Windows.
+     *
+     * @return the path to the directory, if available, or null
+     */
+    public static @Nullable Path getProgramFilesX86() {
+        return resolveKnownFolderOnSystemDrive("ProgramFiles(x86)", "Program Files (x86)/");
+    }
+
+    /**
+     * Returns the system drive root.
+     * <p>
+     * Returns null if not running on Windows.
+     *
+     * @return the path to the directory, if available, or null
+     */
+    public static @Nullable Path getSystemDrive() {
+        var systemDrivePath = System.getenv("SystemDrive");
+        if (systemDrivePath != null) {
+            return Paths.get(systemDrivePath + "/");
+        }
+
+        return null;
+    }
+
+    private static @Nullable Path resolveKnownFolderInUserProfile(
+            String environmentVariable,
+            String inUserProfilePath,
+            String legacyInUserProfilePath
+    ) {
         if (!SystemUtils.IS_OS_WINDOWS) {
             return null;
         }
@@ -75,6 +117,27 @@ public final class WindowsPaths {
             return Paths.get(SystemUtils.USER_HOME, inUserProfilePath);
         }
         return Paths.get(SystemUtils.USER_HOME, legacyInUserProfilePath);
+    }
+
+    private static @Nullable Path resolveKnownFolderOnSystemDrive(
+            String environmentVariable,
+            String inSystemDrivePath
+    ) {
+        if (!SystemUtils.IS_OS_WINDOWS) {
+            return null;
+        }
+
+        var environmentPath = System.getenv(environmentVariable);
+        if (environmentPath != null) {
+            return Paths.get(environmentPath);
+        }
+
+        var systemDrive = getSystemDrive();
+        if (systemDrive != null) {
+            return systemDrive.resolve(inSystemDrivePath);
+        }
+
+        return null;
     }
 
     private static boolean isAtLeastVista() {

@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -63,12 +62,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class AdbServicesBridgeTest {
     @Mock
     AdbManager adbManager;
-    @Mock
+    @Mock(strictness = Mock.Strictness.LENIENT)
     AdbConfigurationPref adbConfigurationPref;
 
     @Mock
@@ -76,7 +76,8 @@ class AdbServicesBridgeTest {
 
     @BeforeEach
     void setUp() {
-        lenient().when(adbConfigurationPref.getExecutable()).thenReturn(Optional.of(new File("adb")));
+        when(adbConfigurationPref.isAdbAutoDiscoveryAllowed()).thenReturn(false);
+        when(adbConfigurationPref.getExecutable()).thenReturn(Optional.of(new File("adb")));
     }
 
     @Test
@@ -307,8 +308,15 @@ class AdbServicesBridgeTest {
     }
 
     private AdbServicesBridge createBridge(GlobalAdbDeviceList deviceList) {
-        return new AdbServicesBridge(adbManager, adbConfigurationPref, adbServicesFactory,
-                new TestSequentialExecutor(MoreExecutors.directExecutor()), MoreExecutors.directExecutor(), deviceList);
+        return new AdbServicesBridge(
+                adbManager,
+                adbConfigurationPref,
+                adbServicesFactory,
+                new TestSequentialExecutor(MoreExecutors.directExecutor()),
+                MoreExecutors.directExecutor(),
+                deviceList,
+                Stream::empty
+        );
     }
 
     private AdbServicesBridge createBridge(Executor uiExecutor, Executor adbExecutor) {

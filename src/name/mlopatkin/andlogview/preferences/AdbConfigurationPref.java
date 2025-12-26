@@ -192,4 +192,29 @@ public class AdbConfigurationPref {
         current = newConfiguration;
         preference.set(current);
     }
+
+    /**
+     * Returns true if ADB auto-discovery is allowed. In particular, there is no user-provided ADB location.
+     *
+     * @return {@code true} if the discovery is allowed
+     */
+    public boolean isAdbAutoDiscoveryAllowed() {
+        synchronized (lock) {
+            return current.location == null;
+        }
+    }
+
+    /**
+     * Commits the auto-discovered location if it is valid and no location has been set yet.
+     *
+     * @param location the auto-discovered location
+     */
+    public boolean trySetAutoDiscoveredLocation(String location) {
+        synchronized (lock) {
+            if (!isAdbAutoDiscoveryAllowed()) {
+                return false;
+            }
+            return trySetAdbLocation(location);
+        }
+    }
 }
