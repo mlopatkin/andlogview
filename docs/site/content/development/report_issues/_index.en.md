@@ -25,4 +25,4 @@ information in bug description:
 
 It would be nice if you attach a log file of the app, which is located in
 the temporary files directory (`C:\Users\<username>\AppData\Local\Temp`
-on Windows and `/tmp` on Linux and macOS) and named `logview.log`.
+on Windows and `/tmp` on Linux) and named `logview.log`.

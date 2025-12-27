@@ -15,7 +15,7 @@ There are several types of installers available:
 
 In general, you need the following:
 * A machine with Windows, Linux, or macOS installed. GUI support is mandatory.
-* For noJRE distribution only - Java: JRE or JDK 8+ (version 17+ is recommended)
+* For noJRE distribution only - Java: JRE or JDK 17+
 * Android SDK Platform-Tools (optional, to work with a device or an emulator)
 
 ## Installing
@@ -40,7 +40,7 @@ unpack it into the location of your choice.
 
 To run AndLogView, use the OS-specific script:
 * `bin/logview.bat` (Windows)
-* `bin/logview` (Linux/MacOS X)
+* `bin/logview` (Linux/macOS)
 
 [gh_latest_release]: https://github.com/mlopatkin/andlogview/releases/latest
 [temurin_download]: https://adoptium.net/temurin/releases/?version=17

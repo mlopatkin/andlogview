@@ -3,13 +3,11 @@
 ## Prerequisites
 
  * Windows, Linux, or macOS
- * OpenJDK 8 or newer (e.g. from [Eclipse Adoptium](https://adoptium.net/)) to run Gradle
+ * OpenJDK 17 or newer (e.g. from [Eclipse Adoptium](https://adoptium.net/)) to run Gradle
  * Internet connection to download dependencies from Maven Central, Gradle Plugin Portal, etc.
  * Git (to check out and commit)
 
-Andlogview is written in Java. It supports JDKs starting from 8 as its runtime environment. However, to make development
-easier, the [Jabel](https://github.com/bsideup/jabel) compiler plugin is applied to allow using modern language
-constructs from recent Java versions, such as text blocks and `var`.
+AndLogView is written in Java. It supports JDKs starting from 17 as its runtime environment.
 
 ## Checking out the sources
 The repository can be cloned with Git or you can download the latest snapshot in archive from GitHub. The rest of this
@@ -53,7 +51,7 @@ each line ends with line ending symbol, there are no tab symbols. To install the
 
 ## Building with Gradle
 ### Setting up the JDK
-Technically, the build uses JDK 25 to compile everything and JDK 8 to run tests. It utilizes Gradle's
+Technically, the build uses JDK 25 to compile everything and JDK 17 to run tests. It utilizes Gradle's
 [Java Toolchains](https://docs.gradle.org/current/userguide/toolchains.html) to select the proper JDK. You have to
 either provide JDKs to Gradle somehow, as described in the docs, or rely on its automated provisioning.
 

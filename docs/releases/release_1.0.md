@@ -1,5 +1,12 @@
 ## What's New
 
+### Breaking Changes
+
+* **Minimal supported JDK to run AndLogView is now 17**.
+
+  Starting with AndLogView version 1.0, JDK 17 or higher is required to run it. Before, only Java 8 was required.
+  You can use new distributions with bundled JDK if you don't want to manage JDK yourself.
+
 ### New Features
 * Semi-automated ADB installation ([#239](https://github.com/mlopatkin/andlogview/issues/239)).
   AndLogView can now download and install Android SDK platform-tools for you.
@@ -11,7 +18,7 @@
   * Windows (x64), as EXE installer ([#436](https://github.com/mlopatkin/andlogview/issues/436)).
   * macOS (arm64 aka M1+), as DMG image ([#438](https://github.com/mlopatkin/andlogview/issues/438)).
 
-  Users on other platforms should continue use the `noJRE` distribution with manually installed JDK for now.
+  Users on other platforms should continue use the `noJRE` distribution with manually installed JDK 17+ for now.
 * The app now has a custom icon.
 
 ### More info:

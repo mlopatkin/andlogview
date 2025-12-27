@@ -13,7 +13,7 @@ of the Android logs, both online and offline.
 - Bookmarks
 - Filter log lines by tag, PID, app name, log priority, message content
 - Filtered lines can be hidden, highlighted or shown in a separate window
-- Display any avaliable buffers: main, system, events, radio
+- Display any available buffers: main, system, events, radio
 - Save filtered lines
 - Display process list
 
@@ -21,17 +21,17 @@ of the Android logs, both online and offline.
 
 Requirements:
 
- - JRE or JDK 8+
- - Android SDK (to work with a device or an emulator)
+ - JRE or JDK 17+
+ - Android SDK (optional, to work with a device or an emulator; AndLogView can install it for you)
 
-Unpack a zip archive to any folder.
+Unpack the zip archive to any folder.
 
 Use the OS-specific script to launch AndLogView:
 
  - `bin/andlogview.bat` (Windows)
- - `bin/andlogview` (Linux, MacOS)
+ - `bin/andlogview` (Linux, macOS)
 
-Both scripts expect the javaw/java to be on your PATH.
+Both scripts expect the `javaw`/`java` to be on your `PATH`.
 
 ## Overview: filters
 
