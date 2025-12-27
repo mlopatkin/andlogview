@@ -17,7 +17,7 @@ mkdir -p "$GRADLE_CACHE_DIR"
 GRADLE_PROPERTIES="$GRADLE_CACHE_DIR/gradle.properties"
 if [ ! -f "$GRADLE_PROPERTIES" ]; then
   cat > "$GRADLE_PROPERTIES" <<'EOF'
-org.gradle.java.installations.fromEnv=JDK8,JDK17
+org.gradle.java.installations.fromEnv=JDK17,JDK25
 org.gradle.java.installations.auto-download=false
 org.gradle.java.installations.auto-detect=false
 EOF

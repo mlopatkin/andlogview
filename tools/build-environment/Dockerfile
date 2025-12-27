@@ -1,13 +1,14 @@
 # When changing the version here, update the JDK version in .github/versions.properties.
 # This is the version to bundle with Linux distribution, and it is good to have it consistent across platforms.
- FROM eclipse-temurin:25.0.1_8-jdk@sha256:194e728dada6f5bf366f62398e53ef0d1b57ac67c8042da0f43edd92385fe9ec
+FROM eclipse-temurin:25.0.1_8-jdk@sha256:194e728dada6f5bf366f62398e53ef0d1b57ac67c8042da0f43edd92385fe9ec
 
-ENV JDK17=/opt/java/openjdk
-ENV JDK8=/opt/java/openjdk8
+ENV JDK25=/opt/java/openjdk
+ENV JDK17=/opt/java/openjdk17
+
 # Ensure reproducible DEB builds, 1980-01-31T23:00:00Z, something close to what Gradle uses as a default timestamp
 ENV SOURCE_DATE_EPOCH=318207600
 
-COPY --from=eclipse-temurin:8u472-b08-jdk@sha256:6c9af470aeafde76116d29f500e899454c42001b5d7f7385ae0aadebe851073e /opt/java/openjdk $JDK8
+COPY --from=eclipse-temurin:17.0.17_10-jdk@sha256:7bcd719950407380e7acd15b53b228673c82289a7d8c765cbdb0c89a75f17a12 /opt/java/openjdk $JDK17
 
 LABEL org.opencontainers.image.authors="Mikhail Lopatkin <me@mlopatkin.name>"
 LABEL org.opencontainers.image.source="https://github.com/mlopatkin/andlogview"
