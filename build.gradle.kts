@@ -596,3 +596,15 @@ tasks.run {
         layout.buildDirectory.dir("tmp/andlogview-home").get().asFile.absolutePath
     )
 }
+
+tasks.register<Copy>("prepareChangelog") {
+    description = "Copies the changelog for the current version to a stable location for GitHub releases"
+    group = "distribution"
+
+    val baseVersion = libs.versions.andlogview
+    from(baseVersion.map { "docs/releases/release_${it}.md" })
+    into(layout.buildDirectory.dir("changelog"))
+    rename { "release-notes.md" }
+
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}

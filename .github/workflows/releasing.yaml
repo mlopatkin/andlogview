@@ -31,7 +31,7 @@ jobs:
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
-            check noJreInstaller
+            check noJreInstaller prepareChangelog
       - name: Build and publish snapshot
         run: >
             ./gradlew
@@ -60,7 +60,7 @@ jobs:
           gh release create "nightly"
           --draft
           --latest=false
-          --notes-file docs/releases/release_0.24.md
+          --notes-file build/changelog/release-notes.md
           --prerelease=true
           --title "nightly"
           --verify-tag
@@ -186,7 +186,7 @@ jobs:
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
-            check noJreInstaller
+            check noJreInstaller prepareChangelog
       - name: Build and publish tag
         run: >
             ./gradlew
@@ -203,7 +203,7 @@ jobs:
           gh release create "${{ github.ref_name }}"
           --draft
           --latest=false
-          --notes-file docs/releases/release_0.24.md
+          --notes-file build/changelog/release-notes.md
           --prerelease=false
           --title "${{ github.ref_name }}"
           --verify-tag

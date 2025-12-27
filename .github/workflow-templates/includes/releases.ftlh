@@ -4,7 +4,7 @@
           gh release create "[=tag]"
           --draft
           --latest=false
-          --notes-file docs/releases/release_0.24.md
+          --notes-file build/changelog/release-notes.md
           --prerelease=[=prerelease]
           --title "[=tag]"
           --verify-tag
@@ -45,7 +45,7 @@
       - <@gradle.setupGradle />
       - name: Run checks and build noJRE installer
         # This can benefit from the configuration cache, unlike the installer builds later
-        <@gradle.runGradle "check noJreInstaller"/>
+        <@gradle.runGradle "check noJreInstaller prepareChangelog"/>
       - name: Build and publish [=pipeline]
         <@gradle.runGradle "linuxInstallers"/>
       - name: Publish artifacts
