@@ -12,7 +12,7 @@ compileJdkVersion = "25"  # JDK version used for compilation
 # Language level used for compilation. Java 17 introduces sealed classes that may not be supported in Jabel, so we stick
 # with 16 for now
 sourceJavaVersion = "16"
-runtimeJdkVersion = "8"  # JDK version used at runtime, determines available APIs
+runtimeJdkVersion = "17"  # JDK version used at runtime, determines available APIs
 
 [libraries]
 # Bytebuddy is a dependency of Jabel, we upgrade it

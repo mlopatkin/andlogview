@@ -14,7 +14,7 @@ env:
 jobs:
   build-snapshot:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:12e18d995ba5d572ab13a7cd19f9e8e10f144b26823653e854905e506eebafad
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:902e19e084dffe8d4773f42fae44c7910674b2ed504bc077f1ca0ef08064f4a2
     env:
       LOGVIEW_SNAPSHOT_BUILD: true
     # Only build snapshots on master
@@ -27,7 +27,7 @@ jobs:
         # This can benefit from the configuration cache, unlike the installer builds later
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -35,7 +35,7 @@ jobs:
       - name: Build and publish snapshot
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -97,7 +97,7 @@ jobs:
         shell: cmd
         run: >
             gradlew.bat
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -131,7 +131,7 @@ jobs:
         shell: sh
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -169,7 +169,7 @@ jobs:
 
   build-tag:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:12e18d995ba5d572ab13a7cd19f9e8e10f144b26823653e854905e506eebafad
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:902e19e084dffe8d4773f42fae44c7910674b2ed504bc077f1ca0ef08064f4a2
     env:
       LOGVIEW_SNAPSHOT_BUILD: false
     # Only build releases out of tags
@@ -182,7 +182,7 @@ jobs:
         # This can benefit from the configuration cache, unlike the installer builds later
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -190,7 +190,7 @@ jobs:
       - name: Build and publish tag
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -237,7 +237,7 @@ jobs:
         shell: cmd
         run: >
             gradlew.bat
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
@@ -271,7 +271,7 @@ jobs:
         shell: sh
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace

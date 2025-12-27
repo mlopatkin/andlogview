@@ -1,7 +1,7 @@
 <#macro runGradle tasks gradleCmd="./gradlew">
         run: >
             [=gradleCmd]
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace

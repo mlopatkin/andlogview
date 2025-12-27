@@ -7,7 +7,7 @@ on:
 jobs:
   run-precommit-tests:
     runs-on: ubuntu-latest
-    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:12e18d995ba5d572ab13a7cd19f9e8e10f144b26823653e854905e506eebafad
+    container: ghcr.io/mlopatkin/andlogview-build-environment@sha256:902e19e084dffe8d4773f42fae44c7910674b2ed504bc077f1ca0ef08064f4a2
     env:
       PYTHON_BINARY: python3
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: Run unit tests
         run: >
             ./gradlew
-            -Porg.gradle.java.installations.fromEnv=JDK8,JDK17
+            -Porg.gradle.java.installations.fromEnv=JDK17,JDK25
             -Porg.gradle.java.installations.auto-download=false
             -Porg.gradle.java.installations.auto-detect=false
             --stacktrace
