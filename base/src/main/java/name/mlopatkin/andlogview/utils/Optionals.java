@@ -17,27 +17,9 @@
 package name.mlopatkin.andlogview.utils;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public final class Optionals {
     private Optionals() {
-    }
-
-    /**
-     * Backport of the {@code Optional.ifPresentOrElse} available in Java 9+.
-     *
-     * @param optional the optional
-     * @param ifPresent action to execute with the Optional value if it is present
-     * @param ifEmpty action to execute if the Optional is empty
-     * @param <T> the type of the optional.
-     */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static <T> void ifPresentOrElse(Optional<T> optional, Consumer<? super T> ifPresent, Runnable ifEmpty) {
-        if (optional.isPresent()) {
-            ifPresent.accept(optional.get());
-        } else {
-            ifEmpty.run();
-        }
     }
 
     /**

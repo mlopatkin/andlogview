@@ -16,15 +16,11 @@
 package name.mlopatkin.andlogview.utils;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 
 import java.util.Locale;
-import java.util.stream.Stream;
 
 public class MyStringUtils {
     private MyStringUtils() {}
-
-    private static final Splitter EOL_SPLITTER = Splitter.onPattern("((?<=\n))");
 
     public static final int NOT_FOUND = -1;
 
@@ -79,7 +75,7 @@ public class MyStringUtils {
         int suffixLength = maxLength - prefixLength - 1; // one symbol for replacement
         assert suffixLength > 0;
         int suffixStart = str.length() - suffixLength;
-        // StringBuilder has fewer allocations because no substring and IndyConcat is Java 9+ while target is Java 8.
+        // StringBuilder has fewer allocations because no substring is needed.
         StringBuilder result = new StringBuilder(maxLength);
         result.append(str, 0, prefixLength);
         result.append(replacement);
@@ -88,17 +84,10 @@ public class MyStringUtils {
     }
 
     /**
-     * Returns {@code true} if the given CharSequence is empty. Backport of Java 15's instance method.
-     */
-    public static boolean isEmpty(CharSequence cs) {
-        return cs.length() == 0;
-    }
-
-    /**
      * Returns the first character of a non-empty {@link CharSequence}.
      */
     public static char first(CharSequence cs) {
-        Preconditions.checkArgument(!isEmpty(cs), "CharSequence is empty");
+        Preconditions.checkArgument(!cs.isEmpty(), "CharSequence is empty");
         return cs.charAt(0);
     }
 
@@ -106,21 +95,7 @@ public class MyStringUtils {
      * Returns the last character of a non-empty {@link CharSequence}.
      */
     public static char last(CharSequence cs) {
-        Preconditions.checkArgument(!isEmpty(cs), "CharSequence is empty");
+        Preconditions.checkArgument(!cs.isEmpty(), "CharSequence is empty");
         return cs.charAt(cs.length() - 1);
-    }
-
-    /**
-     * Splits the char sequence at line terminators into a stream of strings. Similar to Java 11's
-     * {@code String.lines()}, but only recognizes {@code \n} as a line terminator.
-     *
-     * @param sequence the sequence to split
-     * @return the stream of strings
-     */
-    public static Stream<String> lines(CharSequence sequence) {
-        if (isEmpty(sequence)) {
-            return Stream.empty();
-        }
-        return EOL_SPLITTER.splitToStream(sequence).map(s -> s.endsWith("\n") ? s.substring(0, s.length() - 1) : s);
     }
 }

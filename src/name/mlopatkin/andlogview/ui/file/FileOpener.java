@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.file;
 
-import static name.mlopatkin.andlogview.utils.MyFutures.failedFuture;
-
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
 import name.mlopatkin.andlogview.liblogcat.file.FileDataSourceFactory;
 import name.mlopatkin.andlogview.liblogcat.file.ImportProblem;
@@ -104,11 +102,11 @@ public class FileOpener {
         } catch (UnrecognizedFormatException e) {
             logger.error("Unrecognized file format for {}", file, e);
             ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Unrecognized file format for " + file);
-            return failedFuture(e);
+            return CompletableFuture.failedFuture(e);
         } catch (IOException e) {
             logger.error("Cannot open {}", file, e);
             ErrorDialogsHelper.showError(dialogFactory.getOwner(), "Cannot read " + file);
-            return failedFuture(e);
+            return CompletableFuture.failedFuture(e);
         }
     }
 

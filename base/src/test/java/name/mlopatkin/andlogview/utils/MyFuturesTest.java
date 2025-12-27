@@ -116,7 +116,7 @@ class MyFuturesTest {
     void cancelByFailedFutureDoesNotCancel() {
         Cancellable cancellable1 = mock();
         var cancellable2 = new CompletableFuture<>();
-        var future = MyFutures.failedFuture(new Exception("already failed"));
+        var future = CompletableFuture.failedFuture(new Exception("already failed"));
 
         MyFutures.cancelBy(cancellable1, future);
         MyFutures.cancelBy(cancellable2, future);
@@ -129,7 +129,7 @@ class MyFuturesTest {
     void attachingCancellableDoesNotPropagateExceptions() throws Exception {
         Cancellable cancellable1 = mock();
         var cancellable2 = new CompletableFuture<>();
-        var future = MyFutures.failedFuture(new Exception("already failed"));
+        var future = CompletableFuture.failedFuture(new Exception("already failed"));
 
         var handler = ThreadTestUtils.withUncaughtExceptionHandler(mock(), () -> {
             MyFutures.cancelBy(cancellable1, future);

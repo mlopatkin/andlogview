@@ -22,7 +22,6 @@ import name.mlopatkin.andlogview.search.Search;
 import name.mlopatkin.andlogview.search.SearchModel;
 import name.mlopatkin.andlogview.ui.status.SearchStatusPresenter;
 import name.mlopatkin.andlogview.utils.MyFutures;
-import name.mlopatkin.andlogview.utils.Optionals;
 import name.mlopatkin.andlogview.widgets.DialogResult;
 
 import java.util.Optional;
@@ -163,19 +162,19 @@ public class SearchPresenter<T, P, S extends Predicate<? super T>> {
 
     private void find(Search.Direction direction) {
         searchStatusPresenter.reset();
-        Optionals.ifPresentOrElse(searchModel.getCurrentSearch(), s -> continueSearch(direction, s),
-                this::showSearchPrompt);
+        searchModel.getCurrentSearch().ifPresentOrElse(
+                s -> continueSearch(direction, s),
+                this::showSearchPrompt
+        );
     }
 
     private void continueSearch(Search.Direction direction, Search<P> search) {
         searchableView.getSearchStartPosition().ifPresent(search::setPosition);
         search.search(direction)
-                .thenAcceptAsync(r ->
-                                Optionals.ifPresentOrElse(r,
-                                        this::onSearchHit,
-                                        this::onNoMoreHits),
-                        uiThreadExecutor)
-                .exceptionally(MyFutures::uncaughtException);
+                .thenAcceptAsync(
+                        r -> r.ifPresentOrElse(this::onSearchHit, this::onNoMoreHits),
+                        uiThreadExecutor
+                ).exceptionally(MyFutures::uncaughtException);
     }
 
     private void onSearchHit(P foundPosition) {
@@ -191,9 +190,10 @@ public class SearchPresenter<T, P, S extends Predicate<? super T>> {
             S pattern = patternCompiler.compile(patternText);
             searchPromptView.hide();
             var startPosition = searchableView.getSearchStartPosition();
-            Optionals.ifPresentOrElse(startPosition,
+            startPosition.ifPresentOrElse(
                     p -> searchModel.startSearch(pattern, p),
-                    () -> searchModel.startSearch(pattern));
+                    () -> searchModel.startSearch(pattern)
+            );
             find(Search.Direction.FORWARD.alsoSearchCurrent());
         } catch (RequestCompilationException e) {
             searchPromptView.showPatternError(

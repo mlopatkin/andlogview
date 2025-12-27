@@ -25,7 +25,6 @@ import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Cancelled;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Installed;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.ManualFallback;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter.Result;
-import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -109,7 +108,7 @@ class InstallAdbPresenterFactoryTest {
         void startInstallFailsWhenDownloadFails() {
             RuntimeException exception = new RuntimeException("Network error");
             when(downloadPresenter.isAvailable()).thenReturn(true);
-            when(downloadPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+            when(downloadPresenter.startInstall()).thenReturn(CompletableFuture.failedFuture(exception));
 
             var future = presenter.startInstall();
 
@@ -163,7 +162,7 @@ class InstallAdbPresenterFactoryTest {
             RuntimeException exception = new RuntimeException("Failed to open browser");
             when(downloadPresenter.isAvailable()).thenReturn(false);
             when(desktopPresenter.isAvailable()).thenReturn(true);
-            when(desktopPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+            when(desktopPresenter.startInstall()).thenReturn(CompletableFuture.failedFuture(exception));
 
             var future = presenter.startInstall();
 
@@ -174,7 +173,7 @@ class InstallAdbPresenterFactoryTest {
         void startInstallFailsWhenDesktopPresenterFailsAfterManualFallback() {
             RuntimeException exception = new RuntimeException("Failed to open browser");
             setupDownloadPresenter(Result.manual());
-            when(desktopPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+            when(desktopPresenter.startInstall()).thenReturn(CompletableFuture.failedFuture(exception));
 
             var future = presenter.startInstall();
 
@@ -185,7 +184,7 @@ class InstallAdbPresenterFactoryTest {
         void startInstallFailsWhenDesktopPresenterFailsAfterPackageNotFoundFallback() {
             RuntimeException exception = new RuntimeException("Failed to open browser");
             setupDownloadPresenter(Result.notFound());
-            when(desktopPresenter.startInstall()).thenReturn(MyFutures.failedFuture(exception));
+            when(desktopPresenter.startInstall()).thenReturn(CompletableFuture.failedFuture(exception));
 
             var future = presenter.startInstall();
 

@@ -23,7 +23,6 @@ import name.mlopatkin.andlogview.parsers.ParserControl;
 import name.mlopatkin.andlogview.parsers.Patterns;
 import name.mlopatkin.andlogview.utils.LineParser;
 import name.mlopatkin.andlogview.utils.LineParser.State;
-import name.mlopatkin.andlogview.utils.MyStringUtils;
 
 import com.google.common.base.CharMatcher;
 
@@ -177,7 +176,7 @@ class DelegateLong extends RegexLogcatParserDelegate {
     }
 
     private static boolean isBlank(CharSequence sequence) {
-        return MyStringUtils.isEmpty(sequence);
+        return sequence.isEmpty();
     }
 
     @Override

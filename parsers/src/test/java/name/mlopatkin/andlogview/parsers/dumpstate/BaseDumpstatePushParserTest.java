@@ -16,8 +16,6 @@
 
 package name.mlopatkin.andlogview.parsers.dumpstate;
 
-import static name.mlopatkin.andlogview.utils.MyStringUtils.lines;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -46,9 +44,9 @@ class BaseDumpstatePushParserTest {
     void dumpstateWithGarbageLinesCanBeMeaningfullyHandled() {
         var handler = createHandler();
         try (var parser = createParser(handler)) {
-            ParserUtils.readInto(parser, lines("""
+            ParserUtils.readInto(parser, """
                     Garbage in
-                    Garbage out"""));
+                    Garbage out""".lines());
         }
         var order = inOrder(handler);
         order.verify(handler).unparseableLine("Garbage in");
@@ -61,11 +59,11 @@ class BaseDumpstatePushParserTest {
     void dumpstateHeaderIsParsed() {
         var handler = createHandler();
         try (var parser = createParser(handler)) {
-            ParserUtils.readInto(parser, lines("""
+            ParserUtils.readInto(parser, """
                     ========================================================
                     == dumpstate: 2022-10-03 21:10:47
                     ========================================================
-                    """));
+                    """.lines());
         }
         var order = inOrder(handler);
         order.verify(handler).header();
@@ -77,11 +75,11 @@ class BaseDumpstatePushParserTest {
     void dumpstateHeaderWithGarbageInTheBeginningIsParsed() {
         var handler = createHandler();
         try (var parser = createParser(handler)) {
-            ParserUtils.readInto(parser, lines("""
+            ParserUtils.readInto(parser, """
                     SoMeJunk========================================================
                     == dumpstate: 2022-10-03 21:10:47
                     ========================================================
-                    """));
+                    """.lines());
         }
         var order = inOrder(handler);
         order.verify(handler).header();
@@ -93,11 +91,11 @@ class BaseDumpstatePushParserTest {
     void dumpstateHeaderWithoutTimestampIsParsed() {
         var handler = createHandler();
         try (var parser = createParser(handler)) {
-            ParserUtils.readInto(parser, lines("""
+            ParserUtils.readInto(parser, """
                     ========================================================
                     == dumpstate
                     ========================================================
-                    """));
+                    """.lines());
         }
         var order = inOrder(handler);
         order.verify(handler).header();
@@ -109,14 +107,14 @@ class BaseDumpstatePushParserTest {
     void headerWithUnparseableLinesInBetweenCanBeRecognized() {
         var handler = createHandler();
         try (var parser = createParser(handler)) {
-            ParserUtils.readInto(parser, lines("""
+            ParserUtils.readInto(parser, """
                     Prefix Junk
                     ========================================================
                     Junk
                     == dumpstate
                     Other junk
                     ========================================================
-                    """));
+                    """.lines());
         }
         var order = inOrder(handler);
         order.verify(handler).unparseableLine("Prefix Junk");
@@ -131,12 +129,12 @@ class BaseDumpstatePushParserTest {
     void linesAfterHeaderAreReportedAsUnparseable() {
         var handler = createHandler();
         try (var parser = createParser(handler)) {
-            ParserUtils.readInto(parser, lines("""
+            ParserUtils.readInto(parser, """
                     ========================================================
                     == dumpstate
                     ========================================================
                     Junk
-                    """));
+                    """.lines());
         }
         var order = inOrder(handler);
         order.verify(handler).header();
@@ -152,12 +150,12 @@ class BaseDumpstatePushParserTest {
 
         boolean parseResult;
         try (var parser = createParser(handler)) {
-            parseResult = ParserUtils.readInto(parser, lines("""
+            parseResult = ParserUtils.readInto(parser, """
                     ========================================================
                     == dumpstate
                     ========================================================
                     Junk line
-                    """));
+                    """.lines());
         }
 
         var order = inOrder(handler);
@@ -461,14 +459,14 @@ class BaseDumpstatePushParserTest {
     }
 
     static Stream<String> linesWithHeader(String s) {
-        return Stream.concat(header(), lines(s));
+        return Stream.concat(header(), s.lines());
     }
 
     private static Stream<String> header() {
-        return lines("""
+        return """
                 ========================================================
                 == dumpstate
                 ========================================================
-                """);
+                """.lines();
     }
 }

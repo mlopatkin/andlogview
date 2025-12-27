@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.parsers.logcat;
 
 import static name.mlopatkin.andlogview.logmodel.AssertLogRecord.assertThatRecord;
 import static name.mlopatkin.andlogview.parsers.logcat.SingleEntryParser.assertOnlyParsedRecord;
-import static name.mlopatkin.andlogview.utils.MyStringUtils.lines;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.atIndex;
@@ -37,11 +36,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class DelegateLongTest {
     @Test
     void parsesEmptyMessage() {
-        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, """
                 [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
 
 
-                """))
+                """.lines())
                 .hasDate(1, 2)
                 .hasTime(3, 4, 5, 678)
                 .hasPid(1234)
@@ -53,11 +52,11 @@ public class DelegateLongTest {
 
     @Test
     void parsesBlankMessage() {
-        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, """
                 [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
                     \t
 
-                """))
+                """.lines())
                 .hasDate(1, 2)
                 .hasTime(3, 4, 5, 678)
                 .hasPid(1234)
@@ -69,11 +68,11 @@ public class DelegateLongTest {
 
     @Test
     void parsesSingleLineMessage() {
-        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, """
                 [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
                 Some message
 
-                """))
+                """.lines())
                 .hasDate(1, 2)
                 .hasTime(3, 4, 5, 678)
                 .hasPid(1234)
@@ -85,12 +84,12 @@ public class DelegateLongTest {
 
     @Test
     void parsesSingleLineMessageWithBlankEnd() {
-        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines("""
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, """
                 [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
                 Some message
 
 
-                """))
+                """.lines())
                 .hasDate(1, 2)
                 .hasTime(3, 4, 5, 678)
                 .hasPid(1234)
@@ -164,11 +163,11 @@ public class DelegateLongTest {
             "' 1165:0x48d', 1165, 1165",
     })
     void parsesPidAndTid(String pidTid, int expectedPid, int expectedTid) {
-        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines(String.format("""
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, String.format("""
                 [ 01-01 00:00:00.000 %s E/sometag ]
                 Some message
 
-                """, pidTid)))
+                """, pidTid).lines())
                 .hasPid(expectedPid)
                 .hasTid(expectedTid)
                 .hasPriority(LogRecord.Priority.ERROR)
@@ -190,11 +189,11 @@ public class DelegateLongTest {
             "'I/t ]   ', 'I/t ]'", // Special characters pretend to be the end of the pattern.
     })
     void parsesTag(String tagString, String expectedTag) {
-        assertOnlyParsedRecord(LogcatParsers::logcatLong, lines(String.format("""
+        assertOnlyParsedRecord(LogcatParsers::logcatLong, String.format("""
                 [ 01-01 00:00:00.000     1:    3 E/%s ]
                 Some message
 
-                """, tagString)))
+                """, tagString).lines())
                 .hasPriority(LogRecord.Priority.ERROR)
                 .hasTag(expectedTag);
     }
@@ -444,7 +443,7 @@ public class DelegateLongTest {
     private static ListAssert<LogRecord> assertParsed(String records) {
         var handler = new ListCollectingHandler();
         try (var parser = LogcatParsers.logcatLong(handler)) {
-            ParserUtils.readInto(parser, lines(records));
+            ParserUtils.readInto(parser, records.lines());
         }
 
         return assertThat(handler.getCollectedRecords());

@@ -31,7 +31,6 @@ import name.mlopatkin.andlogview.test.TestActionHandler;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
-import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -230,7 +229,7 @@ class ConfigurationDialogPresenterTest {
     void failedAdbInstallDoesNotChangeLocation() {
         withInvalidAdbLocation();
         when(installPresenter.startInstall()).thenReturn(
-                MyFutures.failedFuture(new RuntimeException("Network error")));
+                CompletableFuture.failedFuture(new RuntimeException("Network error")));
 
         var presenter = createPresenter();
         presenter.openDialog();

@@ -191,19 +191,6 @@ public final class MyFutures {
     }
 
     /**
-     * Backport of the {@code CompletableFuture::failedFuture} for Java 8.
-     *
-     * @param th the failure reason
-     * @param <T> the type of the future
-     * @return the completed completion stage that has failed with the provided failure
-     */
-    public static <T> CompletableFuture<T> failedFuture(Throwable th) {
-        var future = new CompletableFuture<T>();
-        future.completeExceptionally(th);
-        return future;
-    }
-
-    /**
      * Adapter for void-returning methods to be used in {@link CompletableFuture#exceptionally(Function)}.
      *
      * @param consumer the consumer of the exception
