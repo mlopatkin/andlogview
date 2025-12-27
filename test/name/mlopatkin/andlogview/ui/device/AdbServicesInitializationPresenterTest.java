@@ -499,6 +499,97 @@ class AdbServicesInitializationPresenterTest {
         thenRequestCompletedSuccessfully();
     }
 
+    @Test
+    void postponedErrorIsNotShownImmediately() {
+        whenErrorDialogsPostponed();
+        whenRequestedAdbInteractive();
+        whenAdbInitFailed();
+
+        thenNoErrorIsShown();
+    }
+
+    @Test
+    void postponedErrorIsShownWhenResumed() {
+        givenInitialState(() -> {
+            whenErrorDialogsPostponed();
+            whenRequestedAdbInteractive();
+            whenAdbInitFailed();
+        });
+
+        whenErrorDialogsResumed();
+
+        thenErrorIsShown();
+    }
+
+    @Test
+    @SuppressWarnings("Convert2MethodRef")
+    void resumingWithoutPostponedErrorDoesNotShowError() {
+        givenInitialState(() -> whenErrorDialogsPostponed());
+        whenErrorDialogsResumed();
+
+        thenNoErrorIsShown();
+    }
+
+    @Test
+    void errorAfterResumingIsShownImmediately() {
+        givenInitialState(() -> {
+            whenErrorDialogsPostponed();
+            whenErrorDialogsResumed();
+        });
+
+        whenRequestedAdbInteractive();
+        whenAdbInitFailed();
+
+        thenErrorIsShown();
+    }
+
+    @Test
+    void restartAdbDiscardsPostponedError() {
+        givenInitialState(() -> {
+            whenErrorDialogsPostponed();
+            whenRequestedAdbInteractive();
+            whenAdbInitFailed();
+        });
+
+        withNewResultAfterReload();
+        whenRequestedAdbWith(restartRequest());
+        whenErrorDialogsResumed();
+
+        thenNoErrorIsShown();
+    }
+
+    @Test
+    void showsErrorIfRestartingAdbFails() {
+        givenInitialState(() -> {
+            whenErrorDialogsPostponed();
+            whenRequestedAdbInteractive();
+            whenAdbInitFailed();
+        });
+
+        withNewResultAfterReload();
+        whenRequestedAdbWith(restartRequest());
+        whenAdbInitFailed();
+        whenErrorDialogsResumed();
+
+        thenErrorIsShown();
+    }
+
+    @Test
+    void postponedErrorIsNotShownAfterRestart() {
+        givenInitialState(() -> {
+            whenErrorDialogsPostponed();
+            whenRequestedAdbInteractive();
+            whenAdbInitFailed();
+        });
+
+        withNewResultAfterReload();
+        whenRequestedAdbWith(restartRequest());
+        whenAdbInitSucceed();
+        whenErrorDialogsResumed();
+
+        thenNoErrorIsShown();
+    }
+
     private AdbServicesInitializationPresenter createPresenter() {
         return createPresenter(MoreExecutors.directExecutor());
     }
@@ -546,6 +637,14 @@ class AdbServicesInitializationPresenterTest {
 
     private void whenRequestedAdbDeviceList() {
         presenter.withAdbDeviceList(presenter::handleAdbError);
+    }
+
+    private void whenErrorDialogsPostponed() {
+        presenter.postponeErrorDialogs();
+    }
+
+    private void whenErrorDialogsResumed() {
+        presenter.resumeErrorDialogs();
     }
 
     private void givenServiceConsumerThrows() {

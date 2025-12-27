@@ -39,7 +39,7 @@ import javax.inject.Named;
  * A holder for per-AdbServer instances of {@link AdbDeviceList}. Changes to the underlying list become opaque to the
  * clients.
  */
-class GlobalAdbDeviceList implements AdbDeviceList {
+public class GlobalAdbDeviceList implements AdbDeviceList {
     private final Subject<DeviceChangeObserver> deviceChangeObservers = new Subject<>();
     private final SequentialExecutor uiExecutor;
 

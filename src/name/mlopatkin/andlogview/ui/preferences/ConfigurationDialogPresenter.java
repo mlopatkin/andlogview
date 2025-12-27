@@ -97,6 +97,8 @@ public class ConfigurationDialogPresenter {
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());
         view.setAdbInstallAvailable(!adbConfigurationPref.hasValidAdbLocation() && adbInstaller.isAvailable());
         view.setAdbInstallerAction(this::startAdbInstall);
+
+        adbServicesPresenter.postponeErrorDialogs();
         view.show();
     }
 
@@ -131,9 +133,14 @@ public class ConfigurationDialogPresenter {
         if (hasLocationChanged || adbServicesStatus.getStatus().isFailed()) {
             adbServicesPresenter.restartAdb();
         }
+
+        // Show any postponed ADB errors if we didn't restart ADB above.
+        adbServicesPresenter.resumeErrorDialogs();
     }
 
     private void discard() {
         view.hide();
+        // Show any postponed ADB errors since the dialog closed without changes.
+        adbServicesPresenter.resumeErrorDialogs();
     }
 }

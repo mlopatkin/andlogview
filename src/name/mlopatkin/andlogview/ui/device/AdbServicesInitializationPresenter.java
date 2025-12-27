@@ -29,6 +29,8 @@ import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.utils.Cancellable;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -79,9 +81,11 @@ public class AdbServicesInitializationPresenter {
     private final Set<Object> progressTokens = new HashSet<>();
 
     private boolean hasShownErrorMessage;
+    private boolean areErrorsPostponed;
+    private @Nullable Runnable postponedError;
 
     @Inject
-    AdbServicesInitializationPresenter(
+    public AdbServicesInitializationPresenter(
             View view,
             AdbServicesBridge bridge,
             AdbConfigurationPref adbConfigurationPref,
@@ -183,6 +187,8 @@ public class AdbServicesInitializationPresenter {
      * <p>
      * The error may also be suppressed if it is a result of an automatic connection that happened without explicit
      * ADB service request, e.g. when the user starts the app without a log file provided.
+     * <p>
+     * If the configuration dialog is currently open, the error is postponed until the dialog closes.
      *
      * @param failure the failure
      * @param isAutoStart if the error is triggered by the automatic connection setup
@@ -190,12 +196,20 @@ public class AdbServicesInitializationPresenter {
     public void handleAdbError(Throwable failure, boolean isAutoStart) {
         if (!hasShownErrorMessage && (!isAutoStart || adbConfigurationPref.shouldShowAutostartFailures())) {
             hasShownErrorMessage = true;
-            // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag before
-            // showing the dialog to prevent re-entrance and double dialog.
+            String failureMessage;
             if (MyThrowables.unwrapUninteresting(failure) instanceof AdbException adbException) {
-                view.showAdbLoadingError(adbException.getMessage(), isAutoStart);
+                failureMessage = adbException.getMessage();
             } else {
-                view.showAdbLoadingError("Failed to initialize ADB", isAutoStart);
+                failureMessage = "Failed to initialize ADB";
+            }
+
+            if (areErrorsPostponed) {
+                // Postpone showing the error until the configuration dialog closes
+                postponedError = () -> view.showAdbLoadingError(failureMessage, isAutoStart);
+            } else {
+                // showAdbLoadingError blocks and opens a nested message pump. It is important to set up the flag
+                // before showing the dialog to prevent re-entrance and double dialog.
+                view.showAdbLoadingError(failureMessage, isAutoStart);
             }
         }
     }
@@ -210,9 +224,49 @@ public class AdbServicesInitializationPresenter {
         deviceDisconnectedHandler.suppressDialogs();
         bridge.stopAdb();
         hasShownErrorMessage = false;
+        // This error was for the previous bridge.
+        postponedError = null;
         initAdbServicesInteractive(
                 false /* allowCancellation */,
                 adbServices -> deviceDisconnectedHandler.resumeDialogs(),
                 failure -> deviceDisconnectedHandler.resumeDialogs());
+    }
+
+    /**
+     * Postpones showing ADB error dialogs until {@link #resumeErrorDialogs()} is called. This is useful when a dialog
+     * that can address the ADB configuration issue is already shown, and showing an error dialog on top would be
+     * confusing or disruptive to the user.
+     * <p>
+     * While errors are postponed, calls to {@link #handleAdbError(Throwable, boolean)} will save the error to be shown
+     * later instead of displaying it immediately. Only the most recent error is saved; earlier postponed errors are
+     * discarded.
+     * <p>
+     * Multiple calls to this method without intervening {@link #resumeErrorDialogs()} calls have no additional effect.
+     */
+    public void postponeErrorDialogs() {
+        areErrorsPostponed = true;
+    }
+
+    /**
+     * Resumes normal ADB error dialog behavior and shows any error that was postponed since the last call to
+     * {@link #postponeErrorDialogs()}.
+     * <p>
+     * If an error was postponed, it will be shown to the user. If multiple errors occurred while postponed, only the
+     * most recent one is shown. After showing the postponed error (if any), the error is discarded.
+     * <p>
+     * This method can be called even if no errors were postponed, in which case it simply resumes normal error
+     * handling without showing any dialogs.
+     * <p>
+     * Note: Calling {@link #restartAdb()} also discards any postponed errors without showing them, as they are no
+     * longer relevant for the new ADB instance.
+     */
+    public void resumeErrorDialogs() {
+        areErrorsPostponed = false;
+        var postponedError = this.postponedError;
+        this.postponedError = null;
+
+        if (postponedError != null) {
+            postponedError.run();
+        }
     }
 }

@@ -45,7 +45,7 @@ public class AdbOpener {
     private final Executor uiExecutor;
 
     @Inject
-    AdbOpener(AdbServicesInitializationPresenter presenter,
+    public AdbOpener(AdbServicesInitializationPresenter presenter,
             AdbDataSourceFactory adbDataSourceFactory,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.presenter = presenter;
