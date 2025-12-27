@@ -383,7 +383,7 @@ tasks.shadowDistZip.configure {
 val additionalFiles = copySpec {
     from(projectDir)
     from(tasks.generateNotices.flatMap { it.noticeOutputFile })
-    include("AUTHORS.md", "HISTORY", "LICENSE", "NOTICE", "README.md")
+    include("AUTHORS.md", "LICENSE", "NOTICE", "README.md")
 }
 distributions.all { contents.with(additionalFiles) }
 
