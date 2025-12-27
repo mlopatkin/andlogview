@@ -9,20 +9,14 @@ flatlaf = "3.7"
 guava = "33.5.0-jre"
 mockito = "4.11.0"
 compileJdkVersion = "25"  # JDK version used for compilation
-# Language level used for compilation. Java 17 introduces sealed classes that may not be supported in Jabel, so we stick
-# with 16 for now
-sourceJavaVersion = "16"
 runtimeJdkVersion = "17"  # JDK version used at runtime, determines available APIs
 
 [libraries]
-# Bytebuddy is a dependency of Jabel, we upgrade it
-build-bytebuddy = "net.bytebuddy:byte-buddy:1.18.3"
 build-errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 # Errorprone plugin allows to configure Errorprone compiler
 build-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
 # Runtime plugin allows preparing runtime images with JDK included
 build-jlink-plugin = "org.beryx.runtime:org.beryx.runtime.gradle.plugin:2.0.1"
-build-jabel = "com.pkware.jabel:jabel-javac-plugin:1.0.1-1"
 build-nullaway-processor = "com.uber.nullaway:nullaway:0.12.15"
 build-nullaway-plugin = { module = "net.ltgt.nullaway:net.ltgt.nullaway.gradle.plugin", version.ref = "nullawayPlugin" }
 checkerframeworkAnnotations = "org.checkerframework:checker-qual:3.38.0"

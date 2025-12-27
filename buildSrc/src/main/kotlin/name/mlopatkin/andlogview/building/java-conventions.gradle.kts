@@ -46,9 +46,6 @@ dependencies {
     testImplementation(buildLibs.test.assertj.guava)
     testImplementation(platform(buildLibs.test.junit5.bom))
     testImplementation(buildLibs.test.junit5.jupiter)
-    testRuntimeOnly(buildLibs.checkerframeworkAnnotations) {
-        because("Java 8 needs type annotations on the classpath to avoid NPEs when reflecting")
-    }
     testRuntimeOnly(buildLibs.test.junit5.vintageEngine)
 
     errorprone(buildLibs.build.errorprone.core)
@@ -63,13 +60,9 @@ sourceSets.withType<SourceSet> {
 
         implementationConfigurationName(buildLibs.guava)
 
-        annotationProcessorConfigurationName(buildLibs.build.bytebuddy) {
-            because("upgrading Jabel's dependency to support Java 25")
-        }
         annotationProcessorConfigurationName(buildLibs.guava) {
             because("upgrading NullAway's dependency to avoid warning on Java 25")
         }
-        annotationProcessorConfigurationName(buildLibs.build.jabel)
         annotationProcessorConfigurationName(buildLibs.build.nullaway.processor)
     }
 }
@@ -92,6 +85,8 @@ java {
     toolchain {
         languageVersion = compileJdk.languageVersion
     }
+
+    sourceCompatibility = JavaVersion.toVersion(runtimeJdk.int) // for the IDE support
 }
 
 checkstyle {
@@ -120,32 +115,21 @@ tasks.withType<JavaCompile>().configureEach {
     // Workaround for JMH plugin not respecting the toolchain
     javaCompiler.convention(javaToolchains.compilerFor(java.toolchain))
 
-    sourceCompatibility = buildLibs.versions.sourceJavaVersion.get() // for the IDE support
+
 
     with(options) {
         encoding = "UTF-8"
         release = runtimeJdk.intProvider
-
-        forkOptions {
-            // Allow Jabel to attach its agent.
-            jvmArgs = (jvmArgs ?: listOf()) + "-XX:+EnableDynamicAgentLoading"
-        }
-
-        // Generates metadata for reflection on method parameters.
-        // This is required for Mockito to work properly on Java 8.
-        // See https://github.com/junit-team/junit-framework/issues/3797 for inspiration.
-        compilerArgs.add("-parameters")
 
         // Configure javac warnings
         compilerArgs.addAll(
             listOf(
                 "-Xlint:all", // Enable everything
                 // But silence some warnings we don't care about:
-                // - options warns about Java 8 target on modern JVMs
                 // - processing is too strict for the annotation processors we use.
                 // - serial is triggered by Swing-extending classes, but these are never serialized in the app.
                 // - this-escape is a common pattern in our code
-                "-Xlint:-options,-processing,-serial,-this-escape",
+                "-Xlint:-processing,-serial,-this-escape",
                 "-Werror",  // Treat warnings as errors
             )
         )
