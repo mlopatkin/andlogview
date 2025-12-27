@@ -44,9 +44,14 @@ abstract class BuildEnvironment(project: Project) {
     @Suppress("MemberVisibilityCanBePrivate")  // The warning is false positive
     val revisionNumber: Provider<Int>
 
+    /**
+     * Whether we're building in the CI environment
+     */
+    val isCi: Provider<Boolean>
+
     init {
         with(project) {
-            val isCi = providers.environmentVariable("CI").map { it.toBoolean() }.orElse(false)
+            isCi = providers.environmentVariable("CI").map { it.toBoolean() }.orElse(false)
             val bitbucketPipelinesRevision = providers.environmentVariable("BITBUCKET_COMMIT")
             val githubActionsRevision = providers.environmentVariable("GITHUB_SHA")
 

@@ -608,3 +608,23 @@ tasks.register<Copy>("prepareChangelog") {
 
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
+
+tasks.register("printVersions") {
+    val isCi = buildEnvironment.isCi
+    val revNumber = buildEnvironment.revisionNumber
+    val isSnapshot = buildEnvironment.isSnapshot
+    val linuxVersion = installers.linux.version
+    val windowsVersion = installers.windows.version
+    val macosVersion = installers.macos.version
+
+    doLast {
+        println("""
+            CI: ${isCi.get()}
+            Rev Number: ${revNumber.get()}
+            Snapshot: $isSnapshot
+            Linux: ${linuxVersion.get()}
+            Windows: ${windowsVersion.get()}
+            macOS: ${macosVersion.get()}
+        """.trimIndent())
+    }
+}
