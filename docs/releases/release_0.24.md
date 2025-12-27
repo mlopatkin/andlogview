@@ -1,3 +1,5 @@
+## What's New
+
 ### New Features
 * Semi-automated ADB installation ([#239](https://github.com/mlopatkin/andlogview/issues/239)).
   AndLogView can now download and install Android SDK platform-tools for you.
