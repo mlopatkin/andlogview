@@ -489,7 +489,7 @@ installers {
 
     macos {
         // On macOS the version must not start from `0.` or contain anything but dot-separated numbers.
-        version = libs.versions.andlogview.map { "1.$it" }
+        version = libs.versions.andlogview
         displayAppName = "AndLogView"
         icon = file("assets/andlogview.icns")
 

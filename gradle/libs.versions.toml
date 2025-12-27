@@ -1,5 +1,5 @@
 [versions]
-andlogview = "0.24"
+andlogview = "1.0"
 checkstyle = "10.21.1"
 dagger = "2.55"
 errorprone = "2.45.0"

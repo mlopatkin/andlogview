@@ -1,7 +1,7 @@
-version 0.24
+version 1.0
     [+] The app now has an icon!
 
-    [!] See docs/releases/release_0.24.md for further info.
+    [!] See docs/releases/release_1.0.md for further info.
 
 version 0.23
     [+] Filter list view replaces the button panel.
