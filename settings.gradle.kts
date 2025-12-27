@@ -44,11 +44,6 @@ include("search")
 include("search:logrecord")
 include("widgets")
 
-include(":jspecify") {
-    projectDir = file("third-party/jspecify")
-}
-
-
 fun include(projectPath: String, configure: ProjectDescriptor.() -> Unit) {
     include(projectPath)
     project(projectPath).configure()
