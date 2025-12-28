@@ -42,5 +42,5 @@ This is a bugfix release for release 1.0.
   Error dialogs now include expandable stack traces to help diagnose issues and provide better context when things go wrong.
 
 ### More info:
-* [Full Changelog](https://github.com/mlopatkin/andlogview/compare/0.23...master)
-* [Known issues](https://github.com/mlopatkin/andlogview/issues?q=sort%3Aupdated-desc%20is%3Aissue%20label%3Aa%3Abug%2Ca%3Aregression%20label%3Aaffects-version%3A1.0%20is%3Aopen)
+* [Full Changelog](https://github.com/mlopatkin/andlogview/compare/0.23...1.0.1)
+* [Known issues](https://github.com/mlopatkin/andlogview/issues?q=is%3Aissue+label%3Aaffects-version%3A1.0.1+-milestone%3A1.0.1+). Closed issues in this list are fixed in the later version.
