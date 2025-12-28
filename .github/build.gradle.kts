@@ -1,6 +1,7 @@
-import name.mlopatkin.gradleplugins.freemarker.FreeMarkerTask
+import name.mlopatkin.gradleplugins.freemarker.FreemarkerTask
+import name.mlopatkin.gradleplugins.freemarker.FreemarkerConfiguration.InterpolationSyntax
 import java.io.StringReader
-import java.util.Properties
+import java.util.*
 
 /*
  * Copyright 2025 the Andlogview authors
@@ -24,7 +25,11 @@ plugins {
 }
 
 
-val buildWorkflows = tasks.register<FreeMarkerTask>("buildWorkflows") {
+val buildWorkflows = tasks.register<FreemarkerTask>("buildWorkflows") {
+    configuration {
+        interpolationSyntax = InterpolationSyntax.SQUARE_BRACKET
+    }
+
     includes = file("workflow-templates/includes")
 
     templates = fileTree(file("workflow-templates")) {

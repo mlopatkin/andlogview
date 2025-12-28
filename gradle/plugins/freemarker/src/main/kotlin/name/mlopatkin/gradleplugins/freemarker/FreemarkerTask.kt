@@ -18,15 +18,19 @@ package name.mlopatkin.gradleplugins.freemarker
 
 import freemarker.template.Configuration
 import freemarker.template.Template
+import name.mlopatkin.gradleplugins.freemarker.FreemarkerConfiguration.InterpolationSyntax
+import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
@@ -39,7 +43,7 @@ import org.gradle.workers.WorkerExecutor
 import java.io.File
 import javax.inject.Inject
 
-abstract class FreeMarkerTask : DefaultTask() {
+abstract class FreemarkerTask : DefaultTask() {
     @get:Classpath
     abstract val freeMarkerClasspath: ConfigurableFileCollection
 
@@ -60,6 +64,13 @@ abstract class FreeMarkerTask : DefaultTask() {
     @get:Inject
     protected abstract val worker: WorkerExecutor
 
+    @get:Nested
+    abstract val configuration: FreemarkerConfiguration
+
+    fun configuration(block: Action<in FreemarkerConfiguration>) {
+        block.execute(configuration)
+    }
+
     @TaskAction
     fun action() {
         val queue = worker.classLoaderIsolation {
@@ -69,9 +80,10 @@ abstract class FreeMarkerTask : DefaultTask() {
         templates.files.forEach { inputTemplate ->
             queue.submit(FreeMarkerWorkItem::class) {
                 template.set(inputTemplate)
-                includes.set(this@FreeMarkerTask.includes)
-                definitions.set(this@FreeMarkerTask.definitions)
-                outputDirectory.set(this@FreeMarkerTask.outputDirectory)
+                includes.set(this@FreemarkerTask.includes)
+                definitions.set(this@FreemarkerTask.definitions)
+                outputDirectory.set(this@FreemarkerTask.outputDirectory)
+                configuration.set(this@FreemarkerTask.configuration)
             }
         }
     }
@@ -82,19 +94,21 @@ interface FreeMarkerWorkParams : WorkParameters {
     val includes: DirectoryProperty
     val definitions: MapProperty<String, String>
     val outputDirectory: DirectoryProperty
+    val configuration: Property<FreemarkerConfiguration>
 }
 
 abstract class FreeMarkerWorkItem : WorkAction<FreeMarkerWorkParams> {
     override fun execute() {
-        val cfg = Configuration(Configuration.VERSION_2_3_34).apply {
-            defaultEncoding = "UTF-8"
-            interpolationSyntax = Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX
-            if (parameters.includes.isPresent) {
-                setDirectoryForTemplateLoading(parameters.includes.get().asFile)
-            }
-        }
-
         with(parameters) {
+            val cfg = Configuration(Configuration.VERSION_2_3_34).apply {
+                defaultEncoding = "UTF-8"
+                if (includes.isPresent) {
+                    setDirectoryForTemplateLoading(includes.get().asFile)
+                }
+            }
+
+            configuration.get().applyTo(cfg)
+
             val templateFile = template.get().asFile
             val outputFileName = templateFile.nameWithoutExtension
             processTemplate(cfg, templateFile, outputDirectory.file(outputFileName).get().asFile, definitions.get())
@@ -122,6 +136,14 @@ abstract class FreeMarkerWorkItem : WorkAction<FreeMarkerWorkParams> {
             decoratedException.stackTrace = e.stackTrace
 
             throw decoratedException
+        }
+    }
+
+    private fun FreemarkerConfiguration.applyTo(configuration: Configuration) {
+        configuration.interpolationSyntax = when (interpolationSyntax.get()) {
+            InterpolationSyntax.LEGACY -> Configuration.LEGACY_INTERPOLATION_SYNTAX
+            InterpolationSyntax.SQUARE_BRACKET -> Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX
+            InterpolationSyntax.DOLLAR -> Configuration.DOLLAR_INTERPOLATION_SYNTAX
         }
     }
 }

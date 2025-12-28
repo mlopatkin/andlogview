@@ -39,8 +39,11 @@ abstract class FreemarkerPlugin : Plugin<Project> {
             }
         }
 
-        project.tasks.withType<FreeMarkerTask> {
+        project.tasks.withType<FreemarkerTask> {
             freeMarkerClasspath.from(freemarkerRuntimeConfiguration)
+            configuration {
+                interpolationSyntax.set(FreemarkerConfiguration.InterpolationSyntax.DOLLAR)
+            }
         }
     }
 }
