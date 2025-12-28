@@ -20,6 +20,8 @@ import name.mlopatkin.andlogview.building.Version
 import name.mlopatkin.andlogview.building.buildLibs
 import name.mlopatkin.andlogview.building.disableTasks
 import name.mlopatkin.andlogview.building.theBuildDir
+import name.mlopatkin.gradleplugins.freemarker.FreemarkerTask
+import name.mlopatkin.gradleplugins.freemarker.FreemarkerConfiguration.InterpolationSyntax
 import name.mlopatkin.gradleplugins.licenses.License
 
 plugins {
@@ -31,6 +33,7 @@ plugins {
     id("name.mlopatkin.andlogview.building.build-environment")
     id("name.mlopatkin.andlogview.building.java-conventions")
     id("name.mlopatkin.andlogview.building.metadata")
+    id("name.mlopatkin.gradleplugins.freemarker")
     id("name.mlopatkin.gradleplugins.jpackage")
     id("name.mlopatkin.gradleplugins.licenses")
 }
@@ -376,14 +379,24 @@ tasks.shadowDistZip.configure {
     this.archiveClassifier = "noJRE"
 }
 
+val buildHistory by tasks.registering(FreemarkerTask::class) {
+    configuration {
+        interpolationSyntax = InterpolationSyntax.DOLLAR
+    }
+    outputDirectory = layout.buildDirectory.dir("tmp/buildHistory")
+    templates.from("docs/releases/HISTORY.md.ftl")
+}
+
 // Using CopySpec.with(CopySpec) is the only way to add files into the distribution. Other approaches are:
 // - old way of shadow.applicationDistribution no longer works after 2.0.0. The applicationDistribution from application
 //   plugin still works though.
 // - simply listing from/include in contents completely replaces the archive content
 val additionalFiles = copySpec {
-    from(projectDir)
+    from(projectDir) {
+        include("AUTHORS.md", "LICENSE", "README.md")
+    }
     from(tasks.generateNotices.flatMap { it.noticeOutputFile })
-    include("AUTHORS.md", "LICENSE", "NOTICE", "README.md")
+    from(buildHistory)
 }
 distributions.all { contents.with(additionalFiles) }
 
