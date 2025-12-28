@@ -420,6 +420,10 @@ tasks.startShadowScripts {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
+    outputs.doNotCacheIf("Incorrectly handles metadata resource") {
+        true
+    }
+
     // NOTICES and licenses are included into ours NOTICE file manually.
     // Maven metadata isn't necessary also.
     exclude("**/NOTICE")
