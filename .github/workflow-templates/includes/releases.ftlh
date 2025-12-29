@@ -4,7 +4,7 @@
           gh release create "[=tag]"
           --draft
           --latest=false
-          --notes-file build/changelog/release-notes.md
+          --notes-file build/changelog/WHATS-NEW.md
           --prerelease=[=prerelease]
           --title "[=tag]"
           --verify-tag

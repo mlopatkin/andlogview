@@ -60,7 +60,7 @@ jobs:
           gh release create "nightly"
           --draft
           --latest=false
-          --notes-file build/changelog/release-notes.md
+          --notes-file build/changelog/WHATS-NEW.md
           --prerelease=true
           --title "nightly"
           --verify-tag
@@ -203,7 +203,7 @@ jobs:
           gh release create "${{ github.ref_name }}"
           --draft
           --latest=false
-          --notes-file build/changelog/release-notes.md
+          --notes-file build/changelog/WHATS-NEW.md
           --prerelease=false
           --title "${{ github.ref_name }}"
           --verify-tag

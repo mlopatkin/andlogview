@@ -387,6 +387,18 @@ val buildHistory by tasks.registering(FreemarkerTask::class) {
     templates.from("docs/releases/HISTORY.md.ftl")
 }
 
+val prepareChangelog by tasks.registering(Copy::class) {
+    description = "Copies the changelog for the current version to a stable location for GitHub releases"
+    group = "distribution"
+
+    val baseVersion = libs.versions.andlogview
+    from(baseVersion.map { "docs/releases/release_${it}.md" })
+    into(layout.buildDirectory.dir("changelog"))
+    rename { "WHATS-NEW.md" }
+
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
 // Using CopySpec.with(CopySpec) is the only way to add files into the distribution. Other approaches are:
 // - old way of shadow.applicationDistribution no longer works after 2.0.0. The applicationDistribution from application
 //   plugin still works though.
@@ -397,6 +409,7 @@ val additionalFiles = copySpec {
     }
     from(tasks.generateNotices.flatMap { it.noticeOutputFile })
     from(buildHistory)
+    from(prepareChangelog)
 }
 distributions.all { contents.with(additionalFiles) }
 
@@ -614,18 +627,6 @@ tasks.run {
     )
 }
 
-tasks.register<Copy>("prepareChangelog") {
-    description = "Copies the changelog for the current version to a stable location for GitHub releases"
-    group = "distribution"
-
-    val baseVersion = libs.versions.andlogview
-    from(baseVersion.map { "docs/releases/release_${it}.md" })
-    into(layout.buildDirectory.dir("changelog"))
-    rename { "release-notes.md" }
-
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-}
-
 tasks.register("printVersions") {
     val isCi = buildEnvironment.isCi
     val revNumber = buildEnvironment.revisionNumber
@@ -644,4 +645,11 @@ tasks.register("printVersions") {
             macOS: ${macosVersion.get()}
         """.trimIndent())
     }
+}
+
+tasks.check {
+    dependsOn(
+        buildHistory,
+        prepareChangelog,
+    )
 }
