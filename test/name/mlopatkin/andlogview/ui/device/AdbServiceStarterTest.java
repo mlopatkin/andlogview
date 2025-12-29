@@ -34,8 +34,11 @@ import name.mlopatkin.andlogview.device.AdbServer;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,6 +58,11 @@ class AdbServiceStarterTest {
 
     @Mock
     AdbManager adbManager;
+
+    @BeforeAll
+    static void checkPreconditions() {
+        Assumptions.assumeTrue(!SystemUtils.IS_OS_WINDOWS, "Contains Unix PATHs");
+    }
 
     @BeforeEach
     void setUp() throws Exception {
