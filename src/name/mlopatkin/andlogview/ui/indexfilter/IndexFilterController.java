@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.ui.indexfilter;
 
 import static name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies.FOR_MAIN_FRAME;
 
-import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.filters.CompoundFilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -61,15 +60,12 @@ public class IndexFilterController extends AbstractIndexController implements Au
             DialogFactory dialogFactory,
             MutableFilterModel parentFilterModel,
             @Named(FOR_MAIN_FRAME) JTable mainTable,
-            Features features,
             @Assisted IndexWindowFilter filter) {
         super(mainTable);
         this.filterModel = parentFilterModel;
 
         this.filter = filter;
-        var parent = !features.useFilterTree.isEnabled()
-                ? parentFilterModel
-                : Objects.requireNonNull(parentFilterModel.findSubModel(filter));
+        var parent = Objects.requireNonNull(parentFilterModel.findSubModel(filter));
         logModelFilter = new IndexFilter(
                 new CompoundFilterModel(parent, filter));
 

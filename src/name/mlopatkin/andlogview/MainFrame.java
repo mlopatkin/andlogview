@@ -17,7 +17,6 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.base.concurrent.SequentialExecutor;
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
@@ -121,8 +120,6 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
                     ? UiHelper.createPlatformKeystroke(KeyEvent.VK_G, InputEvent.SHIFT_DOWN_MASK)
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
 
-    @Inject
-    Features features;
     @Inject
     Theme theme;
 
@@ -362,7 +359,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         JScrollPane logTableScrollPane = new JScrollPane(logElements);
 
-        if (!theme.supportsFilterTreeView() || !features.useFilterTree.isEnabled()) {
+        if (!theme.supportsFilterTreeView()) {
             mainFrameUi.getContentPane().add(logTableScrollPane, BorderLayout.CENTER);
             return;
         }
@@ -409,7 +406,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         initInstantSearch();
 
-        if (!theme.supportsFilterTreeView() || !features.useFilterTree.isEnabled()) {
+        if (!theme.supportsFilterTreeView()) {
             controlsPanel.add(filterPanel);
         }
 

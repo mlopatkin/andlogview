@@ -26,11 +26,9 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Features {
-    public final Feature useFilterTree;
 
     @Inject
     @VisibleForTesting
     public Features() {
-        useFilterTree = Feature.create("name.mlopatkin.andlogview.features.useFilterTree", true);
     }
 }
