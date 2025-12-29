@@ -169,16 +169,6 @@ public class Configuration {
         }
     }
 
-    public static class dump { // NO CHECKSTYLE
-
-        private static final String PREFIX = "dump.";
-        private static final String BUFFER_HEADER_KEY = PREFIX + "buffer";
-
-        public static String bufferHeader(Buffer buffer) {
-            return getConfig().get(BUFFER_HEADER_KEY, buffer);
-        }
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private Configuration() {}
@@ -227,8 +217,6 @@ public class Configuration {
         cfg.property(adb.BUFFER_NAME_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.EXECUTABLE_KEY, string());
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
-
-        cfg.property(dump.BUFFER_HEADER_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
         // @formatter:on
 
         // setup default values from resource
