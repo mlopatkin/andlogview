@@ -45,7 +45,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
@@ -235,7 +234,7 @@ public class FilterDialogPresenterTest {
 
     @Test
     public void presenterSetsUpViewIfHighlightFilterGiven() {
-        Color highlightColor = Configuration.ui.highlightColors().get(0);
+        Color highlightColor = Color.LIGHT_GRAY;
         FilterFromDialogData highlightFilter = new FilterFromDialogData(FilteringMode.HIGHLIGHT)
                 .setTags(Arrays.asList("TAG", "/[Oo]ther/"))
                 .setHighlightColor(highlightColor);

@@ -17,7 +17,6 @@
 package name.mlopatkin.andlogview.ui.filterdialog;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
@@ -35,6 +34,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
  * Common GUI logic related to filtering.
@@ -47,8 +47,8 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
      * Create the dialog.
      */
     @Inject
-    public FilterDialog(DialogFactory dialogFactory) {
-        super(dialogFactory.getOwner());
+    public FilterDialog(DialogFactory dialogFactory, Provider<ColorsComboBoxModel> colorsModel) {
+        super(dialogFactory.getOwner(), colorsModel);
 
         okButton.addActionListener(e -> onPositiveResult());
 
@@ -142,13 +142,11 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
 
     @Override
     public void setHighlightColor(@Nullable Color color) {
-        int index = 0;
-        for (Color current : Configuration.ui.highlightColors()) {
-            if (current.equals(color)) {
+        // TODO(mlopatkin) figure out what to do when the color is null or not one of the list colors.
+        for (int index = 0, size = colorsList.getItemCount(); index < size; ++index) {
+            if (colorsList.getItemAt(index).color().equals(color)) {
                 colorsList.setSelectedIndex(index);
-                return;
-            } else {
-                ++index;
+                break;
             }
         }
     }
@@ -156,7 +154,12 @@ class FilterDialog extends BaseFilterDialogUi implements FilterDialogPresenter.F
     @Override
     public Optional<Color> getHighlightColor() {
         if (getMode() == FilteringMode.HIGHLIGHT) {
-            return Optional.of(Configuration.ui.highlightColors().get(colorsList.getSelectedIndex()));
+            return Optional.of(
+                    Objects.requireNonNull(
+                            (ColorsComboBoxModel.Item) colorsList.getSelectedItem(),
+                            "Expected item to be always selected"
+                    ).color()
+            );
         }
 
         return Optional.empty();

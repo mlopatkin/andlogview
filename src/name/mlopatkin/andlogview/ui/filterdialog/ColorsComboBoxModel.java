@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
-import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 
 import com.google.common.collect.Lists;
 
@@ -25,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 import java.awt.Color;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
@@ -33,10 +34,12 @@ class ColorsComboBoxModel
     private @Nullable Item selected;
     private final List<Item> items;
 
-    public ColorsComboBoxModel() {
-        items = Lists.newArrayListWithCapacity(Configuration.ui.highlightColors().size());
+    @Inject
+    public ColorsComboBoxModel(HighlightColors highlightColors) {
+        var highlightColorsList = highlightColors.getColors();
+        items = Lists.newArrayListWithCapacity(highlightColorsList.size());
         int index = 0;
-        for (Color color : Configuration.ui.highlightColors()) {
+        for (Color color : highlightColorsList) {
             items.add(new Item(color, index++));
         }
     }
@@ -61,15 +64,7 @@ class ColorsComboBoxModel
         return items.size();
     }
 
-    public static class Item {
-        private final Color color;
-        private final int index;
-
-        private Item(Color color, int index) {
-            this.color = color;
-            this.index = index;
-        }
-
+    public record Item(Color color, int index) {
         @Override
         public String toString() {
             return String.format("<html><span style='background-color: #%06x '>Color %d</span></html>",

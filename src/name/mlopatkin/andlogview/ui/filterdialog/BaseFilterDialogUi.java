@@ -30,6 +30,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Frame;
 
+import javax.inject.Provider;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -55,7 +56,7 @@ class BaseFilterDialogUi extends JDialog {
     protected final JButton okButton;
     protected final JButton cancelButton;
 
-    public BaseFilterDialogUi(Frame owner) {
+    public BaseFilterDialogUi(Frame owner, Provider<ColorsComboBoxModel> colorsModel) {
         super(owner);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -74,7 +75,7 @@ class BaseFilterDialogUi extends JDialog {
         logLevelList = addEntry(content, "Log level", new JComboBox<>(new PriorityComboBoxModel()), "optional");
 
         modesPanel = new FilteringModesPanel();
-        colorsList = new JComboBox<>(new ColorsComboBoxModel());
+        colorsList = new JComboBox<>(colorsModel.get());
         colorsList.setSelectedIndex(0);
 
         modesPanel.getButtons().forEach((mode, button) -> {

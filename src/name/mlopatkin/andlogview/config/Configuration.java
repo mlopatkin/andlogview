@@ -92,6 +92,7 @@ public class Configuration {
             return getConfig().get(BOOKMARK_FOREGROUND_KEY);
         }
 
+        @Deprecated
         public static List<Color> highlightColors() {
             return getConfig().get(HIGHLIGHT_FOREGROUNDS_KEY);
         }

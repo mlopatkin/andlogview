@@ -32,6 +32,7 @@ public class HighlightColors {
     public HighlightColors() {
     }
 
+    @SuppressWarnings("deprecation")
     public ImmutableList<Color> getColors() {
         return ImmutableList.copyOf(Configuration.ui.highlightColors());
     }
