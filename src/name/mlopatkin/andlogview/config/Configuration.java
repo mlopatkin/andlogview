@@ -57,7 +57,6 @@ public class Configuration {
 
         private static final String PREFIX = "ui.";
 
-        private static final String HIDE_LOGGING_PROCESSES_KEY = PREFIX + "hide_logging_processes";
         private static final String BACKGROUND_COLOR_KEY = PREFIX + "background_color";
         private static final String BOOKMARK_FOREGROUND_KEY = PREFIX + "bookmark_foreground";
         private static final String BOOKMARK_BACKGROUND_KEY = PREFIX + "bookmark_background";
@@ -105,10 +104,6 @@ public class Configuration {
             return getConfig().get(BUFFER_ENABLED_KEY, buffer);
         }
 
-        public static Boolean hideLoggingProcesses() {
-            return getConfig().get(HIDE_LOGGING_PROCESSES_KEY);
-        }
-
         @Deprecated
         public static Point mainWindowPosition() {
             return getConfig().get(MAIN_WINDOW_POSITION_KEY);
@@ -138,7 +133,6 @@ public class Configuration {
         private static final String PREFIX = "adb.";
 
         private static final String EXECUTABLE_KEY = PREFIX + "executable";
-        private static final String KMSG_COMMANDLINE_KEY = PREFIX + "kmsg_cmdline";
         private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
 
@@ -220,7 +214,6 @@ public class Configuration {
         cfg.property(ui.BOOKMARK_FOREGROUND_KEY, color);
         cfg.property(ui.BUFFER_ENABLED_KEY, enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
         cfg.property(ui.COLUMNS_KEY, list(String.class, Parsers.stringParser));
-        cfg.property(ui.HIDE_LOGGING_PROCESSES_KEY, bool().defaultVal(true));
         cfg.property(ui.HIGHLIGHT_FOREGROUNDS_KEY, list(Color.class, colorParser));
         cfg.property(ui.PRIORITY_FOREGROUND_KEY, enumMap(Priority.class, Color.class, colorParser));
         cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
@@ -232,7 +225,6 @@ public class Configuration {
 
         cfg.property(adb.BUFFER_NAME_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.EXECUTABLE_KEY, string());
-        cfg.property(adb.KMSG_COMMANDLINE_KEY, string());
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
 
         cfg.property(dump.BUFFER_HEADER_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
