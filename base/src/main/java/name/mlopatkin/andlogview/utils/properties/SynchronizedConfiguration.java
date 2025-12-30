@@ -49,11 +49,6 @@ public class SynchronizedConfiguration implements Configuration {
     }
 
     @Override
-    public synchronized void clear(String key) {
-        cfg.clear(key);
-    }
-
-    @Override
     public synchronized <K extends Enum<K>, V> void set(String key, K enumKey, V value) {
         cfg.set(key, enumKey, value);
     }

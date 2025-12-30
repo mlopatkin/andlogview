@@ -119,11 +119,6 @@ public class Configuration {
         public static @Nullable Point processWindowPosition() {
             return getConfig().get(PROCESS_LIST_WINDOW_POSITION_KEY);
         }
-
-        @Deprecated
-        public static void clearProcessWindowPosition() {
-            getConfig().clear(PROCESS_LIST_WINDOW_POSITION_KEY);
-        }
     }
 
     public static class adb { // NO CHECKSTYLE

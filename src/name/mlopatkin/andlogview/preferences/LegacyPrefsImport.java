@@ -76,6 +76,10 @@ public class LegacyPrefsImport {
 
     @SuppressWarnings("deprecation")
     private void importProcessListPosition(WindowsPositionsPref windowsPositions) {
+        if (windowsPositions.getFrameLocation(Frame.PROCESS_LIST) != null) {
+            log.info("Skip importing ui.proc_window_pos because it is already in the modern config.");
+            return;
+        }
         var legacyPosition = Configuration.ui.processWindowPosition();
         if (legacyPosition != null) {
             log.info("Importing ui.proc_window_pos = {}", legacyPosition);
@@ -85,9 +89,6 @@ public class LegacyPrefsImport {
                     new FrameLocation(legacyPosition.x, legacyPosition.y),
                     defaultDimensions
             );
-            // TODO(mlopatkin): Now I'm not sure if removing anything from the old config is a good option. What about
-            //  existing legacy clients? This isn't a very important piece of data, though.
-            Configuration.ui.clearProcessWindowPosition();
         }
     }
 
