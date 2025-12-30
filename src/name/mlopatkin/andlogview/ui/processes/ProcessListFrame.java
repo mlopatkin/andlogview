@@ -15,8 +15,12 @@
  */
 package name.mlopatkin.andlogview.ui.processes;
 
-import name.mlopatkin.andlogview.config.Configuration;
+import static name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame.PROCESS_LIST;
+
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
+import name.mlopatkin.andlogview.ui.FrameDimensions;
+import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 
 import com.google.common.collect.ImmutableList;
@@ -26,6 +30,8 @@ import dagger.Lazy;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,6 +56,7 @@ public class ProcessListFrame {
             ImmutableList.of(new SortKey(ProcessListModel.COLUMN_PID, SortOrder.ASCENDING));
 
     private final Lazy<DialogFactory> dialogFactory;
+    private final WindowsPositionsPref windowsPosition;
     private final ProcessListFrameUi frameUi = new ProcessListFrameUi();
 
     private @Nullable ProcessListModel model;
@@ -61,8 +68,22 @@ public class ProcessListFrame {
     });
 
     @Inject
-    public ProcessListFrame(Lazy<DialogFactory> dialogFactory) {
+    public ProcessListFrame(Lazy<DialogFactory> dialogFactory, WindowsPositionsPref windowsPosition) {
         this.dialogFactory = dialogFactory;
+        this.windowsPosition = windowsPosition;
+
+        var frame = frameUi.getFrame();
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                windowsPosition.setFrameInfo(
+                        PROCESS_LIST,
+                        new FrameLocation(frame.getX(), frame.getY()),
+                        new FrameDimensions(frame.getWidth(), frame.getHeight())
+                );
+            }
+        });
     }
 
     private void reset() {
@@ -106,18 +127,20 @@ public class ProcessListFrame {
 
     public void show() {
         var frame = getFrame();
-        Point position = Configuration.ui.processWindowPosition();
+        frame.setPreferredSize(windowsPosition.getFrameDimensions(PROCESS_LIST).toAwtDimension());
+        frame.pack();
+
+        var position = windowsPosition.getFrameLocation(PROCESS_LIST);
         if (position == null) {
             frame.setLocationRelativeTo(dialogFactory.get().getOwner());
         } else {
-            frame.setLocation(position);
+            frame.setLocation(new Point(position.x(), position.y()));
         }
         frame.setVisible(true);
     }
 
     public void hide() {
         var frame = getFrame();
-        Configuration.ui.processWindowPosition(frame.getLocation());
         frame.setVisible(false);
     }
 

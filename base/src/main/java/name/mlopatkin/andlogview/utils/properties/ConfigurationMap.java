@@ -67,6 +67,12 @@ public class ConfigurationMap implements Configuration {
         p.setValue(value);
     }
 
+    @Override
+    public void clear(String key) {
+        Property<?> p = getPropertyOrThrow(key);
+        p.setValue(null);
+    }
+
     private <T> Property<T> getPropertyOrThrow(String key) {
         @SuppressWarnings("unchecked")
         Property<T> result = (Property<T>) properties.get(key);

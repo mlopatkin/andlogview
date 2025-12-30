@@ -116,13 +116,15 @@ public class Configuration {
             return getConfig().get(MAIN_WINDOW_HEIGHT_KEY);
         }
 
+        @Deprecated
         @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
         public static @Nullable Point processWindowPosition() {
             return getConfig().get(PROCESS_LIST_WINDOW_POSITION_KEY);
         }
 
-        public static void processWindowPosition(Point pos) {
-            getConfig().set(PROCESS_LIST_WINDOW_POSITION_KEY, pos);
+        @Deprecated
+        public static void clearProcessWindowPosition() {
+            getConfig().clear(PROCESS_LIST_WINDOW_POSITION_KEY);
         }
     }
 

@@ -30,6 +30,8 @@ public interface Configuration {
 
     <T> void set(String key, T value);
 
+    void clear(String key);
+
     <K extends Enum<K>, V> void set(String key, K enumKey, V value);
 
     void save(OutputStream output, String comments) throws IOException;

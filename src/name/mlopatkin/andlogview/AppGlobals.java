@@ -27,6 +27,7 @@ import name.mlopatkin.andlogview.device.AdbManager;
 import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.LastUsedDirPref;
+import name.mlopatkin.andlogview.preferences.LegacyPrefsImport;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
@@ -83,6 +84,8 @@ public interface AppGlobals {
     Theme getTheme();
 
     Features getFeatures();
+
+    LegacyPrefsImport getPreferenceImporter();
 
     @Component.Factory
     interface Factory {

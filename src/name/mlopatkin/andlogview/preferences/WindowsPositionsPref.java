@@ -45,7 +45,9 @@ import javax.inject.Singleton;
 @Singleton
 public class WindowsPositionsPref {
     public enum Frame {
-        MAIN("main", getLegacyMainFrameInfo());
+        MAIN("main", getLegacyMainFrameInfo()),
+        // TODO(mlopatkin) this size is arbitrary.
+        PROCESS_LIST("process_list", new FrameInfo(null, new FrameDimensions(300, 500)));
 
         private final String prefName;
         private final FrameInfo defaultInfo;
@@ -123,7 +125,7 @@ public class WindowsPositionsPref {
         return getFrameInfo(frame).dimensions();
     }
 
-    public void setFrameInfo(Frame frame, FrameLocation location, FrameDimensions dimensions) {
+    public void setFrameInfo(Frame frame, @Nullable FrameLocation location, FrameDimensions dimensions) {
         EnumMap<Frame, FrameInfo> updatedMap = new EnumMap<>(Frame.class);
         updatedMap.putAll(frameInfoPref.get());
         updatedMap.put(frame, new FrameInfo(location, dimensions));

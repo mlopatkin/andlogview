@@ -66,14 +66,20 @@ public class Main {
         logger.info("Revision {}", BuildInfo.REVISION);
         logger.info("Configuration: {}", configurationLoc.getConfigurationDir().getAbsolutePath());
 
-        Try<?> configurationState = Try.ofCallable(() -> {
-            Configuration.load(configurationLoc.getLegacyConfigurationFile());
-            return true;
+        Try<Boolean> configurationState = Try.ofCallable(() -> {
+            var legacyFile = configurationLoc.getLegacyConfigurationFile();
+            var needsMigration = legacyFile.isFile();
+            Configuration.load(legacyFile);
+            return needsMigration;
         });
 
         Theme theme = initLaf();
 
         AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, theme);
+
+        if (configurationState.isPresent() && configurationState.get()) {
+            globals.getPreferenceImporter().importLegacyPreferences();
+        }
 
         EventQueue.invokeLater(() -> globals.getMain().start(configurationState));
     }
