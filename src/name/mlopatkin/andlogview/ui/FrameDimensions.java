@@ -27,8 +27,8 @@ import java.awt.Dimension;
 @Immutable
 public record FrameDimensions(int width, int height) {
     public FrameDimensions {
-        Preconditions.checkArgument(width >= 0, "Negative width (%s) not supported", width);
-        Preconditions.checkArgument(height >= 0, "Negative height (%s) not supported", height);
+        Preconditions.checkArgument(width > 0, "Expecting width > 0 (%s)", width);
+        Preconditions.checkArgument(height > 0, "Expecting height > 0 (%s)", height);
     }
 
     public Dimension toAwtDimension() {

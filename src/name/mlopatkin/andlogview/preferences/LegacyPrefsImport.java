@@ -141,8 +141,8 @@ public class LegacyPrefsImport {
         var importedLocation = legacyLocation != null ? new FrameLocation(legacyLocation.x, legacyLocation.y) : null;
         var defaultDimensions = windowsPositionsPref.getFrameDimensions(Frame.MAIN);
         var importedDimensions = new FrameDimensions(
-                legacyWidth != null && legacyWidth >= 0 ? legacyWidth : defaultDimensions.width(),
-                legacyHeight != null && legacyHeight >= 0 ? legacyHeight : defaultDimensions.height());
+                legacyWidth != null && legacyWidth > 0 ? legacyWidth : defaultDimensions.width(),
+                legacyHeight != null && legacyHeight > 0 ? legacyHeight : defaultDimensions.height());
 
         windowsPositionsPref.setFrameInfo(Frame.MAIN, importedLocation, importedDimensions);
     }
