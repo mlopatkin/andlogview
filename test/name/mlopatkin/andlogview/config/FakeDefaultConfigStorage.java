@@ -27,4 +27,9 @@ public class FakeDefaultConfigStorage implements ConfigStorage {
     public <T> T loadConfig(ConfigStorageClient<T> client) {
         return client.getDefault();
     }
+
+    @Override
+    public boolean hasStoredDataFor(String clientName) {
+        return false;
+    }
 }

@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -127,6 +128,42 @@ public class ConfigStorageImplTest {
         ConfigStorage storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
 
         storage.saveConfig(new TestClient(), new TestClientData("123456"));
+    }
+
+
+    @Test
+    public void testHasDataWhenDataIsPresent() throws Exception {
+        CharSource in = CharSource.wrap("{\"TestClient\":{\"s\":\"123456\"}}");
+        CharSink out = new NullCharSink();
+
+        ConfigStorageImpl storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
+        storage.load();
+
+        assertThat(storage.hasStoredDataFor("TestClient")).isTrue();
+    }
+
+    @Test
+    public void testHasDataWhenDataIsAbsent() throws Exception {
+        CharSource in = CharSource.empty();
+        CharSink out = new NullCharSink();
+
+        ConfigStorageImpl storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
+        storage.load();
+
+        assertThat(storage.hasStoredDataFor("TestClient")).isFalse();
+    }
+
+    @Test
+    public void testHasDataAfterGettingDefaults() throws Exception {
+        CharSource in = CharSource.empty();
+        CharSink out = new NullCharSink();
+
+        ConfigStorageImpl storage = new ConfigStorageImpl(in, out, MoreExecutors.newDirectExecutorService());
+        storage.load();
+
+        storage.loadConfig(new TestClient());
+
+        assertThat(storage.hasStoredDataFor("TestClient")).isFalse();
     }
 
     private static class NullCharSink extends CharSink {

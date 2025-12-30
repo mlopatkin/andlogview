@@ -61,6 +61,11 @@ public class FakeInMemoryConfigStorage implements ConfigStorage {
         return client.getDefault();
     }
 
+    @Override
+    public boolean hasStoredDataFor(String clientName) {
+        return data.containsKey(clientName);
+    }
+
     public void setJsonData(String key, String json) {
         data.put(key, JsonParser.parseString(json));
     }

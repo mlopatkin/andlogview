@@ -183,6 +183,13 @@ class ConfigStorageImpl implements ConfigStorage {
         return client.getDefault();
     }
 
+    @Override
+    public boolean hasStoredDataFor(String clientName) {
+        synchronized (serializedConfig) {
+            return serializedConfig.containsKey(clientName);
+        }
+    }
+
     void shutdown(boolean waitForCompletion) throws InterruptedException {
         Future<?> saveResult = fileWorker.submit(fileSaver);
         if (waitForCompletion) {

@@ -151,7 +151,8 @@ public class Configuration {
         }
 
         @Deprecated
-        public static Boolean isAutoReconnectEnabled() {
+        @SuppressWarnings("DataFlowIssue") // The annotation on get() is off.
+        public static @Nullable Boolean isAutoReconnectEnabled() {
             return getConfig().get(AUTORECONNECT_KEY);
         }
 
@@ -207,7 +208,7 @@ public class Configuration {
         cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
 
         cfg.property(adb.EXECUTABLE_KEY, string());
-        cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
+        cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(null));
         // @formatter:on
 
         // setup default values from resource

@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.preferences;
 
+import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
 import name.mlopatkin.andlogview.ui.FrameLocation;
@@ -33,12 +34,19 @@ import javax.inject.Inject;
 public class LegacyPrefsImport {
     private static final Logger log = LoggerFactory.getLogger(LegacyPrefsImport.class);
 
-    @SuppressWarnings("unused")
-    private final Lazy<WindowsPositionsPref> windowsPositions;
+    private final Lazy<ConfigStorage> storage;
+    private final Lazy<WindowsPositionsPref> windowsPositionsPref;
+    private final Lazy<AdbConfigurationPref> adbConfigurationPref;
 
     @Inject
-    public LegacyPrefsImport(Lazy<WindowsPositionsPref> windowsPositions) {
-        this.windowsPositions = windowsPositions;
+    public LegacyPrefsImport(
+            Lazy<ConfigStorage> storage,
+            Lazy<WindowsPositionsPref> windowsPositions,
+            Lazy<AdbConfigurationPref> adbConfiguration
+    ) {
+        this.storage = storage;
+        this.windowsPositionsPref = windowsPositions;
+        this.adbConfigurationPref = adbConfiguration;
     }
 
     public void importLegacyPreferences() {
@@ -50,11 +58,14 @@ public class LegacyPrefsImport {
 
         // Let's start with preferences that were never integrated with the modern infrastructure before.
         // TODO(mlopatkin) test this somehow (make Configuration injectable when nothing accesses it anymore?)
-        importProcessListPosition(windowsPositions.get());
+        importProcessListPosition(windowsPositionsPref.get());
+
+        // These might have been migrated.
+        importAdbConfiguration(adbConfigurationPref.get());
     }
 
     @SuppressWarnings("deprecation")
-    private static void importProcessListPosition(WindowsPositionsPref windowsPositions) {
+    private void importProcessListPosition(WindowsPositionsPref windowsPositions) {
         var legacyPosition = Configuration.ui.processWindowPosition();
         if (legacyPosition != null) {
             log.debug("Importing ui.proc_window_pos = {}", legacyPosition);
@@ -65,6 +76,17 @@ public class LegacyPrefsImport {
                     defaultDimensions
             );
             Configuration.ui.clearProcessWindowPosition();
+        }
+    }
+
+    @SuppressWarnings({"deprecation", "unused"})
+    private void importAdbConfiguration(AdbConfigurationPref adbConfiguration) {
+        var hasModernAdbPref = storage.get().hasStoredDataFor(AdbConfigurationPref.CLIENT_NAME);
+        var legacyAutoReconnect = Configuration.adb.isAutoReconnectEnabled();
+        if (legacyAutoReconnect != null && !hasModernAdbPref) {
+            // 0.21 was the first version with the JSON pref, and it already had auto-reconnect.
+            // Nightly builds do not count.
+            adbConfiguration.setAutoReconnectEnabled(legacyAutoReconnect);
         }
     }
 }

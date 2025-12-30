@@ -36,9 +36,12 @@ import javax.inject.Singleton;
  */
 @ThreadSafe
 public interface ConfigStorage {
+
     <T> void saveConfig(ConfigStorageClient<T> client, T value);
 
     <T> T loadConfig(ConfigStorageClient<T> client);
+
+    boolean hasStoredDataFor(String clientName);
 
     default <T> Preference<T> preference(ConfigStorageClient<T> client) {
         return new PreferenceImpl<>(this, client);

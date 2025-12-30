@@ -40,6 +40,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class AdbConfigurationPref {
+    static final String CLIENT_NAME = "adb";
+
     // Helper class to store inner configuration.
     private static class AdbConfiguration {
         final @Nullable String location;
@@ -53,10 +55,10 @@ public class AdbConfigurationPref {
             // values with what is present in JSON data.
             this(
                     Configuration.adb.executable(),
-                    Configuration.adb.isAutoReconnectEnabled(),
-                    true,
+                    true /* isAutoReconnectEnabled */,
+                    true /* shouldShowAutostartFailures */,
                     // Disable auto discovery by default if the legacy configuration has location
-                    Configuration.adb.executable() == null
+                    Configuration.adb.executable() == null /* isAutoDiscoveryAllowed */
             );
         }
 
@@ -119,7 +121,7 @@ public class AdbConfigurationPref {
     }
 
     private static final ConfigStorageClient<AdbConfiguration> STORAGE_CLIENT =
-            new SimpleClient<>("adb", AdbConfiguration.class, AdbConfiguration::new);
+            new SimpleClient<>(CLIENT_NAME, AdbConfiguration.class, AdbConfiguration::new);
 
     private final Object lock = new Object();
 
@@ -133,6 +135,8 @@ public class AdbConfigurationPref {
 
     @Inject
     public AdbConfigurationPref(ConfigStorage configStorage, SystemPathResolver systemPathResolver) {
+        // This constructor should not write preferences to storage! Otherwise, invariants of the LegacyPrefsImport
+        // go off!
         this.preference = configStorage.preference(STORAGE_CLIENT);
         this.systemPathResolver = systemPathResolver;
         this.current = preference.get();
