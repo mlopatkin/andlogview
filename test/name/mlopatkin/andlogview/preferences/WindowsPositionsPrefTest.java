@@ -19,7 +19,6 @@ package name.mlopatkin.andlogview.preferences;
 import static name.mlopatkin.andlogview.ui.FrameDimensionsAssert.assertThat;
 import static name.mlopatkin.andlogview.ui.FrameLocationAssert.assertThat;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
 import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
@@ -52,10 +51,8 @@ class WindowsPositionsPrefTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    void preferenceFallsBackToConfiguration() {
-        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
-                Configuration.ui.mainWindowHeight());
+    void noLocationByDefault() {
+        assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
@@ -94,7 +91,6 @@ class WindowsPositionsPrefTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void invalidWidthFallbacksToDefaultSizeAndPos() {
         configStorage.setJsonData("windows", """
                 {
@@ -106,13 +102,11 @@ class WindowsPositionsPrefTest {
                   }
                 }""");
 
-        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
-                Configuration.ui.mainWindowHeight());
+        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
         assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void invalidHeightFallbacksToDefaultSizeAndPos() {
         configStorage.setJsonData("windows", """
                 {
@@ -124,18 +118,15 @@ class WindowsPositionsPrefTest {
                   }
                 }""");
 
-        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
-                Configuration.ui.mainWindowHeight());
+        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
         assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void invalidJsonFallbacksToDefaultSizeAndPos() {
         configStorage.setJsonData("windows", "[ ]");
 
-        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
-                Configuration.ui.mainWindowHeight());
+        assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
         assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 }

@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
+import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.filters.BufferFilterModel;
 
@@ -69,6 +70,7 @@ public class LegacyPrefsImport {
         importBufferPrefs(BufferFilterModel.enabledBuffersPref(storage.get()));
 
         // These might have been migrated.
+        importMainWindowPosition(windowsPositionsPref.get());
         importAdbConfiguration(adbConfigurationPref.get());
     }
 
@@ -113,6 +115,35 @@ public class LegacyPrefsImport {
                     Collectors.joining(", ")));
             bufferPref.set(legacyEnabledBuffers);
         }
+    }
+
+
+    @SuppressWarnings("deprecation")
+    private void importMainWindowPosition(WindowsPositionsPref windowsPositionsPref) {
+        var currentLocation = windowsPositionsPref.getFrameLocation(Frame.MAIN);
+        // By default, with empty config, the location is not defined. If it is there, then we have already imported it
+        // through old code or run the app and saved the location that way. It is impossible to run the app without
+        // storing the location.
+        if (currentLocation != null) {
+            log.info("Skip importing ui.main_window_* because the values are already in the modern config.");
+            return;
+        }
+
+        var legacyLocation = Configuration.ui.mainWindowPosition();
+        var legacyWidth = Configuration.ui.mainWindowWidth();
+        var legacyHeight = Configuration.ui.mainWindowHeight();
+
+        log.info("Importing ui.main_window_location = {}", legacyLocation);
+        log.info("Importing ui.main_window_width = {}", legacyWidth);
+        log.info("Importing ui.main_window_height = {}", legacyHeight);
+
+        var importedLocation = legacyLocation != null ? new FrameLocation(legacyLocation.x, legacyLocation.y) : null;
+        var defaultDimensions = windowsPositionsPref.getFrameDimensions(Frame.MAIN);
+        var importedDimensions = new FrameDimensions(
+                legacyWidth != null && legacyWidth >= 0 ? legacyWidth : defaultDimensions.width(),
+                legacyHeight != null && legacyHeight >= 0 ? legacyHeight : defaultDimensions.height());
+
+        windowsPositionsPref.setFrameInfo(Frame.MAIN, importedLocation, importedDimensions);
     }
 
     @SuppressWarnings({"deprecation", "unused"})

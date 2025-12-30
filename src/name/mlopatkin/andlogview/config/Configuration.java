@@ -103,12 +103,14 @@ public class Configuration {
         }
 
         @Deprecated
-        public static int mainWindowWidth() {
+        @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
+        public static @Nullable Integer mainWindowWidth() {
             return getConfig().get(MAIN_WINDOW_WIDTH_KEY);
         }
 
         @Deprecated
-        public static int mainWindowHeight() {
+        @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
+        public static @Nullable Integer mainWindowHeight() {
             return getConfig().get(MAIN_WINDOW_HEIGHT_KEY);
         }
 
@@ -206,8 +208,8 @@ public class Configuration {
 
         cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(null));
         cfg.property(ui.PROCESS_LIST_WINDOW_POSITION_KEY, point().defaultVal(null));
-        cfg.property(ui.MAIN_WINDOW_WIDTH_KEY, integer(800));
-        cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
+        cfg.property(ui.MAIN_WINDOW_WIDTH_KEY, integer().defaultVal(null));
+        cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer().defaultVal(null));
 
         cfg.property(adb.EXECUTABLE_KEY, string());
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(null));

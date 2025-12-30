@@ -206,7 +206,7 @@ class AdbConfigurationPrefTest {
     }
 
     private void importLegacyPreferences(AdbConfigurationPref pref) {
-        new LegacyPrefsImport(LazyInstance.of(storage), LazyInstance.of(mock()),
+        new LegacyPrefsImport(LazyInstance.of(storage), LazyInstance.of(new WindowsPositionsPref(storage)),
                 LazyInstance.of(pref)).importLegacyPreferences();
     }
 }

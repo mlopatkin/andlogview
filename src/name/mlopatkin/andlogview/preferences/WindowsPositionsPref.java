@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.preferences;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.InvalidJsonContentException;
 import name.mlopatkin.andlogview.config.NamedClient;
 import name.mlopatkin.andlogview.config.Preference;
@@ -45,7 +44,7 @@ import javax.inject.Singleton;
 @Singleton
 public class WindowsPositionsPref {
     public enum Frame {
-        MAIN("main", getLegacyMainFrameInfo()),
+        MAIN("main", new FrameInfo(null, new FrameDimensions(1024, 768))),
         // TODO(mlopatkin) this size is arbitrary.
         PROCESS_LIST("process_list", new FrameInfo(null, new FrameDimensions(300, 500)));
 
@@ -134,26 +133,6 @@ public class WindowsPositionsPref {
 
     private FrameInfo getFrameInfo(Frame frame) {
         return frameInfoPref.get().getOrDefault(frame, frame.getDefaultInfo());
-    }
-
-    private static int getSizeWithFallback(int size, int fallbackSize) {
-        if (size <= 0) {
-            return fallbackSize;
-        }
-        return size;
-    }
-
-    @SuppressWarnings("deprecation")
-    private static FrameInfo getLegacyMainFrameInfo() {
-        FrameLocation location = null;
-        var legacyPosition = Configuration.ui.mainWindowPosition();
-        if (legacyPosition != null) {
-            location = new FrameLocation(legacyPosition.x, legacyPosition.y);
-        }
-        FrameDimensions dimensions = new FrameDimensions(
-                getSizeWithFallback(Configuration.ui.mainWindowWidth(), 1024),
-                getSizeWithFallback(Configuration.ui.mainWindowHeight(), 768));
-        return new FrameInfo(location, dimensions);
     }
 
     @Immutable
