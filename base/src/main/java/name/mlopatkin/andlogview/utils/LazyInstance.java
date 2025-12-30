@@ -61,4 +61,20 @@ public abstract class LazyInstance<T> implements Lazy<T> {
             }
         };
     }
+
+    /**
+     * Creates a lazy holder for an existing value, useful for passing stuff into things that expect lazy.
+     *
+     * @param value the value to wrap
+     * @param <T> the type of the value
+     * @return the value wrapped in the holder
+     */
+    public static <T> LazyInstance<T> of(T value) {
+        return new LazyInstance<>() {
+            @Override
+            public T get() {
+                return value;
+            }
+        };
+    }
 }

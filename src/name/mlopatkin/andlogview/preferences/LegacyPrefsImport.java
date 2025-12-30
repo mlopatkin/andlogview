@@ -68,7 +68,7 @@ public class LegacyPrefsImport {
     private void importProcessListPosition(WindowsPositionsPref windowsPositions) {
         var legacyPosition = Configuration.ui.processWindowPosition();
         if (legacyPosition != null) {
-            log.debug("Importing ui.proc_window_pos = {}", legacyPosition);
+            log.info("Importing ui.proc_window_pos = {}", legacyPosition);
             var defaultDimensions = windowsPositions.getFrameDimensions(Frame.PROCESS_LIST);
             windowsPositions.setFrameInfo(
                     Frame.PROCESS_LIST,
@@ -81,9 +81,23 @@ public class LegacyPrefsImport {
 
     @SuppressWarnings({"deprecation", "unused"})
     private void importAdbConfiguration(AdbConfigurationPref adbConfiguration) {
-        var hasModernAdbPref = storage.get().hasStoredDataFor(AdbConfigurationPref.CLIENT_NAME);
+        if (storage.get().hasStoredDataFor(AdbConfigurationPref.CLIENT_NAME)) {
+            log.info("Skip importing ADB preferences because they're already in the modern config.");
+            return;
+        }
+
+        var legacyExecutable = Configuration.adb.executable();
+        if (legacyExecutable != null) {
+            log.info("Importing adb.executable = {}", legacyExecutable);
+            // Modern executable was in JSON from the very first commit.
+            // If the new location isn't resolvable, we just drop it and rely on auto-detection instead.
+            if (!adbConfiguration.trySetAdbLocation(legacyExecutable)) {
+                log.info("Discarding invalid adb.executable at {}", legacyExecutable);
+            }
+        }
         var legacyAutoReconnect = Configuration.adb.isAutoReconnectEnabled();
-        if (legacyAutoReconnect != null && !hasModernAdbPref) {
+        if (legacyAutoReconnect != null) {
+            log.info("Importing adb.autoreconnect = {}", legacyAutoReconnect);
             // 0.21 was the first version with the JSON pref, and it already had auto-reconnect.
             // Nightly builds do not count.
             adbConfiguration.setAutoReconnectEnabled(legacyAutoReconnect);

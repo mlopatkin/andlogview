@@ -25,6 +25,7 @@ import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
+import name.mlopatkin.andlogview.utils.LazyInstance;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.Test;
@@ -97,19 +98,21 @@ class AdbConfigurationPrefTest {
         Configuration.adb.executable("adb.exe");
 
         var pref = createPref(mockResolver());
+        importLegacyPreferences(pref);
         assertThat(pref.isAdbAutoDiscoveryAllowed()).isFalse();
     }
 
     @Test
     @SuppressWarnings("deprecation")
-    void autoDiscoveryIsNotAllowedIfLegacyAdbIsAvailableButInvalid() {
+    void autoDiscoveryIsAllowedIfLegacyAdbIsAvailableButInvalid() {
         Configuration.adb.executable("adb.exe");
 
         var pref = createPref(FakePathResolver.acceptsNothing());
+        importLegacyPreferences(pref);
 
         assertThat(pref.hasValidAdbLocation()).isFalse();
-        assertThat(pref.getAdbLocation()).isEqualTo("adb.exe");
-        assertThat(pref.isAdbAutoDiscoveryAllowed()).isFalse();
+        assertThat(pref.getAdbLocation()).isEqualTo(Configuration.adb.DEFAULT_EXECUTABLE);
+        assertThat(pref.isAdbAutoDiscoveryAllowed()).isTrue();
     }
 
     @Test
@@ -200,5 +203,10 @@ class AdbConfigurationPrefTest {
 
     private SystemPathResolver mockResolver() {
         return FakePathResolver.acceptsAnything();
+    }
+
+    private void importLegacyPreferences(AdbConfigurationPref pref) {
+        new LegacyPrefsImport(LazyInstance.of(storage), LazyInstance.of(mock()),
+                LazyInstance.of(pref)).importLegacyPreferences();
     }
 }

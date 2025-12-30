@@ -49,16 +49,14 @@ public class AdbConfigurationPref {
         final boolean shouldShowAutostartFailures;
         final boolean isAutoDiscoveryAllowed;
 
-        @SuppressWarnings("deprecation")
         public AdbConfiguration() {
             // Default configuration values. Gson uses this constructor to create the instance, then overrides all
             // values with what is present in JSON data.
             this(
-                    Configuration.adb.executable(),
+                    null /* location */,
                     true /* isAutoReconnectEnabled */,
                     true /* shouldShowAutostartFailures */,
-                    // Disable auto discovery by default if the legacy configuration has location
-                    Configuration.adb.executable() == null /* isAutoDiscoveryAllowed */
+                    true /* isAutoDiscoveryAllowed */
             );
         }
 
