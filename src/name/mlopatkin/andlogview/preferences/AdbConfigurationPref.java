@@ -43,6 +43,7 @@ public class AdbConfigurationPref {
     static final String CLIENT_NAME = "adb";
 
     // Helper class to store inner configuration.
+    @SuppressWarnings("ClassCanBeRecord") // We rely on Gson not setting missing fields to false
     private static class AdbConfiguration {
         final @Nullable String location;
         final boolean isAutoReconnectEnabled;
