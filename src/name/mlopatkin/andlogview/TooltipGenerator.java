@@ -15,7 +15,6 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.search.text.TextHighlighter;
 
 import com.google.common.collect.Range;
@@ -46,7 +45,7 @@ public class TooltipGenerator implements TextHighlighter {
             "<span style='color: %s; background-color: %s'>", highlightTextColor, highlightBackgroundColor);
     private static final String SPAN_END = "</span>";
     private static final String BR = "<br>";
-    private static final int WIDTH = Configuration.ui.tooltipMaxWidth();
+    private static final int WIDTH = 100;
 
     private static StringBuilder appendEnc(StringBuilder b, String text) {
         return b.append(HtmlEscapers.htmlEscaper().escape(text));

@@ -62,7 +62,6 @@ public class Configuration {
         private static final String BOOKMARK_BACKGROUND_KEY = PREFIX + "bookmark_background";
         private static final String PRIORITY_FOREGROUND_KEY = PREFIX + "priority_color";
         private static final String HIGHLIGHT_FOREGROUNDS_KEY = PREFIX + "highlight_colors";
-        private static final String TOOLTIP_MAX_WIDTH_KEY = PREFIX + "tooltip_max_width";
         private static final String BUFFER_ENABLED_KEY = PREFIX + "buffer_enabled";
 
         private static final String MAIN_WINDOW_POSITION_KEY = PREFIX + "main_window_pos";
@@ -70,10 +69,6 @@ public class Configuration {
         private static final String MAIN_WINDOW_HEIGHT_KEY = PREFIX + "main_window_height";
 
         private static final String PROCESS_LIST_WINDOW_POSITION_KEY = PREFIX + "proc_window_pos";
-
-        public static Integer tooltipMaxWidth() {
-            return getConfig().get(TOOLTIP_MAX_WIDTH_KEY);
-        }
 
         public static Color priorityColor(Priority p) {
             return getConfig().get(PRIORITY_FOREGROUND_KEY, p);
@@ -200,7 +195,6 @@ public class Configuration {
         cfg.property(ui.BUFFER_ENABLED_KEY, enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
         cfg.property(ui.HIGHLIGHT_FOREGROUNDS_KEY, list(Color.class, colorParser));
         cfg.property(ui.PRIORITY_FOREGROUND_KEY, enumMap(Priority.class, Color.class, colorParser));
-        cfg.property(ui.TOOLTIP_MAX_WIDTH_KEY, integer());
 
         cfg.property(ui.MAIN_WINDOW_POSITION_KEY, point().defaultVal(null));
         cfg.property(ui.PROCESS_LIST_WINDOW_POSITION_KEY, point().defaultVal(null));
