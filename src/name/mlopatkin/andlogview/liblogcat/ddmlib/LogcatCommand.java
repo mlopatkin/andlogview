@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.liblogcat.ddmlib;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.device.Command;
 import name.mlopatkin.andlogview.device.Device;
 import name.mlopatkin.andlogview.device.DeviceGoneException;
@@ -96,10 +95,6 @@ class LogcatCommand {
      * @return optional with the prepared command
      */
     public static Optional<LogcatCommand> tryPrepare(Device device, LogRecord.Buffer buffer) {
-        var bufferName = Configuration.adb.bufferName(buffer);
-        if (bufferName == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new LogcatCommand(device, bufferName));
+        return Optional.of(new LogcatCommand(device, buffer.logcatName));
     }
 }

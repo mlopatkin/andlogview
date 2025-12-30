@@ -134,15 +134,9 @@ public class Configuration {
         private static final String PREFIX = "adb.";
 
         private static final String EXECUTABLE_KEY = PREFIX + "executable";
-        private static final String BUFFER_NAME_KEY = PREFIX + "buffer";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
 
         public static final String DEFAULT_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb");
-
-
-        public static String bufferName(Buffer buffer) {
-            return getConfig().get(BUFFER_NAME_KEY, buffer);
-        }
 
         /**
          * Returns the current path to the adb executable, as specified in logview.properties, or null if there is
@@ -214,7 +208,6 @@ public class Configuration {
         cfg.property(ui.MAIN_WINDOW_WIDTH_KEY, integer(800));
         cfg.property(ui.MAIN_WINDOW_HEIGHT_KEY, integer(600));
 
-        cfg.property(adb.BUFFER_NAME_KEY, enumMap(Buffer.class, String.class, Parsers.stringParser));
         cfg.property(adb.EXECUTABLE_KEY, string());
         cfg.property(adb.AUTORECONNECT_KEY, bool().defaultVal(true));
         // @formatter:on

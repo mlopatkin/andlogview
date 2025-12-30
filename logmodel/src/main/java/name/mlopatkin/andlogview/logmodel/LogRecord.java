@@ -65,21 +65,27 @@ public class LogRecord {
     }
 
     public enum Buffer {
-        MAIN("Main"),
-        SYSTEM("System"),
-        RADIO("Radio"),
-        EVENTS("Events"),
-        CRASH("Crash"),
-        KERNEL("Kernel");
+        MAIN("Main", "main"),
+        SYSTEM("System", "system"),
+        RADIO("Radio", "radio"),
+        EVENTS("Events", "events"),
+        CRASH("Crash", "crash"),
+        KERNEL("Kernel", "kernel");
 
         private final String name;
+
+        /**
+         * The name of the buffer used in {@code logcat -b <...>}
+         */
+        public final String logcatName;
 
         public String getCaption() {
             return name;
         }
 
-        Buffer(String name) {
+        Buffer(String name, String logcatName) {
             this.name = name;
+            this.logcatName = logcatName;
         }
     }
 
