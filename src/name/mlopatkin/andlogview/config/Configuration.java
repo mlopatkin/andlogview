@@ -29,7 +29,6 @@ import name.mlopatkin.andlogview.logmodel.LogRecord.Buffer;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.utils.properties.ConfigurationMap;
 import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
-import name.mlopatkin.andlogview.utils.properties.Parsers;
 import name.mlopatkin.andlogview.utils.properties.PropertyBuilder;
 import name.mlopatkin.andlogview.utils.properties.PropertyUtils;
 import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
@@ -91,8 +90,10 @@ public class Configuration {
             return getConfig().get(BACKGROUND_COLOR_KEY);
         }
 
-        public static Boolean bufferEnabled(Buffer buffer) {
-            return getConfig().get(BUFFER_ENABLED_KEY, buffer);
+        @Deprecated
+        @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
+        public static @Nullable Boolean bufferEnabled(Buffer buffer) {
+            return getConfig().get(BUFFER_ENABLED_KEY + "." + buffer.name());
         }
 
         @Deprecated
@@ -192,7 +193,14 @@ public class Configuration {
         cfg.property(ui.BACKGROUND_COLOR_KEY, color);
         cfg.property(ui.BOOKMARK_BACKGROUND_KEY, color);
         cfg.property(ui.BOOKMARK_FOREGROUND_KEY, color);
-        cfg.property(ui.BUFFER_ENABLED_KEY, enumMap(Buffer.class, Boolean.class, Parsers.booleanParser));
+        // Legacy buffer preferences
+        cfg.property(ui.BUFFER_ENABLED_KEY + ".MAIN", bool().defaultVal(null));
+        cfg.property(ui.BUFFER_ENABLED_KEY + ".SYSTEM", bool().defaultVal(null));
+        cfg.property(ui.BUFFER_ENABLED_KEY + ".RADIO", bool().defaultVal(null));
+        cfg.property(ui.BUFFER_ENABLED_KEY + ".EVENTS", bool().defaultVal(null));
+        cfg.property(ui.BUFFER_ENABLED_KEY + ".CRASH", bool().defaultVal(null));
+        cfg.property(ui.BUFFER_ENABLED_KEY + ".KERNEL", bool().defaultVal(null));
+
         cfg.property(ui.HIGHLIGHT_FOREGROUNDS_KEY, list(Color.class, colorParser));
         cfg.property(ui.PRIORITY_FOREGROUND_KEY, enumMap(Priority.class, Color.class, colorParser));
 

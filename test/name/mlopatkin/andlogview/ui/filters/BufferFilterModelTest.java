@@ -19,6 +19,8 @@ package name.mlopatkin.andlogview.ui.filters;
 import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer.CRASH;
 import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer.EVENTS;
 import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer.MAIN;
+import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer.RADIO;
+import static name.mlopatkin.andlogview.logmodel.LogRecord.Buffer.SYSTEM;
 import static name.mlopatkin.andlogview.logmodel.LogRecordUtils.forBuffer;
 import static name.mlopatkin.andlogview.logmodel.LogRecordUtils.forUnknownBuffer;
 
@@ -26,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static java.util.stream.Collectors.toSet;
 
+import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.filters.FilterChain;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
@@ -36,6 +39,7 @@ import com.google.common.collect.ImmutableSet;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -172,8 +176,57 @@ class BufferFilterModelTest {
         );
     }
 
+    @Test
+    void preferencePersistsDisabledAndEnabledBuffers() {
+        var pref = createPref(MAIN, SYSTEM, CRASH);
+        var model1 = createModel(MutableFilterModel.create(), pref);
+
+        model1.setBufferEnabled(SYSTEM, false);
+        model1.setBufferEnabled(RADIO, true);
+
+        var model2 = createModel(filterModel, pref);
+
+        assertThat(model2.isBufferEnabled(MAIN)).isTrue();
+        assertThat(model2.isBufferEnabled(RADIO)).isTrue();
+        assertThat(model2.isBufferEnabled(SYSTEM)).isFalse();
+
+        assertThat(shouldShow()).accepts(
+                forBuffer(MAIN),
+                forBuffer(RADIO)
+        );
+        assertThat(shouldShow()).rejects(
+                forBuffer(SYSTEM),
+                forBuffer(EVENTS)
+        );
+    }
+
+    private Preference<Set<Buffer>> createPref(Buffer... enabledBuffers) {
+        return new Preference<>() {
+            ImmutableSet<Buffer> buffers = ImmutableSet.copyOf(enabledBuffers);
+
+            @Override
+            public boolean isSet() {
+                return true;
+            }
+
+            @Override
+            public void set(Set<Buffer> value) {
+                buffers = ImmutableSet.copyOf(value);
+            }
+
+            @Override
+            public Set<Buffer> get() {
+                return buffers;
+            }
+        };
+    }
+
     private BufferFilterModel createModel(Buffer... enabledBuffers) {
-        return new BufferFilterModel(filterModel, ImmutableSet.copyOf(enabledBuffers)::contains);
+        return createModel(filterModel, createPref(enabledBuffers));
+    }
+
+    private BufferFilterModel createModel(MutableFilterModel model, Preference<Set<Buffer>> pref) {
+        return new BufferFilterModel(model, pref);
     }
 
     @SuppressWarnings("resource")

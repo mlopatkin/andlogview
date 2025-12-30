@@ -23,6 +23,14 @@ package name.mlopatkin.andlogview.config;
  */
 public interface Preference<T> {
     /**
+     * Returns true if the preference has been set at least once. Returns false if there is no explicit value in the
+     * config, and getting the value will return the default.
+     *
+     * @return true if there is an explicit value for the preference stored in the config
+     */
+    boolean isSet();
+
+    /**
      * Stores the value in the bound config storage.
      */
     void set(T value);

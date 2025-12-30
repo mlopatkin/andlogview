@@ -18,34 +18,45 @@ package name.mlopatkin.andlogview.ui.filters;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
-import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.ConfigStorage;
+import name.mlopatkin.andlogview.config.Preference;
+import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.filters.BufferFilter;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.gson.reflect.TypeToken;
 
-import java.util.function.Predicate;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class BufferFilterModel {
     private final MutableFilterModel filterModel;
+    private final Preference<Set<LogRecord.Buffer>> enabledBuffersPref;
 
     private BufferFilter currentFilter;
 
     @VisibleForTesting
-    BufferFilterModel(MutableFilterModel filterModel, Predicate<? super LogRecord.Buffer> isBufferEnabled) {
+    BufferFilterModel(MutableFilterModel filterModel, Preference<Set<LogRecord.Buffer>> enabledBuffersPref) {
         this.filterModel = filterModel;
+        this.enabledBuffersPref = enabledBuffersPref;
 
         this.currentFilter = new BufferFilter(
-                Stream.of(LogRecord.Buffer.values()).filter(isBufferEnabled).collect(toImmutableSet())
+                Stream.of(LogRecord.Buffer.values())
+                        .filter(enabledBuffersPref.get()::contains)
+                        .collect(toImmutableSet())
         );
 
         filterModel.addFilter(currentFilter);
     }
 
-    BufferFilterModel(MutableFilterModel filterModel) {
-        this(filterModel, Configuration.ui::bufferEnabled);
+    BufferFilterModel(ConfigStorage configStorage, MutableFilterModel filterModel) {
+        this(
+                filterModel,
+                enabledBuffersPref(configStorage)
+        );
     }
 
     MutableFilterModel getConfiguredFilterModel() {
@@ -55,6 +66,8 @@ public class BufferFilterModel {
     private void setFilter(BufferFilter filter) {
         filterModel.replaceFilter(currentFilter, filter);
         currentFilter = filter;
+
+        enabledBuffersPref.set(currentFilter.getAllowedBuffers());
     }
 
     public void setBufferFilteringEnabled(boolean enabled) {
@@ -67,5 +80,13 @@ public class BufferFilterModel {
 
     public void setBufferEnabled(LogRecord.Buffer buffer, boolean enabled) {
         setFilter(enabled ? currentFilter.allowBuffer(buffer) : currentFilter.disallowBuffer(buffer));
+    }
+
+    public static Preference<Set<LogRecord.Buffer>> enabledBuffersPref(ConfigStorage configStorage) {
+        return configStorage.preference(new SimpleClient<>(
+                "logcatBuffers",
+                new TypeToken<>() {},
+                () -> EnumSet.of(LogRecord.Buffer.MAIN, LogRecord.Buffer.SYSTEM, LogRecord.Buffer.CRASH)
+        ));
     }
 }

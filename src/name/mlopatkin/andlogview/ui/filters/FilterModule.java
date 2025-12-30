@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filters;
 
+import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
 import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
@@ -42,8 +43,8 @@ public abstract class FilterModule {
 
     @Provides
     @MainFrameScoped
-    static BufferFilterModel bufferFilterModel() {
-        return new BufferFilterModel(MutableFilterModel.create());
+    static BufferFilterModel bufferFilterModel(ConfigStorage configStorage) {
+        return new BufferFilterModel(configStorage, MutableFilterModel.create());
     }
 
     @Provides

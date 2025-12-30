@@ -33,6 +33,11 @@ class MemoizedPreference<T> implements Preference<T> {
     }
 
     @Override
+    public boolean isSet() {
+        return basePreference.isSet();
+    }
+
+    @Override
     public void set(T value) {
         synchronized (lock) {
             cachedValue = value;

@@ -18,13 +18,20 @@ package name.mlopatkin.andlogview.preferences;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.Preference;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
 import name.mlopatkin.andlogview.ui.FrameLocation;
+import name.mlopatkin.andlogview.ui.filters.BufferFilterModel;
 
 import dagger.Lazy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -59,6 +66,7 @@ public class LegacyPrefsImport {
         // Let's start with preferences that were never integrated with the modern infrastructure before.
         // TODO(mlopatkin) test this somehow (make Configuration injectable when nothing accesses it anymore?)
         importProcessListPosition(windowsPositionsPref.get());
+        importBufferPrefs(BufferFilterModel.enabledBuffersPref(storage.get()));
 
         // These might have been migrated.
         importAdbConfiguration(adbConfigurationPref.get());
@@ -75,7 +83,35 @@ public class LegacyPrefsImport {
                     new FrameLocation(legacyPosition.x, legacyPosition.y),
                     defaultDimensions
             );
+            // TODO(mlopatkin): Now I'm not sure if removing anything from the old config is a good option. What about
+            //  existing legacy clients? This isn't a very important piece of data, though.
             Configuration.ui.clearProcessWindowPosition();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void importBufferPrefs(Preference<Set<LogRecord.Buffer>> bufferPref) {
+        if (bufferPref.isSet()) {
+            log.info("Skip importing Buffer visibility preferences because they're already in the modern config.");
+            return;
+        }
+        boolean hasAnyBuffers = false;
+        Set<LogRecord.Buffer> legacyEnabledBuffers = new HashSet<>();
+
+        for (var buffer : LogRecord.Buffer.values()) {
+            var enabled = Configuration.ui.bufferEnabled(buffer);
+            if (enabled != null) {
+                hasAnyBuffers = true;
+                if (enabled) {
+                    legacyEnabledBuffers.add(buffer);
+                }
+            }
+        }
+
+        if (hasAnyBuffers) {
+            log.info("Importing ui.bufferEnabled.* for {}", legacyEnabledBuffers.stream().map(Enum::name).collect(
+                    Collectors.joining(", ")));
+            bufferPref.set(legacyEnabledBuffers);
         }
     }
 

@@ -26,6 +26,11 @@ class PreferenceImpl<T> implements Preference<T> {
     }
 
     @Override
+    public boolean isSet() {
+        return storage.hasStoredDataFor(client.getName());
+    }
+
+    @Override
     public void set(T value) {
         storage.saveConfig(client, value);
     }
