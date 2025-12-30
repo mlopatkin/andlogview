@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.liblogcat.LogRecordFormatter;
 import name.mlopatkin.andlogview.liblogcat.ddmlib.DeviceDisconnectedHandler;
 import name.mlopatkin.andlogview.logmodel.DataSource;
+import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogModel;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
@@ -352,7 +353,8 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         logElements.setFillsViewportHeight(true);
         logElements.setShowGrid(false);
 
-        LogRecordTableColumnModel columnModel = columnModelFactory.create(mapper, Column.getSelectedColumns());
+        LogRecordTableColumnModel columnModel = columnModelFactory.create(mapper, Column.getColumnsForFields(
+                Field.values()));
         logElements.setColumnModel(columnModel);
         logElements.getTableHeader()
                 .setComponentPopupMenu(new LogTableHeaderPopupMenuController(columnModel).createMenu());

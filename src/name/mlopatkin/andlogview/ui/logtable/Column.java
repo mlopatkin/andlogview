@@ -16,7 +16,6 @@
 
 package name.mlopatkin.andlogview.ui.logtable;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.Field;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.TimeFormatUtils;
@@ -25,10 +24,8 @@ import name.mlopatkin.andlogview.widgets.TableColumnBuilder;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -145,24 +142,6 @@ public enum Column {
 
     static Column getByColumnIndex(int index) {
         return values()[index];
-    }
-
-    /**
-     * @return the list of all columns that are enabled by config file in the specified order
-     */
-    public static List<Column> getSelectedColumns() {
-        List<String> columnKeys = Configuration.ui.columns();
-        List<Column> columns = new ArrayList<>(columnKeys.size());
-
-        for (String key : columnKeys) {
-            // Can be replacing with map lookup if there is performance bottleneck
-            for (Column c : values()) {
-                if (c.columnName.equals(key)) {
-                    columns.add(c);
-                }
-            }
-        }
-        return columns;
     }
 
     public static Set<Column> getColumnsForFields(Collection<Field<?>> fields) {
