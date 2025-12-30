@@ -23,15 +23,7 @@ import com.google.errorprone.annotations.Immutable;
  * Represents a position of a frame (aka window) on screen.
  */
 @Immutable
-public class FrameLocation {
-    public final int x;
-    public final int y;
-
-    public FrameLocation(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
+public record FrameLocation(int x, int y) {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).add("x", x).add("y", y).toString();

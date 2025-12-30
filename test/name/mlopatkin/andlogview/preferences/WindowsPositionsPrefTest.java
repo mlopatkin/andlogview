@@ -19,8 +19,6 @@ package name.mlopatkin.andlogview.preferences;
 import static name.mlopatkin.andlogview.ui.FrameDimensionsAssert.assertThat;
 import static name.mlopatkin.andlogview.ui.FrameLocationAssert.assertThat;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
@@ -39,7 +37,7 @@ class WindowsPositionsPrefTest {
     @Test
     void setPreferenceValuesAreAvailable() {
         pref.setFrameInfo(Frame.MAIN, new FrameLocation(10, 10), new FrameDimensions(1024, 768));
-        assertThat(pref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(location -> assertThat(location).isAt(10, 10));
+        assertThat(pref.getFrameLocation(Frame.MAIN)).satisfies(location -> assertThat(location).isAt(10, 10));
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
     }
 
@@ -49,8 +47,7 @@ class WindowsPositionsPrefTest {
 
         WindowsPositionsPref newPref = new WindowsPositionsPref(configStorage);
 
-        assertThat(newPref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(
-                location -> assertThat(location).isAt(10, 10));
+        assertThat(newPref.getFrameLocation(Frame.MAIN)).satisfies(location -> assertThat(location).isAt(10, 10));
         assertThat(newPref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
     }
 
@@ -63,7 +60,7 @@ class WindowsPositionsPrefTest {
 
     @Test
     void defaultLocationIsNotPresent() {
-        assertThat(pref.getFrameLocation(Frame.MAIN)).isNotPresent();
+        assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
@@ -79,7 +76,7 @@ class WindowsPositionsPrefTest {
                 }""");
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
-        assertThat(pref.getFrameLocation(Frame.MAIN)).hasValueSatisfying(location -> assertThat(location).isAt(12, 21));
+        assertThat(pref.getFrameLocation(Frame.MAIN)).satisfies(location -> assertThat(location).isAt(12, 21));
     }
 
     @Test
@@ -93,7 +90,7 @@ class WindowsPositionsPrefTest {
                 }""");
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(1024, 768);
-        assertThat(pref.getFrameLocation(Frame.MAIN)).isNotPresent();
+        assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
@@ -111,7 +108,7 @@ class WindowsPositionsPrefTest {
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
                 Configuration.ui.mainWindowHeight());
-        assertThat(pref.getFrameLocation(Frame.MAIN)).isNotPresent();
+        assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
@@ -129,7 +126,7 @@ class WindowsPositionsPrefTest {
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
                 Configuration.ui.mainWindowHeight());
-        assertThat(pref.getFrameLocation(Frame.MAIN)).isNotPresent();
+        assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 
     @Test
@@ -139,6 +136,6 @@ class WindowsPositionsPrefTest {
 
         assertThat(pref.getFrameDimensions(Frame.MAIN)).hasDimensions(Configuration.ui.mainWindowWidth(),
                 Configuration.ui.mainWindowHeight());
-        assertThat(pref.getFrameLocation(Frame.MAIN)).isNotPresent();
+        assertThat(pref.getFrameLocation(Frame.MAIN)).isNull();
     }
 }

@@ -85,7 +85,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
@@ -430,9 +429,9 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     private void setupSize() {
         mainFrameUi.setPreferredSize(
                 windowsPositionsPref.getFrameDimensions(WindowsPositionsPref.Frame.MAIN).toAwtDimension());
-        Optional<FrameLocation> frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
-        if (frameLocation.isPresent()) {
-            mainFrameUi.setLocation(frameLocation.get().x, frameLocation.get().y);
+        var frameLocation = windowsPositionsPref.getFrameLocation(WindowsPositionsPref.Frame.MAIN);
+        if (frameLocation != null) {
+            mainFrameUi.setLocation(frameLocation.x(), frameLocation.y());
         } else {
             mainFrameUi.setLocationByPlatform(true);
         }

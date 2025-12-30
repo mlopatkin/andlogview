@@ -25,16 +25,10 @@ import java.awt.Dimension;
  * Represents the size of a frame (aka window) on screen.
  */
 @Immutable
-public class FrameDimensions {
-    public final int width;
-    public final int height;
-
-    public FrameDimensions(int width, int height) {
+public record FrameDimensions(int width, int height) {
+    public FrameDimensions {
         Preconditions.checkArgument(width >= 0, "Negative width (%s) not supported", width);
         Preconditions.checkArgument(height >= 0, "Negative height (%s) not supported", height);
-
-        this.width = width;
-        this.height = height;
     }
 
     public Dimension toAwtDimension() {

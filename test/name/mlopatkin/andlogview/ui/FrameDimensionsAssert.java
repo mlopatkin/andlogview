@@ -28,25 +28,25 @@ public class FrameDimensionsAssert extends AbstractAssert<FrameDimensionsAssert,
     }
 
     public FrameDimensionsAssert hasWidth(int width) {
-        if (width != actual.width) {
-            throw failureWithActualExpected(actual.width, width,
-                    "Expected frame width <%d>, got <%d>", width, actual.width);
+        if (width != actual.width()) {
+            throw failureWithActualExpected(actual.width(), width,
+                    "Expected frame width <%d>, got <%d>", width, actual.width());
         }
         return this;
     }
 
     public FrameDimensionsAssert hasHeight(int height) {
-        if (height != actual.height) {
-            throw failureWithActualExpected(actual.height, height,
-                    "Expected frame height <%d>, got <%d>", height, actual.height);
+        if (height != actual.height()) {
+            throw failureWithActualExpected(actual.height(), height,
+                    "Expected frame height <%d>, got <%d>", height, actual.height());
         }
         return this;
     }
 
     public FrameDimensionsAssert hasDimensions(int width, int height) {
-        if (width != actual.width || height != actual.height) {
+        if (width != actual.width() || height != actual.height()) {
             throw failureWithActualExpected(actual, new FrameDimensions(width, height),
-                    "Expected dimensions <%dx%d>, got <%dx%d>", width, height, actual.width, actual.height);
+                    "Expected dimensions <%dx%d>, got <%dx%d>", width, height, actual.width(), actual.height());
         }
         return this;
     }

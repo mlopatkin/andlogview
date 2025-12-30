@@ -17,34 +17,35 @@
 package name.mlopatkin.andlogview.ui;
 
 import org.assertj.core.api.AbstractAssert;
+import org.jspecify.annotations.Nullable;
 
-public class FrameLocationAssert extends AbstractAssert<FrameLocationAssert, FrameLocation> {
-    protected FrameLocationAssert(FrameLocation frameLocation) {
+public class FrameLocationAssert extends AbstractAssert<FrameLocationAssert, @Nullable FrameLocation> {
+    protected FrameLocationAssert(@Nullable FrameLocation frameLocation) {
         super(frameLocation, FrameLocationAssert.class);
     }
 
-    public static FrameLocationAssert assertThat(FrameLocation frameLocation) {
+    public static FrameLocationAssert assertThat(@Nullable FrameLocation frameLocation) {
         return new FrameLocationAssert(frameLocation);
     }
 
     public FrameLocationAssert hasX(int x) {
-        if (x != actual.x) {
-            throw failureWithActualExpected(actual.x, x, "Expected location's X <%d>, got <%d>", x, actual.x);
+        if (x != actual.x()) {
+            throw failureWithActualExpected(actual.x(), x, "Expected location's X <%d>, got <%d>", x, actual.x());
         }
         return this;
     }
 
     public FrameLocationAssert hasY(int y) {
-        if (y != actual.y) {
-            throw failureWithActualExpected(actual.y, y, "Expected location's Y <%d>, got <%d>", y, actual.y);
+        if (y != actual.y()) {
+            throw failureWithActualExpected(actual.y(), y, "Expected location's Y <%d>, got <%d>", y, actual.y());
         }
         return this;
     }
 
     public FrameLocationAssert isAt(int x, int y) {
-        if (x != actual.x || y != actual.y) {
+        if (x != actual.x() || y != actual.y()) {
             throw failureWithActualExpected(actual, new FrameLocation(x, y),
-                    "Expected location <(%d, %d)>, got <(%d, %d)>", x, y, actual.x, actual.y);
+                    "Expected location <(%d, %d)>, got <(%d, %d)>", x, y, actual.x(), actual.y());
         }
         return this;
     }

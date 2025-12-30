@@ -101,21 +101,23 @@ public class Configuration {
         }
 
         @Deprecated
-        public static Point mainWindowPosition() {
+        @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
+        public static @Nullable Point mainWindowPosition() {
             return getConfig().get(MAIN_WINDOW_POSITION_KEY);
         }
 
         @Deprecated
-        public static Integer mainWindowWidth() {
+        public static int mainWindowWidth() {
             return getConfig().get(MAIN_WINDOW_WIDTH_KEY);
         }
 
         @Deprecated
-        public static Integer mainWindowHeight() {
+        public static int mainWindowHeight() {
             return getConfig().get(MAIN_WINDOW_HEIGHT_KEY);
         }
 
-        public static Point processWindowPosition() {
+        @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
+        public static @Nullable Point processWindowPosition() {
             return getConfig().get(PROCESS_LIST_WINDOW_POSITION_KEY);
         }
 

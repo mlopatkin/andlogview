@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -116,12 +115,12 @@ public class WindowsPositionsPref {
         this.frameInfoPref = configStorage.preference(STORAGE_CLIENT).memoize();
     }
 
-    public Optional<FrameLocation> getFrameLocation(Frame frame) {
-        return getFrameInfo(frame).getLocation();
+    public @Nullable FrameLocation getFrameLocation(Frame frame) {
+        return getFrameInfo(frame).location();
     }
 
     public FrameDimensions getFrameDimensions(Frame frame) {
-        return getFrameInfo(frame).getDimensions();
+        return getFrameInfo(frame).dimensions();
     }
 
     public void setFrameInfo(Frame frame, FrameLocation location, FrameDimensions dimensions) {
@@ -145,9 +144,9 @@ public class WindowsPositionsPref {
     @SuppressWarnings("deprecation")
     private static FrameInfo getLegacyMainFrameInfo() {
         FrameLocation location = null;
-        if (Configuration.ui.mainWindowPosition() != null) {
-            location =
-                    new FrameLocation(Configuration.ui.mainWindowPosition().x, Configuration.ui.mainWindowPosition().y);
+        var legacyPosition = Configuration.ui.mainWindowPosition();
+        if (legacyPosition != null) {
+            location = new FrameLocation(legacyPosition.x, legacyPosition.y);
         }
         FrameDimensions dimensions = new FrameDimensions(
                 getSizeWithFallback(Configuration.ui.mainWindowWidth(), 1024),
@@ -156,50 +155,19 @@ public class WindowsPositionsPref {
     }
 
     @Immutable
-    private static class FrameInfo {
-        private final @Nullable FrameLocation location;
-        private final FrameDimensions dimensions;
-
-        public FrameInfo(@Nullable FrameLocation location, FrameDimensions dimensions) {
-            this.location = location;
-            this.dimensions = dimensions;
-        }
-
-        public Optional<FrameLocation> getLocation() {
-            return Optional.ofNullable(location);
-        }
-
-        public FrameDimensions getDimensions() {
-            return dimensions;
-        }
-
+    private record FrameInfo(@Nullable FrameLocation location, FrameDimensions dimensions) {
         public FrameInfoSerialized toSerialized() {
             if (location == null) {
-                return new FrameInfoSerialized(dimensions.width, dimensions.height);
+                return new FrameInfoSerialized(dimensions.width(), dimensions.height());
             }
-            return new FrameInfoSerialized(location.x, location.y, dimensions.width, dimensions.height);
+            return new FrameInfoSerialized(location.x(), location.y(), dimensions.width(), dimensions.height());
         }
     }
 
     // Serialized form of the frame info has no built-in checks
-    private static class FrameInfoSerialized {
-        private final @Nullable Integer x;
-        private final @Nullable Integer y;
-        private final int width;
-        private final int height;
-
-        FrameInfoSerialized(int x, int y, int width, int height) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-
+    private record FrameInfoSerialized(@Nullable Integer x, @Nullable Integer y, int width, int height) {
         FrameInfoSerialized(int width, int height) {
-            this.x = null;
-            this.y = null;
-            this.width = width;
-            this.height = height;
+            this(null, null, width, height);
         }
 
         public FrameInfo tryDeserialize() throws InvalidJsonContentException {
