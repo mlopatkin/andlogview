@@ -1,27 +1,4 @@
 # Contributing to AndLogView
-<style>
-.gh-label-adaptive {
-padding: 3px 8px;
-border-radius: 12px;
-font-size: 12px;
-font-weight: bold;
-display: inline-block;
-white-space: nowrap;
-}
-
-@media (prefers-color-scheme: dark) {
-.gh-label-adaptive {
-  color: #000000;  /* Dark text for dark mode */
-}
-}
-
-@media (prefers-color-scheme: light) {
-.gh-label-adaptive {
-  color: #ffffff;  /* Light text for light mode */
-}
-}
-</style>
-
 
 ## Reporting issues
 
@@ -56,16 +33,16 @@ on Windows and `/tmp` on Linux) and named `logview.log`.
 
 The project uses two labels to highlight issues recommended for external
 contribution:
-- <a class="gh-label-adaptive" style="background: #7057ff;" href="https://github.com/mlopatkin/andlogview/issues?q=state%3Aopen+label%3A%22good+first+issue%22">good first issue</a>
+- [`good first issue`](https://github.com/mlopatkin/andlogview/issues?q=state%3Aopen+label%3A%22good+first+issue%22)
   &mdash; issues good for newcomers, not yet familiar with the project.
-- <a class="gh-label-adaptive" style="background: #008672;" href="https://github.com/mlopatkin/andlogview/issues?q=state%3Aopen%20label%3A%22help%20wanted%22">help wanted</a>
+- [`help wanted`](https://github.com/mlopatkin/andlogview/issues?q=state%3Aopen%20label%3A%22help%20wanted%22)
   &mdash; issues where outside expertise is especially appreciated, but not
   necessarily easy to tackle. They may require some prior knowledge.
 
 ### Building and testing
 
-See [`BUILDING.md`] for recommendations on how to set up the environment, check
-out and build the sources, run tests.
+See [`BUILDING.md`](BUILDING.md) for recommendations on how to set up the
+environment, check out and build the sources, run tests.
 
 ### Submitting a PR
 
