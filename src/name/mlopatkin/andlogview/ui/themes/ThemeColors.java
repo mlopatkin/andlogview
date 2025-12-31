@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
+import name.mlopatkin.andlogview.logmodel.LogRecord;
+
 import java.awt.Color;
 import java.util.List;
 
@@ -29,4 +31,12 @@ public interface ThemeColors {
      * @return the immutable list of highlight colors
      */
     List<Color> getHighlightColors();
+
+    /**
+     * Returns a foreground (text) color to use when displaying log record line with a given priority.
+     *
+     * @param priority the priority to find color for
+     * @return the color
+     */
+    Color getPriorityForegroundColor(LogRecord.Priority priority);
 }

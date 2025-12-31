@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.PriorityColoredCellRenderer;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 import name.mlopatkin.andlogview.widgets.SortingDisableSorter;
 
@@ -30,10 +31,10 @@ class LogTable extends DecoratingRendererTable implements LogModelFilter.Observe
     private final LogModelFilter filterModel;
     private final SortingDisableSorter<LogRecordTableModel> sorter;
 
-    private LogTable(LogRecordTableModel dataModel, LogModelFilter filterModel) {
+    private LogTable(ThemeColors themeColors, LogRecordTableModel dataModel, LogModelFilter filterModel) {
         this.filterModel = filterModel;
 
-        addDecorator(new PriorityColoredCellRenderer());
+        addDecorator(new PriorityColoredCellRenderer(themeColors));
         addDecorator(new RowHighlightRenderer(filterModel));
 
         setModel(dataModel);
@@ -60,8 +61,8 @@ class LogTable extends DecoratingRendererTable implements LogModelFilter.Observe
         }
     }
 
-    static LogTable create(LogRecordTableModel dataModel, LogModelFilter filterModel) {
-        LogTable logTable = new LogTable(dataModel, filterModel);
+    static LogTable create(ThemeColors themeColors, LogRecordTableModel dataModel, LogModelFilter filterModel) {
+        LogTable logTable = new LogTable(themeColors, dataModel, filterModel);
         filterModel.asObservable().addObserver(logTable);
         return logTable;
     }

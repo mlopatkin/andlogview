@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.themes;
 
 import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import java.awt.Color;
 import java.util.List;
@@ -29,5 +30,10 @@ public class LegacyThemeColors implements ThemeColors {
     @Override
     public List<Color> getHighlightColors() {
         return Configuration.ui.highlightColors();
+    }
+
+    @Override
+    public Color getPriorityForegroundColor(LogRecord.Priority priority) {
+        return Configuration.ui.priorityColor(priority);
     }
 }

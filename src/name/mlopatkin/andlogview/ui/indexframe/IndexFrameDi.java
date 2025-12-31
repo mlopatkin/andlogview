@@ -28,6 +28,7 @@ import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenuViewImpl;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -55,6 +56,9 @@ public final class IndexFrameDi {
 
         @Component.Builder
         interface Builder {
+            @BindsInstance
+            Builder themeColors(ThemeColors themeColors);
+
             @BindsInstance
             Builder dialogFactory(DialogFactory dialogFactory);
 
@@ -88,9 +92,14 @@ public final class IndexFrameDi {
         @Provides
         @IndexFrameScoped
         @Named(FOR_INDEX_FRAME)
-        static JTable getIndexWindowTable(LogRecordTableModel model,
-                @Named(FOR_INDEX_FRAME) LogModelFilter logModelFilter) {
-            return DaggerIndexFrameDi_IndexLogTableComponent.factory().create(model, logModelFilter).getLogTable();
+        static JTable getIndexWindowTable(
+                ThemeColors themeColors,
+                LogRecordTableModel model,
+                @Named(FOR_INDEX_FRAME) LogModelFilter logModelFilter
+        ) {
+            return DaggerIndexFrameDi_IndexLogTableComponent.factory()
+                    .create(themeColors, model, logModelFilter)
+                    .getLogTable();
         }
     }
 
@@ -102,8 +111,11 @@ public final class IndexFrameDi {
         @Component.Factory
         interface Factory {
             @SuppressWarnings("ClassEscapesDefinedScope")
-            IndexLogTableComponent create(@BindsInstance LogRecordTableModel tableModel,
-                    @BindsInstance LogModelFilter modelFilter);
+            IndexLogTableComponent create(
+                    @BindsInstance ThemeColors themeColors,
+                    @BindsInstance LogRecordTableModel tableModel,
+                    @BindsInstance LogModelFilter modelFilter
+            );
         }
     }
 

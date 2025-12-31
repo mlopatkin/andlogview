@@ -15,9 +15,9 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -25,20 +25,21 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.EnumMap;
+import java.util.Map;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
-    private static final EnumMap<Priority, Color> COLOR_MAP = new EnumMap<>(Priority.class);
-
-    static {
-        for (Priority p : Priority.values()) {
-            COLOR_MAP.put(p, Configuration.ui.priorityColor(p));
-        }
-    }
+    private final Map<Priority, Color> colorMap = new EnumMap<>(Priority.class);
 
     private @MonotonicNonNull TableCellRenderer inner;
+
+    public PriorityColoredCellRenderer(ThemeColors themeColors) {
+        for (Priority p : Priority.values()) {
+            colorMap.put(p, themeColors.getPriorityForegroundColor(p));
+        }
+    }
 
     @Override
     public Component getTableCellRendererComponent(
@@ -48,7 +49,7 @@ public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
         row = table.convertRowIndexToModel(row);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
         Priority priority = model.getRowData(row).getPriority();
-        result.setForeground(COLOR_MAP.get(priority));
+        result.setForeground(colorMap.get(priority));
         return result;
     }
 

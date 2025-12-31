@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.logtable;
 
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
@@ -32,8 +34,8 @@ public class LogTableModule {
 
     @LogTableScoped
     @Provides
-    LogTable createBaseLogTable(LogRecordTableModel model, LogModelFilter modelFilter) {
-        return LogTable.create(model, modelFilter);
+    LogTable createBaseLogTable(ThemeColors themeColors, LogRecordTableModel model, LogModelFilter modelFilter) {
+        return LogTable.create(themeColors, model, modelFilter);
     }
 
     @Module

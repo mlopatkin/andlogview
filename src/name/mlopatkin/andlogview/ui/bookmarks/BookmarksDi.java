@@ -28,6 +28,7 @@ import name.mlopatkin.andlogview.ui.logtable.LogTableModule;
 import name.mlopatkin.andlogview.ui.logtable.LogTableScoped;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenu;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -63,11 +64,12 @@ final class BookmarksDi {
         @Provides
         @IndexFrameScoped
         static BookmarksLogTableComponent getLogTableComponent(
+                ThemeColors themeColors,
                 LogRecordTableModel tableModel,
                 @Named(FOR_INDEX_FRAME) LogModelFilter filter,
                 BookmarkModel bookmarkModel) {
             return DaggerBookmarksDi_BookmarksLogTableComponent.factory()
-                    .create(tableModel, filter, bookmarkModel);
+                    .create(themeColors, tableModel, filter, bookmarkModel);
         }
 
         @Provides
@@ -92,8 +94,12 @@ final class BookmarksDi {
         @Component.Factory
         interface Factory {
             @SuppressWarnings("ClassEscapesDefinedScope")
-            BookmarksLogTableComponent create(@BindsInstance LogRecordTableModel tableModel,
-                    @BindsInstance LogModelFilter modelFilter, @BindsInstance BookmarkModel bookmarkModel);
+            BookmarksLogTableComponent create(
+                    @BindsInstance ThemeColors themeColors,
+                    @BindsInstance LogRecordTableModel tableModel,
+                    @BindsInstance LogModelFilter modelFilter,
+                    @BindsInstance BookmarkModel bookmarkModel
+            );
         }
     }
 

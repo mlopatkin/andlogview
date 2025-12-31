@@ -28,6 +28,7 @@ import name.mlopatkin.andlogview.ui.indexframe.IndexFrame;
 import name.mlopatkin.andlogview.ui.indexframe.IndexFrameDi;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.MyStringUtils;
 import name.mlopatkin.andlogview.utils.TextUtils;
@@ -56,6 +57,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
 
     @AssistedInject
     IndexFilterController(
+            ThemeColors themeColors,
             LogRecordTableModel logModel,
             DialogFactory dialogFactory,
             MutableFilterModel parentFilterModel,
@@ -70,6 +72,7 @@ public class IndexFilterController extends AbstractIndexController implements Au
                 new CompoundFilterModel(parent, filter));
 
         IndexFrameDi.IndexFrameComponent component = DaggerIndexFrameDi_IndexFrameComponent.builder()
+                .themeColors(themeColors)
                 .logRecordTableModel(logModel)
                 .dialogFactory(dialogFactory)
                 .setIndexController(this)

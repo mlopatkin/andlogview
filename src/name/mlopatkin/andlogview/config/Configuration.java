@@ -68,6 +68,7 @@ public class Configuration {
 
         private static final String PROCESS_LIST_WINDOW_POSITION_KEY = PREFIX + "proc_window_pos";
 
+        @Deprecated
         public static Color priorityColor(Priority p) {
             return getConfig().get(PRIORITY_FOREGROUND_KEY, p);
         }

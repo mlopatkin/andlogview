@@ -23,6 +23,7 @@ import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameDependencies;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import java.awt.event.KeyEvent;
@@ -39,6 +40,7 @@ public class BookmarkController extends AbstractIndexController implements Index
 
     @Inject
     public BookmarkController(
+            ThemeColors themeColors,
             BookmarkModel bookmarksModel,
             LogRecordTableModel logModel,
             BookmarksLogModelFilter logModelFilter,
@@ -65,6 +67,7 @@ public class BookmarkController extends AbstractIndexController implements Index
 
         var builder = DaggerBookmarksDi_BookmarksFrameComponent.builder()
                 .bookmarkModel(bookmarksModel)
+                .themeColors(themeColors)
                 .logRecordTableModel(logModel)
                 .dialogFactory(dialogFactory)
                 .setIndexController(this)
