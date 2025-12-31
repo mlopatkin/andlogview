@@ -26,12 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 
 public class Utils {
     @SuppressWarnings("LoggerInitializedWithForeignClass")
@@ -50,24 +47,6 @@ public class Utils {
             return String.format("#%02x%02x%02x", value.getRed(), value.getGreen(), value.getBlue());
         }
     };
-
-    static void saveConfiguration(
-            File cfgFile,
-            name.mlopatkin.andlogview.utils.properties.Configuration cfg
-    ) {
-        try {
-            File cfgDir = cfgFile.getParentFile();
-            if (!cfgDir.exists()) {
-                Files.createDirectories(cfgDir.toPath());
-            }
-
-            try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(cfgFile))) {
-                cfg.save(output, "Do not modify while Logviewer is running");
-            }
-        } catch (IOException e) {
-            logger.error("Failed to save configuration file", e);
-        }
-    }
 
     public static void loadConfiguration(
             File cfgFile,

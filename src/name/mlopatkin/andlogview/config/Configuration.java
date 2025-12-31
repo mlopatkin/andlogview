@@ -36,8 +36,6 @@ import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 import com.google.common.annotations.VisibleForTesting;
 
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -154,26 +152,10 @@ public class Configuration {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
-
     private Configuration() {}
 
     public static void load(File cfgFile) throws IllegalConfigurationException {
-        // save on exit
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                Configuration.save(cfgFile);
-            } catch (Throwable e) { // OK to catch Throwable here
-                // exception in shutdown hook is bad
-                logger.error("Exception while saving configuration", e);
-            }
-        }));
-
         Utils.loadConfiguration(cfgFile, config);
-    }
-
-    public static void save(File cfgFile) {
-        Utils.saveConfiguration(cfgFile, config);
     }
 
     private static name.mlopatkin.andlogview.utils.properties.Configuration createDefaultConfiguration() {
