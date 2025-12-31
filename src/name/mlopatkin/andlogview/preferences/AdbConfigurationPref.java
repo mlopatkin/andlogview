@@ -18,9 +18,9 @@ package name.mlopatkin.andlogview.preferences;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigStorageClient;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
+import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import com.google.common.base.MoreObjects;
@@ -146,7 +146,7 @@ public class AdbConfigurationPref {
     /** @return the location of the ADB executable as set up by the user */
     public String getAdbLocation() {
         synchronized (lock) {
-            return MoreObjects.firstNonNull(current.location, Configuration.adb.DEFAULT_EXECUTABLE);
+            return MoreObjects.firstNonNull(current.location, AdbLocationDiscovery.ADB_EXECUTABLE);
         }
     }
 

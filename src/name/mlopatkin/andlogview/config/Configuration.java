@@ -35,7 +35,6 @@ import name.mlopatkin.andlogview.utils.properties.SynchronizedConfiguration;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,8 +126,6 @@ public class Configuration {
 
         private static final String EXECUTABLE_KEY = PREFIX + "executable";
         private static final String AUTORECONNECT_KEY = PREFIX + "autoreconnect";
-
-        public static final String DEFAULT_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb");
 
         /**
          * Returns the current path to the adb executable, as specified in logview.properties, or null if there is

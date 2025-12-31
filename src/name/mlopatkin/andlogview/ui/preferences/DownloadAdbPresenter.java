@@ -20,8 +20,8 @@ import static name.mlopatkin.andlogview.utils.MyFutures.cancellationTransformer;
 import static name.mlopatkin.andlogview.utils.MyFutures.toCancellable;
 
 import name.mlopatkin.andlogview.AppExecutors;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
+import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.sdkrepo.ManifestParseException;
 import name.mlopatkin.andlogview.sdkrepo.SdkException;
 import name.mlopatkin.andlogview.sdkrepo.SdkPackage;
@@ -437,6 +437,6 @@ public class DownloadAdbPresenter implements InstallAdbPresenter {
 
     @VisibleForTesting
     static File getAdbExecutablePath(File sdkRoot) {
-        return sdkRoot.toPath().resolve(PLATFORM_TOOLS_PACKAGE).resolve(Configuration.adb.DEFAULT_EXECUTABLE).toFile();
+        return sdkRoot.toPath().resolve(PLATFORM_TOOLS_PACKAGE).resolve(AdbLocationDiscovery.ADB_EXECUTABLE).toFile();
     }
 }

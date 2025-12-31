@@ -24,9 +24,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
@@ -48,7 +48,7 @@ import java.util.function.Predicate;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigurationDialogPresenterTest {
-    private static final String DEFAULT_ADB_LOCATION = Configuration.adb.DEFAULT_EXECUTABLE;
+    private static final String DEFAULT_ADB_LOCATION = AdbLocationDiscovery.ADB_EXECUTABLE;
     private static final String VALID_ADB_LOCATION = "validAdb";
     private static final String INVALID_ADB_LOCATION = "invalidAdb";
 

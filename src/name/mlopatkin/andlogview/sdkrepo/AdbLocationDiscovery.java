@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.sdkrepo;
 
 import name.mlopatkin.andlogview.base.collections.MyStreams;
 import name.mlopatkin.andlogview.base.io.WindowsPaths;
-import name.mlopatkin.andlogview.config.Configuration;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.jspecify.annotations.Nullable;
@@ -40,16 +39,18 @@ import java.util.stream.Stream;
  * </p>
  */
 public class AdbLocationDiscovery {
+    public static final String ADB_EXECUTABLE = (SystemUtils.IS_OS_WINDOWS ? "adb.exe" : "adb");
+
     private static final Logger log = LoggerFactory.getLogger(AdbLocationDiscovery.class);
 
-    private static final String ADB_EXECUTABLE_NAME = Configuration.adb.DEFAULT_EXECUTABLE;
+
     private static final String PLATFORM_TOOLS_DIR = SdkPackage.PLATFORM_TOOLS;
 
     private AdbLocationDiscovery() {}
 
     public static Stream<File> discoverAdbLocations() {
         return getCandidatePaths()
-                .map(sdkRoot -> sdkRoot.resolve(PLATFORM_TOOLS_DIR).resolve(ADB_EXECUTABLE_NAME))
+                .map(sdkRoot -> sdkRoot.resolve(PLATFORM_TOOLS_DIR).resolve(ADB_EXECUTABLE))
                 .filter(path -> Files.isRegularFile(path) && Files.isExecutable(path))
                 .map(Path::toFile);
     }

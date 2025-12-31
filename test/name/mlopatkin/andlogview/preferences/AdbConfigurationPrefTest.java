@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.LazyInstance;
@@ -82,7 +83,7 @@ class AdbConfigurationPrefTest {
         var pref = createPref(resolver);
 
         assertThat(pref.hasValidAdbLocation()).isTrue();
-        assertThat(pref.getExecutable()).contains(new File(Configuration.adb.DEFAULT_EXECUTABLE));
+        assertThat(pref.getExecutable()).contains(new File(AdbLocationDiscovery.ADB_EXECUTABLE));
     }
 
     @Test
@@ -111,7 +112,7 @@ class AdbConfigurationPrefTest {
         importLegacyPreferences(pref);
 
         assertThat(pref.hasValidAdbLocation()).isFalse();
-        assertThat(pref.getAdbLocation()).isEqualTo(Configuration.adb.DEFAULT_EXECUTABLE);
+        assertThat(pref.getAdbLocation()).isEqualTo(AdbLocationDiscovery.ADB_EXECUTABLE);
         assertThat(pref.isAdbAutoDiscoveryAllowed()).isTrue();
     }
 
