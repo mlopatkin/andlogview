@@ -18,8 +18,7 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
-import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
-import name.mlopatkin.andlogview.ui.themes.LegacyThemeColors;
+import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
@@ -57,7 +56,7 @@ public abstract class GlobalsModule {
 
     @Provides
     @Singleton
-    static ThemeColors getThemeColors(LegacyConfiguration legacyConfig) {
-        return new LegacyThemeColors(legacyConfig);
+    static ThemeColors getThemeColors(ThemeColorsPref preference) {
+        return preference.getThemeColors();
     }
 }

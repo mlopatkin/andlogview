@@ -1,0 +1,34 @@
+{
+  "logTable": {
+    "background": "#FFFFFF",
+    "bookmarks": {
+      "background": "#FFFFFF",
+      "foreground": "#FFFFFF"
+    },
+    "priority": {
+      "VERBOSE": {
+        "foreground": "#FFFFFF"
+      },
+      "DEBUG": {
+        "foreground": "#FFFFFF"
+      },
+      "INFO": {
+        "foreground": "#FFFFFF"
+      },
+      "WARN": {
+        "foreground": "#FFFFFF"
+      },
+      "ERROR": {
+        "foreground": "#FFFFFF"
+      },
+      "FATAL": {
+        "foreground": "#FFFFFF"
+      }
+    },
+    "highlights": [
+      {
+        "background": "#FFFFFF"
+      }
+    ]
+  }
+}

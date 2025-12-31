@@ -25,13 +25,13 @@ import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
 import com.google.gson.JsonSyntaxException;
 
-import org.jspecify.annotations.Nullable;
-
 import java.awt.Color;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Implementation of {@link ThemeColors} based on JSON theme definition.
+ */
 public class JsonBasedThemeColors implements ThemeColors {
     private final Color logTableBackground;
     private final Color logTableBookmarksBackground;
@@ -39,7 +39,9 @@ public class JsonBasedThemeColors implements ThemeColors {
     private final ImmutableMap<LogRecord.Priority, Color> logTablePriorityForeground;
     private final ImmutableList<Color> logTableHighlightBackground;
 
-    private JsonBasedThemeColors(JsonThemeData data) {
+    private JsonBasedThemeColors(ThemeColorsJson data) {
+        // We convert the JSON-based representation into stuff that ThemeColors provide, simultaneously verifying the
+        // invariants.
         checkArgument(data.logTable() != null, "logTable is missing");
         var logTable = data.logTable();
 
@@ -54,16 +56,15 @@ public class JsonBasedThemeColors implements ThemeColors {
 
         ImmutableMap.Builder<LogRecord.Priority, Color> priorityForegroundBuilder = ImmutableMap.builder();
 
-        checkArgument(logTable.priority != null, "logTable.priority is missing");
+        checkArgument(logTable.priority() != null, "logTable.priority is missing");
         for (var p : LogRecord.Priority.values()) {
-            var priorityColor = logTable.priority.get(p);
+            var priorityColor = logTable.priority().get(p);
             checkArgument(priorityColor != null, "logTable.priority.%s is missing", p.name());
             checkArgument(priorityColor.foreground() != null, "logTable.priority.%s.foreground is missing", p.name());
 
             priorityForegroundBuilder.put(p, priorityColor.foreground());
         }
         logTablePriorityForeground = priorityForegroundBuilder.build();
-
 
         ImmutableList.Builder<Color> highlightsBackgroundBuilder = ImmutableList.builder();
         checkArgument(logTable.highlights() != null, "logTable.highlights is missing");
@@ -76,20 +77,6 @@ public class JsonBasedThemeColors implements ThemeColors {
         }
         this.logTableHighlightBackground = highlightsBackgroundBuilder.build();
     }
-
-    public record JsonThemeData(@Nullable LogTable logTable) {}
-
-    public record LogTable(
-            @Nullable Color background,
-            @Nullable RowColors bookmarks,
-            @Nullable Map<LogRecord.@Nullable Priority, @Nullable RowColors> priority,
-            @Nullable List<@Nullable RowColors> highlights
-    ) {}
-
-    public record RowColors(
-            @Nullable Color background,
-            @Nullable Color foreground
-    ) {}
 
     @Override
     public List<Color> getHighlightColors() {
@@ -131,7 +118,22 @@ public class JsonBasedThemeColors implements ThemeColors {
      * @param data the parsed theme data
      * @return the full set of theme colors
      */
-    public static JsonBasedThemeColors fromThemeDefinition(JsonThemeData data) throws JsonSyntaxException {
+    public static JsonBasedThemeColors fromThemeDefinition(ThemeColorsJson data) throws JsonSyntaxException {
         return new JsonBasedThemeColors(data);
+    }
+
+    /**
+     * Builds an instance based on the given theme with some values overridden. Typical use is applying user-modified
+     * values on top of the base theme. Override may specify only a subset of values, but the base theme must be
+     * complete.
+     *
+     * @param theme the base theme
+     * @param override the overrides
+     * @return the full combined set of theme colors
+     * @throws JsonSyntaxException if the combination doesn't make sense
+     */
+    public static JsonBasedThemeColors withOverlay(ThemeColorsJson theme, ThemeColorsJson override)
+            throws JsonSyntaxException {
+        return new JsonBasedThemeColors(theme.merge(override));
     }
 }

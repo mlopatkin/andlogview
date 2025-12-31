@@ -151,6 +151,7 @@ tasks.withType<JavaCompile>().configureEach {
             nullaway {
                 annotatedPackages = listOf("name.mlopatkin")
                 checkContracts = true
+                handleTestAssertionLibraries = true
                 isAssertsEnabled = true
                 isJSpecifyMode = true
 

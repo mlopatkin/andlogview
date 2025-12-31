@@ -16,21 +16,35 @@
 
 package name.mlopatkin.andlogview.preferences;
 
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
+
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.filters.BufferFilterModel;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
+import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
+import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.LogTable;
+import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.RowColors;
 
 import dagger.Lazy;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -45,18 +59,21 @@ public class LegacyPrefsImport {
     private final Lazy<ConfigStorage> storage;
     private final Lazy<WindowsPositionsPref> windowsPositionsPref;
     private final Lazy<AdbConfigurationPref> adbConfigurationPref;
+    private final Lazy<ThemeColorsPref> themeColorsPref;
 
     @Inject
     public LegacyPrefsImport(
             LegacyConfiguration legacy,
             Lazy<ConfigStorage> storage,
             Lazy<WindowsPositionsPref> windowsPositions,
-            Lazy<AdbConfigurationPref> adbConfiguration
+            Lazy<AdbConfigurationPref> adbConfiguration,
+            Lazy<ThemeColorsPref> themeColors
     ) {
         this.legacy = legacy;
         this.storage = storage;
         this.windowsPositionsPref = windowsPositions;
         this.adbConfigurationPref = adbConfiguration;
+        this.themeColorsPref = themeColors;
     }
 
     public void importLegacyPreferences() {
@@ -69,6 +86,7 @@ public class LegacyPrefsImport {
         // Let's start with preferences that were never integrated with the modern infrastructure before.
         importProcessListPosition(windowsPositionsPref.get());
         importBufferPrefs(BufferFilterModel.enabledBuffersPref(storage.get()));
+        importThemeColors(themeColorsPref.get());
 
         // These might have been migrated.
         importMainWindowPosition(windowsPositionsPref.get());
@@ -115,6 +133,57 @@ public class LegacyPrefsImport {
                     Collectors.joining(", ")));
             bufferPref.set(legacyEnabledBuffers);
         }
+    }
+
+    private void importThemeColors(ThemeColorsPref themeColors) {
+        themeColors.setOverride(legacyOverride(themeColors));
+    }
+
+    private ThemeColorsJson legacyOverride(ThemeColorsPref themeColors) {
+        var theme = themeColors.getBaseThemeColors();
+        return new ThemeColorsJson(
+                LogTable.create(
+                        getIfDifferent(legacy.ui().backgroundColor(), theme.getBackgroundColor()),
+                        new RowColors(
+                                getIfDifferent(legacy.ui().bookmarkBackground(), theme.getBookmarkBackgroundColor()),
+                                getIfDifferent(legacy.ui().bookmarkedForeground(), theme.getBookmarkForegroundColor())
+                        ),
+                        importPriorityColorsMap(theme),
+                        importHighlightColors(theme)
+                )
+        );
+    }
+
+    private @Nullable Color getIfDifferent(@Nullable Color overlayColor, Color baseColor) {
+        return !Objects.equals(overlayColor, baseColor) ? overlayColor : null;
+    }
+
+    private @Nullable Map<Priority, RowColors> importPriorityColorsMap(ThemeColors baseTheme) {
+        // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
+        // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
+        // per se.
+        var colors = Arrays.stream(Priority.values())
+                .filter(p -> {
+                    var legacyColor = legacy.ui().priorityColor(p);
+                    return legacyColor != null && !legacyColor.equals(baseTheme.getPriorityForegroundColor(p));
+                })
+                .collect(toImmutableMap(
+                        Function.identity(),
+                        p -> new RowColors(null, legacy.ui().priorityColor(p))
+                ));
+        return !colors.isEmpty() ? colors : null;
+    }
+
+    private @Nullable List<RowColors> importHighlightColors(ThemeColors baseTheme) {
+        // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
+        // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
+        // per se.
+        var legacyColors = legacy.ui().highlightColors();
+        if (legacyColors == null || Objects.equals(legacyColors, baseTheme.getHighlightColors())) {
+            // Nullable collection is meh, but we need to tell the theming code that there is no user-provided overlay.
+            return null;
+        }
+        return legacyColors.stream().map(c -> new RowColors(c, null)).toList();
     }
 
     private void importMainWindowPosition(WindowsPositionsPref windowsPositionsPref) {

@@ -62,23 +62,23 @@ public class LegacyConfiguration {
     public static class Ui {
         private Ui() {}
 
-        public Color priorityColor(LogRecord.Priority p) {
+        public @Nullable Color priorityColor(LogRecord.Priority p) {
             return Configuration.ui.priorityColor(p);
         }
 
-        public Color bookmarkBackground() {
+        public @Nullable Color bookmarkBackground() {
             return Configuration.ui.bookmarkBackground();
         }
 
-        public Color bookmarkedForeground() {
+        public @Nullable Color bookmarkedForeground() {
             return Configuration.ui.bookmarkedForeground();
         }
 
-        public List<Color> highlightColors() {
+        public @Nullable List<Color> highlightColors() {
             return Configuration.ui.highlightColors();
         }
 
-        public Color backgroundColor() {
+        public @Nullable Color backgroundColor() {
             return Configuration.ui.backgroundColor();
         }
 

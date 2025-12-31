@@ -17,15 +17,15 @@
 package name.mlopatkin.andlogview.utils.properties;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ListPropertyBuilder<T> implements IPropertyBuilder<List<T>> {
     private final Class<T> elemType;
     private @MonotonicNonNull Parser<T> parser;
-    private List<T> defaultVal = Collections.emptyList();
+    private @Nullable List<T> defaultVal = null;
 
     private ListPropertyBuilder(Class<T> type) {
         elemType = type;

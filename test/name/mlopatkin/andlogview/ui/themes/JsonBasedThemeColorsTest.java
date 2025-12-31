@@ -19,20 +19,26 @@ package name.mlopatkin.andlogview.ui.themes;
 import name.mlopatkin.andlogview.base.AppResources;
 import name.mlopatkin.andlogview.config.Utils;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.charset.StandardCharsets;
 
 class JsonBasedThemeColorsTest {
-    @Test
-    void canParseDefaultTheme() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "Light",
+            "Test.Light",
+            "Test.Dark"
+    })
+    void canParseBuiltinThemes(String theme) throws Exception {
         var gson = Utils.createConfigurationGson();
         try (
-                var res = AppResources.getResource("ui/themes/AndLogView.Light.json")
+                var res = AppResources.getResource("ui/themes/AndLogView.%s.json".formatted(theme))
                         .asCharSource(StandardCharsets.UTF_8)
                         .openBufferedStream()
         ) {
-            JsonBasedThemeColors.fromThemeDefinition(gson.fromJson(res, JsonBasedThemeColors.JsonThemeData.class));
+            JsonBasedThemeColors.fromThemeDefinition(gson.fromJson(res, ThemeColorsJson.class));
         }
     }
 }
