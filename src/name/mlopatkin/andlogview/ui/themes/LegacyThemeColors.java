@@ -16,39 +16,47 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.LegacyConfiguration;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import java.awt.Color;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * This class provides access to colors defined in `logview.properties` files.
  */
-@SuppressWarnings("deprecation")
 public class LegacyThemeColors implements ThemeColors {
+    private final LegacyConfiguration legacy;
+
+    @Inject
+    public LegacyThemeColors(LegacyConfiguration legacy) {
+        this.legacy = legacy;
+    }
+
     @Override
     public List<Color> getHighlightColors() {
-        return Configuration.ui.highlightColors();
+        return legacy.ui().highlightColors();
     }
 
     @Override
     public Color getPriorityForegroundColor(LogRecord.Priority priority) {
-        return Configuration.ui.priorityColor(priority);
+        return legacy.ui().priorityColor(priority);
     }
 
     @Override
     public Color getBackgroundColor() {
-        return Configuration.ui.backgroundColor();
+        return legacy.ui().backgroundColor();
     }
 
     @Override
     public Color getBookmarkBackgroundColor() {
-        return Configuration.ui.bookmarkBackground();
+        return legacy.ui().bookmarkBackground();
     }
 
     @Override
     public Color getBookmarkForegroundColor() {
-        return Configuration.ui.bookmarkedForeground();
+        return legacy.ui().bookmarkedForeground();
     }
 }

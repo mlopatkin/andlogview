@@ -21,22 +21,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
-import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
-import name.mlopatkin.andlogview.utils.LazyInstance;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
-@ExtendWith(DefaultConfigurationExtension.class)
 class AdbConfigurationPrefTest {
     private final FakeInMemoryConfigStorage storage = new FakeInMemoryConfigStorage();
 
@@ -90,29 +85,6 @@ class AdbConfigurationPrefTest {
     void autoDiscoveryIsAllowedByDefault() {
         var pref = createPref(mockResolver());
 
-        assertThat(pref.isAdbAutoDiscoveryAllowed()).isTrue();
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    void autoDiscoveryIsNotAllowedIfLegacyAdbIsAvailable() {
-        Configuration.adb.executable("adb.exe");
-
-        var pref = createPref(mockResolver());
-        importLegacyPreferences(pref);
-        assertThat(pref.isAdbAutoDiscoveryAllowed()).isFalse();
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    void autoDiscoveryIsAllowedIfLegacyAdbIsAvailableButInvalid() {
-        Configuration.adb.executable("adb.exe");
-
-        var pref = createPref(FakePathResolver.acceptsNothing());
-        importLegacyPreferences(pref);
-
-        assertThat(pref.hasValidAdbLocation()).isFalse();
-        assertThat(pref.getAdbLocation()).isEqualTo(AdbLocationDiscovery.ADB_EXECUTABLE);
         assertThat(pref.isAdbAutoDiscoveryAllowed()).isTrue();
     }
 
@@ -204,10 +176,5 @@ class AdbConfigurationPrefTest {
 
     private SystemPathResolver mockResolver() {
         return FakePathResolver.acceptsAnything();
-    }
-
-    private void importLegacyPreferences(AdbConfigurationPref pref) {
-        new LegacyPrefsImport(LazyInstance.of(storage), LazyInstance.of(new WindowsPositionsPref(storage)),
-                LazyInstance.of(pref)).importLegacyPreferences();
     }
 }

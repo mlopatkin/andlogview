@@ -43,13 +43,10 @@ import java.awt.Color;
 import java.awt.Point;
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Configuration {
-    private static final AtomicReference<name.mlopatkin.andlogview.utils.properties.Configuration> config =
-            new AtomicReference<>(createDefaultConfiguration());
+    private static final name.mlopatkin.andlogview.utils.properties.Configuration config =
+            createDefaultConfiguration();
 
     public static class ui { // NO CHECKSTYLE
 
@@ -70,57 +67,57 @@ public class Configuration {
 
         @Deprecated
         public static Color priorityColor(Priority p) {
-            return getConfig().get(PRIORITY_FOREGROUND_KEY, p);
+            return config.get(PRIORITY_FOREGROUND_KEY, p);
         }
 
         @Deprecated
         public static Color bookmarkBackground() {
-            return getConfig().get(BOOKMARK_BACKGROUND_KEY);
+            return config.get(BOOKMARK_BACKGROUND_KEY);
         }
 
         @Deprecated
         public static Color bookmarkedForeground() {
-            return getConfig().get(BOOKMARK_FOREGROUND_KEY);
+            return config.get(BOOKMARK_FOREGROUND_KEY);
         }
 
         @Deprecated
         public static List<Color> highlightColors() {
-            return getConfig().get(HIGHLIGHT_FOREGROUNDS_KEY);
+            return config.get(HIGHLIGHT_FOREGROUNDS_KEY);
         }
 
         @Deprecated
         public static Color backgroundColor() {
-            return getConfig().get(BACKGROUND_COLOR_KEY);
+            return config.get(BACKGROUND_COLOR_KEY);
         }
 
         @Deprecated
         @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
         public static @Nullable Boolean bufferEnabled(Buffer buffer) {
-            return getConfig().get(BUFFER_ENABLED_KEY + "." + buffer.name());
+            return config.get(BUFFER_ENABLED_KEY + "." + buffer.name());
         }
 
         @Deprecated
         @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
         public static @Nullable Point mainWindowPosition() {
-            return getConfig().get(MAIN_WINDOW_POSITION_KEY);
+            return config.get(MAIN_WINDOW_POSITION_KEY);
         }
 
         @Deprecated
         @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
         public static @Nullable Integer mainWindowWidth() {
-            return getConfig().get(MAIN_WINDOW_WIDTH_KEY);
+            return config.get(MAIN_WINDOW_WIDTH_KEY);
         }
 
         @Deprecated
         @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
         public static @Nullable Integer mainWindowHeight() {
-            return getConfig().get(MAIN_WINDOW_HEIGHT_KEY);
+            return config.get(MAIN_WINDOW_HEIGHT_KEY);
         }
 
         @Deprecated
         @SuppressWarnings("DataFlowIssue")  // The annotation on get() is off.
         public static @Nullable Point processWindowPosition() {
-            return getConfig().get(PROCESS_LIST_WINDOW_POSITION_KEY);
+            return config.get(PROCESS_LIST_WINDOW_POSITION_KEY);
         }
     }
 
@@ -141,19 +138,19 @@ public class Configuration {
         @SuppressWarnings("DataFlowIssue") // The annotation on get() is off.
         @Deprecated
         public static @Nullable String executable() {
-            return getConfig().get(EXECUTABLE_KEY);
+            return config.get(EXECUTABLE_KEY);
         }
 
         @Deprecated
         @SuppressWarnings("DataFlowIssue") // The annotation on get() is off.
         public static @Nullable Boolean isAutoReconnectEnabled() {
-            return getConfig().get(AUTORECONNECT_KEY);
+            return config.get(AUTORECONNECT_KEY);
         }
 
         @Deprecated
         @VisibleForTesting
         public static void executable(String executable) {
-            getConfig().set(EXECUTABLE_KEY, executable);
+            config.set(EXECUTABLE_KEY, executable);
         }
     }
 
@@ -172,15 +169,11 @@ public class Configuration {
             }
         }));
 
-        Utils.loadConfiguration(cfgFile, getConfig());
+        Utils.loadConfiguration(cfgFile, config);
     }
 
     public static void save(File cfgFile) {
-        Utils.saveConfiguration(cfgFile, getConfig());
-    }
-
-    private static name.mlopatkin.andlogview.utils.properties.Configuration getConfig() {
-        return Objects.requireNonNull(config.get());
+        Utils.saveConfiguration(cfgFile, config);
     }
 
     private static name.mlopatkin.andlogview.utils.properties.Configuration createDefaultConfiguration() {
@@ -215,31 +208,5 @@ public class Configuration {
         PropertyUtils.loadValuesFromResource(cfg, Main.class, "logview.properties");
 
         return new SynchronizedConfiguration(cfg);
-    }
-
-    /**
-     * A hook for test to execute with known default configuration values. Do not use at production.
-     *
-     * @param action the action to execute with the default configuration
-     * @throws IllegalStateException if the configuration instance is modified outside the test
-     * @throws Exception if the {@code action} throws the exception is propagated to the caller
-     */
-    @VisibleForTesting
-    public static void withDefaultConfiguration(Callable<?> action) throws Exception {
-        name.mlopatkin.andlogview.utils.properties.Configuration oldConfig = getConfig();
-        name.mlopatkin.andlogview.utils.properties.Configuration defaultConfig = createDefaultConfiguration();
-        trySetConfig(oldConfig, defaultConfig);
-        try {
-            action.call();
-        } finally {
-            trySetConfig(defaultConfig, oldConfig);
-        }
-    }
-
-    private static void trySetConfig(name.mlopatkin.andlogview.utils.properties.Configuration expectedValue,
-            name.mlopatkin.andlogview.utils.properties.Configuration newValue) {
-        if (!config.compareAndSet(expectedValue, newValue)) {
-            throw new IllegalStateException("Configuration instance was modified while overriding it");
-        }
     }
 }

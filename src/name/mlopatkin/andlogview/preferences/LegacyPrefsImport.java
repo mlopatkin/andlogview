@@ -17,7 +17,7 @@
 package name.mlopatkin.andlogview.preferences;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.Configuration;
+import name.mlopatkin.andlogview.config.LegacyConfiguration;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
@@ -42,16 +42,19 @@ import javax.inject.Inject;
 public class LegacyPrefsImport {
     private static final Logger log = LoggerFactory.getLogger(LegacyPrefsImport.class);
 
+    private final LegacyConfiguration legacy;
     private final Lazy<ConfigStorage> storage;
     private final Lazy<WindowsPositionsPref> windowsPositionsPref;
     private final Lazy<AdbConfigurationPref> adbConfigurationPref;
 
     @Inject
     public LegacyPrefsImport(
+            LegacyConfiguration legacy,
             Lazy<ConfigStorage> storage,
             Lazy<WindowsPositionsPref> windowsPositions,
             Lazy<AdbConfigurationPref> adbConfiguration
     ) {
+        this.legacy = legacy;
         this.storage = storage;
         this.windowsPositionsPref = windowsPositions;
         this.adbConfigurationPref = adbConfiguration;
@@ -65,7 +68,6 @@ public class LegacyPrefsImport {
         // We can expect that in majority of cases running migration, we'll have both legacy and modern preferences.
 
         // Let's start with preferences that were never integrated with the modern infrastructure before.
-        // TODO(mlopatkin) test this somehow (make Configuration injectable when nothing accesses it anymore?)
         importProcessListPosition(windowsPositionsPref.get());
         importBufferPrefs(BufferFilterModel.enabledBuffersPref(storage.get()));
 
@@ -74,13 +76,12 @@ public class LegacyPrefsImport {
         importAdbConfiguration(adbConfigurationPref.get());
     }
 
-    @SuppressWarnings("deprecation")
     private void importProcessListPosition(WindowsPositionsPref windowsPositions) {
         if (windowsPositions.getFrameLocation(Frame.PROCESS_LIST) != null) {
             log.info("Skip importing ui.proc_window_pos because it is already in the modern config.");
             return;
         }
-        var legacyPosition = Configuration.ui.processWindowPosition();
+        var legacyPosition = legacy.ui().processWindowPosition();
         if (legacyPosition != null) {
             log.info("Importing ui.proc_window_pos = {}", legacyPosition);
             var defaultDimensions = windowsPositions.getFrameDimensions(Frame.PROCESS_LIST);
@@ -92,7 +93,6 @@ public class LegacyPrefsImport {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void importBufferPrefs(Preference<Set<LogRecord.Buffer>> bufferPref) {
         if (bufferPref.isSet()) {
             log.info("Skip importing Buffer visibility preferences because they're already in the modern config.");
@@ -102,7 +102,7 @@ public class LegacyPrefsImport {
         Set<LogRecord.Buffer> legacyEnabledBuffers = new HashSet<>();
 
         for (var buffer : LogRecord.Buffer.values()) {
-            var enabled = Configuration.ui.bufferEnabled(buffer);
+            var enabled = legacy.ui().bufferEnabled(buffer);
             if (enabled != null) {
                 hasAnyBuffers = true;
                 if (enabled) {
@@ -118,8 +118,6 @@ public class LegacyPrefsImport {
         }
     }
 
-
-    @SuppressWarnings("deprecation")
     private void importMainWindowPosition(WindowsPositionsPref windowsPositionsPref) {
         var currentLocation = windowsPositionsPref.getFrameLocation(Frame.MAIN);
         // By default, with empty config, the location is not defined. If it is there, then we have already imported it
@@ -130,9 +128,9 @@ public class LegacyPrefsImport {
             return;
         }
 
-        var legacyLocation = Configuration.ui.mainWindowPosition();
-        var legacyWidth = Configuration.ui.mainWindowWidth();
-        var legacyHeight = Configuration.ui.mainWindowHeight();
+        var legacyLocation = legacy.ui().mainWindowPosition();
+        var legacyWidth = legacy.ui().mainWindowWidth();
+        var legacyHeight = legacy.ui().mainWindowHeight();
 
         log.info("Importing ui.main_window_location = {}", legacyLocation);
         log.info("Importing ui.main_window_width = {}", legacyWidth);
@@ -147,14 +145,13 @@ public class LegacyPrefsImport {
         windowsPositionsPref.setFrameInfo(Frame.MAIN, importedLocation, importedDimensions);
     }
 
-    @SuppressWarnings({"deprecation", "unused"})
     private void importAdbConfiguration(AdbConfigurationPref adbConfiguration) {
         if (storage.get().hasStoredDataFor(AdbConfigurationPref.CLIENT_NAME)) {
             log.info("Skip importing ADB preferences because they're already in the modern config.");
             return;
         }
 
-        var legacyExecutable = Configuration.adb.executable();
+        var legacyExecutable = legacy.adb().executable();
         if (legacyExecutable != null) {
             log.info("Importing adb.executable = {}", legacyExecutable);
             // Modern executable was in JSON from the very first commit.
@@ -163,7 +160,7 @@ public class LegacyPrefsImport {
                 log.info("Discarding invalid adb.executable at {}", legacyExecutable);
             }
         }
-        var legacyAutoReconnect = Configuration.adb.isAutoReconnectEnabled();
+        var legacyAutoReconnect = legacy.adb().isAutoReconnectEnabled();
         if (legacyAutoReconnect != null) {
             log.info("Importing adb.autoreconnect = {}", legacyAutoReconnect);
             // 0.21 was the first version with the JSON pref, and it already had auto-reconnect.

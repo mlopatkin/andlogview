@@ -21,14 +21,11 @@ import static name.mlopatkin.andlogview.ui.FrameLocationAssert.assertThat;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
-import name.mlopatkin.andlogview.test.DefaultConfigurationExtension;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(DefaultConfigurationExtension.class)
 class WindowsPositionsPrefTest {
     private final FakeInMemoryConfigStorage configStorage = new FakeInMemoryConfigStorage();
     private final WindowsPositionsPref pref = new WindowsPositionsPref(configStorage);
