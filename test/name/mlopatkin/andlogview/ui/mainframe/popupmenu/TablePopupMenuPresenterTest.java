@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
 import name.mlopatkin.andlogview.ui.logtable.TestSelectedRows;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.FakeTablePopupMenuView.MenuElements;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -51,14 +51,15 @@ public class TablePopupMenuPresenterTest {
     @Mock
     MenuFilterCreator filterCreator;
     @Mock
-    HighlightColors highlightColors;
+    ThemeColors highlightColors;
     @Mock
     DialogFactory dialogFactory;
 
     @BeforeEach
     public void setUp() throws Exception {
         popupMenuView = new FakeTablePopupMenuView();
-        lenient().when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
+        lenient().when(highlightColors.getHighlightColors())
+                .thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
     }
 
     @Test

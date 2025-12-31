@@ -23,12 +23,12 @@ import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.search.RequestCompilationException;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filterdialog.PatternsList;
-import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.PopupMenuPresenter;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.events.Observable;
 
@@ -65,12 +65,12 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
 
     private final BookmarkModel bookmarkModel;
     private final MenuFilterCreator filterCreator;
-    private final HighlightColors highlightColors;
+    private final ThemeColors highlightColors;
     private final DialogFactory dialogFactory;
 
     @Inject
     public TablePopupMenuPresenter(SelectedRows selectedRows, BookmarkModel bookmarkModel,
-            MenuFilterCreator filterCreator, HighlightColors highlightColors, DialogFactory dialogFactory) {
+            MenuFilterCreator filterCreator, ThemeColors highlightColors, DialogFactory dialogFactory) {
         super(selectedRows);
         this.bookmarkModel = bookmarkModel;
         this.filterCreator = filterCreator;
@@ -133,7 +133,7 @@ public class TablePopupMenuPresenter extends PopupMenuPresenter<TablePopupMenuPr
                 menuView.addQuickFilterAction(itemTitle)
                         .addObserver(() -> addFilter(buildFilter(filteringMode, column, row)));
             } else {
-                menuView.addHighlightFilterAction(itemTitle, highlightColors.getColors())
+                menuView.addHighlightFilterAction(itemTitle, highlightColors.getHighlightColors())
                         .addObserver(color -> addFilter(
                                 buildFilter(FilteringMode.HIGHLIGHT, column, row).setHighlightColor(color)));
             }

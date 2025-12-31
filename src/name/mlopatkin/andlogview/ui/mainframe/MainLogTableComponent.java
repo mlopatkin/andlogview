@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.logtable.LogTableModule;
 import name.mlopatkin.andlogview.ui.logtable.LogTableScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -38,6 +39,7 @@ public interface MainLogTableComponent {
     @Component.Factory
     interface Factory {
         MainLogTableComponent create(
+                @BindsInstance ThemeColors themeColors,
                 @BindsInstance LogRecordTableModel tableModel, @BindsInstance LogModelFilter modelFilter,
                 @BindsInstance BookmarkModel bookmarkModel, @BindsInstance MenuFilterCreator filterCreator,
                 @BindsInstance DialogFactory dialogFactory);

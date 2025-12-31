@@ -31,6 +31,7 @@ import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenter;
 import name.mlopatkin.andlogview.ui.preferences.InstallAdbPresenterFactory;
 import name.mlopatkin.andlogview.ui.preferences.PreferencesUiModule;
 import name.mlopatkin.andlogview.ui.status.StatusPanelModule;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.widgets.DecoratingRendererTable;
 
 import dagger.Lazy;
@@ -93,13 +94,14 @@ public class MainFrameModule {
     @MainFrameScoped
     @Named(MainFrameDependencies.FOR_MAIN_FRAME)
     JTable getMainLogTable(
+            ThemeColors themeColors,
             LogRecordTableModel model,
             LogModelFilter filter,
             BookmarkModel bookmarkModel,
             Lazy<MainFilterController> filterController,
             DialogFactory dialogFactory) {
         MainLogTableComponent logTableComponent = DaggerMainLogTableComponent.factory()
-                .create(model, filter, bookmarkModel, new MenuFilterCreator() {
+                .create(themeColors, model, filter, bookmarkModel, new MenuFilterCreator() {
                     // TODO(mlopatkin) break dependency cycle and replace with direct dependency (?)
                     @Override
                     public void addFilter(FilterFromDialog filter) {

@@ -16,7 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.filterdialog;
 
-import name.mlopatkin.andlogview.ui.filters.HighlightColors;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 
 import com.google.common.collect.Lists;
 
@@ -35,8 +35,8 @@ class ColorsComboBoxModel
     private final List<Item> items;
 
     @Inject
-    public ColorsComboBoxModel(HighlightColors highlightColors) {
-        var highlightColorsList = highlightColors.getColors();
+    public ColorsComboBoxModel(ThemeColors themeColors) {
+        var highlightColorsList = themeColors.getHighlightColors();
         items = Lists.newArrayListWithCapacity(highlightColorsList.size());
         int index = 0;
         for (Color color : highlightColorsList) {

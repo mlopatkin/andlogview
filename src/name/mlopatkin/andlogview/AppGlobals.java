@@ -33,6 +33,7 @@ import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
 import name.mlopatkin.andlogview.ui.filters.FilterGlobals;
 import name.mlopatkin.andlogview.ui.themes.Theme;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
 import dagger.BindsInstance;
@@ -82,6 +83,8 @@ public interface AppGlobals {
     AdbManager getAdbManager();
 
     Theme getTheme();
+
+    ThemeColors getThemeColors();
 
     Features getFeatures();
 

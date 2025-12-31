@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Mikhail Lopatkin
+ * Copyright 2025 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.ui.filters;
-
-import name.mlopatkin.andlogview.config.Configuration;
-
-import com.google.common.collect.ImmutableList;
+package name.mlopatkin.andlogview.ui.themes;
 
 import java.awt.Color;
-
-import javax.inject.Inject;
+import java.util.List;
 
 /**
- * A list of default highlight colors.
+ * This class provides access to various colors used in AndLogView.
  */
-public class HighlightColors {
-    @Inject
-    public HighlightColors() {
-    }
-
-    @SuppressWarnings("deprecation")
-    public ImmutableList<Color> getColors() {
-        return ImmutableList.copyOf(Configuration.ui.highlightColors());
-    }
+public interface ThemeColors {
+    /**
+     * Returns a list of colors to be used as filter highlighting.
+     *
+     * @return the immutable list of highlight colors
+     */
+    List<Color> getHighlightColors();
 }

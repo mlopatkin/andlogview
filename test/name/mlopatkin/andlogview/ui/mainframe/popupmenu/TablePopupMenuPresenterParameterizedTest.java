@@ -40,12 +40,12 @@ import name.mlopatkin.andlogview.filters.FilteringMode;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecordUtils;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
-import name.mlopatkin.andlogview.ui.filters.HighlightColors;
 import name.mlopatkin.andlogview.ui.logtable.Column;
 import name.mlopatkin.andlogview.ui.logtable.SelectedRows;
 import name.mlopatkin.andlogview.ui.logtable.TableRow;
 import name.mlopatkin.andlogview.ui.logtable.TestSelectedRows;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -79,14 +79,15 @@ public class TablePopupMenuPresenterParameterizedTest {
     @Mock
     MenuFilterCreator filterCreator;
     @Mock
-    HighlightColors highlightColors;
+    ThemeColors highlightColors;
     @Mock
     DialogFactory dialogFactory;
 
     @BeforeEach
     public void setUp() throws Exception {
         popupMenuView = new FakeTablePopupMenuView();
-        lenient().when(highlightColors.getColors()).thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
+        lenient().when(highlightColors.getHighlightColors())
+                .thenReturn(ImmutableList.of(Color.ORANGE, Color.BLUE, Color.RED));
     }
 
     @ParameterizedTest(name = "{0}")
