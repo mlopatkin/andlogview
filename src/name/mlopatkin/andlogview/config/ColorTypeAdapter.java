@@ -36,7 +36,10 @@ class ColorTypeAdapter extends TypeAdapter<Color> {
     public @Nullable Color read(JsonReader in) throws IOException {
         JsonToken nextToken = in.peek();
         return switch (nextToken) {
-            case NULL -> null;
+            case NULL -> {
+                in.nextNull();
+                yield null;
+            }
             case BEGIN_OBJECT -> parseObject(in);
             case STRING -> parseColorString(in);
             default -> throw new JsonParseException("Unexpected token for Color: " + nextToken);

@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 import org.intellij.lang.annotations.Language;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -138,6 +139,26 @@ class ColorTypeAdapterTest {
         assertThatThrownBy(() -> parseColor(String.format("""
                 "%s"
                 """, failValue))).isInstanceOf(JsonParseException.class);
+    }
+
+    @Test
+    void canParseNull() {
+        assertThat(parseColor("""
+                  null
+                """)).isNull();
+    }
+
+    @Test
+    void canParseNullField() {
+        record Colored(@Nullable Color color) {}
+
+        var colored = gson.fromJson("""
+                {
+                    "color": null
+                }
+                """, Colored.class);
+
+        assertThat(colored.color).isNull();
     }
 
     private Color parseColor(@Language("JSON") String json) {

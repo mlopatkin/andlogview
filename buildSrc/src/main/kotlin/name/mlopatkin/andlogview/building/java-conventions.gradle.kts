@@ -150,6 +150,7 @@ tasks.withType<JavaCompile>().configureEach {
 
             nullaway {
                 annotatedPackages = listOf("name.mlopatkin")
+                checkContracts = true
                 isAssertsEnabled = true
                 isJSpecifyMode = true
 
@@ -165,6 +166,9 @@ tasks.withType<JavaCompile>().configureEach {
                     "org.mockito.Mock",
                     "org.mockito.Spy",
                     "org.openjdk.jmh.annotations.Param",
+                )
+                customContractAnnotations = listOf(
+                    "name.mlopatkin.andlogview.base.annotations.Contract"
                 )
 
                 customInitializerAnnotations = listOf(

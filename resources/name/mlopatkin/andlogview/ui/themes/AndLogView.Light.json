@@ -1,0 +1,43 @@
+{
+  "logTable": {
+    "background": "#FFFFFF",
+    "bookmarks": {
+      "background": "#01146D",
+      "foreground": "#F4EE00"
+    },
+    "priority": {
+      "VERBOSE": {
+        "foreground": "#000000"
+      },
+      "DEBUG": {
+        "foreground": "#0000DD"
+      },
+      "INFO": {
+        "foreground": "#228B22"
+      },
+      "WARN": {
+        "foreground": "#FF681F"
+      },
+      "ERROR": {
+        "foreground": "#FF0000"
+      },
+      "FATAL": {
+        "foreground": "#FF0000"
+      }
+    },
+    "highlights": [
+      {
+        "background": "#D0F0C0"
+      },
+      {
+        "background": "#C7C2FC"
+      },
+      {
+        "background": "#FECBC0"
+      },
+      {
+        "background": "#FCFC96"
+      }
+    ]
+  }
+}
