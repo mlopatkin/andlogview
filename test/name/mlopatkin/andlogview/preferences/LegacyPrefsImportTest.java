@@ -77,7 +77,7 @@ class LegacyPrefsImportTest {
         var adbPref = createAdbPref(FakePathResolver.acceptsAnything());
         var importer = createImport(adbPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         assertThat(adbPref.getAdbLocation()).isEqualTo(adbFile.getPath());
         assertThat(adbPref.hasValidAdbLocation()).isTrue();
@@ -93,7 +93,7 @@ class LegacyPrefsImportTest {
         var adbPref = createAdbPref(FakePathResolver.acceptsNothing());
         var importer = createImport(adbPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         assertThat(adbPref.hasValidAdbLocation()).isFalse();
         assertThat(adbPref.getAdbLocation()).isEqualTo(AdbLocationDiscovery.ADB_EXECUTABLE);
@@ -117,7 +117,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         var resultTheme = createThemeColorsPref(Dark).getThemeColors();
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(customBackground);
@@ -135,7 +135,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         assertThat(createThemeColorsPref(Dark).getThemeColors().getBackgroundColor()).isEqualTo(customBackground);
     }
@@ -150,7 +150,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         var resultTheme = createThemeColorsPref(Dark).getThemeColors();
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(customBookmarkBg);
@@ -167,7 +167,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         var resultTheme = createThemeColorsPref(Dark).getThemeColors();
         assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR)).isEqualTo(customErrorColor);
@@ -187,7 +187,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         assertThat(createThemeColorsPref(Dark).getThemeColors().getHighlightColors()).isEqualTo(customHighlights);
     }
@@ -203,7 +203,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         // Simulate user changing the base theme. Overlay should be empty.
         var resultTheme = createThemeColorsPref(Dark).getThemeColors();
@@ -221,7 +221,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         // Simulate user changing the base theme. Overlay should be empty.
         var resultTheme = createThemeColorsPref(Dark).getThemeColors();
@@ -246,7 +246,7 @@ class LegacyPrefsImportTest {
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
-        importer.importLegacyPreferences();
+        importer.importLegacyPreferences(legacyConfiguration);
 
         var resultTheme = createThemeColorsPref(Dark).getThemeColors();
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(customBackground);
@@ -259,8 +259,7 @@ class LegacyPrefsImportTest {
 
     LegacyPrefsImport createImport(AdbConfigurationPref adbPref) {
         return new LegacyPrefsImport(
-                legacyConfiguration,
-                LazyInstance.of(configStorage),
+                configStorage,
                 LazyInstance.of(new WindowsPositionsPref(configStorage)),
                 LazyInstance.of(adbPref),
                 LazyInstance.of(createThemeColorsPref(Light))
@@ -269,8 +268,7 @@ class LegacyPrefsImportTest {
 
     LegacyPrefsImport createImport(ThemeColorsPref themeColorsPref) {
         return new LegacyPrefsImport(
-                legacyConfiguration,
-                LazyInstance.of(configStorage),
+                configStorage,
                 LazyInstance.of(new WindowsPositionsPref(configStorage)),
                 LazyInstance.of(createAdbPref(FakePathResolver.acceptsAnything())),
                 LazyInstance.of(themeColorsPref)

@@ -40,12 +40,4 @@ public class PropertyUtils {
             throw new RuntimeException("IO exception while loading resource", e);
         }
     }
-
-    public static void loadValuesFromStream(ConfigurationMap cfg, InputStream stream) throws IOException {
-        cfg.assign(getPropertiesFromStream(stream));
-    }
-
-    public static void loadValuesFromResource(ConfigurationMap cfg, Class<?> clazz, String resourceName) {
-        cfg.assign(getPropertiesFromResources(clazz, resourceName));
-    }
 }

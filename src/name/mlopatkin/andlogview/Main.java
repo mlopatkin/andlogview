@@ -15,10 +15,9 @@
  */
 package name.mlopatkin.andlogview;
 
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
+import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
 import name.mlopatkin.andlogview.ui.themes.Theme;
-import name.mlopatkin.andlogview.utils.Try;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import com.formdev.flatlaf.util.SystemInfo;
@@ -66,22 +65,16 @@ public class Main {
         logger.info("Revision {}", BuildInfo.REVISION);
         logger.info("Configuration: {}", configurationLoc.getConfigurationDir().getAbsolutePath());
 
-        Try<Boolean> configurationState = Try.ofCallable(() -> {
-            var legacyFile = configurationLoc.getLegacyConfigurationFile();
-            var needsMigration = legacyFile.isFile();
-            Configuration.load(legacyFile);
-            return needsMigration;
-        });
-
         Theme theme = initLaf();
 
         AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, theme);
 
-        if (configurationState.isPresent() && configurationState.get()) {
-            globals.getPreferenceImporter().importLegacyPreferences();
-        }
+        globals.getPreferenceImporter().importLegacyPreferences(() -> {
+            var legacyFile = configurationLoc.getLegacyConfigurationFile();
+            return LegacyConfiguration.loadIfPresent(legacyFile);
+        });
 
-        EventQueue.invokeLater(() -> globals.getMain().start(configurationState));
+        EventQueue.invokeLater(() -> globals.getMain().start());
     }
 
     private static void initProperties() {
@@ -126,14 +119,8 @@ public class Main {
     }
 
     /** Opens the main frame. Must be called from EDT. */
-    private void start(Try<?> configurationLoadingState) {
+    private void start() {
         MainFrame window = createAndShowWindow();
-
-        // As this shows a dialog, we have to do this on the EDT.
-        configurationLoadingState.handleError(e -> {
-            logger.warn("Unexpected exception while parsing config file", e);
-            ErrorDialogsHelper.showError(window.mainFrameUi, "Error in configuration file: " + e.getMessage());
-        });
 
         if (commandLine.isShouldShowUsage()) {
             OptionPanes.error("Incorrect parameters")

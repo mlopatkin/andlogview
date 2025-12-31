@@ -20,6 +20,7 @@ import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
+import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
@@ -31,18 +32,23 @@ import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.LogTable;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.RowColors;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import dagger.Lazy;
 
+import org.apache.commons.io.function.IOSupplier;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -55,28 +61,48 @@ import javax.inject.Inject;
 public class LegacyPrefsImport {
     private static final Logger log = LoggerFactory.getLogger(LegacyPrefsImport.class);
 
-    private final LegacyConfiguration legacy;
-    private final Lazy<ConfigStorage> storage;
+    private final ConfigStorage storage;
+    private final Preference<Boolean> importPerformed;
+
     private final Lazy<WindowsPositionsPref> windowsPositionsPref;
     private final Lazy<AdbConfigurationPref> adbConfigurationPref;
     private final Lazy<ThemeColorsPref> themeColorsPref;
 
     @Inject
     public LegacyPrefsImport(
-            LegacyConfiguration legacy,
-            Lazy<ConfigStorage> storage,
+            ConfigStorage storage,
             Lazy<WindowsPositionsPref> windowsPositions,
             Lazy<AdbConfigurationPref> adbConfiguration,
             Lazy<ThemeColorsPref> themeColors
     ) {
-        this.legacy = legacy;
         this.storage = storage;
+        this.importPerformed = storage.preference(new SimpleClient<>("importPerformed", Boolean.class, () -> false));
+
         this.windowsPositionsPref = windowsPositions;
         this.adbConfigurationPref = adbConfiguration;
         this.themeColorsPref = themeColors;
     }
 
-    public void importLegacyPreferences() {
+    public void importLegacyPreferences(IOSupplier<Optional<LegacyConfiguration>> legacyConfiguration) {
+        if (importPerformed.get()) {
+            log.info("Skipping import as it was already performed");
+            return;
+        }
+
+        try {
+            legacyConfiguration.get().ifPresentOrElse(
+                    this::importLegacyPreferences,
+                    () -> log.info("No legacy configuration found")
+            );
+        } catch (IOException e) {
+            log.error("Failed to read legacy configuration. Import aborted.", e);
+        } finally {
+            importPerformed.set(true);
+        }
+    }
+
+    @VisibleForTesting
+    void importLegacyPreferences(LegacyConfiguration legacy) {
         log.info("Importing preferences from legacy configuration file");
 
         // Cases to consider
@@ -84,16 +110,16 @@ public class LegacyPrefsImport {
         // We can expect that in majority of cases running migration, we'll have both legacy and modern preferences.
 
         // Let's start with preferences that were never integrated with the modern infrastructure before.
-        importProcessListPosition(windowsPositionsPref.get());
-        importBufferPrefs(BufferFilterModel.enabledBuffersPref(storage.get()));
-        importThemeColors(themeColorsPref.get());
+        importProcessListPosition(legacy, windowsPositionsPref.get());
+        importBufferPrefs(legacy, BufferFilterModel.enabledBuffersPref(storage));
+        importThemeColors(legacy, themeColorsPref.get());
 
         // These might have been migrated.
-        importMainWindowPosition(windowsPositionsPref.get());
-        importAdbConfiguration(adbConfigurationPref.get());
+        importMainWindowPosition(legacy, windowsPositionsPref.get());
+        importAdbConfiguration(legacy, adbConfigurationPref.get());
     }
 
-    private void importProcessListPosition(WindowsPositionsPref windowsPositions) {
+    private void importProcessListPosition(LegacyConfiguration legacy, WindowsPositionsPref windowsPositions) {
         if (windowsPositions.getFrameLocation(Frame.PROCESS_LIST) != null) {
             log.info("Skip importing ui.proc_window_pos because it is already in the modern config.");
             return;
@@ -110,7 +136,7 @@ public class LegacyPrefsImport {
         }
     }
 
-    private void importBufferPrefs(Preference<Set<LogRecord.Buffer>> bufferPref) {
+    private void importBufferPrefs(LegacyConfiguration legacy, Preference<Set<LogRecord.Buffer>> bufferPref) {
         if (bufferPref.isSet()) {
             log.info("Skip importing Buffer visibility preferences because they're already in the modern config.");
             return;
@@ -135,11 +161,11 @@ public class LegacyPrefsImport {
         }
     }
 
-    private void importThemeColors(ThemeColorsPref themeColors) {
-        themeColors.setOverride(legacyOverride(themeColors));
+    private void importThemeColors(LegacyConfiguration legacy, ThemeColorsPref themeColors) {
+        themeColors.setOverride(legacyOverride(legacy, themeColors));
     }
 
-    private ThemeColorsJson legacyOverride(ThemeColorsPref themeColors) {
+    private ThemeColorsJson legacyOverride(LegacyConfiguration legacy, ThemeColorsPref themeColors) {
         var theme = themeColors.getBaseThemeColors();
         return new ThemeColorsJson(
                 LogTable.create(
@@ -148,8 +174,8 @@ public class LegacyPrefsImport {
                                 getIfDifferent(legacy.ui().bookmarkBackground(), theme.getBookmarkBackgroundColor()),
                                 getIfDifferent(legacy.ui().bookmarkedForeground(), theme.getBookmarkForegroundColor())
                         ),
-                        importPriorityColorsMap(theme),
-                        importHighlightColors(theme)
+                        importPriorityColorsMap(legacy, theme),
+                        importHighlightColors(legacy, theme)
                 )
         );
     }
@@ -158,7 +184,10 @@ public class LegacyPrefsImport {
         return !Objects.equals(overlayColor, baseColor) ? overlayColor : null;
     }
 
-    private @Nullable Map<Priority, RowColors> importPriorityColorsMap(ThemeColors baseTheme) {
+    private @Nullable Map<Priority, RowColors> importPriorityColorsMap(
+            LegacyConfiguration legacy,
+            ThemeColors baseTheme
+    ) {
         // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
         // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
         // per se.
@@ -174,7 +203,7 @@ public class LegacyPrefsImport {
         return !colors.isEmpty() ? colors : null;
     }
 
-    private @Nullable List<RowColors> importHighlightColors(ThemeColors baseTheme) {
+    private @Nullable List<RowColors> importHighlightColors(LegacyConfiguration legacy, ThemeColors baseTheme) {
         // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
         // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
         // per se.
@@ -186,7 +215,7 @@ public class LegacyPrefsImport {
         return legacyColors.stream().map(c -> new RowColors(c, null)).toList();
     }
 
-    private void importMainWindowPosition(WindowsPositionsPref windowsPositionsPref) {
+    private void importMainWindowPosition(LegacyConfiguration legacy, WindowsPositionsPref windowsPositionsPref) {
         var currentLocation = windowsPositionsPref.getFrameLocation(Frame.MAIN);
         // By default, with empty config, the location is not defined. If it is there, then we have already imported it
         // through old code or run the app and saved the location that way. It is impossible to run the app without
@@ -213,8 +242,8 @@ public class LegacyPrefsImport {
         windowsPositionsPref.setFrameInfo(Frame.MAIN, importedLocation, importedDimensions);
     }
 
-    private void importAdbConfiguration(AdbConfigurationPref adbConfiguration) {
-        if (storage.get().hasStoredDataFor(AdbConfigurationPref.CLIENT_NAME)) {
+    private void importAdbConfiguration(LegacyConfiguration legacy, AdbConfigurationPref adbConfiguration) {
+        if (storage.hasStoredDataFor(AdbConfigurationPref.CLIENT_NAME)) {
             log.info("Skip importing ADB preferences because they're already in the modern config.");
             return;
         }

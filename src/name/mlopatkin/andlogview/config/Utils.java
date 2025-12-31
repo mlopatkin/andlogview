@@ -15,53 +15,13 @@
  */
 package name.mlopatkin.andlogview.config;
 
-import name.mlopatkin.andlogview.utils.properties.IllegalConfigurationException;
-import name.mlopatkin.andlogview.utils.properties.Parser;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.Color;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 public class Utils {
-    @SuppressWarnings("LoggerInitializedWithForeignClass")
-    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
-
     private Utils() {}
-
-    static final Parser<Color> colorParser = new Parser<>() {
-        @Override
-        public Color read(String value) {
-            return Color.decode(value);
-        }
-
-        @Override
-        public String write(@SuppressWarnings("NullableProblems") Color value) {
-            return String.format("#%02x%02x%02x", value.getRed(), value.getGreen(), value.getBlue());
-        }
-    };
-
-    public static void loadConfiguration(
-            File cfgFile,
-            name.mlopatkin.andlogview.utils.properties.Configuration config
-    ) throws IllegalConfigurationException {
-        if (!cfgFile.exists()) {
-            return;
-        }
-
-        try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(cfgFile))) {
-            config.load(input);
-        } catch (IOException e) {
-            logger.error("Failed to load configuration file", e);
-        }
-    }
 
     public static Gson createConfigurationGson() {
         return new GsonBuilder().registerTypeAdapter(Color.class, new ColorTypeAdapter()).create();
