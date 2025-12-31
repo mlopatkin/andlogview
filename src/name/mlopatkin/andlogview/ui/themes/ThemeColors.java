@@ -39,4 +39,25 @@ public interface ThemeColors {
      * @return the color
      */
     Color getPriorityForegroundColor(LogRecord.Priority priority);
+
+    /**
+     * Returns the default background color for log table rows.
+     *
+     * @return the background color
+     */
+    Color getBackgroundColor();
+
+    /**
+     * Returns the background color for bookmarked log records.
+     *
+     * @return the bookmark background color
+     */
+    Color getBookmarkBackgroundColor();
+
+    /**
+     * Returns the foreground (text) color for bookmarked log records.
+     *
+     * @return the bookmark foreground color
+     */
+    Color getBookmarkForegroundColor();
 }

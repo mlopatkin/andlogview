@@ -73,10 +73,12 @@ public class Configuration {
             return getConfig().get(PRIORITY_FOREGROUND_KEY, p);
         }
 
+        @Deprecated
         public static Color bookmarkBackground() {
             return getConfig().get(BOOKMARK_BACKGROUND_KEY);
         }
 
+        @Deprecated
         public static Color bookmarkedForeground() {
             return getConfig().get(BOOKMARK_FOREGROUND_KEY);
         }
@@ -86,6 +88,7 @@ public class Configuration {
             return getConfig().get(HIGHLIGHT_FOREGROUNDS_KEY);
         }
 
+        @Deprecated
         public static Color backgroundColor() {
             return getConfig().get(BACKGROUND_COLOR_KEY);
         }

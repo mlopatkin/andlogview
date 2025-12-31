@@ -36,4 +36,19 @@ public class LegacyThemeColors implements ThemeColors {
     public Color getPriorityForegroundColor(LogRecord.Priority priority) {
         return Configuration.ui.priorityColor(priority);
     }
+
+    @Override
+    public Color getBackgroundColor() {
+        return Configuration.ui.backgroundColor();
+    }
+
+    @Override
+    public Color getBookmarkBackgroundColor() {
+        return Configuration.ui.bookmarkBackground();
+    }
+
+    @Override
+    public Color getBookmarkForegroundColor() {
+        return Configuration.ui.bookmarkedForeground();
+    }
 }

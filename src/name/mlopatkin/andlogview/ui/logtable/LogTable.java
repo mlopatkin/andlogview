@@ -35,7 +35,7 @@ class LogTable extends DecoratingRendererTable implements LogModelFilter.Observe
         this.filterModel = filterModel;
 
         addDecorator(new PriorityColoredCellRenderer(themeColors));
-        addDecorator(new RowHighlightRenderer(filterModel));
+        addDecorator(new RowHighlightRenderer(filterModel, themeColors));
 
         setModel(dataModel);
         sorter = new SortingDisableSorter<>(dataModel);

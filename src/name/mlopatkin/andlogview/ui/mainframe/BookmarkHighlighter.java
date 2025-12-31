@@ -17,9 +17,9 @@
 package name.mlopatkin.andlogview.ui.mainframe;
 
 import name.mlopatkin.andlogview.bookmarks.BookmarkModel;
-import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -34,12 +34,16 @@ import javax.swing.table.TableCellRenderer;
 public class BookmarkHighlighter implements DecoratingCellRenderer {
     private final LogRecordTableModel model;
     private final BookmarkModel bookmarkModel;
+    private final Color bookmarkBackground;
+    private final Color bookmarkForeground;
     private @MonotonicNonNull TableCellRenderer renderer;
 
     @Inject
-    public BookmarkHighlighter(LogRecordTableModel model, BookmarkModel bookmarkModel) {
+    public BookmarkHighlighter(LogRecordTableModel model, BookmarkModel bookmarkModel, ThemeColors themeColors) {
         this.model = model;
         this.bookmarkModel = bookmarkModel;
+        this.bookmarkBackground = themeColors.getBookmarkBackgroundColor();
+        this.bookmarkForeground = themeColors.getBookmarkForegroundColor();
     }
 
     @Override
@@ -61,8 +65,8 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     }
 
     private void highlight(Component cmp, boolean isSelected) {
-        Color backgroundColor = Configuration.ui.bookmarkBackground();
-        Color foregroundColor = Configuration.ui.bookmarkedForeground();
+        Color backgroundColor = bookmarkBackground;
+        Color foregroundColor = bookmarkForeground;
         if (isSelected) {
             backgroundColor = backgroundColor.brighter();
         }
