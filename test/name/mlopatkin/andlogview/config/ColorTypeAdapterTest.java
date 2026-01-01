@@ -27,7 +27,6 @@ import org.intellij.lang.annotations.Language;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.awt.Color;
@@ -83,35 +82,6 @@ class ColorTypeAdapterTest {
     }
 
     @Test
-    void canStoreOpaqueColor() {
-        var jsonString = gson.toJson(new Color(0xd0f0c0));
-
-        assertThat(jsonString).isEqualTo("\"#D0F0C0\"");
-    }
-
-    @Test
-    void canStoreTransparentColor() {
-        var jsonString = gson.toJson(new Color(0x35d0f0c0, true));
-
-        assertThat(jsonString).isEqualTo("\"#35D0F0C0\"");
-    }
-
-    @ParameterizedTest
-    @CsvSource(textBlock = """
-            0x01020304, #01020304
-            0xFF0A0B0C, #0A0B0C,
-            0xFF000000, #000000
-            0x0, #00000000
-            0x1, #00000001
-            0x0A010203, #0A010203
-            """)
-    void storesLeadingZeroes(long inputColor, String expectedValue) {
-        var jsonString = gson.toJson(new Color((int) inputColor, true));
-
-        assertThat(jsonString).isEqualTo("\"%s\"".formatted(expectedValue));
-    }
-
-    @Test
     void failsOnInvalidPrefix() {
         assertThatThrownBy(() -> parseColor("""
                 "0xFFFFFF"
@@ -159,6 +129,23 @@ class ColorTypeAdapterTest {
                 """, Colored.class);
 
         assertThat(colored.color).isNull();
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {
+            0xFFA1B201,
+            0x00000000,
+            0x01020304
+    })
+    void writesColorInLegacyFormat(long rgba) {
+        var color = new Color((int) rgba, true);
+
+        record ColorRepresentation(int value) {}
+
+        var json =  gson.toJson(color);
+        var r = gson.fromJson(json, ColorRepresentation.class);
+
+        assertThat(r.value).isEqualTo(color.getRGB());
     }
 
     private Color parseColor(@Language("JSON") String json) {

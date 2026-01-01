@@ -19,17 +19,9 @@ class ColorTypeAdapter extends TypeAdapter<Color> {
             out.nullValue();
             return;
         }
-        if (value.getAlpha() == 0xFF) {
-            // write RGB value
-            out.value(String.format(
-                    "#%02X%02X%02X", value.getRed(), value.getGreen(), value.getBlue())
-            );
-        } else {
-            // write ARGB value
-            out.value(String.format(
-                    "#%02X%02X%02X%02X", value.getAlpha(), value.getRed(), value.getGreen(), value.getBlue()
-            ));
-        }
+        out.beginObject();
+        out.name("value").value(value.getRGB());
+        out.endObject();
     }
 
     @Override
