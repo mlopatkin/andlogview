@@ -1,5 +1,12 @@
 No new features announced yet.
 
+### 💥 Breaking Changes
+* Customizing the app through `logview.properties` is no longer
+  supported ([#510](https://github.com/mlopatkin/andlogview/issues/510)).
+
+  Preferences already existing in this file are imported on the first run of
+  1.1, but further changes are ignored.
+
 ### 🛠 Improvements and bugfixes
 * Fixed issue when the last message in the buffer may not be displayed until the
   next message comes ([#513](https://github.com/mlopatkin/andlogview/issues/513)).
