@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
-import name.mlopatkin.andlogview.config.LegacyConfiguration;
+import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
 import name.mlopatkin.andlogview.ui.themes.LegacyThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;

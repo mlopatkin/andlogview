@@ -16,8 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import name.mlopatkin.andlogview.config.LegacyConfiguration;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
+import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
 
 import java.awt.Color;
 import java.util.List;

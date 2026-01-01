@@ -22,7 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
-import name.mlopatkin.andlogview.config.LegacyConfiguration;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.LazyInstance;

@@ -17,7 +17,6 @@
 package name.mlopatkin.andlogview.preferences;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
-import name.mlopatkin.andlogview.config.LegacyConfiguration;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;

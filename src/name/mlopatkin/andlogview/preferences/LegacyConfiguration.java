@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 the Andlogview authors
+ * Copyright 2026 the Andlogview authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package name.mlopatkin.andlogview.config;
+package name.mlopatkin.andlogview.preferences;
 
+import name.mlopatkin.andlogview.config.Configuration;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import org.jspecify.annotations.Nullable;
