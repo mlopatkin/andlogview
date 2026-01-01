@@ -1,6 +1,8 @@
 No new features announced yet.
 
 ### 🛠 Improvements and bugfixes
+* Fixed issue when the last message in the buffer may not be displayed until the
+  next message comes ([#513](https://github.com/mlopatkin/andlogview/issues/513)).
 * Converted changelog to markdown format and added more historical contents
   ([#232](https://github.com/mlopatkin/andlogview/issues/232)).
 

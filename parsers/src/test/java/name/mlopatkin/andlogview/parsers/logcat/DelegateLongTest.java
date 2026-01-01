@@ -440,6 +440,36 @@ public class DelegateLongTest {
                 );
     }
 
+    // https://github.com/mlopatkin/andlogview/issues/513
+    @Test
+    void emitsLinesAsTheyAppear() {
+        var handler = new ListCollectingHandler();
+        try (var parser = LogcatParsers.logcatLong(handler)) {
+            ParserUtils.readInto(parser, """
+                    [ 01-02 03:04:05.678  1234: 4321 E/sometag ]
+                    First line
+
+                    [ 02-03 04:05:06.789  5678: 8765 I/othertag     ]
+                    Stuck message line 1
+                    Stuck message line 2
+
+                    """.lines());
+
+            // We're intentionally asserting before closing the parser.
+            assertThat(handler.getCollectedRecords())
+                    .hasSize(3)
+                    .map(LogRecord::getMessage)
+                    .containsExactly(
+                            "First line",
+                            "Stuck message line 1",
+                            "Stuck message line 2"
+                    );
+        }
+
+        // Verify that last two lines are considered separators.
+        assertThat(handler.getCollectedRecords()).hasSize(3);
+    }
+
     private static ListAssert<LogRecord> assertParsed(String records) {
         var handler = new ListCollectingHandler();
         try (var parser = LogcatParsers.logcatLong(handler)) {

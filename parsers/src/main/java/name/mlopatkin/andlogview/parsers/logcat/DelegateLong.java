@@ -29,8 +29,6 @@ import com.google.common.base.CharMatcher;
 import org.jspecify.annotations.Nullable;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -199,7 +197,6 @@ class DelegateLong extends RegexLogcatParserDelegate {
         private final int tid;
         private final Priority priority;
         private final String tag;
-        private final List<CharSequence> messageLines = new ArrayList<>();
 
         public CurrentMessage(Matcher matcher) {
             timestamp = parseTimestamp(matcher.group(1));
@@ -211,13 +208,11 @@ class DelegateLong extends RegexLogcatParserDelegate {
         }
 
         public void addMessageLine(CharSequence line) {
-            messageLines.add(line);
+            eventsHandler.logRecord(timestamp, pid, tid, priority, tag, line.toString());
         }
 
         public void commit() {
-            for (var messageLine : messageLines) {
-                eventsHandler.logRecord(timestamp, pid, tid, priority, tag, messageLine.toString());
-            }
+            // Do nothing, we emitted all lines as we went through them.
         }
     }
 
