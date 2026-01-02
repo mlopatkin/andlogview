@@ -4,8 +4,8 @@ This is a second bugfix release for release 1.0. It supersedes that release, as 
 
 ### Fixed issues of 1.0
 
-* Incorrect version information (`-SNAPSHOT`) ([#501](https://github.com/mlopatkin/andlogview/issues/501)).
-* Last message in the buffer may not be displayed until the next message comes
+* Fixed incorrect version information (`-SNAPSHOT`) ([#501](https://github.com/mlopatkin/andlogview/issues/501)).
+* Fixed last message in the buffer not being displayed until the next message comes
   ([#513](https://github.com/mlopatkin/andlogview/issues/513)).
 * Fixed JVM warning about restricted function being called ([#511](https://github.com/mlopatkin/andlogview/issues/511)).
 
