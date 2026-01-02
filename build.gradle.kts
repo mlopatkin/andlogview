@@ -108,7 +108,6 @@ sourceSets {
             srcDirs.clear()
             srcDir("resources")
             srcDir("third-party/fontawesomeIcons/resources")
-            srcDir("third-party/tangoIcons/resources")
             srcDir("third-party/themes/resources")
         }
     }
@@ -326,13 +325,6 @@ licenses {
         "Font Awesome",
         uri("https://fontawesome.com"),
         License.ccBy4(fromFile("third-party/fontawesomeIcons/LICENSE"))
-    )
-
-    sourceDependency(
-        "name/mlopatkin/andlogview/ui/icons/legacy/*.png",
-        "Tango Desktop Project",
-        uri("http://tango.freedesktop.org/Tango_Desktop_Project"),
-        License.publicDomain(fromFile("third-party/tangoIcons/LICENSE"))
     )
 
     sourceDependency(

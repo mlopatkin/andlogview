@@ -33,10 +33,6 @@ import javax.swing.UIManager;
  * FlatLaf L&amp;F with Light Flat IDEA theme.
  */
 class FlatLafTheme implements Theme {
-    @Override
-    public boolean isSupported() {
-        return true;
-    }
 
     @Override
     public void install() {

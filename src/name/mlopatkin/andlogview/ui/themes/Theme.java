@@ -16,17 +16,10 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import java.util.List;
-
 /**
  * Represents the Application GUI theme and/or Swing L&amp;F.
  */
 public interface Theme {
-    /**
-     * @return {@code true} if the theme is supported on this platform
-     */
-    boolean isSupported();
-
     /**
      * Tries to install the theme as the current theme of the application
      *
@@ -37,33 +30,12 @@ public interface Theme {
     ThemedWidgetFactory getWidgetFactory();
 
     /**
-     * Returns the list of all available themes. Some themes may be unsupported on some platforms.
-     *
-     * @return the list of available themes
-     */
-    static List<Theme> getAvailableThemes() {
-        return List.of(new FlatLafTheme());
-    }
-
-    /**
      * Returns the default application theme. It is guaranteed to be supported.
      *
      * @return the default theme
      */
     static Theme getDefault() {
-        for (Theme theme : getAvailableThemes()) {
-            if (theme.isSupported()) {
-                return theme;
-            }
-        }
-        return getFallback();
-    }
-
-    /**
-     * @return the fallback theme which is always supported
-     */
-    static Theme getFallback() {
-        return new BasicTheme();
+        return new FlatLafTheme();
     }
 
     /**
