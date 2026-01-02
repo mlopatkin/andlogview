@@ -40,8 +40,6 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private static final String THEME_SYSTEM_PROPERTY = "name.mlopatkin.andlogview.theme";
-
     public static final String APP_NAME = "AndLogView";
 
     private final MainFrame.Factory mainFrameProvider;
@@ -95,8 +93,7 @@ public class Main {
     }
 
     private static Theme initLaf() {
-        String configuredThemeName = System.getProperty(THEME_SYSTEM_PROPERTY);
-        Theme theme = Theme.findByName(configuredThemeName).orElseGet(Theme::getDefault);
+        Theme theme = Theme.getDefault();
         assert theme.isSupported();
         if (!theme.install()) {
             theme = Theme.getFallback();

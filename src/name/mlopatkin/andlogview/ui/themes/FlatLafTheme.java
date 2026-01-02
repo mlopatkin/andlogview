@@ -38,11 +38,6 @@ class FlatLafTheme implements Theme {
     private static final Logger logger = LoggerFactory.getLogger(Theme.class);
 
     @Override
-    public String getName() {
-        return "flatlaf";
-    }
-
-    @Override
     public boolean isSupported() {
         return true;
     }

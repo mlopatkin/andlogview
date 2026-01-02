@@ -16,23 +16,12 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
-import org.jspecify.annotations.Nullable;
-
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Represents the Application GUI theme and/or Swing L&amp;F.
  */
 public interface Theme {
-    /**
-     * Returns the name of the theme. The name can be stored in preferences and used to look up the theme.
-     *
-     * @return the name of the theme
-     */
-    String getName();
-
     /**
      * @return {@code true} if the theme is supported on this platform
      */
@@ -68,25 +57,6 @@ public interface Theme {
             }
         }
         return getFallback();
-    }
-
-    /**
-     * Looks up a theme by the given name and returns it if found. Empty Optional is returned if there is no theme with
-     * this name or this theme is unsupported on the current platform.
-     *
-     * @param themeName the name of the theme (can be {@code null}
-     * @return the theme with the given name or an empty Optional
-     * @see #getName()
-     */
-    static Optional<Theme> findByName(@Nullable String themeName) {
-        if (themeName != null) {
-            for (Theme theme : getAvailableThemes()) {
-                if (Objects.equals(themeName, theme.getName()) && theme.isSupported()) {
-                    return Optional.of(theme);
-                }
-            }
-        }
-        return Optional.empty();
     }
 
     /**

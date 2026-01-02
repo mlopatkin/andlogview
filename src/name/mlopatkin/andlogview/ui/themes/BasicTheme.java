@@ -30,11 +30,6 @@ class BasicTheme implements Theme {
     private static final Logger logger = LoggerFactory.getLogger(Theme.class);
 
     @Override
-    public String getName() {
-        return "legacy";
-    }
-
-    @Override
     public boolean isSupported() {
         return true;
     }
