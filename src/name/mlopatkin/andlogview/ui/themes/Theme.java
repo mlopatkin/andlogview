@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.ui.themes;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -54,7 +53,7 @@ public interface Theme {
      * @return the list of available themes
      */
     static List<Theme> getAvailableThemes() {
-        return Arrays.asList(new FlatLafTheme(), new MacOsSystemTheme(), new BasicTheme());
+        return List.of(new FlatLafTheme());
     }
 
     /**

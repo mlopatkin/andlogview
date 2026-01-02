@@ -18,7 +18,6 @@
  * Themes allows to customize the app's Look&amp;Feel. Currently, three are supported:
  * <ol>
  *     <li>Metal - default Java Swing L&amp;F</li>
- *     <li>System Default - used on MacOS X because Metal has issues there</li>
  *     <li>FlatLaf with LightFlat theme - modern theme that supports HiDpi properly</li>
  * </ol>
  */
