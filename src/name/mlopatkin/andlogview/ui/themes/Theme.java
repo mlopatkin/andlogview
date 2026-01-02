@@ -30,9 +30,9 @@ public interface Theme {
     /**
      * Tries to install the theme as the current theme of the application
      *
-     * @return {@code true} if the theme was installed successfully
+     * @throws ThemeException if loading or installing the theme fails
      */
-    boolean install();
+    void install() throws ThemeException;
 
     ThemedWidgetFactory getWidgetFactory();
 

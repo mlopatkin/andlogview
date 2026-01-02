@@ -18,15 +18,18 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
 import name.mlopatkin.andlogview.ui.themes.Theme;
+import name.mlopatkin.andlogview.ui.themes.ThemeException;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import com.formdev.flatlaf.util.SystemInfo;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.EventQueue;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Inject;
 
@@ -93,13 +96,13 @@ public class Main {
     }
 
     private static Theme initLaf() {
-        Theme theme = Theme.getDefault();
-        assert theme.isSupported();
-        if (!theme.install()) {
-            theme = Theme.getFallback();
+        try {
+            var theme = Theme.getDefault();
             theme.install();
+            return theme;
+        } catch (ThemeException e) {
+            throw showInitializationErrorAndExit("Cannot initialize GUI.", e);
         }
-        return theme;
     }
 
     @Inject
@@ -136,6 +139,33 @@ public class Main {
         } else {
             window.tryToConnectToFirstAvailableDevice();
         }
+    }
+
+    private static RuntimeException showInitializationErrorAndExit(String message, @Nullable Throwable throwable) {
+        logger.error("Fatal error during initialization: {}", message, throwable);
+
+        //noinspection finally
+        try {
+            if (EventQueue.isDispatchThread()) {
+                showErrorDialogOnEdtBlocking(message, throwable);
+            } else {
+                try {
+                    EventQueue.invokeAndWait(() -> showErrorDialogOnEdtBlocking(message, throwable));
+                } catch (InterruptedException e) {
+                    // That's fine, we're tearing down the process anyway.
+                } catch (InvocationTargetException e) {
+                    // We failed even to show the error dialog. Let's give up.
+                    logger.error("Failed to show the error dialog", e);
+                }
+            }
+        } finally {
+            System.exit(-1);
+        }
+        throw new RuntimeException("Did System.exit fail me?");
+    }
+
+    private static void showErrorDialogOnEdtBlocking(String message, @Nullable Throwable throwable) {
+        ErrorDialogsHelper.showFatalError(null, message, throwable);
     }
 
     private static void uncaughtHandler(Thread thread, Throwable throwable) {

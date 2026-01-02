@@ -49,4 +49,14 @@ public class ErrorDialogsHelper {
                 .details(failure)
                 .show(owner);
     }
+
+    public static void showFatalError(@Nullable Component owner, String message, @Nullable Throwable failure) {
+        var builder = OptionPanes.error("Fatal error")
+                .message(message)
+                .addInitialOption("Exit", () -> {});
+        if (failure != null) {
+            builder.details(failure);
+        }
+        builder.show(owner);
+    }
 }

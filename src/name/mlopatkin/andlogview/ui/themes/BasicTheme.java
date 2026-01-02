@@ -35,13 +35,12 @@ class BasicTheme implements Theme {
     }
 
     @Override
-    public boolean install() {
+    public void install() {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ReflectiveOperationException | UnsupportedLookAndFeelException e) {
             logger.error("Failed to initialize default L&F, proceeding and hoping for the best", e);
         }
-        return true;
     }
 
     @Override
