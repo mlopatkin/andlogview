@@ -19,14 +19,11 @@ package name.mlopatkin.andlogview.ui.filters;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.filters.FilterModel;
 import name.mlopatkin.andlogview.filters.MutableFilterModel;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterCreator;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filtertree.FilterNodeViewModel;
 import name.mlopatkin.andlogview.ui.filtertree.FilterTreeModel;
 import name.mlopatkin.andlogview.ui.filtertree.TreeModelAdapter;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
-import name.mlopatkin.andlogview.ui.themes.Theme;
 
 import dagger.Binds;
 import dagger.Module;
@@ -55,12 +52,6 @@ public abstract class FilterModule {
 
     @Binds
     abstract FilterModel filterModel(MutableFilterModel model);
-
-    @Provides
-    @MainFrameScoped
-    static FilterPanel filterPanel(Theme theme, FilterPanelModelAdapter model, FilterCreator filterCreator) {
-        return new FilterPanel(theme, model, filterCreator);
-    }
 
     @Provides
     static FilterTreeModel<FilterNodeViewModel> filterTreeModel(FilterTreeModelAdapter modelAdapter) {

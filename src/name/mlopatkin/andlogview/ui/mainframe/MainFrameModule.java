@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.filters.MainFilterController;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
 import name.mlopatkin.andlogview.ui.filters.FilterModule;
+import name.mlopatkin.andlogview.ui.filtertree.FilterCreator;
 import name.mlopatkin.andlogview.ui.logtable.LogModelFilter;
 import name.mlopatkin.andlogview.ui.logtable.LogRecordTableModel;
 import name.mlopatkin.andlogview.ui.mainframe.device.MainFrameAdbModule;
@@ -74,14 +75,7 @@ public class MainFrameModule {
     }
 
     @Provides
-    name.mlopatkin.andlogview.ui.filterpanel.FilterCreator provideFilterCreator(
-            MainFilterController mainFilterController) {
-        return mainFilterController;
-    }
-
-    @Provides
-    name.mlopatkin.andlogview.ui.filtertree.FilterCreator provideTreeFilterCreator(
-            MainFilterController mainFilterController) {
+    FilterCreator provideTreeFilterCreator(MainFilterController mainFilterController) {
         return mainFilterController;
     }
 

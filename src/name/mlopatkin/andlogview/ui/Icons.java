@@ -20,10 +20,7 @@ package name.mlopatkin.andlogview.ui;
  * Built-in icons for UI.
  */
 public enum Icons {
-    NEXT("icons/fontawesome/angle-right.svg"),
-    PREVIOUS("icons/fontawesome/angle-left.svg"),
-    ADD("icons/fontawesome/plus.svg"),
-    FILTER("icons/fontawesome/magnifying-glass.svg");
+    ADD("icons/fontawesome/plus.svg");
 
     private final String modernPath;
 

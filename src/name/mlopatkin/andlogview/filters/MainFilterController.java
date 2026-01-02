@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.filters;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterDialogFactory;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialog;
 import name.mlopatkin.andlogview.ui.filterdialog.FilterFromDialogData;
+import name.mlopatkin.andlogview.ui.filtertree.FilterCreator;
 import name.mlopatkin.andlogview.ui.indexfilter.IndexFilterCollection;
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
 import name.mlopatkin.andlogview.ui.mainframe.popupmenu.MenuFilterCreator;
@@ -30,9 +31,7 @@ import javax.inject.Inject;
  * The filter controller of the main window.
  */
 @MainFrameScoped
-public class MainFilterController implements MenuFilterCreator,
-        name.mlopatkin.andlogview.ui.filterpanel.FilterCreator,
-        name.mlopatkin.andlogview.ui.filtertree.FilterCreator {
+public class MainFilterController implements MenuFilterCreator, FilterCreator {
     // TODO(mlopatkin): Find a new name and place for this class.
 
     private final FilterDialogFactory dialogFactory;

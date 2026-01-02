@@ -37,7 +37,6 @@ import name.mlopatkin.andlogview.ui.device.AdbOpener;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.ui.file.FileOpener;
-import name.mlopatkin.andlogview.ui.filterpanel.FilterPanel;
 import name.mlopatkin.andlogview.ui.filters.LogModelFilterImpl;
 import name.mlopatkin.andlogview.ui.filtertree.FilterTreeFactory;
 import name.mlopatkin.andlogview.ui.logtable.Column;
@@ -180,8 +179,6 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
     AdbOpener adbOpener;
     @Inject
     TableColumnModelFactory columnModelFactory;
-    @Inject
-    FilterPanel filterPanel;
     @Inject
     LogModelFilterImpl logModelFilter;
     @Inject
@@ -360,11 +357,6 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
 
         JScrollPane logTableScrollPane = new JScrollPane(logElements);
 
-        if (!theme.supportsFilterTreeView()) {
-            mainFrameUi.getContentPane().add(logTableScrollPane, BorderLayout.CENTER);
-            return;
-        }
-
         var filterToolbar = new JToolBar();
         var filterTreePane = new JScrollPane(filterTreeFactory.buildFilterTree(filterToolbar));
         filterTreePane.setPreferredSize(new Dimension(200, 0));
@@ -406,10 +398,6 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
 
         initInstantSearch();
-
-        if (!theme.supportsFilterTreeView()) {
-            controlsPanel.add(filterPanel);
-        }
 
         controlsPanel.add(statusPanel.getPanel());
     }
