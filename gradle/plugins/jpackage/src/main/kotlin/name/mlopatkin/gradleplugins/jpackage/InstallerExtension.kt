@@ -85,6 +85,11 @@ abstract class InstallerExtension @Inject constructor(
     abstract val version: Property<String>
 
     /**
+     * Additional JVM options to set up when running the application through launcher executable.
+     */
+    abstract val jvmOptions: ListProperty<String>
+
+    /**
      * Linux distribution configuration.
      */
     val linux: PackageExtension = objects.newInstance()

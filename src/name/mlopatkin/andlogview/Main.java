@@ -65,6 +65,12 @@ public class Main {
         logger.info("{} {}", APP_NAME, getVersionString());
         logger.info("Revision {}", BuildInfo.REVISION);
         logger.info("Configuration: {}", configurationLoc.getConfigurationDir().getAbsolutePath());
+        logger.info(
+                "JVM: {} {} {}",
+                System.getProperty("java.vendor"),
+                System.getProperty("java.vm.name"),
+                Runtime.version()
+        );
 
         Try<?> configurationState = Try.ofCallable(() -> {
             Configuration.load(configurationLoc.getLegacyConfigurationFile());

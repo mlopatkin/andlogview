@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import name.mlopatkin.andlogview.building.JdkVersion
 import name.mlopatkin.andlogview.building.Version
 import name.mlopatkin.andlogview.building.buildLibs
@@ -419,7 +418,7 @@ tasks.startShadowScripts {
     }
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.shadowJar {
     outputs.doNotCacheIf("Incorrectly handles metadata resource") {
         true
     }
@@ -631,4 +630,33 @@ tasks.register("printVersions") {
             macOS: ${macosVersion.get()}
         """.trimIndent())
     }
+}
+
+enableNativeAccess()
+
+// FlatLaF loads native libraries for extra functionality.
+fun enableNativeAccess() {
+    // Configure manifest to fix runShadow and noJRE distribution
+    tasks.shadowJar {
+        manifest {
+            attributes(
+                "Enable-Native-Access" to "ALL-UNNAMED"
+            )
+        }
+    }
+
+    // Fix jpackage-produced distributions
+    installers {
+        jvmOptions.add(
+            "--enable-native-access=ALL-UNNAMED"
+        )
+    }
+
+    fun isIdeaInjectedRunTask(taskName: String) = taskName.endsWith(".main()")
+
+    // Fix tasks that run application
+    tasks.withType<JavaExec>().named { it == ApplicationPlugin.TASK_RUN_NAME || isIdeaInjectedRunTask(it) }
+        .configureEach {
+            jvmArgs("--enable-native-access=ALL-UNNAMED")
+        }
 }
