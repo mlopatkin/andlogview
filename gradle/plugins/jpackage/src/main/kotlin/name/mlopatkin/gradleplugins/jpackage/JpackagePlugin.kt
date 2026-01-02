@@ -174,6 +174,8 @@ abstract class JpackagePlugin : Plugin<Project> {
                         addAll(forCurrentPlatform.imageOptions.get())
                     }
 
+                    jvmArgs = jvmOptions.get()
+
                     installerOptions = buildList {
                         withOptionalSwitch("--vendor", vendor)
                         withOptionalSwitch("--license-file", forCurrentPlatform.licenseFile.asPath)
