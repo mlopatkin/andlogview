@@ -6,6 +6,11 @@ No new features announced yet.
 
   Preferences already existing in this file are imported on the first run of
   1.1, but further changes are ignored.
+* Old mode with filter buttons on the bottom has been completely removed
+  ([#405](https://github.com/mlopatkin/andlogview/issues/405)).
+
+  It has been replaced by the new filter list that provides a cleaner view to
+  the list of available filters.
 
 ### 🛠 Improvements and bugfixes
 * Fixed issue when the last message in the buffer may not be displayed until the
