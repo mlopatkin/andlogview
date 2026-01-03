@@ -98,6 +98,13 @@ class AdbServerImpl implements AdbServer {
         }
     }
 
+    /**
+     * Removes all registered listeners. Mostly useful when tearing down the whole ADB infrastructure.
+     */
+    public void discardListeners() {
+        adbFacade.discardListeners();
+    }
+
     public void stop() {
         deviceProvisioner.close();
         Preconditions.checkState(!adbFacade.hasRegisteredListeners(), "There are leftover listeners");
@@ -132,6 +139,11 @@ class AdbServerImpl implements AdbServer {
         @Override
         public boolean hasRegisteredListeners() {
             return !listeners.isEmpty();
+        }
+
+        @Override
+        public void discardListeners() {
+            listeners.forEach(this::removeDeviceChangeListener);
         }
     }
 }

@@ -94,6 +94,7 @@ class AdbManagerImpl implements AdbManager {
             var theServer = server;
             if (theServer != null) {
                 logger.info("Stop ADB server");
+                theServer.discardListeners();
                 theServer.stop();
             }
             AndroidDebugBridge.terminate();

@@ -30,4 +30,6 @@ interface AdbFacade {
     void removeDeviceChangeListener(AndroidDebugBridge.IDeviceChangeListener deviceChangeListener);
 
     boolean hasRegisteredListeners();
+
+    void discardListeners();
 }
