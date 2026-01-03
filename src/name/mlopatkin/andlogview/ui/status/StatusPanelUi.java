@@ -49,11 +49,13 @@ class StatusPanelUi {
 
         searchStatusLabel = new JLabel();
         searchStatusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        searchStatusLabel.setFocusable(false);
         statusPanel.add(searchStatusLabel);
 
         statusPanel.add(Box.createHorizontalGlue());
 
         sourceStatusLabel = new JLabel();
+        sourceStatusLabel.setFocusable(false);
         statusPanel.add(sourceStatusLabel);
 
         // Add right padding.
