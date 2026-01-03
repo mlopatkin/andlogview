@@ -24,6 +24,7 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
+import java.awt.event.KeyEvent;
 import java.util.function.Consumer;
 
 import javax.swing.Action;
@@ -48,6 +49,7 @@ class TreeActions {
     ) {
         this.createFilter = UiHelper.makeAction(filterCreator::createFilterWithDialog)
                 .name("Create filter…")
+                .mnemonic(KeyEvent.VK_C)
                 .largeIcon(theme.getWidgetFactory().getToolbarIcon(Icons.ADD))
                 .shortDescription("Create a new filter with dialog editor")
                 .build();

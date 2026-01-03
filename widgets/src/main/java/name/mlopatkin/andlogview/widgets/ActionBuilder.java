@@ -63,6 +63,11 @@ public class ActionBuilder {
         return this;
     }
 
+    public ActionBuilder mnemonic(int key) {
+        action.putValue(Action.MNEMONIC_KEY, key);
+        return this;
+    }
+
     public ActionBuilder disabled() {
         action.setEnabled(false);
         return this;

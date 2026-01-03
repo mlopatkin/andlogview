@@ -60,6 +60,8 @@ class FlatLafTheme implements Theme {
         UIManager.put("Tree.dropCellBackground", dropBackground);
         UIManager.put("Tree.dropLineColor", dropBackground);
 
+        // Display mnemonics always, otherwise it is impossible to see them in the context menu.
+        UIManager.put("Component.hideMnemonics", false);
     }
 
     private ThemeException failure(@Nullable Throwable exception) {
