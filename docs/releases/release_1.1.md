@@ -13,6 +13,8 @@ No new features announced yet.
   the list of available filters.
 
 ### 🛠 Improvements and bugfixes
+* Fixed “context menu” key not triggering popup menu
+  ([#147](https://github.com/mlopatkin/andlogview/issues/147)).
 * Fixed issue when the last message in the buffer may not be displayed until the
   next message comes ([#513](https://github.com/mlopatkin/andlogview/issues/513)).
 * Fixed JVM warning about restricted function being called

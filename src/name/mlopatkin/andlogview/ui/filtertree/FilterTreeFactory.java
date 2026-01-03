@@ -19,8 +19,11 @@ package name.mlopatkin.andlogview.ui.filtertree;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
+import com.google.common.base.Preconditions;
+
 import org.jspecify.annotations.Nullable;
 
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import javax.inject.Inject;
@@ -110,14 +113,38 @@ public class FilterTreeFactory {
         var treePopupMenu = new JPopupMenu();
         treePopupMenu.add(treeActions.createFilter).setToolTipText(null);
 
-        UiHelper.PopupMenuDelegate<JTree> menuHandler = (component, x, y) -> {
+        UiHelper.PopupMenuDelegate<JTree> menuHandler = (component, p) -> {
             assert component == tree;
-            var path = getPathConsideringWideSelection(tree, x, y);
-            if (path == null) {
-                treePopupMenu.show(tree, x, y);
+
+            final TreePath selectedPath;
+            final int popupX, popupY;
+
+            if (p != null) {
+                selectedPath = getPathConsideringWideSelection(tree, p.x, p.y);
+                if (selectedPath != null) {
+                    tree.setSelectionPath(selectedPath);
+                }
+                popupX = p.x;
+                popupY = p.y;
             } else {
-                tree.setSelectionPath(path);
-                filterPopupMenu.show(tree, x, y);
+                selectedPath = tree.getSelectionPath();
+                var bounds = selectedPath != null
+                        ? getPathBoundsWithWideSelection(tree, selectedPath)
+                        : tree.getVisibleRect();
+                Preconditions.checkState(bounds != null, "Cannot find bounds for path = %s", selectedPath);
+
+                if (selectedPath != null) {
+                    tree.scrollPathToVisible(selectedPath);
+                }
+
+                popupX = bounds.x + bounds.width / 2;
+                popupY = bounds.y + bounds.height / 2;
+            }
+
+            if (selectedPath != null) {
+                filterPopupMenu.show(tree, popupX, popupY);
+            } else {
+                treePopupMenu.show(tree, popupX, popupY);
             }
         };
 
@@ -149,6 +176,18 @@ public class FilterTreeFactory {
             return null;
         }
         return path;
+    }
 
+    private static @Nullable Rectangle getPathBoundsWithWideSelection(JTree tree, @Nullable TreePath path) {
+        if (path == null) {
+            return null;
+        }
+        var pathBounds = tree.getPathBounds(path);
+        if (pathBounds != null) {
+            pathBounds.x = 0;
+            pathBounds.width = tree.getWidth();
+            return pathBounds;
+        }
+        return null;
     }
 }

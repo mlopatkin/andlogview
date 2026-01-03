@@ -23,6 +23,9 @@ import name.mlopatkin.andlogview.utils.events.Subject;
 import name.mlopatkin.andlogview.widgets.ObservableAction;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
+import org.jspecify.annotations.Nullable;
+
+import java.awt.Point;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
@@ -58,8 +61,10 @@ class SourceStatusViewImpl implements SourceStatusPresenter.View {
         return popupMenuAction.asObservable();
     }
 
-    private void showMenu(JLabel invoker, int x, int y) {
-        PopupMenu popupMenu = new PopupMenu(invoker, x, y);
+    private void showMenu(JLabel invoker, @Nullable Point p) {
+        assert p != null : "The status bar is not focusable, cannot be invoked by keyboard";
+
+        PopupMenu popupMenu = new PopupMenu(invoker, p.x, p.y);
         for (Consumer<SourceStatusPopupMenuView> consumer : popupMenuAction) {
             consumer.accept(popupMenu);
         }

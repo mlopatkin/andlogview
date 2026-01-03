@@ -16,14 +16,13 @@
 
 package name.mlopatkin.andlogview.ui.logtable;
 
+import name.mlopatkin.andlogview.widgets.UiHelper;
+
 import com.google.common.base.Preconditions;
 
 import org.jspecify.annotations.Nullable;
 
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.inject.Inject;
 import javax.swing.JTable;
@@ -59,35 +58,66 @@ public class PopupMenu {
     }
 
     void attachToTable(LogTable table) {
-        table.addMouseListener(createMouseHandler(table));
+        UiHelper.addPopupMenu(table, this::showMenuIfNeeded);
     }
 
-    private MouseListener createMouseHandler(LogTable table) {
-        return new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                showMenuIfNeeded(table, e);
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                showMenuIfNeeded(table, e);
-            }
-        };
-    }
-
-    private void showMenuIfNeeded(LogTable table, MouseEvent e) {
-        if (!e.isPopupTrigger()) {
+    private void showMenuIfNeeded(LogTable table, @Nullable Point p) {
+        if (p == null) {
+            showMenuForSelection(table);
             return;
         }
-        Column column = getColumnAt(table, e.getPoint());
-        TableRow tableRow = getRowAt(table, e.getPoint());
+
+        Column column = getColumnAt(table, p);
+        TableRow tableRow = getRowAt(table, p);
         selectionAdjuster.onPopupMenuShown(tableRow);
-        delegate.showMenu(table, e.getX(), e.getY(), column, tableRow);
+        delegate.showMenu(table, p.x, p.y, column, tableRow);
+    }
+
+    private void showMenuForSelection(LogTable table) {
+        var rsm = table.getSelectionModel();
+        var csm = table.getColumnModel().getSelectionModel();
+
+        // Lead selection index serves as an index for the focused cell in the table.
+        // Focused cell may not be selected.
+        int r = rsm.getLeadSelectionIndex();
+        int c = csm.getLeadSelectionIndex();
+
+        TableRow tableRow = getRowAt(table, r);
+
+        if (rsm.isSelectedIndex(r) && csm.isSelectedIndex(c)) {
+            // We're within the selection. No adjustment needed.
+        } else {
+            // Focused column is out of selection, need to adjust it first
+            selectionAdjuster.onPopupMenuShown(tableRow);
+        }
+
+        final int x, y;
+        final Column column;
+        if (r >= 0 && c >= 0) {
+            column = getColumnAt(table, c);
+
+            var cellRect = table.getCellRect(r, c, false);
+            table.scrollRectToVisible(cellRect);
+
+            x = cellRect.x + cellRect.width / 2;
+            y = cellRect.y + cellRect.height / 2;
+        } else {
+            column = getColumnAt(table, 0);
+            var tableBounds = table.getVisibleRect();
+
+            x = tableBounds.x + tableBounds.width / 2;
+            y = tableBounds.y + tableBounds.height / 2;
+        }
+
+        delegate.showMenu(table, x, y, column, tableRow);
     }
 
     private Column getColumnAt(LogTable table, Point p) {
         int columnIndex = table.columnAtPoint(p);
+        return getColumnAt(table, columnIndex);
+    }
+
+    private Column getColumnAt(LogTable table, int columnIndex) {
         Preconditions.checkArgument(columnIndex >= 0, "Unsupported column index=%s", columnIndex);
         TableColumnModel columnModel = table.getColumnModel();
 
@@ -98,6 +128,10 @@ public class PopupMenu {
 
     private @Nullable TableRow getRowAt(LogTable table, Point p) {
         int rowViewIndex = table.rowAtPoint(p);
+        return getRowAt(table, rowViewIndex);
+    }
+
+    private static @Nullable TableRow getRowAt(LogTable table, int rowViewIndex) {
         if (rowViewIndex == -1) {
             return null;
         }

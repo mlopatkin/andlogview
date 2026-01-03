@@ -15,10 +15,15 @@
  */
 package name.mlopatkin.andlogview.widgets;
 
+import com.formdev.flatlaf.util.SystemInfo;
+import com.google.common.base.Preconditions;
 import com.google.common.html.HtmlEscapers;
+
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +35,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
@@ -43,16 +47,25 @@ public class UiHelper {
 
     private UiHelper() {}
 
-    public static void addPopupMenu(final JComponent component, final JPopupMenu menu) {
-        addPopupMenu(component, menu::show);
-    }
-
     @FunctionalInterface
     public interface PopupMenuDelegate<T extends JComponent> {
-        void createAndShowMenu(T component, int x, int y);
+        /**
+         * Called when popup menu is requested for this component
+         *
+         * @param component the component to show the popup menu for
+         * @param point the location of mouse event invoking popup or null if requested with keyboard
+         */
+        void createAndShowMenu(T component, @Nullable Point point);
     }
 
-    public static <T extends JComponent> void addPopupMenu(T component, PopupMenuDelegate<T> delegate) {
+    /**
+     * Adds a popup menu to the component
+     *
+     * @param component the component to add popup menus to
+     * @param delegate the delegate that handles showing the menu
+     * @param <T> the type of the component to make supplier's interface cleaner
+     */
+    public static <T extends JComponent> void addPopupMenu(T component, PopupMenuDelegate<? super T> delegate) {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -69,9 +82,21 @@ public class UiHelper {
             }
 
             private void showMenu(MouseEvent e) {
-                delegate.createAndShowMenu(component, e.getX(), e.getY());
+                delegate.createAndShowMenu(component, e.getPoint());
             }
         });
+
+        if (!SystemInfo.isMacOS) { // macOS doesn't have a context menu key.
+
+            // See RootPane.ancestorInputMap bindings in e.g.
+            // javax.swing.plaf.basic.BasicLookAndFeel.initComponentDefaults
+            bindKeysFocused(
+                    component,
+                    makeAction("AndLogView.postPopup", () -> delegate.createAndShowMenu(component, null)),
+                    "shift F10",
+                    "CONTEXT_MENU"
+            );
+        }
     }
 
     public static String covertToHtml(String value) {
@@ -81,6 +106,25 @@ public class UiHelper {
 
     public static String convertToSafe(String value) {
         return value.replace("\n", " ");
+    }
+
+    /**
+     * Binds multiple key combinations to the action. The combinations are handled when {@code component} has focus.
+     *
+     * @param component the component, which must have focus to enable the combination
+     * @param action the action to invoke
+     * @param keys the non-empty list of keys as expected by {@link KeyStroke#getKeyStroke(String)}, to bind to
+     */
+    public static void bindKeysFocused(JComponent component, Action action, String... keys) {
+        Preconditions.checkArgument(keys.length > 0, "Cannot bind to nothing");
+
+        var actionName = action.getValue(Action.NAME);
+        component.getActionMap().put(actionName, action);
+
+        var inputMap = component.getInputMap();
+        for (var key : keys) {
+            inputMap.put(KeyStroke.getKeyStroke(key), actionName);
+        }
     }
 
     /**
