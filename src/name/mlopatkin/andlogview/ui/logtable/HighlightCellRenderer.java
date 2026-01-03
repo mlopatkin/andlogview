@@ -32,18 +32,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 public class HighlightCellRenderer extends DefaultTableCellRenderer implements TableCellRenderer, TextHighlighter {
-    private static final Border NO_BORDER = new EmptyBorder(1, 1, 1, 1);
-    private static final Border FOCUSED_BORDER = getFocusedBorder();
-
     private static final Color HIGHLIGHT_BACKGROUND = Color.YELLOW;
     private static final Color HIGHLIGHT_FOREGROUND = Color.RED;
 
@@ -56,12 +50,9 @@ public class HighlightCellRenderer extends DefaultTableCellRenderer implements T
     @Override
     public Component getTableCellRendererComponent(
             JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
         clearHighlight();
-        if (hasFocus) {
-            setBorder(FOCUSED_BORDER);
-        } else {
-            setBorder(NO_BORDER);
-        }
         if (isSelected) {
             setBackground(table.getSelectionBackground());
             setForeground(table.getSelectionForeground());
@@ -82,19 +73,6 @@ public class HighlightCellRenderer extends DefaultTableCellRenderer implements T
             setToolTipText(null);
         }
         return this;
-    }
-
-    /**
-     * Hack to get a consistent focused border from
-     * {@link DefaultTableCellRenderer}.
-     *
-     * @return the border for focuse cell
-     */
-    private static Border getFocusedBorder() {
-        JTable t = new JTable();
-        TableCellRenderer r = t.getDefaultRenderer(Object.class);
-        JComponent c = (JComponent) r.getTableCellRendererComponent(t, "value", true, true, 0, 0);
-        return c.getBorder();
     }
 
     @Override
