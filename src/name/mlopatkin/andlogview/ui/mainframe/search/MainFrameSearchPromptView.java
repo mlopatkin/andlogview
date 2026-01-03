@@ -23,6 +23,11 @@ import name.mlopatkin.andlogview.ui.search.SearchScoped;
 import name.mlopatkin.andlogview.widgets.DialogResult;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
+import org.jspecify.annotations.Nullable;
+
+import java.awt.Component;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
 import javax.inject.Inject;
@@ -38,6 +43,7 @@ public class MainFrameSearchPromptView extends AbstractSearchPromptView {
     private final MainFrameSearchUi mainFrame;
 
     private boolean keyBindingInitialized;
+    private @Nullable Component previousFocusOwner;
 
     @Inject
     public MainFrameSearchPromptView(DialogFactory dialogFactory, MainFrameSearchUi mainFrame) {
@@ -50,6 +56,13 @@ public class MainFrameSearchPromptView extends AbstractSearchPromptView {
         UiHelper.bindKeyFocused(
                 getSearchPatternField(), KEY_HIDE_AND_START_SEARCH, ACTION_HIDE_AND_START_SEARCH,
                 e -> commit());
+
+        getSearchPatternField().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                previousFocusOwner = e.getOppositeComponent();
+            }
+        });
     }
 
     private JTextField getSearchPatternField() {
@@ -68,8 +81,15 @@ public class MainFrameSearchPromptView extends AbstractSearchPromptView {
 
     @Override
     public void hide() {
+        // Search may have no focus when we're hiding it. The current owner should not lose it then.
+        var hadFocusBeforeHiding = getSearchPatternField().hasFocus();
         super.hide();
         mainFrame.hideSearchField();
+        if (previousFocusOwner != null && hadFocusBeforeHiding) {
+            // TODO(mlopatkin): sometimes, when search was invoked with main menu, the focus goes back to "nowhere".
+            previousFocusOwner.requestFocusInWindow();
+        }
+        previousFocusOwner = null;
     }
 
     @Override
