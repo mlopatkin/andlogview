@@ -30,7 +30,7 @@ import name.mlopatkin.andlogview.ui.filters.BufferFilterModel;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.LogTable;
-import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.RowColors;
+import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.RowStyle;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -170,7 +170,7 @@ public class LegacyPrefsImport {
         return new ThemeColorsJson(
                 LogTable.create(
                         getIfDifferent(legacy.ui().backgroundColor(), theme.getBackgroundColor()),
-                        new RowColors(
+                        new RowStyle(
                                 getIfDifferent(legacy.ui().bookmarkBackground(), theme.getBookmarkBackgroundColor()),
                                 getIfDifferent(legacy.ui().bookmarkedForeground(), theme.getBookmarkForegroundColor())
                         ),
@@ -184,7 +184,7 @@ public class LegacyPrefsImport {
         return !Objects.equals(overlayColor, baseColor) ? overlayColor : null;
     }
 
-    private @Nullable Map<Priority, RowColors> importPriorityColorsMap(
+    private @Nullable Map<Priority, RowStyle> importPriorityColorsMap(
             LegacyConfiguration legacy,
             ThemeColors baseTheme
     ) {
@@ -198,12 +198,12 @@ public class LegacyPrefsImport {
                 })
                 .collect(toImmutableMap(
                         Function.identity(),
-                        p -> new RowColors(null, legacy.ui().priorityColor(p))
+                        p -> new RowStyle(null, legacy.ui().priorityColor(p))
                 ));
         return !colors.isEmpty() ? colors : null;
     }
 
-    private @Nullable List<RowColors> importHighlightColors(LegacyConfiguration legacy, ThemeColors baseTheme) {
+    private @Nullable List<RowStyle> importHighlightColors(LegacyConfiguration legacy, ThemeColors baseTheme) {
         // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
         // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
         // per se.
@@ -212,7 +212,7 @@ public class LegacyPrefsImport {
             // Nullable collection is meh, but we need to tell the theming code that there is no user-provided overlay.
             return null;
         }
-        return legacyColors.stream().map(c -> new RowColors(c, null)).toList();
+        return legacyColors.stream().map(c -> new RowStyle(c, null)).toList();
     }
 
     private void importMainWindowPosition(LegacyConfiguration legacy, WindowsPositionsPref windowsPositionsPref) {

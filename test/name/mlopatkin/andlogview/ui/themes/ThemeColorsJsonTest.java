@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.LogTable;
-import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.RowColors;
+import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.RowStyle;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -56,33 +56,33 @@ class ThemeColorsJsonTest {
     void mergeLogTableMergesNestedFields() {
         var baseTable = LogTable.create(
                 Color.WHITE,
-                new RowColors(Color.YELLOW, Color.BLACK),
-                mapOf(LogRecord.Priority.ERROR, new RowColors(Color.RED, Color.WHITE)),
-                List.of(new RowColors(Color.BLUE, Color.WHITE))
+                new RowStyle(Color.YELLOW, Color.BLACK),
+                mapOf(LogRecord.Priority.ERROR, new RowStyle(Color.RED, Color.WHITE)),
+                List.of(new RowStyle(Color.BLUE, Color.WHITE))
         );
 
         var overrideTable = LogTable.create(
                 Color.GRAY,
                 null,
-                mapOf(LogRecord.Priority.WARN, new RowColors(Color.ORANGE, Color.BLACK)),
-                List.of(new RowColors(Color.GREEN, Color.BLACK))
+                mapOf(LogRecord.Priority.WARN, new RowStyle(Color.ORANGE, Color.BLACK)),
+                List.of(new RowStyle(Color.GREEN, Color.BLACK))
         );
 
         var logTable = merge(baseTable, overrideTable);
 
         assertThat(logTable).isNotNull();
         assertThat(logTable.background()).isEqualTo(Color.GRAY);
-        assertThat(logTable.bookmarks()).isEqualTo(new RowColors(Color.YELLOW, Color.BLACK));
+        assertThat(logTable.bookmarks()).isEqualTo(new RowStyle(Color.YELLOW, Color.BLACK));
         assertThat(logTable.priority()).containsEntry(
                 LogRecord.Priority.ERROR,
-                new RowColors(Color.RED, Color.WHITE)
+                new RowStyle(Color.RED, Color.WHITE)
         );
         assertThat(logTable.priority()).containsEntry(
                 LogRecord.Priority.WARN,
-                new RowColors(Color.ORANGE, Color.BLACK)
+                new RowStyle(Color.ORANGE, Color.BLACK)
         );
         assertThat(logTable.highlights()).isEqualTo(
-                List.of(new RowColors(Color.GREEN, Color.BLACK))
+                List.of(new RowStyle(Color.GREEN, Color.BLACK))
         );
     }
 
@@ -110,8 +110,8 @@ class ThemeColorsJsonTest {
 
     @Test
     void mergeOverridesBookmarks() {
-        var baseBookmarks = new RowColors(Color.YELLOW, Color.BLACK);
-        var overrideBookmarks = new RowColors(Color.CYAN, Color.BLUE);
+        var baseBookmarks = new RowStyle(Color.YELLOW, Color.BLACK);
+        var overrideBookmarks = new RowStyle(Color.CYAN, Color.BLUE);
 
         var result = merge(
                 LogTable.create(null, baseBookmarks, null, null),
@@ -124,7 +124,7 @@ class ThemeColorsJsonTest {
 
     @Test
     void mergeKeepsBookmarksWhenOverrideIsNull() {
-        var baseBookmarks = new RowColors(Color.YELLOW, Color.BLACK);
+        var baseBookmarks = new RowStyle(Color.YELLOW, Color.BLACK);
 
         var result = merge(
                 LogTable.create(null, baseBookmarks, null, null),
@@ -138,8 +138,8 @@ class ThemeColorsJsonTest {
     @Test
     void mergeBookmarksOverridesIndividualColors() {
         var result = merge(
-                LogTable.create(null, new RowColors(Color.RED, Color.WHITE), null, null),
-                LogTable.create(null, new RowColors(Color.BLUE, null), null, null)
+                LogTable.create(null, new RowStyle(Color.RED, Color.WHITE), null, null),
+                LogTable.create(null, new RowStyle(Color.BLUE, null), null, null)
         );
 
         assertThat(result).isNotNull();
@@ -152,18 +152,18 @@ class ThemeColorsJsonTest {
     @Test
     void mergeBookmarksKeepsColorsWhenOverrideHasNulls() {
         var result = merge(
-                LogTable.create(null, new RowColors(Color.RED, Color.WHITE), null, null),
-                LogTable.create(null, new RowColors(null, null), null, null)
+                LogTable.create(null, new RowStyle(Color.RED, Color.WHITE), null, null),
+                LogTable.create(null, new RowStyle(null, null), null, null)
         );
 
         assertThat(result).isNotNull();
-        assertThat(result.bookmarks()).isEqualTo(new RowColors(Color.RED, Color.WHITE));
+        assertThat(result.bookmarks()).isEqualTo(new RowStyle(Color.RED, Color.WHITE));
     }
 
     @Test
     void mergePriorityWithNullOverrideReturnsOriginal() {
         var basePriority = mapOf(
-                LogRecord.Priority.ERROR, new RowColors(Color.RED, Color.WHITE)
+                LogRecord.Priority.ERROR, new RowStyle(Color.RED, Color.WHITE)
         );
 
         var result = merge(
@@ -178,7 +178,7 @@ class ThemeColorsJsonTest {
     @Test
     void mergePriorityWithNullBaseTakesOverride() {
         var overridePriority = mapOf(
-                LogRecord.Priority.WARN, new RowColors(Color.ORANGE, Color.BLACK)
+                LogRecord.Priority.WARN, new RowStyle(Color.ORANGE, Color.BLACK)
         );
 
         var result = merge(
@@ -193,12 +193,12 @@ class ThemeColorsJsonTest {
     @Test
     void mergePriorityMergesIndividualPriorities() {
         var basePriority = mapOf(
-                LogRecord.Priority.ERROR, new RowColors(Color.RED, Color.WHITE),
-                LogRecord.Priority.WARN, new RowColors(Color.ORANGE, Color.BLACK)
+                LogRecord.Priority.ERROR, new RowStyle(Color.RED, Color.WHITE),
+                LogRecord.Priority.WARN, new RowStyle(Color.ORANGE, Color.BLACK)
         );
         var overridePriority = mapOf(
-                LogRecord.Priority.WARN, new RowColors(Color.YELLOW, null),
-                LogRecord.Priority.INFO, new RowColors(Color.GREEN, Color.WHITE)
+                LogRecord.Priority.WARN, new RowStyle(Color.YELLOW, null),
+                LogRecord.Priority.INFO, new RowStyle(Color.GREEN, Color.WHITE)
         );
 
         var result = merge(
@@ -211,25 +211,25 @@ class ThemeColorsJsonTest {
         assertThat(priority).isNotNull();
         assertThat(priority).containsEntry(
                 LogRecord.Priority.ERROR,
-                new RowColors(Color.RED, Color.WHITE)
+                new RowStyle(Color.RED, Color.WHITE)
         );
         assertThat(priority).containsEntry(
                 LogRecord.Priority.WARN,
-                new RowColors(Color.YELLOW, Color.BLACK)
+                new RowStyle(Color.YELLOW, Color.BLACK)
         );
         assertThat(priority).containsEntry(
                 LogRecord.Priority.INFO,
-                new RowColors(Color.GREEN, Color.WHITE)
+                new RowStyle(Color.GREEN, Color.WHITE)
         );
     }
 
     @Test
     void mergePriorityRowColorsOverridesIndividualColors() {
         var basePriority = mapOf(
-                LogRecord.Priority.ERROR, new RowColors(Color.RED, Color.WHITE)
+                LogRecord.Priority.ERROR, new RowStyle(Color.RED, Color.WHITE)
         );
         var overridePriority = mapOf(
-                LogRecord.Priority.ERROR, new RowColors(null, Color.BLACK)
+                LogRecord.Priority.ERROR, new RowStyle(null, Color.BLACK)
         );
 
         var result = merge(
@@ -242,18 +242,18 @@ class ThemeColorsJsonTest {
         assertThat(priority).isNotNull();
         assertThat(priority).containsEntry(
                 LogRecord.Priority.ERROR,
-                new RowColors(Color.RED, Color.BLACK)
+                new RowStyle(Color.RED, Color.BLACK)
         );
     }
 
     @Test
     void mergeHighlightsReplacesCompleteList() {
         var baseHighlights = List.of(
-                new RowColors(Color.BLUE, Color.WHITE),
-                new RowColors(Color.GREEN, Color.BLACK)
+                new RowStyle(Color.BLUE, Color.WHITE),
+                new RowStyle(Color.GREEN, Color.BLACK)
         );
         var overrideHighlights = List.of(
-                new RowColors(Color.CYAN, Color.RED)
+                new RowStyle(Color.CYAN, Color.RED)
         );
 
         var result = merge(
@@ -268,7 +268,7 @@ class ThemeColorsJsonTest {
     @Test
     void mergeHighlightsKeepsOriginalWhenOverrideIsNull() {
         var baseHighlights = List.of(
-                new RowColors(Color.BLUE, Color.WHITE)
+                new RowStyle(Color.BLUE, Color.WHITE)
         );
 
         var result = merge(
@@ -283,7 +283,7 @@ class ThemeColorsJsonTest {
     private static LogTable createLogTable() {
         return LogTable.create(
                 Color.WHITE,
-                new RowColors(Color.YELLOW, Color.BLACK),
+                new RowStyle(Color.YELLOW, Color.BLACK),
                 mapOf(),
                 List.of()
         );
@@ -293,19 +293,19 @@ class ThemeColorsJsonTest {
         return new ThemeColorsJson(left).merge(new ThemeColorsJson(right)).logTable();
     }
 
-    private static Map<LogRecord.Priority, RowColors> mapOf() {
+    private static Map<LogRecord.Priority, RowStyle> mapOf() {
         return ImmutableMap.of();
     }
 
-    private static Map<LogRecord.Priority, RowColors> mapOf(
-            LogRecord.Priority k1, RowColors v1
+    private static Map<LogRecord.Priority, RowStyle> mapOf(
+            LogRecord.Priority k1, RowStyle v1
     ) {
         return ImmutableMap.of(k1, v1);
     }
 
-    private static Map<LogRecord.Priority, RowColors> mapOf(
-            LogRecord.Priority k1, RowColors v1,
-            LogRecord.Priority k2, RowColors v2
+    private static Map<LogRecord.Priority, RowStyle> mapOf(
+            LogRecord.Priority k1, RowStyle v1,
+            LogRecord.Priority k2, RowStyle v2
     ) {
         return ImmutableMap.of(k1, v1, k2, v2);
     }

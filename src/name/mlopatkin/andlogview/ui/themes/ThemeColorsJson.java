@@ -18,13 +18,16 @@ package name.mlopatkin.andlogview.ui.themes;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A definition of the AndLogView-specific colors. This corresponds to a JSON file with theme values.
@@ -69,33 +72,63 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
      */
     public record LogTable(
             @Nullable Color background,
-            @Nullable RowColors bookmarks,
-            @Nullable Map<LogRecord.Priority, @Nullable RowColors> priority,
-            @Nullable List<@Nullable RowColors> highlights
+            @Nullable RowStyle bookmarks,
+            Map<LogRecord.Priority, RowStyle> priority,
+            @Nullable List<RowStyle> highlights
     ) {
+        // The public constructor reflects the reality of the JSON parsing, where everything is possible.
+        public LogTable(
+                @Nullable Color background,
+                @Nullable RowStyle bookmarks,
+                @Nullable Map<LogRecord.@Nullable Priority, @Nullable RowStyle> priority,
+                @Nullable List<@Nullable RowStyle> highlights
+        ) {
+            this.background = background;
+            this.bookmarks = bookmarks;
+            this.priority = sanitize(priority);
+            this.highlights = sanitize(highlights);
+        }
+
         // Solves NullAway complaint about List<T?> not being a supertype of List<T!> when calling constructor with a
         // list of non-nullables. As our lists and maps are read-only, we can cast them safely.
+        @SuppressWarnings("unchecked")
         public static LogTable create(
                 @Nullable Color background,
-                @Nullable RowColors bookmarks,
-                @Nullable Map<LogRecord.Priority, ? extends @Nullable RowColors> priority,
-                @Nullable List<? extends @Nullable RowColors> highlights
+                @Nullable RowStyle bookmarks,
+                @Nullable Map<? extends LogRecord.@Nullable Priority, ? extends @Nullable RowStyle> priority,
+                @Nullable List<? extends @Nullable RowStyle> highlights
         ) {
-            return new LogTable(background, bookmarks, sanitize(priority), sanitize(highlights));
+            return new LogTable(
+                    background,
+                    bookmarks,
+                    (Map<LogRecord.@Nullable Priority, @Nullable RowStyle>) priority,
+                    (List<@Nullable RowStyle>) highlights
+            );
         }
 
-        @SuppressWarnings({"NullAway", "unchecked"})
-        private static @Nullable Map<LogRecord.Priority, @Nullable RowColors> sanitize(
-                @Nullable Map<LogRecord.Priority, ? extends @Nullable RowColors> priority
-        ) {
-            return (Map<LogRecord.Priority, RowColors>) priority;
+
+        private static Map<LogRecord.Priority, RowStyle> sanitize(
+                @Nullable Map<LogRecord.@Nullable Priority, @Nullable RowStyle> priority) {
+            if (priority == null) {
+                return Map.of();
+            }
+            // Can't use contains{Key,Value}(null) because of the null-hostility
+            Preconditions.checkArgument(
+                    priority.entrySet().stream().noneMatch(e -> e.getKey() == null || e.getValue() == null),
+                    "logTable.priority should not contain nulls"
+            );
+            // noinspection RedundantCast - NullAway
+            return (Map<LogRecord.@NonNull Priority, @NonNull RowStyle>) priority;
         }
 
-        @SuppressWarnings({"NullAway", "unchecked"})
-        private static @Nullable List<@Nullable RowColors> sanitize(
-                @Nullable List<? extends @Nullable RowColors> colors
-        ) {
-            return (List<RowColors>) colors;
+        private static @Nullable List<RowStyle> sanitize(@Nullable List<@Nullable RowStyle> r) {
+            // Can't use contains(null) because of the null-hostility
+            Preconditions.checkArgument(
+                    r == null || r.stream().noneMatch(Objects::isNull),
+                    "logTable.highlights contains null element"
+            );
+            // noinspection RedundantCast - NullAway
+            return (List<@NonNull RowStyle>) r;
         }
 
         private LogTable merge(@Nullable LogTable other) {
@@ -103,40 +136,37 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
                 return this;
             }
             var newBackground = mergeColor(background, other.background);
-            var newBookmarks = RowColors.merge(bookmarks, other.bookmarks);
+            var newBookmarks = RowStyle.merge(bookmarks, other.bookmarks);
             var newPriority = mergePriority(other.priority);
             var newHighlights = mergeHighlights(other.highlights);
 
-            return new LogTable(newBackground, newBookmarks, newPriority, newHighlights);
+            return LogTable.create(newBackground, newBookmarks, newPriority, newHighlights);
         }
 
-        private @Nullable Map<LogRecord.Priority, @Nullable RowColors> mergePriority(
-                @Nullable Map<LogRecord.Priority, @Nullable RowColors> other
-        ) {
-            if (other == null) {
+        private Map<LogRecord.Priority, RowStyle> mergePriority(Map<LogRecord.Priority, RowStyle> other) {
+            if (other.isEmpty()) {
                 return this.priority;
             }
-            if (this.priority == null) {
+            if (this.priority.isEmpty()) {
                 return other;
             }
 
-            assert other != null && this.priority != null;
+            assert !other.isEmpty() && !this.priority.isEmpty();
 
-            var priorityMap = ImmutableMap.<LogRecord.Priority, RowColors>builder();
+            var priorityMap = ImmutableMap.<LogRecord.Priority, RowStyle>builder();
             for (var priority : LogRecord.Priority.values()) {
                 var baseColors = this.priority.get(priority);
                 var overlayColors = other.get(priority);
 
-                var resultColors = RowColors.merge(baseColors, overlayColors);
+                var resultColors = RowStyle.merge(baseColors, overlayColors);
                 if (resultColors != null) {
                     priorityMap.put(priority, resultColors);
                 }
             }
-            // noinspection RedundantCast - NullAway needs it
-            return (Map<LogRecord.Priority, @Nullable RowColors>) priorityMap.build();
+            return priorityMap.build();
         }
 
-        private @Nullable List<@Nullable RowColors> mergeHighlights(@Nullable List<@Nullable RowColors> other) {
+        private @Nullable List<RowStyle> mergeHighlights(@Nullable List<RowStyle> other) {
             return other != null ? other : this.highlights;
         }
     }
@@ -148,11 +178,11 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
      * @param background the background color of the cell/row
      * @param foreground the color of the text in the cell/row
      */
-    public record RowColors(
+    public record RowStyle(
             @Nullable Color background,
             @Nullable Color foreground
     ) {
-        private static @Nullable RowColors merge(@Nullable RowColors base, @Nullable RowColors overlay) {
+        private static @Nullable RowStyle merge(@Nullable RowStyle base, @Nullable RowStyle overlay) {
             if (overlay == null) {
                 return base;
             }
@@ -163,7 +193,7 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
             assert base != null;
             assert overlay != null;
 
-            return new RowColors(
+            return new RowStyle(
                     mergeColor(base.background, overlay.background),
                     mergeColor(base.foreground, overlay.foreground)
             );
