@@ -25,7 +25,10 @@ import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
 import com.google.gson.JsonSyntaxException;
 
+import org.jspecify.annotations.Nullable;
+
 import java.awt.Color;
+import java.awt.Font;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +39,7 @@ public class JsonBasedThemeColors implements ThemeColors {
     private final Color logTableBackground;
     private final Color logTableBookmarksBackground;
     private final Color logTableBookmarksForeground;
+    private final ThemeColorsJson.@Nullable FontStyle logTableBookmarkFont;
     private final ImmutableMap<LogRecord.Priority, Color> logTablePriorityForeground;
     private final ImmutableList<Color> logTableHighlightBackground;
 
@@ -53,6 +57,7 @@ public class JsonBasedThemeColors implements ThemeColors {
         checkArgument(logTable.bookmarks().foreground() != null, "logTable.bookmarks.foreground is missing");
         this.logTableBookmarksBackground = logTable.bookmarks().background();
         this.logTableBookmarksForeground = logTable.bookmarks().foreground();
+        this.logTableBookmarkFont = logTable.bookmarks().fontStyle();
 
         ImmutableMap.Builder<LogRecord.Priority, Color> priorityForegroundBuilder = ImmutableMap.builder();
 
@@ -102,6 +107,17 @@ public class JsonBasedThemeColors implements ThemeColors {
     @Override
     public Color getBookmarkForegroundColor() {
         return logTableBookmarksForeground;
+    }
+
+    @Override
+    public Font configureBookmarkFont(Font baseFont) {
+        if (logTableBookmarkFont == null) {
+            return baseFont;
+        }
+        return switch (logTableBookmarkFont) {
+            case BOLD -> baseFont.deriveFont(Font.BOLD);
+            case REGULAR -> baseFont.deriveFont(Font.PLAIN);
+        };
     }
 
     @FormatMethod

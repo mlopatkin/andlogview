@@ -3,7 +3,8 @@
     "background": "#FFFFFF",
     "bookmarks": {
       "background": "#01146D",
-      "foreground": "#F4EE00"
+      "foreground": "#F4EE00",
+      "fontStyle": "BOLD"
     },
     "priority": {
       "VERBOSE": {

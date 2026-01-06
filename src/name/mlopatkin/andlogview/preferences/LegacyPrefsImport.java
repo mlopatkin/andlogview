@@ -172,7 +172,8 @@ public class LegacyPrefsImport {
                         getIfDifferent(legacy.ui().backgroundColor(), theme.getBackgroundColor()),
                         new RowStyle(
                                 getIfDifferent(legacy.ui().bookmarkBackground(), theme.getBookmarkBackgroundColor()),
-                                getIfDifferent(legacy.ui().bookmarkedForeground(), theme.getBookmarkForegroundColor())
+                                getIfDifferent(legacy.ui().bookmarkedForeground(), theme.getBookmarkForegroundColor()),
+                                null // legacy configuration doesn't support font customization
                         ),
                         importPriorityColorsMap(legacy, theme),
                         importHighlightColors(legacy, theme)
@@ -198,7 +199,7 @@ public class LegacyPrefsImport {
                 })
                 .collect(toImmutableMap(
                         Function.identity(),
-                        p -> new RowStyle(null, legacy.ui().priorityColor(p))
+                        p -> RowStyle.foreground(Objects.requireNonNull(legacy.ui().priorityColor(p)))
                 ));
         return !colors.isEmpty() ? colors : null;
     }
@@ -212,7 +213,7 @@ public class LegacyPrefsImport {
             // Nullable collection is meh, but we need to tell the theming code that there is no user-provided overlay.
             return null;
         }
-        return legacyColors.stream().map(c -> new RowStyle(c, null)).toList();
+        return legacyColors.stream().map(RowStyle::background).toList();
     }
 
     private void importMainWindowPosition(LegacyConfiguration legacy, WindowsPositionsPref windowsPositionsPref) {

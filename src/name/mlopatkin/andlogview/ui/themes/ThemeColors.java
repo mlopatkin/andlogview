@@ -19,6 +19,7 @@ package name.mlopatkin.andlogview.ui.themes;
 import name.mlopatkin.andlogview.logmodel.LogRecord;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.List;
 
 /**
@@ -60,4 +61,11 @@ public interface ThemeColors {
      * @return the bookmark foreground color
      */
     Color getBookmarkForegroundColor();
+
+    /**
+     * Creates a font to display bookmarked records in the base window.
+     * @param baseFont the base font to configure
+     * @return the configured font (can be the same if no customization applied)
+     */
+    Font configureBookmarkFont(Font baseFont);
 }

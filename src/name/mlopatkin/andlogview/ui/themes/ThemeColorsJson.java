@@ -135,7 +135,7 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
             if (other == null) {
                 return this;
             }
-            var newBackground = mergeColor(background, other.background);
+            var newBackground = mergeValue(background, other.background);
             var newBookmarks = RowStyle.merge(bookmarks, other.bookmarks);
             var newPriority = mergePriority(other.priority);
             var newHighlights = mergeHighlights(other.highlights);
@@ -172,16 +172,22 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
     }
 
     /**
-     * A representation of the color of a row or a cell in the log table. In general, {@code null} color means that it
+     * A representation of the style of a row or a cell in the log table. In general, {@code null} value means that it
      * is inherited from container's defaults.
      *
      * @param background the background color of the cell/row
      * @param foreground the color of the text in the cell/row
+     * @param fontStyle the optional font style for the text, e.g. bold or italic.
      */
     public record RowStyle(
             @Nullable Color background,
-            @Nullable Color foreground
+            @Nullable Color foreground,
+            @Nullable FontStyle fontStyle
     ) {
+        public RowStyle(@Nullable Color background, @Nullable Color foreground) {
+            this(background, foreground, null);
+        }
+
         private static @Nullable RowStyle merge(@Nullable RowStyle base, @Nullable RowStyle overlay) {
             if (overlay == null) {
                 return base;
@@ -194,13 +200,26 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
             assert overlay != null;
 
             return new RowStyle(
-                    mergeColor(base.background, overlay.background),
-                    mergeColor(base.foreground, overlay.foreground)
+                    mergeValue(base.background, overlay.background),
+                    mergeValue(base.foreground, overlay.foreground),
+                    mergeValue(base.fontStyle, overlay.fontStyle)
             );
+        }
+
+        public static RowStyle background(Color background) {
+            return new RowStyle(background, null, null);
+        }
+        public static RowStyle foreground(Color foreground) {
+            return new RowStyle(null, foreground, null);
         }
     }
 
-    private static @Nullable Color mergeColor(@Nullable Color color, @Nullable Color overlay) {
+    public enum FontStyle {
+        BOLD,
+        REGULAR
+    }
+
+    private static @Nullable <T> T mergeValue(@Nullable T color, @Nullable T overlay) {
         return overlay != null ? overlay : color;
     }
 }

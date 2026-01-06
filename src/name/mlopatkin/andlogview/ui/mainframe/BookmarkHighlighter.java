@@ -36,14 +36,16 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     private final BookmarkModel bookmarkModel;
     private final Color bookmarkBackground;
     private final Color bookmarkForeground;
+    private final ThemeColors theme;
     private @MonotonicNonNull TableCellRenderer renderer;
 
     @Inject
-    public BookmarkHighlighter(LogRecordTableModel model, BookmarkModel bookmarkModel, ThemeColors themeColors) {
+    public BookmarkHighlighter(LogRecordTableModel model, BookmarkModel bookmarkModel, ThemeColors theme) {
         this.model = model;
         this.bookmarkModel = bookmarkModel;
-        this.bookmarkBackground = themeColors.getBookmarkBackgroundColor();
-        this.bookmarkForeground = themeColors.getBookmarkForegroundColor();
+        this.bookmarkBackground = theme.getBookmarkBackgroundColor();
+        this.bookmarkForeground = theme.getBookmarkForegroundColor();
+        this.theme = theme;
     }
 
     @Override
@@ -65,6 +67,8 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     }
 
     private void highlight(Component cmp, boolean isSelected) {
+        cmp.setFont(theme.configureBookmarkFont(cmp.getFont()));
+
         Color backgroundColor = bookmarkBackground;
         Color foregroundColor = bookmarkForeground;
         if (isSelected) {
