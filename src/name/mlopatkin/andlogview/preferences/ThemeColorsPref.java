@@ -109,7 +109,9 @@ public class ThemeColorsPref {
      * @param jsonThemeData the override
      */
     public void setOverride(ThemeColorsJson jsonThemeData) {
-        preference.set(new ThemeData(preference.get().selectedTheme(), jsonThemeData));
+        if (jsonThemeData.logTable() != null) {
+            preference.set(new ThemeData(preference.get().selectedTheme(), jsonThemeData));
+        }
     }
 
     /**

@@ -171,9 +171,9 @@ public class LegacyPrefsImport {
 
     private ThemeColorsJson legacyOverride(LegacyConfiguration legacy, ThemeColors base) {
         return new ThemeColorsJson(
-                LogTable.create(
+                LogTable.createIfNeeded(
                         getIfDifferent(legacy.ui().backgroundColor(), base.getBackgroundColor()),
-                        new RowStyle(
+                        RowStyle.createIfNeeded(
                                 getIfDifferent(legacy.ui().bookmarkBackground(), base.getBookmarkBackgroundColor()),
                                 getIfDifferent(legacy.ui().bookmarkedForeground(), base.getBookmarkForegroundColor()),
                                 null // legacy configuration doesn't support font customization

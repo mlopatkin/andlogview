@@ -106,6 +106,20 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
             );
         }
 
+        public static @Nullable LogTable createIfNeeded(
+                @Nullable Color background,
+                @Nullable RowStyle bookmarks,
+                @Nullable Map<? extends LogRecord.@Nullable Priority, ? extends @Nullable RowStyle> priority,
+                @Nullable List<? extends @Nullable RowStyle> highlights
+        ) {
+            if (background == null && bookmarks == null
+                    && (priority == null || priority.isEmpty()) && (highlights == null)
+            ) {
+                return null;
+            }
+            return create(background, bookmarks, priority, highlights);
+        }
+
 
         private static Map<LogRecord.Priority, RowStyle> sanitize(
                 @Nullable Map<LogRecord.@Nullable Priority, @Nullable RowStyle> priority) {
@@ -209,8 +223,20 @@ public record ThemeColorsJson(@Nullable LogTable logTable) {
         public static RowStyle background(Color background) {
             return new RowStyle(background, null, null);
         }
+
         public static RowStyle foreground(Color foreground) {
             return new RowStyle(null, foreground, null);
+        }
+
+        public static @Nullable RowStyle createIfNeeded(
+                @Nullable Color background,
+                @Nullable Color foreground,
+                @Nullable FontStyle fontStyle
+        ) {
+            if (background == null && foreground == null && fontStyle == null) {
+                return null;
+            }
+            return new RowStyle(background, foreground, fontStyle);
         }
     }
 
