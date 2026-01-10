@@ -17,6 +17,7 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
+import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.ui.themes.ThemeException;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
@@ -72,9 +73,9 @@ public class Main {
                 Runtime.version()
         );
 
-        Theme theme = initLaf();
+        var currentTheme = initLaf();
 
-        AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, theme);
+        AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, currentTheme);
 
         globals.getPreferenceImporter().importLegacyPreferences(() -> {
             var legacyFile = configurationLoc.getLegacyConfigurationFile();
@@ -95,11 +96,9 @@ public class Main {
         }
     }
 
-    private static Theme initLaf() {
+    private static CurrentTheme initLaf() {
         try {
-            var theme = Theme.getDefault();
-            theme.install();
-            return theme;
+            return new CurrentTheme(Theme.getDefault());
         } catch (ThemeException e) {
             throw showInitializationErrorAndExit("Cannot initialize GUI.", e);
         }

@@ -32,7 +32,7 @@ import name.mlopatkin.andlogview.preferences.WindowsPositionsPref;
 import name.mlopatkin.andlogview.ui.GlobalClipboard;
 import name.mlopatkin.andlogview.ui.SwingUiModule;
 import name.mlopatkin.andlogview.ui.filters.FilterGlobals;
-import name.mlopatkin.andlogview.ui.themes.Theme;
+import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.UiThreadScheduler;
 
@@ -82,7 +82,7 @@ public interface AppGlobals {
 
     AdbManager getAdbManager();
 
-    Theme getTheme();
+    CurrentTheme getCurrentTheme();
 
     ThemeColors getThemeColors();
 
@@ -95,6 +95,6 @@ public interface AppGlobals {
         AppGlobals create(
                 @BindsInstance ConfigurationLocation configurationLocation,
                 @BindsInstance CommandLine cmdline,
-                @BindsInstance Theme selectedTheme);
+                @BindsInstance CurrentTheme currentTheme);
     }
 }

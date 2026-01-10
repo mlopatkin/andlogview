@@ -35,6 +35,15 @@ public interface Theme {
      * @return the default theme
      */
     static Theme getDefault() {
+        return light();
+    }
+
+    /**
+     * Returns the light application theme.
+     *
+     * @return the light theme
+     */
+    static Theme light() {
         return new FlatLafTheme();
     }
 }

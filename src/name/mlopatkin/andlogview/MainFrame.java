@@ -57,7 +57,7 @@ import name.mlopatkin.andlogview.ui.processes.ProcessListFrame;
 import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
-import name.mlopatkin.andlogview.ui.themes.Theme;
+import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.MyFutures;
 import name.mlopatkin.andlogview.widgets.UiHelper;
@@ -120,7 +120,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
                     : KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK);
 
     @Inject
-    Theme theme;
+    CurrentTheme theme;
 
     @Inject
     MainFrameUi mainFrameUi;
@@ -371,7 +371,7 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         // and the content. An extra separator results in double line. This may be reconsidered if I decide to merge
         // top bar with the panel.
         if (!SystemUtils.IS_OS_MAC_OSX) {
-            filterControls.setBorder(theme.getWidgetFactory().createTopSeparatorBorder());
+            filterControls.setBorder(theme.get().getWidgetFactory().createTopSeparatorBorder());
         }
 
         var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filterControls, logTableScrollPane);
