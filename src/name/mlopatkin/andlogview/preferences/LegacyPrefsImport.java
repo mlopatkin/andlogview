@@ -27,6 +27,7 @@ import name.mlopatkin.andlogview.preferences.WindowsPositionsPref.Frame;
 import name.mlopatkin.andlogview.ui.FrameDimensions;
 import name.mlopatkin.andlogview.ui.FrameLocation;
 import name.mlopatkin.andlogview.ui.filters.BufferFilterModel;
+import name.mlopatkin.andlogview.ui.themes.LegacyThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson.LogTable;
@@ -162,40 +163,39 @@ public class LegacyPrefsImport {
     }
 
     private void importThemeColors(LegacyConfiguration legacy, ThemeColorsPref themeColors) {
-        themeColors.setOverride(legacyOverride(legacy, themeColors));
+        // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
+        // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
+        // per se.
+        themeColors.setOverride(legacyOverride(legacy, new LegacyThemeColors()));
     }
 
-    private ThemeColorsJson legacyOverride(LegacyConfiguration legacy, ThemeColorsPref themeColors) {
-        var theme = themeColors.getBaseThemeColors();
+    private ThemeColorsJson legacyOverride(LegacyConfiguration legacy, ThemeColors base) {
         return new ThemeColorsJson(
                 LogTable.create(
-                        getIfDifferent(legacy.ui().backgroundColor(), theme.getBackgroundColor()),
+                        getIfDifferent(legacy.ui().backgroundColor(), base.getBackgroundColor()),
                         new RowStyle(
-                                getIfDifferent(legacy.ui().bookmarkBackground(), theme.getBookmarkBackgroundColor()),
-                                getIfDifferent(legacy.ui().bookmarkedForeground(), theme.getBookmarkForegroundColor()),
+                                getIfDifferent(legacy.ui().bookmarkBackground(), base.getBookmarkBackgroundColor()),
+                                getIfDifferent(legacy.ui().bookmarkedForeground(), base.getBookmarkForegroundColor()),
                                 null // legacy configuration doesn't support font customization
                         ),
-                        importPriorityColorsMap(legacy, theme),
-                        importHighlightColors(legacy, theme)
+                        importPriorityColorsMap(legacy, base),
+                        importHighlightColors(legacy, base)
                 )
         );
     }
 
-    private @Nullable Color getIfDifferent(@Nullable Color overlayColor, Color baseColor) {
-        return !Objects.equals(overlayColor, baseColor) ? overlayColor : null;
+    private @Nullable Color getIfDifferent(@Nullable Color overlayColor, Color base) {
+        return !Objects.equals(overlayColor, base) ? overlayColor : null;
     }
 
     private @Nullable Map<Priority, RowStyle> importPriorityColorsMap(
             LegacyConfiguration legacy,
-            ThemeColors baseTheme
+            ThemeColors base
     ) {
-        // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
-        // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
-        // per se.
         var colors = Arrays.stream(Priority.values())
                 .filter(p -> {
                     var legacyColor = legacy.ui().priorityColor(p);
-                    return legacyColor != null && !legacyColor.equals(baseTheme.getPriorityForegroundColor(p));
+                    return legacyColor != null && !legacyColor.equals(base.getPriorityForegroundColor(p));
                 })
                 .collect(toImmutableMap(
                         Function.identity(),
@@ -204,12 +204,9 @@ public class LegacyPrefsImport {
         return !colors.isEmpty() ? colors : null;
     }
 
-    private @Nullable List<RowStyle> importHighlightColors(LegacyConfiguration legacy, ThemeColors baseTheme) {
-        // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
-        // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
-        // per se.
+    private @Nullable List<RowStyle> importHighlightColors(LegacyConfiguration legacy, ThemeColors base) {
         var legacyColors = legacy.ui().highlightColors();
-        if (legacyColors == null || Objects.equals(legacyColors, baseTheme.getHighlightColors())) {
+        if (legacyColors == null || Objects.equals(legacyColors, base.getHighlightColors())) {
             // Nullable collection is meh, but we need to tell the theming code that there is no user-provided overlay.
             return null;
         }

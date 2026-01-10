@@ -76,15 +76,6 @@ public class ThemeColorsPref {
         preference.set(new ThemeData(jsonThemeData));
     }
 
-    /**
-     * Returns the colors of the base theme, without user modifications.
-     *
-     * @return the color set
-     */
-    public ThemeColors getBaseThemeColors() {
-        return JsonBasedThemeColors.fromThemeDefinition(baseThemeData);
-    }
-
     private static ThemeColorsJson getDefaultThemeData() {
         ThemeColorsJson themeData;
         try (

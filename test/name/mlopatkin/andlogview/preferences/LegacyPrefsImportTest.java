@@ -20,6 +20,7 @@ import static name.mlopatkin.andlogview.preferences.LegacyPrefsImportTest.ThemeF
 import static name.mlopatkin.andlogview.preferences.LegacyPrefsImportTest.ThemeFlavor.Light;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
+import name.mlopatkin.andlogview.ui.themes.LegacyThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.LazyInstance;
@@ -67,6 +69,14 @@ class LegacyPrefsImportTest {
     void setUp() {
         lenient().when(legacyConfiguration.adb()).thenReturn(adb);
         lenient().when(legacyConfiguration.ui()).thenReturn(ui);
+
+        var legacyColors = new LegacyThemeColors();
+        lenient().when(ui.backgroundColor()).thenReturn(legacyColors.getBackgroundColor());
+        lenient().when(ui.bookmarkBackground()).thenReturn(legacyColors.getBookmarkBackgroundColor());
+        lenient().when(ui.bookmarkedForeground()).thenReturn(legacyColors.getBookmarkForegroundColor());
+        lenient().when(ui.highlightColors()).thenReturn(legacyColors.getHighlightColors());
+        lenient().when(ui.priorityColor(any()))
+                .thenAnswer(c -> legacyColors.getPriorityForegroundColor(c.getArgument(0)));
     }
 
     @Test
@@ -105,7 +115,7 @@ class LegacyPrefsImportTest {
         var customBackground = new Color(0x123456);
         var customBookmarkBg = new Color(0xAABBCC);
         var customBookmarkFg = new Color(0xDDEEFF);
-        var customErrorColor = new Color(0xFF0000);
+        var customErrorColor = new Color(0xDD1100);
         var customHighlights = List.of(new Color(0x111111), new Color(0x222222));
 
         when(ui.backgroundColor()).thenReturn(customBackground);
@@ -159,7 +169,7 @@ class LegacyPrefsImportTest {
 
     @Test
     void importThemeColors_importsCustomPriorityColors() {
-        var customErrorColor = new Color(0xFF0000);
+        var customErrorColor = new Color(0xFF1000);
         var customWarnColor = new Color(0xFFFF00);
         when(ui.priorityColor(Priority.ERROR)).thenReturn(customErrorColor);
         when(ui.priorityColor(Priority.WARN)).thenReturn(customWarnColor);
@@ -194,12 +204,6 @@ class LegacyPrefsImportTest {
 
     @Test
     void importThemeColors_doesNotImportColorsSameAsBaseTheme() {
-        when(ui.backgroundColor()).thenReturn(Light.color);
-        when(ui.bookmarkBackground()).thenReturn(Light.color);
-        when(ui.bookmarkedForeground()).thenReturn(Light.color);
-        when(ui.priorityColor(Priority.ERROR)).thenReturn(Light.color);
-        when(ui.highlightColors()).thenReturn(List.of(Light.color));
-
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
 
@@ -236,12 +240,10 @@ class LegacyPrefsImportTest {
     @Test
     void importThemeColors_importsMixOfCustomAndDefaultColors() {
         var customBackground = new Color(0x123456);
-        var customErrorColor = new Color(0xFF0000);
+        var customErrorColor = new Color(0xFF1000);
 
         when(ui.backgroundColor()).thenReturn(customBackground);
-        when(ui.bookmarkBackground()).thenReturn(Light.color);
         when(ui.priorityColor(Priority.ERROR)).thenReturn(customErrorColor);
-        when(ui.priorityColor(Priority.WARN)).thenReturn(Light.color);
 
         var themeColorsPref = createThemeColorsPref(Light);
         var importer = createImport(themeColorsPref);
