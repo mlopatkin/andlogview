@@ -67,21 +67,21 @@ public class LegacyPrefsImport {
 
     private final Lazy<WindowsPositionsPref> windowsPositionsPref;
     private final Lazy<AdbConfigurationPref> adbConfigurationPref;
-    private final Lazy<ThemeColorsPref> themeColorsPref;
+    private final Lazy<ThemePref> themePref;
 
     @Inject
     public LegacyPrefsImport(
             ConfigStorage storage,
             Lazy<WindowsPositionsPref> windowsPositions,
             Lazy<AdbConfigurationPref> adbConfiguration,
-            Lazy<ThemeColorsPref> themeColors
+            Lazy<ThemePref> themePref
     ) {
         this.storage = storage;
         this.importPerformed = storage.preference(new SimpleClient<>("importPerformed", Boolean.class, () -> false));
 
         this.windowsPositionsPref = windowsPositions;
         this.adbConfigurationPref = adbConfiguration;
-        this.themeColorsPref = themeColors;
+        this.themePref = themePref;
     }
 
     public void importLegacyPreferences(IOSupplier<Optional<LegacyConfiguration>> legacyConfiguration) {
@@ -113,7 +113,7 @@ public class LegacyPrefsImport {
         // Let's start with preferences that were never integrated with the modern infrastructure before.
         importProcessListPosition(legacy, windowsPositionsPref.get());
         importBufferPrefs(legacy, BufferFilterModel.enabledBuffersPref(storage));
-        importThemeColors(legacy, themeColorsPref.get());
+        importThemeColors(legacy, themePref.get());
 
         // These might have been migrated.
         importMainWindowPosition(legacy, windowsPositionsPref.get());
@@ -162,7 +162,7 @@ public class LegacyPrefsImport {
         }
     }
 
-    private void importThemeColors(LegacyConfiguration legacy, ThemeColorsPref themeColors) {
+    private void importThemeColors(LegacyConfiguration legacy, ThemePref themeColors) {
         // We only apply the colors if they're different from the color defined in the base theme. AndLogView used to
         // dump all colors into the user config file, so the presence of the value doesn't mean it is user-configured
         // per se.

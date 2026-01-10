@@ -44,7 +44,7 @@ import javax.inject.Inject;
  * GUI colors configuration. There are several built-in themes (light, dark). User can potentially define custom themes
  * stored there too.
  */
-public class ThemeColorsPref {
+public class ThemePref {
     private static final String THEME_LIGHT = "light";
     private static final String THEME_DARK = "dark";
 
@@ -67,21 +67,21 @@ public class ThemeColorsPref {
     }
 
     @Inject
-    public ThemeColorsPref(ConfigStorage storage, Features features) {
+    public ThemePref(ConfigStorage storage, Features features) {
         this(storage, getDefaultThemeData(), features.darkModeSelector.isEnabled());
     }
 
     @VisibleForTesting
-    public ThemeColorsPref(ConfigStorage storage) {
+    public ThemePref(ConfigStorage storage) {
         this(storage, getDefaultThemeData());
     }
 
     @VisibleForTesting
-    ThemeColorsPref(ConfigStorage storage, ThemeColorsJson baseThemeData) {
+    ThemePref(ConfigStorage storage, ThemeColorsJson baseThemeData) {
         this(storage, baseThemeData, true);
     }
 
-    private ThemeColorsPref(ConfigStorage storage, ThemeColorsJson baseThemeData, boolean enableDarkTheme) {
+    private ThemePref(ConfigStorage storage, ThemeColorsJson baseThemeData, boolean enableDarkTheme) {
         this.preference = storage.preference(new SimpleClient<>(
                 "theme",
                 ThemeData.class,

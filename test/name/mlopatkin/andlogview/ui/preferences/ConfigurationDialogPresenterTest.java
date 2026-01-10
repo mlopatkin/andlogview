@@ -28,7 +28,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
-import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
+import name.mlopatkin.andlogview.preferences.ThemePref;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
@@ -307,8 +307,8 @@ class ConfigurationDialogPresenterTest {
         );
     }
 
-    private ThemeColorsPref theme() {
-        return new ThemeColorsPref(configStorage);
+    private ThemePref theme() {
+        return new ThemePref(configStorage);
     }
 
     private AdbConfigurationPref adbConfiguration() {

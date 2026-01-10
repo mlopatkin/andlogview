@@ -18,7 +18,7 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
-import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
+import name.mlopatkin.andlogview.preferences.ThemePref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
 import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
@@ -77,7 +77,7 @@ public class ConfigurationDialogPresenter {
     }
 
     private final View view;
-    private final ThemeColorsPref themePref;
+    private final ThemePref themePref;
     private final CurrentTheme currentTheme;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesInitializationPresenter adbServicesPresenter;
@@ -88,7 +88,7 @@ public class ConfigurationDialogPresenter {
     @Inject
     ConfigurationDialogPresenter(
             View view,
-            ThemeColorsPref themePref,
+            ThemePref themePref,
             CurrentTheme currentTheme,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesInitializationPresenter adbServicesPresenter,
