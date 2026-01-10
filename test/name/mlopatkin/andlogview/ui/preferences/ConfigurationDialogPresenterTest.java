@@ -20,11 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
+import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
@@ -58,7 +60,7 @@ class ConfigurationDialogPresenterTest {
     private static final String VALID_ADB_LOCATION = "validAdb";
     private static final String INVALID_ADB_LOCATION = "invalidAdb";
 
-    private final ConfigStorage configStorage = new FakeInMemoryConfigStorage();
+    private final ConfigStorage configStorage = new FakeInMemoryConfigStorage(Utils.createConfigurationGson());
     private final FakeView fakeView = new FakeView();
 
     @Mock
@@ -255,9 +257,41 @@ class ConfigurationDialogPresenterTest {
 
         presenter.openDialog();
 
-        fakeView.selectTheme(Theme.dark().getDisplayName());
+        fakeView.selectTheme(Theme.dark());
 
         verify(currentTheme).set(Theme.dark());
+    }
+
+    @Test
+    void selectedThemeIsStoredInPreferences() {
+        theme().setTheme(Theme.light());
+
+        var presenter = createPresenter();
+
+        presenter.openDialog();
+        fakeView.selectTheme(Theme.dark());
+        fakeView.commit();
+
+        assertThat(theme().getSelectedTheme()).isEqualTo(Theme.dark());
+    }
+
+    @Test
+    void discardingChangedThemeRevertsChanges() {
+        theme().setTheme(Theme.light());
+
+        var presenter = createPresenter();
+
+        presenter.openDialog();
+        fakeView.selectTheme(Theme.dark());
+        fakeView.discard();
+
+        var order = inOrder(currentTheme);
+
+        assertThat(theme().getSelectedTheme()).isEqualTo(Theme.light());
+
+        // Check that setting the light theme was the last interaction.
+        order.verify(currentTheme).set(Theme.light());
+        order.verifyNoMoreInteractions();
     }
 
     private ConfigurationDialogPresenter createPresenter() {
@@ -336,8 +370,8 @@ class ConfigurationDialogPresenterTest {
             onThemeSelected.setAction(newTheme::accept);
         }
 
-        public List<String> getAvailableThemes() {
-            return availableThemes;
+        public void selectTheme(Theme theme) {
+            selectTheme(theme.getDisplayName());
         }
 
         public void selectTheme(String themeName) {

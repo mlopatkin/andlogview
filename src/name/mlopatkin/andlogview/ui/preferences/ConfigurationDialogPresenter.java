@@ -156,6 +156,10 @@ public class ConfigurationDialogPresenter {
         }
 
         adbConfigurationPref.setAutoReconnectEnabled(view.isAutoReconnectEnabled());
+        themePref.getAvailableThemes().stream()
+                .filter(t -> t.getDisplayName().equals(view.getSelectedThemeName()))
+                .findAny()
+                .ifPresent(themePref::setTheme);
         view.hide();
 
         if (hasLocationChanged || adbServicesStatus.getStatus().isFailed()) {
@@ -167,6 +171,7 @@ public class ConfigurationDialogPresenter {
     }
 
     private void discard() {
+        currentTheme.set(themePref.getSelectedTheme());
         view.hide();
         // Show any postponed ADB errors since the dialog closed without changes.
         adbServicesPresenter.resumeErrorDialogs();

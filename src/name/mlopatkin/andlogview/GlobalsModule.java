@@ -19,7 +19,9 @@ package name.mlopatkin.andlogview;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
+import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
+import name.mlopatkin.andlogview.ui.themes.ThemeException;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
 
 import dagger.Module;
@@ -58,5 +60,15 @@ public abstract class GlobalsModule {
     @Singleton
     static ThemeColors getThemeColors(ThemeColorsPref preference) {
         return preference.getThemeColors();
+    }
+
+    @Provides
+    @Singleton
+    static CurrentTheme getCurrentTheme(ThemeColorsPref preference) {
+        try {
+            return new CurrentTheme(preference.getSelectedTheme());
+        } catch (ThemeException e) {
+            throw Main.showInitializationErrorAndExit("Cannot initialize GUI", e);
+        }
     }
 }

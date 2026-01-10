@@ -77,4 +77,9 @@ class FlatLafTheme implements Theme {
     private static ThemeException failure(String theme, @Nullable Throwable exception) {
         throw new ThemeException("Failed to load %s theme".formatted(theme), exception);
     }
+
+    @Override
+    public String toString() {
+        return "FlatLafTheme(" + getDisplayName() + ")";
+    }
 }

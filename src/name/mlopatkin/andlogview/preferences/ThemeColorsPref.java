@@ -21,12 +21,17 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.config.Utils;
+import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.ui.themes.JsonBasedThemeColors;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -36,29 +41,57 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * GUI colors configuration. We have a base theme (only one today) and a set of overrides for specific aspects.
- * The user can specify only the overrides.
+ * GUI colors configuration. There are several built-in themes (light, dark). User can potentially define custom themes
+ * stored there too.
  */
 public class ThemeColorsPref {
+    private static final String THEME_LIGHT = "light";
+    private static final String THEME_DARK = "dark";
+
     private final Preference<ThemeData> preference;
     // TODO(mlopatkin): the base theme should also be stored in the preferences. Or, even better, maybe we can have
     //  multiple custom user themes without inheritance at all?
     private final ThemeColorsJson baseThemeData;
+    private final boolean enableDarkTheme;
 
     /** Serialized form of the preference */
-    private record ThemeData(ThemeColorsJson override) {}
+    private record ThemeData(
+            String selectedTheme,
+            ThemeColorsJson override
+    ) {
+        ThemeData(@Nullable String selectedTheme, @Nullable ThemeColorsJson override) {
+            // TODO(mlopatkin) Not sure if we should handle nulls this way.
+            this.selectedTheme = MoreObjects.firstNonNull(selectedTheme, THEME_LIGHT);
+            this.override = MoreObjects.firstNonNull(override, new ThemeColorsJson(null));
+        }
+    }
 
     @Inject
+    public ThemeColorsPref(ConfigStorage storage, Features features) {
+        this(storage, getDefaultThemeData(), features.darkModeSelector.isEnabled());
+    }
+
+    @VisibleForTesting
     public ThemeColorsPref(ConfigStorage storage) {
         this(storage, getDefaultThemeData());
     }
 
     @VisibleForTesting
     ThemeColorsPref(ConfigStorage storage, ThemeColorsJson baseThemeData) {
+        this(storage, baseThemeData, true);
+    }
+
+    private ThemeColorsPref(ConfigStorage storage, ThemeColorsJson baseThemeData, boolean enableDarkTheme) {
         this.preference = storage.preference(new SimpleClient<>(
-                "theme", ThemeData.class, () -> new ThemeData(new ThemeColorsJson(null))
+                "theme",
+                ThemeData.class,
+                () -> new ThemeData(
+                        THEME_LIGHT,
+                        new ThemeColorsJson(null)
+                )
         ));
         this.baseThemeData = baseThemeData;
+        this.enableDarkTheme = enableDarkTheme;
     }
 
     /**
@@ -76,7 +109,7 @@ public class ThemeColorsPref {
      * @param jsonThemeData the override
      */
     public void setOverride(ThemeColorsJson jsonThemeData) {
-        preference.set(new ThemeData(jsonThemeData));
+        preference.set(new ThemeData(preference.get().selectedTheme(), jsonThemeData));
     }
 
     /**
@@ -85,7 +118,33 @@ public class ThemeColorsPref {
      * @return the selected theme.
      */
     public Theme getSelectedTheme() {
-        return Theme.light();
+        return switch (preference.get().selectedTheme()) {
+            case THEME_LIGHT -> Theme.light();
+            case THEME_DARK -> enableDarkTheme ? Theme.dark() : Theme.getDefault();
+            default -> Theme.getDefault();
+        };
+    }
+
+    /**
+     * Updates the currently selected theme. It must be one of the available themes.
+     *
+     * @param newTheme the new theme
+     */
+    public void setTheme(Theme newTheme) {
+        Preconditions.checkArgument(
+                getAvailableThemes().contains(newTheme),
+                "Supplied theme %s is not one of the available themes",
+                newTheme.getDisplayName()
+        );
+        preference.set(new ThemeData(getThemeName(newTheme), preference.get().override()));
+    }
+
+    private String getThemeName(Theme theme) {
+        if (theme == Theme.dark()) {
+            return THEME_DARK;
+        }
+        // TODO(mlopatkin) this is lame again
+        return THEME_LIGHT;
     }
 
     /**
@@ -94,7 +153,11 @@ public class ThemeColorsPref {
      * @return the list of themes
      */
     public List<Theme> getAvailableThemes() {
-        return List.of(Theme.light(), Theme.dark());
+        if (enableDarkTheme) {
+            return List.of(Theme.light(), Theme.dark());
+        } else {
+            return List.of(Theme.light());
+        }
     }
 
     private static ThemeColorsJson getDefaultThemeData() {

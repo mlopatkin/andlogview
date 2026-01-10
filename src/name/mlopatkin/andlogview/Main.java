@@ -17,9 +17,6 @@ package name.mlopatkin.andlogview;
 
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.preferences.LegacyConfiguration;
-import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
-import name.mlopatkin.andlogview.ui.themes.Theme;
-import name.mlopatkin.andlogview.ui.themes.ThemeException;
 import name.mlopatkin.andlogview.widgets.dialogs.OptionPanes;
 
 import com.formdev.flatlaf.util.SystemInfo;
@@ -73,9 +70,7 @@ public class Main {
                 Runtime.version()
         );
 
-        var currentTheme = initLaf();
-
-        AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine, currentTheme);
+        AppGlobals globals = DaggerAppGlobals.factory().create(configurationLoc, commandLine);
 
         globals.getPreferenceImporter().importLegacyPreferences(() -> {
             var legacyFile = configurationLoc.getLegacyConfigurationFile();
@@ -93,14 +88,6 @@ public class Main {
             System.setProperty("apple.awt.application.name", APP_NAME);
             // Force default light style even with global system dark mode to fix black-on-black text in some controls.
             System.setProperty("apple.awt.application.appearance", "NSAppearanceNameAqua");
-        }
-    }
-
-    private static CurrentTheme initLaf() {
-        try {
-            return new CurrentTheme(Theme.getDefault());
-        } catch (ThemeException e) {
-            throw showInitializationErrorAndExit("Cannot initialize GUI.", e);
         }
     }
 
@@ -140,7 +127,7 @@ public class Main {
         }
     }
 
-    private static RuntimeException showInitializationErrorAndExit(String message, @Nullable Throwable throwable) {
+    public static RuntimeException showInitializationErrorAndExit(String message, @Nullable Throwable throwable) {
         logger.error("Fatal error during initialization: {}", message, throwable);
 
         //noinspection finally

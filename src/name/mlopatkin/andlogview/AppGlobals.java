@@ -94,7 +94,6 @@ public interface AppGlobals {
     interface Factory {
         AppGlobals create(
                 @BindsInstance ConfigurationLocation configurationLocation,
-                @BindsInstance CommandLine cmdline,
-                @BindsInstance CurrentTheme currentTheme);
+                @BindsInstance CommandLine cmdline);
     }
 }
