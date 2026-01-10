@@ -32,6 +32,8 @@ import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
+import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 
 import com.google.common.util.concurrent.MoreExecutors;
@@ -58,6 +60,9 @@ class ConfigurationDialogPresenterTest {
 
     private final ConfigStorage configStorage = new FakeInMemoryConfigStorage();
     private final FakeView fakeView = new FakeView();
+
+    @Mock
+    private CurrentTheme currentTheme;
 
     @Mock
     private AdbServicesInitializationPresenter adbServicesInitPresenter;
@@ -244,10 +249,22 @@ class ConfigurationDialogPresenterTest {
         assertThat(fakeView.getAdbLocation()).isEqualTo(originalLocation);
     }
 
+    @Test
+    void changingThemeUpdatesCurrent() {
+        var presenter = createPresenter();
+
+        presenter.openDialog();
+
+        fakeView.selectTheme(Theme.dark().getDisplayName());
+
+        verify(currentTheme).set(Theme.dark());
+    }
+
     private ConfigurationDialogPresenter createPresenter() {
         return new ConfigurationDialogPresenter(
                 fakeView,
                 theme(),
+                currentTheme,
                 adbConfiguration(),
                 adbServicesInitPresenter,
                 adbServicesStatus,

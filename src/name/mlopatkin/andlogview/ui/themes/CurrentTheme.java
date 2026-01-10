@@ -16,6 +16,8 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
+import com.formdev.flatlaf.FlatLaf;
+
 /**
  * The controller that manages the current theme.
  */
@@ -39,6 +41,7 @@ public class CurrentTheme {
      */
     public void set(Theme newTheme) throws ThemeException {
         newTheme.install();
+        FlatLaf.updateUI();
         this.theme = newTheme;
     }
 

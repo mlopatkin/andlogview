@@ -21,6 +21,7 @@ import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
 import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
+import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
 import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
@@ -77,6 +78,7 @@ public class ConfigurationDialogPresenter {
 
     private final View view;
     private final ThemeColorsPref themePref;
+    private final CurrentTheme currentTheme;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesInitializationPresenter adbServicesPresenter;
     private final AdbServicesStatus adbServicesStatus;
@@ -87,6 +89,7 @@ public class ConfigurationDialogPresenter {
     ConfigurationDialogPresenter(
             View view,
             ThemeColorsPref themePref,
+            CurrentTheme currentTheme,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesInitializationPresenter adbServicesPresenter,
             AdbServicesStatus adbServicesStatus,
@@ -94,6 +97,7 @@ public class ConfigurationDialogPresenter {
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.view = view;
         this.themePref = themePref;
+        this.currentTheme = currentTheme;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbServicesPresenter = adbServicesPresenter;
         this.adbServicesStatus = adbServicesStatus;
@@ -108,7 +112,14 @@ public class ConfigurationDialogPresenter {
 
         var themes = themePref.getAvailableThemes().stream().map(Theme::getDisplayName).toList();
         view.setThemes(themePref.getSelectedTheme().getDisplayName(), themes);
-        view.setThemeSelectedAction(theme -> log.info("Selected theme {}", theme));
+        view.setThemeSelectedAction(themeName -> {
+            log.info("Selected theme {}", themeName);
+            currentTheme.set(themePref.getAvailableThemes().stream()
+                    .filter(theme -> theme.getDisplayName().equals(themeName))
+                    .findAny()
+                    .orElseThrow()
+            );
+        });
 
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());

@@ -86,6 +86,7 @@ class AdbErrorHandlingIntegTest {
         var configurationDialogPresenter = new ConfigurationDialogPresenter(
                 configurationView,
                 themePref,
+                mock(),
                 adbPref,
                 adbInitPresenter,
                 bridge,
