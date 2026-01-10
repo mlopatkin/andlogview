@@ -17,16 +17,25 @@
 package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
+import name.mlopatkin.andlogview.base.collections.MyIterables;
 import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.TextFieldVerifier;
 
+import com.google.common.base.Preconditions;
+
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
+import javax.swing.AbstractButton;
 import javax.swing.JFileChooser;
 
 public class ConfigurationDialogView implements ConfigurationDialogPresenter.View {
@@ -34,6 +43,8 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     private final Features features;
     private @Nullable ConfigurationDialogUi dialog;
 
+    private List<String> availableThemes = List.of();
+    private @MonotonicNonNull String selectedTheme;
     private @MonotonicNonNull Runnable onCommit;
     private @MonotonicNonNull Runnable onDiscard;
     private @MonotonicNonNull Runnable onInstall;
@@ -43,6 +54,31 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     public ConfigurationDialogView(DialogFactory dialogFactory, Features features) {
         this.dialogFactory = dialogFactory;
         this.features = features;
+    }
+
+    @Override
+    public void setThemes(String selectedTheme, List<String> availableThemes) {
+        Preconditions.checkState(dialog == null, "Dialog has been created already");
+        this.selectedTheme = selectedTheme;
+        this.availableThemes = availableThemes;
+    }
+
+    @Override
+    public String getSelectedThemeName() {
+        return getDialog().themeSelector.getSelection().getActionCommand();
+    }
+
+    @Override
+    public void setThemeSelectedAction(Consumer<? super String> newTheme) {
+        ItemListener buttonItemListener = item -> {
+            if (item.getStateChange() == ItemEvent.SELECTED) {
+                selectedTheme = ((AbstractButton) item.getItem()).getActionCommand();
+                newTheme.accept(selectedTheme);
+            }
+        };
+        for (var button : MyIterables.forEnumeration(getDialog().themeSelector::getElements)) {
+            button.addItemListener(buttonItemListener);
+        }
     }
 
     @Override
@@ -119,6 +155,8 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
         if (dialog == null) {
             this.dialog = dialog = new ConfigurationDialogUi(
                     dialogFactory.getOwner(),
+                    Objects.requireNonNull(selectedTheme, "Theme is not yet set"),
+                    availableThemes,
                     features.darkModeSelector.isEnabled()
             ) {
                 {

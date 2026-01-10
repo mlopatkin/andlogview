@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.test.Expectations;
 import name.mlopatkin.andlogview.test.TestActionHandler;
@@ -35,6 +36,7 @@ import name.mlopatkin.andlogview.utils.FakePathResolver;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,8 +44,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @ExtendWith(MockitoExtension.class)
@@ -241,8 +245,19 @@ class ConfigurationDialogPresenterTest {
     }
 
     private ConfigurationDialogPresenter createPresenter() {
-        return new ConfigurationDialogPresenter(fakeView, adbConfiguration(), adbServicesInitPresenter,
-                adbServicesStatus, installPresenter, MoreExecutors.directExecutor());
+        return new ConfigurationDialogPresenter(
+                fakeView,
+                theme(),
+                adbConfiguration(),
+                adbServicesInitPresenter,
+                adbServicesStatus,
+                installPresenter,
+                MoreExecutors.directExecutor()
+        );
+    }
+
+    private ThemeColorsPref theme() {
+        return new ThemeColorsPref(configStorage);
     }
 
     private AdbConfigurationPref adbConfiguration() {
@@ -271,6 +286,7 @@ class ConfigurationDialogPresenterTest {
     }
 
     static class FakeView implements ConfigurationDialogPresenter.View {
+        private final TestActionHandler<Consumer<String>> onThemeSelected = TestActionHandler.consumerAction();
         private final TestActionHandler<Runnable> onCommit = TestActionHandler.runnableAction();
         private final TestActionHandler<Runnable> onDiscard = TestActionHandler.runnableAction();
         private final TestActionHandler<Predicate<String>> checkAdbLocation = TestActionHandler.predicateAction(true);
@@ -278,11 +294,40 @@ class ConfigurationDialogPresenterTest {
 
         final TestActionHandler<Runnable> onAdbLocationWarningShown = TestActionHandler.runnableAction();
 
+        private List<String> availableThemes = List.of();
+        private @Nullable String selectedTheme;
         private String adbLocation = "";
         private boolean isShown;
         private boolean enableAutoReconnect;
         private boolean isInvalidAdbLocationHighlighted;
         private boolean isAdbInstallAvailable;
+
+        @Override
+        public void setThemes(String selectedTheme, List<String> availableThemes) {
+            assertThat(availableThemes).contains(selectedTheme);
+            this.availableThemes = availableThemes;
+            this.selectedTheme = selectedTheme;
+        }
+
+        @Override
+        public String getSelectedThemeName() {
+            return Objects.requireNonNull(selectedTheme, "Theme has not been initialized");
+        }
+
+        @Override
+        public void setThemeSelectedAction(Consumer<? super String> newTheme) {
+            onThemeSelected.setAction(newTheme::accept);
+        }
+
+        public List<String> getAvailableThemes() {
+            return availableThemes;
+        }
+
+        public void selectTheme(String themeName) {
+            assertThat(availableThemes).contains(themeName);
+            selectedTheme = themeName;
+            onThemeSelected.action().accept(selectedTheme);
+        }
 
         public boolean isShown() {
             return isShown;

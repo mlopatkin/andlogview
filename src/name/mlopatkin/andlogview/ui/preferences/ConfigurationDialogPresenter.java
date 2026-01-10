@@ -18,8 +18,10 @@ package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.AppExecutors;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
 import name.mlopatkin.andlogview.ui.device.AdbServicesInitializationPresenter;
 import name.mlopatkin.andlogview.ui.device.AdbServicesStatus;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.utils.MyFutures;
 
 import com.google.common.base.CharMatcher;
@@ -27,8 +29,10 @@ import com.google.common.base.CharMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -40,6 +44,12 @@ public class ConfigurationDialogPresenter {
     // Design consideration: the dialog doesn't close itself on commit/discard, it waits for the presenter to take a
     // decision and call show()/hide(). This means that the presenter can abort the closing.
     interface View {
+        void setThemes(String selectedTheme, List<String> availableThemes);
+
+        String getSelectedThemeName();
+
+        void setThemeSelectedAction(Consumer<? super String> newTheme);
+
         void setAdbLocation(String adbLocation);
 
         String getAdbLocation();
@@ -66,6 +76,7 @@ public class ConfigurationDialogPresenter {
     }
 
     private final View view;
+    private final ThemeColorsPref themePref;
     private final AdbConfigurationPref adbConfigurationPref;
     private final AdbServicesInitializationPresenter adbServicesPresenter;
     private final AdbServicesStatus adbServicesStatus;
@@ -75,12 +86,14 @@ public class ConfigurationDialogPresenter {
     @Inject
     ConfigurationDialogPresenter(
             View view,
+            ThemeColorsPref themePref,
             AdbConfigurationPref adbConfigurationPref,
             AdbServicesInitializationPresenter adbServicesPresenter,
             AdbServicesStatus adbServicesStatus,
             InstallAdbPresenter adbInstaller,
             @Named(AppExecutors.UI_EXECUTOR) Executor uiExecutor) {
         this.view = view;
+        this.themePref = themePref;
         this.adbConfigurationPref = adbConfigurationPref;
         this.adbServicesPresenter = adbServicesPresenter;
         this.adbServicesStatus = adbServicesStatus;
@@ -92,6 +105,10 @@ public class ConfigurationDialogPresenter {
         view.setCommitAction(this::tryCommit);
         view.setDiscardAction(this::discard);
         view.setAdbLocationChecker(path -> adbConfigurationPref.checkAdbLocation(sanitizeAdbLocation(path)));
+
+        var themes = themePref.getAvailableThemes().stream().map(Theme::getDisplayName).toList();
+        view.setThemes(themePref.getSelectedTheme().getDisplayName(), themes);
+        view.setThemeSelectedAction(theme -> log.info("Selected theme {}", theme));
 
         view.setAdbLocation(adbConfigurationPref.getAdbLocation());
         view.setAutoReconnectEnabled(adbConfigurationPref.isAutoReconnectEnabled());

@@ -30,6 +30,11 @@ import java.util.Locale;
  */
 class FlatLafTheme implements Theme {
     @Override
+    public String getDisplayName() {
+        return "Light";
+    }
+
+    @Override
     public void install() {
         FlatLaf.registerCustomDefaultsSource(getClass().getPackageName());
         try {

@@ -22,6 +22,7 @@ import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.ui.themes.JsonBasedThemeColors;
+import name.mlopatkin.andlogview.ui.themes.Theme;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 
@@ -30,6 +31,7 @@ import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -70,10 +72,29 @@ public class ThemeColorsPref {
 
     /**
      * Sets the override JSON for the theme.
+     *
      * @param jsonThemeData the override
      */
     public void setOverride(ThemeColorsJson jsonThemeData) {
         preference.set(new ThemeData(jsonThemeData));
+    }
+
+    /**
+     * Returns the currently selected theme.
+     *
+     * @return the selected theme.
+     */
+    public Theme getSelectedTheme() {
+        return Theme.light();
+    }
+
+    /**
+     * Returns the list of themes available to select. The returned list is never empty.
+     *
+     * @return the list of themes
+     */
+    public List<Theme> getAvailableThemes() {
+        return List.of(Theme.light(), Theme.dark());
     }
 
     private static ThemeColorsJson getDefaultThemeData() {

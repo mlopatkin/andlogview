@@ -28,6 +28,7 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -40,6 +41,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 abstract class ConfigurationDialogUi extends JDialog {
+    protected final ButtonGroup themeSelector = new ButtonGroup();
     protected final JTextField adbExecutableText = new JTextField(25);
     protected final JButton browseAdbBtn = new JButton(String.valueOf(CommonChars.ELLIPSIS));
     protected final JCheckBox autoReconnectCheckbox = new JCheckBox("Reconnect to device automatically");
@@ -47,7 +49,7 @@ abstract class ConfigurationDialogUi extends JDialog {
     protected final Action okAction = UiHelper.makeAction("OK", this::onPositiveResult);
     protected final Action cancelAction = UiHelper.makeAction("Cancel", this::onNegativeResult);
 
-    public ConfigurationDialogUi(Frame owner, boolean darkModeEnabled) {
+    public ConfigurationDialogUi(Frame owner, String selectedTheme, List<String> themes, boolean darkModeEnabled) {
         super(owner, true);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -59,8 +61,9 @@ abstract class ConfigurationDialogUi extends JDialog {
         ));
 
         if (darkModeEnabled) {
-            setUpAppearanceSection(content);
+            setUpAppearanceSection(content, selectedTheme, themes);
         }
+
         setUpAdbSection(content);
         setUpDialogButtonsRow(content);
 
@@ -71,20 +74,29 @@ abstract class ConfigurationDialogUi extends JDialog {
         UiHelper.bindKeyGlobal(this, KeyEvent.VK_ESCAPE, "close", cancelAction);
     }
 
-    private void setUpAppearanceSection(Container content) {
+    private void setUpAppearanceSection(Container content, String selectedTheme, List<String> themes) {
         beginSection(content, "Appearance");
-        var light = new JRadioButton("Light");
-        var dark = new JRadioButton("Dark");
+        List<JRadioButton> themeRadioButtons = themes.stream().map(this::newThemeButton).toList();
 
-        var themeSelector = new ButtonGroup();
-        themeSelector.add(light);
-        themeSelector.add(dark);
-        themeSelector.setSelected(light.getModel(), true);
+        themeRadioButtons.forEach(themeSelector::add);
+
+        var selectedThemeButton = themeRadioButtons.get(themes.indexOf(selectedTheme));
+        themeSelector.setSelected(selectedThemeButton.getModel(), true);
 
         var label = new JLabel("Theme:");
-        content.add(label, indent().span(2).split(3));
-        content.add(light);
-        content.add(dark, CC().wrap("unrelated"));
+        var themeCount = themeRadioButtons.size();
+        content.add(label, indent().span(2).split(themeCount + 1));
+
+        for (int i = 0; i < themeCount - 1; i++) {
+            content.add(themeRadioButtons.get(i));
+        }
+        content.add(themeRadioButtons.get(themeCount - 1), CC().wrap("unrelated"));
+    }
+
+    private JRadioButton newThemeButton(String theme) {
+        var button = new JRadioButton(theme);
+        button.setActionCommand(theme);
+        return button;
     }
 
     private void setUpAdbSection(Container content) {

@@ -20,6 +20,7 @@ import com.google.common.base.MoreObjects;
 
 import org.jspecify.annotations.Nullable;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class TestActionHandler<T> {
@@ -46,5 +47,9 @@ public class TestActionHandler<T> {
 
     public static TestActionHandler<Predicate<String>> predicateAction(boolean defaultResult) {
         return new TestActionHandler<>(t -> defaultResult);
+    }
+
+    public static TestActionHandler<Consumer<String>> consumerAction() {
+        return new TestActionHandler<>(ignored -> {});
     }
 }

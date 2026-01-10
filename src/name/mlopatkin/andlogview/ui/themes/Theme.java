@@ -21,6 +21,13 @@ package name.mlopatkin.andlogview.ui.themes;
  */
 public interface Theme {
     /**
+     * Returns a user-visible name for this theme.
+     *
+     * @return the name
+     */
+    String getDisplayName();
+
+    /**
      * Tries to install the theme as the current theme of the application
      *
      * @throws ThemeException if loading or installing the theme fails
@@ -45,5 +52,20 @@ public interface Theme {
      */
     static Theme light() {
         return new FlatLafTheme();
+    }
+
+    /**
+     * Returns the dark application theme.
+     *
+     * @return the dark theme
+     */
+    static Theme dark() {
+        // TODO(mlopatkin): For now it is only a stub with different name.
+        return new FlatLafTheme() {
+            @Override
+            public String getDisplayName() {
+                return "Dark";
+            }
+        };
     }
 }

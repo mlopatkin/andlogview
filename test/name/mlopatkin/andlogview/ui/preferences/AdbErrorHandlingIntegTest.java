@@ -29,6 +29,7 @@ import name.mlopatkin.andlogview.base.concurrent.TestSequentialExecutor;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.device.AdbException;
 import name.mlopatkin.andlogview.preferences.AdbConfigurationPref;
+import name.mlopatkin.andlogview.preferences.ThemeColorsPref;
 import name.mlopatkin.andlogview.ui.device.AdbOpener;
 import name.mlopatkin.andlogview.ui.device.AdbServices;
 import name.mlopatkin.andlogview.ui.device.AdbServicesBridge;
@@ -55,8 +56,10 @@ class AdbErrorHandlingIntegTest {
     void noSecondConfigurationDialogOpensIfAdbErrorOccursWhileConfigurationDialogIsOnScreen() {
         var uiExecutor = new TestSequentialExecutor(MoreExecutors.directExecutor());
 
-        var adbPref = new AdbConfigurationPref(new FakeInMemoryConfigStorage(), FakePathResolver.acceptsAnything());
+        var storage = new FakeInMemoryConfigStorage();
+        var adbPref = new AdbConfigurationPref(storage, FakePathResolver.acceptsAnything());
         adbPref.trySetAdbLocation("/usr/bin/adb");
+        var themePref = new ThemeColorsPref(storage);
 
         AdbServicesBridge bridge = mock();
         CompletableFuture<AdbServices> result = new CompletableFuture<>();
@@ -82,6 +85,7 @@ class AdbErrorHandlingIntegTest {
 
         var configurationDialogPresenter = new ConfigurationDialogPresenter(
                 configurationView,
+                themePref,
                 adbPref,
                 adbInitPresenter,
                 bridge,
