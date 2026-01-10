@@ -51,7 +51,7 @@ public interface Theme {
      * @return the light theme
      */
     static Theme light() {
-        return new FlatLafTheme();
+        return FlatLafTheme.LIGHT;
     }
 
     /**
@@ -60,12 +60,6 @@ public interface Theme {
      * @return the dark theme
      */
     static Theme dark() {
-        // TODO(mlopatkin): For now it is only a stub with different name.
-        return new FlatLafTheme() {
-            @Override
-            public String getDisplayName() {
-                return "Dark";
-            }
-        };
+        return FlatLafTheme.DARK;
     }
 }

@@ -16,6 +16,7 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import com.google.common.io.Resources;
@@ -23,38 +24,57 @@ import com.google.common.io.Resources;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.util.function.Supplier;
 
 /**
  * FlatLaf L&amp;F with Light Flat IDEA theme.
  */
 class FlatLafTheme implements Theme {
+    static final Theme LIGHT = new FlatLafTheme("Light", FlatLafTheme::createLight);
+    static final Theme DARK = new FlatLafTheme("Dark", FlatLafTheme::createDark);
+
+    private final String displayName;
+    private final Supplier<FlatLaf> lafBuilder;
+
+    static {
+        FlatLaf.registerCustomDefaultsSource(FlatLafTheme.class.getPackageName());
+    }
+
+    private FlatLafTheme(String displayName, Supplier<FlatLaf> lafBuilder) {
+        this.displayName = displayName;
+        this.lafBuilder = lafBuilder;
+    }
+
     @Override
     public String getDisplayName() {
-        return "Light";
+        return displayName;
     }
 
     @Override
     public void install() {
-        FlatLaf.registerCustomDefaultsSource(getClass().getPackageName());
-        try {
-            if (!IntelliJTheme.setup(Resources.asByteSource(FlatLafThemes.LIGHTFLAT.getUrl()).openStream())) {
-                throw failure(null);
-            }
-        } catch (IOException e) {
-            throw failure(e);
+        if (!FlatLaf.setup(lafBuilder.get())) {
+            failure(displayName, null);
         }
-    }
-
-    private ThemeException failure(@Nullable Throwable exception) {
-        throw new ThemeException(
-                "Failed to load %s theme".formatted(FlatLafThemes.LIGHTFLAT.name().toLowerCase(Locale.ROOT)),
-                exception
-        );
     }
 
     @Override
     public ThemedWidgetFactory getWidgetFactory() {
         return new FlatLafWidgetFactory();
+    }
+
+    private static FlatLaf createLight() throws ThemeException {
+        try {
+            return IntelliJTheme.createLaf(Resources.asByteSource(FlatLafThemes.LIGHTFLAT.getUrl()).openStream());
+        } catch (IOException e) {
+            throw failure("Light", e);
+        }
+    }
+
+    private static FlatLaf createDark() {
+        return new FlatDarkLaf();
+    }
+
+    private static ThemeException failure(String theme, @Nullable Throwable exception) {
+        throw new ThemeException("Failed to load %s theme".formatted(theme), exception);
     }
 }
