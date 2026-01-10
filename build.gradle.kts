@@ -616,6 +616,8 @@ tasks.run {
         "name.mlopatkin.andlogview.config.dir",
         layout.buildDirectory.dir("tmp/andlogview-home").get().asFile.absolutePath
     )
+
+    systemProperty("andlogview.darkMode", true)
 }
 
 tasks.register("printVersions") {

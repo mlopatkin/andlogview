@@ -26,9 +26,11 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Features {
+    public final Feature darkModeSelector;
 
     @Inject
     @VisibleForTesting
     public Features() {
+        darkModeSelector = Feature.create("andlogview.darkMode", false);
     }
 }

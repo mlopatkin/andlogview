@@ -17,6 +17,7 @@
 package name.mlopatkin.andlogview.ui.preferences;
 
 import name.mlopatkin.andlogview.ErrorDialogsHelper;
+import name.mlopatkin.andlogview.features.Features;
 import name.mlopatkin.andlogview.ui.mainframe.DialogFactory;
 import name.mlopatkin.andlogview.widgets.TextFieldVerifier;
 
@@ -30,6 +31,7 @@ import javax.swing.JFileChooser;
 
 public class ConfigurationDialogView implements ConfigurationDialogPresenter.View {
     private final DialogFactory dialogFactory;
+    private final Features features;
     private @Nullable ConfigurationDialogUi dialog;
 
     private @MonotonicNonNull Runnable onCommit;
@@ -38,8 +40,9 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     private @MonotonicNonNull Predicate<String> adbLocationChecker;
 
     @Inject
-    public ConfigurationDialogView(DialogFactory dialogFactory) {
+    public ConfigurationDialogView(DialogFactory dialogFactory, Features features) {
         this.dialogFactory = dialogFactory;
+        this.features = features;
     }
 
     @Override
@@ -114,7 +117,10 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
     private ConfigurationDialogUi getDialog() {
         ConfigurationDialogUi dialog = this.dialog;
         if (dialog == null) {
-            this.dialog = dialog = new ConfigurationDialogUi(dialogFactory.getOwner()) {
+            this.dialog = dialog = new ConfigurationDialogUi(
+                    dialogFactory.getOwner(),
+                    features.darkModeSelector.isEnabled()
+            ) {
                 {
                     browseAdbBtn.addActionListener(e -> {
                         JFileChooser fileChooser = new JFileChooser();
