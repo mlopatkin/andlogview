@@ -16,33 +16,42 @@
 
 package name.mlopatkin.andlogview.ui.themes;
 
+import name.mlopatkin.andlogview.base.AppResources;
+import name.mlopatkin.andlogview.config.Utils;
+
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import com.google.common.io.Resources;
+import com.google.gson.JsonParseException;
 
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
 /**
  * FlatLaf L&amp;F with Light Flat IDEA theme.
  */
 class FlatLafTheme implements Theme {
-    static final Theme LIGHT = new FlatLafTheme("Light", FlatLafTheme::createLight);
-    static final Theme DARK = new FlatLafTheme("Dark", FlatLafTheme::createDark);
+    static final Theme LIGHT = new FlatLafTheme("Light", FlatLafTheme::createLight, FlatLafTheme::loadJson);
+    static final Theme DARK = new FlatLafTheme("Dark", FlatLafTheme::createDark, FlatLafTheme::loadJson);
 
     private final String displayName;
     private final Supplier<FlatLaf> lafBuilder;
+    private final ThemeColors themeColors;
+    private final Supplier<ThemeColorsJson> themeJson;
 
     static {
         FlatLaf.registerCustomDefaultsSource(FlatLafTheme.class.getPackageName());
     }
 
-    private FlatLafTheme(String displayName, Supplier<FlatLaf> lafBuilder) {
+    private FlatLafTheme(String displayName, Supplier<FlatLaf> lafBuilder, Supplier<ThemeColorsJson> themeJson) {
         this.displayName = displayName;
         this.lafBuilder = lafBuilder;
+        this.themeJson = themeJson;
+        this.themeColors = JsonBasedThemeColors.fromThemeDefinition(themeJson.get());
     }
 
     @Override
@@ -60,6 +69,11 @@ class FlatLafTheme implements Theme {
     @Override
     public ThemedWidgetFactory getWidgetFactory() {
         return new FlatLafWidgetFactory();
+    }
+
+    @Override
+    public ThemeColors getColors() {
+        return themeColors;
     }
 
     private static FlatLaf createLight() throws ThemeException {
@@ -81,5 +95,23 @@ class FlatLafTheme implements Theme {
     @Override
     public String toString() {
         return "FlatLafTheme(" + getDisplayName() + ")";
+    }
+
+    @Override
+    public Theme withOverrides(String themeName, ThemeColorsJson jsonOverride) throws ThemeException {
+        return new FlatLafTheme(themeName, lafBuilder, () -> themeJson.get().merge(jsonOverride));
+    }
+
+    private static ThemeColorsJson loadJson() throws ThemeException {
+        try (
+                var res = AppResources.getResource("ui/themes/AndLogView.Light.json")
+                        .asCharSource(StandardCharsets.UTF_8)
+                        .openBufferedStream()
+        ) {
+            return Utils.createConfigurationGson().fromJson(res, ThemeColorsJson.class);
+        } catch (IOException | JsonParseException e) {
+            // TODO(mlopatkin): name is not correct
+            throw failure("Light", e);
+        }
     }
 }

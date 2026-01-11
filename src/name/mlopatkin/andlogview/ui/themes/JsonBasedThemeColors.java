@@ -137,19 +137,4 @@ public class JsonBasedThemeColors implements ThemeColors {
     public static JsonBasedThemeColors fromThemeDefinition(ThemeColorsJson data) throws JsonSyntaxException {
         return new JsonBasedThemeColors(data);
     }
-
-    /**
-     * Builds an instance based on the given theme with some values overridden. Typical use is applying user-modified
-     * values on top of the base theme. Override may specify only a subset of values, but the base theme must be
-     * complete.
-     *
-     * @param theme the base theme
-     * @param override the overrides
-     * @return the full combined set of theme colors
-     * @throws JsonSyntaxException if the combination doesn't make sense
-     */
-    public static JsonBasedThemeColors withOverlay(ThemeColorsJson theme, ThemeColorsJson override)
-            throws JsonSyntaxException {
-        return new JsonBasedThemeColors(theme.merge(override));
-    }
 }

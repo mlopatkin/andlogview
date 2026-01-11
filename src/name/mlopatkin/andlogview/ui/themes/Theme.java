@@ -37,6 +37,23 @@ public interface Theme {
     ThemedWidgetFactory getWidgetFactory();
 
     /**
+     * Returns a set of AndLogView-specific colors to use.
+     *
+     * @return the colors
+     */
+    ThemeColors getColors();
+
+    /**
+     * Creates a new theme, based on this theme with overrides applied.
+     *
+     * @param themeName the user-visible name for the new theme
+     * @param jsonOverride the overrides
+     * @return the new theme
+     * @throws ThemeException if the overrides are incorrect or cannot be applied
+     */
+    Theme withOverrides(String themeName, ThemeColorsJson jsonOverride) throws ThemeException;
+
+    /**
      * Returns the default application theme. It is guaranteed to be supported.
      *
      * @return the default theme

@@ -27,6 +27,7 @@ import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.ui.themes.LegacyThemeColors;
+import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.LazyInstance;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
@@ -113,7 +114,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref().getThemeColors();
+        var resultTheme = loadImportedTheme();
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(customBackground);
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(customBookmarkBg);
         assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(customBookmarkFg);
@@ -131,7 +132,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        assertThat(createThemePref().getThemeColors().getBackgroundColor()).isEqualTo(customBackground);
+        assertThat(loadImportedTheme().getBackgroundColor()).isEqualTo(customBackground);
     }
 
     @Test
@@ -146,7 +147,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref().getThemeColors();
+        var resultTheme = loadImportedTheme();
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(customBookmarkBg);
         assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(customBookmarkFg);
     }
@@ -163,7 +164,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref().getThemeColors();
+        var resultTheme = loadImportedTheme();
         assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR)).isEqualTo(customErrorColor);
         assertThat(resultTheme.getPriorityForegroundColor(Priority.WARN)).isEqualTo(customWarnColor);
         assertThat(resultTheme.getPriorityForegroundColor(Priority.INFO))
@@ -184,7 +185,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        assertThat(createThemePref().getThemeColors().getHighlightColors()).isEqualTo(customHighlights);
+        assertThat(loadImportedTheme().getHighlightColors()).isEqualTo(customHighlights);
     }
 
     @Test
@@ -194,7 +195,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref().getThemeColors();
+        var resultTheme = loadImportedTheme();
 
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(legacyColors.getBackgroundColor());
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(legacyColors.getBookmarkBackgroundColor());
@@ -217,7 +218,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref().getThemeColors();
+        var resultTheme = loadImportedTheme();
 
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(legacyColors.getBackgroundColor());
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(legacyColors.getBookmarkBackgroundColor());
@@ -240,7 +241,7 @@ class LegacyPrefsImportTest {
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref().getThemeColors();
+        var resultTheme = loadImportedTheme();
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(customBackground);
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(legacyColors.getBookmarkBackgroundColor());
         assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(legacyColors.getBookmarkForegroundColor());
@@ -248,6 +249,10 @@ class LegacyPrefsImportTest {
         assertThat(resultTheme.getPriorityForegroundColor(Priority.WARN))
                 .isEqualTo(legacyColors.getPriorityForegroundColor(Priority.WARN));
         assertThat(resultTheme.getHighlightColors()).isEqualTo(legacyColors.getHighlightColors());
+    }
+
+    private ThemeColors loadImportedTheme() {
+        return createThemePref().getSelectedTheme().getColors();
     }
 
     LegacyPrefsImport createImport(AdbConfigurationPref adbPref) {

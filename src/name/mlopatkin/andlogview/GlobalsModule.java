@@ -57,9 +57,8 @@ public abstract class GlobalsModule {
     }
 
     @Provides
-    @Singleton
-    static ThemeColors getThemeColors(ThemePref preference) {
-        return preference.getThemeColors();
+    static ThemeColors getThemeColors(CurrentTheme theme) {
+        return theme.get().getColors();
     }
 
     @Provides

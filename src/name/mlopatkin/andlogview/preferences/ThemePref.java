@@ -16,27 +16,30 @@
 
 package name.mlopatkin.andlogview.preferences;
 
-import name.mlopatkin.andlogview.base.AppResources;
+import static com.google.common.collect.ImmutableList.toImmutableList;
+
+import name.mlopatkin.andlogview.base.collections.MyStreams;
 import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.Preference;
 import name.mlopatkin.andlogview.config.SimpleClient;
-import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.features.Features;
-import name.mlopatkin.andlogview.ui.themes.JsonBasedThemeColors;
 import name.mlopatkin.andlogview.ui.themes.Theme;
-import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
+import name.mlopatkin.andlogview.ui.themes.ThemeException;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonSyntaxException;
 
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -45,72 +48,108 @@ import javax.inject.Inject;
  * stored there too.
  */
 public class ThemePref {
+    private static final Logger log = LoggerFactory.getLogger(ThemePref.class);
+
     private static final String THEME_LIGHT = "light";
     private static final String THEME_DARK = "dark";
-
-    private final Preference<ThemeData> preference;
-    // TODO(mlopatkin): the base theme should also be stored in the preferences. Or, even better, maybe we can have
-    //  multiple custom user themes without inheritance at all?
-    private final ThemeColorsJson baseThemeData;
-    private final boolean enableDarkTheme;
+    private static final String THEME_LEGACY = "legacy";
 
     /** Serialized form of the preference */
     private record ThemeData(
             String selectedTheme,
-            ThemeColorsJson override
+            List<UserTheme> userThemes
     ) {
-        ThemeData(@Nullable String selectedTheme, @Nullable ThemeColorsJson override) {
+        ThemeData(@Nullable String selectedTheme, @Nullable List<@Nullable UserTheme> userThemes) {
             // TODO(mlopatkin) Not sure if we should handle nulls this way.
             this.selectedTheme = MoreObjects.firstNonNull(selectedTheme, THEME_LIGHT);
+            this.userThemes = sanitize(userThemes);
+        }
+
+        private static List<UserTheme> sanitize(@Nullable List<@Nullable UserTheme> userThemes) {
+            if (userThemes == null) {
+                return ImmutableList.of();
+            }
+            return MyStreams.withoutNulls(userThemes.stream()).collect(toImmutableList());
+        }
+
+        @SuppressWarnings("RedundantCast")
+        public ThemeData withSelectedTheme(String selectedTheme) {
+            return new ThemeData(selectedTheme, (List<@Nullable UserTheme>) userThemes());
+        }
+    }
+
+    private record UserTheme(
+            String name,
+            String baseTheme,
+            ThemeColorsJson override
+    ) {
+        UserTheme(@Nullable String name, @Nullable String baseTheme, @Nullable ThemeColorsJson override) {
+            // TODO(mlopatkin) Not sure if we should handle nulls this way.
+            if (name == null) {
+                throw new JsonSyntaxException("name is required for the user theme");
+            }
+            this.name = name;
+            this.baseTheme = MoreObjects.firstNonNull(baseTheme, THEME_LIGHT);
             this.override = MoreObjects.firstNonNull(override, new ThemeColorsJson(null));
         }
     }
 
+    private final Preference<ThemeData> preference;
+
+    private Theme theme;
+    private final Map<String, Theme> availableThemes = new HashMap<>();
+
     @Inject
     public ThemePref(ConfigStorage storage, Features features) {
-        this(storage, getDefaultThemeData(), features.darkModeSelector.isEnabled());
+        this(storage, features.darkModeSelector.isEnabled());
     }
 
     @VisibleForTesting
     public ThemePref(ConfigStorage storage) {
-        this(storage, getDefaultThemeData());
+        this(storage, true);
     }
 
     @VisibleForTesting
-    ThemePref(ConfigStorage storage, ThemeColorsJson baseThemeData) {
-        this(storage, baseThemeData, true);
-    }
-
-    private ThemePref(ConfigStorage storage, ThemeColorsJson baseThemeData, boolean enableDarkTheme) {
+    ThemePref(ConfigStorage storage, boolean enableDarkTheme) {
         this.preference = storage.preference(new SimpleClient<>(
                 "theme",
                 ThemeData.class,
-                () -> new ThemeData(
-                        THEME_LIGHT,
-                        new ThemeColorsJson(null)
-                )
-        ));
-        this.baseThemeData = baseThemeData;
-        this.enableDarkTheme = enableDarkTheme;
+                () -> new ThemeData(THEME_LIGHT, List.of())
+        )).memoize();
+
+        // Light theme is always available
+        availableThemes.put(THEME_LIGHT, Theme.light());
+        if (enableDarkTheme) {
+            availableThemes.put(THEME_DARK, Theme.dark());
+        }
+        preference.get().userThemes().forEach(userThemeData -> {
+            if (THEME_LEGACY.equals(userThemeData.name())) {
+                try {
+                    availableThemes.put(THEME_LEGACY, createLegacyTheme(userThemeData.override()));
+                } catch (ThemeException e) {
+                    log.error("Cannot parse the legacy theme");
+                }
+            }
+        });
+
+        theme = availableThemes.getOrDefault(preference.get().selectedTheme, Theme.getDefault());
     }
 
     /**
-     * Returns current theme colors based on preferences.
-     *
-     * @return the color set
-     */
-    public ThemeColors getThemeColors() {
-        return JsonBasedThemeColors.withOverlay(baseThemeData, preference.get().override());
-    }
-
-    /**
-     * Sets the override JSON for the theme.
+     * Sets the override JSON for the theme. This enables the "legacy" theme and selects it as active.
      *
      * @param jsonThemeData the override
      */
     public void setOverride(ThemeColorsJson jsonThemeData) {
+        // TODO(mlopatkin) What if I already have something? E.g. someone decided to rerun the import.
+
         if (jsonThemeData.logTable() != null) {
-            preference.set(new ThemeData(preference.get().selectedTheme(), jsonThemeData));
+            var legacyTheme = createLegacyTheme(jsonThemeData);
+            availableThemes.put(THEME_LEGACY, legacyTheme);
+            this.theme = legacyTheme;
+            preference.set(
+                    new ThemeData(THEME_LEGACY, List.of(new UserTheme(THEME_LEGACY, THEME_LIGHT, jsonThemeData)))
+            );
         }
     }
 
@@ -120,11 +159,7 @@ public class ThemePref {
      * @return the selected theme.
      */
     public Theme getSelectedTheme() {
-        return switch (preference.get().selectedTheme()) {
-            case THEME_LIGHT -> Theme.light();
-            case THEME_DARK -> enableDarkTheme ? Theme.dark() : Theme.getDefault();
-            default -> Theme.getDefault();
-        };
+        return theme;
     }
 
     /**
@@ -133,20 +168,17 @@ public class ThemePref {
      * @param newTheme the new theme
      */
     public void setTheme(Theme newTheme) {
-        Preconditions.checkArgument(
-                getAvailableThemes().contains(newTheme),
-                "Supplied theme %s is not one of the available themes",
-                newTheme.getDisplayName()
-        );
-        preference.set(new ThemeData(getThemeName(newTheme), preference.get().override()));
+        preference.set(preference.get().withSelectedTheme(getThemeName(newTheme)));
+        this.theme = newTheme;
     }
 
     private String getThemeName(Theme theme) {
-        if (theme == Theme.dark()) {
-            return THEME_DARK;
-        }
-        // TODO(mlopatkin) this is lame again
-        return THEME_LIGHT;
+        return availableThemes.entrySet().stream()
+                .filter(e -> e.getValue() == theme)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("Supplied theme %s is not one of the available themes", theme.getDisplayName())
+                )).getKey();
     }
 
     /**
@@ -155,24 +187,14 @@ public class ThemePref {
      * @return the list of themes
      */
     public List<Theme> getAvailableThemes() {
-        if (enableDarkTheme) {
-            return List.of(Theme.light(), Theme.dark());
-        } else {
-            return List.of(Theme.light());
-        }
+        return MyStreams.withoutNulls(Stream.of(
+                availableThemes.get(THEME_LIGHT),
+                availableThemes.get(THEME_DARK),
+                availableThemes.get(THEME_LEGACY)
+        )).toList();
     }
 
-    private static ThemeColorsJson getDefaultThemeData() {
-        ThemeColorsJson themeData;
-        try (
-                var res = AppResources.getResource("ui/themes/AndLogView.Light.json")
-                        .asCharSource(StandardCharsets.UTF_8)
-                        .openBufferedStream()
-        ) {
-            themeData = Utils.createConfigurationGson().fromJson(res, ThemeColorsJson.class);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return themeData;
+    private Theme createLegacyTheme(ThemeColorsJson override) {
+        return Theme.light().withOverrides("Legacy", override);
     }
 }
