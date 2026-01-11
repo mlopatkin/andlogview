@@ -28,8 +28,7 @@ class JsonBasedThemeColorsTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "Light",
-            "Test.Light",
-            "Test.Dark"
+            "Dark"
     })
     void canParseBuiltinThemes(String theme) throws Exception {
         var gson = Utils.createConfigurationGson();
