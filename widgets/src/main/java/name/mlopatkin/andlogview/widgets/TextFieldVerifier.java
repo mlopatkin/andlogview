@@ -16,7 +16,8 @@
 
 package name.mlopatkin.andlogview.widgets;
 
-import java.awt.Color;
+import com.formdev.flatlaf.FlatClientProperties;
+
 import java.util.function.Predicate;
 
 import javax.swing.InputVerifier;
@@ -27,8 +28,8 @@ import javax.swing.text.JTextComponent;
 
 /**
  * This class appends a simple verification to the text field. When the field loses focus then a predicate is called
- * with the field's new value. If the predicate fails then focus change is abandoned and the background of the text
- * field is changed to reddish.
+ * with the field's new value. If the predicate fails then focus change is abandoned and the text field gets red
+ * outline.
  */
 public class TextFieldVerifier {
     private final JTextComponent text;
@@ -37,22 +38,17 @@ public class TextFieldVerifier {
     private final InputVerifier inputVerifier = new Verifier();
     private final DocumentListener documentListener = new ChangeListener();
 
-    private final Color defaultBackgroundColor;
-    private final Color errorBackgroundColor;
-
     private TextFieldVerifier(JTextComponent text, Predicate<String> textVerifier) {
         this.text = text;
         this.textVerifier = textVerifier;
-        this.defaultBackgroundColor = text.getBackground();
-        this.errorBackgroundColor = new Color(0xFECBC0);
     }
 
     private void reset() {
-        text.setBackground(defaultBackgroundColor);
+        text.putClientProperty(FlatClientProperties.OUTLINE, null);
     }
 
     private void showFailure() {
-        text.setBackground(errorBackgroundColor);
+        text.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_ERROR);
     }
 
     public static <T extends JTextComponent> T verifyWith(T component, Predicate<String> textVerifier) {
@@ -70,9 +66,8 @@ public class TextFieldVerifier {
         }
 
         @Override
-        @SuppressWarnings("deprecation")
-        public boolean shouldYieldFocus(JComponent input) {
-            if (!super.shouldYieldFocus(input)) {
+        public boolean shouldYieldFocus(JComponent source, JComponent target) {
+            if (!super.shouldYieldFocus(source, target)) {
                 showFailure();
                 return false;
             }
