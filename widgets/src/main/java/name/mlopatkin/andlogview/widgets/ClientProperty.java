@@ -18,7 +18,6 @@ package name.mlopatkin.andlogview.widgets;
 
 import org.jspecify.annotations.Nullable;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JComponent;
@@ -144,33 +143,5 @@ public final class ClientProperty<V> {
      */
     public static <V> ClientProperty<V> create(Class<V> cls) {
         return new ClientProperty<>(cls);
-    }
-
-    /**
-     * Creates a property instance to hold colors.
-     *
-     * @return the property instance
-     */
-
-    public static ClientProperty<Color> colorProperty() {
-        return create(Color.class);
-    }
-
-    /**
-     * Creates a property instance to hold floats.
-     *
-     * @return the property instance
-     */
-    public static ClientProperty<Float> floatProperty() {
-        return create(Float.class);
-    }
-
-    /**
-     * Creates a property instance to hold integers.
-     *
-     * @return the property instance
-     */
-    public static ClientProperty<Integer> intProperty() {
-        return create(Integer.class);
     }
 }
