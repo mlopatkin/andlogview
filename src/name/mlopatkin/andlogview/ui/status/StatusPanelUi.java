@@ -17,7 +17,8 @@
 package name.mlopatkin.andlogview.ui.status;
 
 import name.mlopatkin.andlogview.ui.mainframe.MainFrameScoped;
-import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
+import name.mlopatkin.andlogview.ui.themes.ThemeProperties;
+import name.mlopatkin.andlogview.widgets.BorderPanel;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -39,9 +40,9 @@ class StatusPanelUi {
     protected final JLabel sourceStatusLabel;
 
     @Inject
-    public StatusPanelUi(CurrentTheme theme) {
-        statusPanel = new JPanel();
-        statusPanel.setBorder(theme.get().getWidgetFactory().createTopSeparatorBorder());
+    public StatusPanelUi() {
+        statusPanel = new BorderPanel(ThemeProperties.panelWithTopSeparatorBorder);
+
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
 
         // Add left padding.

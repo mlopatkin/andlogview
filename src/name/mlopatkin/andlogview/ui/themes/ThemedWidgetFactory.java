@@ -19,15 +19,7 @@ package name.mlopatkin.andlogview.ui.themes;
 import name.mlopatkin.andlogview.ui.Icons;
 
 import javax.swing.ImageIcon;
-import javax.swing.border.Border;
 
 public interface ThemedWidgetFactory {
     ImageIcon getToolbarIcon(Icons iconId);
-
-    /**
-     * Creates a border that is only drawn on top and can serve as a separator.
-     *
-     * @return the border
-     */
-    Border createTopSeparatorBorder();
 }

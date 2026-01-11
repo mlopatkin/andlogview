@@ -21,10 +21,7 @@ import name.mlopatkin.andlogview.ui.Icons;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
 
 class FlatLafWidgetFactory implements ThemedWidgetFactory {
 
@@ -41,14 +38,4 @@ class FlatLafWidgetFactory implements ThemedWidgetFactory {
         return UIScale.scale(10);
     }
 
-    @Override
-    public Border createTopSeparatorBorder() {
-        // see https://www.formdev.com/flatlaf/components/separator/
-        // I've considered using the full separator drawing routine, with indents and such, but it doesn't appeal
-        // visually.
-        var foreground = UIManager.getColor("Separator.foreground");
-        var stripeThickness = UIManager.getInt("Separator.stripeWidth");  // This is thickness
-
-        return BorderFactory.createMatteBorder(stripeThickness, 0, 0, 0, foreground);
-    }
 }

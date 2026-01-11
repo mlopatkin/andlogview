@@ -40,9 +40,9 @@ public class CurrentTheme {
      * @throws ThemeException if loading or installing the theme fails
      */
     public void set(Theme newTheme) throws ThemeException {
+        this.theme = newTheme;
         newTheme.install();
         FlatLaf.updateUI();
-        this.theme = newTheme;
     }
 
     /**

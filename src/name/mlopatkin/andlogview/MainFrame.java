@@ -58,8 +58,10 @@ import name.mlopatkin.andlogview.ui.search.SearchPresenter;
 import name.mlopatkin.andlogview.ui.search.logtable.TablePosition;
 import name.mlopatkin.andlogview.ui.status.StatusPanel;
 import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
+import name.mlopatkin.andlogview.ui.themes.ThemeProperties;
 import name.mlopatkin.andlogview.utils.CommonChars;
 import name.mlopatkin.andlogview.utils.MyFutures;
+import name.mlopatkin.andlogview.widgets.BorderPanel;
 import name.mlopatkin.andlogview.widgets.UiHelper;
 
 import com.google.common.io.Files;
@@ -361,18 +363,18 @@ public class MainFrame implements MainFrameSearchUi, DeviceDisconnectedHandler.D
         var filterTreePane = new JScrollPane(filterTreeFactory.buildFilterTree(filterToolbar));
         filterTreePane.setPreferredSize(new Dimension(200, 0));
 
-        // A combined filter tree and the filter toolbar
-        var filterControls = new JPanel(new BorderLayout());
-        filterControls.add(filterToolbar, BorderLayout.NORTH);
-        filterControls.add(filterTreePane, BorderLayout.CENTER);
-
+        // A combined filter tree and the filter toolbar.
         // Add a small separator line on top of the filter toolbar to visually glue toolbar and the tree together.
         // This isn't needed on macOS, because the top menu is detached, and there is a line between the window header
         // and the content. An extra separator results in double line. This may be reconsidered if I decide to merge
         // top bar with the panel.
-        if (!SystemUtils.IS_OS_MAC_OSX) {
-            filterControls.setBorder(theme.get().getWidgetFactory().createTopSeparatorBorder());
-        }
+        var filterControls = !SystemUtils.IS_OS_MAC_OSX
+                ? new BorderPanel(ThemeProperties.panelWithTopSeparatorBorder)
+                : new JPanel();
+
+        filterControls.setLayout(new BorderLayout());
+        filterControls.add(filterToolbar, BorderLayout.NORTH);
+        filterControls.add(filterTreePane, BorderLayout.CENTER);
 
         var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filterControls, logTableScrollPane);
         // Some paddings around the table and the filters to avoid them overlapping the other stuff, like the toolbar.

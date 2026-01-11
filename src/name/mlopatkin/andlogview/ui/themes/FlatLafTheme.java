@@ -62,8 +62,10 @@ class FlatLafTheme implements Theme {
     @Override
     public void install() {
         if (!FlatLaf.setup(lafBuilder.get())) {
-            failure(displayName, null);
+            throw failure(displayName, null);
         }
+
+        ThemeProperties.updateDefaults();
     }
 
     @Override
