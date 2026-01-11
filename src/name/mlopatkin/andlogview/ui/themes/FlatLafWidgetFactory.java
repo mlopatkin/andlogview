@@ -21,8 +21,6 @@ import name.mlopatkin.andlogview.ui.Icons;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
-import java.awt.Color;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -31,11 +29,7 @@ import javax.swing.border.Border;
 class FlatLafWidgetFactory implements ThemedWidgetFactory {
 
     private FlatSVGIcon createIcon(Icons iconId, int iconWidth, int iconHeight) {
-        FlatSVGIcon icon = new FlatSVGIcon(iconId.resolveModernPath(), iconWidth, iconHeight);
-        FlatSVGIcon.ColorFilter colorFilter = new FlatSVGIcon.ColorFilter();
-        colorFilter.add(Color.BLACK, UIManager.getColor("ToggleButton.foreground"));
-        icon.setColorFilter(colorFilter);
-        return icon;
+        return new FlatSVGIcon(iconId.resolveModernPath(), iconWidth, iconHeight);
     }
 
     @Override
