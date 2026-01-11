@@ -35,8 +35,8 @@ import java.util.function.Supplier;
  * FlatLaf L&amp;F with Light Flat IDEA theme.
  */
 class FlatLafTheme implements Theme {
-    static final Theme LIGHT = new FlatLafTheme("Light", FlatLafTheme::createLight, FlatLafTheme::loadJson);
-    static final Theme DARK = new FlatLafTheme("Dark", FlatLafTheme::createDark, FlatLafTheme::loadJson);
+    static final Theme LIGHT = new FlatLafTheme("Light", FlatLafTheme::createLight, () -> loadJson("Light"));
+    static final Theme DARK = new FlatLafTheme("Dark", FlatLafTheme::createDark, () -> loadJson("Dark"));
 
     private final String displayName;
     private final Supplier<FlatLaf> lafBuilder;
@@ -102,16 +102,15 @@ class FlatLafTheme implements Theme {
         return new FlatLafTheme(themeName, lafBuilder, () -> themeJson.get().merge(jsonOverride));
     }
 
-    private static ThemeColorsJson loadJson() throws ThemeException {
+    private static ThemeColorsJson loadJson(String theme) throws ThemeException {
         try (
-                var res = AppResources.getResource("ui/themes/AndLogView.Light.json")
+                var res = AppResources.getResource("ui/themes/AndLogView.%s.json".formatted(theme))
                         .asCharSource(StandardCharsets.UTF_8)
                         .openBufferedStream()
         ) {
             return Utils.createConfigurationGson().fromJson(res, ThemeColorsJson.class);
         } catch (IOException | JsonParseException e) {
-            // TODO(mlopatkin): name is not correct
-            throw failure("Light", e);
+            throw failure(theme, e);
         }
     }
 }

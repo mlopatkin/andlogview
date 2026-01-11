@@ -1,0 +1,49 @@
+{
+  "logTable": {
+    "background": "#1e1f22",
+    "bookmarks": {
+      "background": "#243447",
+      "foreground": "#5fa8e8"
+    },
+    "priority": {
+      "VERBOSE": {
+        "foreground": "#bbbbbb"
+      },
+      "DEBUG": {
+        "foreground": "#299999"
+      },
+      "INFO": {
+        "foreground": "#ABC023"
+      },
+      "WARN": {
+        "foreground": "#f09400"
+      },
+      "ERROR": {
+        "foreground": "#ff6b68"
+      },
+      "FATAL": {
+        "foreground": "#ff6b68"
+      }
+    },
+    "highlights": [
+      {
+        "background": "#3b5016"
+      },
+      {
+        "background": "#5e3717"
+      },
+      {
+        "background": "#4a3535"
+      },
+      {
+        "background": "#354a4a"
+      },
+      {
+        "background": "#4a4a35"
+      },
+      {
+        "background": "#423548"
+      }
+    ]
+  }
+}
