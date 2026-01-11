@@ -34,8 +34,6 @@ import javax.swing.table.TableCellRenderer;
 public class BookmarkHighlighter implements DecoratingCellRenderer {
     private final LogRecordTableModel model;
     private final BookmarkModel bookmarkModel;
-    private final Color bookmarkBackground;
-    private final Color bookmarkForeground;
     private final ThemeColors theme;
     private @MonotonicNonNull TableCellRenderer renderer;
 
@@ -43,8 +41,6 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     public BookmarkHighlighter(LogRecordTableModel model, BookmarkModel bookmarkModel, ThemeColors theme) {
         this.model = model;
         this.bookmarkModel = bookmarkModel;
-        this.bookmarkBackground = theme.getBookmarkBackgroundColor();
-        this.bookmarkForeground = theme.getBookmarkForegroundColor();
         this.theme = theme;
     }
 
@@ -69,16 +65,13 @@ public class BookmarkHighlighter implements DecoratingCellRenderer {
     private void highlight(Component cmp, boolean isSelected) {
         cmp.setFont(theme.configureBookmarkFont(cmp.getFont()));
 
-        Color backgroundColor = bookmarkBackground;
-        Color foregroundColor = bookmarkForeground;
+        Color backgroundColor = theme.getBookmarkBackgroundColor();
+        Color foregroundColor = theme.getBookmarkForegroundColor();
         if (isSelected) {
             backgroundColor = backgroundColor.brighter();
         }
-        if (backgroundColor != null) {
-            cmp.setBackground(backgroundColor);
-        }
-        if (foregroundColor != null) {
-            cmp.setForeground(foregroundColor);
-        }
+
+        cmp.setBackground(backgroundColor);
+        cmp.setForeground(foregroundColor);
     }
 }

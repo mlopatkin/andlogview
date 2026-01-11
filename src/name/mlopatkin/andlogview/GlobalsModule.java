@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.config.ConfigStorage;
 import name.mlopatkin.andlogview.config.ConfigurationLocation;
 import name.mlopatkin.andlogview.preferences.ThemePref;
 import name.mlopatkin.andlogview.ui.themes.CurrentTheme;
+import name.mlopatkin.andlogview.ui.themes.CurrentThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.ui.themes.ThemeException;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
@@ -57,8 +58,9 @@ public abstract class GlobalsModule {
     }
 
     @Provides
+    @Singleton
     static ThemeColors getThemeColors(CurrentTheme theme) {
-        return theme.get().getColors();
+        return new CurrentThemeColors(theme);
     }
 
     @Provides

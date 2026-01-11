@@ -22,23 +22,18 @@ import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.util.EnumMap;
-import java.util.Map;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
-    private final Map<Priority, Color> colorMap = new EnumMap<>(Priority.class);
+    private final ThemeColors themeColors;
 
     private @MonotonicNonNull TableCellRenderer inner;
 
     public PriorityColoredCellRenderer(ThemeColors themeColors) {
-        for (Priority p : Priority.values()) {
-            colorMap.put(p, themeColors.getPriorityForegroundColor(p));
-        }
+        this.themeColors = themeColors;
     }
 
     @Override
@@ -49,7 +44,7 @@ public class PriorityColoredCellRenderer implements DecoratingCellRenderer {
         row = table.convertRowIndexToModel(row);
         LogRecordTableModel model = (LogRecordTableModel) table.getModel();
         Priority priority = model.getRowData(row).getPriority();
-        result.setForeground(colorMap.get(priority));
+        result.setForeground(themeColors.getPriorityForegroundColor(priority));
         return result;
     }
 
