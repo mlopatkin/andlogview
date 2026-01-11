@@ -43,7 +43,9 @@ public class HighlightCellRenderer extends DefaultTableCellRenderer implements T
 
     private final List<Range<Integer>> highlights = new ArrayList<>();
 
-    public HighlightCellRenderer() {
+    @Override
+    public void updateUI() {
+        super.updateUI();
         setUI(new HighlightUI());
     }
 
