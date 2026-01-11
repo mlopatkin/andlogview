@@ -16,7 +16,6 @@
 package name.mlopatkin.andlogview.ui.logtable;
 
 import name.mlopatkin.andlogview.logmodel.LogRecord;
-import name.mlopatkin.andlogview.ui.themes.ThemeColors;
 import name.mlopatkin.andlogview.widgets.DecoratingCellRenderer;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -29,12 +28,10 @@ import javax.swing.table.TableCellRenderer;
 
 class RowHighlightRenderer implements DecoratingCellRenderer {
     private @MonotonicNonNull TableCellRenderer inner;
-    private final Color backgroundColor;
     private final LogModelFilter colorer;
 
-    public RowHighlightRenderer(LogModelFilter colorer, ThemeColors themeColors) {
+    public RowHighlightRenderer(LogModelFilter colorer) {
         this.colorer = colorer;
-        this.backgroundColor = themeColors.getBackgroundColor();
     }
 
     @Override
@@ -52,11 +49,7 @@ class RowHighlightRenderer implements DecoratingCellRenderer {
             int modelRow = table.convertRowIndexToModel(row);
             LogRecord record = tableModel.getRowData(modelRow);
             Color targetColor = colorer.getHighlightColor(record);
-            if (targetColor != null) {
-                result.setBackground(targetColor);
-            } else {
-                result.setBackground(backgroundColor);
-            }
+            result.setBackground(targetColor);
         }
         return result;
     }

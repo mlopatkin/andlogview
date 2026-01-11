@@ -19,6 +19,11 @@ package name.mlopatkin.andlogview.ui.themes;
 import name.mlopatkin.andlogview.widgets.BorderPanel;
 import name.mlopatkin.andlogview.widgets.ClientProperty;
 
+import com.formdev.flatlaf.FlatLaf;
+
+import java.awt.Color;
+import java.util.Map;
+
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
@@ -36,6 +41,12 @@ public final class ThemeProperties {
      */
     public static final ClientProperty<Border> panelWithTopSeparatorBorder = ClientProperty.create(Border.class);
 
+    static void setThemeVariables(FlatLaf laf, ThemeColors themeColors) {
+        laf.setExtraDefaults(Map.of(
+                "@AndLogView.logtableBackground", toHexValue(themeColors.getBackgroundColor())
+        ));
+    }
+
     static void updateDefaults() {
         panelWithTopSeparatorBorder.setDefault(createTopSeparatorBorder());
     }
@@ -48,5 +59,10 @@ public final class ThemeProperties {
         var stripeThickness = UIManager.getInt("Separator.stripeWidth");  // This is thickness despite the name
 
         return new BorderUIResource.MatteBorderUIResource(stripeThickness, 0, 0, 0, foreground);
+    }
+
+    private static String toHexValue(Color cl) {
+        // We drop alpha value.
+        return "#%06X".formatted(cl.getRGB() & 0xFFFFFF);
     }
 }
