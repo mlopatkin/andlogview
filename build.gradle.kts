@@ -352,6 +352,18 @@ licenses {
         uri("https://fontawesome.com"),
         License.ccBy4(fromFile("third-party/fontawesomeIcons/LICENSE"))
     )
+    sourceDependency(
+        "resources/name/mlopatkin/andlogview/ui/themes/AndLogView.Dark.json",
+        "Android Studio",
+        uri("https://developer.android.com/studio/"),
+        License.apache2().withNotice(fromFile("third-party/libs/notices/android-studio-colors.NOTICE"))
+    )
+    sourceDependency(
+        "resources/name/mlopatkin/andlogview/ui/themes/AndLogView.Dark.json",
+        "IntelliJ IDEA Community Edition",
+        uri("https://www.jetbrains.com/idea/"),
+        License.apache2().withNotice(fromFile("third-party/libs/notices/idea-ce.NOTICE"))
+    )
 }
 
 // Configure distribution (archive creation).
