@@ -39,12 +39,12 @@ class FilterNodeRenderer implements TreeCellRenderer {
     private final CheckablePanel panel;
     private final TreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 
-    private final Color selectionForeground;
-    private final Color selectionBackground;
-    private final Color textForeground;
-    private final Color textBackground;
-    private final Color selectionInactiveForeground;
-    private final Color selectionInactiveBackground;
+    private Color selectionForeground;
+    private Color selectionBackground;
+    private Color textForeground;
+    private Color textBackground;
+    private Color selectionInactiveForeground;
+    private Color selectionInactiveBackground;
 
     @Inject
     public FilterNodeRenderer() {
@@ -56,6 +56,10 @@ class FilterNodeRenderer implements TreeCellRenderer {
         checkBox.setFocusable(false);
         panel.setFocusable(false);
 
+        updateUiValues();
+    }
+
+    private void updateUiValues() {
         var fontValue = UIManager.getFont("Tree.font");
         if (fontValue != null) {
             text.setFont(fontValue);
@@ -67,6 +71,13 @@ class FilterNodeRenderer implements TreeCellRenderer {
         selectionBackground = UIManager.getColor("Tree.selectionBackground");
         textForeground = UIManager.getColor("Tree.textForeground");
         textBackground = UIManager.getColor("Tree.background");
+    }
+
+    /**
+     * Reconciles the state of this class with the current L&amp;F.
+     */
+    public void updateUI() {
+        updateUiValues();
     }
 
     @Override

@@ -20,6 +20,7 @@ import name.mlopatkin.andlogview.widgets.UiHelper;
 import name.mlopatkin.andlogview.widgets.checktree.CheckFlatTreeUi;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -52,7 +53,8 @@ public class FilterTreeFactory {
     FilterTreeFactory(
             FilterNodeRenderer renderer,
             TreeModelAdapter treeModel,
-            TreeActions.Factory treeActionsFactory) {
+            TreeActions.Factory treeActionsFactory
+    ) {
         this.renderer = renderer;
         this.treeModel = treeModel;
         this.treeActionsFactory = treeActionsFactory;
@@ -72,6 +74,15 @@ public class FilterTreeFactory {
                 }
 
                 return value.getTooltip();
+            }
+
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                if (!(getUI() instanceof CheckFlatTreeUi)) {
+                    setUI(new CheckFlatTreeUi());
+                }
+                renderer.updateUI();
             }
         };
 
@@ -106,12 +117,19 @@ public class FilterTreeFactory {
      * @param tree the filter tree to install menu to
      */
     private void configurePopupMenu(JTree tree, TreeActions treeActions) {
-        var filterPopupMenu = new JPopupMenu();
-        filterPopupMenu.add(treeActions.editSelectedFilter);
-        filterPopupMenu.add(treeActions.deleteSelectedFilter);
+        // Recreate menus every time they're needed so they pick up L&F changes.
+        Supplier<JPopupMenu> filterPopupMenu = () -> {
+            var menu = new JPopupMenu();
+            menu.add(treeActions.editSelectedFilter);
+            menu.add(treeActions.deleteSelectedFilter);
+            return menu;
+        };
 
-        var treePopupMenu = new JPopupMenu();
-        treePopupMenu.add(treeActions.createFilter).setToolTipText(null);
+        Supplier<JPopupMenu> treePopupMenu = () -> {
+            var menu = new JPopupMenu();
+            menu.add(treeActions.createFilter).setToolTipText(null);
+            return menu;
+        };
 
         UiHelper.PopupMenuDelegate<JTree> menuHandler = (component, p) -> {
             assert component == tree;
@@ -142,9 +160,9 @@ public class FilterTreeFactory {
             }
 
             if (selectedPath != null) {
-                filterPopupMenu.show(tree, popupX, popupY);
+                filterPopupMenu.get().show(tree, popupX, popupY);
             } else {
-                treePopupMenu.show(tree, popupX, popupY);
+                treePopupMenu.get().show(tree, popupX, popupY);
             }
         };
 
