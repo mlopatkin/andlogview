@@ -65,6 +65,9 @@ public class ConfigurationDialogView implements ConfigurationDialogPresenter.Vie
 
     @Override
     public String getSelectedThemeName() {
+        if (!features.darkModeSelector.isEnabled()) {
+            return Objects.requireNonNull(selectedTheme);
+        }
         return getDialog().themeSelector.getSelection().getActionCommand();
     }
 
