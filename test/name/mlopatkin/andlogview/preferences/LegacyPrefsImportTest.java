@@ -16,22 +16,17 @@
 
 package name.mlopatkin.andlogview.preferences;
 
-import static name.mlopatkin.andlogview.preferences.LegacyPrefsImportTest.ThemeFlavor.Dark;
-import static name.mlopatkin.andlogview.preferences.LegacyPrefsImportTest.ThemeFlavor.Light;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import name.mlopatkin.andlogview.base.AppResources;
 import name.mlopatkin.andlogview.config.FakeInMemoryConfigStorage;
 import name.mlopatkin.andlogview.config.Utils;
 import name.mlopatkin.andlogview.logmodel.LogRecord.Priority;
 import name.mlopatkin.andlogview.sdkrepo.AdbLocationDiscovery;
 import name.mlopatkin.andlogview.ui.themes.LegacyThemeColors;
-import name.mlopatkin.andlogview.ui.themes.ThemeColorsJson;
 import name.mlopatkin.andlogview.utils.FakePathResolver;
 import name.mlopatkin.andlogview.utils.LazyInstance;
 import name.mlopatkin.andlogview.utils.SystemPathResolver;
@@ -40,23 +35,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
 class LegacyPrefsImportTest {
-    enum ThemeFlavor {
-        Light(Color.WHITE),
-        Dark(Color.BLACK);
-
-        public final Color color;
-
-        ThemeFlavor(Color color) {
-            this.color = color;
-        }
-    }
+    private final LegacyThemeColors legacyColors = new LegacyThemeColors();
 
     // Default behavior for the legacy configuration is to return nulls for any unspecified property.
     final LegacyConfiguration.Adb adb = mock(LegacyConfiguration.Adb.class, invocation -> null);
@@ -70,13 +53,14 @@ class LegacyPrefsImportTest {
         lenient().when(legacyConfiguration.adb()).thenReturn(adb);
         lenient().when(legacyConfiguration.ui()).thenReturn(ui);
 
-        var legacyColors = new LegacyThemeColors();
         lenient().when(ui.backgroundColor()).thenReturn(legacyColors.getBackgroundColor());
         lenient().when(ui.bookmarkBackground()).thenReturn(legacyColors.getBookmarkBackgroundColor());
         lenient().when(ui.bookmarkedForeground()).thenReturn(legacyColors.getBookmarkForegroundColor());
         lenient().when(ui.highlightColors()).thenReturn(legacyColors.getHighlightColors());
         lenient().when(ui.priorityColor(any()))
-                .thenAnswer(c -> legacyColors.getPriorityForegroundColor(c.getArgument(0)));
+                .thenAnswer(c -> c.getArgument(0) != null
+                        ? legacyColors.getPriorityForegroundColor(c.getArgument(0))
+                        : null);
     }
 
     @Test
@@ -124,12 +108,12 @@ class LegacyPrefsImportTest {
         when(ui.priorityColor(Priority.ERROR)).thenReturn(customErrorColor);
         when(ui.highlightColors()).thenReturn(customHighlights);
 
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref(Dark).getThemeColors();
+        var resultTheme = createThemePref().getThemeColors();
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(customBackground);
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(customBookmarkBg);
         assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(customBookmarkFg);
@@ -142,12 +126,12 @@ class LegacyPrefsImportTest {
         var customBackground = new Color(0x123456);
         when(ui.backgroundColor()).thenReturn(customBackground);
 
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        assertThat(createThemePref(Dark).getThemeColors().getBackgroundColor()).isEqualTo(customBackground);
+        assertThat(createThemePref().getThemeColors().getBackgroundColor()).isEqualTo(customBackground);
     }
 
     @Test
@@ -157,12 +141,12 @@ class LegacyPrefsImportTest {
         when(ui.bookmarkBackground()).thenReturn(customBookmarkBg);
         when(ui.bookmarkedForeground()).thenReturn(customBookmarkFg);
 
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref(Dark).getThemeColors();
+        var resultTheme = createThemePref().getThemeColors();
         assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(customBookmarkBg);
         assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(customBookmarkFg);
     }
@@ -174,15 +158,16 @@ class LegacyPrefsImportTest {
         when(ui.priorityColor(Priority.ERROR)).thenReturn(customErrorColor);
         when(ui.priorityColor(Priority.WARN)).thenReturn(customWarnColor);
 
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref(Dark).getThemeColors();
+        var resultTheme = createThemePref().getThemeColors();
         assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR)).isEqualTo(customErrorColor);
         assertThat(resultTheme.getPriorityForegroundColor(Priority.WARN)).isEqualTo(customWarnColor);
-        assertThat(resultTheme.getPriorityForegroundColor(Priority.INFO)).isEqualTo(Dark.color);
+        assertThat(resultTheme.getPriorityForegroundColor(Priority.INFO))
+                .isEqualTo(legacyColors.getPriorityForegroundColor(Priority.INFO));
     }
 
     @Test
@@ -194,47 +179,52 @@ class LegacyPrefsImportTest {
         );
         when(ui.highlightColors()).thenReturn(customHighlights);
 
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        assertThat(createThemePref(Dark).getThemeColors().getHighlightColors()).isEqualTo(customHighlights);
+        assertThat(createThemePref().getThemeColors().getHighlightColors()).isEqualTo(customHighlights);
     }
 
     @Test
     void importThemeColors_doesNotImportColorsSameAsBaseTheme() {
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        // Simulate user changing the base theme. Overlay should be empty.
-        var resultTheme = createThemePref(Dark).getThemeColors();
+        var resultTheme = createThemePref().getThemeColors();
 
-        assertThat(resultTheme.getBackgroundColor()).isEqualTo(Dark.color);
-        assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(Dark.color);
-        assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(Dark.color);
+        assertThat(resultTheme.getBackgroundColor()).isEqualTo(legacyColors.getBackgroundColor());
+        assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(legacyColors.getBookmarkBackgroundColor());
+        assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(legacyColors.getBookmarkForegroundColor());
         assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR))
-                .isEqualTo(Dark.color);
-        assertThat(resultTheme.getHighlightColors()).isEqualTo(List.of(Dark.color));
+                .isEqualTo(legacyColors.getPriorityForegroundColor(Priority.ERROR));
+        assertThat(resultTheme.getHighlightColors()).isEqualTo(legacyColors.getHighlightColors());
     }
 
     @Test
     void importThemeColors_handlesNullLegacyColors() {
-        var themeColorsPref = createThemePref(Light);
+        when(ui.backgroundColor()).thenReturn(null);
+        when(ui.bookmarkBackground()).thenReturn(null);
+        when(ui.bookmarkedForeground()).thenReturn(null);
+        when(ui.priorityColor(any())).thenReturn(null);
+        when(ui.highlightColors()).thenReturn(null);
+
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        // Simulate user changing the base theme. Overlay should be empty.
-        var resultTheme = createThemePref(Dark).getThemeColors();
+        var resultTheme = createThemePref().getThemeColors();
 
-        assertThat(resultTheme.getBackgroundColor()).isEqualTo(Dark.color);
-        assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(Dark.color);
-        assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(Dark.color);
-        assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR)).isEqualTo(Dark.color);
-        assertThat(resultTheme.getHighlightColors()).isEqualTo(List.of(Dark.color));
+        assertThat(resultTheme.getBackgroundColor()).isEqualTo(legacyColors.getBackgroundColor());
+        assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(legacyColors.getBookmarkBackgroundColor());
+        assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(legacyColors.getBookmarkForegroundColor());
+        assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR))
+                .isEqualTo(legacyColors.getPriorityForegroundColor(Priority.ERROR));
+        assertThat(resultTheme.getHighlightColors()).isEqualTo(legacyColors.getHighlightColors());
     }
 
     @Test
@@ -245,18 +235,19 @@ class LegacyPrefsImportTest {
         when(ui.backgroundColor()).thenReturn(customBackground);
         when(ui.priorityColor(Priority.ERROR)).thenReturn(customErrorColor);
 
-        var themeColorsPref = createThemePref(Light);
+        var themeColorsPref = createThemePref();
         var importer = createImport(themeColorsPref);
 
         importer.importLegacyPreferences(legacyConfiguration);
 
-        var resultTheme = createThemePref(Dark).getThemeColors();
+        var resultTheme = createThemePref().getThemeColors();
         assertThat(resultTheme.getBackgroundColor()).isEqualTo(customBackground);
-        assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(Dark.color);
-        assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(Dark.color);
+        assertThat(resultTheme.getBookmarkBackgroundColor()).isEqualTo(legacyColors.getBookmarkBackgroundColor());
+        assertThat(resultTheme.getBookmarkForegroundColor()).isEqualTo(legacyColors.getBookmarkForegroundColor());
         assertThat(resultTheme.getPriorityForegroundColor(Priority.ERROR)).isEqualTo(customErrorColor);
-        assertThat(resultTheme.getPriorityForegroundColor(Priority.WARN)).isEqualTo(Dark.color);
-        assertThat(resultTheme.getHighlightColors()).isEqualTo(List.of(Dark.color));
+        assertThat(resultTheme.getPriorityForegroundColor(Priority.WARN))
+                .isEqualTo(legacyColors.getPriorityForegroundColor(Priority.WARN));
+        assertThat(resultTheme.getHighlightColors()).isEqualTo(legacyColors.getHighlightColors());
     }
 
     LegacyPrefsImport createImport(AdbConfigurationPref adbPref) {
@@ -264,7 +255,7 @@ class LegacyPrefsImportTest {
                 configStorage,
                 LazyInstance.of(new WindowsPositionsPref(configStorage)),
                 LazyInstance.of(adbPref),
-                LazyInstance.of(createThemePref(Light))
+                LazyInstance.of(createThemePref())
         );
     }
 
@@ -281,21 +272,7 @@ class LegacyPrefsImportTest {
         return new AdbConfigurationPref(configStorage, pathResolver);
     }
 
-    private ThemePref createThemePref(ThemeFlavor themeFlavor) {
-        return new ThemePref(configStorage, loadTestTheme(themeFlavor));
-    }
-
-    private static ThemeColorsJson loadTestTheme(ThemeFlavor themeFlavor) {
-        ThemeColorsJson themeData;
-        try (
-                var res = AppResources.getResource("ui/themes/AndLogView.Test.%s.json".formatted(themeFlavor.name()))
-                        .asCharSource(StandardCharsets.UTF_8)
-                        .openBufferedStream()
-        ) {
-            themeData = Utils.createConfigurationGson().fromJson(res, ThemeColorsJson.class);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return themeData;
+    private ThemePref createThemePref() {
+        return new ThemePref(configStorage);
     }
 }
